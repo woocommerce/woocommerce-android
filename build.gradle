@@ -1,0 +1,62 @@
+buildscript {
+    ext.kotlin_version = '1.1.51'
+
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    apply plugin: 'checkstyle'
+
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+    }
+
+    task checkstyle(type: Checkstyle) {
+        source 'src'
+        include '**/*.java'
+        include '**/*.kt'
+        exclude '**/gen/**'
+
+        classpath = files()
+    }
+
+    checkstyle {
+        toolVersion = '8.3'
+        configFile file("${project.rootDir}/config/checkstyle.xml")
+    }
+}
+
+subprojects {
+    configurations {
+        ktlint
+    }
+
+    dependencies {
+        ktlint 'com.github.shyiko:ktlint:0.9.2'
+    }
+
+    task ktlint(type: JavaExec) {
+        main = "com.github.shyiko.ktlint.Main"
+        classpath = configurations.ktlint
+        args "src/**/*.kt"
+    }
+
+    task ktlintFormat(type: JavaExec) {
+        main = "com.github.shyiko.ktlint.Main"
+        classpath = configurations.ktlint
+        args "-F", "src/**/*.kt"
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
