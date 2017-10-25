@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
 android {
@@ -39,6 +40,10 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
 
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+
+    compile('com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:0eabd5cdb62494f772f7fbc6b89cf9e619fe8ba8') {
+        exclude group: "com.android.support";
+    }
 
     // Dagger
     compile "com.google.dagger:dagger:$daggerVersion"

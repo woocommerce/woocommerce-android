@@ -6,12 +6,19 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
+import org.wordpress.android.fluxc.module.ReleaseBaseModule
+import org.wordpress.android.fluxc.module.ReleaseNetworkModule
+import org.wordpress.android.fluxc.module.ReleaseOkHttpClientModule
 import javax.inject.Singleton
 
 @Singleton
 @Component(modules = arrayOf(
         AndroidSupportInjectionModule::class,
-        ApplicationModule::class))
+        ApplicationModule::class,
+        AppSecretsModule::class,
+        ReleaseBaseModule::class,
+        ReleaseNetworkModule::class,
+        ReleaseOkHttpClientModule::class))
 interface AppComponent : AndroidInjector<WooCommerce> {
     override fun inject(app: WooCommerce)
 
