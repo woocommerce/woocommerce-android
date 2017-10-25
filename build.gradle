@@ -62,5 +62,6 @@ task clean(type: Delete) {
 }
 
 ext {
+    daggerVersion = '2.11'
     supportLibraryVersion = '26.1.0'
 }
