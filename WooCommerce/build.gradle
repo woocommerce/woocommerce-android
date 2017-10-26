@@ -52,6 +52,9 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28'
     compile "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+
+    // Debug dependencies
+    debugCompile 'com.facebook.stetho:stetho:1.5.0'
 }
 
 // Add properties named "wp.xxx" to our BuildConfig
