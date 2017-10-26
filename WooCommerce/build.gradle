@@ -55,6 +55,7 @@ dependencies {
 
     // Debug dependencies
     debugCompile 'com.facebook.stetho:stetho:1.5.0'
+    debugCompile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 }
 
 // Add properties named "wp.xxx" to our BuildConfig
