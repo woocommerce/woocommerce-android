@@ -1,7 +1,8 @@
-package com.woocommerce.android
+package com.woocommerce.android.ui.main
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.woocommerce.android.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
