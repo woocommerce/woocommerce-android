@@ -1,6 +1,6 @@
 # woocommerce-android
 
-[![Build Status](https://travis-ci.com/woocommerce/woocommerce-android.svg?token=umh3yUbJENBttxqUrtQX&branch=develop)](https://travis-ci.com/woocommerce/woocommerce-android)
+[![BuddyBuild](https://dashboard.buddybuild.com/api/statusImage?appID=59f725915b765d0001608b25&branch=develop&build=latest)](https://dashboard.buddybuild.com/apps/59f725915b765d0001608b25/build/latest?branch=develop)
 
 Jetpack-powered WooCommerce Android app codenamed Dervish.
 
