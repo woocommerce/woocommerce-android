@@ -7,6 +7,7 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class ActivityBindingModule {
+    @ActivityScoped
     @ContributesAndroidInjector(modules = arrayOf(MainModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 }
