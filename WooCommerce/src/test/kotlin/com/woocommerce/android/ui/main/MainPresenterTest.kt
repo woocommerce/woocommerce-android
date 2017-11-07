@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +31,7 @@ class MainPresenterTest {
 
         Assert.assertFalse(mainPresenter.userIsLoggedIn())
 
-        Mockito.doReturn(true).`when`(accountStore).hasAccessToken()
+        Mockito.doReturn(true).whenever(accountStore).hasAccessToken()
         Assert.assertTrue(mainPresenter.userIsLoggedIn())
     }
 }
