@@ -6,6 +6,7 @@ apply plugin: 'kotlin-kapt'
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
+    maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
 }
 
 android {
@@ -46,8 +47,21 @@ dependencies {
 
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"
 
-    compile('com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:5629317341197ba6a79f58a4c40c263992d728b9') {
-        exclude group: "com.android.support";
+    compile ('org.wordpress:utils:1.19.0') {
+        exclude group: "com.mcxiaoke.volley"
+    }
+
+    compile('com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:fd47635fb823d74405c56edc37c6c7a6a59e5fb5') {
+        exclude group: "com.android.support"
+    }
+
+    releaseCompile(project(path: ':libs:login:WordPressLoginFlow', configuration: 'release')) {
+        exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
+        exclude group: "org.wordpress", module: "utils"
+    }
+    debugCompile(project(path: ':libs:login:WordPressLoginFlow', configuration: 'debug')) {
+        exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
+        exclude group: "org.wordpress", module: "utils"
     }
 
     // Dagger
