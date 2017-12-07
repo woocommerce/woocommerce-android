@@ -15,7 +15,8 @@ import javax.inject.Singleton
         AppSecretsModule::class,
         ReleaseBaseModule::class,
         ReleaseNetworkModule::class,
-        DebugOkHttpClientModule::class))
+        DebugOkHttpClientModule::class,
+        ActivityBindingModule::class))
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

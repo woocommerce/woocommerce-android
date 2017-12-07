@@ -34,6 +34,7 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         debug.java.srcDirs += 'src/debug/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
 }
 
@@ -56,6 +57,10 @@ dependencies {
     // Debug dependencies
     debugCompile 'com.facebook.stetho:stetho:1.5.0'
     debugCompile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+
+    // Dependencies for local unit tests
+    testCompile "junit:junit:4.12"
+    testCompile "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
 }
 
 // Add properties named "wp.xxx" to our BuildConfig
