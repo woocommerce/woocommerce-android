@@ -10,6 +10,7 @@ import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -31,6 +32,10 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), LoginListener, HasSupportFragmentInjector {
+    companion object {
+        private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
+    }
+
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
     private var loginMode: LoginMode? = null
@@ -159,7 +164,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, HasSupportFragmentInje
     }
 
     override fun openEmailClient() {
-        // TODO: Open e-mail client
+        if (ActivityUtils.isEmailClientAvailable(this)) {
+            AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
+            ActivityUtils.openEmailClient(this)
+        } else {
+            ToastUtils.showToast(this, R.string.login_email_client_not_found)
+        }
     }
 
     override fun usePasswordInstead(email: String?) {
@@ -170,7 +180,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, HasSupportFragmentInje
 
     override fun forgotPassword(url: String?) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FORGOT_PASSWORD_CLICKED)
-        // TODO: Open password reset screen
+        ActivityUtils.openUrlExternal(this, url + FORGOT_PASSWORD_URL_SUFFIX)
     }
 
     override fun needs2fa(email: String?, password: String?) {
