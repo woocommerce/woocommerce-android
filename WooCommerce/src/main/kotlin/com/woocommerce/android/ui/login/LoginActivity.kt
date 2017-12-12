@@ -21,6 +21,7 @@ import org.wordpress.android.login.Login2FaFragment
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginGoogleFragment
+import org.wordpress.android.login.LoginGoogleFragment.GoogleLoginListener
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMagicLinkSentFragment
@@ -31,7 +32,7 @@ import org.wordpress.android.util.ToastUtils
 import java.util.ArrayList
 import javax.inject.Inject
 
-class LoginActivity : AppCompatActivity(), LoginListener, HasSupportFragmentInjector {
+class LoginActivity : AppCompatActivity(), LoginListener, GoogleLoginListener, HasSupportFragmentInjector {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
@@ -306,4 +307,20 @@ class LoginActivity : AppCompatActivity(), LoginListener, HasSupportFragmentInje
                                             profilePicture: Uri?) {
         // TODO: Hook for smartlock, if using
     }
+
+    //  -- END: LoginListener implementation methods
+
+    //  -- BEGIN: GoogleLoginListener implementation methods
+
+    override fun onGoogleEmailSelected(email: String?) {
+        val loginEmailFragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG) as LoginEmailFragment
+        loginEmailFragment.setGoogleEmail(email)
+    }
+
+    override fun onGoogleLoginFinished() {
+        val loginEmailFragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG) as LoginEmailFragment
+        loginEmailFragment.finishLogin()
+    }
+
+    //  -- END: GoogleLoginListener implementation methods
 }
