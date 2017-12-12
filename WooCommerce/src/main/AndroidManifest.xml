@@ -31,6 +31,17 @@
                   android:windowSoftInputMode="adjustResize">
         </activity>
 
+        <activity android:name=".ui.login.MagicLinkInterceptActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="magic-login"
+                    android:scheme="wordpress" />
+            </intent-filter>
+        </activity>
+
         <!-- Services -->
         <service
             android:name="org.wordpress.android.login.LoginWpcomService"

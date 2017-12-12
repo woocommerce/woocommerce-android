@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
 import javax.inject.Inject
@@ -12,6 +13,9 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), MainContract.View {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
+
+        private const val MAGIC_LOGIN = "magic-login"
+        private const val TOKEN_PARAMETER = "token"
     }
 
     @Inject lateinit var presenter: MainContract.Presenter
@@ -23,10 +27,14 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         presenter.takeView(this)
 
         if (!presenter.userIsLoggedIn()) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
-            finish()
-            return
+            if (hasMagicLinkLoginIntent()) {
+                getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
+            } else {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
+                finish()
+                return
+            }
         }
     }
 
@@ -44,5 +52,24 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 }
             }
         }
+    }
+
+    override fun notifyTokenUpdated() {
+        if (hasMagicLinkLoginIntent()) {
+            AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_SUCCEEDED)
+            // TODO Launch next screen
+        }
+    }
+
+    private fun hasMagicLinkLoginIntent(): Boolean {
+        val action = intent.action
+        val uri = intent.data
+        val host = if (uri != null && uri.host != null) uri.host else ""
+        return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
+    }
+
+    private fun getAuthTokenFromIntent(): String? {
+        val uri = intent.data
+        return uri?.getQueryParameter(TOKEN_PARAMETER)
     }
 }
