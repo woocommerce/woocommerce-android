@@ -18,11 +18,14 @@ class MainPresenterTest {
 
     private lateinit var mainPresenter: MainPresenter
 
-    @Test
-    fun `Reports AccountStore token status correctly`() {
+    @Before
+    fun setup() {
         mainPresenter = spy(MainPresenter(dispatcher, accountStore))
         mainPresenter.takeView(mainContractView)
+    }
 
+    @Test
+    fun `Reports AccountStore token status correctly`() {
         Assert.assertFalse(mainPresenter.userIsLoggedIn())
 
         doReturn(true).whenever(accountStore).hasAccessToken()
