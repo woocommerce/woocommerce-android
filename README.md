@@ -15,6 +15,11 @@ You first need to generate the `gradle.properties` file:
 Next, you'll have to get a WordPress.com OAuth2 ID and secret, for use in the `gradle.properties` file. Please read the
 [OAuth2 Authentication](#oauth2-authentication) section.
 
+## Running Tests ##
+
+    $ ./gradlew testDebug # Unit tests
+    $ ./gradlew cAT       # UI tests
+
 ## OAuth2 Authentication ##
 
 You will need a client ID and a client secret key. These details will be
