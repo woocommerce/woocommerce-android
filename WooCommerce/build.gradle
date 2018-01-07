@@ -22,6 +22,8 @@ android {
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -35,6 +37,7 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 }
 
@@ -61,6 +64,15 @@ dependencies {
     // Dependencies for local unit tests
     testCompile "junit:junit:4.12"
     testCompile "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
+
+    // Dependencies for Espresso UI tests
+    androidTestCompile "com.android.support.test:runner:$testRunnerVersion"
+    androidTestCompile "com.android.support.test:rules:$testRunnerVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$espressoVersion"
+
+    // Resolve conflicts between main and test APK
+    androidTestCompile "com.android.support:support-annotations:$supportLibraryVersion"
+    androidTestCompile "com.google.code.findbugs:jsr305:3.0.1"
 }
 
 // Add properties named "wp.xxx" to our BuildConfig
