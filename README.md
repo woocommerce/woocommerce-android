@@ -20,6 +20,24 @@ Next, you'll have to get a WordPress.com OAuth2 ID and secret, for use in the `g
     $ ./gradlew testDebug # Unit tests
     $ ./gradlew cAT       # UI tests
 
+## Setting up Checkstyle ##
+
+The woocommerce-android project uses [Checkstyle](http://checkstyle.sourceforge.net/). You can run checkstyle using `./gradlew checkstyle`.  You can also view errors and warnings in realtime with the Checkstyle plugin.  When importing the project into Android Studio, Checkstyle should be set up automatically.  If it is not, follow the steps below.
+
+You can install the CheckStyle-IDEA plugin in Android Studio here:
+
+`Android Studio > Preferences... > Plugins > CheckStyle-IDEA`
+
+Once installed, you can configure the plugin here:
+
+`Android Studio > Preferences... > Other Settings > Checkstyle`
+
+From there, add and enable the configuration file for woocommerce-android, located at [config/checkstyle.xml](https://github.com/woocommerce/woocommerce-android/blob/develop/config/checkstyle.xml).
+
+## Using ktlint ##
+
+The woocommerce-android project uses [ktlint](https://github.com/shyiko/ktlint) for Kotlin linting. You can run ktlint using `./gradlew ktlint`, and you can also run `./gradlew ktlintFormat` for auto-formatting. There is no IDEA plugin (like Checkstyle's) at this time.
+
 ## OAuth2 Authentication ##
 
 You will need a client ID and a client secret key. These details will be
