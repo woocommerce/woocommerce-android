@@ -25,10 +25,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity android:name=".ui.login.LoginActivity"
                   android:theme="@style/LoginTheme"
                   android:windowSoftInputMode="adjustResize">
         </activity>
+
+        <!-- Services -->
+        <service
+            android:name="org.wordpress.android.login.LoginWpcomService"
+            android:exported="false"
+            android:label="Login to WPCOM Service" />
     </application>
 
 </manifest>
