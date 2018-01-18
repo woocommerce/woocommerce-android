@@ -74,6 +74,7 @@ task clean(type: Delete) {
 ext {
     daggerVersion = '2.11'
     supportLibraryVersion = '26.1.0'
+    glideVersion = '4.1.1'
     testRunnerVersion = '1.0.0'
     espressoVersion = '3.0.0'
 }

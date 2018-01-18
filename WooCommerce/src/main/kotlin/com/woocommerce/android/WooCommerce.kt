@@ -5,7 +5,9 @@ import android.app.Application
 import android.app.Service
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
+import com.woocommerce.android.di.WooCommerceGlideModule
 import com.yarolegovich.wellsql.WellSql
+import dagger.MembersInjector
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -16,6 +18,8 @@ import javax.inject.Inject
 open class WooCommerce : Application(), HasActivityInjector, HasServiceInjector {
     @Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
     @Inject lateinit var serviceInjector: DispatchingAndroidInjector<Service>
+
+    @Inject lateinit var membersInjector: MembersInjector<WooCommerceGlideModule>
 
     protected open val component: AppComponent by lazy {
         DaggerAppComponent.builder()
