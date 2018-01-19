@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule
@@ -18,7 +19,8 @@ import javax.inject.Singleton
         ReleaseNetworkModule::class,
         DebugOkHttpClientModule::class,
         InterceptorModule::class,
-        ActivityBindingModule::class))
+        ActivityBindingModule::class,
+        LoginAnalyticsModule::class))
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {
