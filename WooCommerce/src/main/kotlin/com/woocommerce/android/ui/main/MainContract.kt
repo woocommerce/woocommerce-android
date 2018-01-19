@@ -6,7 +6,12 @@ import com.woocommerce.android.ui.base.BaseView
 interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun userIsLoggedIn(): Boolean
+        fun storeMagicLinkToken(token: String)
+        fun logout()
     }
 
-    interface View : BaseView<Presenter>
+    interface View : BaseView<Presenter> {
+        fun notifyTokenUpdated()
+        fun showLoginScreen()
+    }
 }

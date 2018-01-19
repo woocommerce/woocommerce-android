@@ -19,12 +19,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.woocommerce.android.ui.main.MainActivity">
+        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.login.LoginActivity"
+                  android:theme="@style/LoginTheme"
+                  android:windowSoftInputMode="adjustResize">
+        </activity>
+
+        <activity android:name=".ui.login.MagicLinkInterceptActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="magic-login"
+                    android:scheme="wordpress" />
+            </intent-filter>
+        </activity>
+
+        <!-- Services -->
+        <service
+            android:name="org.wordpress.android.login.LoginWpcomService"
+            android:exported="false"
+            android:label="Login to WPCOM Service" />
     </application>
 
 </manifest>
