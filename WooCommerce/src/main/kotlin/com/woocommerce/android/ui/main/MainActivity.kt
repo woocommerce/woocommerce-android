@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
+import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainContract.View {
@@ -26,13 +27,13 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         setContentView(R.layout.activity_main)
         presenter.takeView(this)
 
+        logoutButton.setOnClickListener { presenter.logout() }
+
         if (!presenter.userIsLoggedIn()) {
             if (hasMagicLinkLoginIntent()) {
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
-                finish()
+                showLoginScreen()
                 return
             }
         }
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         when (requestCode) {
             REQUEST_CODE_ADD_ACCOUNT -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    // TODO
+                    // TODO Launch next screen
                 }
             }
         }
@@ -59,6 +60,12 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_SUCCEEDED)
             // TODO Launch next screen
         }
+    }
+
+    override fun showLoginScreen() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
+        finish()
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
