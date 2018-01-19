@@ -7,16 +7,15 @@ android:
     - extra-android-support
     - platform-tools
     - tools
-    - build-tools-26.0.2
-    - build-tools-25.0.3 # Remove this when login library build tools are bumped to 26.0.2
+    - build-tools-25.0.3
     - android-26
 
 env:
   global:
     - MALLOC_ARENA_MAX=2
     - GRADLE_OPTS="-Xmx768m -Xms256m -Xss1m"
-    - ANDROID_SDKS=android-17
-    - ANDROID_TARGET=android-17
+    - ANDROID_SDKS=android-16
+    - ANDROID_TARGET=android-16
 
 install:
   # Setup gradle.properties
@@ -24,7 +23,5 @@ install:
 
 script:
   - ./gradlew assembleDebug assembleRelease
-  - ./gradlew testRelease
   - ./gradlew lint || (grep -A20 -B2 'severity="Error"' */build/**/*.xml; exit 1)
   - ./gradlew checkstyle
-  - ./gradlew ktlint
