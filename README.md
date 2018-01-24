@@ -8,12 +8,17 @@ Jetpack-powered WooCommerce Android app codenamed Dervish.
 
 ## Build Instructions ##
 
+(Make sure you've installed [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and [Android Studio](https://developer.android.com/studio/index.html).)
+
 You first need to generate the `gradle.properties` file:
 
     $ cp ./gradle.properties-example ./gradle.properties
 
 Next, you'll have to get a WordPress.com OAuth2 ID and secret, for use in the `gradle.properties` file. Please read the
 [OAuth2 Authentication](#oauth2-authentication) section.
+
+**In Android Studio, don't accept any offers to upgrade the gradle plugin - this project does not support Gradle plugin
+3 yet.**
 
 ## Running Tests ##
 
