@@ -12,18 +12,22 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
         private var dispatcher: Dispatcher,
         private var accountStore: AccountStore,
-        private var siteStore: SiteStore
+        private var siteStore: SiteStore,
+        private var wooCommerceStore: WooCommerceStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
     override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
+
+        if (userIsLoggedIn()) mainView?.updateStoreList(wooCommerceStore.getWooCommerceSites())
     }
 
     override fun dropView() {
@@ -90,5 +94,7 @@ class MainPresenter @Inject constructor(
             // TODO: Notify the user of the problem
             return
         }
+
+        mainView?.updateStoreList(wooCommerceStore.getWooCommerceSites())
     }
 }

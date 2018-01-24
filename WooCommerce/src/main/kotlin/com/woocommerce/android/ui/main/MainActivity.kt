@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
+import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainContract.View {
@@ -34,7 +35,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
                 showLoginScreen()
-                return
             }
         }
     }
@@ -66,6 +66,21 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         val intent = Intent(this, LoginActivity::class.java)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
         finish()
+    }
+
+    override fun updateStoreList(storeList: List<SiteModel>) {
+        if (storeList.isEmpty()) {
+            textView.text = "No WooCommerce sites found!"
+        } else {
+            val siteNameList = """
+                |Found stores:
+                |
+                |${storeList.joinToString("\n\n") {
+                "${it.name}\n(${it.url})\nType: ${if (it.isWpComStore) "WordPress.com Store" else "Jetpack Store" }"
+            }}
+            """.trimMargin()
+            textView.text = siteNameList
+        }
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
