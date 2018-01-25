@@ -51,7 +51,7 @@ dependencies {
         exclude group: "com.mcxiaoke.volley"
     }
 
-    compile('com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:fd47635fb823d74405c56edc37c6c7a6a59e5fb5') {
+    compile("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
     }
 
