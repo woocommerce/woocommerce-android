@@ -15,18 +15,22 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
+import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class MainPresenterTest {
     private val mainContractView: MainContract.View = mock()
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
+    private val siteStore: SiteStore = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
 
     private lateinit var mainPresenter: MainPresenter
 
     @Before
     fun setup() {
-        mainPresenter = spy(MainPresenter(dispatcher, accountStore))
+        mainPresenter = spy(MainPresenter(dispatcher, accountStore, siteStore, wooCommerceStore))
         mainPresenter.takeView(mainContractView)
     }
 
