@@ -239,6 +239,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleLoginListener, H
 //        HelpshiftHelper.getInstance().showConversation(this, siteStore, Tag.ORIGIN_LOGIN_SITE_ADDRESS, username)
     }
 
+    // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
         loggedInAndFinish()
     }
