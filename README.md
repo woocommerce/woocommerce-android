@@ -48,9 +48,9 @@ used to authenticate your application and verify that the API calls being
 made are valid. You can create an application or view details for your existing
 applications with our [WordPress.com applications manager](https://developer.wordpress.com/apps/).
 
-When creating your application, you should select "Native client" for the
-application type. The applications manager currently requires a "redirect URL",
-but this isn't used for mobile apps. Just use "https://localhost".
+When creating your application, you should select "Native client" for the application type.
+The "Website URL", "Redirect URLs", and "Javascript Origins" fields are required but not used for
+the mobile apps. Just use "https://localhost".
 
 Once you've created your application in the [applications manager](https://developer.wordpress.com/apps/), you'll
 need to edit the `./gradle.properties` file and change the
