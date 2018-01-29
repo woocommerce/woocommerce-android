@@ -255,6 +255,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleLoginListener, H
     }
 
     override fun addGoogleLoginFragment(parent: Fragment) {
+        // TODO: Remove this toast when social signin with Google is configured
+        ToastUtils.showToast(this, "Login with Google is not yet implemented")
         val fragmentManager = parent.childFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         var loginGoogleFragment = fragmentManager.findFragmentByTag(LoginGoogleFragment.TAG) as LoginGoogleFragment?
