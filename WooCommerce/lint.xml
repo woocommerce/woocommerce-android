@@ -3,6 +3,11 @@
     <!-- WARNING -->
 
     <!-- ERROR -->
+    <issue id="InconsistentArrays" severity="error" />
+    <issue id="HardcodedText" severity="error" />
+    <issue id="IconDuplicates" severity="error" />
+    <issue id="IconDipSize" severity="error" />
+    <issue id="StringFormatCount" severity="error" />
 
     <!-- IGNORE -->
     <issue id="IconLauncherFormat">
