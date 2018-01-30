@@ -41,6 +41,7 @@ subprojects {
         resolutionStrategy {
             forcedModules = [
                     "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion",
+                    "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
                     "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
             ]
         }
