@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- WARNING -->
+
+    <!-- ERROR -->
+
+    <!-- IGNORE -->
+    <issue id="IconLauncherFormat">
+        <!-- TODO: Should be able to remove after upgrading to Gradle plugin 3.0.0. -->
+        <ignore path="src/main/res/mipmap-anydpi-v26/ic_launcher.xml" />
+        <ignore path="src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" />
+    </issue>
+</lint>
