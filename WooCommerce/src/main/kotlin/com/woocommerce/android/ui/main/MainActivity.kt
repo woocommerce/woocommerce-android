@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainContract.View {
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     override fun showLoginScreen() {
         val intent = Intent(this, LoginActivity::class.java)
+        LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
         finish()
     }
