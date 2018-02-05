@@ -59,6 +59,8 @@ dependencies {
         exclude group: "com.android.support"
     }
 
+    compile 'com.automattic:tracks:1.1.0'
+
     releaseCompile(project(path: ':libs:login:WordPressLoginFlow', configuration: 'release')) {
         exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
         exclude group: "org.wordpress", module: "utils"
