@@ -131,7 +131,7 @@ class AnalyticsTracker constructor(context: Context) {
     }
 
     companion object {
-        private lateinit var instance: AnalyticsTracker
+        lateinit var instance: AnalyticsTracker
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
