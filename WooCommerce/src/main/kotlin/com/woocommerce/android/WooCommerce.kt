@@ -6,7 +6,6 @@ import android.app.Service
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import android.os.Bundle
-import com.automattic.android.tracks.TracksClient
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
@@ -49,7 +48,7 @@ open class WooCommerce : Application(), HasActivityInjector, HasServiceInjector 
 
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
 
-    private class ApplicationLifecycleMonitor: Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
+    private class ApplicationLifecycleMonitor : Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
         override fun onActivityPaused(p0: Activity?) {
         }
 

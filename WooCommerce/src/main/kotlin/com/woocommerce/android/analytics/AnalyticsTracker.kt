@@ -7,7 +7,6 @@ import android.preference.PreferenceManager
 import java.util.UUID
 import org.json.JSONObject
 
-
 class AnalyticsTracker constructor(context: Context) {
     enum class Stat {
         SIGNED_IN,
@@ -117,15 +116,15 @@ class AnalyticsTracker constructor(context: Context) {
 
     private fun refreshMetadata(newUsername: String) {
         if (newUsername.isNotEmpty()) {
-            username = newUsername;
+            username = newUsername
             if (getAnonID() != null) {
-                tracksClient.trackAliasUser(username, getAnonID(), TracksClient.NosaraUserType.WPCOM);
-                clearAnonID();
+                tracksClient.trackAliasUser(username, getAnonID(), TracksClient.NosaraUserType.WPCOM)
+                clearAnonID()
             }
         } else {
-            username = null;
+            username = null
             if (getAnonID() == null) {
-                generateNewAnonID();
+                generateNewAnonID()
             }
         }
     }
