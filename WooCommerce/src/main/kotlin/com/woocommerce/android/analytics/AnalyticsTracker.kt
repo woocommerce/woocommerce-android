@@ -94,11 +94,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         } else {
             // This is just a security checks since the anonID is already available here.
             // refresh metadata is called on login/logout/startup and it loads/generates the anonId when necessary.
-            if (getAnonID() == null) {
-                user = generateNewAnonID()
-            } else {
-                user = getAnonID()!!
-            }
+            user = getAnonID() ?: generateNewAnonID()
             userType = TracksClient.NosaraUserType.ANON
         }
 
