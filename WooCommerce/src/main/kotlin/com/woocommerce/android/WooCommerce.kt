@@ -49,35 +49,35 @@ open class WooCommerce : Application(), HasActivityInjector, HasServiceInjector 
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
 
     private class ApplicationLifecycleMonitor : Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
-        override fun onActivityPaused(p0: Activity?) {
+        override fun onActivityPaused(activity: Activity?) {
         }
 
-        override fun onActivityStarted(p0: Activity?) {
+        override fun onActivityStarted(activity: Activity?) {
         }
 
-        override fun onActivityDestroyed(p0: Activity?) {
+        override fun onActivityDestroyed(activity: Activity?) {
         }
 
-        override fun onActivitySaveInstanceState(p0: Activity?, p1: Bundle?) {
+        override fun onActivitySaveInstanceState(activity: Activity?, bundle: Bundle?) {
         }
 
-        override fun onActivityStopped(p0: Activity?) {
+        override fun onActivityStopped(activity: Activity?) {
         }
 
-        override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
+        override fun onActivityCreated(activity: Activity?, bundle: Bundle?) {
         }
 
         override fun onActivityResumed(activity: Activity?) {
             AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_OPENED)
         }
 
-        override fun onConfigurationChanged(p0: Configuration?) {
+        override fun onConfigurationChanged(config: Configuration?) {
         }
 
         override fun onLowMemory() {
         }
 
-        override fun onTrimMemory(p0: Int) {
+        override fun onTrimMemory(level: Int) {
             AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_CLOSED)
             AnalyticsTracker.flush()
         }
