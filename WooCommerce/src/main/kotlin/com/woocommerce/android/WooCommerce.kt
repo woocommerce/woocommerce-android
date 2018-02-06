@@ -41,7 +41,7 @@ open class WooCommerce : Application(), HasActivityInjector, HasServiceInjector 
         registerComponentCallbacks(lifecycleMonitor)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
 
-        AnalyticsTracker.instance = AnalyticsTracker(applicationContext)
+        AnalyticsTracker.init(applicationContext)
     }
 
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector

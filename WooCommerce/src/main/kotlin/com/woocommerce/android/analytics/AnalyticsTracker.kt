@@ -7,7 +7,7 @@ import android.preference.PreferenceManager
 import java.util.UUID
 import org.json.JSONObject
 
-class AnalyticsTracker constructor(context: Context) {
+class AnalyticsTracker private constructor(context: Context) {
     enum class Stat {
         SIGNED_IN,
         LOGIN_ACCESSED,
@@ -130,9 +130,13 @@ class AnalyticsTracker constructor(context: Context) {
     }
 
     companion object {
-        lateinit var instance: AnalyticsTracker
+        private lateinit var instance: AnalyticsTracker
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
+
+        fun init(context: Context) {
+            instance = AnalyticsTracker(context.applicationContext)
+        }
 
         fun track(stat: Stat) {
             track(stat, emptyMap<String, String>())
