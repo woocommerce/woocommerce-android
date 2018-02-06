@@ -79,6 +79,11 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     compile "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
 
+    // Support library
+    compile "com.android.support:support-v4:$supportLibraryVersion"
+    compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
+
     // Debug dependencies
     debugCompile 'com.facebook.stetho:stetho:1.5.0'
     debugCompile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
