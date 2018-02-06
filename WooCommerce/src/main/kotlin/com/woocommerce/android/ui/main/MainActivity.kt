@@ -3,17 +3,21 @@ package com.woocommerce.android.ui.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), MainContract.View {
+class MainActivity : AppCompatActivity(), MainContract.View, HasSupportFragmentInjector {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
 
@@ -22,6 +26,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     @Inject lateinit var presenter: MainContract.Presenter
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -36,6 +41,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
                 showLoginScreen()
+                return
             }
         }
     }
@@ -43,6 +49,10 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     public override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()
+    }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> {
+        return fragmentInjector
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -72,7 +82,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     override fun updateStoreList(storeList: List<SiteModel>) {
         if (storeList.isEmpty()) {
-            textView.text = "No WooCommerce sites found!"
+//            textView.text = "No WooCommerce sites found!"
         } else {
             val siteNameList = """
                 |Found stores:
@@ -81,7 +91,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 "${it.name}\n(${it.url})\nType: ${if (it.isWpComStore) "WordPress.com Store" else "Jetpack Store" }"
             }}
             """.trimMargin()
-            textView.text = siteNameList
+//            textView.text = siteNameList
         }
     }
 
