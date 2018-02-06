@@ -86,16 +86,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         val eventName = stat.name.toLowerCase()
 
-        val user: String
-        val userType: TracksClient.NosaraUserType
-        if (username != null) {
-            user = username!!
-            userType = TracksClient.NosaraUserType.WPCOM
+        val user = username ?: getAnonID() ?: generateNewAnonID()
+
+        val userType = if (username != null) {
+            TracksClient.NosaraUserType.WPCOM
         } else {
-            // This is just a security checks since the anonID is already available here.
-            // refresh metadata is called on login/logout/startup and it loads/generates the anonId when necessary.
-            user = getAnonID() ?: generateNewAnonID()
-            userType = TracksClient.NosaraUserType.ANON
+            TracksClient.NosaraUserType.ANON
         }
 
         val propertiesJson = JSONObject(properties)
