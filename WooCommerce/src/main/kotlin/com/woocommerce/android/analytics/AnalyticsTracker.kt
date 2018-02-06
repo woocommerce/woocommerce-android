@@ -102,12 +102,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
             userType = TracksClient.NosaraUserType.ANON
         }
 
-        if (properties != null) {
-            val propertiesJson = JSONObject(properties)
-            tracksClient.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
-        } else {
-            tracksClient.track(EVENTS_PREFIX + eventName, user, userType)
-        }
+        val propertiesJson = JSONObject(properties)
+        tracksClient.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
     }
 
     private fun flush() {
