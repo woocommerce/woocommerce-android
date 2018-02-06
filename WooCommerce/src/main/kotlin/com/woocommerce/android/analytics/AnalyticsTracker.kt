@@ -1,5 +1,6 @@
 package com.woocommerce.android.analytics
 
+import android.annotation.SuppressLint
 import android.content.Context
 import java.util.HashMap
 import com.automattic.android.tracks.TracksClient
@@ -129,6 +130,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
     }
 
     companion object {
+        // Guaranteed to hold a reference to the application context, which is safe
+        @SuppressLint("StaticFieldLeak")
         private lateinit var instance: AnalyticsTracker
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
