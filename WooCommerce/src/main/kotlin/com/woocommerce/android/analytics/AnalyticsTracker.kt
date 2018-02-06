@@ -7,7 +7,7 @@ import android.preference.PreferenceManager
 import java.util.UUID
 import org.json.JSONObject
 
-class AnalyticsTracker private constructor(context: Context) {
+class AnalyticsTracker private constructor(private val context: Context) {
     enum class Stat {
         SIGNED_IN,
         LOGIN_ACCESSED,
@@ -46,7 +46,6 @@ class AnalyticsTracker private constructor(context: Context) {
     }
 
     private var tracksClient = TracksClient.getClient(context)
-    private val context = context
     private var username: String? = null
     private var anonymousID: String? = null
 
