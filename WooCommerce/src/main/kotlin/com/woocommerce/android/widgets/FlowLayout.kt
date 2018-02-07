@@ -8,18 +8,20 @@ import com.woocommerce.android.R
 /*
  * FlowLayout taken from the WordPress Android source
  */
-
-class FlowLayout(context: Context, attrs: AttributeSet) : ViewGroup(context, attrs) {
+open class FlowLayout @JvmOverloads constructor(context: Context,
+                                                attrs: AttributeSet? = null) : ViewGroup(context, attrs) {
     private var mHorizontalSpacing: Int = 0
     private var mVerticalSpacing: Int = 0
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout)
-        try {
-            mHorizontalSpacing = a.getDimensionPixelSize(R.styleable.FlowLayout_horizontalSpacing, 0)
-            mVerticalSpacing = a.getDimensionPixelSize(R.styleable.FlowLayout_verticalSpacing, 0)
-        } finally {
-            a.recycle()
+        attrs?.let {
+            val a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout)
+            try {
+                mHorizontalSpacing = a.getDimensionPixelSize(R.styleable.FlowLayout_horizontalSpacing, 0)
+                mVerticalSpacing = a.getDimensionPixelSize(R.styleable.FlowLayout_verticalSpacing, 0)
+            } finally {
+                a.recycle()
+            }
         }
     }
 

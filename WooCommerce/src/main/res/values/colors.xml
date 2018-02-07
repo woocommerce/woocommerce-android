@@ -3,4 +3,12 @@
     <color name="colorPrimary">#96588A</color>
     <color name="colorPrimaryDark">#3C3C3C</color>
     <color name="colorAccent">#71B02F</color>
+
+    <!-- Tag View default colors -->
+    <color name="tagView_bgColor">#d2d2d2</color>
+    <color name="tagView_fgColor">#a7a7a7</color>
+
+    <!-- Orders List -->
+    <color name="orderslist_itemColor">#ffffff</color>
+    <color name="orderslist_bgColor">#dcdbdb</color>
 </resources>

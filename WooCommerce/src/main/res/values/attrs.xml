@@ -8,4 +8,10 @@
         <attr name="layout_horizontalSpacing" format="dimension" />
         <attr name="layout_verticalSpacing" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="TagView">
+        <attr name="tagLabel" format="reference|string"/>
+        <attr name="tagFontColor" format="reference|color"/>
+        <attr name="tagBackgroundColor" format="reference|color"/>
+    </declare-styleable>
 </resources>

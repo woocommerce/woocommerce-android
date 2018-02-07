@@ -47,7 +47,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         dateCreated = "2018-02-06T09:11:13+0000"
         localSiteId = 1
         remoteOrderId = 15
-        status = "pending"
+        status = "pending, on-hold, complete"
         total = 106.0F
     }
 
@@ -69,7 +69,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         dateCreated = "2018-02-02T16:11:13+0000"
         localSiteId = 1
         remoteOrderId = 55
-        status = "pending"
+        status = "pending, Custom 1,Custom 2,Custom 3"
         total = 106.0F
     }
 

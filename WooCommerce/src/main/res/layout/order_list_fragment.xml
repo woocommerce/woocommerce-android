@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/orderRefreshLayout">
+    android:id="@+id/orderRefreshLayout"
+    android:background="@color/orderslist_bgColor">
 
     <RelativeLayout
         android:id="@+id/ordersContainer"
@@ -23,7 +24,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/ordersList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <!-- No Orders View -->

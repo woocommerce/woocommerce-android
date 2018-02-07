@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,7 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     }
 
     private lateinit var ordersAdapter: OrderListAdapter
+    private lateinit var ordersDividerDecoration: DividerItemDecoration
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -41,7 +43,9 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.order_list_fragment, container, false)
 
-        ordersAdapter = OrderListAdapter()
+        ordersAdapter = OrderListAdapter(context)
+        ordersDividerDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
+        ordersDividerDecoration.setDrawable(ContextCompat.getDrawable(context, R.drawable.list_divider))
 
         with(root) {
             orderRefreshLayout.apply {
@@ -61,13 +65,11 @@ class OrderListFragment : Fragment(), OrderListContract.View {
 
     override fun onResume() {
         super.onResume()
-        println("onResume")
         presenter.takeView(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        println("onDestroy")
         presenter.dropView()
     }
 
@@ -85,6 +87,7 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = ordersAdapter
+            addItemDecoration(ordersDividerDecoration)
         }
 
         ordersView.visibility = View.VISIBLE

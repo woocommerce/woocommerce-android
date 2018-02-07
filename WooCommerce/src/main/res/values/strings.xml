@@ -20,4 +20,9 @@
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
+
+    <!-- Base Order Status Labels -->
+    <string name="orderstatus_new">New Order</string>
+    <string name="orderstatus_hold">On Hold</string>
+    <string name="orderstatus_complete">Fulfilled</string>
 </resources>
