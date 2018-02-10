@@ -7,9 +7,7 @@ import com.woocommerce.android.widgets.tags.ITag
 /**
  * Represents a single order status label.
  */
-class OrderStatusTag(rawText: String,
-                     bgColor: Int,
-                     fgColor: Int) : ITag(rawText, bgColor, fgColor) {
+class OrderStatusTag(rawText: String) : ITag(rawText) {
     override fun getFormattedLabel(context: Context): String {
         return when (rawText) {
             "pending", "processing" -> context.getString(R.string.orderstatus_new)

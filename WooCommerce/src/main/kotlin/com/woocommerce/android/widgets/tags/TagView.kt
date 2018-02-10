@@ -4,8 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.FrameLayout
+import android.util.TypedValue
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.util.getDensityPixel
@@ -14,46 +13,42 @@ import com.woocommerce.android.util.getDensityPixel
  * Custom tag view. This view displays a simple string label. The background and font colors are both styleable.
  * Font color will default to gray, background color will default to light gray.
  *
- * Has three custom xml attributes available:
- * * tagLabel: String to display in the tag
- * * tagFontColor: Font color
- * * tagBackgroundColor: Background color
+ * @attr ref com.woocommerce.android.R.styleable#tagText
+ * @attr ref com.woocommerce.android.R.styleable#tagTextColor
+ * @attr ref com.woocommerce.android.R.styleable#tagTextSize
+ * @attr ref com.woocommerce.android.R.styleable#tagColor
  */
-class TagView constructor(ctx: Context,
-                          attrs: AttributeSet? = null) : FrameLayout(ctx) {
+class TagView @JvmOverloads constructor(ctx: Context,
+                                        attrs: AttributeSet? = null) : TextView(ctx, attrs) {
+    init {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, 0, 0)
+        try {
+            val labelStr = a.getString(R.styleable.TagView_tagText)
+            labelStr?.let { text = labelStr }
+
+            val textColor = a.getColor(R.styleable.TagView_tagTextColor, Color.GRAY)
+            setTextColor(textColor)
+
+            val textSize = a.getDimensionPixelSize(R.styleable.TagView_tagTextSize, 0)
+            if (textSize > 0) {
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
+            }
+
+            val bgColor = a.getColor(R.styleable.TagView_tagColor, Color.LTGRAY)
+            initBackground(bgColor)
+        } finally {
+            a.recycle()
+        }
+    }
+
     var tag: ITag? = null
     set(v) {
         field = v
-        textView.text = tag?.getFormattedLabel(context).orEmpty()
+        text = tag?.getFormattedLabel(context).orEmpty()
 
-        val bg = tag?.bgColor ?: Color.LTGRAY
-        initBackground(bg)
-
-        val fg = tag?.fgColor ?: Color.GRAY
-        textView.setTextColor(fg)
-    }
-
-    private val textView: TextView
-
-    init {
-        val inflater = LayoutInflater.from(context)
-        inflater.inflate(R.layout.tag_view, this)
-        textView = getChildAt(0) as TextView
-
-        attrs?.let {
-            val a = context.theme.obtainStyledAttributes(attrs, R.styleable.TagView, 0, 0)
-            try {
-                val labelStr = a.getString(R.styleable.TagView_tagLabel)
-                labelStr?.let { textView.text = labelStr }
-
-                val fontColor = a.getColor(R.styleable.TagView_tagFontColor, Color.GRAY)
-                textView.setTextColor(fontColor)
-
-                val bgColor = a.getColor(R.styleable.TagView_tagBackgroundColor, Color.LTGRAY)
-                initBackground(bgColor)
-            } finally {
-                a.recycle()
-            }
+        tag?.let {
+            setTextColor(tag!!.fgColor)
+            initBackground(tag!!.bgColor)
         }
     }
 
@@ -65,6 +60,6 @@ class TagView constructor(ctx: Context,
         val gd = GradientDrawable()
         gd.setColor(baseColor)
         gd.cornerRadius = getDensityPixel(context, 2).toFloat()
-        textView.background = gd
+        background = gd
     }
 }

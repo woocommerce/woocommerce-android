@@ -43,7 +43,7 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.order_list_fragment, container, false)
 
-        ordersAdapter = OrderListAdapter(context)
+        ordersAdapter = OrderListAdapter()
         ordersDividerDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         ordersDividerDecoration.setDrawable(ContextCompat.getDrawable(context, R.drawable.list_divider))
 
