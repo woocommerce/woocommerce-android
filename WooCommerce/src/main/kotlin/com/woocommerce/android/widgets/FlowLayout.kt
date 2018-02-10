@@ -5,8 +5,14 @@ import android.util.AttributeSet
 import android.view.ViewGroup
 import com.woocommerce.android.R
 
-/*
- * FlowLayout taken from the WordPress Android source
+/**
+ * FlowLayout: taken from the WordPress Android source and modified for Woo.
+ *
+ * Displays a horizontal list of items that automatically wraps when room on the current
+ * line runs out to ensure all items are visible.
+ *
+ * @attr ref com.woocommerce.android.R.styleable#FlowLayout_horizontalSpacing
+ * @attr ref com.woocommerce.android.R.styleable#FlowLayout_verticalSpacing
  */
 open class FlowLayout @JvmOverloads constructor(context: Context,
                                                 attrs: AttributeSet? = null) : ViewGroup(context, attrs) {
@@ -15,7 +21,7 @@ open class FlowLayout @JvmOverloads constructor(context: Context,
 
     init {
         attrs?.let {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout)
+            val a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout, R.attr.flowLayoutStyle, 0)
             try {
                 mHorizontalSpacing = a.getDimensionPixelSize(R.styleable.FlowLayout_horizontalSpacing, 0)
                 mVerticalSpacing = a.getDimensionPixelSize(R.styleable.FlowLayout_verticalSpacing, 0)
@@ -98,7 +104,7 @@ open class FlowLayout @JvmOverloads constructor(context: Context,
     class LayoutParams : ViewGroup.MarginLayoutParams {
         internal var x: Int = 0
         internal var y: Int = 0
-        var horizontalSpacing: Int = 0
+        var horizontalSpacing: Int = -1
         constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout_LayoutParams)
             horizontalSpacing = try {

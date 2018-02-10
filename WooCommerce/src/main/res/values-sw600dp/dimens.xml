@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Lists
+    -->
+    <dimen name="list_item_padding_start">@dimen/list_item_padding_start_tablet</dimen>
+    <dimen name="list_item_padding_end">@dimen/list_item_padding_end_tablet</dimen>
+    <dimen name="list_item_padding_top">@dimen/list_item_padding_top_tablet</dimen>
+    <dimen name="list_item_padding_bottom">@dimen/list_item_padding_bottom_tablet</dimen>
+</resources>

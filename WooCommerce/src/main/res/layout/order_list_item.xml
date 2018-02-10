@@ -4,32 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp"
-    android:background="@color/orderslist_itemColor">
+    style="@style/Woo.OrderList.Item">
 
     <TextView
         android:id="@+id/orderNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        tools:text="#51"
+        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="#51"/>
 
     <TextView
         android:id="@+id/orderName"
+        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:textStyle="bold"
+        android:layout_marginEnd="@dimen/list_item_padding_intra_h"
+        android:layout_marginStart="@dimen/list_item_padding_intra_h"
         app:layout_constraintEnd_toStartOf="@+id/orderTotal"
         app:layout_constraintStart_toEndOf="@+id/orderNum"
         app:layout_constraintTop_toTopOf="parent"
@@ -37,10 +29,9 @@
 
     <TextView
         android:id="@+id/orderTotal"
+        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="$100"/>
@@ -49,11 +40,8 @@
         android:id="@+id/orderTags"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/orderNum"/>
+        app:layout_constraintTop_toBottomOf="@+id/orderName"/>
 
 </android.support.constraint.ConstraintLayout>

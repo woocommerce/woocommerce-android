@@ -19,9 +19,9 @@ import com.woocommerce.android.util.getDensityPixel
  * @attr ref com.woocommerce.android.R.styleable#tagColor
  */
 class TagView @JvmOverloads constructor(ctx: Context,
-                                        attrs: AttributeSet? = null) : TextView(ctx, attrs) {
+                                        attrs: AttributeSet? = null) : TextView(ctx, attrs, R.attr.tagViewStyle) {
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, 0, 0)
+        val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, R.attr.tagViewStyle, 0)
         try {
             val labelStr = a.getString(R.styleable.TagView_tagText)
             labelStr?.let { text = labelStr }

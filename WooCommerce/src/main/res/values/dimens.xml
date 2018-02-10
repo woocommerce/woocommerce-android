@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Text Sizes
+    -->
+    <dimen name="text_extra_small">10sp</dimen>
+    <dimen name="text_small">12sp</dimen>
+    <dimen name="text_medium">14sp</dimen>
+    <dimen name="text_large">16sp</dimen>
+    <dimen name="text_extra_large">20sp</dimen>
+    <dimen name="text_double_extra_large">24sp</dimen>
+    <dimen name="text_triple_extra_large">26sp</dimen>
+    <!--
+        Default List
+    -->
+    <dimen name="list_item_text_size">@dimen/text_medium</dimen>
+    <dimen name="list_header_text_size">@dimen/text_large</dimen>
+
+    <dimen name="list_group_header_height">48dp</dimen>
+    <dimen name="list_item_height">72dp</dimen>
+
+    <dimen name="list_item_padding_intra_h">8dp</dimen>
+    <dimen name="list_item_padding_intra_v">4dp</dimen>
+
+    <dimen name="list_item_padding_start">16dp</dimen>
+    <dimen name="list_item_padding_start_tablet">24dp</dimen>
+
+    <dimen name="list_item_padding_end">16dp</dimen>
+    <dimen name="list_item_padding_end_tablet">24dp</dimen>
+
+    <dimen name="list_item_padding_top">12dp</dimen>
+    <dimen name="list_item_padding_top_tablet">12dp</dimen>
+
+    <dimen name="list_item_padding_bottom">12dp</dimen>
+    <dimen name="list_item_padding_bottom_tablet">12dp</dimen>
+
+    <dimen name="list_item_margin_end">16dp</dimen>
+    <dimen name="list_item_margin_end_tablet">24dp</dimen>
+    <!--
+        Default TagView
+    -->
+    <dimen name="tag_text_size">@dimen/text_small</dimen>
+
+    <dimen name="tag_margin_end">4dp</dimen>
+    <dimen name="tag_margin_top">4dp</dimen>
+    <dimen name="tag_margin_bottom">4dp</dimen>
+    <dimen name="tag_padding_start">8dp</dimen>
+    <dimen name="tag_padding_end">8dp</dimen>
+    <dimen name="tag_padding_top">2dp</dimen>
+    <dimen name="tag_padding_bottom">2dp</dimen>
+
+    <dimen name="tag_layout_margin_end">8dp</dimen>
+    <dimen name="tag_layout_margin_bottom">8dp</dimen>
+</resources>
