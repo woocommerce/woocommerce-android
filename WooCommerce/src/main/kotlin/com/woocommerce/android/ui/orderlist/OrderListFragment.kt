@@ -41,8 +41,6 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.order_list_fragment, container, false)
 
-        ordersAdapter = OrderListAdapter()
-
         with(root) {
             orderRefreshLayout.apply {
                 setColorSchemeColors(
@@ -57,6 +55,17 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         }
 
         return root
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        ordersAdapter = OrderListAdapter()
+        ordersAdapter.setOrders(ArrayList())
+        ordersList.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = ordersAdapter
+        }
     }
 
     override fun onResume() {
@@ -81,12 +90,6 @@ class OrderListFragment : Fragment(), OrderListContract.View {
 
     override fun showOrders(orders: List<WCOrderModel>) {
         ordersAdapter.setOrders(orders)
-
-        ordersList.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = ordersAdapter
-        }
-
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
         setLoadingIndicator(false)
