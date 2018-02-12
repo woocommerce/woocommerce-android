@@ -70,13 +70,11 @@ class OrderListFragment : Fragment(), OrderListContract.View {
 
     override fun onResume() {
         super.onResume()
-        println("onResume")
         presenter.takeView(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        println("onDestroy")
         presenter.dropView()
     }
 
