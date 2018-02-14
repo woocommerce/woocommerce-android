@@ -10,9 +10,4 @@
     <issue id="StringFormatCount" severity="error" />
 
     <!-- IGNORE -->
-    <issue id="IconLauncherFormat">
-        <!-- TODO: Should be able to remove after upgrading to Gradle plugin 3.0.0. -->
-        <ignore path="src/main/res/mipmap-anydpi-v26/ic_launcher.xml" />
-        <ignore path="src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" />
-    </issue>
 </lint>
