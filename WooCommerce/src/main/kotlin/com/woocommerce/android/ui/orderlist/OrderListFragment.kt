@@ -66,15 +66,12 @@ class OrderListFragment : Fragment(), OrderListContract.View {
             layoutManager = LinearLayoutManager(context)
             adapter = ordersAdapter
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
         presenter.takeView(this)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.dropView()
     }
 
