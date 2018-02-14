@@ -30,7 +30,8 @@ open class WooCommerce : Application(), HasActivityInjector, HasServiceInjector 
     override fun onCreate() {
         super.onCreate()
         component.inject(this)
-        WellSql.init(WellSqlConfig(applicationContext))
+        val wellSqlConfig = WellSqlConfig(applicationContext, WellSqlConfig.ADDON_WOOCOMMERCE)
+        WellSql.init(wellSqlConfig)
     }
 
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector
