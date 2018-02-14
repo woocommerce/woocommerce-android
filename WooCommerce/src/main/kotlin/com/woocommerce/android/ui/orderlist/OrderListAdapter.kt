@@ -85,7 +85,7 @@ class OrderListAdapter : SectionedRecyclerViewAdapter() {
             val order = list[position]
             val itemHolder = holder as ItemViewHolder
 
-            var currencySymbol = "?"
+            var currencySymbol = ""
             try {
                 currencySymbol = Currency.getInstance(order.currency).symbol
             } catch (e: IllegalArgumentException) {
