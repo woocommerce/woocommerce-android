@@ -3,7 +3,7 @@ package com.woocommerce.android
 import org.wordpress.android.fluxc.model.WCOrderModel
 
 /**
- * Generates an array containing 2 [WCOrderModel] objects.
+ * Generates an array containing multiple [WCOrderModel] objects.
  */
 fun generateWCOrderModels(): List<WCOrderModel> {
     val result = ArrayList<WCOrderModel>()
@@ -11,7 +11,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         billingFirstName = "John"
         billingLastName = "Peters"
         currency = "USD"
-        dateCreated = "2018-01-05T05:14:30+0000"
+        dateCreated = "2018-01-05T05:14:30Z"
         localSiteId = 1
         remoteOrderId = 51
         status = "processing"
@@ -22,7 +22,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         billingFirstName = "Jane"
         billingLastName = "Masterson"
         currency = "CAD"
-        dateCreated = "2017-12-08T16:11:13+0000"
+        dateCreated = "2017-12-08T16:11:13Z"
         localSiteId = 1
         remoteOrderId = 63
         status = "pending"
@@ -33,7 +33,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         billingFirstName = "Mandy"
         billingLastName = "Sykes"
         currency = "USD"
-        dateCreated = "2018-02-05T16:11:13+0000"
+        dateCreated = "2018-02-05T16:11:13Z"
         localSiteId = 1
         remoteOrderId = 14
         status = "processing"
@@ -44,7 +44,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         billingFirstName = "Jennifer"
         billingLastName = "Johnson"
         currency = "CAD"
-        dateCreated = "2018-02-06T09:11:13+0000"
+        dateCreated = "2018-02-06T09:11:13Z"
         localSiteId = 1
         remoteOrderId = 15
         status = "pending"
@@ -55,7 +55,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         billingFirstName = "Christopher"
         billingLastName = "Jones"
         currency = "USD"
-        dateCreated = "2018-02-05T16:11:13+0000"
+        dateCreated = "2018-02-05T16:11:13Z"
         localSiteId = 1
         remoteOrderId = 3
         status = "pending"
@@ -66,7 +66,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         billingFirstName = "Carissa"
         billingLastName = "King"
         currency = "USD"
-        dateCreated = "2018-02-02T16:11:13+0000"
+        dateCreated = "2018-02-02T16:11:13Z"
         localSiteId = 1
         remoteOrderId = 55
         status = "pending"
