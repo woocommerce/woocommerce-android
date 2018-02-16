@@ -178,8 +178,8 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        activeNavPosition = findNavigationPositionById(item.itemId)
-        return switchFragment(activeNavPosition)
+        val navPosition = findNavigationPositionById(item.itemId)
+        return switchFragment(navPosition)
     }
     // endregion
 
@@ -198,63 +198,59 @@ class MainActivity : AppCompatActivity(),
 
     /**
      * If the user clicked on the already displayed top-level option, pop any child
-     * fragments and reset to the main fragment.
+     * fragments and reset to the parent fragment.
      *
-     * If the user selected an option not currently selected, pop any child fragments,
-     * detach the current top-level fragment and attach the destination top-level fragment.
+     * If the user selected an option not currently active, pop any child fragments,
+     * hide the current top-level fragment and add/show the destination top-level fragment.
      *
      * Immediately execute transactions with FragmentManager#executePendingTransactions.
      */
     private fun switchFragment(navPosition: BottomNavigationPosition): Boolean {
+        val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
+
         // Remove any child fragments in the back stack
-        clearFragmentBackStack()
+        clearFragmentBackStack(activeFragment)
 
         // Grab the requested top-level fragment and load if not already
         // in the current view.
         val fragment = supportFragmentManager.findFragment(navPosition)
-        if (!fragment.isAdded) {
+        if (fragment.isHidden || !fragment.isAdded) {
             // Remove the active fragment and replace with this newly selected one
-            detachParentFragment()
-            attachParentFragment(fragment, navPosition.getTag())
+            hideParentFragment(activeFragment)
+            showParentFragment(fragment, navPosition.getTag())
             supportFragmentManager.executePendingTransactions()
-
+            activeNavPosition = navPosition
             return true
         }
         return false
     }
 
     /**
-     * Attach the provided fragment to the fragment container. This should
+     * Show the provided fragment in the fragment container. This should
      * only be used with top-level fragments.
      */
-    private fun attachParentFragment(fragment: Fragment, tag: String) {
-        supportFragmentManager.popBackStack()
-        if (fragment.isDetached) {
-            supportFragmentManager.beginTransaction().attach(fragment).commit()
+    private fun showParentFragment(fragment: Fragment, tag: String) {
+        if (fragment.isHidden) {
+            supportFragmentManager.beginTransaction().show(fragment).commit()
         } else {
             supportFragmentManager.beginTransaction().add(R.id.container, fragment, tag).commit()
         }
-        // Set a transition animation for this transaction.
-        supportFragmentManager.beginTransaction()
-                .setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit()
     }
 
     /**
-     * Remove the current fragment from the fragment container. This
+     * Hide the provided fragment in the fragment container. This
      * should only be used with top-level fragments.
      */
-    private fun detachParentFragment() {
-        supportFragmentManager.findFragmentById(R.id.container)?.also {
-            supportFragmentManager.beginTransaction().detach(it).commit()
+    private fun hideParentFragment(fragment: Fragment?) {
+        fragment?.let {
+            supportFragmentManager.beginTransaction().hide(fragment).commit()
         }
     }
 
     /**
      * Pop all child fragments to return to the top-level view.
      */
-    private fun clearFragmentBackStack() {
-        val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
+    private fun clearFragmentBackStack(fragment: Fragment?) {
         fragment?.let {
             while (fragment.childFragmentManager.backStackEntryCount > 0) {
                 fragment.childFragmentManager.popBackStackImmediate()
