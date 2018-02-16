@@ -254,8 +254,11 @@ class MainActivity : AppCompatActivity(),
      * Pop all child fragments to return to the top-level view.
      */
     private fun clearFragmentBackStack() {
-        while (supportFragmentManager.backStackEntryCount > 0) {
-            supportFragmentManager.popBackStackImmediate()
+        val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
+        fragment?.let {
+            while (fragment.childFragmentManager.backStackEntryCount > 0) {
+                fragment.childFragmentManager.popBackStackImmediate()
+            }
         }
     }
     // endregion
