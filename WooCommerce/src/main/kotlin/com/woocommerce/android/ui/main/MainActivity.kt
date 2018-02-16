@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: MainContract.Presenter
 
-    private var navPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
+    private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onSaveInstanceState(outState: Bundle?) {
         // Store the current bottom bar navigation position.
-        outState?.putInt(KEY_POSITION, navPosition.id)
+        outState?.putInt(KEY_POSITION, activeNavPosition.id)
         super.onSaveInstanceState(outState)
     }
 
@@ -85,24 +85,19 @@ class MainActivity : AppCompatActivity(),
         // Restore the current navigation position
         savedInstanceState?.also {
             val id = it.getInt(KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
-            navPosition = findNavigationPositionById(id)
+            activeNavPosition = findNavigationPositionById(id)
         }
     }
 
     /**
-     * Prevent the user from exiting the app on back press if nothing is available
-     * in the back stack to process.
+     * Send the onBackPressed request to the current active fragment to pop any
+     * child fragments it may have on its back stack.
+     *
+     * Currently prevents the user from hitting back and exiting the app.
      */
     override fun onBackPressed() {
-        val count = supportFragmentManager.backStackEntryCount
-
-        if (count > 0) {
-            supportFragmentManager.popBackStack()
-            if (count == 1) {
-                supportActionBar?.setDisplayShowHomeEnabled(false)
-                supportActionBar?.setDisplayHomeAsUpEnabled(false)
-            }
-        }
+        val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
+        fragment.childFragmentManager.popBackStack()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -112,6 +107,7 @@ class MainActivity : AppCompatActivity(),
                 onBackPressed()
                 true
             }
+            // User selected the logout menu option
             R.id.menu_signout -> {
                 presenter.logout()
                 true
@@ -177,13 +173,13 @@ class MainActivity : AppCompatActivity(),
     // region Bottom Navigation
     private fun setupBottomNavigation() {
         bottom_nav.disableShiftMode()
-        bottom_nav.active(navPosition.position)
+        bottom_nav.active(activeNavPosition.position)
         bottom_nav.setOnNavigationItemSelectedListener(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        navPosition = findNavigationPositionById(item.itemId)
-        return switchFragment(navPosition)
+        activeNavPosition = findNavigationPositionById(item.itemId)
+        return switchFragment(activeNavPosition)
     }
     // endregion
 
@@ -211,7 +207,7 @@ class MainActivity : AppCompatActivity(),
      */
     private fun switchFragment(navPosition: BottomNavigationPosition): Boolean {
         // Remove any child fragments in the back stack
-        popChildFragmentBackStack()
+        clearFragmentBackStack()
 
         // Grab the requested top-level fragment and load if not already
         // in the current view.
@@ -257,13 +253,10 @@ class MainActivity : AppCompatActivity(),
     /**
      * Pop all child fragments to return to the top-level view.
      */
-    private fun popChildFragmentBackStack() {
+    private fun clearFragmentBackStack() {
         while (supportFragmentManager.backStackEntryCount > 0) {
             supportFragmentManager.popBackStackImmediate()
         }
-        // Reset toolbar status
-        supportActionBar?.setDisplayShowHomeEnabled(false)
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
     // endregion
 
