@@ -36,4 +36,18 @@
     <color name="list_item_bg">#ffffff</color>
     <color name="List_header_text">#ffffff</color>
     <color name="list_header_bg">#000000</color>
+    <!--
+        Text color themes
+    -->
+    <color name="wc_menu_title_text">#FFFFFFFF</color>
+    <color name="wc_menu_action_text">#FFFFFFFF</color>
+    <!--
+        Bottom Navigation Bar
+    -->
+    <!-- Bar Background color -->
+    <color name="wc_navbar_bg">@color/colorPrimary</color>
+    <!-- Option icon/text color when NOT selected -->
+    <color name="wc_navbar_normal">#FFCCCCCC</color>
+    <!-- Option icon/text color when selected -->
+    <color name="wc_navbar_checked">#FFFFFFFF</color>
 </resources>

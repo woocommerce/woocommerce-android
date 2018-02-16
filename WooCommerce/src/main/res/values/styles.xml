@@ -2,13 +2,18 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <!--
             Default colors
         -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@color/default_window_background</item>
         <item name="colorButtonNormal">@color/light_gray</item>
         <!--
@@ -105,4 +110,23 @@
     <style name="Woo.OrderList.TextAppearance.ListItem.Bold">
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="ToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!-- Tints input fields like checkboxes and text fields -->
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Color of the title text in the toolbar -->
+        <item name="android:textColorPrimary">@color/wc_menu_title_text</item>
+        <!-- Applies to views in their normal state. -->
+        <item name="colorControlNormal">#FFFFFFFF</item>
+        <!-- Applies to views in their activated state (i.e checked or switches) -->
+        <item name="colorControlActivated">#FFCCCCCC</item>
+        <!-- Applied to framework control highlights (i.e ripples or list selectors) -->
+        <item name="colorControlHighlight">#3d96588a</item>
+        <!-- Ripple effect when clicking items -->
+        <item name="selectableItemBackground">?android:selectableItemBackground</item>
+        <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+    </style>
+
 </resources>
