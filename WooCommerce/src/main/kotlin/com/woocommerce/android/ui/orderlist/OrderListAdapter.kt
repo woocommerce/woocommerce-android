@@ -21,7 +21,8 @@ import javax.inject.Inject
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter) : SectionedRecyclerViewAdapter() {
+class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
+    : SectionedRecyclerViewAdapter() {
     companion object {
         val TAG: String = OrderListAdapter::class.java.simpleName
     }
