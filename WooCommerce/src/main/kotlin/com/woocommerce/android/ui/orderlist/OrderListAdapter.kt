@@ -21,7 +21,7 @@ import javax.inject.Inject
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
+class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter) : SectionedRecyclerViewAdapter() {
     companion object {
         val TAG: String = OrderListAdapter::class.java.simpleName
     }
@@ -103,6 +103,7 @@ class OrderListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
             itemHolder.orderTotal.text = resources.getString(
                     R.string.orderlist_item_order_total, currencySymbol, order.total)
+            itemHolder.rootView.tag = order
 
             // clear existing tags and add new ones
             itemHolder.orderTagList.removeAllViews()
