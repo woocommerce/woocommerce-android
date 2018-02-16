@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orderlist
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DividerItemDecoration
@@ -11,13 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.base.ParentFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
-class OrderListFragment : Fragment(), OrderListContract.View {
+class OrderListFragment : ParentFragment(), OrderListContract.View {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         fun newInstance() = OrderListFragment()
@@ -35,18 +35,22 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         super.onAttach(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.fragment_order_list, container, false)
-        with(root) {
-            orderRefreshLayout.apply {
-                setColorSchemeColors(
-                    ContextCompat.getColor(activity, R.color.colorPrimary),
-                    ContextCompat.getColor(activity, R.color.colorAccent),
-                    ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                )
-                // Set the scrolling view in the custom SwipeRefreshLayout
-                scrollUpChild = ordersList
-                setOnRefreshListener { presenter.loadOrders() }
+    override fun onCreateFragmentView(inflater: LayoutInflater?,
+                                      container: ViewGroup?,
+                                      savedInstanceState: Bundle?): View? {
+        val view = inflater?.inflate(R.layout.fragment_order_list, container, false)
+        view?.let {
+            with(view) {
+                orderRefreshLayout.apply {
+                    setColorSchemeColors(
+                            ContextCompat.getColor(activity, R.color.colorPrimary),
+                            ContextCompat.getColor(activity, R.color.colorAccent),
+                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
+                    )
+                    // Set the scrolling view in the custom SwipeRefreshLayout
+                    scrollUpChild = ordersList
+                    setOnRefreshListener { presenter.loadOrders() }
+                }
             }
         }
         // Set the title in the action bar
@@ -56,7 +60,7 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         ordersDividerDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         ordersDividerDecoration.setDrawable(ContextCompat.getDrawable(context, R.drawable.list_divider))
 
-        return root
+        return view
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
