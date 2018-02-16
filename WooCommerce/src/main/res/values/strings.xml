@@ -29,4 +29,11 @@
     <string name="orderstatus_hold">On-Hold</string>
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
+
+    <!-- Bottom Navigation Bar -->
+    <string name="wc_dashboard">Dashboard</string>
+    <string name="wc_orders">Orders</string>
+    <string name="wc_settings">Settings</string>
+
+    <string name="wc_order_detail">Order Detail</string>
 </resources>

@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
     tools:context=".ui.main.MainActivity">
 
-    <fragment
-        android:id="@+id/fragment_orderList"
-        android:name="com.woocommerce.android.ui.orderlist.OrderListFragment"
-        android:layout_width="match_parent"
+    <include
+        layout="@layout/view_toolbar"
+        android:id="@+id/toolbar"/>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/signout"/>
+        android:background="@color/wc_navbar_bg"
+        app:elevation="4dp"
+        app:itemIconTint="@drawable/selector_bottom_navbar"
+        app:itemTextColor="@drawable/selector_bottom_navbar"
+        app:menu="@menu/menu_bottom_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

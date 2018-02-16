@@ -38,6 +38,10 @@
     <!--
         Default Widget Color Definitions
     -->
+    <!-- Menu Text Colors -->
+    <color name="wc_menu_title_text">#FFFFFFFF</color>
+    <color name="wc_menu_action_text">#FFFFFFFF</color>
+
     <!-- Default List colors -->
     <color name="list_divider">@color/wc_grey</color>
     <color name="list_item_text">@color/default_text</color>
@@ -51,6 +55,15 @@
     <color name="tagView_bg">@color/wc_grey_light</color>
     <color name="tagView_text">@color/wc_grey_darkest</color>
     <color name="tagView_border_bg">@color/wc_grey_darker</color>
+    <!--
+        Bottom Navigation Bar
+    -->
+    <!-- Bar Background color -->
+    <color name="wc_navbar_bg">@color/colorPrimary</color>
+    <!-- Option icon/text color when NOT selected -->
+    <color name="wc_navbar_normal">#FFCCCCCC</color>
+    <!-- Option icon/text color when selected -->
+    <color name="wc_navbar_checked">#FFFFFFFF</color>
     <!--
         Order: status tag background colors
     -->

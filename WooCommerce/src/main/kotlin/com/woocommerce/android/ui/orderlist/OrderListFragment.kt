@@ -13,28 +13,23 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.order_list_fragment.*
-import kotlinx.android.synthetic.main.order_list_fragment.view.*
+import kotlinx.android.synthetic.main.fragment_order_list.*
+import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
 class OrderListFragment : Fragment(), OrderListContract.View {
+    companion object {
+        val TAG: String = OrderListFragment::class.java.simpleName
+        fun newInstance() = OrderListFragment()
+    }
+
     @Inject lateinit var presenter: OrderListContract.Presenter
+    @Inject lateinit var ordersAdapter: OrderListAdapter
+    private lateinit var ordersDividerDecoration: DividerItemDecoration
 
     override var isActive: Boolean = false
         get() = isAdded
-
-    /**
-     * Listener for clicks on individual orders.
-     */
-    internal var itemListener = object : OrderItemListener {
-        override fun onOrderItemClicked(order: WCOrderModel) {
-            // Todo add itemListener to list items
-        }
-    }
-
-    private lateinit var ordersAdapter: OrderListAdapter
-    private lateinit var ordersDividerDecoration: DividerItemDecoration
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -42,11 +37,7 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.order_list_fragment, container, false)
-
-        ordersDividerDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
-        ordersDividerDecoration.setDrawable(ContextCompat.getDrawable(context, R.drawable.list_divider))
-
+        val root = inflater.inflate(R.layout.fragment_order_list, container, false)
         with(root) {
             orderRefreshLayout.apply {
                 setColorSchemeColors(
@@ -59,6 +50,12 @@ class OrderListFragment : Fragment(), OrderListContract.View {
                 setOnRefreshListener { presenter.loadOrders() }
             }
         }
+        // Set the title in the action bar
+        activity.title = getString(R.string.wc_orders)
+
+        // Set the divider decoration for the list
+        ordersDividerDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
+        ordersDividerDecoration.setDrawable(ContextCompat.getDrawable(context, R.drawable.list_divider))
 
         return root
     }
@@ -66,20 +63,17 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        ordersAdapter = OrderListAdapter()
-        ordersAdapter.setOrders(ArrayList())
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = ordersAdapter
             addItemDecoration(ordersDividerDecoration)
         }
-
         presenter.takeView(this)
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         presenter.dropView()
+        super.onDestroyView()
     }
 
     override fun setLoadingIndicator(active: Boolean) {
@@ -103,8 +97,4 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     }
 
     override fun getSelectedSite() = (activity as? MainActivity)?.getSite()
-
-    interface OrderItemListener {
-        fun onOrderItemClicked(order: WCOrderModel)
-    }
 }
