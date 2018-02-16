@@ -16,11 +16,12 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Currency
 import java.util.Date
+import javax.inject.Inject
 
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter : SectionedRecyclerViewAdapter() {
+class OrderListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     companion object {
         val TAG: String = OrderListAdapter::class.java.simpleName
     }
