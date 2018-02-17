@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orderlist
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.R
@@ -15,12 +16,15 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Currency
 import java.util.Date
-import java.util.Locale
 
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
 class OrderListAdapter : SectionedRecyclerViewAdapter() {
+    companion object {
+        val TAG: String = OrderListAdapter::class.java.simpleName
+    }
+
     fun setOrders(orders: List<WCOrderModel>) {
         // clear all the current data from the adapter
         removeAllSections()
@@ -64,6 +68,7 @@ class OrderListAdapter : SectionedRecyclerViewAdapter() {
         if (listMonth.size > 0) {
             addSection(OrderListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
+        notifyDataSetChanged()
     }
 
     /**
@@ -83,9 +88,15 @@ class OrderListAdapter : SectionedRecyclerViewAdapter() {
             val order = list[position]
             val itemHolder = holder as ItemViewHolder
 
-            val currencySymbol = Currency.getInstance(order.currency).getSymbol(Locale.getDefault())
+            var currencySymbol = ""
+            try {
+                currencySymbol = Currency.getInstance(order.currency).symbol
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "Error finding valid currency symbol for currency code [${order.currency}]", e)
+            }
+
+            val resources = itemHolder.rootView.context.applicationContext.resources
             val ctx = itemHolder.rootView.context
-            val resources = ctx.applicationContext.resources
             itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.remoteOrderId)
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
