@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orderlist
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
@@ -20,9 +21,17 @@ import java.util.Date
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter : SectionedRecyclerViewAdapter() {
+class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
     companion object {
         val TAG: String = OrderListAdapter::class.java.simpleName
+    }
+
+    private val fgColorDefault: Int by lazy {
+        ContextCompat.getColor(context, R.color.tagView_fgColor)
+    }
+
+    private val bgColorDefault: Int by lazy {
+        ContextCompat.getColor(context, R.color.tagView_bgColor)
     }
 
     fun setOrders(orders: List<WCOrderModel>) {
@@ -96,6 +105,7 @@ class OrderListAdapter : SectionedRecyclerViewAdapter() {
             }
 
             val resources = itemHolder.rootView.context.applicationContext.resources
+            val ctx = itemHolder.rootView.context
             itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.remoteOrderId)
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)

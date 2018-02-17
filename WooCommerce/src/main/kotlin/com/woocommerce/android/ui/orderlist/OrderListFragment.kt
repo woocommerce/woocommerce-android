@@ -65,7 +65,7 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ordersAdapter = OrderListAdapter()
+        ordersAdapter = OrderListAdapter(context)
         ordersAdapter.setOrders(ArrayList())
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
