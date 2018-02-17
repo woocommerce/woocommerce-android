@@ -51,9 +51,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, HasSupportFragmentI
         super.onDestroy()
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> {
-        return fragmentInjector
-    }
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

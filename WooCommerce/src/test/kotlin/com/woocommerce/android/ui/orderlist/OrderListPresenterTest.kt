@@ -16,7 +16,7 @@ class OrderListPresenterTest {
     private val orderStore: WCOrderStore = mock()
 
     private val orders = generateWCOrderModels()
-    private val noOrders = ArrayList<WCOrderModel>()
+    private val noOrders = emptyList<WCOrderModel>()
     private lateinit var presenter: OrderListPresenter
 
     @Before

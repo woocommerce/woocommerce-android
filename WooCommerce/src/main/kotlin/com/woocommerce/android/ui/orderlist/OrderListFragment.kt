@@ -43,7 +43,6 @@ class OrderListFragment : Fragment(), OrderListContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.order_list_fragment, container, false)
 
-        ordersAdapter = OrderListAdapter(context)
         ordersDividerDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         ordersDividerDecoration.setDrawable(ContextCompat.getDrawable(context, R.drawable.list_divider))
 
@@ -63,13 +62,22 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         return root
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        ordersAdapter = OrderListAdapter()
+        ordersAdapter.setOrders(ArrayList())
+        ordersList.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = ordersAdapter
+            addItemDecoration(ordersDividerDecoration)
+        }
+
         presenter.takeView(this)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.dropView()
     }
 
@@ -83,13 +91,6 @@ class OrderListFragment : Fragment(), OrderListContract.View {
 
     override fun showOrders(orders: List<WCOrderModel>) {
         ordersAdapter.setOrders(orders)
-
-        ordersList.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = ordersAdapter
-            addItemDecoration(ordersDividerDecoration)
-        }
-
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
         setLoadingIndicator(false)

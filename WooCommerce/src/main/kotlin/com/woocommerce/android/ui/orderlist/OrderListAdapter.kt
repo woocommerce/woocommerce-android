@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orderlist
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.R
@@ -16,18 +16,13 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Currency
 import java.util.Date
-import java.util.Locale
 
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
-    private val fgColorDefault: Int by lazy {
-        ContextCompat.getColor(context, R.color.tagView_fgColor)
-    }
-
-    private val bgColorDefault: Int by lazy {
-        ContextCompat.getColor(context, R.color.tagView_bgColor)
+class OrderListAdapter : SectionedRecyclerViewAdapter() {
+    companion object {
+        val TAG: String = OrderListAdapter::class.java.simpleName
     }
 
     fun setOrders(orders: List<WCOrderModel>) {
@@ -73,6 +68,7 @@ class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
         if (listMonth.size > 0) {
             addSection(OrderListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
+        notifyDataSetChanged()
     }
 
     /**
@@ -92,9 +88,14 @@ class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
             val order = list[position]
             val itemHolder = holder as ItemViewHolder
 
-            val currencySymbol = Currency.getInstance(order.currency).getSymbol(Locale.getDefault())
-            val ctx = itemHolder.rootView.context
-            val resources = ctx.applicationContext.resources
+            var currencySymbol = ""
+            try {
+                currencySymbol = Currency.getInstance(order.currency).symbol
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "Error finding valid currency symbol for currency code [${order.currency}]", e)
+            }
+
+            val resources = itemHolder.rootView.context.applicationContext.resources
             itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.remoteOrderId)
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
