@@ -58,8 +58,8 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         return root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
         ordersAdapter = OrderListAdapter()
         ordersAdapter.setOrders(ArrayList())
