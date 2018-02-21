@@ -96,4 +96,8 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
         ordersView.visibility = View.GONE
         noOrdersView.visibility = View.VISIBLE
     }
+
+    override fun getFragmentTitle(): String {
+        return getString(R.string.wc_orders)
+    }
 }

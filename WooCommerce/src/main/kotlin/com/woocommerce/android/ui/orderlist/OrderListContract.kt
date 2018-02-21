@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 interface OrderListContract {
     interface Presenter : BasePresenter<View> {
         fun loadOrders()
+        fun openOrderDetail(orderId: Long)
     }
 
     interface View : BaseView<Presenter>, ParentFragmentView {

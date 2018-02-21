@@ -26,4 +26,10 @@ interface ParentFragmentView : FragmentManager.OnBackStackChangedListener {
     fun onCreateFragmentView(inflater: LayoutInflater?,
                              container: ViewGroup?,
                              savedInstanceState: Bundle?): View?
+
+    /**
+     * Return the title that should appear in the action bar while this fragment is
+     * visible.
+     */
+    fun getFragmentTitle(): String
 }
