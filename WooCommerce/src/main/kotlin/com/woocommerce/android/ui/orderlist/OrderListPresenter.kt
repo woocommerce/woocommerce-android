@@ -56,8 +56,8 @@ class OrderListPresenter @Inject constructor(private val dispatcher: Dispatcher,
         orderView?.setLoadingIndicator(false)
     }
 
-    override fun openOrderDetail(orderId: Int) {
-        val frag = OrderDetailFragment.newInstance(orderId)
+    override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long) {
+        val frag = OrderDetailFragment.newInstance(localOrderId, remoteOrderId)
         orderView?.loadChildFragment(frag)
     }
 }
