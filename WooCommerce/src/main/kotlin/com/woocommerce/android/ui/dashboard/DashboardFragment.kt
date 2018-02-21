@@ -16,8 +16,10 @@ class DashboardFragment : ParentFragment() {
     override fun onCreateFragmentView(inflater: LayoutInflater?,
                                       container: ViewGroup?,
                                       savedInstanceState: Bundle?): View? {
-        // Set the title in the action bar
-        activity.title = getString(R.string.wc_dashboard)
         return inflater?.inflate(R.layout.fragment_dashboard, container, false)
+    }
+
+    override fun getFragmentTitle(): String {
+        return getString(R.string.wc_dashboard)
     }
 }

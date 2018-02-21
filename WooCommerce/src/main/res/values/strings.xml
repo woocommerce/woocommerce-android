@@ -6,8 +6,6 @@
     <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
     <string name="signout">Log out</string>
 
-    <string name="welcome_message">Woo!</string>
-
     <!-- OrderList Views -->
     <string name="orderlist_no_orders">No Orders</string>
     <string name="orderlist_item_order_num">#%d</string>
@@ -35,5 +33,7 @@
     <string name="wc_orders">Orders</string>
     <string name="wc_settings">Settings</string>
 
+    <!-- Order Views -->
+    <string name="wc_order_orderNum">Order #%1$s</string>
     <string name="wc_order_detail">Order Detail</string>
 </resources>

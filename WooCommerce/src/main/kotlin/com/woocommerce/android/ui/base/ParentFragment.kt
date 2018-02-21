@@ -28,6 +28,21 @@ abstract class ParentFragment : Fragment(), ParentFragmentView {
         return layout
     }
 
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Set activity title
+        activity?.title = getFragmentTitle()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            // Update the activity title
+            activity?.title = getFragmentTitle()
+        }
+    }
+
     override fun onDestroyView() {
         container.removeAllViews()
         super.onDestroyView()
@@ -53,6 +68,7 @@ abstract class ParentFragment : Fragment(), ParentFragmentView {
             container.getChildAt(0).visibility = View.VISIBLE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
+            mainActivity?.title = getFragmentTitle()
         } else {
             container.getChildAt(0).visibility = View.GONE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
