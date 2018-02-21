@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun userIsLoggedIn(): Boolean
+        fun getSelectedSite(): SiteModel?
         fun storeMagicLinkToken(token: String)
         fun logout()
     }

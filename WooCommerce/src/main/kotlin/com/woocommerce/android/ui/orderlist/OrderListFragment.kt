@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.ParentFragment
+import com.woocommerce.android.ui.main.MainActivity
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -62,8 +63,8 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
         return view
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -99,5 +100,9 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
 
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
+    override fun getSelectedSite() = (activity as? MainActivity)?.getSite()
+
+    interface OrderItemListener {
+        fun onOrderItemClicked(order: WCOrderModel)
     }
 }

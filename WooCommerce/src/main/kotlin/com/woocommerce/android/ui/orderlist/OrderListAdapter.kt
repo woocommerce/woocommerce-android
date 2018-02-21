@@ -40,7 +40,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
         orders.forEach {
             // Default to today if the date cannot be parsed
-            val date: Date = DateTimeUtils.dateFromIso8601(it.dateCreated) ?: Date()
+            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
             val timeGroup = TimeGroup.getTimeGroupForDate(date)
             when (timeGroup) {
                 TimeGroup.GROUP_TODAY -> listToday.add(it)
