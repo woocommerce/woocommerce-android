@@ -100,9 +100,7 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
 
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
-    override fun getSelectedSite() = (activity as? MainActivity)?.getSite()
-
-    interface OrderItemListener {
-        fun onOrderItemClicked(order: WCOrderModel)
     }
+
+    override fun getSelectedSite() = (activity as? MainActivity)?.getSite()
 }
