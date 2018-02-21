@@ -80,8 +80,7 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
     }
 
     override fun setLoadingIndicator(active: Boolean) {
-        val root = view ?: return
-        with(root as SwipeRefreshLayout) {
+        with(orderRefreshLayout) {
             // Make sure this is called after the layout is done with everything else.
             post { isRefreshing = active }
         }
