@@ -42,6 +42,13 @@
     <color name="menu_title_text">#FFFFFFFF</color>
     <color name="menu_action_text">#FFFFFFFF</color>
 
+    <!-- Default Card colors -->
+    <color name="card_bgColor">@color/white</color>
+
+    <!-- Tag View default colors -->
+    <color name="tagView_bgColor">#d2d2d2</color>
+    <color name="tagView_fgColor">#a7a7a7</color>
+
     <!-- Default List colors -->
     <color name="list_divider">@color/wc_grey</color>
     <color name="list_item_text">@color/default_text</color>

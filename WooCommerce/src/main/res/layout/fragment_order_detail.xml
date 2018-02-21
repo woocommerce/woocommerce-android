@@ -4,12 +4,19 @@
     android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_window_background"
     tools:context="com.woocommerce.android.ui.order.OrderDetailFragment">
 
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/wc_order_detail"/>
+        android:layout_height="match_parent">
+
+        <com.woocommerce.android.ui.order.OrderDetailOrderStatusView
+            android:id="@+id/orderDetail_orderStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card"/>
+    </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>
