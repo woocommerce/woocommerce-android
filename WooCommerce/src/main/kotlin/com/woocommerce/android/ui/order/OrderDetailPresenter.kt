@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.order
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
-class OrderDetailPresenter @Inject constructor(private var orderStore: WCOrderStore) : OrderDetailContract.Presenter {
+class OrderDetailPresenter @Inject constructor(private val orderStore: WCOrderStore) : OrderDetailContract.Presenter {
     private var orderView: OrderDetailContract.View? = null
 
     override fun takeView(view: OrderDetailContract.View) {
@@ -15,12 +15,14 @@ class OrderDetailPresenter @Inject constructor(private var orderStore: WCOrderSt
     }
 
     override fun loadOrderDetail(orderId: Int) {
-        if (orderView != null) {
-            orderView?.setLoadingIndicator(true)
+        if (orderId != 0) {
+            orderView?.let {
+                orderView?.setLoadingIndicator(true)
 
-            // todo - fetch the order detail
-
-            orderView?.setLoadingIndicator(false)
+                val order = orderStore.getOrderByLocalOrderId(orderId)
+                orderView?.showOrderDetail(order)
+                orderView?.setLoadingIndicator(false)
+            }
         }
     }
 }

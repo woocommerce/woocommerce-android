@@ -11,6 +11,6 @@ interface OrderDetailContract {
 
     interface View : BaseView<Presenter> {
         fun setLoadingIndicator(active: Boolean)
-        fun showOrderDetail(order: WCOrderModel)
+        fun showOrderDetail(order: WCOrderModel?)
     }
 }
