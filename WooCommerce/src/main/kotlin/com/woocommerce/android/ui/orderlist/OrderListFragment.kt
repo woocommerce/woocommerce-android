@@ -53,7 +53,7 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
             }
         }
         // Set the title in the action bar
-        activity.title = getString(R.string.wc_orders)
+        activity.title = getString(R.string.orders)
 
         // Set the divider decoration for the list
         ordersDividerDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
@@ -98,6 +98,6 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
     }
 
     override fun getFragmentTitle(): String {
-        return getString(R.string.wc_orders)
+        return getString(R.string.orders)
     }
 }

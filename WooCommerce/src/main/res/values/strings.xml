@@ -25,11 +25,14 @@
     <string name="orderstatus_complete">Fulfilled</string>
 
     <!-- Bottom Navigation Bar -->
-    <string name="wc_dashboard">Dashboard</string>
-    <string name="wc_orders">Orders</string>
-    <string name="wc_settings">Settings</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="orders">Orders</string>
+    <string name="settings">Settings</string>
 
-    <!-- Order Views -->
-    <string name="wc_order_orderNum">Order #%1$s</string>
-    <string name="wc_order_detail">Order Detail</string>
+    <!-- Order Detail Views -->
+    <string name="order_detail">Order Detail</string>
+    <string name="order_orderstatus_ordernum">Order #%1$s</string>
+
+    <!-- Friendly date string: Created today at 9:51 AM -->
+    <string name="order_orderstatus_created">Created %1$s at %2$s</string>
 </resources>
