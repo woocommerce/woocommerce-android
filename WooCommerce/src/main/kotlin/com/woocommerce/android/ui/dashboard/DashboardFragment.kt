@@ -20,6 +20,6 @@ class DashboardFragment : ParentFragment() {
     }
 
     override fun getFragmentTitle(): String {
-        return getString(R.string.wc_dashboard)
+        return getString(R.string.dashboard)
     }
 }

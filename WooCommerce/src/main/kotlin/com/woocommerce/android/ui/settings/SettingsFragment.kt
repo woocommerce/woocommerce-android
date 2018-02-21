@@ -20,6 +20,6 @@ class SettingsFragment : ParentFragment() {
     }
 
     override fun getFragmentTitle(): String {
-        return getString(R.string.wc_settings)
+        return getString(R.string.settings)
     }
 }
