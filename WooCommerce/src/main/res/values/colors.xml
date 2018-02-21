@@ -26,6 +26,9 @@
     <!--
         Widget Color Definitions
     -->
+    <!-- Default Card colors -->
+    <color name="card_bgColor">@color/white</color>
+
     <!-- Tag View default colors -->
     <color name="tagView_bgColor">#d2d2d2</color>
     <color name="tagView_fgColor">#a7a7a7</color>

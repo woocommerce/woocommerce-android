@@ -11,6 +11,26 @@
     <dimen name="text_double_extra_large">24sp</dimen>
     <dimen name="text_triple_extra_large">26sp</dimen>
     <!--
+        Default Card
+    -->
+    <dimen name="card_padding_start">16dp</dimen>
+    <dimen name="card_padding_start_tablet">24dp</dimen>
+
+    <dimen name="card_padding_end">16dp</dimen>
+    <dimen name="card_padding_end_tablet">24dp</dimen>
+
+    <dimen name="card_padding_top">16dp</dimen>
+    <dimen name="card_padding_top_tablet">24dp</dimen>
+
+    <dimen name="card_padding_bottom">16dp</dimen>
+    <dimen name="card_padding_bottom_tablet">24dp</dimen>
+
+    <dimen name="card_gutter">8dp</dimen>
+    <dimen name="card_gutter_tablet">16dp</dimen>
+
+    <dimen name="card_item_padding_intra_h">8dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <!--
         Default List
     -->
     <dimen name="list_item_text_size">@dimen/text_medium</dimen>
@@ -33,9 +53,6 @@
 
     <dimen name="list_item_padding_bottom">12dp</dimen>
     <dimen name="list_item_padding_bottom_tablet">12dp</dimen>
-
-    <dimen name="list_item_margin_end">16dp</dimen>
-    <dimen name="list_item_margin_end_tablet">24dp</dimen>
     <!--
         Default TagView
     -->
