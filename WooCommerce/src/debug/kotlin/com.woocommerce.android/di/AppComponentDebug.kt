@@ -8,6 +8,7 @@ import dagger.android.support.AndroidSupportInjectionModule
 import org.wordpress.android.fluxc.module.DebugOkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseBaseModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
+import org.wordpress.android.fluxc.module.ReleaseWCNetworkModule
 import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Singleton
 
@@ -18,6 +19,7 @@ import javax.inject.Singleton
         AppSecretsModule::class,
         ReleaseBaseModule::class,
         ReleaseNetworkModule::class,
+        ReleaseWCNetworkModule::class,
         DebugOkHttpClientModule::class,
         InterceptorModule::class,
         ActivityBindingModule::class,

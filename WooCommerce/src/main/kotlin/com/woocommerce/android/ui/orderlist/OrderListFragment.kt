@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.main.MainActivity
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.order_list_fragment.*
 import kotlinx.android.synthetic.main.order_list_fragment.view.*
@@ -57,8 +58,8 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         return root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
         ordersAdapter = OrderListAdapter()
         ordersAdapter.setOrders(ArrayList())
@@ -94,6 +95,8 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         ordersView.visibility = View.GONE
         noOrdersView.visibility = View.VISIBLE
     }
+
+    override fun getSelectedSite() = (activity as? MainActivity)?.getSite()
 
     interface OrderItemListener {
         fun onOrderItemClicked(order: WCOrderModel)
