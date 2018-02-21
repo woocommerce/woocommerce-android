@@ -29,7 +29,7 @@ class OrderListPresenter @Inject constructor(private var orderStore: WCOrderStor
         orderView?.setLoadingIndicator(false)
     }
 
-    override fun openOrderDetail(orderId: Long) {
+    override fun openOrderDetail(orderId: Int) {
         val frag = OrderDetailFragment.newInstance(orderId)
         orderView?.loadChildFragment(frag)
     }
