@@ -96,7 +96,7 @@ class OrderListFragment : Fragment(), OrderListContract.View {
         noOrdersView.visibility = View.VISIBLE
     }
 
-    override fun getSelectedSite() = (activity as MainActivity).getSite()
+    override fun getSelectedSite() = (activity as? MainActivity)?.getSite()
 
     interface OrderItemListener {
         fun onOrderItemClicked(order: WCOrderModel)
