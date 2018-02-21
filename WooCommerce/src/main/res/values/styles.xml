@@ -9,13 +9,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="AppTheme" parent="AppTheme.Base">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@color/default_window_bg</item>
         <item name="colorButtonNormal">@color/light_gray</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <!--
             Default text
         -->
@@ -26,6 +24,10 @@
         <item name="tagViewStyle">@style/Woo.Tag</item>
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.Base">
+        <!-- Overrides for various api levels -->
     </style>
 
     <style name="Woo"/>
