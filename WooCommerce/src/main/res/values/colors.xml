@@ -3,6 +3,12 @@
     <color name="colorPrimary">#96588A</color>
     <color name="colorPrimaryDark">#3C3C3C</color>
     <color name="colorAccent">#71B02F</color>
+
+    <!-- Default Colors-->
+    <color name="default_window_background">@color/grey_lighten_30</color>
+    <color name="default_text_color">@color/grey_dark</color>
+    <color name="default_button_fg_color">@color/colorPrimary</color>
+    <color name="default_text_label_color">@color/grey</color>
     <!--
         General Color Definitions
     -->
