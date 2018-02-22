@@ -9,12 +9,16 @@ import com.woocommerce.android.widgets.tags.ITag
  */
 class OrderStatusTag(rawText: String,
                      bgColor: Int,
-                     fgColor: Int) : ITag(rawText, bgColor, fgColor) {
+                     fgColor: Int) : ITag(rawText.trim(), bgColor, fgColor) {
     override fun getFormattedLabel(context: Context): String {
-        return when (rawText) {
-            "pending", "processing" -> context.getString(R.string.orderstatus_new)
+        return when (rawText.toLowerCase()) {
+            "processing" -> context.getString(R.string.orderstatus_processing)
+            "pending" -> context.getString(R.string.orderstatus_pending)
+            "failed" -> context.getString(R.string.orderstatus_failed)
+            "completed" -> context.getString(R.string.orderstatus_completed)
             "on-hold" -> context.getString(R.string.orderstatus_hold)
-            "completed" -> context.getString(R.string.orderstatus_complete)
+            "cancelled" -> context.getString(R.string.orderstatus_cancelled)
+            "refunded" -> context.getString(R.string.orderstatus_refunded)
             else -> rawText
         }
     }

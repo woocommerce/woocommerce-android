@@ -135,11 +135,11 @@ class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
 
         /**
          * Converts the order status label into an [OrderStatusTag], creates the associated [TagView],
-         * and add it to the holder.
+         * and add it to the holder. No need to trim the label text since this is done in [OrderStatusTag]
          */
         private fun processTagView(ctx: Context, text: String, holder: ItemViewHolder) {
             val orderTag = OrderStatusTag(
-                    text.trim(), this@OrderListAdapter.bgColorDefault, this@OrderListAdapter.fgColorDefault)
+                    text, this@OrderListAdapter.bgColorDefault, this@OrderListAdapter.fgColorDefault)
             val tagView = TagView(ctx)
             tagView.tag = orderTag
             holder.orderTagList.addView(tagView)
