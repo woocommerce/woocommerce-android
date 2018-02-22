@@ -24,6 +24,7 @@
         <item name="tagViewStyle">@style/Woo.Tag</item>
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
+        <item name="android:buttonStyle">@style/Woo.Button</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">
@@ -56,11 +57,30 @@
     -->
     <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
         <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:textSize">@dimen/text_medium</item>
     </style>
 
     <style name="Woo.TextAppearance.Title">
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Label">
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/default_text_label_color</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Button">
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/default_button_fg_color</item>
+    </style>
+    <!--
+        Default Button Style
+    -->
+    <style name="Woo.Button" parent="android:Widget.DeviceDefault.Button.Borderless">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:background">@color/white</item>
     </style>
     <!--
         Default TagView Style
@@ -152,7 +172,6 @@
         OrderDetail Styles
     -->
     <style name="Woo.OrderDetail.TextAppearance.Title" parent="Woo.TextAppearance.Title"/>
-    <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance">
-        <item name="android:textSize">@dimen/text_small</item>
-    </style>
+    <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance"/>
+    <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
 </resources>

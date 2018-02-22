@@ -30,9 +30,16 @@
     <string name="settings">Settings</string>
 
     <!-- Order Detail Views -->
+    <string name="customer_information">Customer Information</string>
     <string name="order_detail">Order Detail</string>
     <string name="order_orderstatus_ordernum">Order #%1$s</string>
 
     <!-- Friendly date string: Created today at 9:51 AM -->
     <string name="order_orderstatus_created">Created %1$s at %2$s</string>
+    <string name="shipping_details">Shipping Details</string>
+    <string name="email_address">Email Address</string>
+    <string name="view_more">VIEW MORE</string>
+    <string name="view_less">VIEW LESS</string>
+    <string name="phone">Phone</string>
+    <string name="billing_details">Billing Details</string>
 </resources>

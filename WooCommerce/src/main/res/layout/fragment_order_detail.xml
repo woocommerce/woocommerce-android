@@ -17,6 +17,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/Woo.Card"/>
+
+        <com.woocommerce.android.ui.order.OrderDetailCustomerInfoView
+            android:id="@+id/orderDetail_customerInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card"/>
     </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>
