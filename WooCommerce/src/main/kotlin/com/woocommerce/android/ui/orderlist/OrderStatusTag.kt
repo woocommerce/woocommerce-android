@@ -10,15 +10,19 @@ import com.woocommerce.android.widgets.tags.ITag
 class OrderStatusTag(rawText: String,
                      bgColor: Int,
                      fgColor: Int) : ITag(rawText.trim(), bgColor, fgColor) {
+    /**
+     * Translates the raw status text received from the server into a friendly
+     * localized string.
+     */
     override fun getFormattedLabel(context: Context): String {
         return when (rawText.toLowerCase()) {
-            "processing" -> context.getString(R.string.orderstatus_processing)
-            "pending" -> context.getString(R.string.orderstatus_pending)
-            "failed" -> context.getString(R.string.orderstatus_failed)
-            "completed" -> context.getString(R.string.orderstatus_completed)
-            "on-hold" -> context.getString(R.string.orderstatus_hold)
-            "cancelled" -> context.getString(R.string.orderstatus_cancelled)
-            "refunded" -> context.getString(R.string.orderstatus_refunded)
+            STATUS_PROCESSING -> context.getString(R.string.orderstatus_processing)
+            STATUS_PENDING -> context.getString(R.string.orderstatus_pending)
+            STATUS_FAILED -> context.getString(R.string.orderstatus_failed)
+            STATUS_COMPLETED -> context.getString(R.string.orderstatus_completed)
+            STATUS_HOLD -> context.getString(R.string.orderstatus_hold)
+            STATUS_CANCELLED -> context.getString(R.string.orderstatus_cancelled)
+            STATUS_REFUNDED -> context.getString(R.string.orderstatus_refunded)
             else -> rawText
         }
     }
