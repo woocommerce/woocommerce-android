@@ -41,6 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_label_padding_intra_h"
         android:text="@string/order_shipping_details"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
         android:layout_below="@+id/customerInfo_divider"
@@ -60,6 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_label_padding_intra_h"
         android:text="@string/email_address"
         android:layout_below="@+id/customerInfo_shippingAddr"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"/>
@@ -72,7 +74,7 @@
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
         tools:text="email@example.com"
         android:layout_below="@+id/customerInfo_emailAddrLabel"
-        android:drawableEnd="@drawable/ic_email"/>
+        android:drawableEnd="@drawable/ic_email_compat"/>
 
     <!-- Collapsed View -->
     <LinearLayout
@@ -81,12 +83,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
         android:layout_below="@+id/customerInfo_emailAddr">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/card_label_padding_intra_h"
             android:text="@string/phone"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"/>
 
@@ -95,31 +99,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/card_item_padding_intra_h"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
             tools:text="123-456-7890"
-            android:drawableEnd="@drawable/ic_phone"/>
+            android:drawableEnd="@drawable/ic_phone_compat"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="@dimen/card_item_padding_intra_h"
+            android:paddingBottom="@dimen/card_label_padding_intra_h"
             android:text="@string/order_billing_details"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"/>
 
         <TextView
-            android:id="@+id/customerInfo_billingDetails"
+            android:id="@+id/customerInfo_billingAddr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
             tools:text="123 Sesame Pl\nWarner, FL 12345-6789\nUnited States"/>
     </LinearLayout>
 
     <!-- VIEW MORE Button -->
-    <TextView
+    <ToggleButton
         android:id="@+id/customerInfo_viewMore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/card_item_padding_intra_h"
-        android:paddingBottom="@dimen/card_item_padding_intra_h"
-        android:drawableEnd="@drawable/ic_arrow_down"
         android:layout_below="@+id/customerInfo_moreLayout"
-        android:text="@string/view_more"
-        android:textAppearance="@style/Woo.TextAppearance.Button"/>
+        style="@style/Woo.CardExtenderButton"/>
 </merge>

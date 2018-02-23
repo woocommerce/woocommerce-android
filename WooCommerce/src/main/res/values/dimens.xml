@@ -30,11 +30,13 @@
 
     <dimen name="card_item_padding_intra_h">8dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
+
+    <dimen name="card_label_padding_intra_h">4dp</dimen>
     <!--
         Default List
     -->
-    <dimen name="list_item_text_size">@dimen/text_medium</dimen>
-    <dimen name="list_header_text_size">@dimen/text_large</dimen>
+    <dimen name="list_item_text_size">@dimen/text_large</dimen>
+    <dimen name="list_header_text_size">@dimen/text_medium</dimen>
 
     <dimen name="list_group_header_height">48dp</dimen>
     <dimen name="list_item_height">72dp</dimen>
