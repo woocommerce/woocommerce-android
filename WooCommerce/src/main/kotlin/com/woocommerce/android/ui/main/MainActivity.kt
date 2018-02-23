@@ -104,4 +104,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, HasSupportFragmentI
         val uri = intent.data
         return uri?.getQueryParameter(TOKEN_PARAMETER)
     }
+
+    fun getSite(): SiteModel? {
+        return presenter.getSelectedSite()
+    }
 }
