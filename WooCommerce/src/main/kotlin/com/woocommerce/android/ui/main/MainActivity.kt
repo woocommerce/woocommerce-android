@@ -258,4 +258,8 @@ class MainActivity : AppCompatActivity(),
         }
     }
     // endregion
+
+    fun getSite(): SiteModel? {
+        return presenter.getSelectedSite()
+    }
 }

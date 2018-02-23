@@ -40,7 +40,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
         orders.forEach {
             // Default to today if the date cannot be parsed
-            val date: Date = DateTimeUtils.dateFromIso8601(it.dateCreated) ?: Date()
+            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
             val timeGroup = TimeGroup.getTimeGroupForDate(date)
             when (timeGroup) {
                 TimeGroup.GROUP_TODAY -> listToday.add(it)
@@ -129,10 +129,10 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
         /**
          * Converts the order status label into an [OrderStatusTag], creates the associated [TagView],
-         * and add it to the holder.
+         * and add it to the holder. No need to trim the label text since this is done in [OrderStatusTag]
          */
         private fun processTagView(ctx: Context, text: String, holder: ItemViewHolder) {
-            val orderTag = OrderStatusTag(text.trim())
+            val orderTag = OrderStatusTag(text)
             val tagView = TagView(ctx)
             tagView.tag = orderTag
             holder.orderTagList.addView(tagView)

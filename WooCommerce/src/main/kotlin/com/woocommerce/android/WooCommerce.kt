@@ -1,8 +1,8 @@
 package com.woocommerce.android
 
 import android.app.Activity
-import android.app.Application
 import android.app.Service
+import android.support.multidex.MultiDexApplication
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
@@ -15,7 +15,7 @@ import dagger.android.HasServiceInjector
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import javax.inject.Inject
 
-open class WooCommerce : Application(), HasActivityInjector, HasServiceInjector {
+open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceInjector {
     @Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
     @Inject lateinit var serviceInjector: DispatchingAndroidInjector<Service>
 
@@ -30,7 +30,8 @@ open class WooCommerce : Application(), HasActivityInjector, HasServiceInjector 
     override fun onCreate() {
         super.onCreate()
         component.inject(this)
-        WellSql.init(WellSqlConfig(applicationContext))
+        val wellSqlConfig = WellSqlConfig(applicationContext, WellSqlConfig.ADDON_WOOCOMMERCE)
+        WellSql.init(wellSqlConfig)
     }
 
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector
