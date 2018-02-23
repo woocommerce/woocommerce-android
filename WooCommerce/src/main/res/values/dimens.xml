@@ -30,6 +30,8 @@
 
     <dimen name="card_item_padding_intra_h">8dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
+
+    <dimen name="card_label_padding_intra_h">4dp</dimen>
     <!--
         Default List
     -->

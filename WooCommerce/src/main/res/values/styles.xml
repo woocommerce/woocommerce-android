@@ -111,6 +111,15 @@
         <item name="android:background">@color/card_bgColor</item>
         <item name="android:layout_marginBottom">@dimen/card_gutter</item>
     </style>
+    <style name="Woo.CardExtenderButton">
+        <item name="android:background">@null</item>
+        <item name="android:textOn">@string/view_less</item>
+        <item name="android:textOff">@string/view_more</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:drawableEnd">@drawable/card_expander_selector</item>
+    </style>
     <!--
         Default List Style
     -->
@@ -154,6 +163,7 @@
     </style>
 
     <style name="Woo.TextAppearance.ListHeader">
+        <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/List_header_text</item>
         <item name="android:textSize">@dimen/list_header_text_size</item>
         <item name="android:textStyle">bold</item>

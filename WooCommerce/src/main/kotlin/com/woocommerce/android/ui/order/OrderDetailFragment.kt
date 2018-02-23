@@ -100,6 +100,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         order?.let {
             // Populate the Order Status Card
             orderDetail_orderStatus.initView(order)
+
+            // Populate the Customer Information Card
+            orderDetail_customerInfo.initView(order)
         }
     }
 }

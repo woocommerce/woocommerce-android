@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#96588A</color>
+    <color name="colorPrimary">#88477e</color>
     <color name="colorPrimaryDark">#3C3C3C</color>
     <color name="colorAccent">#71B02F</color>
 
     <!-- Default Colors-->
-    <color name="default_window_background">@color/grey_lighten_30</color>
+    <color name="default_window_background">#e0e0e0</color>
     <color name="default_text_color">@color/grey_dark</color>
     <color name="default_button_fg_color">@color/colorPrimary</color>
-    <color name="default_text_label_color">@color/grey</color>
+    <color name="default_text_label_color">#939393</color>
     <!--
         General Color Definitions
     -->
