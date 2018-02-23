@@ -38,7 +38,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
                               savedInstanceState: Bundle?): View? {
         // Set the title in the action bar
         val orderNumber = arguments.getLong(FIELD_ORDER_ID, 0L)
-        activity.title = getString(R.string.wc_order_orderNum, orderNumber.toString())
+        activity.title = getString(R.string.wc_order_orderNum, orderNumber)
 
         val view = inflater?.inflate(R.layout.fragment_order_detail, container, false)
         view?.let {
