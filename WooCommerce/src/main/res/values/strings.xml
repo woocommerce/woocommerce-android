@@ -34,6 +34,6 @@
     <string name="wc_settings">Settings</string>
 
     <!-- Order Views -->
-    <string name="wc_order_orderNum">Order #%1$s</string>
+    <string name="wc_order_orderNum">Order #%d</string>
     <string name="wc_order_detail">Order Detail</string>
 </resources>
