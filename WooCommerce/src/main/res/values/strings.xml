@@ -20,19 +20,23 @@
     <string name="date_timeframe_older_month">Older than a month</string>
 
     <!-- Base Order Status Labels -->
-    <string name="orderstatus_new">New Order</string>
-    <string name="orderstatus_hold">On Hold</string>
-    <string name="orderstatus_complete">Fulfilled</string>
+    <string name="orderstatus_processing">Processing</string>
+    <string name="orderstatus_pending">Payment pending</string>
+    <string name="orderstatus_failed">Failed</string>
+    <string name="orderstatus_completed">Completed</string>
+    <string name="orderstatus_hold">On-Hold</string>
+    <string name="orderstatus_cancelled">Cancelled</string>
+    <string name="orderstatus_refunded">Refunded</string>
 
     <!-- Bottom Navigation Bar -->
     <string name="dashboard">Dashboard</string>
     <string name="orders">Orders</string>
     <string name="settings">Settings</string>
 
-    <!-- Order Detail Views -->
+    <!-- Order Views -->
     <string name="customer_information">Customer Information</string>
     <string name="order_detail">Order Detail</string>
-    <string name="order_orderstatus_ordernum">Order #%1$s</string>
+    <string name="order_orderstatus_ordernum">Order #%d</string>
 
     <!-- Friendly date string: Created today at 9:51 AM -->
     <string name="order_orderstatus_created">Created %1$s at %2$s</string>

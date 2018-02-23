@@ -16,7 +16,9 @@ interface OrderListContract {
         var isActive: Boolean
 
         fun setLoadingIndicator(active: Boolean)
+
         fun showOrders(orders: List<WCOrderModel>)
+
         fun showNoOrders()
         fun getSelectedSite(): SiteModel?
     }

@@ -81,4 +81,5 @@ ext {
     testRunnerVersion = '1.0.0'
     espressoVersion = '3.0.0'
     constraintLayoutVersion = '1.0.2'
+    multidexVersion = '1.0.2'
 }
