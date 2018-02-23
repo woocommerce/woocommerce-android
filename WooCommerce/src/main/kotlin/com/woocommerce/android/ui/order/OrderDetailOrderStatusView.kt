@@ -22,8 +22,9 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
 
     fun initView(orderModel: WCOrderModel) {
         orderStatus_orderNum.text = context.getString(
-                R.string.order_orderstatus_ordernum, orderModel.remoteOrderId.toString())
+                R.string.order_orderstatus_ordernum, orderModel.remoteOrderId)
         orderStatus_created.text = getFriendlyDateString(orderModel.dateCreated)
+        orderStatus_orderTags.removeAllViews()
         orderModel.status.split(",").sorted().forEach { i -> orderStatus_orderTags.addView(getTagView(i)) }
     }
 
@@ -37,20 +38,17 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
     private fun getFriendlyDateString(rawDate: String): String {
         val date = DateTimeUtils.dateFromIso8601(rawDate) ?: Date()
         val timeGroup = TimeGroup.getTimeGroupForDate(date)
-        var dateLabel = ""
-        dateLabel = when (timeGroup) {
+        val dateLabel = when (timeGroup) {
             TimeGroup.GROUP_TODAY -> {
-                context.getString(R.string.date_timeframe_today)
+                context.getString(R.string.date_timeframe_today).toLowerCase()
             }
             TimeGroup.GROUP_YESTERDAY -> {
-                context.getString(R.string.date_timeframe_yesterday)
+                context.getString(R.string.date_timeframe_yesterday).toLowerCase()
             }
             else -> {
-                // todo: waiting for final design
                 DateFormat.getDateFormat(context).format(date)
             }
         }
-        // todo: waiting on final design
         val timeString = DateFormat.getTimeFormat(context).format(date.time)
         return context.getString(R.string.order_orderstatus_created, dateLabel, timeString)
     }
