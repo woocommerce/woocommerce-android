@@ -1,25 +1,52 @@
 <resources>
     <string name="app_name">WooCommerce</string>
-
-    <string name="cant_open_url">Unable to open the link</string>
-    <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
-    <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
+    <!--
+        General Strings
+    -->
     <string name="signout">Log out</string>
-
-    <!-- OrderList Views -->
-    <string name="orderlist_no_orders">No Orders</string>
-    <string name="orderlist_item_order_num">#%d</string>
-    <string name="orderlist_item_order_name">%1$s %2$s</string>
-    <string name="orderlist_item_order_total">%1$s%2$.2f</string>
-
-    <!-- TimeGroup Labels -->
+    <string name="dashboard">Dashboard</string>
+    <string name="orders">Orders</string>
+    <string name="settings">Settings</string>
+    <string name="email_address">Email Address</string>
+    <string name="view_more">VIEW MORE</string>
+    <string name="view_less">VIEW LESS</string>
+    <string name="phone">Phone</string>
+    <!--
+        Date/Time Labels
+    -->
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
-
-    <!-- Base Order Status Labels -->
+    <!--
+        Error Strings
+    -->
+    <string name="error_cant_open_url">Unable to open the link</string>
+    <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
+    <!--
+        Login View
+    -->
+    <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
+    <!--
+        Order List View
+    -->
+    <string name="orderlist_no_orders">No Orders</string>
+    <string name="orderlist_item_order_num">#%d</string>
+    <string name="orderlist_item_order_name">%1$s %2$s</string>
+    <string name="orderlist_item_order_total">%1$s%2$.2f</string>
+    <!--
+        Order Detail Views
+    -->
+    <string name="customer_information">Customer Information</string>
+    <string name="order_detail">Order Detail</string>
+    <string name="order_orderstatus_ordernum">Order #%d</string>
+    <string name="order_orderstatus_created">Created %1$s at %2$s</string>
+    <string name="order_shipping_details">Shipping Details</string>
+    <string name="order_billing_details">Billing Details</string>
+    <!--
+        Order Status Labels
+    -->
     <string name="orderstatus_processing">Processing</string>
     <string name="orderstatus_pending">Payment pending</string>
     <string name="orderstatus_failed">Failed</string>
@@ -27,23 +54,4 @@
     <string name="orderstatus_hold">On-Hold</string>
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
-
-    <!-- Bottom Navigation Bar -->
-    <string name="dashboard">Dashboard</string>
-    <string name="orders">Orders</string>
-    <string name="settings">Settings</string>
-
-    <!-- Order Detail Views -->
-    <string name="customer_information">Customer Information</string>
-    <string name="order_detail">Order Detail</string>
-    <string name="order_orderstatus_ordernum">Order #%1$s</string>
-
-    <!-- Friendly date string: Created today at 9:51 AM -->
-    <string name="order_orderstatus_created">Created %1$s at %2$s</string>
-    <string name="shipping_details">Shipping Details</string>
-    <string name="email_address">Email Address</string>
-    <string name="view_more">VIEW MORE</string>
-    <string name="view_less">VIEW LESS</string>
-    <string name="phone">Phone</string>
-    <string name="billing_details">Billing Details</string>
 </resources>

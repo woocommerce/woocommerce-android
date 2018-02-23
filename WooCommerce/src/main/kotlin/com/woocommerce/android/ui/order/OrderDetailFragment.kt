@@ -51,7 +51,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         }
 
         // Set the activity title
-        activity.title = getString(R.string.order_orderstatus_ordernum, remoteOrderId.toString())
+        activity.title = getString(R.string.order_orderstatus_ordernum, remoteOrderId)
 
         val view = inflater?.inflate(R.layout.fragment_order_detail, container, false)
         view?.let {
