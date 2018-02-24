@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orderlist
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -56,20 +57,21 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
         // Set the title in the action bar
         activity.title = getString(R.string.wc_orders)
 
-        // Set the divider decoration for the list
-        ordersDividerDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
-        ordersDividerDecoration.setDrawable(ContextCompat.getDrawable(context, R.drawable.list_divider))
-
         return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        // Set the divider decoration for the list
+        ordersDividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = ordersAdapter
+            itemAnimator = DefaultItemAnimator()
+            setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
+            adapter = ordersAdapter
         }
         presenter.takeView(this)
     }

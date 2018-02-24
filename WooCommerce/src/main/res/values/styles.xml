@@ -130,7 +130,7 @@
         <!-- Tints input fields like checkboxes and text fields -->
         <item name="colorAccent">@color/colorAccent</item>
         <!-- Color of the title text in the toolbar -->
-        <item name="android:textColorPrimary">@color/wc_menu_title_text</item>
+        <item name="android:textColorPrimary">@color/menu_title_text</item>
         <!-- Applies to views in their normal state. -->
         <item name="colorControlNormal">#FFFFFFFF</item>
         <!-- Applies to views in their activated state (i.e checked or switches) -->

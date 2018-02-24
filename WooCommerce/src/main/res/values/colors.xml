@@ -15,7 +15,7 @@
     <color name="wc_grey_lighter">#dfdfdf</color>
     <color name="wc_grey_lightest">#f7f7f7</color>
     <color name="wc_grey_dark">#a3a1a1</color>
-    <color name="wc_grey_darker">#787878</color>
+    <color name="wc_grey_darker">#929292</color>
     <color name="wc_grey_darkest">#2a2a2a</color>
 
     <!-- Primary Greens -->
@@ -39,8 +39,8 @@
         Default Widget Color Definitions
     -->
     <!-- Menu Text Colors -->
-    <color name="wc_menu_title_text">#FFFFFFFF</color>
-    <color name="wc_menu_action_text">#FFFFFFFF</color>
+    <color name="menu_title_text">#FFFFFFFF</color>
+    <color name="menu_action_text">#FFFFFFFF</color>
 
     <!-- Default List colors -->
     <color name="list_divider">@color/wc_grey</color>
@@ -59,11 +59,11 @@
         Bottom Navigation Bar
     -->
     <!-- Bar Background color -->
-    <color name="wc_navbar_bg">@color/colorPrimary</color>
+    <color name="bottomBar_bg">@color/wc_grey_lightest</color>
     <!-- Option icon/text color when NOT selected -->
-    <color name="wc_navbar_normal">#FFCCCCCC</color>
+    <color name="bottomBar_fg_normal">@color/wc_grey_darker</color>
     <!-- Option icon/text color when selected -->
-    <color name="wc_navbar_checked">#FFFFFFFF</color>
+    <color name="bottomBar_fg_checked">@color/colorPrimary</color>
     <!--
         Order: status tag background colors
     -->
