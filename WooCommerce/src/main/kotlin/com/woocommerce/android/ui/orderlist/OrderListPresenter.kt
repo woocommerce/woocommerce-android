@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orderlist
 
+import com.woocommerce.android.ui.order.OrderDetailFragment
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import com.woocommerce.android.ui.order.OrderDetailFragment
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
