@@ -13,8 +13,8 @@
     <!--
         Default List
     -->
-    <dimen name="list_item_text_size">@dimen/text_medium</dimen>
-    <dimen name="list_header_text_size">@dimen/text_large</dimen>
+    <dimen name="list_item_text_size">@dimen/text_large</dimen>
+    <dimen name="list_header_text_size">@dimen/text_medium</dimen>
 
     <dimen name="list_group_header_height">48dp</dimen>
     <dimen name="list_item_height">72dp</dimen>

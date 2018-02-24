@@ -9,7 +9,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/default_window_background</item>
+        <item name="android:windowBackground">@color/default_window_bg</item>
         <item name="colorButtonNormal">@color/light_gray</item>
         <!--
             Default colors: v21 only

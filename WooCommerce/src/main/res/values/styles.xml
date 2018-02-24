@@ -9,7 +9,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/default_window_background</item>
+        <item name="android:windowBackground">@color/default_window_bg</item>
         <item name="colorButtonNormal">@color/light_gray</item>
         <!--
             Default text
@@ -28,7 +28,13 @@
         Default Text Style
     -->
     <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
-        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:textColor">@color/default_text</item>
+    </style>
+    <!--
+        Default List Style
+    -->
+    <style name="Woo.List" parent="android:Widget.DeviceDefault.ListView">
+        <item name="android:listDivider">@drawable/list_divider</item>
     </style>
     <!--
         Default TagView Style
@@ -44,18 +50,13 @@
         <item name="android:paddingTop">@dimen/tag_padding_top</item>
         <item name="android:paddingBottom">@dimen/tag_padding_bottom</item>
         <!-- Custom View Attributes -->
-        <item name="com.woocommerce.android:tagTextColor">@color/tagView_fgColor</item>
+        <item name="com.woocommerce.android:tagTextColor">@color/tagView_text</item>
         <item name="com.woocommerce.android:tagTextSize">@dimen/tag_text_size</item>
-        <item name="com.woocommerce.android:tagColor">@color/tagView_bgColor</item>
+        <item name="com.woocommerce.android:tagColor">@color/tagView_bg</item>
+        <item name="com.woocommerce.android:tagBorderColor">@color/tagView_border_bg</item>
     </style>
     <!--
-        Default List Style
-    -->
-    <style name="Woo.List" parent="android:Widget.DeviceDefault.ListView">
-        <item name="android:listDivider">@drawable/list_divider</item>
-    </style>
-    <!--
-        Base List Child Styles
+        Default List Item Styles
     -->
     <style name="Woo.ListItem">
         <item name="android:paddingStart">@dimen/list_item_padding_start</item>
@@ -69,10 +70,21 @@
         <item name="android:textAppearance">@style/Woo.TextAppearance.ListItem</item>
     </style>
 
+    <style name="Woo.TextAppearance.ListItem">
+        <item name="android:textColor">@color/list_item_text</item>
+        <item name="android:textSize">@dimen/list_item_text_size</item>
+    </style>
+
+    <style name="Woo.TextAppearance.ListItem.Title">
+        <item name="android:textColor">@color/list_item_text_title</item>
+    </style>
+    <!--
+        Default List Item Header Styles
+    -->
     <style name="Woo.ListHeader" parent="android:Widget.DeviceDefault.TextView">
         <item name="android:paddingStart">@dimen/list_item_padding_start</item>
         <item name="android:paddingEnd">@dimen/list_item_padding_end</item>
-        <item name="android:background">@color/list_header_bg</item>
+        <item name="android:background">@drawable/list_header_bg</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/list_group_header_height</item>
         <item name="android:gravity">center_vertical</item>
@@ -82,27 +94,26 @@
     <style name="Woo.TextAppearance.ListHeader">
         <item name="android:textColor">@color/List_header_text</item>
         <item name="android:textSize">@dimen/list_header_text_size</item>
-    </style>
-
-    <style name="Woo.TextAppearance.ListItem">
-        <item name="android:textColor">@color/list_item_text</item>
-        <item name="android:textSize">@dimen/list_item_text_size</item>
+        <item name="android:textStyle">bold</item>
     </style>
     <!--
         Default FlowLayout Style
     -->
     <style name="Woo.FlowLayout">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
         <item name="com.woocommerce.android:horizontalSpacing">4dp</item>
         <item name="com.woocommerce.android:verticalSpacing">4dp</item>
     </style>
     <!--
-        OrderList Styles
+        Order: List Style
     -->
     <style name="Woo.OrderList.Item" parent="Woo.ListItem"/>
     <style name="Woo.OrderList.Header" parent="Woo.ListHeader"/>
     <style name="Woo.OrderList.TextAppearance.Header" parent="Woo.TextAppearance.ListHeader"/>
     <style name="Woo.OrderList.TextAppearance.ListItem" parent="Woo.TextAppearance.ListItem"/>
-    <style name="Woo.OrderList.TextAppearance.ListItem.Bold">
+    <style name="Woo.OrderList.TextAppearance.ListItem.Title" parent="Woo.TextAppearance.ListItem.Title"/>
+    <style name="Woo.OrderList.TextAppearance.ListItem.Title.Bold">
         <item name="android:textStyle">bold</item>
     </style>
 </resources>

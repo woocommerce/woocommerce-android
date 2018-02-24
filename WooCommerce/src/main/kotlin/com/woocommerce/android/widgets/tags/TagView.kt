@@ -1,8 +1,8 @@
 package com.woocommerce.android.widgets.tags
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.TextView
@@ -17,49 +17,73 @@ import com.woocommerce.android.util.getDensityPixel
  * @attr ref com.woocommerce.android.R.styleable#tagTextColor
  * @attr ref com.woocommerce.android.R.styleable#tagTextSize
  * @attr ref com.woocommerce.android.R.styleable#tagColor
+ * @attr ref com.woocommerce.android.R.styleable#tagBorderColor
  */
 class TagView @JvmOverloads constructor(ctx: Context,
                                         attrs: AttributeSet? = null) : TextView(ctx, attrs, R.attr.tagViewStyle) {
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, R.attr.tagViewStyle, 0)
-        try {
-            val labelStr = a.getString(R.styleable.TagView_tagText)
-            labelStr?.let { text = labelStr }
+        if (attrs != null) {
+            val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, R.attr.tagViewStyle, 0)
+            val config = TagConfig(context)
+            try {
+                config.tagText = a.getString(R.styleable.TagView_tagText).orEmpty()
 
-            val textColor = a.getColor(R.styleable.TagView_tagTextColor, Color.GRAY)
-            setTextColor(textColor)
+                var textColor = a.getColor(R.styleable.TagView_tagTextColor, 0)
+                if (textColor == 0) {
+                    val textColorResId = a.getResourceId(R.styleable.TagView_tagTextColor, R.color.tagView_text)
+                    textColor = ContextCompat.getColor(context, textColorResId)
+                }
+                config.fgColor = textColor
 
-            val textSize = a.getDimensionPixelSize(R.styleable.TagView_tagTextSize, 0)
-            if (textSize > 0) {
-                setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
+                val textSize = a.getDimensionPixelSize(R.styleable.TagView_tagTextSize, 0)
+                if (textSize == 0) {
+                    config.textSize = context.resources.getDimension(R.dimen.tag_text_size)
+                } else {
+                    config.textSize = textSize.toFloat()
+                }
+
+                var bgColor = a.getColor(R.styleable.TagView_tagColor, 0)
+                if (bgColor == 0) {
+                    val bgColorResId = a.getResourceId(R.styleable.TagView_tagColor, R.color.tagView_bg)
+                    bgColor = ContextCompat.getColor(context, bgColorResId)
+                }
+                config.bgColor = bgColor
+
+                var borderColor = a.getColor(R.styleable.TagView_tagBorderColor, 0)
+                if (borderColor == 0) {
+                    val borderColorResId =
+                            a.getResourceId(R.styleable.TagView_tagBorderColor, R.color.tagView_border_bg)
+                    borderColor = ContextCompat.getColor(context, borderColorResId)
+                }
+                config.borderColor = borderColor
+
+                initTag(config)
+            } finally {
+                a.recycle()
             }
-
-            val bgColor = a.getColor(R.styleable.TagView_tagColor, Color.LTGRAY)
-            initBackground(bgColor)
-        } finally {
-            a.recycle()
         }
     }
 
     var tag: ITag? = null
     set(v) {
         field = v
-        text = tag?.getFormattedLabel(context).orEmpty()
-
         tag?.let {
-            setTextColor(tag!!.fgColor)
-            initBackground(tag!!.bgColor)
+            initTag(tag!!.getTagConfiguration(context))
         }
     }
 
     /**
-     * Should be called anytime the tag changes. Sets the background color and
-     * corner radius of the tag view.
+     * Should be called anytime the tag changes. Sets the background color, border
+     * color and corner radius of the tag view.
      */
-    private fun initBackground(baseColor: Int) {
+    private fun initTag(config: TagConfig) {
+        text = config.tagText
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, config.textSize)
+        setTextColor(config.fgColor)
         val gd = GradientDrawable()
-        gd.setColor(baseColor)
+        gd.setColor(config.bgColor)
         gd.cornerRadius = getDensityPixel(context, 2).toFloat()
+            gd.setStroke(3, config.borderColor)
         background = gd
     }
 }

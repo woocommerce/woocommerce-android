@@ -10,14 +10,14 @@
         android:id="@+id/orderNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem"
+        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="#51"/>
 
     <TextView
         android:id="@+id/orderName"
-        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Bold"
+        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/list_item_padding_intra_h"
@@ -29,7 +29,7 @@
 
     <TextView
         android:id="@+id/orderTotal"
-        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem"
+        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,6 +42,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/orderName"/>
+        app:layout_constraintTop_toBottomOf="@+id/orderName"
+        style="@style/Woo.FlowLayout"/>
 
 </android.support.constraint.ConstraintLayout>
