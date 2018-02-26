@@ -3,8 +3,8 @@ package com.woocommerce.android.di
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
-import com.woocommerce.android.ui.order.OrderDetailModule
-import com.woocommerce.android.ui.orderlist.OrderListModule
+import com.woocommerce.android.ui.orders.OrderDetailModule
+import com.woocommerce.android.ui.orders.OrderListModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule

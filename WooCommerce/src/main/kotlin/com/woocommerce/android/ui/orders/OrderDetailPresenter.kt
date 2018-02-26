@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.order
+package com.woocommerce.android.ui.orders
 
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject

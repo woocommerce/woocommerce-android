@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.order
+package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.text.format.DateFormat
@@ -6,8 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.model.TimeGroup
-import com.woocommerce.android.ui.orderlist.OrderStatusTag
+import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_detail_order_status.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel

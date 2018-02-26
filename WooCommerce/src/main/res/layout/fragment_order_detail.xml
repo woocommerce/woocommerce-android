@@ -5,20 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_window_background"
-    tools:context="com.woocommerce.android.ui.order.OrderDetailFragment">
+    tools:context="com.woocommerce.android.ui.orders.OrderDetailFragment">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.woocommerce.android.ui.order.OrderDetailOrderStatusView
+        <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
             android:id="@+id/orderDetail_orderStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/Woo.Card"/>
 
-        <com.woocommerce.android.ui.order.OrderDetailCustomerInfoView
+        <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
             android:id="@+id/orderDetail_customerInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

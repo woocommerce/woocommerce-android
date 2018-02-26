@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orderlist
+package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.di.FragmentScope
 import dagger.Binds

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.order
+package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle

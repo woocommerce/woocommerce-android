@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orderlist
+package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -6,7 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.model.TimeGroup
+import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.widgets.FlowLayout
 import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter

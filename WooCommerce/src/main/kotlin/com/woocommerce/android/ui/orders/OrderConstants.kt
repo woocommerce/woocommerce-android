@@ -1,6 +1,6 @@
 @file:JvmName("OrderConstants")
 
-package com.woocommerce.android.ui.orderlist
+package com.woocommerce.android.ui.orders
 
 /**
  * Order status base values

@@ -1,6 +1,5 @@
-package com.woocommerce.android.ui.orderlist
+package com.woocommerce.android.ui.orders
 
-import com.woocommerce.android.ui.order.OrderDetailFragment
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
