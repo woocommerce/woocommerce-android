@@ -32,6 +32,10 @@
     <dimen name="card_elevation">4dp</dimen>
 
     <dimen name="card_label_padding_intra_h">4dp</dimen>
+
+    <dimen name="card_title_text_size">@dimen/text_large</dimen>
+    <dimen name="card_normal_text_size">@dimen/text_medium</dimen>
+    <dimen name="card_label_text_size">@dimen/text_small</dimen>
     <!--
         Default List
     -->

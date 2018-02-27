@@ -69,6 +69,8 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
+    implementation project(':libaddressinput_common')
+
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"

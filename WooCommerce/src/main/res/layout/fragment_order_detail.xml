@@ -7,22 +7,27 @@
     android:background="@color/default_window_background"
     tools:context="com.woocommerce.android.ui.orders.OrderDetailFragment">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
-            android:id="@+id/orderDetail_orderStatus"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
+            android:layout_height="wrap_content">
 
-        <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
-            android:id="@+id/orderDetail_customerInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
-    </LinearLayout>
+            <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
+                android:id="@+id/orderDetail_orderStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Woo.Card"/>
+
+            <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
+                android:id="@+id/orderDetail_customerInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Woo.Card"/>
+        </LinearLayout>
+    </ScrollView>
 
 </android.support.v4.widget.SwipeRefreshLayout>

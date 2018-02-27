@@ -1,2 +1,2 @@
-include ':WooCommerce'
+include ':WooCommerce', ':libaddressinput_common'
 include ':libs:login:WordPressLoginFlow'

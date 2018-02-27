@@ -120,6 +120,23 @@
         <item name="android:textAlignment">viewStart</item>
         <item name="android:drawableEnd">@drawable/card_expander_selector</item>
     </style>
+
+    <style name="Woo.TextAppearance.Card">
+        <item name="android:textColor">@color/card_normal_text</item>
+        <item name="android:textSize">@dimen/card_normal_text_size</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Card.Title">
+        <item name="android:textColor">@color/card_title_text</item>
+        <item name="android:textSize">@dimen/card_title_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Card.Label">
+        <item name="android:textColor">@color/card_label_text</item>
+        <item name="android:textSize">@dimen/card_label_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
     <!--
         Default List Style
     -->
@@ -166,7 +183,6 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/List_header_text</item>
         <item name="android:textSize">@dimen/list_header_text_size</item>
-        <item name="android:textStyle">bold</item>
     </style>
     <!--
         Default FlowLayout Style
@@ -191,7 +207,7 @@
     <!--
         OrderDetail Styles
     -->
-    <style name="Woo.OrderDetail.TextAppearance.Title" parent="Woo.TextAppearance.Title"/>
-    <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance"/>
-    <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
+    <style name="Woo.OrderDetail.TextAppearance.Title" parent="Woo.TextAppearance.Card.Title"/>
+    <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance.Card"/>
+    <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Card.Label"/>
 </resources>

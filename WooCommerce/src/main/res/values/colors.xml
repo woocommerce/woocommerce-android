@@ -50,6 +50,9 @@
 
     <!-- Default Card colors -->
     <color name="card_bgColor">@color/white</color>
+    <color name="card_title_text">@color/default_text_title</color>
+    <color name="card_label_text">@color/default_text_label_color</color>
+    <color name="card_normal_text">@color/default_text_color</color>
 
     <!-- Tag View default colors -->
     <color name="tagView_bgColor">#d2d2d2</color>
