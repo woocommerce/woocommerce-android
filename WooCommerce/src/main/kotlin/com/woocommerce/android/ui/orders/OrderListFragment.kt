@@ -89,6 +89,7 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
     }
 
     override fun showOrders(orders: List<WCOrderModel>) {
+        ordersList.scrollToPosition(0)
         ordersAdapter.setOrders(orders)
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
@@ -102,6 +103,10 @@ class OrderListFragment : ParentFragment(), OrderListContract.View {
 
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
+    }
+
+    override fun refreshFragmentState() {
+        presenter.loadOrders()
     }
 
     override fun getSelectedSite() = (activity as? MainActivity)?.getSite()

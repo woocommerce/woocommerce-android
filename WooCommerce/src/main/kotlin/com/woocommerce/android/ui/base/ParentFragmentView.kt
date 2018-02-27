@@ -32,4 +32,9 @@ interface ParentFragmentView : FragmentManager.OnBackStackChangedListener {
      * visible.
      */
     fun getFragmentTitle(): String
+
+    /**
+     * Refresh this top-level fragment data and reset its state.
+     */
+    fun refreshFragmentState()
 }

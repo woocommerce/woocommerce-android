@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
+import com.woocommerce.android.ui.base.ParentFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -28,7 +29,8 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
-        BottomNavigationView.OnNavigationItemSelectedListener {
+        BottomNavigationView.OnNavigationItemSelectedListener,
+        BottomNavigationView.OnNavigationItemReselectedListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
 
@@ -180,12 +182,20 @@ class MainActivity : AppCompatActivity(),
         bottom_nav.disableShiftMode()
         bottom_nav.active(activeNavPosition.position)
         bottom_nav.setOnNavigationItemSelectedListener(this)
+        bottom_nav.setOnNavigationItemReselectedListener(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val navPosition = findNavigationPositionById(item.itemId)
         return switchFragment(navPosition)
     }
+
+    override fun onNavigationItemReselected(item: MenuItem) {
+        val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
+        clearFragmentBackStack(activeFragment)
+        (activeFragment as ParentFragment).refreshFragmentState()
+    }
+
     // endregion
 
     // region Fragment Processing

@@ -22,4 +22,8 @@ class SettingsFragment : ParentFragment() {
     override fun getFragmentTitle(): String {
         return getString(R.string.settings)
     }
+
+    override fun refreshFragmentState() {
+        // todo reset any scrolling
+    }
 }

@@ -22,4 +22,8 @@ class DashboardFragment : ParentFragment() {
     override fun getFragmentTitle(): String {
         return getString(R.string.dashboard)
     }
+
+    override fun refreshFragmentState() {
+        // todo reset scrolling
+    }
 }
