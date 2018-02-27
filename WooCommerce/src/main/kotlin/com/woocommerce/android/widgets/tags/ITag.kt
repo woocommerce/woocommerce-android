@@ -14,10 +14,13 @@ abstract class ITag(val rawText: String,
     abstract fun getFormattedLabel(context: Context): String
 
     override fun equals(other: Any?): Boolean {
-        return if (other !is ITag) false
-        else other.rawText == rawText
-                && other.fgColor == fgColor
-                && other.bgColor == bgColor
+        return if (other !is ITag) {
+            false
+        } else {
+            other.rawText == rawText
+                    && other.fgColor == fgColor
+                    && other.bgColor == bgColor
+        }
     }
 
     override fun compareTo(other: ITag): Int {

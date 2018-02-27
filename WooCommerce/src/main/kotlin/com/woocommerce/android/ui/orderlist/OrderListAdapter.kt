@@ -18,6 +18,9 @@ import org.wordpress.android.util.DateTimeUtils
 import java.util.Currency
 import java.util.Date
 
+import kotlinx.android.synthetic.main.order_list_header.view.*
+import kotlinx.android.synthetic.main.order_list_item.view.*
+
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
@@ -114,7 +117,7 @@ class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
 
             // clear existing tags and add new ones
             itemHolder.orderTagList.removeAllViews()
-            order.status.split(",").sorted().forEach { i -> processTagView(ctx, i, itemHolder) }
+            processTagView(ctx, order.status, itemHolder)
         }
 
         override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
@@ -147,14 +150,14 @@ class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
     }
 
     private class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var orderNum: TextView = view.findViewById(R.id.orderNum)
-        var orderName: TextView = view.findViewById(R.id.orderName)
-        var orderTotal: TextView = view.findViewById(R.id.orderTotal)
-        var orderTagList: FlowLayout = view.findViewById(R.id.orderTags)
+        var orderNum: TextView = view.orderNum
+        var orderName: TextView = view.orderName
+        var orderTotal: TextView = view.orderTotal
+        var orderTagList: FlowLayout = view.orderTags
         var rootView = view
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title = view.findViewById<TextView>(R.id.orderListHeader)!!
+        val title: TextView = view.orderListHeader
     }
 }
