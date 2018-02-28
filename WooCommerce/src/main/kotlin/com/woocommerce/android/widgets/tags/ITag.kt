@@ -16,8 +16,6 @@ abstract class ITag(val rawText: String) : Comparable<ITag> {
             false
         } else {
             other.rawText == rawText
-                    && other.fgColor == fgColor
-                    && other.bgColor == bgColor
         }
     }
 
