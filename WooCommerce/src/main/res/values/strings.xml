@@ -21,7 +21,7 @@
 
     <!-- Base Order Status Labels -->
     <string name="orderstatus_processing">Processing</string>
-    <string name="orderstatus_pending">Payment pending</string>
+    <string name="orderstatus_pending">Pending Payment</string>
     <string name="orderstatus_failed">Failed</string>
     <string name="orderstatus_completed">Completed</string>
     <string name="orderstatus_hold">On-Hold</string>

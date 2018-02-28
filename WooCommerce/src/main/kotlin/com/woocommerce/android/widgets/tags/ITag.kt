@@ -12,8 +12,11 @@ abstract class ITag(val rawText: String) : Comparable<ITag> {
     abstract fun getTagConfiguration(context: Context): TagConfig
 
     override fun equals(other: Any?): Boolean {
-        return if (other !is ITag) false
-        else other.rawText == rawText
+        return if (other !is ITag) {
+            false
+        } else {
+            other.rawText == rawText
+        }
     }
 
     override fun compareTo(other: ITag): Int {
