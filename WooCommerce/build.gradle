@@ -45,6 +45,11 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
+    // Support library
+    implementation "com.android.support:support-v4:$supportLibraryVersion"
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    implementation "com.android.support:multidex:$multidexVersion"
     implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
 
     implementation('org.wordpress:utils:1.19.0') {

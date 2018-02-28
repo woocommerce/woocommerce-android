@@ -25,4 +25,12 @@
     <color name="login_footnote_text_color">@color/wc_dark_grey</color>
 
     <color name="login_notification_accent_color">@color/color_primary</color>
+
+    <!-- Tag View default colors -->
+    <color name="tagView_bgColor">#d2d2d2</color>
+    <color name="tagView_fgColor">#a7a7a7</color>
+
+    <!-- Orders List -->
+    <color name="orderslist_itemColor">#ffffff</color>
+    <color name="orderslist_bgColor">#dcdbdb</color>
 </resources>

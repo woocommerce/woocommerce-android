@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/orderRefreshLayout"
+    android:background="@color/orderslist_bgColor">
+
+    <RelativeLayout
+        android:id="@+id/ordersContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true">
+
+        <!-- Orders List View -->
+        <LinearLayout
+            android:id="@+id/ordersView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/ordersList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- No Orders View -->
+        <LinearLayout
+            android:id="@+id/noOrdersView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/orderlist_no_orders"/>
+        </LinearLayout>
+    </RelativeLayout>
+</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
