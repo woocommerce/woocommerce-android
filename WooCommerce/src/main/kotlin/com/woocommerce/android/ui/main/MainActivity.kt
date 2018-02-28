@@ -104,7 +104,9 @@ class MainActivity : AppCompatActivity(),
      */
     override fun onBackPressed() {
         val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
-        fragment.childFragmentManager.popBackStack()
+        if (!fragment.childFragmentManager.popBackStackImmediate()) {
+            super.onBackPressed()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
