@@ -119,6 +119,7 @@
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:drawableEnd">@drawable/card_expander_selector</item>
+        <item name="android:paddingEnd">4dp</item>
     </style>
 
     <style name="Woo.TextAppearance.Card">

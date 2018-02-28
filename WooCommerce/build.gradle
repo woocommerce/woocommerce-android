@@ -43,6 +43,8 @@ android {
 }
 
 dependencies {
+    implementation project(':libaddressinput_common')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
     // Support library
@@ -68,8 +70,6 @@ dependencies {
         exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
         exclude group: "org.wordpress", module: "utils"
     }
-
-    implementation project(':libaddressinput_common')
 
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"

@@ -1,12 +1,15 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.woocommerce.android.R
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
@@ -102,7 +105,31 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             orderDetail_orderStatus.initView(order)
 
             // Populate the Customer Information Card
-            orderDetail_customerInfo.initView(order)
+            orderDetail_customerInfo.initView(order, this)
         }
     }
+
+    // region OrderActionListener
+    override fun dialPhone(phone: String) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:" + phone)
+        startActivity(intent)
+    }
+
+    override fun createEmail(emailAddr: String) {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:" + emailAddr) // only email apps should handle this
+        if (intent.resolveActivity(context.packageManager) != null) {
+            startActivity(intent)
+        }
+    }
+
+    override fun sendSms(phone: String) {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("smsto:" + phone)
+        if (intent.resolveActivity(context.packageManager) != null) {
+            startActivity(intent)
+        }
+    }
+    // endregion
 }

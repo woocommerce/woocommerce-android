@@ -1,51 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/customerInfo_label"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/customer_information"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title"/>
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
         android:id="@+id/customerInfo_custName"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
-        tools:text="Michelle Frederickson"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_label"
+        tools:text="Michelle Frederickson"/>
 
     <FrameLayout
         android:id="@+id/customerInfo_divider"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:layout_marginBottom="@dimen/card_item_padding_intra_h"
         android:background="@color/list_divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_custName"
         app:srcCompat="@drawable/list_divider"/>
 
     <TextView
         android:id="@+id/customerInfo_shippingLabel"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_label_padding_intra_h"
         android:text="@string/order_shipping_details"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"/>
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider"/>
 
     <TextView
         android:id="@+id/customerInfo_shippingAddr"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_shippingLabel"
         tools:text="123 Sesame Pl\nWarner, FL"/>
 
     <TextView
@@ -54,65 +64,115 @@
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_shippingAddr"
         tools:text="United States"/>
 
     <TextView
         android:id="@+id/customerInfo_emailAddrLabel"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_label_padding_intra_h"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
         android:text="@string/email_address"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"/>
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_shippingCountry"/>
 
     <TextView
         android:id="@+id/customerInfo_emailAddr"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_section_padding_h"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        tools:text="email@example.com"
-        android:drawableEnd="@drawable/ic_email_compat"/>
+        app:layout_constraintEnd_toStartOf="@+id/customerInfo_emailBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_emailAddrLabel"
+        tools:text="email@example.com"/>
 
-    <!-- Collapsed View -->
-    <LinearLayout
-        android:id="@+id/customerInfo_moreLayout"
+    <ImageButton
+        android:id="@+id/customerInfo_emailBtn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:clickable="true"
+        android:focusable="true"
+        style="@android:style/Widget.ActionButton"
+        android:contentDescription="@string/order_email_content_desc"
+        android:scaleType="center"
+        android:src="@drawable/ic_email_compat"
+        app:layout_constraintBottom_toBottomOf="@+id/customerInfo_emailAddr"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/customerInfo_emailAddr"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/customerInfo_morePanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
         android:paddingTop="@dimen/card_item_padding_intra_h"
-        android:paddingBottom="@dimen/card_item_padding_intra_h">
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_emailAddr"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/customerInfo_phoneLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/card_label_padding_intra_h"
             android:text="@string/phone"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"/>
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/customerInfo_phone"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/card_item_padding_intra_h"
+            android:paddingBottom="@dimen/card_section_padding_h"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="123-456-7890"
-            android:drawableEnd="@drawable/ic_phone_compat"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/customerInfo_phoneLabel"
+            tools:text="123-456-7890"/>
+
+        <ImageButton
+            android:id="@+id/customerInfo_hangoutsBtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_message_compat"
+            style="@android:style/Widget.ActionButton"
+            android:contentDescription="@string/order_customer_hangout_desc"
+            app:layout_constraintEnd_toStartOf="@+id/customerInfo_phoneBtn"
+            app:layout_constraintBottom_toBottomOf="@+id/customerInfo_phone"/>
+
+        <ImageButton
+            android:id="@+id/customerInfo_phoneBtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="center"
+            style="@android:style/Widget.ActionButton"
+            android:src="@drawable/ic_phone_compat"
+            android:contentDescription="@string/order_call_customer_desc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/customerInfo_phone"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/customerInfo_billingLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/card_item_padding_intra_h"
             android:paddingBottom="@dimen/card_label_padding_intra_h"
+            android:paddingTop="@dimen/card_item_padding_intra_h"
             android:text="@string/order_billing_details"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"/>
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/customerInfo_phone"/>
 
         <TextView
             android:id="@+id/customerInfo_billingAddr"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
             tools:text="123 Sesame Pl\nWarner, FL 12345-6789"/>
 
         <TextView
@@ -120,13 +180,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddr"
             tools:text="United States"/>
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
     <!-- VIEW MORE Button -->
     <ToggleButton
         android:id="@+id/customerInfo_viewMore"
-        android:layout_width="match_parent"
+        style="@style/Woo.CardExtenderButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="@style/Woo.CardExtenderButton"/>
-</LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_morePanel"/>
+</merge>

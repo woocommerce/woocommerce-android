@@ -9,7 +9,7 @@ interface OrderDetailContract {
         fun loadOrderDetail(orderId: Int)
     }
 
-    interface View : BaseView<Presenter> {
+    interface View : BaseView<Presenter>, OrderActionListener {
         fun setLoadingIndicator(active: Boolean)
         fun showOrderDetail(order: WCOrderModel?)
     }

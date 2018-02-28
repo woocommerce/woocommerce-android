@@ -44,6 +44,9 @@
     <string name="order_orderstatus_created">Created %1$s at %2$s</string>
     <string name="order_shipping_details">Shipping Details</string>
     <string name="order_billing_details">Billing Details</string>
+    <string name="order_email_content_desc">email customer</string>
+    <string name="order_call_customer_desc">call customer</string>
+    <string name="order_customer_hangout_desc">send customer hangout message</string>
     <!--
         Order Status Labels
     -->
