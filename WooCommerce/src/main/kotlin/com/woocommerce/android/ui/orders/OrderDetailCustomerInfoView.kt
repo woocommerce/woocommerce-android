@@ -2,12 +2,8 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
-import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
-import com.google.i18n.addressinput.common.AddressData
-import com.google.i18n.addressinput.common.FormOptions
-import com.google.i18n.addressinput.common.FormatInterpreter
 import com.woocommerce.android.R
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.PhoneUtils
@@ -23,36 +19,20 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
     fun initView(order: WCOrderModel, listener: OrderActionListener) {
         customerInfo_custName.text = order.billingFirstName + " " + order.billingLastName
 
+        val billingAddr = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
+        val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
+
         // display billing address info
-        val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
-        val billingAddressData: AddressData = AddressData.builder()
-                .setAddressLines(mutableListOf(order.billingAddress1, order.billingAddress2))
-                .setLocality(order.billingCity)
-                .setAdminArea(order.billingState)
-                .setPostalCode(order.billingPostcode)
-                .setCountry(order.billingCountry)
-                .setOrganization(order.billingCompany)
-                .build()
-        val billingAddressFrags = formatInterpreter.getEnvelopeAddress(billingAddressData)
-        customerInfo_billingAddr.text = TextUtils.join(System.getProperty("line.separator"), billingAddressFrags)
-        customerInfo_billingCountry.text = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
+        customerInfo_billingAddr.text = billingAddr
+        customerInfo_billingCountry.text = billingCountry
 
         // display shipping address info
         if (order.hasSeparateShippingDetails()) {
-            val shippingAddressData: AddressData = AddressData.builder()
-                    .setAddressLines(mutableListOf(order.shippingAddress1, order.shippingAddress2))
-                    .setLocality(order.shippingCity)
-                    .setAdminArea(order.shippingState)
-                    .setPostalCode(order.shippingPostcode)
-                    .setCountry(order.shippingCountry)
-                    .setOrganization(order.shippingCompany)
-                    .build()
-            val addressFrags = formatInterpreter.getEnvelopeAddress(shippingAddressData)
-            customerInfo_shippingAddr.text = TextUtils.join(System.getProperty("line.separator"), addressFrags)
+            customerInfo_shippingAddr.text = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
             customerInfo_shippingCountry.text = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
         } else {
-            customerInfo_shippingAddr.text = TextUtils.join(System.getProperty("line.separator"), billingAddressFrags)
-            customerInfo_shippingCountry.text = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
+            customerInfo_shippingAddr.text = billingAddr
+            customerInfo_shippingCountry.text = billingCountry
         }
 
         // display email address info
