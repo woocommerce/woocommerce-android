@@ -9,7 +9,8 @@
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:paddingStart="8dp"
-    android:paddingEnd="8dp">
+    android:paddingEnd="8dp"
+    android:background="@color/orderslist_itemColor">
 
     <TextView
         android:id="@+id/orderNum"

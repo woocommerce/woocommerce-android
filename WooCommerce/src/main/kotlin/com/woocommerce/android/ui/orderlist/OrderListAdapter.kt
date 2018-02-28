@@ -1,25 +1,40 @@
 package com.woocommerce.android.ui.orderlist
 
+import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.model.TimeGroup
+import com.woocommerce.android.widgets.FlowLayout
 import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.StatelessSection
+import com.woocommerce.android.widgets.tags.TagView
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Currency
 import java.util.Date
 
+import kotlinx.android.synthetic.main.order_list_header.view.*
+import kotlinx.android.synthetic.main.order_list_item.view.*
+
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter : SectionedRecyclerViewAdapter() {
+class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
     companion object {
         val TAG: String = OrderListAdapter::class.java.simpleName
+    }
+
+    private val fgColorDefault: Int by lazy {
+        ContextCompat.getColor(context, R.color.tagView_fgColor)
+    }
+
+    private val bgColorDefault: Int by lazy {
+        ContextCompat.getColor(context, R.color.tagView_bgColor)
     }
 
     fun setOrders(orders: List<WCOrderModel>) {
@@ -72,7 +87,7 @@ class OrderListAdapter : SectionedRecyclerViewAdapter() {
      * Custom class represents a single [TimeGroup] and it's assigned list of [WCOrderModel]. Responsible
      * for providing and populating the header and item view holders.
      */
-    private class OrderListSection(val title: String, val list: List<WCOrderModel>) : StatelessSection(
+    private inner class OrderListSection(val title: String, val list: List<WCOrderModel>) : StatelessSection(
             SectionParameters.Builder(R.layout.order_list_item).headerResourceId(R.layout.order_list_header).build()
     ) {
         override fun getContentItemsTotal() = list.size
@@ -93,11 +108,16 @@ class OrderListAdapter : SectionedRecyclerViewAdapter() {
             }
 
             val resources = itemHolder.rootView.context.applicationContext.resources
+            val ctx = itemHolder.rootView.context
             itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.remoteOrderId)
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
             itemHolder.orderTotal.text = resources.getString(
                     R.string.orderlist_item_order_total, currencySymbol, order.total)
+
+            // clear existing tags and add new ones
+            itemHolder.orderTagList.removeAllViews()
+            processTagView(ctx, order.status, itemHolder)
         }
 
         override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
@@ -115,16 +135,29 @@ class OrderListAdapter : SectionedRecyclerViewAdapter() {
                 TimeGroup.GROUP_TODAY -> headerViewHolder.title.setText(R.string.date_timeframe_today)
             }
         }
+
+        /**
+         * Converts the order status label into an [OrderStatusTag], creates the associated [TagView],
+         * and add it to the holder. No need to trim the label text since this is done in [OrderStatusTag]
+         */
+        private fun processTagView(ctx: Context, text: String, holder: ItemViewHolder) {
+            val orderTag = OrderStatusTag(
+                    text, this@OrderListAdapter.bgColorDefault, this@OrderListAdapter.fgColorDefault)
+            val tagView = TagView(ctx)
+            tagView.tag = orderTag
+            holder.orderTagList.addView(tagView)
+        }
     }
 
     private class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var orderNum: TextView = view.findViewById(R.id.orderNum)
-        var orderName: TextView = view.findViewById(R.id.orderName)
-        var orderTotal: TextView = view.findViewById(R.id.orderTotal)
+        var orderNum: TextView = view.orderNum
+        var orderName: TextView = view.orderName
+        var orderTotal: TextView = view.orderTotal
+        var orderTagList: FlowLayout = view.orderTags
         var rootView = view
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title = view.findViewById<TextView>(R.id.orderListHeader)!!
+        val title: TextView = view.orderListHeader
     }
 }
