@@ -43,7 +43,7 @@ android {
 }
 
 dependencies {
-    implementation project(':libaddressinput_common')
+    implementation 'org.wordpress:libaddressinput.common:0.0.1'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
