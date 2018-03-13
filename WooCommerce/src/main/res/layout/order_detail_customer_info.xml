@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/customer_information"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title.Bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -44,7 +44,7 @@
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_label_padding_intra_h"
-        android:text="@string/order_shipping_details"
+        android:text="@string/orderdetail_shipping_details"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider"/>
@@ -97,7 +97,7 @@
         android:clickable="true"
         android:focusable="true"
         style="@android:style/Widget.ActionButton"
-        android:contentDescription="@string/order_email_content_desc"
+        android:contentDescription="@string/orderdetail_email_contentdesc"
         android:scaleType="center"
         android:src="@drawable/ic_email_compat"
         app:layout_constraintBottom_toBottomOf="@+id/customerInfo_emailAddr"
@@ -140,7 +140,7 @@
             android:scaleType="center"
             android:src="@drawable/ic_message_compat"
             style="@android:style/Widget.ActionButton"
-            android:contentDescription="@string/order_customer_hangout_desc"
+            android:contentDescription="@string/orderdetail_sms_contentdesc"
             app:layout_constraintEnd_toStartOf="@+id/customerInfo_phoneBtn"
             app:layout_constraintBottom_toBottomOf="@+id/customerInfo_phone"/>
 
@@ -151,7 +151,7 @@
             android:scaleType="center"
             style="@android:style/Widget.ActionButton"
             android:src="@drawable/ic_phone_compat"
-            android:contentDescription="@string/order_call_customer_desc"
+            android:contentDescription="@string/orderdetail_call_contentdesc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@+id/customerInfo_phone"/>
 
@@ -161,7 +161,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/card_label_padding_intra_h"
             android:paddingTop="@dimen/card_item_padding_intra_h"
-            android:text="@string/order_billing_details"
+            android:text="@string/orderdetail_billing_details"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/customerInfo_phone"/>

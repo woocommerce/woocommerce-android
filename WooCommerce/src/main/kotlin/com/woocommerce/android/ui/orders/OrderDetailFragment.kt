@@ -53,7 +53,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         }
 
         // Set the activity title
-        activity.title = getString(R.string.order_orderstatus_ordernum, remoteOrderId)
+        activity.title = getString(R.string.orderdetail_orderstatus_ordernum, remoteOrderId)
 
         val view = inflater?.inflate(R.layout.fragment_order_detail, container, false)
         view?.let {
@@ -102,6 +102,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         order?.let {
             // Populate the Order Status Card
             orderDetail_orderStatus.initView(order)
+
+            // Populate the Order Product List Card
+            orderDetail_productList.initView(order)
 
             // Populate the Customer Information Card
             orderDetail_customerInfo.initView(order, this)

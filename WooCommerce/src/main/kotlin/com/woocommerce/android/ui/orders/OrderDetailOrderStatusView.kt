@@ -21,7 +21,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
 
     fun initView(orderModel: WCOrderModel) {
         orderStatus_orderNum.text = context.getString(
-                R.string.order_orderstatus_ordernum, orderModel.remoteOrderId)
+                R.string.orderdetail_orderstatus_ordernum, orderModel.remoteOrderId)
         orderStatus_created.text = getFriendlyDateString(orderModel.dateCreated)
         orderStatus_orderTags.removeAllViews()
         orderModel.status.split(",").sorted().forEach { i -> orderStatus_orderTags.addView(getTagView(i)) }
@@ -49,6 +49,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
             }
         }
         val timeString = DateFormat.getTimeFormat(context).format(date.time)
-        return context.getString(R.string.order_orderstatus_created, dateLabel, timeString)
+        return context.getString(R.string.orderdetail_orderstatus_created, dateLabel, timeString)
     }
 }

@@ -22,6 +22,12 @@
                 android:layout_height="wrap_content"
                 style="@style/Woo.Card"/>
 
+            <com.woocommerce.android.ui.orders.OrderDetailProductListView
+                android:id="@+id/orderDetail_productList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Woo.Card"/>
+
             <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
                 android:id="@+id/orderDetail_customerInfo"
                 android:layout_width="match_parent"

@@ -130,6 +130,9 @@
     <style name="Woo.TextAppearance.Card.Title">
         <item name="android:textColor">@color/card_title_text</item>
         <item name="android:textSize">@dimen/card_title_text_size</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Card.Title.Bold">
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -209,6 +212,7 @@
         OrderDetail Styles
     -->
     <style name="Woo.OrderDetail.TextAppearance.Title" parent="Woo.TextAppearance.Card.Title"/>
+    <style name="Woo.OrderDetail.TextAppearance.Title.Bold" parent="Woo.TextAppearance.Card.Title.Bold"/>
     <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance.Card"/>
     <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Card.Label"/>
 </resources>
