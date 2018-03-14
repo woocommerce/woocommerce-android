@@ -45,7 +45,7 @@
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_label_padding_intra_h"
         android:text="@string/orderdetail_shipping_details"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label.Bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider"/>
 
@@ -75,7 +75,7 @@
         android:paddingBottom="@dimen/card_label_padding_intra_h"
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:text="@string/email_address"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label.Bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/customerInfo_shippingCountry"/>
 
@@ -119,7 +119,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/card_label_padding_intra_h"
             android:text="@string/phone"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label.Bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -162,7 +162,7 @@
             android:paddingBottom="@dimen/card_label_padding_intra_h"
             android:paddingTop="@dimen/card_item_padding_intra_h"
             android:text="@string/orderdetail_billing_details"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label.Bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/customerInfo_phone"/>
 
