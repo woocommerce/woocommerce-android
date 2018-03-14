@@ -27,8 +27,6 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
                 R.string.orderdetail_product_lineitem_total, orderTotal, productPrice, item.quantity)
         productInfo_totalTax.text = res.getString(R.string.currency_total, currencySymbol, item.totalTax)
 
-        // todo Product Description
-
         // todo Product Image
     }
 }

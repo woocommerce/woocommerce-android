@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -38,32 +38,6 @@
         tools:text="2"/>
 
     <TextView
-        android:id="@+id/productInfo_lblDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/card_label_padding_intra_h"
-        android:paddingStart="0dp"
-        android:layout_marginStart="@dimen/card_section_padding_h"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:text="@string/orderdetail_details"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
-        tools:text="Details:"/>
-
-    <TextView
-        android:id="@+id/productInfo_productDetails"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_lblDetails"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
-        tools:text="Pink, Medium candle"/>
-
-    <TextView
         android:id="@+id/productInfo_productTotal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -73,7 +47,7 @@
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_lblDetails"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
         tools:text="$30.00 ($15.00 x 2)"/>
 
     <TextView
@@ -127,4 +101,4 @@
         app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
         tools:text="T3124"/>
 
-</merge>
+</android.support.constraint.ConstraintLayout>
