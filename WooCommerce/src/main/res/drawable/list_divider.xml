@@ -2,6 +2,6 @@
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android" android:shape="line">
 
-    <solid android:color="@color/orderslist_bgColor"/>
+    <stroke android:color="@color/list_divider"/>
     <size android:height="1dp"/>
 </shape>

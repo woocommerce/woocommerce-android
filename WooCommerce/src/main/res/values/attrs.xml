@@ -10,8 +10,15 @@
     </declare-styleable>
 
     <declare-styleable name="TagView">
-        <attr name="tagLabel" format="reference|string"/>
-        <attr name="tagFontColor" format="reference|color"/>
-        <attr name="tagBackgroundColor" format="reference|color"/>
+        <attr name="tagText" format="reference|string"/>
+        <attr name="tagTextColor" format="reference|color"/>
+        <attr name="tagTextSize" format="dimension"/>
+        <attr name="tagColor" format="reference|color"/>
+        <attr name="tagBorderColor" format="reference|color"/>
+    </declare-styleable>
+
+    <declare-styleable name="AppTheme">
+        <attr name="tagViewStyle" format="reference"/>
+        <attr name="flowLayoutStyle" format="reference"/>
     </declare-styleable>
 </resources>

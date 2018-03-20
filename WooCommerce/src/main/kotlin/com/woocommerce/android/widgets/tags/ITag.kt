@@ -5,21 +5,17 @@ import android.content.Context
 /**
  * Interface for working with individual Tag elements.
  */
-abstract class ITag(val rawText: String,
-                    val bgColor: Int,
-                    val fgColor: Int) : Comparable<ITag> {
+abstract class ITag(val rawText: String) : Comparable<ITag> {
     /**
-     * Convert the raw text into a formatted label
+     * Returns the configuration to apply to this tag.
      */
-    abstract fun getFormattedLabel(context: Context): String
+    abstract fun getTagConfiguration(context: Context): TagConfig
 
     override fun equals(other: Any?): Boolean {
         return if (other !is ITag) {
             false
         } else {
             other.rawText == rawText
-                    && other.fgColor == fgColor
-                    && other.bgColor == bgColor
         }
     }
 
@@ -28,6 +24,6 @@ abstract class ITag(val rawText: String,
     }
 
     override fun hashCode(): Int {
-        return 38 + fgColor.hashCode() + rawText.hashCode() + bgColor.hashCode()
+        return 38 + rawText.hashCode()
     }
 }
