@@ -1,11 +1,10 @@
 package com.woocommerce.android.widgets.tags
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.FrameLayout
+import android.util.TypedValue
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.util.getDensityPixel
@@ -14,57 +13,77 @@ import com.woocommerce.android.util.getDensityPixel
  * Custom tag view. This view displays a simple string label. The background and font colors are both styleable.
  * Font color will default to gray, background color will default to light gray.
  *
- * Has three custom xml attributes available:
- * * tagLabel: String to display in the tag
- * * tagFontColor: Font color
- * * tagBackgroundColor: Background color
+ * @attr ref com.woocommerce.android.R.styleable#tagText
+ * @attr ref com.woocommerce.android.R.styleable#tagTextColor
+ * @attr ref com.woocommerce.android.R.styleable#tagTextSize
+ * @attr ref com.woocommerce.android.R.styleable#tagColor
+ * @attr ref com.woocommerce.android.R.styleable#tagBorderColor
  */
-class TagView constructor(ctx: Context,
-                          attrs: AttributeSet? = null) : FrameLayout(ctx) {
-    var tag: ITag? = null
-    set(v) {
-        field = v
-        textView.text = tag?.getFormattedLabel(context).orEmpty()
-
-        val bg = tag?.bgColor ?: Color.LTGRAY
-        initBackground(bg)
-
-        val fg = tag?.fgColor ?: Color.GRAY
-        textView.setTextColor(fg)
-    }
-
-    private val textView: TextView
-
+class TagView @JvmOverloads constructor(ctx: Context,
+                                        attrs: AttributeSet? = null) : TextView(ctx, attrs, R.attr.tagViewStyle) {
     init {
-        val inflater = LayoutInflater.from(context)
-        inflater.inflate(R.layout.tag_view, this)
-        textView = getChildAt(0) as TextView
-
-        attrs?.let {
-            val a = context.theme.obtainStyledAttributes(attrs, R.styleable.TagView, 0, 0)
+        if (attrs != null) {
+            val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, R.attr.tagViewStyle, 0)
+            val config = TagConfig(context)
             try {
-                val labelStr = a.getString(R.styleable.TagView_tagLabel)
-                labelStr?.let { textView.text = labelStr }
+                config.tagText = a.getString(R.styleable.TagView_tagText).orEmpty()
 
-                val fontColor = a.getColor(R.styleable.TagView_tagFontColor, Color.GRAY)
-                textView.setTextColor(fontColor)
+                var textColor = a.getColor(R.styleable.TagView_tagTextColor, 0)
+                if (textColor == 0) {
+                    val textColorResId = a.getResourceId(R.styleable.TagView_tagTextColor, R.color.tagView_text)
+                    textColor = ContextCompat.getColor(context, textColorResId)
+                }
+                config.fgColor = textColor
 
-                val bgColor = a.getColor(R.styleable.TagView_tagBackgroundColor, Color.LTGRAY)
-                initBackground(bgColor)
+                val textSize = a.getDimensionPixelSize(R.styleable.TagView_tagTextSize, 0)
+                if (textSize == 0) {
+                    config.textSize = context.resources.getDimension(R.dimen.tag_text_size)
+                } else {
+                    config.textSize = textSize.toFloat()
+                }
+
+                var bgColor = a.getColor(R.styleable.TagView_tagColor, 0)
+                if (bgColor == 0) {
+                    val bgColorResId = a.getResourceId(R.styleable.TagView_tagColor, R.color.tagView_bg)
+                    bgColor = ContextCompat.getColor(context, bgColorResId)
+                }
+                config.bgColor = bgColor
+
+                var borderColor = a.getColor(R.styleable.TagView_tagBorderColor, 0)
+                if (borderColor == 0) {
+                    val borderColorResId =
+                            a.getResourceId(R.styleable.TagView_tagBorderColor, R.color.tagView_border_bg)
+                    borderColor = ContextCompat.getColor(context, borderColorResId)
+                }
+                config.borderColor = borderColor
+
+                initTag(config)
             } finally {
                 a.recycle()
             }
         }
     }
 
+    var tag: ITag? = null
+    set(v) {
+        field = v
+        tag?.let {
+            initTag(it.getTagConfiguration(context))
+        }
+    }
+
     /**
-     * Should be called anytime the tag changes. Sets the background color and
-     * corner radius of the tag view.
+     * Should be called anytime the tag changes. Sets the background color, border
+     * color and corner radius of the tag view.
      */
-    private fun initBackground(baseColor: Int) {
+    private fun initTag(config: TagConfig) {
+        text = config.tagText
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, config.textSize)
+        setTextColor(config.fgColor)
         val gd = GradientDrawable()
-        gd.setColor(baseColor)
+        gd.setColor(config.bgColor)
         gd.cornerRadius = getDensityPixel(context, 2).toFloat()
-        textView.background = gd
+            gd.setStroke(3, config.borderColor)
+        background = gd
     }
 }

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orderlist
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
@@ -24,17 +23,9 @@ import kotlinx.android.synthetic.main.order_list_item.view.*
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
+class OrderListAdapter : SectionedRecyclerViewAdapter() {
     companion object {
         val TAG: String = OrderListAdapter::class.java.simpleName
-    }
-
-    private val fgColorDefault: Int by lazy {
-        ContextCompat.getColor(context, R.color.tagView_fgColor)
-    }
-
-    private val bgColorDefault: Int by lazy {
-        ContextCompat.getColor(context, R.color.tagView_bgColor)
     }
 
     fun setOrders(orders: List<WCOrderModel>) {
@@ -141,8 +132,7 @@ class OrderListAdapter(context: Context) : SectionedRecyclerViewAdapter() {
          * and add it to the holder. No need to trim the label text since this is done in [OrderStatusTag]
          */
         private fun processTagView(ctx: Context, text: String, holder: ItemViewHolder) {
-            val orderTag = OrderStatusTag(
-                    text, this@OrderListAdapter.bgColorDefault, this@OrderListAdapter.fgColorDefault)
+            val orderTag = OrderStatusTag(text)
             val tagView = TagView(ctx)
             tagView.tag = orderTag
             holder.orderTagList.addView(tagView)

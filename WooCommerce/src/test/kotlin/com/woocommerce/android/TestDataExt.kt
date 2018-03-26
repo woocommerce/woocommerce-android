@@ -15,7 +15,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         localSiteId = 1
         remoteOrderId = 51
         status = "processing"
-        total = 14.53F
+        total = "14.53"
     }
 
     val om2 = WCOrderModel(2).apply {
@@ -26,7 +26,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         localSiteId = 1
         remoteOrderId = 63
         status = "pending"
-        total = 106.0F
+        total = "106.00"
     }
 
     val om3 = WCOrderModel(2).apply {
@@ -37,7 +37,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         localSiteId = 1
         remoteOrderId = 14
         status = "processing"
-        total = 25.73F
+        total = "25.73"
     }
 
     val om4 = WCOrderModel(2).apply {
@@ -48,7 +48,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         localSiteId = 1
         remoteOrderId = 15
         status = "pending, on-hold, complete"
-        total = 106.0F
+        total = "106.00"
     }
 
     val om5 = WCOrderModel(2).apply {
@@ -59,7 +59,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         localSiteId = 1
         remoteOrderId = 3
         status = "pending"
-        total = 106.0F
+        total = "106.00"
     }
 
     val om6 = WCOrderModel(2).apply {
@@ -70,7 +70,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         localSiteId = 1
         remoteOrderId = 55
         status = "pending, Custom 1,Custom 2,Custom 3"
-        total = 106.0F
+        total = "106.00"
     }
 
     result.add(om1)
