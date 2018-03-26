@@ -7,12 +7,8 @@
     <!--
         General Color Definitions
     -->
-    <color name="wc_white">#ffffff</color>
-    <color name="wc_black">#000000</color>
-
     <!-- Primary Greys -->
     <color name="wc_grey">#c9c9c9</color>
-    <color name="wc_grey_light">#e6e6e6</color>
     <color name="wc_grey_lighter">#dfdfdf</color>
     <color name="wc_grey_lightest">#f7f7f7</color>
     <color name="wc_grey_dark">#a3a1a1</color>
@@ -20,11 +16,11 @@
     <color name="wc_grey_darkest">#2a2a2a</color>
 
     <!-- Primary Greens -->
-    <color name="wc_green">#d1dcc7</color>
-    <color name="wc_green_light">#e9f4db</color>
+    <color name="wc_green_light">#d1dcc7</color>
+    <color name="wc_green_lightest">#e9f4db</color>
 
     <!-- Primary Reds -->
-    <color name="wc_red_light">#FFFEBDBB</color>
+    <color name="wc_red_light">#febdbb</color>
     <color name="wc_red_lightest">#fededd</color>
 
     <!-- Primary Blues -->
@@ -33,7 +29,7 @@
     <!--
         Default Global Colors
     -->
-    <color name="default_window_bg">@color/wc_grey_light</color>
+    <color name="default_window_bg">@color/wc_border_color</color>
     <color name="default_text">@color/wc_grey_darker</color>
     <color name="default_text_title">@color/wc_grey_darkest</color>
     <!--
@@ -43,25 +39,25 @@
     <color name="list_divider">@color/wc_grey</color>
     <color name="list_item_text">@color/default_text</color>
     <color name="list_item_text_title">@color/default_text_title</color>
-    <color name="list_item_bg">@color/wc_white</color>
+    <color name="list_item_bg">@color/white</color>
     <color name="List_header_text">@color/wc_grey_darker</color>
-    <color name="list_header_bg">@color/wc_grey_light</color>
+    <color name="list_header_bg">@color/wc_border_color</color>
     <color name="list_header_border">@color/wc_grey</color>
 
     <!-- Default Tag colors -->
-    <color name="tagView_bg">@color/wc_grey_light</color>
+    <color name="tagView_bg">@color/wc_border_color</color>
     <color name="tagView_text">@color/wc_grey_darkest</color>
     <color name="tagView_border_bg">@color/wc_grey_darker</color>
     <!--
         Order: status tag background colors
     -->
     <color name="orderStatus_processing_text">@color/tagView_text</color>
-    <color name="orderStatus_processing_bg">@color/wc_green_light</color>
-    <color name="orderStatus_processing_border">@color/wc_green</color>
+    <color name="orderStatus_processing_bg">@color/wc_green_lightest</color>
+    <color name="orderStatus_processing_border">@color/wc_green_light</color>
 
     <color name="orderStatus_pending_text">@color/tagView_text</color>
-    <color name="orderStatus_pending_bg">@color/wc_green_light</color>
-    <color name="orderStatus_pending_border">@color/wc_green</color>
+    <color name="orderStatus_pending_bg">@color/wc_green_lightest</color>
+    <color name="orderStatus_pending_border">@color/wc_green_light</color>
 
     <color name="orderStatus_failed_text">@color/tagView_text</color>
     <color name="orderStatus_failed_bg">@color/wc_red_lightest</color>
@@ -72,11 +68,11 @@
     <color name="orderStatus_completed_border">@color/wc_blue_light</color>
 
     <color name="orderStatus_hold_text">@color/tagView_text</color>
-    <color name="orderStatus_hold_bg">@color/wc_grey_light</color>
+    <color name="orderStatus_hold_bg">@color/wc_border_color</color>
     <color name="orderStatus_hold_border">@color/wc_grey</color>
 
     <color name="orderStatus_cancelled_text">@color/tagView_text</color>
-    <color name="orderStatus_cancelled_bg">@color/wc_grey_light</color>
+    <color name="orderStatus_cancelled_bg">@color/wc_border_color</color>
     <color name="orderStatus_cancelled_border">@color/wc_grey</color>
 
     <color name="orderStatus_refunded_text">@color/tagView_text</color>
