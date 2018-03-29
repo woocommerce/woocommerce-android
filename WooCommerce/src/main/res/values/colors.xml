@@ -9,6 +9,7 @@
     -->
     <!-- Primary Greys -->
     <color name="wc_grey_darker">#787878</color>
+    <color name="grey_dark_highlight">#333333</color>
     <color name="wc_grey_darkest">#2a2a2a</color>
 
     <!-- Primary Greens -->
@@ -88,10 +89,10 @@
     <color name="login_text_label_text_color">@color/wc_grey_dark</color>
     <color name="login_input_label_static_text_color">@color/wc_grey_39</color>
     <color name="login_edit_text_color_control_normal">@color/wc_grey_39</color>
-    <color name="login_edit_text_color_control_activated">@color/color_accent</color>
-    <color name="login_edit_text_color_control_highlight">@color/color_accent</color>
+    <color name="login_edit_text_color_control_activated">@color/grey_dark_highlight</color>
+    <color name="login_edit_text_color_control_highlight">@color/grey_dark_highlight</color>
     <color name="login_edit_text_text_color">@color/wc_grey_dark</color>
-    <color name="login_edit_text_text_hint_color">@color/wc_grey_39</color>
+    <color name="login_edit_text_text_hint_color">@color/wc_grey_dark</color>
     <color name="login_heading_text_color">@color/wc_grey_17</color>
     <color name="login_subhead_text_color">@color/wc_grey_dark</color>
     <color name="login_username_text_color">@color/wc_grey_17</color>
