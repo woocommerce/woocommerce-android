@@ -98,5 +98,7 @@
     <color name="login_username_text_color">@color/wc_grey_17</color>
     <color name="login_footnote_text_color">@color/wc_grey_dark</color>
 
+    <color name="login_input_icon_color">@color/wc_grey_30</color>
+    <color name="login_input_password_icon_color">@color/wc_grey_39</color>
     <color name="login_notification_accent_color">@color/color_primary</color>
 </resources>
