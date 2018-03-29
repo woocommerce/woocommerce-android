@@ -78,7 +78,7 @@
     <!-- Login -->
     <color name="status_bar_tint">@color/color_primary_dark</color>
     <color name="login_theme_accent_color">@color/color_accent</color>
-    <color name="login_background_color">@color/grey_light</color>
+    <color name="login_background_color">@color/wc_border_color</color>
 
     <color name="login_toolbar_color">@color/color_primary</color>
     <color name="login_primary_button_normal_color">@color/color_accent</color>
@@ -86,13 +86,15 @@
     <color name="login_secondary_button_text_color">@color/color_primary</color>
     <color name="login_google_button_text_color">@color/color_primary</color>
     <color name="login_text_label_text_color">@color/wc_grey_dark</color>
-    <color name="login_input_label_static_text_color">@color/grey</color>
-    <color name="login_edit_text_color_control_normal">@color/grey</color>
+    <color name="login_input_label_static_text_color">@color/wc_grey_39</color>
+    <color name="login_edit_text_color_control_normal">@color/wc_grey_39</color>
     <color name="login_edit_text_color_control_activated">@color/color_accent</color>
     <color name="login_edit_text_color_control_highlight">@color/color_accent</color>
     <color name="login_edit_text_text_color">@color/wc_grey_dark</color>
-    <color name="login_edit_text_text_hint_color">@color/grey</color>
+    <color name="login_edit_text_text_hint_color">@color/wc_grey_39</color>
+    <color name="login_heading_text_color">@color/wc_grey_17</color>
     <color name="login_subhead_text_color">@color/wc_grey_dark</color>
+    <color name="login_username_text_color">@color/wc_grey_17</color>
     <color name="login_footnote_text_color">@color/wc_grey_dark</color>
 
     <color name="login_notification_accent_color">@color/color_primary</color>
