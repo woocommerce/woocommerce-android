@@ -8,7 +8,6 @@
         General Color Definitions
     -->
     <!-- Primary Greys -->
-    <color name="wc_grey">#c9c9c9</color>
     <color name="wc_grey_darker">#787878</color>
     <color name="wc_grey_darkest">#2a2a2a</color>
 
@@ -33,13 +32,13 @@
         Default Widget Color Definitions
     -->
     <!-- Default List colors -->
-    <color name="list_divider">@color/wc_grey</color>
+    <color name="list_divider">@color/wc_grey_17</color>
     <color name="list_item_text">@color/default_text</color>
     <color name="list_item_text_title">@color/default_text_title</color>
     <color name="list_item_bg">@color/white</color>
     <color name="List_header_text">@color/wc_grey_darker</color>
     <color name="list_header_bg">@color/wc_border_color</color>
-    <color name="list_header_border">@color/wc_grey</color>
+    <color name="list_header_border">@color/wc_grey_17</color>
 
     <!-- Default Tag colors -->
     <color name="tagView_bg">@color/wc_border_color</color>
@@ -66,11 +65,11 @@
 
     <color name="orderStatus_hold_text">@color/tagView_text</color>
     <color name="orderStatus_hold_bg">@color/wc_border_color</color>
-    <color name="orderStatus_hold_border">@color/wc_grey</color>
+    <color name="orderStatus_hold_border">@color/wc_grey_17</color>
 
     <color name="orderStatus_cancelled_text">@color/tagView_text</color>
     <color name="orderStatus_cancelled_bg">@color/wc_border_color</color>
-    <color name="orderStatus_cancelled_border">@color/wc_grey</color>
+    <color name="orderStatus_cancelled_border">@color/wc_grey_17</color>
 
     <color name="orderStatus_refunded_text">@color/tagView_text</color>
     <color name="orderStatus_refunded_bg">@color/wc_red_lightest</color>
