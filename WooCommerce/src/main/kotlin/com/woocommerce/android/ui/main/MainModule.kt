@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.di.ActivityScoped
+import com.woocommerce.android.di.ActivityScope
 import dagger.Binds
 import dagger.Module
 
 @Module
 internal abstract class MainModule {
-    @ActivityScoped
+    @ActivityScope
     @Binds
     abstract fun provideMainPresenter(mainActivityPresenter: MainPresenter): MainContract.Presenter
 }
