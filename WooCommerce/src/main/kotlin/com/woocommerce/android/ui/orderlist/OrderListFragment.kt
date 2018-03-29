@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.base.ParentFragment
+import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
-class OrderListFragment : ParentFragment(), OrderListContract.View {
+class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         fun newInstance() = OrderListFragment()
