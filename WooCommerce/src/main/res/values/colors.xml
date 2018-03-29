@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="color_primary">@color/wc_purple</color>
-    <color name="color_primary_dark">@color/wc_dark_grey</color>
+    <color name="color_primary_dark">@color/wc_grey_dark</color>
     <color name="color_accent">@color/wc_green</color>
 
     <!--
@@ -9,9 +9,6 @@
     -->
     <!-- Primary Greys -->
     <color name="wc_grey">#c9c9c9</color>
-    <color name="wc_grey_lighter">#dfdfdf</color>
-    <color name="wc_grey_lightest">#f7f7f7</color>
-    <color name="wc_grey_dark">#a3a1a1</color>
     <color name="wc_grey_darker">#787878</color>
     <color name="wc_grey_darkest">#2a2a2a</color>
 
@@ -89,15 +86,15 @@
     <color name="login_primary_button_text_color">@color/white</color>
     <color name="login_secondary_button_text_color">@color/color_primary</color>
     <color name="login_google_button_text_color">@color/color_primary</color>
-    <color name="login_text_label_text_color">@color/wc_dark_grey</color>
+    <color name="login_text_label_text_color">@color/wc_grey_dark</color>
     <color name="login_input_label_static_text_color">@color/grey</color>
     <color name="login_edit_text_color_control_normal">@color/grey</color>
     <color name="login_edit_text_color_control_activated">@color/color_accent</color>
     <color name="login_edit_text_color_control_highlight">@color/color_accent</color>
-    <color name="login_edit_text_text_color">@color/wc_dark_grey</color>
+    <color name="login_edit_text_text_color">@color/wc_grey_dark</color>
     <color name="login_edit_text_text_hint_color">@color/grey</color>
-    <color name="login_subhead_text_color">@color/wc_dark_grey</color>
-    <color name="login_footnote_text_color">@color/wc_dark_grey</color>
+    <color name="login_subhead_text_color">@color/wc_grey_dark</color>
+    <color name="login_footnote_text_color">@color/wc_grey_dark</color>
 
     <color name="login_notification_accent_color">@color/color_primary</color>
 </resources>

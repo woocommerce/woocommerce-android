@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="wc_purple">#96588A</color>
-    <color name="wc_dark_grey">#3C3C3C</color>
+    <color name="wc_grey_dark">#3C3C3C</color>
     <color name="wc_green">#71B02F</color>
-    <color name="wc_light_grey">#F7F7F7</color>
+    <color name="wc_grey_light">#F7F7F7</color>
     <color name="wc_border_color">#E6E6E6</color>
 </resources>
