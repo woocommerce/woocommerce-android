@@ -219,7 +219,7 @@ class MainActivity : AppCompatActivity(),
         if (fragment.isHidden || !fragment.isAdded) {
             // Remove the active fragment and replace with this newly selected one
             hideParentFragment(activeFragment)
-            showParentFragment(fragment, navPosition.getTag())
+            showTopLevelFragment(fragment, navPosition.getTag())
             supportFragmentManager.executePendingTransactions()
             activeNavPosition = navPosition
             return true
@@ -231,7 +231,7 @@ class MainActivity : AppCompatActivity(),
      * Show the provided fragment in the fragment container. This should
      * only be used with top-level fragments.
      */
-    private fun showParentFragment(fragment: Fragment, tag: String) {
+    private fun showTopLevelFragment(fragment: Fragment, tag: String) {
         if (fragment.isHidden) {
             supportFragmentManager.beginTransaction().show(fragment).commit()
         } else {
