@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Currency
 import java.util.Date
+import javax.inject.Inject
 
 import kotlinx.android.synthetic.main.order_list_header.view.*
 import kotlinx.android.synthetic.main.order_list_item.view.*
@@ -23,7 +24,8 @@ import kotlinx.android.synthetic.main.order_list_item.view.*
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter : SectionedRecyclerViewAdapter() {
+class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
+    : SectionedRecyclerViewAdapter() {
     companion object {
         val TAG: String = OrderListAdapter::class.java.simpleName
     }
@@ -105,6 +107,7 @@ class OrderListAdapter : SectionedRecyclerViewAdapter() {
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
             itemHolder.orderTotal.text = resources.getString(
                     R.string.orderlist_item_order_total, currencySymbol, order.total)
+            itemHolder.rootView.tag = order
 
             // clear existing tags and add new ones
             itemHolder.orderTagList.removeAllViews()
