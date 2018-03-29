@@ -44,9 +44,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
             with(view) {
                 orderRefreshLayout.apply {
                     setColorSchemeColors(
-                            ContextCompat.getColor(activity, R.color.color_primary),
-                            ContextCompat.getColor(activity, R.color.color_accent),
-                            ContextCompat.getColor(activity, R.color.color_primary_dark)
+                            ContextCompat.getColor(activity, R.color.colorPrimary),
+                            ContextCompat.getColor(activity, R.color.colorAccent),
+                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
                     )
                     // Set the scrolling view in the custom SwipeRefreshLayout
                     scrollUpChild = ordersList
