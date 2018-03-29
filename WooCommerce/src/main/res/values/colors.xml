@@ -2,7 +2,7 @@
 <resources>
     <color name="color_primary">@color/wc_purple</color>
     <color name="color_primary_dark">@color/wc_grey_dark</color>
-    <color name="color_accent">@color/wc_green</color>
+    <color name="color_accent">@color/wc_purple</color>
 
     <!--
         General Color Definitions
