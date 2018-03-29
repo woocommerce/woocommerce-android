@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
+import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -219,7 +220,7 @@ class MainActivity : AppCompatActivity(),
         if (fragment.isHidden || !fragment.isAdded) {
             // Remove the active fragment and replace with this newly selected one
             hideParentFragment(activeFragment)
-            showTopLevelFragment(fragment, navPosition.getTag())
+            showTopLevelFragment(fragment as TopLevelFragment, navPosition.getTag())
             supportFragmentManager.executePendingTransactions()
             activeNavPosition = navPosition
             return true
@@ -231,7 +232,7 @@ class MainActivity : AppCompatActivity(),
      * Show the provided fragment in the fragment container. This should
      * only be used with top-level fragments.
      */
-    private fun showTopLevelFragment(fragment: Fragment, tag: String) {
+    private fun showTopLevelFragment(fragment: TopLevelFragment, tag: String) {
         if (fragment.isHidden) {
             supportFragmentManager.beginTransaction().show(fragment).commit()
         } else {
