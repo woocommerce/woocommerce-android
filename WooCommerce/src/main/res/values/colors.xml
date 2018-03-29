@@ -8,9 +8,9 @@
         General Color Definitions
     -->
     <!-- Primary Greys -->
+    <!-- TODO: Consolidate with rest of wc_greys -->
     <color name="wc_grey_darker">#787878</color>
     <color name="grey_dark_highlight">#333333</color>
-    <color name="wc_grey_darkest">#2a2a2a</color>
 
     <!-- Primary Greens -->
     <color name="wc_green_light">#d1dcc7</color>
@@ -27,8 +27,8 @@
         Default Global Colors
     -->
     <color name="default_window_bg">@color/wc_border_color</color>
-    <color name="default_text">@color/wc_grey_darker</color>
-    <color name="default_text_title">@color/wc_grey_darkest</color>
+    <color name="default_text">@color/wc_grey_dark</color>
+    <color name="default_text_title">@color/grey_dark_highlight</color>
     <!--
         Default Widget Color Definitions
     -->
@@ -37,13 +37,13 @@
     <color name="list_item_text">@color/default_text</color>
     <color name="list_item_text_title">@color/default_text_title</color>
     <color name="list_item_bg">@color/white</color>
-    <color name="List_header_text">@color/wc_grey_darker</color>
+    <color name="List_header_text">@color/default_text</color>
     <color name="list_header_bg">@color/wc_border_color</color>
     <color name="list_header_border">@color/wc_grey_17</color>
 
     <!-- Default Tag colors -->
     <color name="tagView_bg">@color/wc_border_color</color>
-    <color name="tagView_text">@color/wc_grey_darkest</color>
+    <color name="tagView_text">@color/default_text_title</color>
     <color name="tagView_border_bg">@color/wc_grey_darker</color>
     <!--
         Order: status tag background colors
