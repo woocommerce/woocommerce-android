@@ -10,8 +10,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -19,7 +19,7 @@ android {
         versionCode 4
 
         minSdkVersion 17
-        targetSdkVersion 26
+        targetSdkVersion 27
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -51,9 +51,11 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
     implementation "com.android.support:multidex:$multidexVersion"
     implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "com.android.support:design:$supportLibraryVersion"
 
-    implementation('org.wordpress:utils:1.19.0') {
+    implementation('org.wordpress:utils:1.20.1') {
         exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
     }
 
     implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
