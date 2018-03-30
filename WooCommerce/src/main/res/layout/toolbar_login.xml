@@ -14,8 +14,8 @@
     tools:targetApi="LOLLIPOP">
 
     <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_gravity="center"
         app:srcCompat="@drawable/login_toolbar_icon"/>
 </android.support.v7.widget.Toolbar>
