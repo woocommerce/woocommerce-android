@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
@@ -19,6 +18,7 @@ import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
+import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginGoogleFragment
@@ -38,6 +38,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     }
 
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
 
     private var loginMode: LoginMode? = null
 
@@ -50,7 +51,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         setContentView(R.layout.activity_login)
 
         if (savedInstanceState == null) {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_ACCESSED)
+            loginAnalyticsListener.trackLoginAccessed()
             // TODO Check loginMode here and handle different login cases
             startLogin()
         }
@@ -151,7 +152,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     }
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_SUCCESS)
+        loginAnalyticsListener.trackLoginSocialSuccess()
         loggedInAndFinish()
     }
 
@@ -166,7 +167,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
     override fun openEmailClient() {
         if (ActivityUtils.isEmailClientAvailable(this)) {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
+            loginAnalyticsListener.trackLoginMagicLinkOpenEmailClientClicked()
             ActivityUtils.openEmailClient(this)
         } else {
             ToastUtils.showToast(this, R.string.login_email_client_not_found)
@@ -174,13 +175,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     }
 
     override fun usePasswordInstead(email: String?) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_EXITED)
+        loginAnalyticsListener.trackLoginMagicLinkExited()
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
     override fun forgotPassword(url: String?) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FORGOT_PASSWORD_CLICKED)
+        loginAnalyticsListener.trackLoginForgotPasswordClicked()
         ActivityUtils.openUrlExternal(this, url + FORGOT_PASSWORD_URL_SUFFIX)
     }
 
@@ -191,14 +192,14 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
     override fun needs2faSocial(email: String?, userId: String?, nonceAuthenticator: String?, nonceBackup: String?,
                                 nonceSms: String?) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_2FA_NEEDED)
+        loginAnalyticsListener.trackLoginSocial2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstanceSocial(email, userId,
                 nonceAuthenticator, nonceBackup, nonceSms)
         slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
     override fun needs2faSocialConnect(email: String?, password: String?, idToken: String?, service: String?) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_2FA_NEEDED)
+        loginAnalyticsListener.trackLoginSocial2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstanceSocialConnect(email, password, idToken, service)
         slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
