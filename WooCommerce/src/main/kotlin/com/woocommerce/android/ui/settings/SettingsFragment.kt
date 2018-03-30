@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.base.ParentFragment
+import com.woocommerce.android.ui.base.TopLevelFragment
 
-class SettingsFragment : ParentFragment() {
+class SettingsFragment : TopLevelFragment() {
     companion object {
         val TAG: String = SettingsFragment::class.java.simpleName
         fun newInstance() = SettingsFragment()

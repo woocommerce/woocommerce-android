@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.base.ParentFragment
+import com.woocommerce.android.ui.base.TopLevelFragment
 
-class DashboardFragment : ParentFragment() {
+class DashboardFragment : TopLevelFragment() {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()

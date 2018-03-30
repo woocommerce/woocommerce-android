@@ -10,7 +10,11 @@ import android.widget.FrameLayout
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.fragment_parent.*
 
-abstract class ParentFragment : Fragment(), ParentFragmentView {
+/**
+ * The main fragments hosted by the bottom bar should extend this class to enforce
+ * consistent navigation across top-level fragments and their children.
+ */
+abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         childFragmentManager.addOnBackStackChangedListener(this)
