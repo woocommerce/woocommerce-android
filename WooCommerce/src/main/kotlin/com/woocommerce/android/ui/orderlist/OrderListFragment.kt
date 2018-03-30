@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.order.OrderDetailFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -98,6 +99,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun showNoOrders() {
         ordersView.visibility = View.GONE
         noOrdersView.visibility = View.VISIBLE
+    }
+
+    override fun openOrderDetail(orderId: Long) {
+        val frag = OrderDetailFragment.newInstance(orderId)
+        loadChildFragment(frag)
     }
 
     override fun getFragmentTitle(): String {

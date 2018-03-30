@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orderlist
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
-import com.woocommerce.android.ui.base.TopLevelFragmentView
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 
@@ -12,12 +11,13 @@ interface OrderListContract {
         fun openOrderDetail(orderId: Long)
     }
 
-    interface View : BaseView<Presenter>, TopLevelFragmentView {
+    interface View : BaseView<Presenter> {
         var isActive: Boolean
 
         fun setLoadingIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>)
         fun showNoOrders()
+        fun openOrderDetail(orderId: Long)
 
         fun getSelectedSite(): SiteModel?
     }
