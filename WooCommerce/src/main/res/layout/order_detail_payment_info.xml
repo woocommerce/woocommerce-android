@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/paymentInfo_lblTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/payment"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title.Bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/paymentInfo_lblSubtotal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:text="@string/subtotal"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_lblTitle"/>
+
+    <TextView
+        android:id="@+id/paymentInfo_subTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_lblTitle"
+        tools:text="$45.00" />
+
+    <TextView
+        android:id="@+id/paymentInfo_lblDiscount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:text="@string/discount"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_lblSubtotal"/>
+
+    <TextView
+        android:id="@+id/paymentInfo_discountItems"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+        android:layout_marginStart="@dimen/card_item_padding_intra_h"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintEnd_toStartOf="@+id/paymentInfo_discountTotal"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/paymentInfo_lblDiscount"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_lblSubtotal"
+        tools:text="(sale4theday, firstTime)" />
+
+    <TextView
+        android:id="@+id/paymentInfo_discountTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_subTotal"
+        tools:text="-$4.00" />
+
+    <TextView
+        android:id="@+id/paymentInfo_lblShipping"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:text="@string/shipping"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_discountItems" />
+
+    <TextView
+        android:id="@+id/paymentInfo_shippingTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_discountItems"
+        tools:text="$7.00" />
+
+    <TextView
+        android:id="@+id/paymentInfo_lblTaxes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:text="@string/taxes"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_lblShipping" />
+
+    <TextView
+        android:id="@+id/paymentInfo_taxesTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_shippingTotal"
+        tools:text="$1.00" />
+
+    <FrameLayout
+        android:id="@+id/paymentInfo_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:layout_marginBottom="@dimen/card_item_padding_intra_h"
+        android:background="@color/list_divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_lblTaxes"
+        app:srcCompat="@drawable/list_divider" />
+
+    <TextView
+        android:id="@+id/paymentInfo_lblTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:text="@string/total"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_divider" />
+
+    <TextView
+        android:id="@+id/paymentInfo_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_divider"
+        tools:text="$49.00" />
+
+    <FrameLayout
+        android:id="@+id/paymentInfo_divider2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:background="@color/list_divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_lblTotal"
+        app:srcCompat="@drawable/list_divider" />
+
+    <TextView
+        android:id="@+id/paymentInfo_paymentMsg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_divider2"
+        tools:text="Payment of $49.00 received via credit card (PayPal)" />
+</merge>

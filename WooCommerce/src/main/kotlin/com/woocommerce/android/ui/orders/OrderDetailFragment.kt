@@ -108,6 +108,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
             // Populate the Customer Information Card
             orderDetail_customerInfo.initView(order, this)
+
+            // Populate the Payment Information Card
+            orderDetail_paymentInfo.initView(order)
         }
     }
 

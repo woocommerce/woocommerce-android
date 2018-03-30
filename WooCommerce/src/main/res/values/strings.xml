@@ -12,6 +12,12 @@
     <string name="view_less">VIEW LESS</string>
     <string name="phone">Phone</string>
     <string name="currency_total">%1$s%2$s</string>
+    <string name="total">Total</string>
+    <string name="shipping">Shipping</string>
+    <string name="payment">Payment</string>
+    <string name="taxes">Taxes</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="discount">Discount</string>
     <!--
         Date/Time Labels
     -->
@@ -54,6 +60,7 @@
     <string name="orderdetail_product_image_contentdesc">Product Icon</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_qty">QTY</string>
+    <string name="orderdetail_payment_summary">Payment of %1$s received via %2$s (%3$s)</string>
     <!--
         Order Status Labels
     -->

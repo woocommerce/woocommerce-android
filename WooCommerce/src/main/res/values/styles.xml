@@ -60,6 +60,10 @@
         <item name="android:textSize">@dimen/text_medium</item>
     </style>
 
+    <style name="Woo.TextAppearance.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Woo.TextAppearance.Title">
         <item name="android:textColor">@color/default_text_title</item>
         <item name="android:textSize">@dimen/text_large</item>
@@ -224,6 +228,7 @@
     <style name="Woo.OrderDetail.TextAppearance.Title" parent="Woo.TextAppearance.Title"/>
     <style name="Woo.OrderDetail.TextAppearance.Title.Bold" parent="Woo.TextAppearance.Title.Bold"/>
     <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance"/>
+    <style name="Woo.OrderDetail.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
     <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
     <style name="Woo.OrderDetail.TextAppearance.Label.Bold" parent="Woo.TextAppearance.Label.Bold"/>
 </resources>
