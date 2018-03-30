@@ -17,11 +17,11 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginGoogleFragment
-import org.wordpress.android.login.LoginGoogleFragment.GoogleLoginListener
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMagicLinkSentFragment
@@ -32,7 +32,7 @@ import org.wordpress.android.util.ToastUtils
 import java.util.ArrayList
 import javax.inject.Inject
 
-class LoginActivity : AppCompatActivity(), LoginListener, GoogleLoginListener, HasSupportFragmentInjector {
+class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSupportFragmentInjector {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
@@ -150,7 +150,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleLoginListener, H
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
-    override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>) {
+    override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_SUCCESS)
         loggedInAndFinish()
     }
@@ -311,9 +311,27 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleLoginListener, H
         // TODO: Hook for smartlock, if using
     }
 
+    // Signup
+
+    override fun helpSignupEmailScreen(email: String?) {
+        // TODO: Signup
+    }
+
+    override fun helpSignupMagicLinkScreen(email: String?) {
+        // TODO: Signup
+    }
+
+    override fun showSignupMagicLink(email: String?) {
+        // TODO: Signup
+    }
+
+    override fun showSignupToLoginMessage() {
+        // TODO: Signup
+    }
+
     //  -- END: LoginListener implementation methods
 
-    //  -- BEGIN: GoogleLoginListener implementation methods
+    //  -- BEGIN: GoogleListener implementation methods
 
     override fun onGoogleEmailSelected(email: String?) {
         val loginEmailFragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG) as LoginEmailFragment
@@ -325,5 +343,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleLoginListener, H
         loginEmailFragment.finishLogin()
     }
 
-    //  -- END: GoogleLoginListener implementation methods
+    override fun onGoogleSignupFinished(name: String?, email: String?, photoUrl: String?, username: String?) {
+        // TODO: Signup
+    }
+
+    //  -- END: GoogleListener implementation methods
 }
