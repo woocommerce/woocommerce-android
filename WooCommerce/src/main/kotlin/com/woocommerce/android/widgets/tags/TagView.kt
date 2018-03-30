@@ -68,7 +68,7 @@ class TagView @JvmOverloads constructor(ctx: Context,
     set(v) {
         field = v
         tag?.let {
-            initTag(tag!!.getTagConfiguration(context))
+            initTag(it.getTagConfiguration(context))
         }
     }
 

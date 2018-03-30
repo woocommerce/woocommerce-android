@@ -12,7 +12,7 @@ import android.view.ViewGroup
  * Adds an extra layer of management to ensure proper routing and handling of child
  * fragments and their associated back stack.
  */
-interface ParentFragmentView : FragmentManager.OnBackStackChangedListener {
+interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener {
     /**
      * Load the provided fragment into the current view and disable the main
      * underlying fragment view.
