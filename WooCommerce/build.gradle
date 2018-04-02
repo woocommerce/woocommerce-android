@@ -60,10 +60,12 @@ dependencies {
 
     implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
     }
 
     implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:woocommerce:$fluxCVersion") {
         exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
     }
 
     implementation(project(path: ':libs:login:WordPressLoginFlow')) {
