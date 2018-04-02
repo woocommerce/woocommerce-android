@@ -106,7 +106,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
             itemHolder.orderTotal.text = resources.getString(
-                    R.string.currency_total, currencySymbol, order.total)
+                    R.string.currency_total, currencySymbol, order.total.toFloat())
             itemHolder.rootView.tag = order
             itemHolder.rootView.setOnClickListener {
                 val orderItem: WCOrderModel = it.tag as WCOrderModel

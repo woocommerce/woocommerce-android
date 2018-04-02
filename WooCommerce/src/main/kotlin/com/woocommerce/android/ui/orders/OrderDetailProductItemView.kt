@@ -21,11 +21,11 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
         // Populate formatted total and tax values
         val res = context.resources
-        val orderTotal = res.getString(R.string.currency_total, currencySymbol, item.total)
-        val productPrice = res.getString(R.string.currency_total, currencySymbol, item.price)
+        val orderTotal = res.getString(R.string.currency_total, currencySymbol, item.total?.toFloat())
+        val productPrice = res.getString(R.string.currency_total, currencySymbol, item.price?.toFloat())
         productInfo_productTotal.text = res.getString(
                 R.string.orderdetail_product_lineitem_total, orderTotal, productPrice, item.quantity)
-        productInfo_totalTax.text = res.getString(R.string.currency_total, currencySymbol, item.totalTax)
+        productInfo_totalTax.text = res.getString(R.string.currency_total, currencySymbol, item.totalTax?.toFloat())
 
         // todo Product Image
     }
