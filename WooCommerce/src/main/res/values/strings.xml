@@ -11,7 +11,7 @@
     <string name="view_more">VIEW MORE</string>
     <string name="view_less">VIEW LESS</string>
     <string name="phone">Phone</string>
-    <string name="currency_total">%1$s%2$s</string>
+    <string name="currency_total">%1$s%2$.2f</string>
     <string name="total">Total</string>
     <string name="shipping">Shipping</string>
     <string name="payment">Payment</string>
@@ -50,6 +50,7 @@
         Order Detail Views
     -->
     <string name="customer_information">Customer Information</string>
+    <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail">Order Detail</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%d</string>
     <string name="orderdetail_orderstatus_created">Created %1$s at %2$s</string>
@@ -66,6 +67,9 @@
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary">Payment of %1$s received via %2$s (%3$s)</string>
+    <string name="orderdetail_refunded">Refunded</string>
+    <string name="orderdetail_new_total">New Total</string>
+    <string name="orderdetail_payment_refunded">Payment - Refunded</string>
     <!--
         Order Status Labels
     -->
