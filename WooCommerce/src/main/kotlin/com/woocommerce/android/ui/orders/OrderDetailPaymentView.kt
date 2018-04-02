@@ -44,9 +44,15 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         //      - update title
         //      - show refund and new total sections
 
-        // todo discounts
-        //      - if no discounts, hide
-//        paymentInfo_discountItems.text = ""
-//        paymentInfo_discountTotal.text = "-$4.00"
+        // Populate discounts.
+        // - If no discounts, hide section
+        if (order.discountTotal == "0.00") {
+            paymentInfo_discountSection.visibility = View.GONE
+        } else {
+            paymentInfo_discountSection.visibility = View.VISIBLE
+            paymentInfo_discountTotal.text = context.getString(
+                    R.string.currency_total_negative, currencySymbol, order.discountTotal.toFloat())
+            paymentInfo_discountItems.text = context.getString(R.string.orderdetail_discount_items, order.discountCodes)
+        }
     }
 }
