@@ -17,7 +17,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
     }
 
     fun initView(order: WCOrderModel, listener: OrderActionListener) {
-        customerInfo_custName.text = order.billingFirstName + " " + order.billingLastName
+        customerInfo_custName.text = context
+                .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
 
         val billingAddr = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
