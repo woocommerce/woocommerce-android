@@ -25,6 +25,7 @@
     <color name="wc_green_lightest">#e9f4db</color>
 
     <!-- Primary Reds -->
+    <color name="wc_red">#ff0000</color>
     <color name="wc_red_light">#febdbb</color>
     <color name="wc_red_lightest">#fededd</color>
 
