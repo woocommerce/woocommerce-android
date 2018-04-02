@@ -109,21 +109,23 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             // Populate the Customer Information Card
             orderDetail_customerInfo.initView(order, this)
 
-            // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(order)
+            if (order.status.any { it.toString() in "refunded, processing" }) {
+                // Populate the Payment Information Card
+                orderDetail_paymentInfo.initView(order)
+            }
         }
     }
 
     // region OrderActionListener
     override fun dialPhone(phone: String) {
         val intent = Intent(Intent.ACTION_DIAL)
-        intent.data = Uri.parse("tel:" + phone)
+        intent.data = Uri.parse("tel:$phone")
         startActivity(intent)
     }
 
     override fun createEmail(emailAddr: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:" + emailAddr) // only email apps should handle this
+        intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
         if (intent.resolveActivity(context.packageManager) != null) {
             startActivity(intent)
         }
@@ -131,7 +133,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
     override fun sendSms(phone: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("smsto:" + phone)
+        intent.data = Uri.parse("smsto:$phone")
         if (intent.resolveActivity(context.packageManager) != null) {
             startActivity(intent)
         }
