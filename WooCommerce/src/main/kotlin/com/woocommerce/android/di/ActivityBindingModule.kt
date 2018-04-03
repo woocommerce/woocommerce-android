@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.orderlist.OrderListModule
@@ -17,4 +18,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(LoginFragmentModule::class))
     abstract fun provideLoginActivityInjector(): LoginActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract fun provideMagicLinkInterceptActivityInjector(): MagicLinkInterceptActivity
 }

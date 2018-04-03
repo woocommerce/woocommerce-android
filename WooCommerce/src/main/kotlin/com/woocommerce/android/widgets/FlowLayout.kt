@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -32,12 +33,13 @@ open class FlowLayout @JvmOverloads constructor(context: Context,
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec) - paddingRight - paddingLeft
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec) - ViewCompat.getPaddingEnd(this) -
+                ViewCompat.getPaddingStart(this)
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val growHeight = widthMode != MeasureSpec.UNSPECIFIED
         var width = 0
         var height = paddingTop
-        var currentWidth = paddingLeft
+        var currentWidth = ViewCompat.getPaddingStart(this)
         var currentHeight = 0
         var newLine = false
         var spacing = 0
@@ -57,7 +59,7 @@ open class FlowLayout @JvmOverloads constructor(context: Context,
                 height += currentHeight + mVerticalSpacing
                 currentHeight = 0
                 width = Math.max(width, currentWidth - spacing)
-                currentWidth = paddingLeft
+                currentWidth = ViewCompat.getPaddingStart(this)
                 newLine = true
             } else {
                 newLine = false
@@ -72,7 +74,7 @@ open class FlowLayout @JvmOverloads constructor(context: Context,
         if (!newLine) {
             width = Math.max(width, currentWidth - spacing)
         }
-        width += paddingRight
+        width += ViewCompat.getPaddingEnd(this)
         height += currentHeight + paddingBottom
         setMeasuredDimension(resolveSize(width, widthMeasureSpec), resolveSize(height, heightMeasureSpec))
     }
