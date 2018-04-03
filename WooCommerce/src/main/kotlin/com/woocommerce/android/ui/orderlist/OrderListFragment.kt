@@ -37,26 +37,26 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(inflater: LayoutInflater?,
+    override fun onCreateFragmentView(inflater: LayoutInflater,
                                       container: ViewGroup?,
                                       savedInstanceState: Bundle?): View? {
-        val view = inflater?.inflate(R.layout.fragment_order_list, container, false)
-        view?.let {
-            with(view) {
-                orderRefreshLayout.apply {
+        val view = inflater.inflate(R.layout.fragment_order_list, container, false)
+        with(view) {
+            orderRefreshLayout.apply {
+                activity?.let { activity ->
                     setColorSchemeColors(
                             ContextCompat.getColor(activity, R.color.colorPrimary),
                             ContextCompat.getColor(activity, R.color.colorAccent),
                             ContextCompat.getColor(activity, R.color.colorPrimaryDark)
                     )
-                    // Set the scrolling view in the custom SwipeRefreshLayout
-                    scrollUpChild = ordersList
-                    setOnRefreshListener { presenter.loadOrders() }
                 }
+                // Set the scrolling view in the custom SwipeRefreshLayout
+                scrollUpChild = ordersList
+                setOnRefreshListener { presenter.loadOrders() }
             }
         }
         // Set the title in the action bar
-        activity.title = getString(R.string.wc_orders)
+        activity?.title = getString(R.string.wc_orders)
 
         return view
     }

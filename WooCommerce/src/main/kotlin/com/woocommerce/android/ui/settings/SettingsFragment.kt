@@ -13,10 +13,12 @@ class SettingsFragment : TopLevelFragment() {
         fun newInstance() = SettingsFragment()
     }
 
-    override fun onCreateFragmentView(inflater: LayoutInflater?,
+    override fun onCreateFragmentView(inflater: LayoutInflater,
                                       container: ViewGroup?,
                                       savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.fragment_settings, container, false)
+        // Set the title in the action bar
+        activity?.title = getString(R.string.wc_settings)
+        return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
     override fun getFragmentTitle(): String {

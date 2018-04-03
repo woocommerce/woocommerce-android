@@ -8,7 +8,6 @@
     <string name="signout">Log out</string>
 
     <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
-    <string name="enter_site_address_instead">Log in to your store by entering your site address instead.</string>
     <string name="enter_site_address">Enter the address of your WooCommerce store you\'d like to connect.</string>
 
     <string name="welcome_message">Woo!</string>
