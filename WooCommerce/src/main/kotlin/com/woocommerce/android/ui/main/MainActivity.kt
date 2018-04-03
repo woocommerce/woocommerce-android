@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -22,6 +21,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(),
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: MainContract.Presenter
+    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
 
@@ -134,7 +135,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun notifyTokenUpdated() {
         if (hasMagicLinkLoginIntent()) {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_SUCCEEDED)
+            loginAnalyticsListener.trackLoginMagicLinkSucceeded()
             // TODO Launch next screen
         }
     }

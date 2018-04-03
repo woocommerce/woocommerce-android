@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,10 +33,12 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.wordpress.android.fluxc.generated.AccountActionBuilder;
+import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.fluxc.store.AccountStore.OnAvailabilityChecked;
 import org.wordpress.android.login.util.SiteUtils;
 import org.wordpress.android.login.widgets.WPLoginInputRow;
 import org.wordpress.android.login.widgets.WPLoginInputRow.OnEditorCommitListener;
+import org.wordpress.android.util.ActivityUtils;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
 import org.wordpress.android.util.EditTextUtils;
@@ -58,7 +61,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     private static final String KEY_OLD_SITES_IDS = "KEY_OLD_SITES_IDS";
     private static final String KEY_REQUESTED_EMAIL = "KEY_REQUESTED_EMAIL";
     private static final String LOG_TAG = LoginEmailFragment.class.getSimpleName();
-    private static final int GOOGLE_API_CLIENT_ID = 1001;
+    private static final int GOOGLE_API_CLIENT_ID = 1002;
     private static final int EMAIL_CREDENTIALS_REQUEST_CODE = 25100;
 
     public static final String TAG = "login_email_fragment_tag";
@@ -108,6 +111,8 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
 
     @Override
     protected void setupContent(ViewGroup rootView) {
+        // important for accessibility - talkback
+        getActivity().setTitle(R.string.email_address_login_title);
         mEmailInput = rootView.findViewById(R.id.login_email_row);
         if (BuildConfig.DEBUG) {
             mEmailInput.getEditText().setText(BuildConfig.DEBUG_WPCOM_LOGIN_EMAIL);
@@ -139,7 +144,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
             @Override
             public void onClick(View view) {
                 mAnalyticsListener.trackSocialButtonClick();
-                EditTextUtils.hideSoftInput(mEmailInput.getEditText());
+                ActivityUtils.hideKeyboardForced(mEmailInput.getEditText());
 
                 if (NetworkUtils.checkConnection(getActivity())) {
                     if (isAdded()) {
@@ -153,13 +158,11 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
                 }
             }
         });
-    }
 
-    @Override
-    protected void setupBottomButtons(Button secondaryButton, Button primaryButton) {
-        secondaryButton.setOnClickListener(new OnClickListener() {
+        LinearLayout siteLoginButton = rootView.findViewById(R.id.login_site_button);
+        siteLoginButton.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 if (mLoginListener != null) {
                     if (mLoginListener.getLoginMode() == LoginMode.JETPACK_STATS) {
                         mLoginListener.loginViaWpcomUsernameInstead();
@@ -170,23 +173,30 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
             }
         });
 
+        ImageView siteLoginButtonIcon = rootView.findViewById(R.id.login_site_button_icon);
+        TextView siteLoginButtonText = rootView.findViewById(R.id.login_site_button_text);
+
         switch (mLoginListener.getLoginMode()) {
             case FULL:
             case WPCOM_LOGIN_ONLY:
             case SHARE_INTENT:
-                // all features enabled and with typical values
-                secondaryButton.setText(R.string.enter_site_address_instead);
+                siteLoginButtonIcon.setImageResource(R.drawable.ic_domains_grey_24dp);
+                siteLoginButtonText.setText(R.string.enter_site_address_instead);
                 break;
             case JETPACK_STATS:
-                secondaryButton.setText(R.string.enter_username_instead);
+                siteLoginButtonIcon.setImageResource(R.drawable.ic_user_circle_grey_24dp);
+                siteLoginButtonText.setText(R.string.enter_username_instead);
                 break;
             case WPCOM_LOGIN_DEEPLINK:
-                secondaryButton.setVisibility(View.GONE);
-                break;
             case WPCOM_REAUTHENTICATE:
-                secondaryButton.setVisibility(View.GONE);
+                siteLoginButton.setVisibility(View.GONE);
                 break;
         }
+    }
+
+    @Override
+    protected void setupBottomButtons(Button secondaryButton, Button primaryButton) {
+        secondaryButton.setVisibility(View.GONE);
 
         primaryButton.setOnClickListener(new OnClickListener() {
             @SuppressWarnings("PrivateMemberAccessBetweenOuterAndInnerClass")
@@ -342,7 +352,14 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
         if (event.isError()) {
             // report the error but don't bail yet.
             AppLog.e(T.API, "OnAvailabilityChecked has error: " + event.error.type + " - " + event.error.message);
-            showEmailError(R.string.email_not_registered_wpcom);
+            // hide the keyboard to ensure the link to login using the site address is visible
+            ActivityUtils.hideKeyboardForced(mEmailInput);
+            // we validate the email prior to making the request, but just to be safe...
+            if (event.error.type == AccountStore.IsAvailableErrorType.INVALID) {
+                showEmailError(R.string.email_invalid);
+            } else {
+                showErrorDialog(getString(R.string.error_generic_network));
+            }
             return;
         }
 
@@ -350,9 +367,10 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
             case EMAIL:
                 if (event.isAvailable) {
                     // email address is available on wpcom, so apparently the user can't login with that one.
+                    ActivityUtils.hideKeyboardForced(mEmailInput);
                     showEmailError(R.string.email_not_registered_wpcom);
                 } else if (mLoginListener != null) {
-                    EditTextUtils.hideSoftInput(mEmailInput.getEditText());
+                    ActivityUtils.hideKeyboardForced(mEmailInput);
                     mLoginListener.gotWpcomEmail(event.value);
                 }
                 break;
@@ -373,7 +391,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     @Override
     protected void onLoginFinished() {
         mAnalyticsListener.trackAnalyticsSignIn(mAccountStore, mSiteStore, true);
-        mLoginListener.loggedInViaSocialAccount(mOldSitesIDs);
+        mLoginListener.loggedInViaSocialAccount(mOldSitesIDs, false);
     }
 
     @Override
@@ -423,7 +441,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
                     @Override
                     public void run() {
                         if (isAdded()) {
-                            EditTextUtils.showSoftInput(mEmailInput.getEditText());
+                            ActivityUtils.showKeyboard(mEmailInput.getEditText());
                         }
                     }
                 }, getResources().getInteger(android.R.integer.config_mediumAnimTime));
