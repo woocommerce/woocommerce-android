@@ -45,11 +45,11 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             val orderNumber = arguments.getLong(FIELD_ORDER_NUMBER, 0L)
 
             // Set activity title
-            activity?.title = getString(R.string.wc_order_orderNum, orderNumber)
+            activity?.title = getString(R.string.wc_order_orderNum, orderNumber.toString())
 
             with(view) {
                 orderRefreshLayout?.apply {
-                    activity?.let {activity ->
+                    activity?.let { activity ->
                         setColorSchemeColors(
                                 ContextCompat.getColor(activity, R.color.colorPrimary),
                                 ContextCompat.getColor(activity, R.color.colorAccent),
