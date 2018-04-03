@@ -6,6 +6,9 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 
 interface OrderDetailContract {
     interface Presenter : BasePresenter<View> {
+        /**
+         * @param orderId The local order id
+         */
         fun loadOrderDetail(orderId: Int)
     }
 

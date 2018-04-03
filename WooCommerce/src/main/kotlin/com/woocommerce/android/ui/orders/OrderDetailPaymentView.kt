@@ -34,9 +34,8 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                 R.string.currency_total, currencySymbol, order.totalTax.toFloat())
         paymentInfo_total.text = context.getString(R.string.currency_total, currencySymbol, order.total.toFloat())
 
-        paymentInfo_paymentMsg.text = context.getString(
-                R.string.orderdetail_payment_summary,
-                context.getString(R.string.currency_total, currencySymbol, order.total.toFloat()), order.paymentMethodTitle)
+        paymentInfo_paymentMsg.text = context.getString(R.string.orderdetail_payment_summary, context.getString(
+                R.string.currency_total, currencySymbol, order.total.toFloat()), order.paymentMethodTitle)
 
         // todo process refund type
         //      - update title

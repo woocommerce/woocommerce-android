@@ -18,14 +18,14 @@ import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     companion object {
-        const val FIELD_LOCAL_ORDER_ID = "local-order-id"
-        const val FIELD_REMOTE_ORDER_ID = "remote-order-id"
-        val TAG: String = OrderDetailFragment::class.java.simpleName
-
-        fun newInstance(localOrderId: Int, remoteOrderId: Long): Fragment {
+        const val FIELD_ORDER_ID = "order-id"
+        const val FIELD_ORDER_NUMBER = "order-number"
+        fun newInstance(order: WCOrderModel): Fragment {
             val args = Bundle()
-            args.putInt(FIELD_LOCAL_ORDER_ID, localOrderId)
-            args.putLong(FIELD_REMOTE_ORDER_ID, remoteOrderId)
+            args.putInt(FIELD_ORDER_ID, order.id)
+
+            // Use for populating the title only, not for record retrieval
+            args.putLong(FIELD_ORDER_NUMBER, order.remoteOrderId)
             val fragment = OrderDetailFragment()
             fragment.arguments = args
             return fragment
@@ -34,39 +34,33 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
 
-    private var remoteOrderId: Long = 0L
-    private var localOrderId: Int = 0
-
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        if (savedInstanceState == null) {
-            localOrderId = arguments.getInt(FIELD_LOCAL_ORDER_ID, 0)
-            remoteOrderId = arguments.getLong(FIELD_REMOTE_ORDER_ID, 0L)
-        } else {
-            localOrderId = savedInstanceState.getInt(FIELD_LOCAL_ORDER_ID)
-            remoteOrderId = savedInstanceState.getLong(FIELD_REMOTE_ORDER_ID)
-        }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_order_detail, container, false)
 
-        // Set the activity title
-        activity.title = getString(R.string.orderdetail_orderstatus_ordernum, remoteOrderId)
+        arguments?.let { arguments ->
+            val orderId = arguments.getInt(FIELD_ORDER_ID, 0)
+            val orderNumber = arguments.getLong(FIELD_ORDER_NUMBER, 0L)
 
-        val view = inflater?.inflate(R.layout.fragment_order_detail, container, false)
-        view?.let {
+            // Set activity title
+            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
+
             with(view) {
-                orderRefreshLayout.apply {
-                    setColorSchemeColors(
-                            ContextCompat.getColor(activity, R.color.colorPrimary),
-                            ContextCompat.getColor(activity, R.color.colorAccent),
-                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                    )
+                orderRefreshLayout?.apply {
+                    activity?.let { activity ->
+                        setColorSchemeColors(
+                                ContextCompat.getColor(activity, R.color.colorPrimary),
+                                ContextCompat.getColor(activity, R.color.colorAccent),
+                                ContextCompat.getColor(activity, R.color.colorPrimaryDark)
+                        )
+                    }
 
                     setOnRefreshListener {
-                        presenter.loadOrderDetail(localOrderId)
+                        presenter.loadOrderDetail(orderId)
                     }
                 }
             }
@@ -78,13 +72,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        presenter.loadOrderDetail(localOrderId)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putInt(FIELD_LOCAL_ORDER_ID, localOrderId)
-        outState?.putLong(FIELD_REMOTE_ORDER_ID, remoteOrderId)
-        super.onSaveInstanceState(outState)
+        val orderId = arguments?.getInt(FIELD_ORDER_ID, 0)
+        orderId?.let {
+            presenter.loadOrderDetail(it)
+        }
     }
 
     override fun onDestroyView() {
@@ -126,16 +117,20 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     override fun createEmail(emailAddr: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
-        if (intent.resolveActivity(context.packageManager) != null) {
-            startActivity(intent)
+        context?.let { context ->
+            if (intent.resolveActivity(context.packageManager) != null) {
+                startActivity(intent)
+            }
         }
     }
 
     override fun sendSms(phone: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("smsto:$phone")
-        if (intent.resolveActivity(context.packageManager) != null) {
-            startActivity(intent)
+        context?.let { context ->
+            if (intent.resolveActivity(context.packageManager) != null) {
+                startActivity(intent)
+            }
         }
     }
     // endregion

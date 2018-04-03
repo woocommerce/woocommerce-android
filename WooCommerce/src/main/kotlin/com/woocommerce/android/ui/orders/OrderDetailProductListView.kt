@@ -36,7 +36,10 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         val viewManager = LinearLayoutManager(context)
         val viewAdapter = ProductListAdapter(order.getLineItemList(), currencySymbol)
         val divider = AlignedDividerDecoration(context, DividerItemDecoration.VERTICAL, R.id.productInfo_name)
-        divider.setDrawable(ContextCompat.getDrawable(context, R.drawable.list_divider))
+
+        ContextCompat.getDrawable(context, R.drawable.list_divider)?.let { drawable ->
+            divider.setDrawable(drawable)
+        }
 
         productList_products.apply {
             setHasFixedSize(false)
