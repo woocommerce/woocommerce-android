@@ -11,14 +11,19 @@ import com.woocommerce.android.R
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import kotlinx.android.synthetic.main.fragment_order_detail.view.*
+import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     companion object {
         const val FIELD_ORDER_ID = "order-id"
-        fun newInstance(orderId: Long): Fragment {
+        const val FIELD_ORDER_NUMBER = "order-number"
+        fun newInstance(order: WCOrderModel): Fragment {
             val args = Bundle()
-            args.putLong(FIELD_ORDER_ID, orderId)
+            args.putInt(FIELD_ORDER_ID, order.id)
+
+            // Use for populating the title only, not for record retrieval
+            args.putLong(FIELD_ORDER_NUMBER, order.remoteOrderId)
             val fragment = OrderDetailFragment()
             fragment.arguments = args
             return fragment
@@ -33,24 +38,27 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // Set the title in the action bar
-        val orderNumber = arguments?.getLong(FIELD_ORDER_ID, 0L)
-        activity?.title = getString(R.string.wc_order_orderNum, orderNumber)
-
         val view = inflater.inflate(R.layout.fragment_order_detail, container, false)
-        with(view) {
-            orderRefreshLayout?.apply {
-                activity?.let {activity ->
-                    setColorSchemeColors(
-                            ContextCompat.getColor(activity, R.color.colorPrimary),
-                            ContextCompat.getColor(activity, R.color.colorAccent),
-                            ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-                    )
-                }
 
-                orderNumber?.let {on ->
+        arguments?.let { arguments ->
+            val orderId = arguments.getInt(FIELD_ORDER_ID, 0)
+            val orderNumber = arguments.getLong(FIELD_ORDER_NUMBER, 0L)
+
+            // Set activity title
+            activity?.title = getString(R.string.wc_order_orderNum, orderNumber)
+
+            with(view) {
+                orderRefreshLayout?.apply {
+                    activity?.let {activity ->
+                        setColorSchemeColors(
+                                ContextCompat.getColor(activity, R.color.colorPrimary),
+                                ContextCompat.getColor(activity, R.color.colorAccent),
+                                ContextCompat.getColor(activity, R.color.colorPrimaryDark)
+                        )
+                    }
+
                     setOnRefreshListener {
-                        presenter.loadOrderDetail(on)
+                        presenter.loadOrderDetail(orderId)
                     }
                 }
             }
@@ -62,8 +70,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        val orderNumber = arguments?.getLong(FIELD_ORDER_ID, 0L)
-        orderNumber?.let {
+        val orderId = arguments?.getInt(FIELD_ORDER_ID, 0)
+        orderId?.let {
             presenter.loadOrderDetail(it)
         }
     }

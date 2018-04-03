@@ -5,7 +5,10 @@ import com.woocommerce.android.ui.base.BaseView
 
 interface OrderDetailContract {
     interface Presenter : BasePresenter<View> {
-        fun loadOrderDetail(orderNum: Long)
+        /**
+         * @param orderId The local order id
+         */
+        fun loadOrderDetail(orderId: Int)
     }
 
     interface View : BaseView<Presenter> {

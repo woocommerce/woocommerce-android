@@ -14,7 +14,7 @@ class OrderDetailPresenter @Inject constructor(private var orderStore: WCOrderSt
         orderView = null
     }
 
-    override fun loadOrderDetail(orderNum: Long) {
+    override fun loadOrderDetail(orderId: Int) {
         // todo - fetch order detail
     }
 }

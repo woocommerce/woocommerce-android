@@ -101,8 +101,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         noOrdersView.visibility = View.VISIBLE
     }
 
-    override fun openOrderDetail(orderId: Long) {
-        val frag = OrderDetailFragment.newInstance(orderId)
+    override fun openOrderDetail(order: WCOrderModel) {
+        val frag = OrderDetailFragment.newInstance(order)
         loadChildFragment(frag)
     }
 
