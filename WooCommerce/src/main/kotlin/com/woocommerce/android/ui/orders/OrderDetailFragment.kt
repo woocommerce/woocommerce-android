@@ -47,7 +47,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             val orderNumber = arguments.getLong(FIELD_ORDER_NUMBER, 0L)
 
             // Set activity title
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
+            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber.toString())
 
             with(view) {
                 orderRefreshLayout?.apply {

@@ -51,7 +51,7 @@
     <string name="customer_information">Customer Information</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail">Order Detail</string>
-    <string name="orderdetail_orderstatus_ordernum">Order #%d</string>
+    <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_created">Created %1$s at %2$s</string>
     <string name="orderdetail_shipping_details">Shipping Details</string>
     <string name="orderdetail_billing_details">Billing Details</string>
