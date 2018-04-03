@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.order.OrderDetailFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -36,26 +37,26 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(inflater: LayoutInflater?,
+    override fun onCreateFragmentView(inflater: LayoutInflater,
                                       container: ViewGroup?,
                                       savedInstanceState: Bundle?): View? {
-        val view = inflater?.inflate(R.layout.fragment_order_list, container, false)
-        view?.let {
-            with(view) {
-                orderRefreshLayout.apply {
+        val view = inflater.inflate(R.layout.fragment_order_list, container, false)
+        with(view) {
+            orderRefreshLayout?.apply {
+                activity?.let { activity ->
                     setColorSchemeColors(
                             ContextCompat.getColor(activity, R.color.colorPrimary),
                             ContextCompat.getColor(activity, R.color.colorAccent),
                             ContextCompat.getColor(activity, R.color.colorPrimaryDark)
                     )
-                    // Set the scrolling view in the custom SwipeRefreshLayout
-                    scrollUpChild = ordersList
-                    setOnRefreshListener { presenter.loadOrders() }
                 }
+                // Set the scrolling view in the custom SwipeRefreshLayout
+                scrollUpChild = ordersList
+                setOnRefreshListener { presenter.loadOrders() }
             }
         }
         // Set the title in the action bar
-        activity.title = getString(R.string.orders)
+        activity?.title = getString(R.string.wc_orders)
 
         return view
     }
@@ -99,6 +100,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun showNoOrders() {
         ordersView.visibility = View.GONE
         noOrdersView.visibility = View.VISIBLE
+    }
+
+    override fun openOrderDetail(order: WCOrderModel) {
+        val frag = OrderDetailFragment.newInstance(order)
+        loadChildFragment(frag)
     }
 
     override fun getFragmentTitle(): String {

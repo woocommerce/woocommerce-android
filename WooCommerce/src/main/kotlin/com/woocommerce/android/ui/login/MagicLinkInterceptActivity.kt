@@ -3,14 +3,19 @@ package com.woocommerce.android.ui.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.main.MainActivity
+import dagger.android.AndroidInjection
+import org.wordpress.android.login.LoginAnalyticsListener
+import javax.inject.Inject
 
 class MagicLinkInterceptActivity : Activity() {
+    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPENED)
+        loginAnalyticsListener.trackLoginMagicLinkOpened()
 
         val intent = Intent(this, MainActivity::class.java)
         intent.action = getIntent().action

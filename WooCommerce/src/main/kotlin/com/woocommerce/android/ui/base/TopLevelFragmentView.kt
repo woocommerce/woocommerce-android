@@ -23,7 +23,7 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener {
      * Inflate the fragment view and return to be added to the parent
      * container.
      */
-    fun onCreateFragmentView(inflater: LayoutInflater?,
+    fun onCreateFragmentView(inflater: LayoutInflater,
                              container: ViewGroup?,
                              savedInstanceState: Bundle?): View?
 
