@@ -15,6 +15,12 @@ import kotlinx.android.synthetic.main.fragment_parent.*
  * consistent navigation across top-level fragments and their children.
  */
 abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
+    companion object {
+        // Bundle label to store the state of this top-level fragment.
+        // If the value associated with this label is true, then this
+        // fragment is currently hosting a child fragment (drilled in).
+        const val CHILD_FRAGMENT_ACTIVE = "child-fragment-active"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         childFragmentManager.addOnBackStackChangedListener(this)
@@ -59,6 +65,20 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
                 .commit()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Save the current view state of this top-level fragment.
+        outState.putBoolean(CHILD_FRAGMENT_ACTIVE, childFragmentManager.backStackEntryCount > 0)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            val childViewActive = bundle.getBoolean(CHILD_FRAGMENT_ACTIVE, false)
+            updateParentViewState(childViewActive)
+        }
+    }
+
     /**
      * Set the top-level fragment view to [View.GONE] if a child has been added
      * to prevent click events from passing through to the covered view.
@@ -67,16 +87,25 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
      * [View.VISIBLE] to enable click events.
      */
     override fun onBackStackChanged() {
+        updateParentViewState(childFragmentManager.backStackEntryCount > 0)
+    }
+
+    /**
+     * Update the parent view state to match hierarchy status. If [childActive]
+     * is true, then set the title bar to appropriately show the "up" option,
+     * and set the title to the active child fragments title.
+     */
+    private fun updateParentViewState(childActive: Boolean) {
         val mainActivity: AppCompatActivity? = activity as AppCompatActivity
-        if (childFragmentManager.backStackEntryCount == 0) {
+        if (childActive) {
+            container.getChildAt(0).visibility = View.GONE
+            mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(true)
+        } else {
             container.getChildAt(0).visibility = View.VISIBLE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
             mainActivity?.title = getFragmentTitle()
-        } else {
-            container.getChildAt(0).visibility = View.GONE
-            mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(true)
         }
     }
 }
