@@ -42,7 +42,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                                       savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_order_list, container, false)
         with(view) {
-            orderRefreshLayout.apply {
+            orderRefreshLayout?.apply {
                 activity?.let { activity ->
                     setColorSchemeColors(
                             ContextCompat.getColor(activity, R.color.colorPrimary),

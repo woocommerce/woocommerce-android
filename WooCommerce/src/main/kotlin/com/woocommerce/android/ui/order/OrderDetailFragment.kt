@@ -16,8 +16,6 @@ import javax.inject.Inject
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     companion object {
         const val FIELD_ORDER_ID = "order-id"
-        val TAG: String = OrderDetailFragment::class.java.simpleName
-
         fun newInstance(orderId: Long): Fragment {
             val args = Bundle()
             args.putLong(FIELD_ORDER_ID, orderId)
@@ -34,24 +32,25 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onAttach(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Set the title in the action bar
-        val orderNumber = arguments.getLong(FIELD_ORDER_ID, 0L)
-        activity.title = getString(R.string.wc_order_orderNum, orderNumber)
+        val orderNumber = arguments?.getLong(FIELD_ORDER_ID, 0L)
+        activity?.title = getString(R.string.wc_order_orderNum, orderNumber)
 
-        val view = inflater?.inflate(R.layout.fragment_order_detail, container, false)
-        view?.let {
-            with(view) {
-                orderRefreshLayout.apply {
+        val view = inflater.inflate(R.layout.fragment_order_detail, container, false)
+        with(view) {
+            orderRefreshLayout?.apply {
+                activity?.let {activity ->
                     setColorSchemeColors(
                             ContextCompat.getColor(activity, R.color.colorPrimary),
                             ContextCompat.getColor(activity, R.color.colorAccent),
                             ContextCompat.getColor(activity, R.color.colorPrimaryDark)
                     )
+                }
 
+                orderNumber?.let {on ->
                     setOnRefreshListener {
-                        presenter.loadOrderDetail(orderNumber)
+                        presenter.loadOrderDetail(on)
                     }
                 }
             }
@@ -63,8 +62,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        val orderNumber = arguments.getLong(FIELD_ORDER_ID, 0L)
-        presenter.loadOrderDetail(orderNumber)
+        val orderNumber = arguments?.getLong(FIELD_ORDER_ID, 0L)
+        orderNumber?.let {
+            presenter.loadOrderDetail(it)
+        }
     }
 
     override fun onDestroyView() {
