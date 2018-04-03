@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import java.util.Currency
+import kotlin.math.absoluteValue
 
 class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
@@ -24,8 +25,6 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             Log.e(OrderListAdapter.TAG, "Error finding valid currency symbol for currency code [${order.currency}]", e)
         }
 
-        // todo - if price includes tax, hide tax section
-
         paymentInfo_subTotal.text = context.getString(
                 R.string.currency_total, currencySymbol, order.getOrderSubtotal().toFloat())
         paymentInfo_shippingTotal.text = context.getString(
@@ -37,12 +36,20 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_paymentMsg.text = context.getString(R.string.orderdetail_payment_summary, context.getString(
                 R.string.currency_total, currencySymbol, order.total.toFloat()), order.paymentMethodTitle)
 
-        // todo process refund type
-        //      - update title
-        //      - show refund and new total sections
+        // Populate or hide refund section
+        if (order.refundTotal.absoluteValue > 0) {
+            paymentInfo_lblTitle.text = context.getString(R.string.orderdetail_payment_refunded)
+            paymentInfo_refundSection.visibility = View.VISIBLE
+            paymentInfo_refundTotal.text = context.getString(
+                    R.string.currency_total_negative, currencySymbol, order.refundTotal.absoluteValue.toFloat())
+            val newTotal = order.total.toDouble() + order.refundTotal
+            paymentInfo_newTotal.text = context.getString(R.string.currency_total, currencySymbol, newTotal.toFloat())
+        } else {
+            paymentInfo_lblTitle.text = context.getString(R.string.payment)
+            paymentInfo_refundSection.visibility = View.GONE
+        }
 
-        // Populate discounts.
-        // - If no discounts, hide section
+        // Populate or hide discounts section
         if (order.discountTotal == "0.00") {
             paymentInfo_discountSection.visibility = View.GONE
         } else {
