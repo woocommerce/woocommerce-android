@@ -109,7 +109,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
                     R.string.orderlist_item_order_total, currencySymbol, order.total)
             itemHolder.rootView.tag = order
             itemHolder.rootView.setOnClickListener {
-                val orderItem: WCOrderModel = it.tag as WCOrderModel
+                val orderItem = it.tag as WCOrderModel
                 presenter.openOrderDetail(orderItem)
             }
             // clear existing tags and add new ones
