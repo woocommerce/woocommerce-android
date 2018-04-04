@@ -38,5 +38,4 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector
 
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
-
 }
