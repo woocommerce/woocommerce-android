@@ -16,10 +16,10 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
-        private var dispatcher: Dispatcher,
-        private var accountStore: AccountStore,
-        private var siteStore: SiteStore,
-        private var wooCommerceStore: WooCommerceStore
+        private val dispatcher: Dispatcher,
+        private val accountStore: AccountStore,
+        private val siteStore: SiteStore,
+        private val wooCommerceStore: WooCommerceStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -38,6 +38,9 @@ class MainPresenter @Inject constructor(
     override fun userIsLoggedIn(): Boolean {
         return accountStore.hasAccessToken()
     }
+
+    // TODO Temporary, we should have a global way of storing/getting this (and it should reflect the user's selection)
+    override fun getSelectedSite() = wooCommerceStore.getWooCommerceSites().firstOrNull()
 
     override fun storeMagicLinkToken(token: String) {
         // Save Token to the AccountStore. This will trigger an OnAuthenticationChanged.

@@ -21,12 +21,12 @@ import javax.inject.Named
 class WooCommerceGlideModule : AppGlideModule() {
     @field:[Inject Named("custom-ssl")] internal lateinit var requestQueue: RequestQueue
 
-    override fun applyOptions(context: Context?, builder: GlideBuilder?) {}
+    override fun applyOptions(context: Context, builder: GlideBuilder) {}
 
     override fun isManifestParsingEnabled(): Boolean = false
 
-    override fun registerComponents(context: Context?, glide: Glide?, registry: Registry?) {
+    override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
         (context as WooCommerce).membersInjector.injectMembers(this)
-        glide?.registry?.replace(GlideUrl::class.java, InputStream::class.java, VolleyUrlLoader.Factory(requestQueue))
+        glide.registry.replace(GlideUrl::class.java, InputStream::class.java, VolleyUrlLoader.Factory(requestQueue))
     }
 }

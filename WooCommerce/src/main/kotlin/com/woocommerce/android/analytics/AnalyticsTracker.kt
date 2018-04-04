@@ -43,7 +43,17 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE,
         ADDED_SELF_HOSTED_SITE,
         APPLICATION_OPENED,
-        APPLICATION_CLOSED
+        APPLICATION_CLOSED,
+        SIGNUP_EMAIL_TO_LOGIN,
+        SIGNUP_MAGIC_LINK_FAILED,
+        SIGNUP_MAGIC_LINK_SENT,
+        SIGNUP_MAGIC_LINK_SUCCEEDED,
+        SIGNUP_SOCIAL_2FA_NEEDED,
+        SIGNUP_SOCIAL_ACCOUNTS_NEED_CONNECTING,
+        SIGNUP_SOCIAL_BUTTON_FAILURE,
+        SIGNUP_SOCIAL_TO_LOGIN,
+        ADDED_SELF_HOSTED_SITE,
+        CREATED_ACCOUNT
     }
 
     private var tracksClient = TracksClient.getClient(context)

@@ -1,14 +1,18 @@
 buildscript {
-    ext.kotlinVersion = '1.2.20'
+    ext.kotlinVersion = '1.2.31'
 
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath 'com.automattic.android:fetchstyle:1.0'
     }
 }
+
+apply plugin: 'com.automattic.android.fetchstyle'
 
 allprojects {
     apply plugin: 'checkstyle'
@@ -22,10 +26,6 @@ allprojects {
 
     task checkstyle(type: Checkstyle) {
         source 'src'
-        include '**/*.java'
-        include '**/*.kt'
-        include '**/*.xml'
-        exclude '**/gen/**'
 
         classpath = files()
     }
@@ -73,10 +73,12 @@ task clean(type: Delete) {
 }
 
 ext {
-    fluxCVersion = '599a767d6b664f5d3c0b5de073e469c9f39f080b'
+    fluxCVersion = '875259736be890b94e30579e465d51e2cfb61926'
     daggerVersion = '2.11'
-    supportLibraryVersion = '26.1.0'
-    glideVersion = '4.1.1'
+    supportLibraryVersion = '27.1.0'
+    glideVersion = '4.6.1'
     testRunnerVersion = '1.0.0'
     espressoVersion = '3.0.0'
+    constraintLayoutVersion = '1.0.2'
+    multidexVersion = '1.0.2'
 }

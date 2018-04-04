@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FlowLayout">
+        <attr name="horizontalSpacing" format="dimension" />
+        <attr name="verticalSpacing" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="FlowLayout_LayoutParams">
+        <attr name="layout_horizontalSpacing" format="dimension" />
+        <attr name="layout_verticalSpacing" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="TagView">
+        <attr name="tagText" format="reference|string"/>
+        <attr name="tagTextColor" format="reference|color"/>
+        <attr name="tagTextSize" format="dimension"/>
+        <attr name="tagColor" format="reference|color"/>
+        <attr name="tagBorderColor" format="reference|color"/>
+    </declare-styleable>
+
+    <declare-styleable name="AppTheme">
+        <attr name="tagViewStyle" format="reference"/>
+        <attr name="flowLayoutStyle" format="reference"/>
+    </declare-styleable>
+</resources>
