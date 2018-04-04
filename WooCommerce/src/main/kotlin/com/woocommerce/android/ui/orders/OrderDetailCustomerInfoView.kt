@@ -40,8 +40,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         customerInfo_emailAddr.text = order.billingEmail
 
         // display phone
-        if (!order.billingPhone.isNullOrEmpty()) {
-            customerInfo_phone.text = PhoneUtils.formatPhone(context, order.billingPhone)
+        if (!order.billingPhone.isEmpty()) {
+            customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
         }
 
         // configure more/less button
