@@ -41,9 +41,9 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_lblTitle.text = context.getString(R.string.orderdetail_payment_refunded)
             paymentInfo_refundSection.visibility = View.VISIBLE
             paymentInfo_refundTotal.text = context.getString(
-                    R.string.currency_total_negative, currencySymbol, order.refundTotal.absoluteValue.toFloat())
+                    R.string.currency_total_negative, currencySymbol, order.refundTotal.absoluteValue)
             val newTotal = order.total.toDouble() + order.refundTotal
-            paymentInfo_newTotal.text = context.getString(R.string.currency_total, currencySymbol, newTotal.toFloat())
+            paymentInfo_newTotal.text = context.getString(R.string.currency_total, currencySymbol, newTotal)
         } else {
             paymentInfo_lblTitle.text = context.getString(R.string.payment)
             paymentInfo_refundSection.visibility = View.GONE
