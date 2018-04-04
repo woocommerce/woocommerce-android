@@ -16,8 +16,6 @@ class SettingsFragment : TopLevelFragment() {
     override fun onCreateFragmentView(inflater: LayoutInflater,
                                       container: ViewGroup?,
                                       savedInstanceState: Bundle?): View? {
-        // Set the title in the action bar
-        activity?.title = getString(R.string.wc_settings)
         return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
