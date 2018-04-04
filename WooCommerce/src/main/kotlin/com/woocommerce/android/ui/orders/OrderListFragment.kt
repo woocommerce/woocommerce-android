@@ -54,9 +54,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                 setOnRefreshListener { presenter.loadOrders() }
             }
         }
-        // Set the title in the action bar
-        activity?.title = getString(R.string.orders)
-
         return view
     }
 

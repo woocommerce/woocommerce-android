@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.settings
+package com.woocommerce.android.ui.notifications
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,22 +7,20 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 
-class SettingsFragment : TopLevelFragment() {
+class NotificationsFragment : TopLevelFragment() {
     companion object {
-        val TAG: String = SettingsFragment::class.java.simpleName
-        fun newInstance() = SettingsFragment()
+        val TAG: String = NotificationsFragment::class.java.simpleName
+        fun newInstance() = NotificationsFragment()
     }
 
     override fun onCreateFragmentView(inflater: LayoutInflater,
                                       container: ViewGroup?,
                                       savedInstanceState: Bundle?): View? {
-        // Set the title in the action bar
-        activity?.title = getString(R.string.settings)
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+        return inflater.inflate(R.layout.fragment_notifications, container, false)
     }
 
     override fun getFragmentTitle(): String {
-        return getString(R.string.settings)
+        return getString(R.string.notifications)
     }
 
     override fun refreshFragmentState() {

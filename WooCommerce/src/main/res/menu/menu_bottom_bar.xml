@@ -12,7 +12,7 @@
         android:title="@string/orders"/>
 
     <item
-        android:id="@+id/settings"
-        android:icon="@drawable/ic_menu_settings"
-        android:title="@string/settings"/>
+        android:id="@+id/notifications"
+        android:icon="@drawable/ic_menu_notifications"
+        android:title="@string/notifications"/>
 </menu>

@@ -3,6 +3,7 @@ package com.woocommerce.android
 import android.app.Activity
 import android.app.Service
 import android.support.multidex.MultiDexApplication
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
@@ -29,9 +30,12 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     override fun onCreate() {
         super.onCreate()
+
         component.inject(this)
         val wellSqlConfig = WellSqlConfig(applicationContext, WellSqlConfig.ADDON_WOOCOMMERCE)
         WellSql.init(wellSqlConfig)
+
+        AnalyticsTracker.init(applicationContext)
     }
 
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector
