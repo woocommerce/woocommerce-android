@@ -4,6 +4,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -53,5 +54,9 @@ class OrderListPresenter @Inject constructor(private val dispatcher: Dispatcher,
         }
 
         orderView?.setLoadingIndicator(false)
+    }
+
+    override fun openOrderDetail(order: WCOrderModel) {
+        orderView?.openOrderDetail(order)
     }
 }

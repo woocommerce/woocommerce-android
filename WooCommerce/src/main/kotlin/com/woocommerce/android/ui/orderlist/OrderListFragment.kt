@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.order.OrderDetailFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -41,7 +42,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                                       savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_order_list, container, false)
         with(view) {
-            orderRefreshLayout.apply {
+            orderRefreshLayout?.apply {
                 activity?.let { activity ->
                     setColorSchemeColors(
                             ContextCompat.getColor(activity, R.color.colorPrimary),
@@ -54,9 +55,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                 setOnRefreshListener { presenter.loadOrders() }
             }
         }
-        // Set the title in the action bar
-        activity?.title = getString(R.string.wc_orders)
-
         return view
     }
 
@@ -98,6 +96,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun showNoOrders() {
         ordersView.visibility = View.GONE
         noOrdersView.visibility = View.VISIBLE
+    }
+
+    override fun openOrderDetail(order: WCOrderModel) {
+        val frag = OrderDetailFragment.newInstance(order)
+        loadChildFragment(frag)
+    }
+
+    override fun getFragmentTitle(): String {
+        return getString(R.string.wc_orders)
     }
 
     override fun getSelectedSite() = (activity as? MainActivity)?.getSite()

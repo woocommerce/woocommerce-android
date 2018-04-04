@@ -108,7 +108,10 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             itemHolder.orderTotal.text = resources.getString(
                     R.string.orderlist_item_order_total, currencySymbol, order.total)
             itemHolder.rootView.tag = order
-
+            itemHolder.rootView.setOnClickListener {
+                val orderItem = it.tag as WCOrderModel
+                presenter.openOrderDetail(orderItem)
+            }
             // clear existing tags and add new ones
             itemHolder.orderTagList.removeAllViews()
             processTagView(ctx, order.status, itemHolder)

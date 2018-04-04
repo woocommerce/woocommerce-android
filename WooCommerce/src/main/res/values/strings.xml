@@ -39,5 +39,7 @@
     <string name="wc_orders">Orders</string>
     <string name="wc_settings">Settings</string>
 
+    <!-- Order Views -->
+    <string name="wc_order_orderNum">Order #%s</string>
     <string name="wc_order_detail">Order Detail</string>
 </resources>
