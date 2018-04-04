@@ -41,7 +41,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_SOCIAL_ACCOUNTS_NEED_CONNECTING,
         LOGIN_SOCIAL_ERROR_UNKNOWN_USER,
         LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE,
-        ADDED_SELF_HOSTED_SITE,
         APPLICATION_OPENED,
         APPLICATION_CLOSED,
         SIGNUP_EMAIL_TO_LOGIN,
