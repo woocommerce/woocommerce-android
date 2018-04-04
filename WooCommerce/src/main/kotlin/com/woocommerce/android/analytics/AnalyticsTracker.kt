@@ -1,9 +1,14 @@
 package com.woocommerce.android.analytics
 
+import android.annotation.SuppressLint
+import android.content.Context
 import java.util.HashMap
+import com.automattic.android.tracks.TracksClient
+import android.preference.PreferenceManager
+import java.util.UUID
+import org.json.JSONObject
 
-class AnalyticsTracker {
-    // TODO Connect to Nosara
+class AnalyticsTracker private constructor(private val context: Context) {
     enum class Stat {
         SIGNED_IN,
         LOGIN_ACCESSED,
@@ -36,6 +41,8 @@ class AnalyticsTracker {
         LOGIN_SOCIAL_ACCOUNTS_NEED_CONNECTING,
         LOGIN_SOCIAL_ERROR_UNKNOWN_USER,
         LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE,
+        APPLICATION_OPENED,
+        APPLICATION_CLOSED,
         SIGNUP_EMAIL_TO_LOGIN,
         SIGNUP_MAGIC_LINK_FAILED,
         SIGNUP_MAGIC_LINK_SENT,
@@ -48,13 +55,94 @@ class AnalyticsTracker {
         CREATED_ACCOUNT
     }
 
+    private var tracksClient = TracksClient.getClient(context)
+    private var username: String? = null
+    private var anonymousID: String? = null
+
+    private fun clearAnonID() {
+        anonymousID = null
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        if (preferences.contains(TRACKS_ANON_ID)) {
+            val editor = preferences.edit()
+            editor.remove(TRACKS_ANON_ID)
+            editor.apply()
+        }
+    }
+
+    private fun getAnonID(): String? {
+        if (anonymousID == null) {
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            anonymousID = preferences.getString(TRACKS_ANON_ID, null)
+        }
+        return anonymousID
+    }
+
+    private fun generateNewAnonID(): String {
+        val uuid = UUID.randomUUID().toString()
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val editor = preferences.edit()
+        editor.putString(TRACKS_ANON_ID, uuid)
+        editor.apply()
+
+        anonymousID = uuid
+        return uuid
+    }
+
+    private fun track(stat: Stat, properties: Map<String, *>) {
+        if (tracksClient == null) {
+            return
+        }
+
+        val eventName = stat.name.toLowerCase()
+
+        val user = username ?: getAnonID() ?: generateNewAnonID()
+
+        val userType = if (username != null) {
+            TracksClient.NosaraUserType.WPCOM
+        } else {
+            TracksClient.NosaraUserType.ANON
+        }
+
+        val propertiesJson = JSONObject(properties)
+        tracksClient.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+    }
+
+    private fun flush() {
+        tracksClient.flush()
+    }
+
+    private fun refreshMetadata(newUsername: String) {
+        if (newUsername.isNotEmpty()) {
+            username = newUsername
+            if (getAnonID() != null) {
+                tracksClient.trackAliasUser(username, getAnonID(), TracksClient.NosaraUserType.WPCOM)
+                clearAnonID()
+            }
+        } else {
+            username = null
+            if (getAnonID() == null) {
+                generateNewAnonID()
+            }
+        }
+    }
+
     companion object {
+        // Guaranteed to hold a reference to the application context, which is safe
+        @SuppressLint("StaticFieldLeak")
+        private lateinit var instance: AnalyticsTracker
+        private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
+        private const val EVENTS_PREFIX = "woocommerceandroid_"
+
+        fun init(context: Context) {
+            instance = AnalyticsTracker(context.applicationContext)
+        }
+
         fun track(stat: Stat) {
-            // TODO
+            track(stat, emptyMap<String, String>())
         }
 
         fun track(stat: Stat, properties: Map<String, *>) {
-            // TODO
+            instance.track(stat, properties)
         }
 
         /**
@@ -70,6 +158,14 @@ class AnalyticsTracker {
             props.put("error_type", errorType)
             props.put("error_description", errorDescription)
             track(stat, props)
+        }
+
+        fun flush() {
+            instance.flush()
+        }
+
+        fun refreshMetadata(username: String) {
+            instance.refreshMetadata(username)
         }
     }
 }

@@ -29,6 +29,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     override fun onCreate() {
         super.onCreate()
+
         component.inject(this)
         val wellSqlConfig = WellSqlConfig(applicationContext, WellSqlConfig.ADDON_WOOCOMMERCE)
         WellSql.init(wellSqlConfig)
