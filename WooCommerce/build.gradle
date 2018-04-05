@@ -43,7 +43,9 @@ android {
 }
 
 dependencies {
-    implementation "org.wordpress:libaddressinput.common:$libaddressinputVersion"
+    implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
+        exclude group: "org.json", module: "json"
+    }
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
