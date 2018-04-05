@@ -11,8 +11,8 @@
     <string name="view_more">VIEW MORE</string>
     <string name="view_less">VIEW LESS</string>
     <string name="phone">Phone</string>
-    <string name="currency_total">%1$s%2$.2f</string>
-    <string name="currency_total_negative">-%1$s%2$.2f</string>
+    <string name="currency_total">%1$s%2$s</string>
+    <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="total">Total</string>
     <string name="shipping">Shipping</string>
     <string name="payment">Payment</string>

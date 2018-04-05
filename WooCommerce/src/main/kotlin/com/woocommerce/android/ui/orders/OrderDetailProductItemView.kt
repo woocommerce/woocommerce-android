@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.util.CurrencyUtils
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 
@@ -14,18 +15,18 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
 
-    fun initView(item: WCOrderModel.LineItem, currencySymbol: String) {
+    fun initView(item: WCOrderModel.LineItem, currencyCode: String) {
         productInfo_name.text = item.name
         productInfo_sku.text = item.sku
         productInfo_qty.text = item.quantity.toString()
 
         // Populate formatted total and tax values
         val res = context.resources
-        val orderTotal = res.getString(R.string.currency_total, currencySymbol, item.total?.toFloat())
-        val productPrice = res.getString(R.string.currency_total, currencySymbol, item.price?.toFloat())
+        val orderTotal = CurrencyUtils.currencyString(context, item.total, currencyCode)
+        val productPrice = CurrencyUtils.currencyString(context, item.price, currencyCode)
         productInfo_productTotal.text = res.getString(
                 R.string.orderdetail_product_lineitem_total, orderTotal, productPrice, item.quantity)
-        productInfo_totalTax.text = res.getString(R.string.currency_total, currencySymbol, item.totalTax?.toFloat())
+        productInfo_totalTax.text = CurrencyUtils.currencyString(context, item.totalTax, currencyCode)
 
         // todo Product Image
     }

@@ -8,7 +8,6 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
-import java.util.Currency
 
 class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
@@ -25,16 +23,8 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
     }
 
     fun initView(order: WCOrderModel) {
-        // get the proper currency symbol for the current order
-        var currencySymbol = ""
-        try {
-            currencySymbol = Currency.getInstance(order.currency).symbol
-        } catch (e: IllegalArgumentException) {
-            Log.e(OrderListAdapter.TAG, "Error finding valid currency symbol for currency code [${order.currency}]", e)
-        }
-
         val viewManager = LinearLayoutManager(context)
-        val viewAdapter = ProductListAdapter(order.getLineItemList(), currencySymbol)
+        val viewAdapter = ProductListAdapter(order.getLineItemList(), order.currency)
         val divider = AlignedDividerDecoration(context, DividerItemDecoration.VERTICAL, R.id.productInfo_name)
 
         ContextCompat.getDrawable(context, R.drawable.list_divider)?.let { drawable ->
@@ -50,7 +40,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
     }
 
-    class ProductListAdapter(private val orderItems: List<WCOrderModel.LineItem>, private val currencySymbol: String) :
+    class ProductListAdapter(private val orderItems: List<WCOrderModel.LineItem>, private val currencyCode: String) :
             RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
 
@@ -62,7 +52,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.view.initView(orderItems[position], currencySymbol)
+            holder.view.initView(orderItems[position], currencyCode)
         }
 
         override fun getItemCount(): Int {
