@@ -42,7 +42,8 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         }
 
         // Populate or hide discounts section
-        if (order.discountTotal == "0.00") {
+        val discountCheck = order.discountTotal.toDoubleOrNull()
+        if (discountCheck == null || discountCheck.compareTo(0) == 0) {
             paymentInfo_discountSection.visibility = View.GONE
         } else {
             paymentInfo_discountSection.visibility = View.VISIBLE
