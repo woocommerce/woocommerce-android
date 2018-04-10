@@ -25,7 +25,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             args.putInt(FIELD_ORDER_ID, order.id)
 
             // Use for populating the title only, not for record retrieval
-            args.putLong(FIELD_ORDER_NUMBER, order.remoteOrderId)
+            args.putString(FIELD_ORDER_NUMBER, order.number)
             val fragment = OrderDetailFragment()
             fragment.arguments = args
             return fragment
@@ -44,7 +44,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
         arguments?.let { arguments ->
             val orderId = arguments.getInt(FIELD_ORDER_ID, 0)
-            val orderNumber = arguments.getLong(FIELD_ORDER_NUMBER, 0L)
+            val orderNumber = arguments.getString(FIELD_ORDER_NUMBER, "")
 
             // Set activity title
             activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber.toString())

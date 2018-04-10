@@ -12,13 +12,12 @@ import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.StatelessSection
 import com.woocommerce.android.widgets.tags.TagView
+import kotlinx.android.synthetic.main.order_list_header.view.*
+import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
-
-import kotlinx.android.synthetic.main.order_list_header.view.*
-import kotlinx.android.synthetic.main.order_list_item.view.*
 
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
@@ -90,7 +89,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             val resources = itemHolder.rootView.context.applicationContext.resources
             val ctx = itemHolder.rootView.context
 
-            itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.remoteOrderId)
+            itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.number)
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
             itemHolder.orderTotal.text = CurrencyUtils.currencyString(ctx, order.total, order.currency)
