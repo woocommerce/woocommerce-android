@@ -154,10 +154,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(ctx: Context,
         }
     }
 
-    fun setDrawable(drawable: Drawable?) {
-        if (drawable == null) {
-            throw IllegalArgumentException("Drawable cannot be null.")
-        }
+    fun setDrawable(drawable: Drawable) {
         divider = drawable
     }
 }
