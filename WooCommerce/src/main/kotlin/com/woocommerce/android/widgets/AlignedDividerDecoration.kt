@@ -43,8 +43,10 @@ import android.view.View
  *
  * For Horizontal lists, the start = top, and end = bottom.
  */
-class AlignedDividerDecoration @JvmOverloads constructor(
-        ctx: Context, val orientation: Int, val alignStartToStartOf: Int = 0, val alignEndToEndOf: Int = 0)
+class AlignedDividerDecoration @JvmOverloads constructor(ctx: Context,
+                                                         private val orientation: Int,
+                                                         private val alignStartToStartOf: Int = 0,
+                                                         private val alignEndToEndOf: Int = 0)
     : RecyclerView.ItemDecoration() {
     companion object {
         const val HORIZONTAL = 0
