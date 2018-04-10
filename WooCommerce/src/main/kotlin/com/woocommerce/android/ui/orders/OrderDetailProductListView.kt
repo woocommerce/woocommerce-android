@@ -25,7 +25,8 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
     fun initView(order: WCOrderModel) {
         val viewManager = LinearLayoutManager(context)
         val viewAdapter = ProductListAdapter(order.getLineItemList(), order.currency)
-        val divider = AlignedDividerDecoration(context, DividerItemDecoration.VERTICAL, R.id.productInfo_name)
+        val divider = AlignedDividerDecoration(context,
+                DividerItemDecoration.VERTICAL, R.id.productInfo_name, clipToMargin = true)
 
         ContextCompat.getDrawable(context, R.drawable.list_divider)?.let { drawable ->
             divider.setDrawable(drawable)

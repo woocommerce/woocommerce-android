@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.View
 
@@ -26,11 +27,11 @@ import android.view.View
  * You would create an instance of this class by feeding the [alignStartToStartOf] with the id of this view:
  * `AlignedDividerDecoration(context, DividerItemDecoration.VERTICAL, R.id.text2))`
  *
- * Define an element to align the end of the divider with:
+ * Define an element to align the start and end of the divider and respect the margins:
  *
  * +-------------------------+
  * |ImageView TextView Button|
- * |          --------        <-- Divider aligns with second element (R.id.text2)
+ * |          --------       |<-- Divider aligns with second element (R.id.text2)
  * |ImageView TextView Button|
  * |          --------       |
  * |ImageView TextView Button|
@@ -38,15 +39,27 @@ import android.view.View
  * |ImageView TextView Button|
  * +_________________________+
  *
- * You would create an instance of this class by feeding the [alignEndToEndOf] with the id of this view:
- * `AlignedDividerDecoration(context, DividerItemDecoration.VERTICAL, R.id.text2))`
+ * You would create an instance of this class by feeding the [alignStartToStartOf] and [alignEndToEndOf] with the id
+ * of this view:
+ * `AlignedDividerDecoration(context, DividerItemDecoration.VERTICAL, R.id.text2, R.id.text2, true))`
  *
  * For Horizontal lists, the start = top, and end = bottom.
+ *
+ * @param [ctx] The active context
+ * @param [orientation] The orientation of the list. Either [AlignedDividerDecoration.HORIZONTAL]
+ * or [AlignedDividerDecoration.VERTICAL]
+ * @param [alignStartToStartOf] Optional. The resource ID of the component in the list view to align the start of the
+ * divider with. If not provided, the start will be aligned with the start of the parent.
+ * @param [alignEndToEndOf] Optional. The resource ID of the component in the list item view to align the end of the
+ * divider with. If not provided, the end will be aligned with the end of the parent.
+ * @param [clipToMargin] True if the divider should also clip itself to match the margins of the provided components.
+ * Default is false.
  */
 class AlignedDividerDecoration @JvmOverloads constructor(ctx: Context,
                                                          private val orientation: Int,
                                                          private val alignStartToStartOf: Int = 0,
-                                                         private val alignEndToEndOf: Int = 0)
+                                                         private val alignEndToEndOf: Int = 0,
+                                                         private val clipToMargin: Boolean = false)
     : RecyclerView.ItemDecoration() {
     companion object {
         const val HORIZONTAL = 0
@@ -82,16 +95,24 @@ class AlignedDividerDecoration @JvmOverloads constructor(ctx: Context,
         (0..adjustedChildCount)
                 .map { parent.getChildAt(it) }
                 .forEach {
-                    val clipStartView = it.findViewById<View>(alignStartToStartOf)
-                    val clipEndView = it.findViewById<View>(alignEndToEndOf)
+                    val left = it.findViewById<View>(alignStartToStartOf)
+                    val right = it.findViewById<View>(alignEndToEndOf)
 
-                    val left = clipStartView?.left ?: 0
-                    val right = clipEndView?.right ?: parent.width
+                    var dividerStart = left?.left ?: 0
+                    var dividerEnd = right?.right ?: parent.width
+                    if (clipToMargin) {
+                        (left?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
+                            dividerStart += it.marginStart
+                        }
+                        (right?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
+                            dividerEnd -= it.marginEnd
+                        }
+                    }
 
                     parent.getDecoratedBoundsWithMargins(it, bounds)
                     val bottom = bounds.bottom + Math.round(it.translationY)
                     val top = bottom - divider.intrinsicHeight
-                    divider.setBounds(left, top, right, bottom)
+                    divider.setBounds(dividerStart, top, dividerEnd, bottom)
                     divider.draw(canvas)
                 }
     }
@@ -104,8 +125,18 @@ class AlignedDividerDecoration @JvmOverloads constructor(ctx: Context,
                     val clipStartView = it.findViewById<View>(alignStartToStartOf)
                     val clipEndView = it.findViewById<View>(alignEndToEndOf)
 
-                    val top = clipStartView?.top ?: 0
-                    val bottom = clipEndView?.bottom ?: parent.height
+                    var top = clipStartView?.top ?: 0
+                    var bottom = clipEndView?.bottom ?: parent.height
+
+                    // Calculate margins if enabled
+                    if (clipToMargin) {
+                        (clipStartView?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
+                            top += it.marginStart
+                        }
+                        (clipEndView?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
+                            bottom -= it.marginEnd
+                        }
+                    }
 
                     parent.layoutManager.getDecoratedBoundsWithMargins(it, bounds)
                     val right = bounds.right + Math.round(it.translationX)
@@ -123,7 +154,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(ctx: Context,
         }
     }
 
-    fun setDrawable(drawable: Drawable) {
+    fun setDrawable(drawable: Drawable?) {
         if (drawable == null) {
             throw IllegalArgumentException("Drawable cannot be null.")
         }
