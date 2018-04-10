@@ -100,10 +100,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             // Populate the Customer Information Card
             orderDetail_customerInfo.initView(order, this)
 
-            if (order.status.any { it.toString() in "refunded, processing" }) {
-                // Populate the Payment Information Card
-                orderDetail_paymentInfo.initView(order)
-            }
+            // Populate the Payment Information Card
+            orderDetail_paymentInfo.initView(order)
         }
     }
 
