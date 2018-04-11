@@ -8,9 +8,11 @@
 
     <ImageView
         android:id="@+id/productInfo_icon"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:contentDescription="@string/orderdetail_product_image_contentdesc"
+        android:background="@drawable/product_image_border"
+        android:layout_marginTop="@dimen/card_item_padding_intra_v"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_report_image"/>
