@@ -23,7 +23,6 @@
         android:layout_marginBottom="@dimen/card_item_padding_intra_h"
         android:contentDescription="@string/orderdetail_customer_image_contentdesc"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/customerNote_lblTitle"
         app:srcCompat="@drawable/generic_profile_image" />
