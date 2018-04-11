@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
+import kotlinx.android.synthetic.main.order_detail_customer_note.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 
 class OrderDetailCustomerNoteView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -14,8 +15,6 @@ class OrderDetailCustomerNoteView @JvmOverloads constructor(ctx: Context, attrs:
     }
 
     fun initView(order: WCOrderModel) {
-        // TODO populate the customer note.
-
-        // TODO set customer profile image
+        customerNote_msg.text = order.customerNote
     }
 }

@@ -103,11 +103,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order)
 
-            // If there is a customer note, show the customer
-            // notes view and populate.
-            // TODO check if customer notes exist
-            // TODO if note, show card and populate
-            // TODO if no note, hide the card.
+            // Check for customer note, show if available
+            if (order.customerNote.isEmpty()) {
+                orderDetail_customerNote.visibility = View.GONE
+            } else {
+                orderDetail_customerNote.visibility = View.VISIBLE
+                orderDetail_customerNote.initView(order)
+            }
         }
     }
 
