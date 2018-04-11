@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/customerNote_lblTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/orderdetail_customer_provided_note"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title.Bold"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/customerNote_avatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:contentDescription="@string/orderdetail_customer_image_contentdesc"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/customerNote_lblTitle"
+        app:srcCompat="@drawable/generic_profile_image" />
+
+    <TextView
+        android:id="@+id/customerNote_msg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_item_padding_intra_v"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/customerNote_avatar"
+        app:layout_constraintTop_toBottomOf="@+id/customerNote_lblTitle"
+        tools:text="Hey! Can you please wrap this as a gift. It's a friends birthday, and I want it to be uber special. Thanks!" />
+</merge>

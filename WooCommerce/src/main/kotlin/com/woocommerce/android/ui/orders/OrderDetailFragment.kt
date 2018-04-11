@@ -102,6 +102,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order)
+
+            // If there is a customer note, show the customer
+            // notes view and populate.
+            // TODO check if customer notes exist
+            // TODO if note, show card and populate
+            // TODO if no note, hide the card.
         }
     }
 

@@ -16,24 +16,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- Order Status -->
             <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
                 android:id="@+id/orderDetail_orderStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Woo.Card"/>
 
+            <!-- Product List -->
             <com.woocommerce.android.ui.orders.OrderDetailProductListView
                 android:id="@+id/orderDetail_productList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Woo.Card.List"/>
 
+            <!-- Customer Note -->
+            <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
+                android:id="@+id/orderDetail_customerNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Woo.Card"/>
+
+            <!-- Customer Info -->
             <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
                 android:id="@+id/orderDetail_customerInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Woo.Card"/>
 
+            <!-- Payments -->
             <com.woocommerce.android.ui.orders.OrderDetailPaymentView
                 android:id="@+id/orderDetail_paymentInfo"
                 android:layout_width="match_parent"
