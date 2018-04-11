@@ -35,7 +35,6 @@
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:layout_marginBottom="@dimen/card_item_padding_intra_h"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/customerNote_avatar"
         app:layout_constraintTop_toBottomOf="@+id/customerNote_lblTitle"
