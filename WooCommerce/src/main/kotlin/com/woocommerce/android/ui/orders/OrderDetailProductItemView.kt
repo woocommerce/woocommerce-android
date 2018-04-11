@@ -17,8 +17,16 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
     fun initView(item: WCOrderModel.LineItem, currencyCode: String) {
         productInfo_name.text = item.name
-        productInfo_sku.text = item.sku
         productInfo_qty.text = item.quantity.toString()
+
+        if (item.sku.isNullOrEmpty()) {
+            productInfo_lblSku.visibility = View.GONE
+            productInfo_sku.visibility = View.GONE
+        } else {
+            productInfo_lblSku.visibility = View.VISIBLE
+            productInfo_sku.visibility = View.VISIBLE
+            productInfo_sku.text = item.sku
+        }
 
         // Populate formatted total and tax values
         val res = context.resources
