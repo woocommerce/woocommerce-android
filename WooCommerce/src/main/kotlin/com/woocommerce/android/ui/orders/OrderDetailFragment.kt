@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
+import kotlinx.android.synthetic.main.fragment_order_detail.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
@@ -42,19 +43,25 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         val view = inflater.inflate(R.layout.fragment_order_detail, container, false)
 
         arguments?.let { arguments ->
+            val orderId = arguments.getInt(FIELD_ORDER_ID, 0)
             val orderNumber = arguments.getString(FIELD_ORDER_NUMBER, "")
 
-            activity?.let {
-                // Set activity title
-                it.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber.toString())
+            // Set activity title
+            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber.toString())
 
-                // Set refresh indicator colors
+            with(view) {
                 orderRefreshLayout?.apply {
-                    setColorSchemeColors(
-                            ContextCompat.getColor(it, R.color.colorPrimary),
-                            ContextCompat.getColor(it, R.color.colorAccent),
-                            ContextCompat.getColor(it, R.color.colorPrimaryDark)
-                    )
+                    activity?.let { activity ->
+                        setColorSchemeColors(
+                                ContextCompat.getColor(activity, R.color.colorPrimary),
+                                ContextCompat.getColor(activity, R.color.colorAccent),
+                                ContextCompat.getColor(activity, R.color.colorPrimaryDark)
+                        )
+                    }
+
+                    setOnRefreshListener {
+                        presenter.loadOrderDetail(orderId)
+                    }
                 }
             }
         }
@@ -84,23 +91,17 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
     override fun showOrderDetail(order: WCOrderModel?) {
         order?.let {
-            // Set swipe refresh listener
-            orderRefreshLayout?.apply {
-                setOnRefreshListener {
-                    presenter.refreshOrderDetail(it.remoteOrderId)
-                }
-            }
             // Populate the Order Status Card
-            orderDetail_orderStatus.initView(it)
+            orderDetail_orderStatus.initView(order)
 
             // Populate the Order Product List Card
-            orderDetail_productList.initView(it)
+            orderDetail_productList.initView(order)
 
             // Populate the Customer Information Card
-            orderDetail_customerInfo.initView(it, this)
+            orderDetail_customerInfo.initView(order, this)
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(it)
+            orderDetail_paymentInfo.initView(order)
         }
     }
 
