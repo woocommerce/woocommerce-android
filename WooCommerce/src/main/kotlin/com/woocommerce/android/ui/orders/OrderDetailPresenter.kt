@@ -22,10 +22,4 @@ class OrderDetailPresenter @Inject constructor(private val orderStore: WCOrderSt
             }
         }
     }
-
-    override fun refreshOrderDetail(remoteOrderId: Long) {
-        // TODO - fetch a fresh copy of this order from the server.
-        // for now just cancel the loading indicator
-        orderView?.setLoadingIndicator(false)
-    }
 }
