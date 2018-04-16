@@ -24,7 +24,7 @@ android {
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
     }
 
     buildTypes {
