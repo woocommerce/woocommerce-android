@@ -18,7 +18,6 @@ class OrderListPresenter @Inject constructor(private val dispatcher: Dispatcher,
     override fun takeView(view: OrderListContract.View) {
         orderView = view
         dispatcher.register(this)
-        loadOrders()
     }
 
     override fun dropView() {
