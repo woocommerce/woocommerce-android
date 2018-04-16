@@ -2,6 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-allopen'
+
+allOpen {
+    annotation("com.woocommerce.android.annotations.OpenClass")
+}
 
 repositories {
     mavenCentral()
@@ -36,6 +41,7 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        release.java.srcDirs += 'src/release/kotlin'
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
