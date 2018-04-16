@@ -21,7 +21,7 @@ import javax.inject.Singleton
         ReleaseNetworkModule::class,
         ReleaseWCNetworkModule::class,
         ReleaseOkHttpClientModule::class,
-        ActivityBindingModule::class,
+        MockedActivityBindingModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class))
 interface AppComponentTest : AppComponent {

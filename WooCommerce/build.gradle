@@ -98,12 +98,14 @@ dependencies {
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
-    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
+    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
     androidTestImplementation "com.android.support.test:rules:$testRunnerVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
+    androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
 
     // Resolve conflicts between main and test APK
