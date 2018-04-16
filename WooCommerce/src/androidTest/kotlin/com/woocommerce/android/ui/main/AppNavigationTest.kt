@@ -5,6 +5,7 @@ import android.support.test.espresso.NoActivityResumedException
 import android.support.test.filters.LargeTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import com.woocommerce.android.ui.TestBase
 import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
@@ -12,7 +13,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class AppNavigationTest {
+class AppNavigationTest : TestBase() {
     @Rule
     @JvmField var activityTestRule = ActivityTestRule(MainActivity::class.java)
 
