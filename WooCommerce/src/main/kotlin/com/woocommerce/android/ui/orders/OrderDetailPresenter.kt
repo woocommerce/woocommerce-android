@@ -17,11 +17,8 @@ class OrderDetailPresenter @Inject constructor(private val orderStore: WCOrderSt
     override fun loadOrderDetail(orderId: Int) {
         if (orderId != 0) {
             orderView?.let {
-                orderView?.setLoadingIndicator(true)
-
                 val order = orderStore.getOrderByLocalOrderId(orderId)
                 orderView?.showOrderDetail(order)
-                orderView?.setLoadingIndicator(false)
             }
         }
     }

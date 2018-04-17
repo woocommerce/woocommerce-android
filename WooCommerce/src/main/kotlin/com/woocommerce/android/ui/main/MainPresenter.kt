@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -15,6 +16,7 @@ import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
+@OpenClassOnDebug
 class MainPresenter @Inject constructor(
         private val dispatcher: Dispatcher,
         private val accountStore: AccountStore,
