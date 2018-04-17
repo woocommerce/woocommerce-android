@@ -1,31 +1,79 @@
 <resources>
     <string name="app_name">WooCommerce</string>
-
-    <!-- Login -->
-    <string name="cant_open_url">Unable to open the link</string>
-    <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
-    <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
+    <!--
+        General Strings
+    -->
     <string name="signout">Log out</string>
-
-    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
-    <string name="enter_site_address">Enter the address of your WooCommerce store you\'d like to connect.</string>
-
-    <string name="welcome_message">Woo!</string>
-
-    <!-- OrderList Views -->
-    <string name="orderlist_no_orders">No Orders</string>
-    <string name="orderlist_item_order_num">#%d</string>
-    <string name="orderlist_item_order_name">%1$s %2$s</string>
-    <string name="orderlist_item_order_total">%1$s%2$s</string>
-
-    <!-- TimeGroup Labels -->
+    <string name="dashboard">Dashboard</string>
+    <string name="orders">Orders</string>
+    <string name="settings">Settings</string>
+    <string name="email_address">Email Address</string>
+    <string name="view_more">VIEW MORE</string>
+    <string name="view_less">VIEW LESS</string>
+    <string name="phone">Phone</string>
+    <string name="currency_total">%1$s%2$s</string>
+    <string name="currency_total_negative">-%1$s%2$s</string>
+    <string name="total">Total</string>
+    <string name="shipping">Shipping</string>
+    <string name="payment">Payment</string>
+    <string name="taxes">Taxes</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="discount">Discount</string>
+    <string name="notifications">Notifications</string>
+    <!--
+        Date/Time Labels
+    -->
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
-
-    <!-- Base Order Status Labels -->
+    <!--
+        Error Strings
+    -->
+    <string name="error_cant_open_url">Unable to open the link</string>
+    <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
+    <!--
+        Login View
+    -->
+    <string name="cant_open_url">Unable to open the link</string>
+    <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
+    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
+    <string name="enter_site_address">Enter the address of your WooCommerce store you\'d like to connect.</string>
+    <!--
+        Order List View
+    -->
+    <string name="orderlist_no_orders">No Orders</string>
+    <string name="orderlist_item_order_num">#%s</string>
+    <string name="orderlist_item_order_name">%1$s %2$s</string>
+    <!--
+        Order Detail Views
+    -->
+    <string name="customer_information">Customer Information</string>
+    <string name="customer_full_name">%1$s %2$s</string>
+    <string name="orderdetail">Order Detail</string>
+    <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
+    <string name="orderdetail_orderstatus_created">Created %1$s at %2$s</string>
+    <string name="orderdetail_shipping_details">Shipping Details</string>
+    <string name="orderdetail_billing_details">Billing Details</string>
+    <string name="orderdetail_email_contentdesc">email customer</string>
+    <string name="orderdetail_call_contentdesc">call customer</string>
+    <string name="orderdetail_sms_contentdesc">send customer sms message</string>
+    <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_details">Details:</string>
+    <string name="orderdetail_product_lineitem_tax">Tax:</string>
+    <string name="orderdetail_product_lineitem_sku">SKU:</string>
+    <string name="orderdetail_product_image_contentdesc">Product Icon</string>
+    <string name="orderdetail_product">Product</string>
+    <string name="orderdetail_product_qty">QTY</string>
+    <string name="orderdetail_payment_summary">Payment of %1$s received via %2$s</string>
+    <string name="orderdetail_refunded">Refunded</string>
+    <string name="orderdetail_new_total">New Total</string>
+    <string name="orderdetail_payment_refunded">Payment - Refunded</string>
+    <string name="orderdetail_discount_items">(%1$s)</string>
+    <!--
+        Order Status Labels
+    -->
     <string name="orderstatus_processing">Processing</string>
     <string name="orderstatus_pending">Pending Payment</string>
     <string name="orderstatus_failed">Failed</string>
@@ -33,14 +81,4 @@
     <string name="orderstatus_hold">On-Hold</string>
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
-
-    <!-- Bottom Navigation Bar -->
-    <string name="wc_dashboard">Dashboard</string>
-    <string name="wc_orders">Orders</string>
-    <string name="wc_settings">Settings</string>
-    <string name="notifications">Notifications</string>
-
-    <!-- Order Views -->
-    <string name="wc_order_orderNum">Order #%s</string>
-    <string name="wc_order_detail">Order Detail</string>
 </resources>

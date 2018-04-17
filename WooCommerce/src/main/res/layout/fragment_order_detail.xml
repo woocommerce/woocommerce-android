@@ -1,15 +1,39 @@
-<android.support.v4.widget.SwipeRefreshLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.order.OrderDetailFragment">
+    android:background="@color/default_window_background"
+    tools:context="com.woocommerce.android.ui.orders.OrderDetailFragment">
 
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/wc_order_detail"/>
+        android:layout_height="wrap_content">
 
-</android.support.v4.widget.SwipeRefreshLayout>
+        <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
+            android:id="@+id/orderDetail_orderStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card"/>
+
+        <com.woocommerce.android.ui.orders.OrderDetailProductListView
+            android:id="@+id/orderDetail_productList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card.List"/>
+
+        <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
+            android:id="@+id/orderDetail_customerInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card"/>
+
+        <com.woocommerce.android.ui.orders.OrderDetailPaymentView
+            android:id="@+id/orderDetail_paymentInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card"/>
+    </LinearLayout>
+</ScrollView>

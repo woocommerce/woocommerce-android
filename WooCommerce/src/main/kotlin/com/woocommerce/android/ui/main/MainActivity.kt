@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
@@ -28,13 +29,18 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
-        BottomNavigationView.OnNavigationItemSelectedListener {
+        BottomNavigationView.OnNavigationItemSelectedListener,
+        BottomNavigationView.OnNavigationItemReselectedListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
         private const val KEY_POSITION = "key-position"
+
+        init {
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+        }
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -179,12 +185,20 @@ class MainActivity : AppCompatActivity(),
         bottom_nav.disableShiftMode()
         bottom_nav.active(activeNavPosition.position)
         bottom_nav.setOnNavigationItemSelectedListener(this)
+        bottom_nav.setOnNavigationItemReselectedListener(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val navPosition = findNavigationPositionById(item.itemId)
         return switchFragment(navPosition)
     }
+
+    override fun onNavigationItemReselected(item: MenuItem) {
+        val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
+        clearFragmentBackStack(activeFragment)
+        (activeFragment as TopLevelFragment).refreshFragmentState()
+    }
+
     // endregion
 
     // region Fragment Processing

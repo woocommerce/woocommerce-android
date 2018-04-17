@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.main
 import android.support.v4.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.dashboard.DashboardFragment
-import com.woocommerce.android.ui.orderlist.OrderListFragment
+import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.notifications.NotificationsFragment
 
 enum class BottomNavigationPosition(val position: Int, val id: Int) {

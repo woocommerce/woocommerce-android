@@ -1,7 +1,8 @@
-package com.woocommerce.android.ui.order
+package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
+import org.wordpress.android.fluxc.model.WCOrderModel
 
 interface OrderDetailContract {
     interface Presenter : BasePresenter<View> {
@@ -11,7 +12,7 @@ interface OrderDetailContract {
         fun loadOrderDetail(orderId: Int)
     }
 
-    interface View : BaseView<Presenter> {
-        fun setLoadingIndicator(active: Boolean)
+    interface View : BaseView<Presenter>, OrderActionListener {
+        fun showOrderDetail(order: WCOrderModel?)
     }
 }

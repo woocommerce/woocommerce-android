@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orderlist
+package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.order.OrderDetailFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -28,6 +27,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     @Inject lateinit var presenter: OrderListContract.Presenter
     @Inject lateinit var ordersAdapter: OrderListAdapter
     private lateinit var ordersDividerDecoration: DividerItemDecoration
+
+    private var loadOrdersPending = false // If true, the fragment will refresh its orders when its visible
 
     override var isActive: Boolean = false
         get() = isAdded
@@ -72,6 +73,22 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
             adapter = ordersAdapter
         }
         presenter.takeView(this)
+        // If this fragment is not visible, defer loading the orders until it is visible.
+        if (isVisible) {
+            presenter.loadOrders()
+        } else {
+            loadOrdersPending = true
+        }
+    }
+
+    override fun onBackStackChanged() {
+        super.onBackStackChanged()
+        // If this fragment is now visible and we've deferred loading orders due to it not
+        // being visible - go ahead and load the orders.
+        if (isVisible && loadOrdersPending) {
+            loadOrdersPending = false
+            presenter.loadOrders()
+        }
     }
 
     override fun onDestroyView() {
@@ -87,6 +104,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     }
 
     override fun showOrders(orders: List<WCOrderModel>) {
+        ordersList.scrollToPosition(0)
+        orderRefreshLayout.isEnabled = true
         ordersAdapter.setOrders(orders)
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
@@ -98,13 +117,22 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         noOrdersView.visibility = View.VISIBLE
     }
 
+    /**
+     * Only open the order detail if the list is not actively being refreshed.
+     */
     override fun openOrderDetail(order: WCOrderModel) {
-        val frag = OrderDetailFragment.newInstance(order)
-        loadChildFragment(frag)
+        if (!orderRefreshLayout.isRefreshing) {
+            val frag = OrderDetailFragment.newInstance(order)
+            loadChildFragment(frag)
+        }
     }
 
     override fun getFragmentTitle(): String {
-        return getString(R.string.wc_orders)
+        return getString(R.string.orders)
+    }
+
+    override fun refreshFragmentState() {
+        presenter.loadOrders()
     }
 
     override fun getSelectedSite() = (activity as? MainActivity)?.getSite()

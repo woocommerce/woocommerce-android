@@ -13,7 +13,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         currency = "USD"
         dateCreated = "2018-01-05T05:14:30Z"
         localSiteId = 1
-        remoteOrderId = 51
+        number = "51"
         status = "processing"
         total = "14.53"
     }
@@ -24,7 +24,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         currency = "CAD"
         dateCreated = "2017-12-08T16:11:13Z"
         localSiteId = 1
-        remoteOrderId = 63
+        number = "63"
         status = "pending"
         total = "106.00"
     }
@@ -35,7 +35,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         currency = "USD"
         dateCreated = "2018-02-05T16:11:13Z"
         localSiteId = 1
-        remoteOrderId = 14
+        number = "14"
         status = "processing"
         total = "25.73"
     }
@@ -46,7 +46,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         currency = "CAD"
         dateCreated = "2018-02-06T09:11:13Z"
         localSiteId = 1
-        remoteOrderId = 15
+        number = "15"
         status = "pending, on-hold, complete"
         total = "106.00"
     }
@@ -57,7 +57,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         currency = "USD"
         dateCreated = "2018-02-05T16:11:13Z"
         localSiteId = 1
-        remoteOrderId = 3
+        number = "3"
         status = "pending"
         total = "106.00"
     }
@@ -68,7 +68,7 @@ fun generateWCOrderModels(): List<WCOrderModel> {
         currency = "USD"
         dateCreated = "2018-02-02T16:11:13Z"
         localSiteId = 1
-        remoteOrderId = 55
+        number = "55"
         status = "pending, Custom 1,Custom 2,Custom 3"
         total = "106.00"
     }

@@ -20,6 +20,10 @@ class DashboardFragment : TopLevelFragment() {
     }
 
     override fun getFragmentTitle(): String {
-        return getString(R.string.wc_dashboard)
+        return getString(R.string.dashboard)
+    }
+
+    override fun refreshFragmentState() {
+        // todo reset scrolling
     }
 }

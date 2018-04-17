@@ -24,24 +24,74 @@
         <item name="tagViewStyle">@style/Woo.Tag</item>
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
+        <item name="android:buttonStyle">@style/Woo.Button</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">
         <!-- Overrides for various api levels -->
     </style>
+    <!--
+        Toolbar Theme
+    -->
+    <style name="ToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!-- Tints input fields like checkboxes and text fields -->
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Color of the title text in the toolbar -->
+        <item name="android:textColorPrimary">@color/menu_title_text</item>
+        <!-- Applies to views in their normal state. -->
+        <item name="colorControlNormal">#FFFFFFFF</item>
+        <!-- Applies to views in their activated state (i.e checked or switches) -->
+        <item name="colorControlActivated">#FFCCCCCC</item>
+        <!-- Applied to framework control highlights (i.e ripples or list selectors) -->
+        <item name="colorControlHighlight">#3d96588a</item>
+        <!-- Ripple effect when clicking items -->
+        <item name="selectableItemBackground">?android:selectableItemBackground</item>
+        <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+    </style>
 
     <style name="Woo"/>
     <!--
-        Default Text Style
+        Text Styles
     -->
     <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
-        <item name="android:textColor">@color/default_text</item>
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Title">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Title.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Label">
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textColor">@color/default_text_label_color</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Label.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Button">
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/default_button_fg_color</item>
     </style>
     <!--
-        Default List Style
+        Default Button Style
     -->
-    <style name="Woo.List" parent="android:Widget.DeviceDefault.ListView">
-        <item name="android:listDivider">@drawable/list_divider</item>
+    <style name="Woo.Button" parent="android:Widget.DeviceDefault.Button.Borderless">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:background">@color/white</item>
     </style>
     <!--
         Default TagView Style
@@ -63,7 +113,56 @@
         <item name="com.woocommerce.android:tagBorderColor">@color/tagView_border_bg</item>
     </style>
     <!--
-        Default List Item Styles
+        Default Card Style
+    -->
+    <style name="Woo.Card">
+        <item name="android:paddingStart">@dimen/card_padding_start</item>
+        <item name="android:paddingEnd">@dimen/card_padding_end</item>
+        <item name="android:paddingTop">@dimen/card_padding_top</item>
+        <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
+        <item name="android:background">@color/card_bgColor</item>
+        <item name="android:layout_marginBottom">@dimen/card_gutter</item>
+    </style>
+    <style name="Woo.Card.List">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+    </style>
+    <style name="Woo.TextView">
+        <item name="android:paddingStart">@dimen/card_item_padding_intra_h</item>
+        <item name="android:paddingEnd">@dimen/card_item_padding_intra_h</item>
+        <item name="android:paddingTop">@dimen/card_item_padding_intra_v</item>
+        <item name="android:paddingBottom">@dimen/card_item_padding_intra_v</item>
+        <item name="android:textAppearance">@style/Woo.TextAppearance</item>
+    </style>
+    <style name="Woo.TextView.Title">
+        <item name="android:paddingStart">@dimen/card_padding_start</item>
+        <item name="android:paddingEnd">@dimen/card_padding_end</item>
+        <item name="android:paddingTop">@dimen/card_padding_top</item>
+        <item name="android:paddingBottom">@dimen/card_item_padding_intra_v</item>
+        <item name="android:textAppearance">@style/Woo.TextAppearance.Title</item>
+    </style>
+    <style name="Woo.TextView.Title.Bold">
+        <item name="android:textAppearance">@style/Woo.TextAppearance.Title.Bold</item>
+    </style>
+    <style name="Woo.CardExtenderButton">
+        <item name="android:background">@null</item>
+        <item name="android:textOn">@string/view_less</item>
+        <item name="android:textOff">@string/view_more</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:drawableEnd">@drawable/card_expander_selector</item>
+        <item name="android:paddingEnd">4dp</item>
+    </style>
+    <!--
+        Default List Style
+    -->
+    <style name="Woo.List" parent="android:Widget.DeviceDefault.ListView">
+        <item name="android:listDivider">@drawable/list_divider</item>
+    </style>
+    <!--
+        Base List Child Styles
     -->
     <style name="Woo.ListItem">
         <item name="android:paddingStart">@dimen/list_item_padding_start</item>
@@ -99,9 +198,9 @@
     </style>
 
     <style name="Woo.TextAppearance.ListHeader">
+        <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/List_header_text</item>
         <item name="android:textSize">@dimen/list_header_text_size</item>
-        <item name="android:textStyle">bold</item>
     </style>
     <!--
         Default FlowLayout Style
@@ -123,23 +222,16 @@
     <style name="Woo.OrderList.TextAppearance.ListItem.Title.Bold">
         <item name="android:textStyle">bold</item>
     </style>
-
-    <style name="ToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <!-- Tints input fields like checkboxes and text fields -->
-        <item name="colorAccent">@color/colorAccent</item>
-        <!-- Color of the title text in the toolbar -->
-        <item name="android:textColorPrimary">@color/menu_title_text</item>
-        <!-- Applies to views in their normal state. -->
-        <item name="colorControlNormal">#FFFFFFFF</item>
-        <!-- Applies to views in their activated state (i.e checked or switches) -->
-        <item name="colorControlActivated">#FFCCCCCC</item>
-        <!-- Applied to framework control highlights (i.e ripples or list selectors) -->
-        <item name="colorControlHighlight">#3d96588a</item>
-        <!-- Ripple effect when clicking items -->
-        <item name="selectableItemBackground">?android:selectableItemBackground</item>
-        <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+    <!--
+        OrderDetail Styles
+    -->
+    <style name="Woo.OrderDetail.TextAppearance.Title" parent="Woo.TextAppearance.Title"/>
+    <style name="Woo.OrderDetail.TextAppearance.Title.Bold" parent="Woo.TextAppearance.Title.Bold"/>
+    <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance"/>
+    <style name="Woo.OrderDetail.TextAppearance.Red">
+        <item name="android:textColor">@color/wc_red</item>
     </style>
-
+    <style name="Woo.OrderDetail.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
+    <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
+    <style name="Woo.OrderDetail.TextAppearance.Label.Bold" parent="Woo.TextAppearance.Label.Bold"/>
 </resources>

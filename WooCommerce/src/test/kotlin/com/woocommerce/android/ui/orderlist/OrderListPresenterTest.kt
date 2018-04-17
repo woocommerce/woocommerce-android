@@ -8,6 +8,8 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.generateWCOrderModels
+import com.woocommerce.android.ui.orders.OrderListContract
+import com.woocommerce.android.ui.orders.OrderListPresenter
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -38,6 +40,7 @@ class OrderListPresenterTest {
     fun `Displays the orders list view correctly`() {
         // Presenter should dispatch FETCH_ORDERS on startup
         presenter.takeView(orderListView)
+        presenter.loadOrders()
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
@@ -50,6 +53,7 @@ class OrderListPresenterTest {
     fun `Displays the no orders list view correctly`() {
         // Presenter should dispatch FETCH_ORDERS on startup
         presenter.takeView(orderListView)
+        presenter.loadOrders()
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update

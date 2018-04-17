@@ -3,7 +3,13 @@
     <color name="colorPrimary">@color/wc_purple</color>
     <color name="colorPrimaryDark">@color/wc_grey_dark</color>
     <color name="colorAccent">@color/wc_purple</color>
-
+    <!--
+        Default Colors
+    -->
+    <color name="default_window_background">#e0e0e0</color>
+    <color name="default_text_color">@color/grey_dark</color>
+    <color name="default_button_fg_color">@color/colorPrimary</color>
+    <color name="default_text_label_color">#939393</color>
     <!--
         General Color Definitions
     -->
@@ -11,6 +17,7 @@
     <!-- TODO: Consolidate with rest of wc_greys -->
     <color name="wc_grey_darker">#787878</color>
     <color name="wc_grey_lightest">#f7f7f7</color>
+    <color name="wc_grey_darkest">#2a2a2a</color>
     <color name="grey_dark_highlight">#333333</color>
 
     <!-- Primary Greens -->
@@ -18,6 +25,7 @@
     <color name="wc_green_lightest">#e9f4db</color>
 
     <!-- Primary Reds -->
+    <color name="wc_red">#ff0000</color>
     <color name="wc_red_light">#febdbb</color>
     <color name="wc_red_lightest">#fededd</color>
 
@@ -36,6 +44,16 @@
     <!-- Menu Text Colors -->
     <color name="menu_title_text">#FFFFFFFF</color>
     <color name="menu_action_text">#FFFFFFFF</color>
+
+    <!-- Default Card colors -->
+    <color name="card_bgColor">@color/white</color>
+    <color name="card_title_text">@color/default_text_title</color>
+    <color name="card_label_text">@color/default_text_label_color</color>
+    <color name="card_normal_text">@color/default_text_color</color>
+
+    <!-- Tag View default colors -->
+    <color name="tagView_bgColor">#d2d2d2</color>
+    <color name="tagView_fgColor">#a7a7a7</color>
 
     <!-- Default List colors -->
     <color name="list_divider">@color/wc_grey_17</color>

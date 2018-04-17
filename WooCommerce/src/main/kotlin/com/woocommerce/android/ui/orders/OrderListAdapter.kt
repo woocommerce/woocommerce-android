@@ -1,35 +1,29 @@
-package com.woocommerce.android.ui.orderlist
+package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.model.TimeGroup
+import com.woocommerce.android.model.TimeGroup
+import com.woocommerce.android.util.CurrencyUtils
 import com.woocommerce.android.widgets.FlowLayout
 import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.StatelessSection
 import com.woocommerce.android.widgets.tags.TagView
-import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.util.DateTimeUtils
-import java.util.Currency
-import java.util.Date
-import javax.inject.Inject
-
 import kotlinx.android.synthetic.main.order_list_header.view.*
 import kotlinx.android.synthetic.main.order_list_item.view.*
+import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.util.DateTimeUtils
+import java.util.Date
+import javax.inject.Inject
 
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
 class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
     : SectionedRecyclerViewAdapter() {
-    companion object {
-        val TAG: String = OrderListAdapter::class.java.simpleName
-    }
-
     fun setOrders(orders: List<WCOrderModel>) {
         // clear all the current data from the adapter
         removeAllSections()
@@ -92,21 +86,13 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val order = list[position]
             val itemHolder = holder as ItemViewHolder
-
-            var currencySymbol = ""
-            try {
-                currencySymbol = Currency.getInstance(order.currency).symbol
-            } catch (e: IllegalArgumentException) {
-                Log.e(TAG, "Error finding valid currency symbol for currency code [${order.currency}]", e)
-            }
-
             val resources = itemHolder.rootView.context.applicationContext.resources
             val ctx = itemHolder.rootView.context
-            itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.remoteOrderId)
+
+            itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.number)
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
-            itemHolder.orderTotal.text = resources.getString(
-                    R.string.orderlist_item_order_total, currencySymbol, order.total)
+            itemHolder.orderTotal.text = CurrencyUtils.currencyString(ctx, order.total, order.currency)
             itemHolder.rootView.tag = order
             itemHolder.rootView.setOnClickListener {
                 val orderItem = it.tag as WCOrderModel

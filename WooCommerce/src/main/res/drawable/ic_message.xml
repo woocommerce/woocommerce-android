@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="20dp"
+        android:height="20dp"
+        android:viewportWidth="20"
+        android:viewportHeight="20">
+
+    <group
+        android:name="4.1.1---Order-Details-expanded"
+        android:translateX="-279.000000"
+        android:translateY="-535.000000">
+        <group
+            android:name="ic_chat_black_24px"
+            android:translateX="277.000000"
+            android:translateY="533.000000">
+            <path
+                android:name="Shape"
+                android:fillColor="#96588A"
+                android:strokeWidth="1"
+                android:pathData="M20,2 L4,2 C2.9,2 2.01,2.9 2.01,4 L2,22 L6,18 L20,18 C21.1,18 22,17.1 22,16 L22,4 C22,2.9 21.1,2 20,2 Z M6,9 L18,9 L18,11 L6,11 L6,9 Z M14,14 L6,14 L6,12 L14,12 L14,14 Z M18,8 L6,8 L6,6 L18,6 L18,8 Z" />
+            <path
+                android:name="Shape"
+                android:fillType="evenOdd"
+                android:strokeWidth="1"
+                android:pathData="M 0 0 L 24 0 L 24 24 L 0 24 Z" />
+        </group>
+    </group>
+</vector>

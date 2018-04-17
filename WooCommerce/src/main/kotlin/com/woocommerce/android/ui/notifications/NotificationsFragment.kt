@@ -22,4 +22,8 @@ class NotificationsFragment : TopLevelFragment() {
     override fun getFragmentTitle(): String {
         return getString(R.string.notifications)
     }
+
+    override fun refreshFragmentState() {
+        // todo reset any scrolling
+    }
 }

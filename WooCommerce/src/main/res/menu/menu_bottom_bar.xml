@@ -4,12 +4,12 @@
     <item
         android:id="@+id/dashboard"
         android:icon="@drawable/ic_menu_dashboard"
-        android:title="@string/wc_dashboard"/>
+        android:title="@string/dashboard"/>
 
     <item
         android:id="@+id/orders"
         android:icon="@drawable/ic_menu_orders_list"
-        android:title="@string/wc_orders"/>
+        android:title="@string/orders"/>
 
     <item
         android:id="@+id/notifications"
