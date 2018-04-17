@@ -26,9 +26,11 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         childFragmentManager.addOnBackStackChangedListener(this)
     }
 
-    final override fun onCreateView(inflater: LayoutInflater,
-                                    container: ViewGroup?,
-                                    savedInstanceState: Bundle?): View? {
+    final override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val layout: FrameLayout = inflater.inflate(R.layout.fragment_parent,
                 container, false) as FrameLayout
         val view: View? = onCreateFragmentView(inflater, layout, savedInstanceState)

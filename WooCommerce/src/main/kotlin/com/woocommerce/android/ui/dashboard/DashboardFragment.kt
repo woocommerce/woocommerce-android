@@ -13,9 +13,11 @@ class DashboardFragment : TopLevelFragment() {
         fun newInstance() = DashboardFragment()
     }
 
-    override fun onCreateFragmentView(inflater: LayoutInflater,
-                                      container: ViewGroup?,
-                                      savedInstanceState: Bundle?): View? {
+    override fun onCreateFragmentView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_dashboard, container, false)
     }
 

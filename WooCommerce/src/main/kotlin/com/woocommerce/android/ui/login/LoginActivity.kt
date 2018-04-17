@@ -144,8 +144,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
-    override fun loginViaSocialAccount(email: String?, idToken: String?, service: String?,
-                                       isPasswordRequired: Boolean) {
+    override fun loginViaSocialAccount(
+        email: String?,
+        idToken: String?,
+        service: String?,
+        isPasswordRequired: Boolean
+    ) {
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, idToken,
                 service, isPasswordRequired)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
@@ -190,8 +194,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
-    override fun needs2faSocial(email: String?, userId: String?, nonceAuthenticator: String?, nonceBackup: String?,
-                                nonceSms: String?) {
+    override fun needs2faSocial(
+        email: String?,
+        userId: String?,
+        nonceAuthenticator: String?,
+        nonceBackup: String?,
+        nonceSms: String?
+    ) {
         loginAnalyticsListener.trackLoginSocial2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstanceSocial(email, userId,
                 nonceAuthenticator, nonceBackup, nonceSms)
@@ -225,8 +234,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
-    override fun handleSslCertificateError(memorizingTrustManager: MemorizingTrustManager?,
-                                           callback: LoginListener.SelfSignedSSLCallback?) {
+    override fun handleSslCertificateError(
+        memorizingTrustManager: MemorizingTrustManager?,
+        callback: LoginListener.SelfSignedSSLCallback?
+    ) {
         // TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)
     }
 
@@ -307,8 +318,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
     // SmartLock
 
-    override fun saveCredentialsInSmartLock(username: String?, password: String?, displayName: String,
-                                            profilePicture: Uri?) {
+    override fun saveCredentialsInSmartLock(
+        username: String?,
+        password: String?,
+        displayName: String,
+        profilePicture: Uri?
+    ) {
         // TODO: Hook for smartlock, if using
     }
 

@@ -18,10 +18,10 @@ import javax.inject.Inject
 
 @OpenClassOnDebug
 class MainPresenter @Inject constructor(
-        private val dispatcher: Dispatcher,
-        private val accountStore: AccountStore,
-        private val siteStore: SiteStore,
-        private val wooCommerceStore: WooCommerceStore
+    private val dispatcher: Dispatcher,
+    private val accountStore: AccountStore,
+    private val siteStore: SiteStore,
+    private val wooCommerceStore: WooCommerceStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 

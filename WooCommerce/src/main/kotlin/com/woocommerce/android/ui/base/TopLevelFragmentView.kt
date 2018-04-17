@@ -23,9 +23,11 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener {
      * Inflate the fragment view and return to be added to the parent
      * container.
      */
-    fun onCreateFragmentView(inflater: LayoutInflater,
-                             container: ViewGroup?,
-                             savedInstanceState: Bundle?): View?
+    fun onCreateFragmentView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View?
 
     /**
      * Return the title that should appear in the action bar while this fragment is

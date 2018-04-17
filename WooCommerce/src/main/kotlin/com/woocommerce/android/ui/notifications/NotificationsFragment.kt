@@ -13,9 +13,11 @@ class NotificationsFragment : TopLevelFragment() {
         fun newInstance() = NotificationsFragment()
     }
 
-    override fun onCreateFragmentView(inflater: LayoutInflater,
-                                      container: ViewGroup?,
-                                      savedInstanceState: Bundle?): View? {
+    override fun onCreateFragmentView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_notifications, container, false)
     }
 

@@ -10,8 +10,9 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
-class OrderListPresenter @Inject constructor(private val dispatcher: Dispatcher,
-                                             private val orderStore: WCOrderStore
+class OrderListPresenter @Inject constructor(
+    private val dispatcher: Dispatcher,
+    private val orderStore: WCOrderStore
 ) : OrderListContract.Presenter {
     private var orderView: OrderListContract.View? = null
 

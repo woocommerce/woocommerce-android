@@ -14,8 +14,10 @@ import android.view.View
  *
  * see https://github.com/googlesamples/android-architecture
  */
-class ScrollChildSwipeRefreshLayout @JvmOverloads constructor(context: Context,
-                                                              attrs: AttributeSet? = null)
+class ScrollChildSwipeRefreshLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+)
     : SwipeRefreshLayout(context, attrs) {
     var scrollUpChild: View? = null
 
