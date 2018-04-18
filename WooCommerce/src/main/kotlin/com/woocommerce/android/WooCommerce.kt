@@ -16,8 +16,12 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import javax.inject.Inject
 
 open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceInjector, ApplicationLifecycleListener {
@@ -26,6 +30,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     @Inject lateinit var membersInjector: MembersInjector<WooCommerceGlideModule>
 
+    @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
 
     protected open val component: AppComponent by lazy {
@@ -41,6 +46,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         WellSql.init(wellSqlConfig)
 
         component.inject(this)
+        dispatcher.register(this)
 
         initAnalytics()
 
@@ -60,6 +66,19 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     private fun initAnalytics() {
         AnalyticsTracker.init(applicationContext)
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAccountChanged(event: OnAccountChanged) {
+        if (!accountStore.hasAccessToken()) {
+            // Logged out
+            AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
+
+            // Analytics resets
+            AnalyticsTracker.flush()
+            AnalyticsTracker.clearAllData()
+        }
     }
 
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector
