@@ -17,6 +17,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceInjector, ApplicationLifecycleListener {
@@ -24,6 +25,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Inject lateinit var serviceInjector: DispatchingAndroidInjector<Service>
 
     @Inject lateinit var membersInjector: MembersInjector<WooCommerceGlideModule>
+
+    @Inject lateinit var accountStore: AccountStore
 
     protected open val component: AppComponent by lazy {
         DaggerAppComponent.builder()
@@ -34,11 +37,12 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     override fun onCreate() {
         super.onCreate()
 
-        component.inject(this)
         val wellSqlConfig = WellSqlConfig(applicationContext, WellSqlConfig.ADDON_WOOCOMMERCE)
         WellSql.init(wellSqlConfig)
 
-        AnalyticsTracker.init(applicationContext)
+        component.inject(this)
+
+        initAnalytics()
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
@@ -51,6 +55,11 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     override fun onAppGoesToBackground() {
         AnalyticsTracker.track(Stat.APPLICATION_CLOSED)
+    }
+
+    private fun initAnalytics() {
+        AnalyticsTracker.init(applicationContext)
+        AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
     }
 
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector

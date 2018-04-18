@@ -111,8 +111,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         tracksClient.flush()
     }
 
-    private fun refreshMetadata(newUsername: String) {
-        if (newUsername.isNotEmpty()) {
+    private fun refreshMetadata(newUsername: String?) {
+        if (!newUsername.isNullOrEmpty()) {
             username = newUsername
             if (getAnonID() != null) {
                 tracksClient.trackAliasUser(username, getAnonID(), TracksClient.NosaraUserType.WPCOM)
@@ -164,7 +164,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             instance.flush()
         }
 
-        fun refreshMetadata(username: String) {
+        fun refreshMetadata(username: String?) {
             instance.refreshMetadata(username)
         }
     }
