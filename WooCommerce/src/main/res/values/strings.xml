@@ -71,6 +71,8 @@
     <string name="orderdetail_new_total">New Total</string>
     <string name="orderdetail_payment_refunded">Payment - Refunded</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
+    <string name="orderdetail_customer_provided_note">Customer Provided Note</string>
+    <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <!--
         Order Status Labels
     -->

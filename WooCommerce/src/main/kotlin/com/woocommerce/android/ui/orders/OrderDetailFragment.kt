@@ -76,6 +76,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order)
+
+            // Check for customer note, show if available
+            if (order.customerNote.isEmpty()) {
+                orderDetail_customerNote.visibility = View.GONE
+            } else {
+                orderDetail_customerNote.visibility = View.VISIBLE
+                orderDetail_customerNote.initView(order)
+            }
         }
     }
 
