@@ -10,7 +10,7 @@ import javax.inject.Singleton
 @Singleton
 class LoginAnalyticsTracker : LoginAnalyticsListener {
     override fun trackAnalyticsSignIn(accountStore: AccountStore, siteStore: SiteStore, isWpcomLogin: Boolean) {
-        refreshMetadata(accountStore, siteStore)
+        AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
         val properties = HashMap<String, Boolean>()
         properties["dotcom_user"] = isWpcomLogin // checkstyle ignore
         AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNED_IN, properties)
@@ -174,16 +174,4 @@ class LoginAnalyticsTracker : LoginAnalyticsListener {
     override fun trackWpComBackgroundServiceUpdate(properties: Map<String, *>) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE, properties)
     }
-
-    private fun refreshMetadata(accountStore: AccountStore, siteStore: SiteStore) {
-        // TODO
-    }
-
-    /**
-     * @return true if the siteStore has sites accessed via the WPCom Rest API that are not WPCom sites. This only
-     * counts Jetpack sites connected via WPCom Rest API. If there are Jetpack sites in the site store and they're
-     * all accessed via XMLRPC, this method returns false.
-     */
-    private fun isJetpackUser(siteStore: SiteStore): Boolean =
-            siteStore.sitesAccessedViaWPComRestCount - siteStore.wpComSitesCount > 0
 }
