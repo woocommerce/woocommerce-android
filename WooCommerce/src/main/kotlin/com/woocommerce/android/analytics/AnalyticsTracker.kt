@@ -10,6 +10,8 @@ import org.json.JSONObject
 
 class AnalyticsTracker private constructor(private val context: Context) {
     enum class Stat {
+        APPLICATION_OPENED,
+        APPLICATION_CLOSED,
         SIGNED_IN,
         LOGIN_ACCESSED,
         LOGIN_MAGIC_LINK_EXITED,
@@ -41,8 +43,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_SOCIAL_ACCOUNTS_NEED_CONNECTING,
         LOGIN_SOCIAL_ERROR_UNKNOWN_USER,
         LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE,
-        APPLICATION_OPENED,
-        APPLICATION_CLOSED,
         SIGNUP_EMAIL_TO_LOGIN,
         SIGNUP_MAGIC_LINK_FAILED,
         SIGNUP_MAGIC_LINK_SENT,
