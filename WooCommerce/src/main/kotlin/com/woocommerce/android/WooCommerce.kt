@@ -99,9 +99,12 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             // Logged out
             AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
 
-            // Analytics resets
+            // Reset analytics
             AnalyticsTracker.flush()
             AnalyticsTracker.clearAllData()
+
+            // Wipe user-specific preferences
+            AppPrefs.reset()
         }
     }
 
