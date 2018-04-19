@@ -48,6 +48,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         component.inject(this)
         dispatcher.register(this)
 
+        AppPrefs.init(this)
+
         initAnalytics()
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
