@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.util.PackageUtils
 import javax.inject.Inject
 
 open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceInjector, ApplicationLifecycleListener {
@@ -55,6 +56,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
         registerComponentCallbacks(lifecycleMonitor)
+
+        trackStartupAnalytics()
     }
 
     override fun onAppComesFromBackground() {
@@ -68,6 +71,25 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     private fun initAnalytics() {
         AnalyticsTracker.init(applicationContext)
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
+    }
+
+    private fun trackStartupAnalytics() {
+        // Track app upgrade and install
+        val versionCode = PackageUtils.getVersionCode(this)
+
+        val oldVersionCode = AppPrefs.getLastAppVersionCode()
+
+        if (oldVersionCode == versionCode) {
+            return
+        }
+
+        if (oldVersionCode == 0) {
+            // Track application installed if there isn't old version code
+            AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
+        } else if (oldVersionCode < versionCode) {
+            AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+        }
+        AppPrefs.setLastAppVersionCode(versionCode)
     }
 
     @Suppress("unused")

@@ -12,6 +12,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
     enum class Stat {
         APPLICATION_OPENED,
         APPLICATION_CLOSED,
+        APPLICATION_INSTALLED,
+        APPLICATION_UPGRADED,
 
         // -- Login
         SIGNED_IN,
