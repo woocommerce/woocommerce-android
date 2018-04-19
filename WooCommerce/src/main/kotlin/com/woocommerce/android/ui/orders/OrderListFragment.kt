@@ -38,9 +38,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(inflater: LayoutInflater,
-                                      container: ViewGroup?,
-                                      savedInstanceState: Bundle?): View? {
+    override fun onCreateFragmentView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_order_list, container, false)
         with(view) {
             orderRefreshLayout?.apply {

@@ -55,11 +55,13 @@ import android.view.View
  * @param [clipToMargin] True if the divider should also clip itself to match the margins of the provided components.
  * Default is false.
  */
-class AlignedDividerDecoration @JvmOverloads constructor(ctx: Context,
-                                                         private val orientation: Int,
-                                                         private val alignStartToStartOf: Int = 0,
-                                                         private val alignEndToEndOf: Int = 0,
-                                                         private val clipToMargin: Boolean = false)
+class AlignedDividerDecoration @JvmOverloads constructor(
+    ctx: Context,
+    private val orientation: Int,
+    private val alignStartToStartOf: Int = 0,
+    private val alignEndToEndOf: Int = 0,
+    private val clipToMargin: Boolean = false
+)
     : RecyclerView.ItemDecoration() {
     companion object {
         const val HORIZONTAL = 0

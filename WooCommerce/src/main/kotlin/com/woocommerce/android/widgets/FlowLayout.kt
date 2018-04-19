@@ -15,8 +15,10 @@ import com.woocommerce.android.R
  * @attr ref com.woocommerce.android.R.styleable#FlowLayout_horizontalSpacing
  * @attr ref com.woocommerce.android.R.styleable#FlowLayout_verticalSpacing
  */
-open class FlowLayout @JvmOverloads constructor(context: Context,
-                                                attrs: AttributeSet? = null) : ViewGroup(context, attrs) {
+open class FlowLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : ViewGroup(context, attrs) {
     private var mHorizontalSpacing: Int = 0
     private var mVerticalSpacing: Int = 0
 
