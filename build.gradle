@@ -6,7 +6,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath 'com.android.tools.build:gradle:3.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.automattic.android:fetchstyle:1.1'
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
@@ -76,13 +76,13 @@ task clean(type: Delete) {
 ext {
     fluxCVersion = '253d46e3e6d84239575198b72ff1cdb608630c16'
     daggerVersion = '2.11'
-    supportLibraryVersion = '27.1.0'
+    supportLibraryVersion = '27.1.1'
     glideVersion = '4.6.1'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.0.1'
     mockitoKotlinVersion = '1.5.0'
     mockitoVersion = '2.11.0'
-    constraintLayoutVersion = '1.0.2'
-    multidexVersion = '1.0.2'
+    constraintLayoutVersion = '1.1.0'
+    multidexVersion = '1.0.3'
     libaddressinputVersion = '0.0.2'
 }
