@@ -46,5 +46,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/Woo.Card"/>
+
+        <!-- Order Notes -->
+        <com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView
+            android:id="@+id/orderDetail_noteList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card.List"/>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

@@ -9,9 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.main.MainActivity
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
@@ -86,6 +88,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             }
         }
     }
+
+    override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
+        // Populate the order notes card
+        orderDetail_noteList.initView(notes)
+    }
+
+    override fun getSelectedSite() = (activity as? MainActivity)?.getSelectedSite()
 
     // region OrderActionListener
     override fun dialPhone(phone: String) {

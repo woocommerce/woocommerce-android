@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.util.Log
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -40,6 +41,7 @@ class OrderListPresenter @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.isError) {
             // TODO: Notify the user of the problem
+            Log.e(this::class.java.simpleName, "Error fetching orders : ${event.error.message}")
             return
         }
 

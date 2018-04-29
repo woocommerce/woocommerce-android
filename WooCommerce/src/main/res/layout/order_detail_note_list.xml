@@ -7,33 +7,24 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/productList_lblProduct"
+        android:id="@+id/notesList_lblNotes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/orderdetail_product"
+        android:text="@string/orderdetail_order_notes"
         style="@style/Woo.TextView.Title.Bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <TextView
-        android:id="@+id/productList_lblQty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/orderdetail_product_qty"
-        style="@style/Woo.TextView.Title.Bold"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/productList_products"
+        android:id="@+id/notesList_notes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false"
-        app:layout_constraintTop_toBottomOf="@+id/productList_lblProduct"
+        app:layout_constraintTop_toBottomOf="@+id/notesList_lblNotes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:listitem="@layout/order_detail_product_list_item"
-        tools:itemCount="3"
+        tools:listitem="@layout/order_detail_note_list_item"
+        tools:itemCount="4"
         tools:targetApi="lollipop"/>
 </merge>

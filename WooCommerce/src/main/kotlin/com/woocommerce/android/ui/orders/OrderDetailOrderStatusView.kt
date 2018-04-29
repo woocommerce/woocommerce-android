@@ -19,7 +19,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
     fun initView(orderModel: WCOrderModel) {
         orderStatus_orderNum.text = context.getString(
                 R.string.orderdetail_orderstatus_ordernum, orderModel.number)
-        val dateStr = DateUtils.getFriendlyDateString(context, orderModel.dateCreated)
+        val dateStr = DateUtils.getFriendlyShortDateAtTimeString(context, orderModel.dateCreated)
         orderStatus_created.text = context.getString(R.string.orderdetail_orderstatus_created, dateStr)
         orderStatus_orderTags.removeAllViews()
         orderStatus_orderTags.addView(getTagView(orderModel.status))

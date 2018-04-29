@@ -13,26 +13,26 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import kotlinx.android.synthetic.main.order_detail_product_list.view.*
-import org.wordpress.android.fluxc.model.WCOrderModel
+import kotlinx.android.synthetic.main.order_detail_note_list.view.*
+import org.wordpress.android.fluxc.model.WCOrderNoteModel
 
-class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
+class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
     init {
-        View.inflate(context, R.layout.order_detail_product_list, this)
+        View.inflate(context, R.layout.order_detail_note_list, this)
     }
 
-    fun initView(order: WCOrderModel) {
+    fun initView(notes: List<WCOrderNoteModel>) {
         val viewManager = LinearLayoutManager(context)
-        val viewAdapter = ProductListAdapter(order.getLineItemList(), order.currency)
+        val viewAdapter = OrderNotesAdapter(notes)
         val divider = AlignedDividerDecoration(context,
-                DividerItemDecoration.VERTICAL, R.id.productInfo_name, clipToMargin = true)
+                DividerItemDecoration.VERTICAL, R.id.orderNote_created, clipToMargin = false)
 
         ContextCompat.getDrawable(context, R.drawable.list_divider)?.let { drawable ->
             divider.setDrawable(drawable)
         }
 
-        productList_products.apply {
+        notesList_notes.apply {
             setHasFixedSize(false)
             layoutManager = viewManager
             itemAnimator = DefaultItemAnimator()
@@ -41,21 +41,21 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
     }
 
-    class ProductListAdapter(private val orderItems: List<WCOrderModel.LineItem>, private val currencyCode: String) :
-            RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
-        class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
+    class OrderNotesAdapter(private val notes: List<WCOrderNoteModel>)
+        : RecyclerView.Adapter<OrderNotesAdapter.ViewHolder>() {
+        class ViewHolder(val view: OrderDetailOrderNoteItemView) : RecyclerView.ViewHolder(view)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view: OrderDetailProductItemView = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.order_detail_product_list_item, parent, false)
-                    as OrderDetailProductItemView
+            val view: OrderDetailOrderNoteItemView = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.order_detail_note_list_item, parent, false)
+                    as OrderDetailOrderNoteItemView
             return ViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.view.initView(orderItems[position], currencyCode)
+            holder.view.initView(notes[position])
         }
 
-        override fun getItemCount() = orderItems.size
+        override fun getItemCount() = notes.size
     }
 }
