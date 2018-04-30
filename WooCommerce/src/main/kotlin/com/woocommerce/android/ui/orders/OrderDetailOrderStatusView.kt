@@ -35,7 +35,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
     }
 
     private fun getFriendlyDateString(rawDate: String): String {
-        val date = DateTimeUtils.dateFromIso8601(rawDate) ?: Date()
+        val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
         val timeGroup = TimeGroup.getTimeGroupForDate(date)
         val dateLabel = when (timeGroup) {
             TimeGroup.GROUP_TODAY -> {
