@@ -23,6 +23,8 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
     }
 
     fun initView(notes: List<WCOrderNoteModel>) {
+        notesList_progress.visibility = View.GONE
+
         val viewManager = LinearLayoutManager(context)
         val viewAdapter = OrderNotesAdapter(notes)
         val divider = AlignedDividerDecoration(context,

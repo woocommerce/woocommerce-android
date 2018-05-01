@@ -57,7 +57,7 @@
     <color name="tagView_fgColor">#a7a7a7</color>
 
     <!-- Default List colors -->
-    <color name="list_divider">@color/wc_grey_17</color>
+    <color name="list_divider">@color/wc_border_color</color>
     <color name="list_item_text">@color/default_text</color>
     <color name="list_item_text_title">@color/default_text_title</color>
     <color name="list_item_bg">@color/white</color>
