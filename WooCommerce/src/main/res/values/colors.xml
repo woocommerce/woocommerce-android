@@ -15,9 +15,10 @@
     -->
     <!-- Primary Greys -->
     <!-- TODO: Consolidate with rest of wc_greys -->
+    <color name="wc_grey">#999999</color>
     <color name="wc_grey_darker">#787878</color>
-    <color name="wc_grey_lightest">#f7f7f7</color>
     <color name="wc_grey_darkest">#2a2a2a</color>
+    <color name="wc_grey_lightest">#f7f7f7</color>
     <color name="grey_dark_highlight">#333333</color>
 
     <!-- Primary Greens -->
@@ -30,7 +31,7 @@
     <color name="wc_red_lightest">#fededd</color>
 
     <!-- Primary Blues -->
-    <color name="wc_blue_light">#c5e0f1</color>
+    <color name="wc_blue_light">#BCDEEE</color>
     <color name="wc_blue_lightest">#e8f2f9</color>
     <!--
         Default Global Colors
@@ -107,6 +108,11 @@
     <color name="orderStatus_refunded_text">@color/tagView_text</color>
     <color name="orderStatus_refunded_bg">@color/wc_red_lightest</color>
     <color name="orderStatus_refunded_border">@color/wc_red_light</color>
+    <!--
+        Order: Order note icon colors
+    -->
+    <color name="orderNote_private">@color/wc_grey</color>
+    <color name="orderNote_public">@color/wc_blue_light</color>
 
     <!-- Login -->
     <!-- Login uses snake_case instead of CamelCase for the main color palette,

@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_note_compat"/>
+        tools:src="@drawable/ic_note_private"/>
 
     <TextView
         android:id="@+id/orderNote_created"

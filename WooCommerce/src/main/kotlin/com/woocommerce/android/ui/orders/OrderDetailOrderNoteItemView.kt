@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
@@ -19,9 +20,15 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
         orderNote_created.text = DateUtils.getFriendlyLongDateAtTimeString(context, note.dateCreated).capitalize()
         orderNote_note.text = note.note
 
-        orderNote_type.text = when (note.customerNote) {
-            true -> context.getString(R.string.orderdetail_note_public)
-            else -> context.getString(R.string.orderdetail_note_private)
+        when (note.customerNote) {
+            true -> {
+                orderNote_type.text = context.getString(R.string.orderdetail_note_public)
+                orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_public))
+            }
+            else -> {
+                orderNote_type.text = context.getString(R.string.orderdetail_note_private)
+                orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_private))
+            }
         }
     }
 }
