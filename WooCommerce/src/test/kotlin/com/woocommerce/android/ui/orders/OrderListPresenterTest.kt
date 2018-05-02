@@ -11,6 +11,7 @@ import com.woocommerce.android.generateWCOrderModels
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -43,7 +44,7 @@ class OrderListPresenterTest {
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
-        presenter.onOrderChanged(OnOrderChanged(orders.size))
+        presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
         verify(orderListView).showOrders(orders)
     }
 
@@ -56,7 +57,7 @@ class OrderListPresenterTest {
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(noOrders).whenever(orderStore).getOrdersForSite(any())
-        presenter.onOrderChanged(OnOrderChanged(0))
+        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
         verify(orderListView).showNoOrders()
     }
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -48,14 +49,16 @@ class OrderListPresenter @Inject constructor(
         // TODO: Temporary, we should be able to guarantee this Presenter is initialized with a non-null SiteModel
         val selectedSite = orderView?.getSelectedSite() ?: return
 
-        val orders = orderStore.getOrdersForSite(selectedSite)
-        if (orders.count() > 0) {
-            orderView?.showOrders(orders)
-        } else {
-            orderView?.showNoOrders()
-        }
+        if (event.causeOfChange == FETCH_ORDERS) {
+            val orders = orderStore.getOrdersForSite(selectedSite)
+            if (orders.count() > 0) {
+                orderView?.showOrders(orders)
+            } else {
+                orderView?.showNoOrders()
+            }
 
-        orderView?.setLoadingIndicator(false)
+            orderView?.setLoadingIndicator(false)
+        }
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
