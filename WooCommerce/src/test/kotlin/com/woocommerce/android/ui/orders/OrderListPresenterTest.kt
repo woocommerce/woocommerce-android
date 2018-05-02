@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orderlist
+package com.woocommerce.android.ui.orders
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
@@ -8,8 +8,6 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.generateWCOrderModels
-import com.woocommerce.android.ui.orders.OrderListContract
-import com.woocommerce.android.ui.orders.OrderListPresenter
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher

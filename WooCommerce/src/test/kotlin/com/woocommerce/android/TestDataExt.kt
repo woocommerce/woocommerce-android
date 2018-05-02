@@ -1,6 +1,7 @@
 package com.woocommerce.android
 
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderNoteModel
 
 /**
  * Generates an array containing multiple [WCOrderModel] objects.
@@ -80,5 +81,35 @@ fun generateWCOrderModels(): List<WCOrderModel> {
     result.add(om5)
     result.add(om6)
 
+    return result
+}
+
+fun generateOrder(): WCOrderModel {
+    return WCOrderModel(2).apply {
+        billingFirstName = "Carissa"
+        billingLastName = "King"
+        currency = "USD"
+        dateCreated = "2018-02-02T16:11:13Z"
+        localSiteId = 1
+        number = "55"
+        status = "pending, Custom 1,Custom 2,Custom 3"
+        total = "106.00"
+    }
+}
+
+fun generateOrderNotes(totalNotes: Int, lOrderId: Int, lSiteId: Int): List<WCOrderNoteModel> {
+    val result = ArrayList<WCOrderNoteModel>()
+    var totalLeft = totalNotes
+
+    while (totalLeft > 0) {
+        result.add(WCOrderNoteModel(totalNotes).apply {
+            customerNote = false
+            dateCreated = "2018-02-02T16:11:13Z"
+            localOrderId = lOrderId
+            localSiteId = lSiteId
+            note = "This is a test note $totalLeft"
+        })
+        totalLeft--
+    }
     return result
 }
