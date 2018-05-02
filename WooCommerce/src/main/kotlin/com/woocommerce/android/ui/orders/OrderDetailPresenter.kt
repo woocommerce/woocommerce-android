@@ -58,7 +58,7 @@ class OrderDetailPresenter @Inject constructor(
 
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderModel?.let { order ->
-                val notes = orderStore.getOrderNotesByLocalOrderId(order.id).orEmpty()
+                val notes = orderStore.getOrderNotesForOrder(order)
                 orderView?.showOrderNotes(notes)
             }
         }

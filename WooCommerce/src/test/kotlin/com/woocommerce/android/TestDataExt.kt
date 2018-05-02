@@ -103,7 +103,7 @@ fun generateOrderNotes(totalNotes: Int, lOrderId: Int, lSiteId: Int): List<WCOrd
 
     while (totalLeft > 0) {
         result.add(WCOrderNoteModel(totalNotes).apply {
-            customerNote = false
+            isCustomerNote = false
             dateCreated = "2018-02-02T16:11:13Z"
             localOrderId = lOrderId
             localSiteId = lSiteId
