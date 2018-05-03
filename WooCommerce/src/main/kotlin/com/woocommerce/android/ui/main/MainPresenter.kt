@@ -96,5 +96,8 @@ class MainPresenter @Inject constructor(
             // TODO: Notify the user of the problem
             return
         }
+
+        // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
+        mainView?.updateSelectedSite()
     }
 }

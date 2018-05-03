@@ -3,6 +3,7 @@
     <!--
         General Strings
     -->
+    <string name="logging_in">Logging in</string>
     <string name="signout">Log out</string>
     <string name="dashboard">Dashboard</string>
     <string name="orders">Orders</string>

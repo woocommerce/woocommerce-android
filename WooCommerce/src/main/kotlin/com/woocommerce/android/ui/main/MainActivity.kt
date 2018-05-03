@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
@@ -54,6 +55,9 @@ class MainActivity : AppCompatActivity(),
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
 
+    // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
+    private var loginProgressDialog: ProgressDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -67,11 +71,14 @@ class MainActivity : AppCompatActivity(),
         presenter.takeView(this)
         if (!presenter.userIsLoggedIn()) {
             if (hasMagicLinkLoginIntent()) {
+                // User has opened a magic link
+                // Trigger an account/site info fetch, and show a 'logging in...' dialog in the meantime
+                loginProgressDialog = ProgressDialog.show(this, "", getString(R.string.logging_in), true)
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
                 showLoginScreen()
-                return
             }
+            return
         }
 
         if (intent.getBooleanExtra(DO_LOGIN_UPDATE, false)) {
@@ -162,9 +169,19 @@ class MainActivity : AppCompatActivity(),
         finish()
     }
 
-    private fun updateSelectedSite() {
+    override fun updateSelectedSite() {
+        loginProgressDialog?.apply { if (isShowing) { cancel() } }
+
+        val onUpdated = {
+            // Complete UI initialization
+            setupBottomNavigation()
+            initFragment(null)
+        }
+
         // TODO: Give user a choice if more than one WooCommerce site found
         selectedSite.set(presenter.getWooCommerceSites()[0])
+
+        onUpdated()
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
