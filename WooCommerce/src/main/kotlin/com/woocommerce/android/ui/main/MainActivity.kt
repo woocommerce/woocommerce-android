@@ -27,6 +27,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.ToastUtils
+import org.wordpress.android.util.ToastUtils.Duration
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
@@ -182,7 +184,10 @@ class MainActivity : AppCompatActivity(),
 
         val wcSites = presenter.getWooCommerceSites()
         when (wcSites.size) {
-            0 -> TODO()
+            0 -> {
+                ToastUtils.showToast(this, R.string.no_woocommerce_sites, Duration.LONG)
+                presenter.logout()
+            }
             1 -> selectedSite.set(wcSites[0])
             else -> {
                 showSiteSelector(wcSites, onUpdated)
