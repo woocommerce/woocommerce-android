@@ -21,6 +21,7 @@ import javax.inject.Singleton
         ReleaseNetworkModule::class,
         ReleaseWCNetworkModule::class,
         DebugOkHttpClientModule::class,
+        SelectedSiteModule::class,
         InterceptorModule::class,
         ActivityBindingModule::class,
         LoginAnalyticsModule::class,
