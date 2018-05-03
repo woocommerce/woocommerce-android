@@ -41,8 +41,7 @@ class MainPresenter @Inject constructor(
         return accountStore.hasAccessToken()
     }
 
-    // TODO Temporary, we should have a global way of storing/getting this (and it should reflect the user's selection)
-    override fun getSelectedSite() = wooCommerceStore.getWooCommerceSites().firstOrNull()
+    override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
 
     override fun storeMagicLinkToken(token: String) {
         // Save Token to the AccountStore. This will trigger an OnAuthenticationChanged.

@@ -14,6 +14,7 @@ import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
@@ -34,6 +35,8 @@ class MainActivity : AppCompatActivity(),
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
 
+        const val DO_LOGIN_UPDATE = "do-login-update"
+
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
         private const val KEY_POSITION = "key-position"
@@ -46,6 +49,8 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
+
+    @Inject lateinit var selectedSite: SelectedSite
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
 
@@ -67,6 +72,10 @@ class MainActivity : AppCompatActivity(),
                 showLoginScreen()
                 return
             }
+        }
+
+        if (intent.getBooleanExtra(DO_LOGIN_UPDATE, false)) {
+            updateSelectedSite()
         }
 
         setupBottomNavigation()
@@ -166,6 +175,11 @@ class MainActivity : AppCompatActivity(),
             """.trimMargin()
 //            textView.text = siteNameList
         }
+    }
+
+    private fun updateSelectedSite() {
+        // TODO: Give user a choice if more than one WooCommerce site found
+        selectedSite.set(presenter.getWooCommerceSites()[0])
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -277,7 +291,7 @@ class MainActivity : AppCompatActivity(),
     }
     // endregion
 
-    fun getSite(): SiteModel? {
-        return presenter.getSelectedSite()
+    fun getSite(): SiteModel {
+        return selectedSite.get()
     }
 }
