@@ -106,7 +106,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     private fun loggedInAndFinish() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        intent.putExtra(MainActivity.DO_LOGIN_UPDATE, true)
         startActivity(intent)
         setResult(Activity.RESULT_OK)
         finish()

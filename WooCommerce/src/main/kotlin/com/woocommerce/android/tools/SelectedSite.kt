@@ -36,6 +36,8 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
         setInt(SELECTED_SITE_LOCAL_ID, siteModel.id)
     }
 
+    fun isSet() = getInt(SELECTED_SITE_LOCAL_ID, -1) != -1
+
     private fun getInt(key: String, def: Int): Int {
         return try {
             val value = getPreferences().getString(key, "")

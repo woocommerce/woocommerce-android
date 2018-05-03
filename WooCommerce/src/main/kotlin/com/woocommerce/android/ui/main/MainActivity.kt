@@ -39,8 +39,6 @@ class MainActivity : AppCompatActivity(),
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
 
-        const val DO_LOGIN_UPDATE = "do-login-update"
-
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
         private const val KEY_POSITION = "key-position"
@@ -70,8 +68,9 @@ class MainActivity : AppCompatActivity(),
         // Set the toolbar
         setSupportActionBar(toolbar as Toolbar)
 
-        // Verify authenticated session
         presenter.takeView(this)
+
+        // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
             if (hasMagicLinkLoginIntent()) {
                 // User has opened a magic link
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity(),
             return
         }
 
-        if (intent.getBooleanExtra(DO_LOGIN_UPDATE, false)) {
+        if (!selectedSite.isSet()) {
             updateSelectedSite()
             return
         }
