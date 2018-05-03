@@ -162,21 +162,6 @@ class MainActivity : AppCompatActivity(),
         finish()
     }
 
-    override fun updateStoreList(storeList: List<SiteModel>) {
-        if (storeList.isEmpty()) {
-//            textView.text = "No WooCommerce sites found!"
-        } else {
-            val siteNameList = """
-                |Found stores:
-                |
-                |${storeList.joinToString("\n\n") {
-                "${it.name}\n(${it.url})\nType: ${if (it.isWpComStore) "WordPress.com Store" else "Jetpack Store" }"
-            }}
-            """.trimMargin()
-//            textView.text = siteNameList
-        }
-    }
-
     private fun updateSelectedSite() {
         // TODO: Give user a choice if more than one WooCommerce site found
         selectedSite.set(presenter.getWooCommerceSites()[0])

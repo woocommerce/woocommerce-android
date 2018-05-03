@@ -13,7 +13,6 @@ interface MainContract {
     }
 
     interface View : BaseView<Presenter> {
-        fun updateStoreList(storeList: List<SiteModel>)
         fun notifyTokenUpdated()
         fun showLoginScreen()
     }

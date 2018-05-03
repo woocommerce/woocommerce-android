@@ -28,8 +28,6 @@ class MainPresenter @Inject constructor(
     override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
-
-        if (userIsLoggedIn()) mainView?.updateStoreList(wooCommerceStore.getWooCommerceSites())
     }
 
     override fun dropView() {
@@ -98,7 +96,5 @@ class MainPresenter @Inject constructor(
             // TODO: Notify the user of the problem
             return
         }
-
-        mainView?.updateStoreList(wooCommerceStore.getWooCommerceSites())
     }
 }
