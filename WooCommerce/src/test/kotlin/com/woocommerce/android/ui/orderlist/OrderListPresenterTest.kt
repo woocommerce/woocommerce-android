@@ -8,6 +8,7 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.generateWCOrderModels
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderListContract
 import com.woocommerce.android.ui.orders.OrderListPresenter
 import org.junit.Before
@@ -24,6 +25,7 @@ class OrderListPresenterTest {
     private val orderListView: OrderListContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private val orders = generateWCOrderModels()
     private val noOrders = emptyList<WCOrderModel>()
@@ -31,9 +33,9 @@ class OrderListPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderListPresenter(dispatcher, orderStore))
+        presenter = spy(OrderListPresenter(dispatcher, orderStore, selectedSite))
         // Use a dummy selected site
-        doReturn(SiteModel()).whenever(orderListView).getSelectedSite()
+        doReturn(SiteModel()).whenever(selectedSite).get()
     }
 
     @Test

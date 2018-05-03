@@ -290,8 +290,4 @@ class MainActivity : AppCompatActivity(),
         }
     }
     // endregion
-
-    fun getSite(): SiteModel {
-        return selectedSite.get()
-    }
 }
