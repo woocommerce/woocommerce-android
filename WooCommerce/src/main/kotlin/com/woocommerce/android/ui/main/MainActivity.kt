@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
@@ -83,6 +84,7 @@ class MainActivity : AppCompatActivity(),
 
         if (intent.getBooleanExtra(DO_LOGIN_UPDATE, false)) {
             updateSelectedSite()
+            return
         }
 
         setupBottomNavigation()
@@ -178,8 +180,15 @@ class MainActivity : AppCompatActivity(),
             initFragment(null)
         }
 
-        // TODO: Give user a choice if more than one WooCommerce site found
-        selectedSite.set(presenter.getWooCommerceSites()[0])
+        val wcSites = presenter.getWooCommerceSites()
+        when (wcSites.size) {
+            0 -> TODO()
+            1 -> selectedSite.set(wcSites[0])
+            else -> {
+                showSiteSelector(wcSites, onUpdated)
+                return
+            }
+        }
 
         onUpdated()
     }
@@ -194,6 +203,23 @@ class MainActivity : AppCompatActivity(),
     private fun getAuthTokenFromIntent(): String? {
         val uri = intent.data
         return uri?.getQueryParameter(TOKEN_PARAMETER)
+    }
+
+    private fun showSiteSelector(storeList: List<SiteModel>, onUpdated: () -> Unit ) {
+        val builder = AlertDialog.Builder(this).apply {
+            setTitle(R.string.select_woocommerce_store)
+            val siteNames = storeList.map { it.displayName ?: it.name ?: it.url }.toTypedArray()
+            setItems(siteNames, { _, which ->
+                selectedSite.set(storeList[which])
+                onUpdated()
+            })
+        }
+
+        val dialog = builder.create().apply {
+            setCancelable(false)
+            setCanceledOnTouchOutside(false)
+        }
+        dialog.show()
     }
 
     // region Bottom Navigation
