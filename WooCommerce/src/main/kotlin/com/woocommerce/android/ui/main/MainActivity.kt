@@ -277,7 +277,7 @@ class MainActivity : AppCompatActivity(),
     }
     // endregion
 
-    fun getSite(): SiteModel? {
+    override fun getSelectedSite(): SiteModel? {
         return presenter.getSelectedSite()
     }
 }

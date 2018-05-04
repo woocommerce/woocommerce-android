@@ -56,8 +56,6 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
             holder.view.initView(orderItems[position], currencyCode)
         }
 
-        override fun getItemCount(): Int {
-            return orderItems.size
-        }
+        override fun getItemCount() = orderItems.size
     }
 }

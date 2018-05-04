@@ -28,6 +28,7 @@
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
+    <string name="date_at_time">%1$s at %2$s</string>
     <!--
         Error Strings
     -->
@@ -53,7 +54,7 @@
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail">Order Detail</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
-    <string name="orderdetail_orderstatus_created">Created %1$s at %2$s</string>
+    <string name="orderdetail_orderstatus_created">Created %1$s</string>
     <string name="orderdetail_shipping_details">Shipping Details</string>
     <string name="orderdetail_billing_details">Billing Details</string>
     <string name="orderdetail_email_contentdesc">email customer</string>
@@ -73,6 +74,10 @@
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_customer_provided_note">Customer Provided Note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
+    <string name="orderdetail_note_icon_contentdesc">Note Icon</string>
+    <string name="orderdetail_note_private">Private Note</string>
+    <string name="orderdetail_note_public">Public Note</string>
+    <string name="orderdetail_order_notes">Order Notes</string>
     <!--
         Order Status Labels
     -->

@@ -137,5 +137,5 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         presenter.loadOrders()
     }
 
-    override fun getSelectedSite() = (activity as? MainActivity)?.getSite()
+    override fun getSelectedSite() = (activity as? MainActivity)?.getSelectedSite()
 }

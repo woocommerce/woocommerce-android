@@ -1,3 +1,7 @@
 package com.woocommerce.android.ui.base
 
-interface BaseView<T>
+import org.wordpress.android.fluxc.model.SiteModel
+
+interface BaseView<T> {
+    fun getSelectedSite(): SiteModel?
+}
