@@ -59,9 +59,11 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         class ViewHolder(val view: OrderDetailOrderNoteItemView) : RecyclerView.ViewHolder(view)
 
         fun setNotes(newList: List<WCOrderNoteModel>) {
-            notes.clear()
-            notes.addAll(newList)
-            notifyDataSetChanged()
+            if (newList != notes) {
+                notes.clear()
+                notes.addAll(newList)
+                notifyDataSetChanged()
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

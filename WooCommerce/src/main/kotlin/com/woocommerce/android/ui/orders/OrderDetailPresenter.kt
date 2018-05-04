@@ -61,7 +61,7 @@ class OrderDetailPresenter @Inject constructor(
             return
         }
 
-        if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES && event.rowsAffected > 0) {
+        if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderModel?.let { order ->
                 val notes = orderStore.getOrderNotesForOrder(order)
                 orderView?.updateOrderNotes(notes)
