@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.preference.PreferenceManager
 import android.text.TextUtils
+import com.woocommerce.android.tools.SelectedSite
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
@@ -44,6 +45,7 @@ object AppPrefs {
     fun reset() {
         val editor = getPreferences().edit()
         DeletablePrefKey.values().forEach { editor.remove(it.name) }
+        editor.remove(SelectedSite.SELECTED_SITE_LOCAL_ID)
         editor.apply()
     }
 
