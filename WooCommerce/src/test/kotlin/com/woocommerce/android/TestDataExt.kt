@@ -99,17 +99,15 @@ fun generateOrder(): WCOrderModel {
 
 fun generateOrderNotes(totalNotes: Int, lOrderId: Int, lSiteId: Int): List<WCOrderNoteModel> {
     val result = ArrayList<WCOrderNoteModel>()
-    var totalLeft = totalNotes
 
-    while (totalLeft > 0) {
+    for (i in totalNotes downTo 1) {
         result.add(WCOrderNoteModel(totalNotes).apply {
             isCustomerNote = false
             dateCreated = "2018-02-02T16:11:13Z"
             localOrderId = lOrderId
             localSiteId = lSiteId
-            note = "This is a test note $totalLeft"
+            note = "This is a test note $i"
         })
-        totalLeft--
     }
     return result
 }
