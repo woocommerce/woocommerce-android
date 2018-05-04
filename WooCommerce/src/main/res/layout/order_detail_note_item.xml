@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/orderNote_icon"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:contentDescription="@string/orderdetail_note_icon_contentdesc"
+        android:layout_marginTop="@dimen/card_item_padding_intra_v"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_note_private"/>
+
+    <TextView
+        android:id="@+id/orderNote_created"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+        android:layout_marginStart="@dimen/card_section_padding_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_v"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title"
+        tools:text="Nov 13, 2017 at 9:54 AM"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/orderNote_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+        android:layout_marginStart="@dimen/card_section_padding_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_v"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+        tools:text="Private Note"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
+        app:layout_constraintTop_toBottomOf="@+id/orderNote_created"/>
+
+    <TextView
+        android:id="@+id/orderNote_note"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+        android:layout_marginStart="@dimen/card_section_padding_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_v"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        tools:text="Order status changed from pending payment to processing."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
+        app:layout_constraintTop_toBottomOf="@+id/orderNote_type"/>
+</merge>
