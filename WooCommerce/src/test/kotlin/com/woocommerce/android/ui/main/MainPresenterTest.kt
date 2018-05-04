@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class MainPresenterTest {
@@ -54,5 +55,13 @@ class MainPresenterTest {
         // Check that the resulting OnAuthenticationChanged ends up notifying the View
         mainPresenter.onAuthenticationChanged(OnAuthenticationChanged())
         verify(mainContractView).notifyTokenUpdated()
+    }
+
+    @Test
+    fun `Triggers a selected site update after site info fetch`() {
+        // Magic link login requires the presenter to fetch account and site info
+        // Check that the final OnSiteChanged triggers a site update
+        mainPresenter.onSiteChanged(OnSiteChanged(6))
+        verify(mainContractView).updateSelectedSite()
     }
 }
