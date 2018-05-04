@@ -23,10 +23,12 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
     }
 
     fun initView(notes: List<WCOrderNoteModel>) {
-        notesList_progress.visibility = View.GONE
+        if (notes.isNotEmpty()) {
+            notesList_progress.visibility = View.GONE
+        }
 
         val viewManager = LinearLayoutManager(context)
-        val viewAdapter = OrderNotesAdapter(notes)
+        val viewAdapter = OrderNotesAdapter(notes.toMutableList())
         val divider = AlignedDividerDecoration(context,
                 DividerItemDecoration.VERTICAL, R.id.orderNote_created, clipToMargin = false)
 
@@ -43,12 +45,27 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         }
     }
 
-    class OrderNotesAdapter(private val notes: List<WCOrderNoteModel>)
+    fun updateView(notes: List<WCOrderNoteModel>) {
+        notesList_progress.visibility = View.VISIBLE
+
+        val adapter = notesList_notes.adapter as OrderNotesAdapter
+        adapter.setNotes(notes)
+
+        notesList_progress.visibility = View.GONE
+    }
+
+    class OrderNotesAdapter(private val notes: MutableList<WCOrderNoteModel>)
         : RecyclerView.Adapter<OrderNotesAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailOrderNoteItemView) : RecyclerView.ViewHolder(view)
 
+        fun setNotes(newList: List<WCOrderNoteModel>) {
+            notes.clear()
+            notes.addAll(newList)
+            notifyDataSetChanged()
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view: OrderDetailOrderNoteItemView = LayoutInflater.from(parent.context)
+            val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.order_detail_note_list_item, parent, false)
                     as OrderDetailOrderNoteItemView
             return ViewHolder(view)

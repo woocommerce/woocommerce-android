@@ -36,8 +36,13 @@ class OrderDetailPresenter @Inject constructor(
 
                 // Fetch order notes
                 orderModel?.let { order ->
-                    orderView?.showOrderDetail(order)
+                    // Load order notes from database if available
+                    val notes = orderStore.getOrderNotesForOrder(order)
 
+                    // Display
+                    orderView?.showOrderDetail(order, notes)
+
+                    // Fetch order notes from API in case there are changes available
                     orderView?.getSelectedSite()?.let { site ->
                         val payload = FetchOrderNotesPayload(order, site)
                         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
@@ -56,10 +61,10 @@ class OrderDetailPresenter @Inject constructor(
             return
         }
 
-        if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
+        if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES && event.rowsAffected > 0) {
             orderModel?.let { order ->
                 val notes = orderStore.getOrderNotesForOrder(order)
-                orderView?.showOrderNotes(notes)
+                orderView?.updateOrderNotes(notes)
             }
         }
     }
