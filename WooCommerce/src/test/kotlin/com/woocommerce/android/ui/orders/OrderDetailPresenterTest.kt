@@ -41,7 +41,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByLocalOrderId(any())
         presenter.loadOrderDetail(orderId)
-        verify(orderDetailView).showOrderDetail(any())
+        verify(orderDetailView).showOrderDetail(any(), any())
     }
 
     @Test
@@ -56,6 +56,6 @@ class OrderDetailPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orderNotes).whenever(orderStore).getOrderNotesForOrder(any())
         presenter.onOrderChanged(OnOrderChanged(10).apply { causeOfChange = FETCH_ORDER_NOTES })
-        verify(orderDetailView).showOrderNotes(orderNotes)
+        verify(orderDetailView).updateOrderNotes(orderNotes)
     }
 }
