@@ -103,6 +103,7 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
     testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"

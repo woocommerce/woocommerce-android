@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.util.Log
+import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val orderStore: WCOrderStore
+    private val orderStore: WCOrderStore,
+    private val selectedSite: SelectedSite
 ) : OrderDetailContract.Presenter {
     private var orderView: OrderDetailContract.View? = null
     private var orderModel: WCOrderModel? = null
@@ -43,10 +45,8 @@ class OrderDetailPresenter @Inject constructor(
                     orderView?.showOrderDetail(order, notes)
 
                     // Fetch order notes from API in case there are changes available
-                    orderView?.getSelectedSite()?.let { site ->
-                        val payload = FetchOrderNotesPayload(order, site)
-                        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
-                    }
+                    val payload = FetchOrderNotesPayload(order, selectedSite.get())
+                    dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
                 }
             }
         }

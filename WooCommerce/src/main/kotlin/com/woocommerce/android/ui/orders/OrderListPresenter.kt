@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.util.Log
+import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 class OrderListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val orderStore: WCOrderStore
+    private val orderStore: WCOrderStore,
+    private val selectedSite: SelectedSite
 ) : OrderListContract.Presenter {
     private var orderView: OrderListContract.View? = null
 
@@ -31,10 +33,8 @@ class OrderListPresenter @Inject constructor(
     override fun loadOrders() {
         orderView?.setLoadingIndicator(true)
 
-        orderView?.getSelectedSite()?.let {
-            val payload = FetchOrdersPayload(it)
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
-        }
+        val payload = FetchOrdersPayload(selectedSite.get())
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
     }
 
     @Suppress("unused")
@@ -46,11 +46,8 @@ class OrderListPresenter @Inject constructor(
             return
         }
 
-        // TODO: Temporary, we should be able to guarantee this Presenter is initialized with a non-null SiteModel
-        val selectedSite = orderView?.getSelectedSite() ?: return
-
         if (event.causeOfChange == FETCH_ORDERS) {
-            val orders = orderStore.getOrdersForSite(selectedSite)
+            val orders = orderStore.getOrdersForSite(selectedSite.get())
             if (orders.count() > 0) {
                 orderView?.showOrders(orders)
             } else {

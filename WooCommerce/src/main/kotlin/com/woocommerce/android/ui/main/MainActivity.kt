@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.main
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
@@ -14,6 +16,7 @@ import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.android.AndroidInjection
@@ -24,6 +27,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.ToastUtils
+import org.wordpress.android.util.ToastUtils.Duration
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
@@ -47,7 +52,12 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
 
+    @Inject lateinit var selectedSite: SelectedSite
+
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
+
+    // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
+    private var loginProgressDialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -58,15 +68,24 @@ class MainActivity : AppCompatActivity(),
         // Set the toolbar
         setSupportActionBar(toolbar as Toolbar)
 
-        // Verify authenticated session
         presenter.takeView(this)
+
+        // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
             if (hasMagicLinkLoginIntent()) {
+                // User has opened a magic link
+                // Trigger an account/site info fetch, and show a 'logging in...' dialog in the meantime
+                loginProgressDialog = ProgressDialog.show(this, "", getString(R.string.logging_in), true)
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
                 showLoginScreen()
-                return
             }
+            return
+        }
+
+        if (!selectedSite.isSet()) {
+            updateSelectedSite()
+            return
         }
 
         setupBottomNavigation()
@@ -153,19 +172,29 @@ class MainActivity : AppCompatActivity(),
         finish()
     }
 
-    override fun updateStoreList(storeList: List<SiteModel>) {
-        if (storeList.isEmpty()) {
-//            textView.text = "No WooCommerce sites found!"
-        } else {
-            val siteNameList = """
-                |Found stores:
-                |
-                |${storeList.joinToString("\n\n") {
-                "${it.name}\n(${it.url})\nType: ${if (it.isWpComStore) "WordPress.com Store" else "Jetpack Store" }"
-            }}
-            """.trimMargin()
-//            textView.text = siteNameList
+    override fun updateSelectedSite() {
+        loginProgressDialog?.apply { if (isShowing) { cancel() } }
+
+        val onUpdated = {
+            // Complete UI initialization
+            setupBottomNavigation()
+            initFragment(null)
         }
+
+        val wcSites = presenter.getWooCommerceSites()
+        when (wcSites.size) {
+            0 -> {
+                ToastUtils.showToast(this, R.string.no_woocommerce_sites, Duration.LONG)
+                presenter.logout()
+            }
+            1 -> selectedSite.set(wcSites[0])
+            else -> {
+                showSiteSelector(wcSites, onUpdated)
+                return
+            }
+        }
+
+        onUpdated()
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -178,6 +207,23 @@ class MainActivity : AppCompatActivity(),
     private fun getAuthTokenFromIntent(): String? {
         val uri = intent.data
         return uri?.getQueryParameter(TOKEN_PARAMETER)
+    }
+
+    private fun showSiteSelector(storeList: List<SiteModel>, onUpdated: () -> Unit ) {
+        val builder = AlertDialog.Builder(this).apply {
+            setTitle(R.string.select_woocommerce_store)
+            val siteNames = storeList.map { it.displayName ?: it.name ?: it.url }.toTypedArray()
+            setItems(siteNames, { _, which ->
+                selectedSite.set(storeList[which])
+                onUpdated()
+            })
+        }
+
+        val dialog = builder.create().apply {
+            setCancelable(false)
+            setCanceledOnTouchOutside(false)
+        }
+        dialog.show()
     }
 
     // region Bottom Navigation
@@ -276,8 +322,4 @@ class MainActivity : AppCompatActivity(),
         }
     }
     // endregion
-
-    override fun getSelectedSite(): SiteModel? {
-        return presenter.getSelectedSite()
-    }
 }

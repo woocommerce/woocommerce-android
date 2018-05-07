@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.main.MainActivity
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -95,8 +94,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         // Update the notes in the notes card
         orderDetail_noteList.updateView(notes)
     }
-
-    override fun getSelectedSite() = (activity as? MainActivity)?.getSelectedSite()
 
     // region OrderActionListener
     override fun dialPhone(phone: String) {

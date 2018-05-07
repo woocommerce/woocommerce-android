@@ -28,8 +28,6 @@ class MainPresenter @Inject constructor(
     override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
-
-        if (userIsLoggedIn()) mainView?.updateStoreList(wooCommerceStore.getWooCommerceSites())
     }
 
     override fun dropView() {
@@ -41,8 +39,7 @@ class MainPresenter @Inject constructor(
         return accountStore.hasAccessToken()
     }
 
-    // TODO Temporary, we should have a global way of storing/getting this (and it should reflect the user's selection)
-    override fun getSelectedSite() = wooCommerceStore.getWooCommerceSites().firstOrNull()
+    override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
 
     override fun storeMagicLinkToken(token: String) {
         // Save Token to the AccountStore. This will trigger an OnAuthenticationChanged.
@@ -100,6 +97,7 @@ class MainPresenter @Inject constructor(
             return
         }
 
-        mainView?.updateStoreList(wooCommerceStore.getWooCommerceSites())
+        // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
+        mainView?.updateSelectedSite()
     }
 }

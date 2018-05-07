@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.main.MainActivity
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -136,6 +135,4 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun refreshFragmentState() {
         presenter.loadOrders()
     }
-
-    override fun getSelectedSite() = (activity as? MainActivity)?.getSelectedSite()
 }

@@ -7,14 +7,14 @@ import org.wordpress.android.fluxc.model.SiteModel
 interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun userIsLoggedIn(): Boolean
-        fun getSelectedSite(): SiteModel?
+        fun getWooCommerceSites(): List<SiteModel>
         fun storeMagicLinkToken(token: String)
         fun logout()
     }
 
     interface View : BaseView<Presenter> {
-        fun updateStoreList(storeList: List<SiteModel>)
         fun notifyTokenUpdated()
         fun showLoginScreen()
+        fun updateSelectedSite()
     }
 }

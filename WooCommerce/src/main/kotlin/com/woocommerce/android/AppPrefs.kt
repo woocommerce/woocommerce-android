@@ -3,7 +3,8 @@ package com.woocommerce.android
 import android.annotation.SuppressLint
 import android.content.Context
 import android.preference.PreferenceManager
-import android.text.TextUtils
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.PreferenceUtils
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
@@ -44,37 +45,21 @@ object AppPrefs {
     fun reset() {
         val editor = getPreferences().edit()
         DeletablePrefKey.values().forEach { editor.remove(it.name) }
+        editor.remove(SelectedSite.SELECTED_SITE_LOCAL_ID)
         editor.apply()
     }
 
-    private fun getInt(key: PrefKey, default: Int = 0): Int {
-        return try {
-            val value = getString(key)
-            if (value.isEmpty()) {
-                default
-            } else Integer.parseInt(value)
-        } catch (e: NumberFormatException) {
-            default
-        }
-    }
+    private fun getInt(key: PrefKey, default: Int = 0) =
+            PreferenceUtils.getInt(getPreferences(), key.toString(), default)
 
-    private fun setInt(key: PrefKey, value: Int) {
-        setString(key, Integer.toString(value))
-    }
+    private fun setInt(key: PrefKey, value: Int) =
+            PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
-    private fun getString(key: PrefKey, defaultValue: String = ""): String {
-        return getPreferences().getString(key.toString(), defaultValue)
-    }
+    private fun getString(key: PrefKey, defaultValue: String = "") =
+            PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue)
 
-    private fun setString(key: PrefKey, value: String) {
-        val editor = getPreferences().edit()
-        if (TextUtils.isEmpty(value)) {
-            editor.remove(key.toString())
-        } else {
-            editor.putString(key.toString(), value)
-        }
-        editor.apply()
-    }
+    private fun setString(key: PrefKey, value: String) =
+            PreferenceUtils.setString(getPreferences(), key.toString(), value)
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 }

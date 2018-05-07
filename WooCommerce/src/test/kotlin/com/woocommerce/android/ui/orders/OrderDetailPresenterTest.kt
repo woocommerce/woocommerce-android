@@ -9,6 +9,7 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.generateOrder
 import com.woocommerce.android.generateOrderNotes
+import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -23,6 +24,7 @@ class OrderDetailPresenterTest {
     private val orderDetailView: OrderDetailContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private val order = generateOrder()
     private val orderId = 2
@@ -31,9 +33,9 @@ class OrderDetailPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderDetailPresenter(dispatcher, orderStore))
+        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite))
         // Use a dummy selected site
-        doReturn(SiteModel()).whenever(orderDetailView).getSelectedSite()
+        doReturn(SiteModel()).whenever(selectedSite).get()
     }
 
     @Test
