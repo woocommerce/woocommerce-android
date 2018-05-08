@@ -17,11 +17,11 @@ import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     companion object {
-        const val FIELD_ORDER_ID = "order-id"
+        const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
         fun newInstance(order: WCOrderModel): Fragment {
             val args = Bundle()
-            args.putInt(FIELD_ORDER_ID, order.id)
+            args.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
 
             // Use for populating the title only, not for record retrieval
             args.putString(FIELD_ORDER_NUMBER, order.number)
@@ -53,8 +53,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        val orderId = arguments?.getInt(FIELD_ORDER_ID, 0)
-        orderId?.let {
+        val orderIdentifier = arguments?.getString(FIELD_ORDER_IDENTIFIER, "")
+        orderIdentifier?.let {
             presenter.loadOrderDetail(it)
         }
     }
