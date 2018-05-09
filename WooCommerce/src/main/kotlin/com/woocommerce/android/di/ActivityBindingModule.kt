@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderListModule
+import com.woocommerce.android.ui.orders.OrderProductListModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule
@@ -16,7 +17,8 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = arrayOf(
             MainModule::class,
             OrderListModule::class,
-            OrderDetailModule::class))
+            OrderDetailModule::class,
+            OrderProductListModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
