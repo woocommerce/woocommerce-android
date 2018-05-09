@@ -70,7 +70,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             orderDetail_orderStatus.initView(order)
 
             // Populate the Order Product List Card
-            orderDetail_productList.initView(order)
+            orderDetail_productList.initView(order, false, this)
 
             // Populate the Customer Information Card
             orderDetail_customerInfo.initView(order, this)
@@ -95,7 +95,23 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         orderDetail_noteList.updateView(notes)
     }
 
-    // region OrderActionListener
+    override fun openOrderFulfillment(order: WCOrderModel) {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                router.openOrderFulfillment(order)
+            }
+        }
+    }
+
+    override fun openOrderProductList(order: WCOrderModel) {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                router.openOrderProductList(order)
+            }
+        }
+    }
+
+    // region OrderCustomerActionListener
     override fun dialPhone(phone: String) {
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phone")

@@ -10,12 +10,11 @@ interface OrderListContract {
         fun openOrderDetail(order: WCOrderModel)
     }
 
-    interface View : BaseView<Presenter> {
+    interface View : BaseView<Presenter>, OrdersViewRouter {
         var isActive: Boolean
 
         fun setLoadingIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>)
         fun showNoOrders()
-        fun openOrderDetail(order: WCOrderModel)
     }
 }

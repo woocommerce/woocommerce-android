@@ -128,6 +128,20 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         }
     }
 
+    override fun openOrderFulfillment(order: WCOrderModel) {
+        if (!orderRefreshLayout.isRefreshing) {
+            val frag = OrderFulfillmentFragment.newInstance(order)
+            loadChildFragment(frag)
+        }
+    }
+
+    override fun openOrderProductList(order: WCOrderModel) {
+        if (!orderRefreshLayout.isRefreshing) {
+            val frag = OrderProductListFragment.newInstance(order)
+            loadChildFragment(frag)
+        }
+    }
+
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
     }

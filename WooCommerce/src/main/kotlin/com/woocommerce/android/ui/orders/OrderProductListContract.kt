@@ -3,9 +3,8 @@ package com.woocommerce.android.ui.orders
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.WCOrderNoteModel
 
-interface OrderDetailContract {
+interface OrderProductListContract {
     interface Presenter : BasePresenter<View> {
         /**
          * @param orderId The local order id
@@ -13,8 +12,7 @@ interface OrderDetailContract {
         fun loadOrderDetail(orderId: Int)
     }
 
-    interface View : BaseView<Presenter>, OrderCustomerActionListener, OrderActionListener {
-        fun showOrderDetail(order: WCOrderModel?, notes: List<WCOrderNoteModel>)
-        fun updateOrderNotes(notes: List<WCOrderNoteModel>)
+    interface View : BaseView<Presenter> {
+        fun showOrderProducts(order: WCOrderModel)
     }
 }
