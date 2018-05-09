@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/orderdetail_customer_provided_note"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title.Bold"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.CardTitle.Bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
