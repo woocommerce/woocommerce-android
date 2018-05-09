@@ -24,6 +24,13 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
     }
     private lateinit var divider: AlignedDividerDecoration
 
+    /**
+     * Initialize and format this view.
+     *
+     * @param [order] The order containing the product list to display.
+     * @param [expanded] If true, expanded view will be shown, else collapsed view.
+     * @param [listener] Listener for routing click actions. If null, the buttons will be hidden.
+     */
     fun initView(order: WCOrderModel, expanded: Boolean, listener: OrderActionListener? = null) {
         divider = AlignedDividerDecoration(context,
                 DividerItemDecoration.VERTICAL, R.id.productInfo_name, clipToMargin = true)
