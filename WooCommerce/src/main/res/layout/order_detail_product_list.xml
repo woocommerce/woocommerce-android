@@ -24,6 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <!-- List: Products -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/productList_products"
         android:layout_width="match_parent"
@@ -35,4 +36,30 @@
         tools:itemCount="3"
         tools:listitem="@layout/order_detail_product_list_item"
         tools:targetApi="lollipop"/>
+
+    <!-- Button: Details -->
+    <Button
+        android:id="@+id/productList_btnDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="37dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/details"
+        style="@style/Woo.Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productList_products"/>
+
+    <!-- Button: Fulfill Order-->
+    <Button
+        android:id="@+id/productList_btnFulfill"
+        style="@style/Woo.ButtonPurple"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/orderdetail_order_fulfill"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/productList_btnDetails"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productList_products"/>
 </merge>
