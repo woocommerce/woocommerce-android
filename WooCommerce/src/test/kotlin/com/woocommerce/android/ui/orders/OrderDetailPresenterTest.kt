@@ -7,8 +7,6 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import com.woocommerce.android.generateOrder
-import com.woocommerce.android.generateOrderNotes
 import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
 import org.junit.Test
@@ -26,9 +24,9 @@ class OrderDetailPresenterTest {
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
 
-    private val order = generateOrder()
+    private val order = OrderTestUtils.generateOrder()
     private val orderId = 2
-    private val orderNotes = generateOrderNotes(10, 2, 1)
+    private val orderNotes = OrderTestUtils.generateOrderNotes(10, 2, 1)
     private lateinit var presenter: OrderDetailPresenter
 
     @Before
