@@ -3,6 +3,7 @@ package com.woocommerce.android
 import android.app.Activity
 import android.app.Service
 import android.support.multidex.MultiDexApplication
+import com.crashlytics.android.Crashlytics
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.AppComponent
@@ -16,6 +17,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
+import io.fabric.sdk.android.Fabric
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -50,6 +52,10 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         dispatcher.register(this)
 
         AppPrefs.init(this)
+
+        if (!PackageUtils.isDebugBuild()) {
+            Fabric.with(this, Crashlytics())
+        }
 
         initAnalytics()
 
