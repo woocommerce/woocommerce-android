@@ -118,17 +118,17 @@ dependencies {
     androidTestImplementation "com.google.code.findbugs:jsr305:3.0.1"
 }
 
-// Add properties named "wp.xxx" to our BuildConfig
+// Add properties named "wc.xxx" to our BuildConfig
 android.buildTypes.all { buildType ->
     def inputFile = checkGradlePropertiesFile()
     def properties = loadPropertiesFromFile(inputFile)
     properties.any { property ->
-        if (property.key.toLowerCase().startsWith("wp.")) {
-            buildType.buildConfigField "String", property.key.replace("wp.", "").replace(".", "_").toUpperCase(),
+        if (property.key.toLowerCase().startsWith("wc.")) {
+            buildType.buildConfigField "String", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),
                     "\"${property.value}\""
         }
-        if (property.key.toLowerCase().startsWith("wp.res.")) {
-            buildType.resValue "string", property.key.replace("wp.res.", "").replace(".", "_").toLowerCase(),
+        if (property.key.toLowerCase().startsWith("wc.res.")) {
+            buildType.resValue "string", property.key.replace("wc.res.", "").replace(".", "_").toLowerCase(),
                     "${property.value}"
         }
     }
