@@ -39,11 +39,10 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_order_product_list, container, false)
 
-        arguments?.let { arguments ->
-            // Set activity title
-            val orderNumber = arguments.getString(FIELD_ORDER_NUMBER, "")
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber.toString())
-        }
+        // Set activity title
+        arguments?.getString(FIELD_ORDER_NUMBER, "").also {
+            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it) }
+
         return view
     }
 
@@ -51,10 +50,7 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        val orderId = arguments?.getInt(FIELD_ORDER_ID, 0)
-        orderId?.let {
-            presenter.loadOrderDetail(it)
-        }
+        arguments?.getInt(FIELD_ORDER_ID, 0).takeIf { it != 0 }?.also { presenter.loadOrderDetail(it) }
     }
 
     override fun onDestroyView() {
