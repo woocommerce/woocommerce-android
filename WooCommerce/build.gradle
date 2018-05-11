@@ -118,6 +118,26 @@ dependencies {
     androidTestImplementation "com.google.code.findbugs:jsr305:3.0.1"
 }
 
+task generateCrashlyticsConfig(group: "generate", description: "Generate Crashlytics config") {
+    def outputFile = new File("${rootDir}/WooCommerce/fabric.properties")
+    def inputFile = checkGradlePropertiesFile()
+    outputs.file outputFile
+    inputs.file inputFile
+    doLast {
+        def properties = loadPropertiesFromFile(inputFile)
+        def crashlyticsApiKey = properties.getProperty('wc.fabric.apikey', '0')
+        def writer = new FileWriter(outputFile)
+        writer.write("""// Auto-generated file from ${rootDir}/gradle.properties - do not modify
+apiKey=${crashlyticsApiKey}""")
+        writer.close()
+    }
+}
+
+// Add generateCrashlyticsConfig to all generateBuildConfig tasks (all variants)
+android.applicationVariants.all { variant ->
+    variant.generateBuildConfig.dependsOn(generateCrashlyticsConfig)
+}
+
 // Add properties named "wc.xxx" to our BuildConfig
 android.buildTypes.all { buildType ->
     def inputFile = checkGradlePropertiesFile()
