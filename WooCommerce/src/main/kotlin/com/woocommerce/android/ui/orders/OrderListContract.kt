@@ -10,7 +10,7 @@ interface OrderListContract {
         fun openOrderDetail(order: WCOrderModel)
     }
 
-    interface View : BaseView<Presenter>, OrdersViewRouter {
+    interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
         var isActive: Boolean
 
         fun setLoadingIndicator(active: Boolean)

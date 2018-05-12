@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
@@ -149,4 +151,32 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun refreshFragmentState() {
         presenter.loadOrders()
     }
+
+    // region OrderCustomerActionListener
+    override fun dialPhone(phone: String) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:$phone")
+        startActivity(intent)
+    }
+
+    override fun createEmail(emailAddr: String) {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
+        context?.let { context ->
+            if (intent.resolveActivity(context.packageManager) != null) {
+                startActivity(intent)
+            }
+        }
+    }
+
+    override fun sendSms(phone: String) {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("smsto:$phone")
+        context?.let { context ->
+            if (intent.resolveActivity(context.packageManager) != null) {
+                startActivity(intent)
+            }
+        }
+    }
+    // endregion
 }

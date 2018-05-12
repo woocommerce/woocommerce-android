@@ -16,7 +16,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         View.inflate(context, R.layout.order_detail_customer_info, this)
     }
 
-    fun initView(order: WCOrderModel, listener: OrderCustomerActionListener) {
+    fun initView(order: WCOrderModel, listener: OrderCustomerActionListener?) {
         customerInfo_custName.text = context
                 .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
 
@@ -51,15 +51,15 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
 
         // Set action button listeners
         customerInfo_emailBtn.setOnClickListener {
-            listener.createEmail(order.billingEmail)
+            listener?.createEmail(order.billingEmail)
         }
 
         customerInfo_phoneBtn.setOnClickListener {
-            listener.dialPhone(order.billingPhone)
+            listener?.dialPhone(order.billingPhone)
         }
 
         customerInfo_hangoutsBtn.setOnClickListener {
-            listener.sendSms(order.billingPhone)
+            listener?.sendSms(order.billingPhone)
         }
     }
 }

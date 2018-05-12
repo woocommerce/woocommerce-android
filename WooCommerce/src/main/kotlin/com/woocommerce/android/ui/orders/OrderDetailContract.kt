@@ -13,7 +13,7 @@ interface OrderDetailContract {
         fun loadOrderDetail(orderId: Int)
     }
 
-    interface View : BaseView<Presenter>, OrderCustomerActionListener, OrderActionListener {
+    interface View : BaseView<Presenter>, OrderActionListener {
         fun showOrderDetail(order: WCOrderModel?, notes: List<WCOrderNoteModel>)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
     }

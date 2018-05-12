@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -69,7 +67,11 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             orderDetail_productList.initView(order, false, this)
 
             // Populate the Customer Information Card
-            orderDetail_customerInfo.initView(order, this)
+            if (parentFragment is OrderCustomerActionListener) {
+                orderDetail_customerInfo.initView(order, parentFragment as OrderCustomerActionListener)
+            } else {
+                orderDetail_customerInfo.initView(order, null)
+            }
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order)
@@ -106,32 +108,4 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             }
         }
     }
-
-    // region OrderCustomerActionListener
-    override fun dialPhone(phone: String) {
-        val intent = Intent(Intent.ACTION_DIAL)
-        intent.data = Uri.parse("tel:$phone")
-        startActivity(intent)
-    }
-
-    override fun createEmail(emailAddr: String) {
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
-        context?.let { context ->
-            if (intent.resolveActivity(context.packageManager) != null) {
-                startActivity(intent)
-            }
-        }
-    }
-
-    override fun sendSms(phone: String) {
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("smsto:$phone")
-        context?.let { context ->
-            if (intent.resolveActivity(context.packageManager) != null) {
-                startActivity(intent)
-            }
-        }
-    }
-    // endregion
 }
