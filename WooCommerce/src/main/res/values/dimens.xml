@@ -25,13 +25,13 @@
     <dimen name="card_padding_bottom">16dp</dimen>
     <dimen name="card_padding_bottom_tablet">24dp</dimen>
 
-    <dimen name="card_gutter">8dp</dimen>
+    <dimen name="card_gutter">16dp</dimen>
     <dimen name="card_gutter_tablet">16dp</dimen>
 
     <dimen name="card_item_padding_intra_h">8dp</dimen>
     <dimen name="card_item_padding_intra_v">4dp</dimen>
     <dimen name="card_section_padding_h">16dp</dimen>
-    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_elevation">1dp</dimen>
 
     <dimen name="card_label_padding_intra_h">4dp</dimen>
 
