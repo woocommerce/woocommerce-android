@@ -84,7 +84,8 @@
     <string name="orderdetail_note_public">Public Note</string>
     <string name="orderdetail_order_notes">Order Notes</string>
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
-    <string name="orderdetail_order_fulfill">Fulfill Order</string>
+    <string name="order_fulfill_order">Fulfill Order</string>
+    <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <!--
         Order Status Labels
     -->

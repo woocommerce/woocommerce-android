@@ -13,6 +13,6 @@ interface OrderFulfillmentContract {
     }
 
     interface View : BaseView<Presenter> {
-        fun showOrderDetail(order: WCOrderModel?)
+        fun showOrderDetail(order: WCOrderModel)
     }
 }
