@@ -73,10 +73,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View {
         }
 
         // Populate the Customer Information Card
-        if (parentFragment is OrderCustomerActionListener) {
-            orderFulfill_customerInfo.initView(order, parentFragment as OrderCustomerActionListener)
-        } else {
-            orderFulfill_customerInfo.initView(order, null)
-        }
+        orderFulfill_customerInfo.initView(order, true)
     }
 }
