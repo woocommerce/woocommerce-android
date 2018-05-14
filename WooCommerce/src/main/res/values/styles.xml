@@ -81,7 +81,7 @@
 
     <style name="Woo.TextAppearance.Medium.Purple">
         <item name="android:textColor">@color/colorPrimary</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
     <style name="Woo.TextAppearance.Small">
