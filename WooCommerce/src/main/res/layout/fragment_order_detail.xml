@@ -38,7 +38,7 @@
             android:id="@+id/orderDetail_customerInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
+            style="@style/Woo.Card.Expandable"/>
 
         <!-- Payments -->
         <com.woocommerce.android.ui.orders.OrderDetailPaymentView

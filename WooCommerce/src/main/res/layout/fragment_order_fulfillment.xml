@@ -32,7 +32,7 @@
             android:id="@+id/orderFulfill_customerInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
+            style="@style/Woo.Card.Expandable"/>
 
         <!-- Button: Mark Order Complete -->
         <android.support.v7.widget.AppCompatButton
