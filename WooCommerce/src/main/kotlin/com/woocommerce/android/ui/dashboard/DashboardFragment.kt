@@ -63,6 +63,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         // If this fragment is not visible, defer loading data until it is visible.
         if (isVisible) {
             setLoadingIndicator(true)
+            dashboard_stats.initView()
             // TODO: Fetch data from presenter
         } else {
             loadDataPending = true
