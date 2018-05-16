@@ -1,5 +1,6 @@
 package com.woocommerce.android.di
 
+import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
@@ -16,6 +17,7 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(
             MainModule::class,
+            DashboardModule::class,
             OrderListModule::class,
             OrderDetailModule::class,
             OrderProductListModule::class))
