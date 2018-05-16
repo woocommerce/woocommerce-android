@@ -12,5 +12,12 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         View.inflate(context, R.layout.dashboard_stats, this)
     }
 
+    enum class StatsTimeframe { THIS_WEEK, THIS_MONTH, THIS_YEAR, YEARS }
+
     fun initView() {}
+
+    fun getActiveTimeframe(): StatsTimeframe {
+        // TODO: Return state of timeframe selector
+        return StatsTimeframe.THIS_MONTH
+    }
 }

@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View {
@@ -48,7 +49,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
                 }
                 setOnRefreshListener {
                     setLoadingIndicator(true)
-                    // TODO: Fetch data from presenter
+                    presenter.loadStats(dashboard_stats.getActiveTimeframe())
                 }
             }
         }
@@ -64,7 +65,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         if (isVisible) {
             setLoadingIndicator(true)
             dashboard_stats.initView()
-            // TODO: Fetch data from presenter
+            presenter.loadStats(dashboard_stats.getActiveTimeframe())
         } else {
             loadDataPending = true
         }
@@ -77,7 +78,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         if (isVisible && loadDataPending) {
             loadDataPending = false
             setLoadingIndicator(true)
-            // TODO: Fetch data from presenter
+            presenter.loadStats(dashboard_stats.getActiveTimeframe())
         }
     }
 
@@ -93,11 +94,20 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         }
     }
 
+    override fun showStats(
+        revenueStats: Map<String, Double>,
+        salesStats: Map<String, Int>,
+        granularity: StatsGranularity
+    ) {
+        // TODO
+    }
+
     override fun getFragmentTitle(): String {
         return getString(R.string.dashboard)
     }
 
     override fun refreshFragmentState() {
         setLoadingIndicator(true)
+        presenter.loadStats(dashboard_stats.getActiveTimeframe())
     }
 }
