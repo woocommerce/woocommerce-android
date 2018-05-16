@@ -8,9 +8,6 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface OrderDetailContract {
     interface Presenter : BasePresenter<View> {
-        /**
-         * @param orderId The local order id
-         */
         fun loadOrderDetail(orderIdentifier: OrderIdentifier)
     }
 
