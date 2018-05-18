@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.RelativeLayout
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : RelativeLayout(ctx, attrs) {
@@ -34,6 +37,25 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             chart.clear()
             return
+        }
+
+        val entries = when (timeframe) {
+            StatsTimeframe.THIS_WEEK -> TODO()
+            StatsTimeframe.THIS_MONTH -> {
+                revenueStats.map({
+                    BarEntry(it.key.substringAfterLast("-").toFloat(), it.value.toFloat())
+                })
+            }
+            StatsTimeframe.THIS_YEAR -> TODO()
+            StatsTimeframe.YEARS -> TODO()
+        }
+
+        val dataSet = BarDataSet(entries, "")
+
+        with (chart) {
+            data = BarData(dataSet)
+
+            invalidate() // Draw the graph
         }
     }
 
