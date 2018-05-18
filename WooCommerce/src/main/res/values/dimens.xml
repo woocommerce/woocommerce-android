@@ -82,4 +82,10 @@
 
     <dimen name="tag_layout_margin_end">8dp</dimen>
     <dimen name="tag_layout_margin_bottom">8dp</dimen>
+
+    <!--
+        Default Chart
+    -->
+    <dimen name="chart_height">200dp</dimen>
+    <dimen name="chart_progress_bar_padding">80dp</dimen>
 </resources>
