@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 class OrderProductListPresenter @Inject constructor(
     private val orderStore: WCOrderStore
@@ -16,10 +17,10 @@ class OrderProductListPresenter @Inject constructor(
         productView = null
     }
 
-    override fun loadOrderDetail(orderId: Int) {
-        if (orderId != 0) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
+        if (orderIdentifier.isNotEmpty()) {
             productView?.let { view ->
-                val orderModel = orderStore.getOrderByLocalOrderId(orderId)
+                val orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
                 orderModel?.let {
                     view.showOrderProducts(it)
                 }

@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -31,10 +32,10 @@ class OrderDetailPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadOrderDetail(orderId: Int) {
-        if (orderId != 0) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
+        if (orderIdentifier.isNotEmpty()) {
             orderView?.let {
-                orderModel = orderStore.getOrderByLocalOrderId(orderId)
+                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
 
                 // Fetch order notes
                 orderModel?.let { order ->

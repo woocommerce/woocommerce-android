@@ -42,8 +42,6 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         val viewManager = LinearLayoutManager(context)
         val viewAdapter = ProductListAdapter(order.getLineItemList(), order.currency, expanded)
 
-        productList_products.layoutAnimationListener
-
         listener?.let {
             if (order.status == OrderStatus.PROCESSING) {
                 productList_btnFulfill.visibility = View.VISIBLE

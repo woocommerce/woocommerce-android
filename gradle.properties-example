@@ -21,5 +21,5 @@ org.gradle.jvmargs=-Xmx1536m
 # For more details on what these properties do visit
 # https://github.com/woocommerce/woocommerce-android/blob/develop/README.md
 
-wp.oauth.app_id = woocommerce
-wp.oauth.app_secret = woocommerce
+wc.oauth.app_id = woocommerce
+wc.oauth.app_secret = woocommerce

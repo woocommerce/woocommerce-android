@@ -1,8 +1,22 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.25.4'
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-allopen'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 allOpen {
     annotation("com.woocommerce.android.annotations.OpenClass")
@@ -20,8 +34,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "0.7"
-        versionCode 7
+        versionName "0.8"
+        versionCode 8
 
         minSdkVersion 17
         targetSdkVersion 27
@@ -49,6 +63,10 @@ android {
 }
 
 dependencies {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
+        transitive = true
+    }
+
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
     }
@@ -118,17 +136,37 @@ dependencies {
     androidTestImplementation "com.google.code.findbugs:jsr305:3.0.1"
 }
 
-// Add properties named "wp.xxx" to our BuildConfig
+task generateCrashlyticsConfig(group: "generate", description: "Generate Crashlytics config") {
+    def outputFile = new File("${rootDir}/WooCommerce/fabric.properties")
+    def inputFile = checkGradlePropertiesFile()
+    outputs.file outputFile
+    inputs.file inputFile
+    doLast {
+        def properties = loadPropertiesFromFile(inputFile)
+        def crashlyticsApiKey = properties.getProperty('wc.fabric.apikey', '0')
+        def writer = new FileWriter(outputFile)
+        writer.write("""// Auto-generated file from ${rootDir}/gradle.properties - do not modify
+apiKey=${crashlyticsApiKey}""")
+        writer.close()
+    }
+}
+
+// Add generateCrashlyticsConfig to all generateBuildConfig tasks (all variants)
+android.applicationVariants.all { variant ->
+    variant.generateBuildConfig.dependsOn(generateCrashlyticsConfig)
+}
+
+// Add properties named "wc.xxx" to our BuildConfig
 android.buildTypes.all { buildType ->
     def inputFile = checkGradlePropertiesFile()
     def properties = loadPropertiesFromFile(inputFile)
     properties.any { property ->
-        if (property.key.toLowerCase().startsWith("wp.")) {
-            buildType.buildConfigField "String", property.key.replace("wp.", "").replace(".", "_").toUpperCase(),
+        if (property.key.toLowerCase().startsWith("wc.")) {
+            buildType.buildConfigField "String", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),
                     "\"${property.value}\""
         }
-        if (property.key.toLowerCase().startsWith("wp.res.")) {
-            buildType.resValue "string", property.key.replace("wp.res.", "").replace(".", "_").toLowerCase(),
+        if (property.key.toLowerCase().startsWith("wc.res.")) {
+            buildType.resValue "string", property.key.replace("wc.res.", "").replace(".", "_").toLowerCase(),
                     "${property.value}"
         }
     }

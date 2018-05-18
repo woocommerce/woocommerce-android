@@ -18,7 +18,6 @@ class OrderProductListPresenterTest {
     private val selectedSite: SelectedSite = mock()
 
     private val order = OrderTestUtils.generateOrder()
-    private val orderId = 2
     private lateinit var presenter: OrderProductListPresenter
 
     @Before
@@ -31,8 +30,8 @@ class OrderProductListPresenterTest {
     @Test
     fun `Displays the product list view correctly`() {
         presenter.takeView(view)
-        doReturn(order).whenever(orderStore).getOrderByLocalOrderId(any())
-        presenter.loadOrderDetail(orderId)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail("1-2-3")
         verify(view).showOrderProducts(any())
     }
 }
