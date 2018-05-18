@@ -24,9 +24,9 @@ class OrderDetailPresenterTest {
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
 
-    private val order = generateOrder()
+    private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
-    private val orderNotes = generateOrderNotes(10, 2, 1)
+    private val orderNotes = OrderTestUtils.generateOrderNotes(10, 2, 1)
     private lateinit var presenter: OrderDetailPresenter
 
     @Before

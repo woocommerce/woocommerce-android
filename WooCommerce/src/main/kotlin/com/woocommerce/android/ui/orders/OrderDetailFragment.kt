@@ -52,8 +52,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        val orderIdentifier = arguments?.getString(FIELD_ORDER_IDENTIFIER, "")
-        orderIdentifier?.let {
+        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
             presenter.loadOrderDetail(it)
         }
     }
