@@ -59,7 +59,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
 
         // TODO: Don't load stats if this fragment is not visible to the user, deferring it to onBackStackChanged()
         presenter.takeView(this)
-        setLoadingIndicator(true)
         dashboard_stats.initView()
         presenter.loadStats(dashboard_stats.getActiveTimeframe())
     }
