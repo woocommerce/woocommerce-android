@@ -21,6 +21,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
+import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
+import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -66,5 +68,18 @@ class DashboardPresenterTest {
         presenter.onWCStatsChanged(onChanged)
 
         verify(dashboardView).showStats(any(), any(), eq(StatsGranularity.DAYS))
+    }
+
+    @Test
+    fun `Handles stats OnChanged error result correctly`() {
+        presenter.takeView(dashboardView)
+
+        // Simulate OnChanged event from FluxC
+        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS).apply {
+            error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
+        }
+        presenter.onWCStatsChanged(onChanged)
+
+        verify(dashboardView).showStats(eq(emptyMap()), eq(emptyMap()), eq(StatsGranularity.DAYS))
     }
 }

@@ -46,7 +46,8 @@ class DashboardPresenter @Inject constructor(
     fun onWCStatsChanged(event: OnWCStatsChanged) {
         if (event.isError) {
             // TODO: Notify the user of the problem
-            dashboardView?.setLoadingIndicator(false)
+            // For now, send empty data so views aren't stuck in loading mode
+            dashboardView?.showStats(emptyMap(), emptyMap(), event.granularity)
             return
         }
 
