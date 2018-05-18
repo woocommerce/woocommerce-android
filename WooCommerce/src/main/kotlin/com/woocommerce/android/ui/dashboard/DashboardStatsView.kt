@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
@@ -26,6 +27,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         timeframe: StatsTimeframe = getActiveTimeframe()
     ) {
         barchart_progress.visibility = View.GONE
+
+        if (revenueStats.isEmpty()) {
+            // TODO Replace with custom empty view
+            chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.default_text_color))
+            chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
+            chart.clear()
+            return
+        }
     }
 
     fun getActiveTimeframe(): StatsTimeframe {
