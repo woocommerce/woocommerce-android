@@ -27,7 +27,7 @@ class OrderDetailPresenterTest {
     private val selectedSite: SelectedSite = mock()
 
     private val order = generateOrder()
-    private val orderId = 2
+    private val orderIdentifier = order.getIdentifier()
     private val orderNotes = generateOrderNotes(10, 2, 1)
     private lateinit var presenter: OrderDetailPresenter
 
@@ -41,8 +41,8 @@ class OrderDetailPresenterTest {
     @Test
     fun `Displays the order detail view correctly`() {
         presenter.takeView(orderDetailView)
-        doReturn(order).whenever(orderStore).getOrderByLocalOrderId(any())
-        presenter.loadOrderDetail(orderId)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier)
         verify(orderDetailView).showOrderDetail(any(), any())
     }
 
@@ -51,8 +51,8 @@ class OrderDetailPresenterTest {
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
         presenter.takeView(orderDetailView)
-        doReturn(order).whenever(orderStore).getOrderByLocalOrderId(any())
-        presenter.loadOrderDetail(orderId)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
