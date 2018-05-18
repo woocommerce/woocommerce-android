@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.dashboard.DashboardStatsView.StatsTimeframe
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -80,7 +81,17 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         salesStats: Map<String, Int>,
         granularity: StatsGranularity
     ) {
-        // TODO
+        // Only update the order stats view if the new stats match the currently selected timeframe
+        val update = when (dashboard_stats.getActiveTimeframe()) {
+            StatsTimeframe.THIS_WEEK, StatsTimeframe.THIS_MONTH -> granularity == StatsGranularity.DAYS
+            StatsTimeframe.THIS_YEAR -> granularity == StatsGranularity.MONTHS
+            StatsTimeframe.YEARS -> granularity == StatsGranularity.YEARS
+        }
+
+        if (update) {
+            dashboard_stats.populateView(revenueStats, salesStats)
+            setLoadingIndicator(false)
+        }
     }
 
     override fun getFragmentTitle(): String {
