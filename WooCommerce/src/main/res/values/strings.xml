@@ -49,6 +49,9 @@
     <!--
         Dashboard View
     -->
+    <string name="dashboard_stats_visitors">Visitors</string>
+    <string name="dashboard_stats_orders">Orders</string>
+    <string name="dashboard_stats_revenue">Revenue</string>
     <string name="dashboard_state_no_data">No data available</string>
     <!--
         Order List View

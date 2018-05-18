@@ -73,6 +73,11 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="Woo.TextAppearance.Title.Small">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+
     <style name="Woo.TextAppearance.Medium">
         <item name="android:textColor">@color/default_text_title</item>
         <item name="android:textSize">@dimen/text_medium</item>
@@ -86,6 +91,12 @@
     <style name="Woo.TextAppearance.Label">
         <item name="android:textSize">@dimen/text_small</item>
         <item name="android:textColor">@color/default_text_label_color</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Label.XL">
+        <item name="android:textSize">@dimen/text_double_extra_large</item>
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Woo.TextAppearance.Label.Bold">
