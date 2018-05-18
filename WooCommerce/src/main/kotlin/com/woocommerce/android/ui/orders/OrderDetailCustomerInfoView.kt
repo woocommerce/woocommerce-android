@@ -16,7 +16,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         View.inflate(context, R.layout.order_detail_customer_info, this)
     }
 
-    fun initView(order: WCOrderModel, listener: OrderActionListener) {
+    fun initView(order: WCOrderModel, listener: OrderCustomerActionListener) {
         customerInfo_custName.text = context
                 .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
 

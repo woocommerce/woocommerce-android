@@ -41,11 +41,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_order_detail, container, false)
 
-        arguments?.let { arguments ->
-            // Set activity title
-            val orderNumber = arguments.getString(FIELD_ORDER_NUMBER, "")
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber.toString())
-        }
+        // Set activity title
+        arguments?.getString(FIELD_ORDER_NUMBER, "").also {
+            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it) }
+
         return view
     }
 
@@ -53,8 +52,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        val orderIdentifier = arguments?.getString(FIELD_ORDER_IDENTIFIER, "")
-        orderIdentifier?.let {
+        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
             presenter.loadOrderDetail(it)
         }
     }
@@ -70,7 +68,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             orderDetail_orderStatus.initView(order)
 
             // Populate the Order Product List Card
-            orderDetail_productList.initView(order)
+            orderDetail_productList.initView(order, false, this)
 
             // Populate the Customer Information Card
             orderDetail_customerInfo.initView(order, this)
@@ -95,7 +93,23 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         orderDetail_noteList.updateView(notes)
     }
 
-    // region OrderActionListener
+    override fun openOrderFulfillment(order: WCOrderModel) {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                router.openOrderFulfillment(order)
+            }
+        }
+    }
+
+    override fun openOrderProductList(order: WCOrderModel) {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                router.openOrderProductList(order)
+            }
+        }
+    }
+
+    // region OrderCustomerActionListener
     override fun dialPhone(phone: String) {
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phone")

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android">
+    <shape android:shape="rectangle">
+        <corners android:radius="1dp" />
+        <solid android:color="@color/button_purple_bg_color" />
+        <padding android:left="16dp"
+                 android:top="8dp"
+                 android:right="16dp"
+                 android:bottom="8dp" />
+    </shape>
+</inset>

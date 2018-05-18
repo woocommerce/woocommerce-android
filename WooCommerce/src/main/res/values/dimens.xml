@@ -56,11 +56,17 @@
     <dimen name="list_item_padding_end">16dp</dimen>
     <dimen name="list_item_padding_end_tablet">24dp</dimen>
 
-    <dimen name="list_item_padding_top">12dp</dimen>
-    <dimen name="list_item_padding_top_tablet">12dp</dimen>
+    <dimen name="list_item_padding_top">4dp</dimen>
+    <dimen name="list_item_padding_top_tablet">4dp</dimen>
 
-    <dimen name="list_item_padding_bottom">12dp</dimen>
-    <dimen name="list_item_padding_bottom_tablet">12dp</dimen>
+    <dimen name="list_item_padding_bottom">4dp</dimen>
+    <dimen name="list_item_padding_bottom_tablet">4dp</dimen>
+
+    <dimen name="list_divider_padding_top">8dp</dimen>
+    <dimen name="list_divider_padding_top_tablet">12dp</dimen>
+
+    <dimen name="list_divider_padding_bottom">8dp</dimen>
+    <dimen name="list_divider_padding_bottom_tablet">12dp</dimen>
     <!--
         Default TagView
     -->

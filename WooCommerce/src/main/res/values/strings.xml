@@ -21,6 +21,8 @@
     <string name="subtotal">Subtotal</string>
     <string name="discount">Discount</string>
     <string name="notifications">Notifications</string>
+    <string name="details">Details</string>
+    <string name="hide_details">Hide Details</string>
     <!--
         Date/Time Labels
     -->
@@ -81,6 +83,8 @@
     <string name="orderdetail_note_private">Private Note</string>
     <string name="orderdetail_note_public">Public Note</string>
     <string name="orderdetail_order_notes">Order Notes</string>
+    <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
+    <string name="orderdetail_order_fulfill">Fulfill Order</string>
     <!--
         Order Status Labels
     -->

@@ -73,6 +73,16 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="Woo.TextAppearance.Medium">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Small">
+        <item name="android:textColor">@color/default_text</item>
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+
     <style name="Woo.TextAppearance.Label">
         <item name="android:textSize">@dimen/text_small</item>
         <item name="android:textColor">@color/default_text_label_color</item>
@@ -87,11 +97,24 @@
         <item name="android:textColor">@color/default_button_fg_color</item>
     </style>
     <!--
-        Default Button Style
+        Button Styles
     -->
     <style name="Woo.Button" parent="android:Widget.DeviceDefault.Button.Borderless">
-        <item name="android:textColor">@color/colorPrimary</item>
-        <item name="android:background">@color/white</item>
+        <item name="android:textColor">@color/button_purple_bg_color</item>
+        <item name="android:background">@null</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="Woo.ButtonPurple" parent="android:Widget.DeviceDefault.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/button_purple_bg</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textSize">@dimen/text_large</item>
     </style>
     <!--
         Default TagView Style
@@ -139,7 +162,7 @@
         <item name="android:paddingStart">@dimen/card_padding_start</item>
         <item name="android:paddingEnd">@dimen/card_padding_end</item>
         <item name="android:paddingTop">@dimen/card_padding_top</item>
-        <item name="android:paddingBottom">@dimen/card_item_padding_intra_v</item>
+        <item name="android:paddingBottom">@dimen/card_item_padding_intra_h</item>
         <item name="android:textAppearance">@style/Woo.TextAppearance.Title</item>
     </style>
     <style name="Woo.TextView.Title.Bold">
@@ -155,6 +178,7 @@
         <item name="android:drawableEnd">@drawable/card_expander_selector</item>
         <item name="android:paddingEnd">4dp</item>
     </style>
+
     <!--
         Default List Style
     -->
@@ -172,7 +196,6 @@
         <item name="android:background">@color/list_item_bg</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">@dimen/list_item_height</item>
         <item name="android:textAppearance">@style/Woo.TextAppearance.ListItem</item>
     </style>
 
@@ -225,8 +248,10 @@
     <!--
         OrderDetail Styles
     -->
-    <style name="Woo.OrderDetail.TextAppearance.Title" parent="Woo.TextAppearance.Title"/>
-    <style name="Woo.OrderDetail.TextAppearance.Title.Bold" parent="Woo.TextAppearance.Title.Bold"/>
+    <style name="Woo.OrderDetail.TextAppearance.Heading" parent="Woo.TextAppearance.Medium"/>
+    <style name="Woo.OrderDetail.TextAppearance.Content" parent="Woo.TextAppearance.Small"/>
+    <style name="Woo.OrderDetail.TextAppearance.CardTitle" parent="Woo.TextAppearance.Title"/>
+    <style name="Woo.OrderDetail.TextAppearance.CardTitle.Bold" parent="Woo.TextAppearance.Title.Bold"/>
     <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance"/>
     <style name="Woo.OrderDetail.TextAppearance.Red">
         <item name="android:textColor">@color/wc_red</item>

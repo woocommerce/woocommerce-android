@@ -10,21 +10,26 @@
         android:id="@+id/productInfo_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_marginEnd="@dimen/card_section_padding_h"
+        android:background="@null"
         android:contentDescription="@string/orderdetail_product_image_contentdesc"
-        android:background="@drawable/product_image_border"
-        android:layout_marginTop="@dimen/card_item_padding_intra_v"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_report_image"/>
+        app:srcCompat="@drawable/ic_product"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/productInfo_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="@dimen/card_section_padding_h"
+        android:paddingStart="0dp"
+        android:paddingEnd="50dp"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
+        android:ellipsize="end"
+        android:maxLines="1"
         app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_qty"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
@@ -34,7 +39,7 @@
         android:id="@+id/productInfo_qty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Title"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="2"/>
@@ -46,11 +51,12 @@
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
-        tools:text="$30.00 ($15.00 x 2)"/>
+        tools:text="$30.00 ($15.00 x 2)"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/productInfo_lblTax"
@@ -61,10 +67,11 @@
         android:paddingEnd="@dimen/card_label_padding_intra_h"
         android:paddingStart="0dp"
         android:text="@string/orderdetail_product_lineitem_tax"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_productTotal"
-        tools:text="Tax:"/>
+        tools:text="Tax:"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/productInfo_totalTax"
@@ -72,11 +79,12 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblTax"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_productTotal"
-        tools:text="$0.75"/>
+        tools:text="$0.75"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/productInfo_lblSku"
@@ -87,9 +95,10 @@
         android:paddingEnd="@dimen/card_label_padding_intra_h"
         android:paddingStart="0dp"
         android:text="@string/orderdetail_product_lineitem_sku"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"/>
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/productInfo_sku"
@@ -97,10 +106,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblSku"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
-        tools:text="T3124"/>
+        tools:text="T3124"
+        tools:visibility="visible"/>
 
 </android.support.constraint.ConstraintLayout>

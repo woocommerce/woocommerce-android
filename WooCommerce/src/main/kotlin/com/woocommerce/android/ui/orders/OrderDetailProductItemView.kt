@@ -15,11 +15,18 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
 
-    fun initView(item: WCOrderModel.LineItem, currencyCode: String) {
+    fun initView(item: WCOrderModel.LineItem, currencyCode: String, expanded: Boolean) {
         productInfo_name.text = item.name
         productInfo_qty.text = item.quantity.toString()
 
-        if (item.sku.isNullOrEmpty()) {
+        // Modify views for expanded or collapsed mode
+        val viewMode = if (expanded) View.VISIBLE else View.GONE
+        productInfo_icon.visibility = viewMode
+        productInfo_productTotal.visibility = viewMode
+        productInfo_totalTax.visibility = viewMode
+        productInfo_lblTax.visibility = viewMode
+
+        if (item.sku.isNullOrEmpty() || !expanded) {
             productInfo_lblSku.visibility = View.GONE
             productInfo_sku.visibility = View.GONE
         } else {
@@ -28,14 +35,16 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
             productInfo_sku.text = item.sku
         }
 
-        // Populate formatted total and tax values
-        val res = context.resources
-        val orderTotal = CurrencyUtils.currencyString(context, item.total, currencyCode)
-        val productPrice = CurrencyUtils.currencyString(context, item.price, currencyCode)
-        productInfo_productTotal.text = res.getString(
-                R.string.orderdetail_product_lineitem_total, orderTotal, productPrice, item.quantity)
-        productInfo_totalTax.text = CurrencyUtils.currencyString(context, item.totalTax, currencyCode)
+        if (expanded) {
+            // Populate formatted total and tax values
+            val res = context.resources
+            val orderTotal = CurrencyUtils.currencyString(context, item.total, currencyCode)
+            val productPrice = CurrencyUtils.currencyString(context, item.price, currencyCode)
+            productInfo_productTotal.text = res.getString(
+                    R.string.orderdetail_product_lineitem_total, orderTotal, productPrice, item.quantity)
+            productInfo_totalTax.text = CurrencyUtils.currencyString(context, item.totalTax, currencyCode)
 
-        // todo Product Image
+            // todo Product Image
+        }
     }
 }
