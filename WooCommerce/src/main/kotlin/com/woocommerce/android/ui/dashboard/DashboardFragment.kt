@@ -89,7 +89,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         }
 
         if (update) {
-            dashboard_stats.populateView(revenueStats, salesStats)
+            dashboard_stats.populateView(revenueStats, salesStats, presenter.getStatsCurrency())
             setLoadingIndicator(false)
         }
     }

@@ -41,6 +41,8 @@ class DashboardPresenter @Inject constructor(
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
     }
 
+    override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {

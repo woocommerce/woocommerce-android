@@ -27,6 +27,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun populateView(
         revenueStats: Map<String, Double>,
         orderStats: Map<String, Int>,
+        currencyCode: String?,
         timeframe: StatsTimeframe = getActiveTimeframe()
     ) {
         barchart_progress.visibility = View.GONE
