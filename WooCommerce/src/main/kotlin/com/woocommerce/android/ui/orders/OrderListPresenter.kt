@@ -34,6 +34,10 @@ class OrderListPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
+    override fun resetInit() {
+        isInit = false
+    }
+
     override fun loadOrders(forceRefresh: Boolean) {
         orderView?.setLoadingIndicator(true)
 

@@ -8,6 +8,7 @@ interface OrderListContract {
     interface Presenter : BasePresenter<View> {
         fun loadOrders(forceRefresh: Boolean = false)
         fun openOrderDetail(order: WCOrderModel)
+        fun resetInit()
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter {

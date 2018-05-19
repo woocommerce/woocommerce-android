@@ -32,6 +32,7 @@ class OrderListPresenterTest {
     @Before
     fun setup() {
         presenter = spy(OrderListPresenter(dispatcher, orderStore, selectedSite))
+        presenter.resetInit()
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
     }
@@ -46,7 +47,7 @@ class OrderListPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showOrders(orders)
+        verify(orderListView).showOrders(orders, true)
     }
 
     @Test
