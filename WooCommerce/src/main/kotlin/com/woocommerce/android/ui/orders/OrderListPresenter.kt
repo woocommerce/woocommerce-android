@@ -18,6 +18,10 @@ class OrderListPresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) : OrderListContract.Presenter {
+    companion object {
+        private var isInit = false // Once set to true, only refresh from network if user manually requests a refresh.
+    }
+
     private var orderView: OrderListContract.View? = null
 
     override fun takeView(view: OrderListContract.View) {
@@ -30,11 +34,15 @@ class OrderListPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadOrders() {
+    override fun loadOrders(forceRefresh: Boolean) {
         orderView?.setLoadingIndicator(true)
 
-        val payload = FetchOrdersPayload(selectedSite.get())
-        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+        if (!isInit || forceRefresh) {
+            val payload = FetchOrdersPayload(selectedSite.get())
+            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+        } else {
+            fetchAndLoadOrdersFromDb(false)
+        }
     }
 
     @Suppress("unused")
@@ -47,18 +55,27 @@ class OrderListPresenter @Inject constructor(
         }
 
         if (event.causeOfChange == FETCH_ORDERS) {
-            val orders = orderStore.getOrdersForSite(selectedSite.get())
-            if (orders.count() > 0) {
-                orderView?.showOrders(orders)
-            } else {
-                orderView?.showNoOrders()
-            }
-
-            orderView?.setLoadingIndicator(false)
+            isInit = true
+            fetchAndLoadOrdersFromDb(true)
         }
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
         orderView?.openOrderDetail(order)
+    }
+
+    /**
+     * Fetch orders from the local database.
+     *
+     * @param isForceRefresh True if orders were refreshed from the API, else false.
+     */
+    private fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean) {
+        val orders = orderStore.getOrdersForSite(selectedSite.get())
+        if (orders.count() > 0) {
+            orderView?.showOrders(orders, isForceRefresh)
+        } else {
+            orderView?.showNoOrders()
+        }
+        orderView?.setLoadingIndicator(false)
     }
 }
