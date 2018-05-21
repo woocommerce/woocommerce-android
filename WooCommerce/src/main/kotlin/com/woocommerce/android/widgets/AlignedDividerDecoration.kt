@@ -96,19 +96,12 @@ class AlignedDividerDecoration @JvmOverloads constructor(
         val adjustedChildCount = parent.childCount - 2
         (0..adjustedChildCount)
                 .map { parent.getChildAt(it) }
-                .forEach { hostView ->
-                    val left = hostView.findViewById<View>(alignStartToStartOf)
-                    val right = hostView.findViewById<View>(alignEndToEndOf)
+                .forEach {
+                    val left = it.findViewById<View>(alignStartToStartOf)
+                    val right = it.findViewById<View>(alignEndToEndOf)
 
-                    var dividerStart = 0
-                    var dividerEnd = parent.width
-                    left?.let {
-                        dividerStart = it.left + hostView.paddingStart
-                    }
-                    right?.let {
-                        dividerEnd = it.right + hostView.paddingEnd
-                    }
-
+                    var dividerStart = left?.left ?: 0
+                    var dividerEnd = right?.right ?: parent.width
                     if (clipToMargin) {
                         (left?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
                             dividerStart += it.marginStart
@@ -118,8 +111,8 @@ class AlignedDividerDecoration @JvmOverloads constructor(
                         }
                     }
 
-                    parent.getDecoratedBoundsWithMargins(hostView, bounds)
-                    val bottom = bounds.bottom + Math.round(hostView.translationY)
+                    parent.getDecoratedBoundsWithMargins(it, bounds)
+                    val bottom = bounds.bottom + Math.round(it.translationY)
                     val top = bottom - divider.intrinsicHeight
                     divider.setBounds(dividerStart, top, dividerEnd, bottom)
                     divider.draw(canvas)
