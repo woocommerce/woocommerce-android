@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.ui.orders.OrderFulfillmentContract.View
+import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
@@ -8,6 +9,7 @@ import javax.inject.Inject
 class OrderFulfillmentPresenter @Inject constructor(
     private val orderStore: WCOrderStore
 ) : OrderFulfillmentContract.Presenter {
+    override var orderModel: WCOrderModel? = null
     private var orderView: OrderFulfillmentContract.View? = null
 
     override fun takeView(view: View) {
@@ -20,7 +22,8 @@ class OrderFulfillmentPresenter @Inject constructor(
 
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
         orderView?.let { view ->
-            orderStore.getOrderByIdentifier(orderIdentifier)?.let {
+            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderModel?.let {
                 view.showOrderDetail(it)
             }
         }

@@ -23,6 +23,8 @@
     <string name="notifications">Notifications</string>
     <string name="details">Details</string>
     <string name="hide_details">Hide Details</string>
+    <string name="undo">Undo</string>
+    <string name="retry">Retry</string>
     <!--
         Date/Time Labels
     -->
@@ -89,6 +91,9 @@
     <string name="orderdetail_hide_billing">Hide Billing</string>
     <string name="order_fulfill_order">Fulfill Order</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
+    <string name="order_fulfill_marked_complete">Order Marked Complete</string>
+    <string name="order_update_error_no_connection">No connection: the order can\'t be updated</string>
+    <string name="order_update_error_general">Error completing order: %s</string>
     <!--
         Order Status Labels
     -->

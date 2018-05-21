@@ -123,24 +123,35 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     /**
      * Only open the order detail if the list is not actively being refreshed.
      */
-    override fun openOrderDetail(order: WCOrderModel) {
+    override fun openOrderDetail(order: WCOrderModel, markComplete: Boolean) {
         if (!orderRefreshLayout.isRefreshing) {
-            val frag = OrderDetailFragment.newInstance(order)
-            loadChildFragment(frag)
+            val tag = OrderDetailFragment.TAG
+            getFragmentFromBackStack(tag)?.let {
+                val args = it.arguments ?: Bundle()
+                args.putBoolean(OrderDetailFragment.FIELD_MARK_COMPLETE, markComplete)
+                args.putString(OrderDetailFragment.FIELD_ORDER_IDENTIFIER, order.getIdentifier())
+                args.putString(OrderDetailFragment.FIELD_ORDER_NUMBER, order.number)
+                it.arguments = args
+                popToState(tag)
+            } ?: loadChildFragment(OrderDetailFragment.newInstance(order, markComplete), tag)
         }
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
         if (!orderRefreshLayout.isRefreshing) {
-            val frag = OrderFulfillmentFragment.newInstance(order)
-            loadChildFragment(frag)
+            val tag = OrderFulfillmentFragment.TAG
+            if (!popToState(tag)) {
+                loadChildFragment(OrderFulfillmentFragment.newInstance(order), tag)
+            }
         }
     }
 
     override fun openOrderProductList(order: WCOrderModel) {
         if (!orderRefreshLayout.isRefreshing) {
-            val frag = OrderProductListFragment.newInstance(order)
-            loadChildFragment(frag)
+            val tag = OrderProductListFragment.TAG
+            if (!popToState(tag)) {
+                loadChildFragment(OrderProductListFragment.newInstance(order), tag)
+            }
         }
     }
 
@@ -149,7 +160,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     }
 
     override fun refreshFragmentState() {
-        presenter.loadOrders()
+        if (isActive) {
+            presenter.loadOrders()
+        } else {
+            loadOrdersPending = true
+        }
     }
 
     // region OrderCustomerActionListener

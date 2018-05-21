@@ -13,8 +13,9 @@ import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
-class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View {
+class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
     companion object {
+        const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
 
@@ -74,5 +75,22 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View {
 
         // Populate the Customer Information Card
         orderFulfill_customerInfo.initView(order, true)
+
+        orderFulfill_btnComplete.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View?) {
+        // User has clicked the button to mark this order complete.
+
+        // todo - check network connectivity - if not connected, display No connection: the order can’t be updated [ RETRY ]
+
+        // todo - if connected, send request to open the orderDetail with mark complete as true
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                presenter.orderModel?.let {
+                    router.openOrderDetail(it, true)
+                }
+            }
+        }
     }
 }

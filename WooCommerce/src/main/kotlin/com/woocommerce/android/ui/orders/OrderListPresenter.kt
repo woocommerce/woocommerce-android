@@ -59,6 +59,6 @@ class OrderListPresenter @Inject constructor(
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
-        orderView?.openOrderDetail(order)
+        orderView?.openOrderDetail(order, false)
     }
 }

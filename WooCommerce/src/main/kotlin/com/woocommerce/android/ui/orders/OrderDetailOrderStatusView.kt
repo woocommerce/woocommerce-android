@@ -26,6 +26,11 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
         orderStatus_orderTags.addView(getTagView(orderModel.status))
     }
 
+    fun updateStatus(status: String) {
+        orderStatus_orderTags.removeAllViews()
+        orderStatus_orderTags.addView(getTagView(status))
+    }
+
     private fun getTagView(text: String): TagView {
         val orderTag = OrderStatusTag(text)
         val tagView = TagView(context)
