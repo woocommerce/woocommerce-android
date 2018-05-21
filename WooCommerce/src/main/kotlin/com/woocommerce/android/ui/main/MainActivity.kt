@@ -322,4 +322,9 @@ class MainActivity : AppCompatActivity(),
         }
     }
     // endregion
+
+    override fun refreshActiveFragment() {
+        val fragment = supportFragmentManager.findFragment(activeNavPosition) as TopLevelFragment
+        fragment.refreshFragmentState()
+    }
 }
