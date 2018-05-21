@@ -20,7 +20,13 @@ object SnackbarUtils {
     }
 
     private fun showSnackbarWithAction(
-        view: View, msg: String, actionString: String,  actionListener: View.OnClickListener, callback: Snackbar.Callback? = null) {
+        view: View,
+        msg: String,
+        actionString:
+        String,
+        actionListener: View.OnClickListener,
+        callback: Snackbar.Callback? = null
+    ) {
         val snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAction(actionString, actionListener)
 
         callback?.let {
