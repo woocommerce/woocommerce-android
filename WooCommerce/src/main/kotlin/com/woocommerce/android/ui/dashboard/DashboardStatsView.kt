@@ -9,6 +9,7 @@ import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
@@ -68,6 +69,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 position = XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
+                granularity = 1f // Don't break x axis values down further than 1 unit of time
             }
 
             with (axisLeft) {
@@ -80,9 +82,17 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 setDrawZeroLine(true)
                 zeroLineWidth = 1F
                 zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
+
+                axisMinimum = 0F
+
+                valueFormatter = IAxisValueFormatter { value, _ ->
+                    formatCurrencyAmountForDisplay(value.toDouble(), currencyCode)
+                }
             }
 
             axisRight.isEnabled = false
+            description.isEnabled = false
+            legend.isEnabled = false
 
             invalidate() // Draw the graph
         }
