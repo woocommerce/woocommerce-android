@@ -55,7 +55,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsTimeframe.YEARS -> TODO()
         }
 
-        val dataSet = BarDataSet(entries, "")
+        val dataSet = BarDataSet(entries, "").apply {
+            color = ContextCompat.getColor(context, R.color.wc_purple)
+            setDrawValues(false)
+        }
 
         with (chart) {
             data = BarData(dataSet)
