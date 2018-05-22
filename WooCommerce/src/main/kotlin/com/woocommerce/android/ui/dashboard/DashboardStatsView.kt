@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
+import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -12,6 +13,7 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
+import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -72,6 +74,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
             }
 
+            // Format the X-axis value range according to the current timeframe and given values
+            formatXAxisValueRange(this, timeframe, revenueStats.keys)
+
             with (axisLeft) {
                 setDrawAxisLine(false)
 
@@ -106,4 +111,18 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     // TODO For certain currencies/locales, replace the thousands mark with k
     private fun formatCurrencyAmountForDisplay(amount: Double, currencyCode: String?) =
             CurrencyUtils.currencyStringRounded(context, amount, currencyCode ?: "")
+
+    private fun formatXAxisValueRange(chart: BarChart, timeframe: StatsTimeframe, dateList: Set<String>) {
+        when (timeframe) {
+            StatsTimeframe.THIS_WEEK -> TODO()
+            StatsTimeframe.THIS_MONTH -> {
+                // Expand the x-axis up to the total days in the current month
+                // (regardless of the current day of the month)
+                val daysInMonth = DateUtils.getNumberOfDaysInMonth(dateList.first())
+                chart.setVisibleXRangeMinimum(daysInMonth.toFloat())
+            }
+            StatsTimeframe.THIS_YEAR -> TODO()
+            StatsTimeframe.YEARS -> TODO()
+        }
+    }
 }
