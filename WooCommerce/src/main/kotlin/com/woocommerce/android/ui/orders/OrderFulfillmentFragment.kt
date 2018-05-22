@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.util.SnackbarUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
@@ -81,15 +83,19 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun onClick(v: View?) {
         // User has clicked the button to mark this order complete.
-
-        // todo - check network connectivity - if not connected, display No connection: the order can’t be updated [ RETRY ]
-
-        // todo - if connected, send request to open the orderDetail with mark complete as true
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                presenter.orderModel?.let {
-                    router.openOrderDetail(it, true)
+        v?.let {
+            // Check for network connection, if none, show message.
+            if (NetworkUtils.isNetworkAvailable(context)) {
+                parentFragment?.let { router ->
+                    if (router is OrdersViewRouter) {
+                        presenter.orderModel?.let {
+                            router.openOrderDetail(it, true)
+                        }
+                    }
                 }
+            } else {
+                SnackbarUtils.showRetrySnack(
+                        it, getString(R.string.order_update_error_no_connection), this)
             }
         }
     }
