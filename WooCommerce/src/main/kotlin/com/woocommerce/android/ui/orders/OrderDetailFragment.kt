@@ -122,6 +122,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             val actionListener = View.OnClickListener {
                 // User canceled the action to mark the order complete.
                 markCompleteCanceled = true
+                arguments?.remove(FIELD_MARK_COMPLETE)
                 previousOrderStatus?.let {
                     orderDetail_orderStatus.updateStatus(it)
                 }
@@ -134,6 +135,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
                     if (!markCompleteCanceled) {
+                        arguments?.remove(FIELD_MARK_COMPLETE)
                         presenter.doMarkOrderComplete()
                     }
                 }
