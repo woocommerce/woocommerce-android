@@ -62,6 +62,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val dataSet = BarDataSet(entries, "").apply {
             color = ContextCompat.getColor(context, R.color.wc_purple)
             setDrawValues(false)
+            isHighlightEnabled = false
         }
 
         with (chart) {
@@ -98,6 +99,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             axisRight.isEnabled = false
             description.isEnabled = false
             legend.isEnabled = false
+
+            // This disables pinch to zoom and swiping through the zoomed graph
+            // We can reenable it, but we'll probably want to disable pull-to-refresh inside the graph view
+            setTouchEnabled(false)
 
             invalidate() // Draw the graph
         }
