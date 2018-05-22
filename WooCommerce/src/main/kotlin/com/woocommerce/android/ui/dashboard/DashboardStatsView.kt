@@ -42,7 +42,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         if (revenueStats.isEmpty()) {
             // TODO Replace with custom empty view
-            chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.default_text_color))
+            chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_test_color))
             chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             chart.clear()
             return
@@ -60,7 +60,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         val dataSet = BarDataSet(entries, "").apply {
-            color = ContextCompat.getColor(context, R.color.wc_purple)
+            color = ContextCompat.getColor(context, R.color.graph_data_color)
             setDrawValues(false)
             isHighlightEnabled = false
         }
@@ -83,11 +83,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
                 setDrawGridLines(true)
                 enableGridDashedLine(10F, 10F, 0F)
-                gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
 
                 setDrawZeroLine(true)
                 zeroLineWidth = 1F
-                zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                zeroLineColor = ContextCompat.getColor(context, R.color.graph_grid_color)
 
                 axisMinimum = 0F
 
