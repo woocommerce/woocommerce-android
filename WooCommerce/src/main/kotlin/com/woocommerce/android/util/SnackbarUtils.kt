@@ -11,12 +11,29 @@ object SnackbarUtils {
         showSnackbarWithAction(view, msg, view.context.getString(R.string.undo), actionListener, callback)
     }
 
-    fun showRetrySnack(view: View, msg: String, actionListener: OnClickListener, callback: Callback? = null) {
-        showSnackbarWithAction(view, msg, view.context.getString(R.string.retry), actionListener, callback)
+    fun getRetrySnack(view: View, msg: String, actionListener: OnClickListener, callback: Callback? = null): Snackbar {
+        return getIndefiniteSnackbarWithAction(
+                view, msg, view.context.getString(R.string.retry), actionListener, callback)
     }
 
     fun showSnack(view: View, msg: String) {
         Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun getIndefiniteSnackbarWithAction(
+        view: View,
+        msg: String,
+        actionString:
+        String,
+        actionListener: View.OnClickListener,
+        callback: Snackbar.Callback? = null
+    ): Snackbar {
+        val snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_INDEFINITE).setAction(actionString, actionListener)
+
+        callback?.let {
+            snackbar.addCallback(it)
+        }
+        return snackbar
     }
 
     private fun showSnackbarWithAction(
