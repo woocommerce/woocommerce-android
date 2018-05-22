@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
+import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
@@ -62,6 +63,26 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         with (chart) {
             data = BarData(dataSet)
+
+            with (xAxis) {
+                position = XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+            }
+
+            with (axisLeft) {
+                setDrawAxisLine(false)
+
+                setDrawGridLines(true)
+                enableGridDashedLine(10F, 10F, 0F)
+                gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
+
+                setDrawZeroLine(true)
+                zeroLineWidth = 1F
+                zeroLineColor = ContextCompat.getColor(context, R.color.wc_border_color)
+            }
+
+            axisRight.isEnabled = false
 
             invalidate() // Draw the graph
         }
