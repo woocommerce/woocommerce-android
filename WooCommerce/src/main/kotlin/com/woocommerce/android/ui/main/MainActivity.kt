@@ -186,6 +186,7 @@ class MainActivity : AppCompatActivity(),
             0 -> {
                 ToastUtils.showToast(this, R.string.no_woocommerce_sites, Duration.LONG)
                 presenter.logout()
+                return
             }
             1 -> selectedSite.set(wcSites[0])
             else -> {
