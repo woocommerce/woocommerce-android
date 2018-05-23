@@ -172,28 +172,34 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
      * Only open the order detail if the list is not actively being refreshed.
      */
     override fun openOrderDetail(order: WCOrderModel, markComplete: Boolean) {
-        val tag = OrderDetailFragment.TAG
-        getFragmentFromBackStack(tag)?.let {
-            val args = it.arguments ?: Bundle()
-            args.putBoolean(OrderDetailFragment.FIELD_MARK_COMPLETE, markComplete)
-            args.putString(OrderDetailFragment.FIELD_ORDER_IDENTIFIER, order.getIdentifier())
-            args.putString(OrderDetailFragment.FIELD_ORDER_NUMBER, order.number)
-            it.arguments = args
-            popToState(tag)
-        } ?: loadChildFragment(OrderDetailFragment.newInstance(order, markComplete), tag)
+        if (!orderRefreshLayout.isRefreshing) {
+            val tag = OrderDetailFragment.TAG
+            getFragmentFromBackStack(tag)?.let {
+                val args = it.arguments ?: Bundle()
+                args.putBoolean(OrderDetailFragment.FIELD_MARK_COMPLETE, markComplete)
+                args.putString(OrderDetailFragment.FIELD_ORDER_IDENTIFIER, order.getIdentifier())
+                args.putString(OrderDetailFragment.FIELD_ORDER_NUMBER, order.number)
+                it.arguments = args
+                popToState(tag)
+            } ?: loadChildFragment(OrderDetailFragment.newInstance(order, markComplete), tag)
+        }
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
-        val tag = OrderFulfillmentFragment.TAG
-        if (!popToState(tag)) {
-            loadChildFragment(OrderFulfillmentFragment.newInstance(order), tag)
+        if (!orderRefreshLayout.isRefreshing) {
+            val tag = OrderFulfillmentFragment.TAG
+            if (!popToState(tag)) {
+                loadChildFragment(OrderFulfillmentFragment.newInstance(order), tag)
+            }
         }
     }
 
     override fun openOrderProductList(order: WCOrderModel) {
-        val tag = OrderProductListFragment.TAG
-        if (!popToState(tag)) {
-            loadChildFragment(OrderProductListFragment.newInstance(order), tag)
+        if (!orderRefreshLayout.isRefreshing) {
+            val tag = OrderProductListFragment.TAG
+            if (!popToState(tag)) {
+                loadChildFragment(OrderProductListFragment.newInstance(order), tag)
+            }
         }
     }
 
