@@ -143,12 +143,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun setLoadingIndicator(active: Boolean) {
         with(orderRefreshLayout) {
             // Make sure this is called after the layout is done with everything else.
-            post { isRefreshing = active }
+            post {
+                isEnabled = !active // Prevent multiple requests at same time
+                isRefreshing = active
+            }
         }
     }
 
     override fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean) {
-        orderRefreshLayout.isEnabled = true
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
 
@@ -159,7 +161,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
             }
             ordersAdapter.setOrders(orders)
         }
-        setLoadingIndicator(false)
         isInit = true
     }
 
@@ -172,24 +173,18 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
      * Only open the order detail if the list is not actively being refreshed.
      */
     override fun openOrderDetail(order: WCOrderModel) {
-        if (!orderRefreshLayout.isRefreshing) {
-            val frag = OrderDetailFragment.newInstance(order)
-            loadChildFragment(frag)
-        }
+        val frag = OrderDetailFragment.newInstance(order)
+        loadChildFragment(frag)
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
-        if (!orderRefreshLayout.isRefreshing) {
-            val frag = OrderFulfillmentFragment.newInstance(order)
-            loadChildFragment(frag)
-        }
+        val frag = OrderFulfillmentFragment.newInstance(order)
+        loadChildFragment(frag)
     }
 
     override fun openOrderProductList(order: WCOrderModel) {
-        if (!orderRefreshLayout.isRefreshing) {
-            val frag = OrderProductListFragment.newInstance(order)
-            loadChildFragment(frag)
-        }
+        val frag = OrderProductListFragment.newInstance(order)
+        loadChildFragment(frag)
     }
 
     override fun getFragmentTitle(): String {
