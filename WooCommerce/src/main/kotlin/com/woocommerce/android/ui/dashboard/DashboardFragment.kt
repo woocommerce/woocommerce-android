@@ -23,8 +23,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
 
     @Inject lateinit var presenter: DashboardContract.Presenter
 
+    private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
+
     override var isActive: Boolean = false
-        get() = isAdded
+        get() = childFragmentManager.backStackEntryCount == 0
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -58,10 +60,26 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // TODO: Don't load stats if this fragment is not visible to the user, deferring it to onBackStackChanged()
         presenter.takeView(this)
-        dashboard_stats.initView()
-        presenter.loadStats(dashboard_stats.getActiveTimeframe())
+
+        if (isActive) {
+            setLoadingIndicator(true)
+            dashboard_stats.initView()
+            presenter.loadStats(dashboard_stats.getActiveTimeframe())
+        } else {
+            loadDataPending = true
+        }
+    }
+
+    override fun onBackStackChanged() {
+        super.onBackStackChanged()
+        // If this fragment is now visible and we've deferred loading data due to it not
+        // being visible - go ahead and load the data.
+        if (isActive && loadDataPending) {
+            loadDataPending = false
+            setLoadingIndicator(true)
+            presenter.loadStats(dashboard_stats.getActiveTimeframe())
+        }
     }
 
     override fun onDestroyView() {
@@ -99,7 +117,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
     }
 
     override fun refreshFragmentState() {
-        setLoadingIndicator(true)
-        presenter.loadStats(dashboard_stats.getActiveTimeframe())
+        if (isActive) {
+            setLoadingIndicator(true)
+            presenter.loadStats(dashboard_stats.getActiveTimeframe())
+        } else {
+            loadDataPending = true
+        }
     }
 }
