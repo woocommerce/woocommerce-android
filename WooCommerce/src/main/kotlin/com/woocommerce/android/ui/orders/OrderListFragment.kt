@@ -143,10 +143,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun setLoadingIndicator(active: Boolean) {
         with(orderRefreshLayout) {
             // Make sure this is called after the layout is done with everything else.
-            post {
-                isEnabled = !active // Prevent multiple requests at same time
-                isRefreshing = active
-            }
+            post { isRefreshing = active }
         }
     }
 
