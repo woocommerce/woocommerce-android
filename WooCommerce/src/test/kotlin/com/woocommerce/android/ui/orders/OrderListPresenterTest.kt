@@ -32,7 +32,6 @@ class OrderListPresenterTest {
     @Before
     fun setup() {
         presenter = spy(OrderListPresenter(dispatcher, orderStore, selectedSite))
-        presenter.resetInit()
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
     }
@@ -41,7 +40,7 @@ class OrderListPresenterTest {
     fun `Displays the orders list view correctly`() {
         // Presenter should dispatch FETCH_ORDERS on startup
         presenter.takeView(orderListView)
-        presenter.loadOrders()
+        presenter.loadOrders(true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
@@ -54,7 +53,7 @@ class OrderListPresenterTest {
     fun `Displays the no orders list view correctly`() {
         // Presenter should dispatch FETCH_ORDERS on startup
         presenter.takeView(orderListView)
-        presenter.loadOrders()
+        presenter.loadOrders(true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update

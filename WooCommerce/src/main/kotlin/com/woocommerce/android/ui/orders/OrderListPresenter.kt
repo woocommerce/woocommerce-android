@@ -18,10 +18,6 @@ class OrderListPresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) : OrderListContract.Presenter {
-    companion object {
-        private var isInit = false // Once set to true, only refresh from network if user manually requests a refresh.
-    }
-
     private var orderView: OrderListContract.View? = null
 
     override fun takeView(view: OrderListContract.View) {
@@ -34,14 +30,10 @@ class OrderListPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun resetInit() {
-        isInit = false
-    }
-
     override fun loadOrders(forceRefresh: Boolean) {
         orderView?.setLoadingIndicator(true)
 
-        if (!isInit || forceRefresh) {
+        if (forceRefresh) {
             val payload = FetchOrdersPayload(selectedSite.get())
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
@@ -59,7 +51,6 @@ class OrderListPresenter @Inject constructor(
         }
 
         if (event.causeOfChange == FETCH_ORDERS) {
-            isInit = true
             fetchAndLoadOrdersFromDb(true)
         }
     }

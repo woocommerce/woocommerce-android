@@ -24,7 +24,8 @@ import javax.inject.Inject
 class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
-        const val LIST_STATE_KEY = "list-state"
+        const val STATE_KEY_LIST = "list-state"
+        const val STATE_KEY_ISINIT = "is-init"
         fun newInstance() = OrderListFragment()
     }
 
@@ -35,6 +36,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
 
     private var loadOrdersPending = false // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
+    private var isInit = false
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0
@@ -42,7 +44,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.let { bundle ->
-            listState = bundle.getParcelable(LIST_STATE_KEY)
+            listState = bundle.getParcelable(STATE_KEY_LIST)
+            isInit = bundle.getBoolean(STATE_KEY_ISINIT, false)
         }
     }
 
@@ -69,7 +72,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
                 setOnRefreshListener {
-                    presenter.loadOrders(true) }
+                    presenter.loadOrders(true)
+                }
             }
         }
         return view
@@ -104,7 +108,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         }
         presenter.takeView(this)
         if (isActive) {
-            presenter.loadOrders()
+            presenter.loadOrders(!isInit)
         } else {
             loadOrdersPending = true
         }
@@ -116,7 +120,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
 
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = ordersList.layoutManager.onSaveInstanceState()
-        outState.putParcelable(LIST_STATE_KEY, listState)
+        outState.putParcelable(STATE_KEY_LIST, listState)
+        outState.putBoolean(STATE_KEY_ISINIT, isInit)
         super.onSaveInstanceState(outState)
     }
 
@@ -126,7 +131,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         // being visible - go ahead and load the orders.
         if (isActive && loadOrdersPending) {
             loadOrdersPending = false
-            presenter.loadOrders()
+            presenter.loadOrders(!isInit)
         }
     }
 
@@ -155,6 +160,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
             ordersAdapter.setOrders(orders)
         }
         setLoadingIndicator(false)
+        isInit = true
     }
 
     override fun showNoOrders() {
@@ -191,6 +197,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     }
 
     override fun refreshFragmentState() {
-        presenter.loadOrders(true)
+        isInit = false
+        if (isActive) {
+            presenter.loadOrders(true)
+        } else {
+            loadOrdersPending = true
+        }
     }
 }
