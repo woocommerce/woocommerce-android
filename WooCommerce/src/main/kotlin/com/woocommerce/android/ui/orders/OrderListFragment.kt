@@ -170,18 +170,24 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
      * Only open the order detail if the list is not actively being refreshed.
      */
     override fun openOrderDetail(order: WCOrderModel) {
-        val frag = OrderDetailFragment.newInstance(order)
-        loadChildFragment(frag)
+        if (!orderRefreshLayout.isRefreshing) {
+            val frag = OrderDetailFragment.newInstance(order)
+            loadChildFragment(frag)
+        }
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
-        val frag = OrderFulfillmentFragment.newInstance(order)
-        loadChildFragment(frag)
+        if (!orderRefreshLayout.isRefreshing) {
+            val frag = OrderFulfillmentFragment.newInstance(order)
+            loadChildFragment(frag)
+        }
     }
 
     override fun openOrderProductList(order: WCOrderModel) {
-        val frag = OrderProductListFragment.newInstance(order)
-        loadChildFragment(frag)
+        if (!orderRefreshLayout.isRefreshing) {
+            val frag = OrderProductListFragment.newInstance(order)
+            loadChildFragment(frag)
+        }
     }
 
     override fun getFragmentTitle(): String {
