@@ -72,7 +72,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
                 setOnRefreshListener {
-                    presenter.loadOrders(true)
+                    presenter.loadOrders(forceRefresh = true)
                 }
             }
         }
@@ -108,7 +108,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         }
         presenter.takeView(this)
         if (isActive) {
-            presenter.loadOrders(!isInit)
+            presenter.loadOrders(forceRefresh = !isInit)
         } else {
             loadOrdersPending = true
         }
@@ -131,7 +131,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         // being visible - go ahead and load the orders.
         if (isActive && loadOrdersPending) {
             loadOrdersPending = false
-            presenter.loadOrders(!isInit)
+            presenter.loadOrders(forceRefresh = !isInit)
         }
     }
 
@@ -197,7 +197,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun refreshFragmentState() {
         isInit = false
         if (isActive) {
-            presenter.loadOrders(true)
+            presenter.loadOrders(forceRefresh = true)
         } else {
             loadOrdersPending = true
         }
