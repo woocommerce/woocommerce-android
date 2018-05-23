@@ -30,11 +30,15 @@ class OrderListPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadOrders() {
+    override fun loadOrders(forceRefresh: Boolean) {
         orderView?.setLoadingIndicator(true)
 
-        val payload = FetchOrdersPayload(selectedSite.get())
-        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+        if (forceRefresh) {
+            val payload = FetchOrdersPayload(selectedSite.get())
+            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+        } else {
+            fetchAndLoadOrdersFromDb(false)
+        }
     }
 
     @Suppress("unused")
@@ -47,18 +51,26 @@ class OrderListPresenter @Inject constructor(
         }
 
         if (event.causeOfChange == FETCH_ORDERS) {
-            val orders = orderStore.getOrdersForSite(selectedSite.get())
-            if (orders.count() > 0) {
-                orderView?.showOrders(orders)
-            } else {
-                orderView?.showNoOrders()
-            }
-
-            orderView?.setLoadingIndicator(false)
+            fetchAndLoadOrdersFromDb(true)
         }
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
         orderView?.openOrderDetail(order, false)
+    }
+
+    /**
+     * Fetch orders from the local database.
+     *
+     * @param isForceRefresh True if orders were refreshed from the API, else false.
+     */
+    private fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean) {
+        val orders = orderStore.getOrdersForSite(selectedSite.get())
+        if (orders.count() > 0) {
+            orderView?.showOrders(orders, isForceRefresh)
+        } else {
+            orderView?.showNoOrders()
+        }
+        orderView?.setLoadingIndicator(false)
     }
 }
