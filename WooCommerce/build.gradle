@@ -1,9 +1,11 @@
 buildscript {
     repositories {
+        jcenter()
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'io.fabric.tools:gradle:1.25.4'
+        classpath 'com.google.gms:google-services:3.2.0'
     }
 }
 
@@ -85,6 +87,8 @@ dependencies {
     }
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
+    implementation 'com.google.android.gms:play-services-auth:12.0.1'
 
     // Support library
     implementation "com.android.support:support-v4:$supportLibraryVersion"
@@ -232,3 +236,6 @@ if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.h
     }
     android.buildTypes.release.signingConfig = android.signingConfigs.release
 }
+
+// Keep this at the bottom (https://stackoverflow.com/a/37565535)
+apply plugin: 'com.google.gms.google-services'
