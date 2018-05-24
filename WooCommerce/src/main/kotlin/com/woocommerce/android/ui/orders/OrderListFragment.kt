@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -17,13 +18,14 @@ import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
-class OrderListFragment : TopLevelFragment(), OrderListContract.View {
+class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnClickListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -33,12 +35,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
 
     @Inject lateinit var presenter: OrderListContract.Presenter
     @Inject lateinit var ordersAdapter: OrderListAdapter
+    @Inject lateinit var uiResolver: UIMessageResolver
+
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private lateinit var listLayoutAnimation: LayoutAnimationController
 
     private var loadOrdersPending = false // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var isInit = false
+    private var snackbar: Snackbar? = null // Displays connection errors
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0
@@ -74,7 +79,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
                 setOnRefreshListener {
-                    presenter.loadOrders(forceRefresh = true)
+                    presenter.loadOrders(context, forceRefresh = true)
                 }
             }
         }
@@ -108,9 +113,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                 override fun onAnimationStart(animation: Animation?) {}
             }
         }
+
         presenter.takeView(this)
         if (isActive) {
-            presenter.loadOrders(forceRefresh = !isInit)
+            presenter.loadOrders(context, forceRefresh = !isInit)
         } else {
             loadOrdersPending = true
         }
@@ -122,6 +128,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
 
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = ordersList.layoutManager.onSaveInstanceState()
+
+        snackbar?.let { isInit = false } // force an attempt to refresh view when back in foreground.
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_ISINIT, isInit)
         super.onSaveInstanceState(outState)
@@ -129,16 +137,27 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
 
     override fun onBackStackChanged() {
         super.onBackStackChanged()
-        // If this fragment is now visible and we've deferred loading orders due to it not
-        // being visible - go ahead and load the orders.
-        if (isActive && loadOrdersPending) {
-            loadOrdersPending = false
-            presenter.loadOrders(forceRefresh = !isInit)
+        if (isActive) {
+            // If this fragment is now visible and we've deferred loading orders due to it not
+            // being visible or the connection error snackbar is not null (meaning we tried to fetch
+            // orders before but were not successful) - go ahead and load the orders.
+            if (loadOrdersPending || snackbar != null) {
+                snackbar?.let { isInit = false } // Force a refresh if the connection error snackbar was present
+                loadOrdersPending = false
+                snackbar = null
+                presenter.loadOrders(context, forceRefresh = !isInit)
+            }
+        } else {
+            snackbar?.let { it.dismiss() }
         }
     }
 
     override fun onDestroyView() {
         presenter.dropView()
+        snackbar?.let {
+            it.dismiss()
+            snackbar = null
+        }
         super.onDestroyView()
     }
 
@@ -171,17 +190,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     /**
      * Only open the order detail if the list is not actively being refreshed.
      */
-    override fun openOrderDetail(order: WCOrderModel, markComplete: Boolean) {
+    override fun openOrderDetail(order: WCOrderModel, originalOrderStatus: String?) {
         if (!orderRefreshLayout.isRefreshing) {
             val tag = OrderDetailFragment.TAG
             getFragmentFromBackStack(tag)?.let {
                 val args = it.arguments ?: Bundle()
-                args.putBoolean(OrderDetailFragment.FIELD_MARK_COMPLETE, markComplete)
                 args.putString(OrderDetailFragment.FIELD_ORDER_IDENTIFIER, order.getIdentifier())
                 args.putString(OrderDetailFragment.FIELD_ORDER_NUMBER, order.number)
+                args.putString(OrderDetailFragment.FIELD_ORIGINAL_ORDER_STATUS, originalOrderStatus)
                 it.arguments = args
                 popToState(tag)
-            } ?: loadChildFragment(OrderDetailFragment.newInstance(order, markComplete), tag)
+            } ?: loadChildFragment(OrderDetailFragment.newInstance(order, originalOrderStatus), tag)
         }
     }
 
@@ -210,9 +229,25 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun refreshFragmentState() {
         isInit = false
         if (isActive) {
-            presenter.loadOrders(forceRefresh = true)
+            presenter.loadOrders(context, forceRefresh = true)
         } else {
             loadOrdersPending = true
+        }
+    }
+
+    override fun onClick(v: View?) {
+        // Handler for the Connection Error RETRY button
+        v?.let {
+            snackbar?.dismiss()
+            snackbar = null
+            presenter.loadOrders(context, true)
+        }
+    }
+
+    override fun showNetworkErrorFetchOrders() {
+        ordersList?.let {
+            snackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this)
+            snackbar?.show()
         }
     }
 

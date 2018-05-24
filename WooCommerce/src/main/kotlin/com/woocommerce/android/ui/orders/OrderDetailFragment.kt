@@ -8,13 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.util.SnackbarUtils
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
@@ -22,15 +20,18 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
-        const val FIELD_MARK_COMPLETE = "mark-order-complete"
+        const val FIELD_ORIGINAL_ORDER_STATUS = "previous-order-status"
+        const val STATE_KEY_PENDING_COMPLETE_ERROR = "active-mark-order-complete-error"
 
-        fun newInstance(order: WCOrderModel, markComplete: Boolean = false): Fragment {
+        fun newInstance(order: WCOrderModel, originalOrderStatus: String?): Fragment {
             val args = Bundle()
             args.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
-            args.putBoolean(FIELD_MARK_COMPLETE, markComplete)
 
             // Use for populating the title only, not for record retrieval
             args.putString(FIELD_ORDER_NUMBER, order.number)
+
+            // If order recently completed, this was the order status prior to that change
+            args.putString(FIELD_ORIGINAL_ORDER_STATUS, originalOrderStatus)
 
             val fragment = OrderDetailFragment()
             fragment.arguments = args
@@ -39,9 +40,34 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
+    @Inject lateinit var uiResolver: UIMessageResolver
 
-    private var markCompleteCanceled: Boolean = false
-    private var previousOrderStatus: String? = null
+    private var originalOrderStatus: String? = null
+    private var errorUpdateStatusSnackbar: Snackbar? = null
+    private var errorFetchNotesSnackbar: Snackbar? = null
+
+    private val retryFetchNotesListener = View.OnClickListener { v ->
+        // Handler for the RETRY button to retry fetching notes after a connection error.
+        v?.let {
+            context?.let { context ->
+                errorFetchNotesSnackbar?.dismiss()
+                errorFetchNotesSnackbar = null
+                presenter.loadOrderNotes(context)
+            }
+        }
+    }
+
+    private val retryUpdateOrderStatusListener = View.OnClickListener { v ->
+        // Handler for the RETRY button to retry submitting order to mark it complete after a
+        // connection error.
+        v?.let {
+            context?.let { context ->
+                errorUpdateStatusSnackbar?.dismiss()
+                errorUpdateStatusSnackbar = null
+                pendingUndoOrderComplete()
+            }
+        }
+    }
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -53,7 +79,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
         // Set activity title
         arguments?.getString(FIELD_ORDER_NUMBER, "").also {
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it) }
+            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it)
+        }
 
         return view
     }
@@ -62,19 +89,48 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        val markComplete = arguments?.getBoolean(FIELD_MARK_COMPLETE, false) ?: false
+        originalOrderStatus = arguments?.getString(FIELD_ORIGINAL_ORDER_STATUS, null) ?: null
 
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
-            presenter.loadOrderDetail(it, markComplete)
+            context?.let { context ->
+                presenter.loadOrderDetail(context, it)
+            }
+
+            // If order was fulfilled, show message to allow user to undo
+            originalOrderStatus?.let {
+                pendingUndoOrderComplete()
+            }
+        }
+
+        savedInstanceState?.let {
+            val isMarkCompleteError = it.getBoolean(STATE_KEY_PENDING_COMPLETE_ERROR, false)
+            if (isMarkCompleteError) {
+                showNetworkErrorForUpdateOrderStatus()
+            }
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        errorUpdateStatusSnackbar?.let {
+            outState.putBoolean(STATE_KEY_PENDING_COMPLETE_ERROR, true)
+        }
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onDestroyView() {
+        errorUpdateStatusSnackbar?.let {
+            it.dismiss()
+            errorUpdateStatusSnackbar = null
+        }
+        errorFetchNotesSnackbar?.let {
+            it.dismiss()
+            errorFetchNotesSnackbar = null
+        }
         presenter.dropView()
         super.onDestroyView()
     }
 
-    override fun showOrderDetail(order: WCOrderModel?, notes: List<WCOrderNoteModel>) {
+    override fun showOrderDetail(order: WCOrderModel?) {
         order?.let {
             // Populate the Order Status Card
             orderDetail_orderStatus.initView(order)
@@ -100,6 +156,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
                 orderDetail_customerNote.initView(order)
             }
         }
+    }
+
+    override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
         // Populate order notes card
         orderDetail_noteList.initView(notes)
     }
@@ -109,58 +168,53 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         orderDetail_noteList.updateView(notes)
     }
 
-    override fun pendingMarkOrderComplete() {
-        markCompleteCanceled = false
+    override fun showNetworkErrorForNotes() {
+        errorFetchNotesSnackbar = uiResolver.getRetrySnack(
+                R.string.order_error_fetch_notes_network, null, retryFetchNotesListener)
+        errorFetchNotesSnackbar?.show()
+    }
 
-        presenter.orderModel?.let {
-            previousOrderStatus = it.status
-            it.status = OrderStatus.COMPLETED
+    override fun showNetworkErrorForUpdateOrderStatus() {
+        errorUpdateStatusSnackbar = uiResolver.getRetrySnack(
+                R.string.order_error_update_no_connection, null, retryUpdateOrderStatusListener)
+        errorUpdateStatusSnackbar?.show()
+    }
 
-            orderDetail_orderStatus.updateStatus(OrderStatus.COMPLETED)
-
-            // Listener for the UNDO button in the snackbar
+    private fun pendingUndoOrderComplete() {
+        originalOrderStatus?.let { status ->
+            // Listener for the UNDO button in the errorUpdateStatusSnackbar
             val actionListener = View.OnClickListener {
-                // User canceled the action to mark the order complete.
-                markCompleteCanceled = true
-                arguments?.remove(FIELD_MARK_COMPLETE)
-                previousOrderStatus?.let {
-                    orderDetail_orderStatus.updateStatus(it)
+                context?.let {
+                    // User canceled the action to mark the order complete.
+                    arguments?.remove(FIELD_ORIGINAL_ORDER_STATUS)
+                    presenter.updateOrderStatus(it, status)
                 }
-                previousOrderStatus = null
             }
 
-            // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
-            // timed out, then process the request to mark this order complete.
             val callback = object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
-                    if (!markCompleteCanceled) {
-                        arguments?.remove(FIELD_MARK_COMPLETE)
-                        presenter.doMarkOrderComplete()
+                    context?.let {
+                        arguments?.remove(FIELD_ORIGINAL_ORDER_STATUS)
                     }
                 }
             }
-            SnackbarUtils.showUndoSnack(
-                    orderDetail_customerInfo,
-                    getString(R.string.order_fulfill_marked_complete),
-                    actionListener,
-                    callback)
+
+            errorUpdateStatusSnackbar = uiResolver.getUndoSnack(
+                    R.string.order_fulfill_marked_complete,
+                    null,
+                    actionListener)
+            errorUpdateStatusSnackbar?.addCallback(callback)
+            errorUpdateStatusSnackbar?.show()
         }
     }
 
-    override fun markOrderCompleteSuccess() {
-        // Successfully marked order asd complete. Main fragment requires a refresh.
-        (activity as MainActivity).refreshActiveFragment()
-    }
-
-    override fun markOrderCompleteFailed(msg: String) {
+    override fun orderStatusUpdateSuccess() {
         // Set the order status back to the previous status
-        previousOrderStatus?.let {
+        originalOrderStatus?.let {
             orderDetail_orderStatus.updateStatus(it)
-            previousOrderStatus = null
+            originalOrderStatus = null
         }
-        // Notify the user.
-        SnackbarUtils.showSnack(orderDetail_customerInfo, getString(R.string.order_update_error_general, msg))
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {

@@ -16,6 +16,5 @@ interface MainContract {
         fun notifyTokenUpdated()
         fun showLoginScreen()
         fun updateSelectedSite()
-        fun refreshActiveFragment()
     }
 }
