@@ -164,6 +164,13 @@ apiKey=${crashlyticsApiKey}""")
     }
 }
 
+task copyGoogleServicesExampleFile(type: Copy) {
+    from('.')
+    into('.')
+    include('google-services.json-example')
+    rename('google-services.json-example', 'google-services.json')
+}
+
 // Add generateCrashlyticsConfig to all generateBuildConfig tasks (all variants)
 android.applicationVariants.all { variant ->
     variant.generateBuildConfig.dependsOn(generateCrashlyticsConfig)
@@ -182,6 +189,16 @@ android.buildTypes.all { buildType ->
             buildType.resValue "string", property.key.replace("wc.res.", "").replace(".", "_").toLowerCase(),
                     "${property.value}"
         }
+    }
+
+    // If Google services file doesn't exist, copy example file.
+    if (!file("google-services.json").exists()) {
+        tasks.copyGoogleServicesExampleFile.execute()
+    }
+
+    // Print warning message if example Google services file is used.
+    if ((new File('WooCommerce/google-services.json').text) == (new File('WooCommerce/google-services.json-example').text)) {
+        println("WARNING: You're using the example google-services.json file. Google login will fail.")
     }
 }
 
