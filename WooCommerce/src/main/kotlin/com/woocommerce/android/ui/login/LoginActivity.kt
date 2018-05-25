@@ -131,7 +131,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
     override fun gotWpcomEmail(email: String?) {
         if (getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT) {
-            val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment.newInstance(email)
+            val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment.newInstance(email, false, null)
             slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
         } else {
             val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
@@ -169,7 +169,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         slideInFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentFragment.TAG)
     }
 
-    override fun openEmailClient() {
+    override fun openEmailClient(isLogin: Boolean) {
         if (ActivityUtils.isEmailClientAvailable(this)) {
             loginAnalyticsListener.trackLoginMagicLinkOpenEmailClientClicked()
             ActivityUtils.openEmailClient(this)
@@ -312,10 +312,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 //        launchHelpshift(url, username, isWpcom, Tag.ORIGIN_LOGIN_USERNAME_PASSWORD)
     }
 
-    override fun setHelpContext(faqId: String?, faqSection: String?) {
-        // nothing implemented here yet. This will set the context the `help()` callback should work with
-    }
-
     // SmartLock
 
     override fun saveCredentialsInSmartLock(
@@ -328,6 +324,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     }
 
     // Signup
+
+    override fun doStartSignup() {
+        // TODO: Signup
+    }
 
     override fun helpSignupEmailScreen(email: String?) {
         // TODO: Signup
