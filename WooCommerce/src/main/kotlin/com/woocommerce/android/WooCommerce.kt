@@ -1,7 +1,11 @@
 package com.woocommerce.android
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
+import android.os.Build
 import android.support.multidex.MultiDexApplication
 import com.crashlytics.android.Crashlytics
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -59,6 +63,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
         initAnalytics()
 
+        createNotificationChannelsOnSdk26()
+
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
         registerComponentCallbacks(lifecycleMonitor)
@@ -96,6 +102,22 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
         }
         AppPrefs.setLastAppVersionCode(versionCode)
+    }
+
+    private fun createNotificationChannelsOnSdk26() {
+        // Create Notification channels introduced in Android Oreo
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            // Create the General channel
+            val generalChannel = NotificationChannel(
+                    getString(R.string.notification_channel_general_id),
+                    getString(R.string.notification_channel_general_title),
+                    NotificationManager.IMPORTANCE_DEFAULT)
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            notificationManager.createNotificationChannel(generalChannel)
+        }
     }
 
     @Suppress("unused")
