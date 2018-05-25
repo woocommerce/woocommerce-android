@@ -131,7 +131,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         // being visible - go ahead and load the orders.
         if (isActive && loadOrdersPending) {
             loadOrdersPending = false
-            presenter.loadOrders(forceRefresh = !isInit)
+            presenter.loadOrders(true)
         }
     }
 
