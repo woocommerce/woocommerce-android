@@ -95,12 +95,32 @@ class LoginAnalyticsTracker : LoginAnalyticsListener {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_PASSWORD_FORM_VIEWED)
     }
 
+    override fun trackSignupCanceled() {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_CANCELED)
+    }
+
+    override fun trackSignupEmailButtonTapped() {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_EMAIL_BUTTON_TAPPED)
+    }
+
     override fun trackSignupEmailToLogin() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_EMAIL_TO_LOGIN)
     }
 
+    override fun trackSignupGoogleButtonTapped() {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_GOOGLE_BUTTON_TAPPED)
+    }
+
     override fun trackSignupMagicLinkFailed() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_FAILED)
+    }
+
+    override fun trackSignupMagicLinkOpened() {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_OPENED)
+    }
+
+    override fun trackSignupMagicLinkOpenEmailClientClicked() {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
     }
 
     override fun trackSignupMagicLinkSent() {
@@ -109,10 +129,6 @@ class LoginAnalyticsTracker : LoginAnalyticsListener {
 
     override fun trackSignupMagicLinkSucceeded() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_SUCCEEDED)
-    }
-
-    override fun trackSignupSocial2faNeeded() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_SOCIAL_2FA_NEEDED)
     }
 
     override fun trackSignupSocialAccountsNeedConnecting() {
@@ -125,6 +141,10 @@ class LoginAnalyticsTracker : LoginAnalyticsListener {
 
     override fun trackSignupSocialToLogin() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_SOCIAL_TO_LOGIN)
+    }
+
+    override fun trackSignupTermsOfServiceTapped() {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_TERMS_OF_SERVICE_TAPPED)
     }
 
     override fun trackSocialAccountsNeedConnecting() {
