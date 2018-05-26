@@ -50,8 +50,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         // Handler for the RETRY button to retry fetching notes after a connection error.
         v?.let {
             context?.let { context ->
-                errorFetchNotesSnackbar?.dismiss()
-                errorFetchNotesSnackbar = null
                 presenter.loadOrderNotes(context)
             }
         }
@@ -62,8 +60,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         // connection error.
         v?.let {
             context?.let { context ->
-                errorUpdateStatusSnackbar?.dismiss()
-                errorUpdateStatusSnackbar = null
                 pendingUndoOrderComplete()
             }
         }
@@ -112,21 +108,19 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        errorUpdateStatusSnackbar?.let {
+        errorUpdateStatusSnackbar?.takeIf { it.isShownOrQueued }?.let {
             outState.putBoolean(STATE_KEY_PENDING_COMPLETE_ERROR, true)
         }
         super.onSaveInstanceState(outState)
     }
 
     override fun onDestroyView() {
-        errorUpdateStatusSnackbar?.let {
-            it.dismiss()
-            errorUpdateStatusSnackbar = null
-        }
-        errorFetchNotesSnackbar?.let {
-            it.dismiss()
-            errorFetchNotesSnackbar = null
-        }
+        errorUpdateStatusSnackbar?.dismiss()
+        errorUpdateStatusSnackbar = null
+
+        errorFetchNotesSnackbar?.dismiss()
+        errorFetchNotesSnackbar = null
+
         presenter.dropView()
         super.onDestroyView()
     }

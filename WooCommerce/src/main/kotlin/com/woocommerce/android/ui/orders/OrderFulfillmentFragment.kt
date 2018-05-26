@@ -39,7 +39,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
     @Inject lateinit var uiResolver: MainUIMessageResolver
 
-    private var snackbar: Snackbar? = null // Displays connection errors
+    private var connectErrorSnackbar: Snackbar? = null // Displays connection errors
     private var originalOrderStatus: String? = null
 
     override fun onAttach(context: Context?) {
@@ -72,7 +72,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        snackbar?.let {
+        connectErrorSnackbar?.takeIf { it.isShownOrQueued }?.let {
             outState.putBoolean(STATE_KEY_CONNECTION_ERROR, true)
         }
         originalOrderStatus?.let { outState.putString(STATE_KEY_PREVIOUS_STATUS, it) }
@@ -81,10 +81,8 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun onDestroyView() {
         presenter.dropView()
-        snackbar?.let {
-            it.dismiss()
-            snackbar = null
-        }
+        connectErrorSnackbar?.dismiss()
+        connectErrorSnackbar = null
         super.onDestroyView()
     }
 
@@ -117,9 +115,9 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     override fun showNetworkConnectivityError() {
-        snackbar = uiResolver.getRetrySnack(
+        connectErrorSnackbar = uiResolver.getRetrySnack(
                 R.string.order_error_update_no_connection, null, this)
-        snackbar?.show()
+        connectErrorSnackbar?.show()
     }
 
     override fun toggleCompleteButton(isEnabled: Boolean) {

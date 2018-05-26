@@ -43,7 +43,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     private var loadOrdersPending = false // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var isInit = false
-    private var snackbar: Snackbar? = null // Displays connection errors
+    private var connectErrorSnackbar: Snackbar? = null // Displays connection errors
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0
@@ -129,7 +129,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = ordersList.layoutManager.onSaveInstanceState()
 
-        snackbar?.let { isInit = false } // force an attempt to refresh view when back in foreground.
+        // force an attempt to refresh view when back in foreground.
+        connectErrorSnackbar?.takeIf { it.isShownOrQueued }?.let { isInit = false }
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_ISINIT, isInit)
         super.onSaveInstanceState(outState)
@@ -139,25 +140,22 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
         super.onBackStackChanged()
         if (isActive) {
             // If this fragment is now visible and we've deferred loading orders due to it not
-            // being visible or the connection error snackbar is not null (meaning we tried to fetch
+            // being visible or the connection error connectErrorSnackbar is not null (meaning we tried to fetch
             // orders before but were not successful) - go ahead and load the orders.
-            if (loadOrdersPending || snackbar != null) {
-                snackbar?.let { isInit = false } // Force a refresh if the connection error snackbar was present
+            if (loadOrdersPending || connectErrorSnackbar?.isShownOrQueued == true) {
+                connectErrorSnackbar?.dismiss()
                 loadOrdersPending = false
-                snackbar = null
-                presenter.loadOrders(context, forceRefresh = !isInit)
+                presenter.loadOrders(context, true)
             }
         } else {
-            snackbar?.dismiss()
+            connectErrorSnackbar?.dismiss()
         }
     }
 
     override fun onDestroyView() {
         presenter.dropView()
-        snackbar?.let {
-            it.dismiss()
-            snackbar = null
-        }
+        connectErrorSnackbar?.dismiss()
+        connectErrorSnackbar = null
         super.onDestroyView()
     }
 
@@ -238,16 +236,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     override fun onClick(v: View?) {
         // Handler for the Connection Error RETRY button
         v?.let {
-            snackbar?.dismiss()
-            snackbar = null
             presenter.loadOrders(context, true)
         }
     }
 
     override fun showNetworkErrorFetchOrders() {
         ordersList?.let {
-            snackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this)
-            snackbar?.show()
+            connectErrorSnackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this)
+            connectErrorSnackbar?.show()
         }
     }
 
