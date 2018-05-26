@@ -82,6 +82,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it)
         }
 
+        // Parse out original order status if the user just fulfilled the order
+        originalOrderStatus = arguments?.getString(FIELD_ORIGINAL_ORDER_STATUS, null)
+
         return view
     }
 
@@ -89,8 +92,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        originalOrderStatus = arguments?.getString(FIELD_ORIGINAL_ORDER_STATUS, null) ?: null
-
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
             context?.let { context ->
                 presenter.loadOrderDetail(context, it)
@@ -180,13 +181,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         errorUpdateStatusSnackbar?.show()
     }
 
+    // User has clicked the "UNDO" button to undo order fulfillment.
+    // Submit request to change the order status back to the original value.
     private fun pendingUndoOrderComplete() {
         originalOrderStatus?.let { status ->
             // Listener for the UNDO button in the errorUpdateStatusSnackbar
             val actionListener = View.OnClickListener {
                 context?.let {
                     // User canceled the action to mark the order complete.
-                    arguments?.remove(FIELD_ORIGINAL_ORDER_STATUS)
                     presenter.updateOrderStatus(it, status)
                 }
             }
@@ -194,6 +196,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             val callback = object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
+                    // Remove the original order status from arguments
                     context?.let {
                         arguments?.remove(FIELD_ORIGINAL_ORDER_STATUS)
                     }
@@ -209,12 +212,19 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         }
     }
 
-    override fun orderStatusUpdateSuccess() {
+    override fun orderStatusUpdateSuccess(order: WCOrderModel) {
         // Set the order status back to the previous status
         originalOrderStatus?.let {
             orderDetail_orderStatus.updateStatus(it)
             originalOrderStatus = null
         }
+
+        // Update the product list view to display the option
+        // to fulfill order
+        orderDetail_productList.updateView(order, false, this)
+
+        // Display success snack message
+        uiResolver.showSnack(R.string.order_fulfill_undo_success)
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {

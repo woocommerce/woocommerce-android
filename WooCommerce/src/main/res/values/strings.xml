@@ -96,6 +96,7 @@
     <string name="order_fulfill_order">Fulfill Order</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
+    <string name="order_fulfill_undo_success">Order saved successfully!</string>
     <string name="order_error_update_no_connection">No connection: the order can\'t be updated</string>
     <string name="order_error_update_general">Error completing order: %s</string>
 

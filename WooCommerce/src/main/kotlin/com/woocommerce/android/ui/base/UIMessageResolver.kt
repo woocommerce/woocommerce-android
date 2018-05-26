@@ -30,8 +30,9 @@ class UIMessageResolver @Inject constructor(val activity: MainActivity) {
                 actionListener)
     }
 
-    fun showSnack(@StringRes stringId: Int, msg: String?) =
-            Snackbar.make(snackbarRoot, snackbarRoot.context.getString(stringId, msg ?: ""), Snackbar.LENGTH_LONG).show()
+    fun showSnack(@StringRes stringId: Int, msg: String? = null) =
+            Snackbar.make(snackbarRoot, snackbarRoot.context.getString(stringId, msg ?: ""), Snackbar.LENGTH_LONG)
+                    .show()
 
     fun showSnack(msg: String) = Snackbar.make(snackbarRoot, msg, Snackbar.LENGTH_LONG).show()
 

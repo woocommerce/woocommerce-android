@@ -19,7 +19,7 @@ interface OrderDetailContract {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
-        fun orderStatusUpdateSuccess()
+        fun orderStatusUpdateSuccess(order: WCOrderModel)
         fun showNetworkErrorForNotes()
         fun showNetworkErrorForUpdateOrderStatus()
     }

@@ -46,9 +46,9 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     override fun markOrderComplete(context: Context) {
-        orderView?.toggleCompleteButton(isEnabled = false)
         orderModel?.let { order ->
             if (NetworkUtils.isNetworkAvailable(context)) {
+                orderView?.toggleCompleteButton(isEnabled = false)
                 val payload = UpdateOrderStatusPayload(order, selectedSite.get(), OrderStatus.COMPLETED)
                 dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
             } else {

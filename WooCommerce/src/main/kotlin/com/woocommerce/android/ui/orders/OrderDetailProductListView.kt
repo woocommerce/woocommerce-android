@@ -72,6 +72,30 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
     }
 
+    fun updateView(order: WCOrderModel, expanded: Boolean, listener: OrderActionListener? = null) {
+        listener?.let {
+            if (order.status == OrderStatus.PROCESSING) {
+                productList_btnFulfill.visibility = View.VISIBLE
+                productList_btnDetails.visibility = View.GONE
+                productList_btnDetails.setOnClickListener(null)
+                productList_btnFulfill.setOnClickListener {
+                    listener.openOrderFulfillment(order)
+                }
+            } else {
+                productList_btnFulfill.visibility = View.GONE
+                productList_btnDetails.visibility = View.VISIBLE
+                productList_btnDetails.setOnClickListener {
+                    listener.openOrderProductList(order)
+                }
+                productList_btnFulfill.setOnClickListener(null)
+            }
+        } ?: hideButtons()
+
+        if (expanded) {
+            productList_products.addItemDecoration(divider)
+        }
+    }
+
     private fun hideButtons() {
         productList_btnFulfill.setOnClickListener(null)
         productList_btnDetails.setOnClickListener(null)
