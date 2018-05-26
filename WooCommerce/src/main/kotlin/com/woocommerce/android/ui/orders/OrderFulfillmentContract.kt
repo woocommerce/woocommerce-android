@@ -16,6 +16,7 @@ interface OrderFulfillmentContract {
     interface View : BaseView<Presenter> {
         fun showOrderDetail(order: WCOrderModel)
         fun showNetworkConnectivityError()
+        fun toggleCompleteButton(isEnabled: Boolean)
         fun orderFulfilled()
     }
 }

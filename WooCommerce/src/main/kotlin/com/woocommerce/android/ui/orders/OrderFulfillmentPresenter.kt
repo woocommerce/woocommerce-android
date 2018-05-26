@@ -46,6 +46,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     override fun markOrderComplete(context: Context) {
+        orderView?.toggleCompleteButton(isEnabled = false)
         orderModel?.let { order ->
             if (NetworkUtils.isNetworkAvailable(context)) {
                 val payload = UpdateOrderStatusPayload(order, selectedSite.get(), OrderStatus.COMPLETED)
@@ -64,6 +65,7 @@ class OrderFulfillmentPresenter @Inject constructor(
             if (event.isError) {
                 // User notified in main activity
                 Log.e(this::class.java.simpleName, "Error updating order status : ${event.error.message}")
+                orderView?.toggleCompleteButton(isEnabled = true)
                 return
             } else {
                 orderView?.orderFulfilled()

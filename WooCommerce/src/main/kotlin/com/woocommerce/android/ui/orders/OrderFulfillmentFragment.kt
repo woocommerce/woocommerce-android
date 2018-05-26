@@ -122,6 +122,10 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         snackbar?.show()
     }
 
+    override fun toggleCompleteButton(isEnabled: Boolean) {
+        orderFulfill_btnComplete.isEnabled = isEnabled
+    }
+
     override fun orderFulfilled() {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {

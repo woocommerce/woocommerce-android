@@ -4,5 +4,9 @@
         android:color="@color/wc_grey_39"
         android:state_pressed="true"/>
 
+    <item
+        android:color="@color/wc_grey_17"
+        android:state_enabled="false"/>
+
     <item android:color="@color/wc_purple"/>
 </selector>
