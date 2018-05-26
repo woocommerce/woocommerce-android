@@ -10,7 +10,7 @@ import com.woocommerce.android.di.ActivityScope
 import javax.inject.Inject
 
 @ActivityScope
-class UIMessageResolver @Inject constructor(val activity: MainActivity) {
+class MainUIMessageResolver @Inject constructor(val activity: MainActivity) {
     private val snackbarRoot: ViewGroup by lazy {
         activity.findViewById(R.id.snack_root) as ViewGroup
     }

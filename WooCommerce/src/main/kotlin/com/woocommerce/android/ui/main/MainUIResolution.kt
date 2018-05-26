@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import javax.inject.Inject
 
-class MainUIResolution @Inject constructor(uiResolver: UIMessageResolver)
+class MainUIResolution @Inject constructor(uiResolver: MainUIMessageResolver)
     : MainErrorResolution, GenericErrorResolution(uiResolver) {
     /**
      * Handle FluxC order action related errors

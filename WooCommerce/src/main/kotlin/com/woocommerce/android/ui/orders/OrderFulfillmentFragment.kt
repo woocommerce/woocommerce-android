@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
-import com.woocommerce.android.ui.main.UIMessageResolver
+import com.woocommerce.android.ui.main.MainUIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -37,7 +37,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
-    @Inject lateinit var uiResolver: UIMessageResolver
+    @Inject lateinit var uiResolver: MainUIMessageResolver
 
     private var snackbar: Snackbar? = null // Displays connection errors
     private var originalOrderStatus: String? = null

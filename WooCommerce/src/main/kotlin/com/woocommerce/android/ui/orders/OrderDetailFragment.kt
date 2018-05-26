@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.main.UIMessageResolver
+import com.woocommerce.android.ui.main.MainUIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -40,7 +40,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
-    @Inject lateinit var uiResolver: UIMessageResolver
+    @Inject lateinit var uiResolver: MainUIMessageResolver
 
     private var originalOrderStatus: String? = null
     private var errorUpdateStatusSnackbar: Snackbar? = null
