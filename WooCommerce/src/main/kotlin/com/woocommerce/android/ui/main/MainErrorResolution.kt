@@ -13,4 +13,4 @@ interface OrdersErrorResolution {
  * This interface is extended by the [MainActivity]. Interface should extend any new error
  * resolution types the main activity is expected to handle.
  */
-interface MainErrorResolution: OrdersErrorResolution
+interface MainErrorResolution : OrdersErrorResolution

@@ -112,7 +112,6 @@ class OrderDetailPresenter @Inject constructor(
      */
     private fun fetchAndLoadNotesFromDb() {
         orderModel?.let { order ->
-            println("AMANDA-TEST > OrderDetailPresenter.fetchAndLoadNotesFromDb > isNotesInit = $isNotesInit")
             val notes = orderStore.getOrderNotesForOrder(order)
             if (isNotesInit) {
                 orderView?.updateOrderNotes(notes)

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
-import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.model.WCOrderModel
 
 interface OrderListContract {
