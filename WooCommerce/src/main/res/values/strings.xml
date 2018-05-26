@@ -7,11 +7,7 @@
     <string name="signout">Log out</string>
     <string name="dashboard">Dashboard</string>
     <string name="orders">Orders</string>
-    <string name="settings">Settings</string>
     <string name="email_address">Email Address</string>
-    <string name="view_more">VIEW MORE</string>
-    <string name="view_less">VIEW LESS</string>
-    <string name="phone">Phone</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="total">Total</string>
@@ -22,7 +18,6 @@
     <string name="discount">Discount</string>
     <string name="notifications">Notifications</string>
     <string name="details">Details</string>
-    <string name="hide_details">Hide Details</string>
     <string name="undo">Undo</string>
     <string name="retry">Retry</string>
     <!--
@@ -71,7 +66,6 @@
     <string name="orderdetail_call_contentdesc">call customer</string>
     <string name="orderdetail_sms_contentdesc">send customer sms message</string>
     <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
-    <string name="orderdetail_details">Details:</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_image_contentdesc">Product Icon</string>

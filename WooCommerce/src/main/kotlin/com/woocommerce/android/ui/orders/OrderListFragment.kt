@@ -148,7 +148,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
                 presenter.loadOrders(context, forceRefresh = !isInit)
             }
         } else {
-            snackbar?.let { it.dismiss() }
+            snackbar?.dismiss()
         }
     }
 

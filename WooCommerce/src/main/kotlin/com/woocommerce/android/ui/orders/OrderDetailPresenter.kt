@@ -40,10 +40,10 @@ class OrderDetailPresenter @Inject constructor(
 
     override fun loadOrderDetail(context: Context, orderIdentifier: OrderIdentifier) {
         if (orderIdentifier.isNotEmpty()) {
-            orderView?.let {
+            orderView?.let { view ->
                 orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
                 orderModel?.let { order ->
-                    orderView?.let { it.showOrderDetail(order) }
+                    view.showOrderDetail(order)
                     loadOrderNotes(context) // load order notes
                 }
             }
