@@ -1,9 +1,9 @@
 package com.woocommerce.android.util
 
 import com.crashlytics.android.Crashlytics
+import com.woocommerce.android.util.WooLog.T
 
 import io.fabric.sdk.android.Fabric
-import org.wordpress.android.util.AppLog.T
 
 object CrashlyticsUtils {
     private const val TAG_KEY = "tag"
