@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -9,6 +10,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.android.support.AndroidSupportInjection
@@ -20,17 +24,30 @@ import javax.inject.Inject
 class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
+        const val STATE_KEY_LIST = "list-state"
+        const val STATE_KEY_ISINIT = "is-init"
         fun newInstance() = OrderListFragment()
     }
 
     @Inject lateinit var presenter: OrderListContract.Presenter
     @Inject lateinit var ordersAdapter: OrderListAdapter
     private lateinit var ordersDividerDecoration: DividerItemDecoration
+    private lateinit var listLayoutAnimation: LayoutAnimationController
 
     private var loadOrdersPending = false // If true, the fragment will refresh its orders when its visible
+    private var listState: Parcelable? = null // Save the state of the recycler view
+    private var isInit = false
 
     override var isActive: Boolean = false
-        get() = isAdded
+        get() = childFragmentManager.backStackEntryCount == 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            listState = bundle.getParcelable(STATE_KEY_LIST)
+            isInit = bundle.getBoolean(STATE_KEY_ISINIT, false)
+        }
+    }
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -54,7 +71,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                 }
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
-                setOnRefreshListener { presenter.loadOrders() }
+                setOnRefreshListener {
+                    presenter.loadOrders(forceRefresh = true)
+                }
             }
         }
         return view
@@ -66,29 +85,53 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         // Set the divider decoration for the list
         ordersDividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
 
+        // Set the animation for this list. Gets disabled at various points so we use a variable for it.
+        listLayoutAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down)
+
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
+            layoutAnimationListener = object : Animation.AnimationListener {
+                override fun onAnimationRepeat(animation: Animation?) {}
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    // Remove the layout animation to prevent the animation from playing
+                    // when just restoring the state of the recycler view.
+                    layoutAnimation = null
+                }
+
+                override fun onAnimationStart(animation: Animation?) {}
+            }
         }
         presenter.takeView(this)
-        // If this fragment is not visible, defer loading the orders until it is visible.
-        if (isVisible) {
-            presenter.loadOrders()
+        if (isActive) {
+            presenter.loadOrders(forceRefresh = !isInit)
         } else {
             loadOrdersPending = true
         }
+        listState?.let {
+            ordersList.layoutManager.onRestoreInstanceState(listState)
+            listState = null
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        val listState = ordersList.layoutManager.onSaveInstanceState()
+        outState.putParcelable(STATE_KEY_LIST, listState)
+        outState.putBoolean(STATE_KEY_ISINIT, isInit)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onBackStackChanged() {
         super.onBackStackChanged()
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
-        if (isVisible && loadOrdersPending) {
+        if (isActive && loadOrdersPending) {
             loadOrdersPending = false
-            presenter.loadOrders()
+            presenter.loadOrders(true)
         }
     }
 
@@ -104,13 +147,18 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         }
     }
 
-    override fun showOrders(orders: List<WCOrderModel>) {
-        ordersList.scrollToPosition(0)
-        orderRefreshLayout.isEnabled = true
-        ordersAdapter.setOrders(orders)
+    override fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean) {
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
-        setLoadingIndicator(false)
+
+        ordersList?.let { listView ->
+            if (isForceRefresh) {
+                ordersList.scrollToPosition(0)
+                listView.layoutAnimation = listLayoutAnimation
+            }
+            ordersAdapter.setOrders(orders)
+        }
+        isInit = true
     }
 
     override fun showNoOrders() {
@@ -147,6 +195,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     }
 
     override fun refreshFragmentState() {
-        presenter.loadOrders()
+        isInit = false
+        if (isActive) {
+            presenter.loadOrders(forceRefresh = true)
+        } else {
+            loadOrdersPending = true
+        }
     }
 }
