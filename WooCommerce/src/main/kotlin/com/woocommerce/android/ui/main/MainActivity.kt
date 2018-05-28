@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(),
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
-        private const val KEY_POSITION = "key-position"
+        private const val STATE_KEY_POSITION = "key-position"
 
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
-
     @Inject lateinit var selectedSite: SelectedSite
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
@@ -104,14 +103,14 @@ class MainActivity : AppCompatActivity(),
 
     override fun onSaveInstanceState(outState: Bundle?) {
         // Store the current bottom bar navigation position.
-        outState?.putInt(KEY_POSITION, activeNavPosition.id)
+        outState?.putInt(STATE_KEY_POSITION, activeNavPosition.id)
         super.onSaveInstanceState(outState)
     }
 
     private fun restoreSavedInstanceState(savedInstanceState: Bundle?) {
         // Restore the current navigation position
         savedInstanceState?.also {
-            val id = it.getInt(KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
+            val id = it.getInt(STATE_KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
             activeNavPosition = findNavigationPositionById(id)
         }
     }
@@ -307,7 +306,7 @@ class MainActivity : AppCompatActivity(),
      */
     private fun hideParentFragment(fragment: Fragment?) {
         fragment?.let {
-            supportFragmentManager.beginTransaction().hide(fragment).commit()
+            supportFragmentManager.beginTransaction().hide(it).commit()
         }
     }
 
@@ -316,8 +315,8 @@ class MainActivity : AppCompatActivity(),
      */
     private fun clearFragmentBackStack(fragment: Fragment?) {
         fragment?.let {
-            while (fragment.childFragmentManager.backStackEntryCount > 0) {
-                fragment.childFragmentManager.popBackStackImmediate()
+            while (it.childFragmentManager.backStackEntryCount > 0) {
+                it.childFragmentManager.popBackStackImmediate()
             }
         }
     }
