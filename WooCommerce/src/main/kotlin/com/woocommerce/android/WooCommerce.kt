@@ -56,7 +56,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
         AppPrefs.init(this)
 
-        if (!PackageUtils.isDebugBuild()) {
+        @Suppress("ConstantConditionIf")
+        if (!BuildConfig.DEBUG) {
             Fabric.with(this, Crashlytics())
 
             // Send logs for app events through to Crashlytics
