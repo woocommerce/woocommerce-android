@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -21,7 +22,8 @@ class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val errorHandler: MainContract.ErrorHandler
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -57,7 +59,8 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
-            // TODO Handle AuthenticationErrorType.INVALID_TOKEN
+            // Temporary error notification
+            errorHandler.handleGenericError(event.error.message)
             return
         }
 
@@ -76,7 +79,8 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
-            // TODO: Notify the user of the problem
+            // Temporary error notification
+            errorHandler.handleGenericError(event.error.message)
             return
         }
 
@@ -93,11 +97,22 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
         if (event.isError) {
-            // TODO: Notify the user of the problem
+            // Temporary error notification
+            errorHandler.handleGenericError(event.error.message)
             return
         }
 
         // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
         mainView?.updateSelectedSite()
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderChanged(event: OnOrderChanged) {
+        if (event.isError) {
+            event.causeOfChange?.let {
+                errorHandler.handleOrderError(it, event.error.message)
+            } ?: errorHandler.handleGenericError(event.error.message)
+        }
     }
 }

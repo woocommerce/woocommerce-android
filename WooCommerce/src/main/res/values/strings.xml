@@ -7,11 +7,7 @@
     <string name="signout">Log out</string>
     <string name="dashboard">Dashboard</string>
     <string name="orders">Orders</string>
-    <string name="settings">Settings</string>
     <string name="email_address">Email Address</string>
-    <string name="view_more">VIEW MORE</string>
-    <string name="view_less">VIEW LESS</string>
-    <string name="phone">Phone</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="total">Total</string>
@@ -22,7 +18,6 @@
     <string name="discount">Discount</string>
     <string name="notifications">Notifications</string>
     <string name="details">Details</string>
-    <string name="hide_details">Hide Details</string>
     <string name="undo">Undo</string>
     <string name="retry">Retry</string>
     <!--
@@ -55,6 +50,7 @@
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_error_network">No connection: unable to refresh orders</string>
+    <string name="orderlist_error_fetch_generic">Error fetching orders: %s</string>
     <!--
         Order Detail Views
     -->
@@ -70,7 +66,6 @@
     <string name="orderdetail_call_contentdesc">call customer</string>
     <string name="orderdetail_sms_contentdesc">send customer sms message</string>
     <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
-    <string name="orderdetail_details">Details:</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_image_contentdesc">Product Icon</string>
@@ -90,12 +85,15 @@
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
     <string name="orderdetail_show_billing">Show Billing</string>
     <string name="orderdetail_hide_billing">Hide Billing</string>
+    <string name="order_error_fetch_notes_network">No connection: unable to refresh order notes</string>
+    <string name="order_error_fetch_notes_generic">Error fetching error notes: %s</string>
     <string name="order_fulfill_order">Fulfill Order</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
-    <string name="order_update_error_no_connection">No connection: the order can\'t be updated</string>
-    <string name="order_update_error_general">Error completing order: %s</string>
-    <string name="order_fetch_error_general">Error fetching orders: %s</string>
+    <string name="order_fulfill_undo_success">Order saved successfully!</string>
+    <string name="order_error_update_no_connection">No connection: the order can\'t be updated</string>
+    <string name="order_error_update_general">Error completing order: %s</string>
+
     <!--
         Order Status Labels
     -->

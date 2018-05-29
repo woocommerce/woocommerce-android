@@ -1,5 +1,6 @@
 package com.woocommerce.android.widgets
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
@@ -109,6 +110,8 @@ open class FlowLayout @JvmOverloads constructor(
         internal var x: Int = 0
         internal var y: Int = 0
         var horizontalSpacing: Int = -1
+
+        @SuppressLint("CustomViewStyleable")
         constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout_LayoutParams)
             horizontalSpacing = try {
