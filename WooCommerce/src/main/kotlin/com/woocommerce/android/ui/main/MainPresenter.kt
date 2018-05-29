@@ -23,7 +23,7 @@ class MainPresenter @Inject constructor(
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val uiResolution: MainUIResolution
+    private val errorHandler: MainContract.ErrorHandler
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -59,7 +59,8 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
-            // TODO Handle AuthenticationErrorType.INVALID_TOKEN
+            // Temporary error notification
+            errorHandler.handleGenericError(event.error.message)
             return
         }
 
@@ -78,7 +79,8 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
-            // TODO: Notify the user of the problem
+            // Temporary error notification
+            errorHandler.handleGenericError(event.error.message)
             return
         }
 
@@ -95,7 +97,8 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
         if (event.isError) {
-            // TODO: Notify the user of the problem
+            // Temporary error notification
+            errorHandler.handleGenericError(event.error.message)
             return
         }
 
@@ -108,8 +111,8 @@ class MainPresenter @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.isError) {
             event.causeOfChange?.let {
-                uiResolution.handleOrderError(it, event.error.message)
-            } ?: uiResolution.handleGenericError(event.error.message)
+                errorHandler.handleOrderError(it, event.error.message)
+            } ?: errorHandler.handleGenericError(event.error.message)
         }
     }
 }

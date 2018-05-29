@@ -7,15 +7,22 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ActivityScope
+import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
 
+/**
+ * This class allows for a centralized and injectable way of handling UI-related messaging, for example
+ * snackbar messaging. A single version should exist for the active context.
+ *
+ * TODO: Abstract this out to allow it to be reused by other Activities
+ */
 @ActivityScope
-class MainUIMessageResolver @Inject constructor(val activity: MainActivity) {
-    private val snackbarRoot: ViewGroup by lazy {
+class MainUIMessageResolver @Inject constructor(val activity: MainActivity) : UIMessageResolver {
+    override val snackbarRoot: ViewGroup by lazy {
         activity.findViewById(R.id.snack_root) as ViewGroup
     }
 
-    fun getUndoSnack(@StringRes stringId: Int, msg: String?, actionListener: OnClickListener): Snackbar {
+    override fun getUndoSnack(@StringRes stringId: Int, msg: String?, actionListener: OnClickListener): Snackbar {
         return getSnackbarWithAction(
                 snackbarRoot,
                 snackbarRoot.context.getString(stringId, msg ?: ""),
@@ -23,7 +30,7 @@ class MainUIMessageResolver @Inject constructor(val activity: MainActivity) {
                 actionListener)
     }
 
-    fun getRetrySnack(@StringRes stringId: Int, msg: String?, actionListener: OnClickListener): Snackbar {
+    override fun getRetrySnack(@StringRes stringId: Int, msg: String?, actionListener: OnClickListener): Snackbar {
         return getIndefiniteSnackbarWithAction(
                 snackbarRoot,
                 snackbarRoot.context.getString(stringId, msg ?: ""),
@@ -31,11 +38,11 @@ class MainUIMessageResolver @Inject constructor(val activity: MainActivity) {
                 actionListener)
     }
 
-    fun showSnack(@StringRes stringId: Int, msg: String? = null) =
+    override fun showSnack(@StringRes stringId: Int, msg: String?) =
             Snackbar.make(snackbarRoot, snackbarRoot.context.getString(stringId, msg ?: ""), Snackbar.LENGTH_LONG)
                     .show()
 
-    fun showSnack(msg: String) = Snackbar.make(snackbarRoot, msg, Snackbar.LENGTH_LONG).show()
+    override fun showSnack(msg: String) = Snackbar.make(snackbarRoot, msg, Snackbar.LENGTH_LONG).show()
 
     private fun getIndefiniteSnackbarWithAction(
         view: View,
