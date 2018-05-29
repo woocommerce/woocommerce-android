@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
-import com.woocommerce.android.util.SnackbarUtils
+import com.woocommerce.android.ui.main.MainUIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -21,7 +21,8 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
-        const val FIELD_CONNECTION_ERROR = "connection-error"
+        const val STATE_KEY_CONNECTION_ERROR = "connection-error"
+        const val STATE_KEY_PREVIOUS_STATUS = "previous-order-status"
 
         fun newInstance(order: WCOrderModel): Fragment {
             val args = Bundle()
@@ -37,8 +38,10 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
+    @Inject lateinit var uiResolver: MainUIMessageResolver
 
-    private var snackbar: Snackbar? = null // Displays connection errors
+    private var connectErrorSnackbar: Snackbar? = null // Displays connection errors
+    private var originalOrderStatus: String? = null
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -62,28 +65,25 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
 
         savedInstanceState?.let {
-            val connectError = it.getBoolean(FIELD_CONNECTION_ERROR, false)
-            if (connectError) {
-                orderFulfill_btnComplete?.let { btn ->
-                    showNetworkConnectivityError(btn)
-                }
-            }
+            val connectError = it.getBoolean(STATE_KEY_CONNECTION_ERROR, false)
+            if (connectError) { showNetworkConnectivityError() }
+
+            originalOrderStatus = it.getString(STATE_KEY_PREVIOUS_STATUS, null)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        snackbar?.let {
-            outState.putBoolean(FIELD_CONNECTION_ERROR, true)
+        connectErrorSnackbar?.takeIf { it.isShownOrQueued }?.let {
+            outState.putBoolean(STATE_KEY_CONNECTION_ERROR, true)
         }
+        originalOrderStatus?.let { outState.putString(STATE_KEY_PREVIOUS_STATUS, it) }
         super.onSaveInstanceState(outState)
     }
 
     override fun onDestroyView() {
         presenter.dropView()
-        snackbar?.let {
-            it.dismiss()
-            snackbar = null
-        }
+        connectErrorSnackbar?.dismiss()
+        connectErrorSnackbar = null
         super.onDestroyView()
     }
 
@@ -107,25 +107,33 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun onClick(v: View?) {
         // User has clicked the button to mark this order complete.
-        v?.let {
-            // Check for network connection, if none, show message.
-            if (NetworkUtils.isNetworkAvailable(context)) {
-                parentFragment?.let { router ->
-                    if (router is OrdersViewRouter) {
-                        presenter.orderModel?.let {
-                            router.openOrderDetail(it, true)
-                        }
-                    }
-                }
-            } else {
-                showNetworkConnectivityError(it)
+        context?.let {
+            presenter.orderModel?.let { order ->
+                originalOrderStatus = order.status
+                presenter.markOrderComplete()
             }
         }
     }
 
-    private fun showNetworkConnectivityError(view: View) {
-        snackbar = SnackbarUtils.getRetrySnack(
-                view, getString(R.string.order_update_error_no_connection), this)
-        snackbar?.show()
+    override fun toggleCompleteButton(isEnabled: Boolean) {
+        orderFulfill_btnComplete.isEnabled = isEnabled
+    }
+
+    override fun orderFulfilled() {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                presenter.orderModel?.let {
+                    router.openOrderDetail(it, originalOrderStatus)
+                }
+            }
+        }
+    }
+
+    override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
+
+    override fun showNetworkConnectivityError() {
+        connectErrorSnackbar = uiResolver.getRetrySnack(
+                R.string.order_error_update_no_connection, null, this)
+        connectErrorSnackbar?.show()
     }
 }
