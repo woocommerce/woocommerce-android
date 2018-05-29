@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.content.Context
 import android.util.Log
 import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
@@ -15,7 +14,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
-import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
@@ -38,44 +36,45 @@ class OrderDetailPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadOrderDetail(context: Context, orderIdentifier: OrderIdentifier) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
         if (orderIdentifier.isNotEmpty()) {
             orderView?.let { view ->
-                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
-                orderModel?.let { order ->
-                    view.showOrderDetail(order)
-                    loadOrderNotes(context) // load order notes
+                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also {
+                    view.showOrderDetail(it)
                 }
+                loadOrderNotes() // load order notes
             }
         }
     }
 
-    override fun loadOrderNotes(context: Context) {
-        orderView?.let {
+    override fun loadOrderNotes() {
+        orderView?.let { view ->
             orderModel?.let { order ->
                 // Preload order notes from database if available
                 fetchAndLoadNotesFromDb()
 
                 // Attempt to refresh notes from api in the background
-                if (NetworkUtils.isNetworkAvailable(context)) {
+                if (view.isNetworkConnected()) {
                     val payload = FetchOrderNotesPayload(order, selectedSite.get())
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
                 } else {
                     // No network connectivity, notify user
-                    it.showNetworkErrorForNotes()
+                    view.showNetworkErrorForNotes()
                 }
             }
         }
     }
 
-    override fun updateOrderStatus(context: Context, status: String) {
-        orderModel?.let { order ->
-            if (NetworkUtils.isNetworkAvailable(context)) {
-                val payload = UpdateOrderStatusPayload(order, selectedSite.get(), status)
-                dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-            } else {
-                // Notify user unable to mark order complete due to no connectivity
-                orderView?.showNetworkErrorForUpdateOrderStatus()
+    override fun updateOrderStatus(status: String) {
+        orderView?.let { view ->
+            orderModel?.let { order ->
+                if (view.isNetworkConnected()) {
+                    val payload = UpdateOrderStatusPayload(order, selectedSite.get(), status)
+                    dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
+                } else {
+                    // Notify user unable to mark order complete due to no connectivity
+                    view.showNetworkErrorForUpdateOrderStatus()
+                }
             }
         }
     }

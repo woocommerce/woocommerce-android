@@ -13,6 +13,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
@@ -49,8 +50,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     private val retryFetchNotesListener = View.OnClickListener { v ->
         // Handler for the RETRY button to retry fetching notes after a connection error.
         v?.let {
-            context?.let { context ->
-                presenter.loadOrderNotes(context)
+            context?.let {
+                presenter.loadOrderNotes()
             }
         }
     }
@@ -88,9 +89,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
-            context?.let { context ->
-                presenter.loadOrderDetail(context, it)
+        context?.let {
+            arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
+                presenter.loadOrderDetail(it)
             }
 
             // If order was fulfilled, show message to allow user to undo
@@ -183,7 +184,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             val actionListener = View.OnClickListener {
                 context?.let {
                     // User canceled the action to mark the order complete.
-                    presenter.updateOrderStatus(it, status)
+                    presenter.updateOrderStatus(status)
                 }
             }
 
@@ -236,4 +237,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             }
         }
     }
+
+    override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
 }
