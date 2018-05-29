@@ -18,7 +18,7 @@ import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.main.MainUIMessageResolver
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -36,7 +36,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
 
     @Inject lateinit var presenter: OrderListContract.Presenter
     @Inject lateinit var ordersAdapter: OrderListAdapter
-    @Inject lateinit var uiResolver: MainUIMessageResolver
+    @Inject lateinit var uiResolver: UIMessageResolver
 
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private lateinit var listLayoutAnimation: LayoutAnimationController

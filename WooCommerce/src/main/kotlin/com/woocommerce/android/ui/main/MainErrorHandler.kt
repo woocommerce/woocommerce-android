@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.base.UIMessageResolver
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
@@ -11,7 +12,7 @@ import javax.inject.Inject
  * Class responsible for processing error messaging for any fragments hosted by the MainActivity. This
  * ensures a single consistent message capable of surviving fragment lifecycles.
  */
-class MainErrorHandler @Inject constructor(val uiResolver: MainUIMessageResolver) : MainContract.ErrorHandler {
+class MainErrorHandler @Inject constructor(val uiResolver: UIMessageResolver) : MainContract.ErrorHandler {
     override fun handleOrderError(actionType: WCOrderAction, errorMsg: String?) {
         when (actionType) {
             FETCH_ORDERS -> uiResolver.showSnack(R.string.orderlist_error_fetch_generic, errorMsg)

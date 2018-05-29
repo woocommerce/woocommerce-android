@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.util.Log
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderFulfillmentContract.View
 import org.greenrobot.eventbus.Subscribe
