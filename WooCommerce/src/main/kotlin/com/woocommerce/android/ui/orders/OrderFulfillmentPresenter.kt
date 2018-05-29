@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.content.Context
 import android.util.Log
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderFulfillmentContract.View
@@ -15,7 +14,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
-import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class OrderFulfillmentPresenter @Inject constructor(
@@ -38,22 +36,23 @@ class OrderFulfillmentPresenter @Inject constructor(
 
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
         orderView?.let { view ->
-            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
-            orderModel?.let {
+            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also {
                 view.showOrderDetail(it)
             }
         }
     }
 
-    override fun markOrderComplete(context: Context) {
-        orderModel?.let { order ->
-            if (NetworkUtils.isNetworkAvailable(context)) {
-                orderView?.toggleCompleteButton(isEnabled = false)
-                val payload = UpdateOrderStatusPayload(order, selectedSite.get(), OrderStatus.COMPLETED)
-                dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-            } else {
-                // Notify user unable to mark order complete due to no connectivity
-                orderView?.showNetworkConnectivityError()
+    override fun markOrderComplete() {
+        orderView?.let { view ->
+            orderModel?.let { order ->
+                if (view.isNetworkConnected()) {
+                    view.toggleCompleteButton(isEnabled = false)
+                    val payload = UpdateOrderStatusPayload(order, selectedSite.get(), OrderStatus.COMPLETED)
+                    dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
+                } else {
+                    // Notify user unable to mark order complete due to no connectivity
+                    view.showNetworkConnectivityError()
+                }
             }
         }
     }
@@ -64,7 +63,6 @@ class OrderFulfillmentPresenter @Inject constructor(
         if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
                 // User notified in main activity
-                Log.e(this::class.java.simpleName, "Error updating order status : ${event.error.message}")
                 orderView?.toggleCompleteButton(isEnabled = true)
                 return
             } else {

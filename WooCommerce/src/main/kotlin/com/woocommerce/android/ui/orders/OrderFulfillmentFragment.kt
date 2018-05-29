@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.main.MainUIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
@@ -109,15 +110,9 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         context?.let {
             presenter.orderModel?.let { order ->
                 originalOrderStatus = order.status
-                presenter.markOrderComplete(it)
+                presenter.markOrderComplete()
             }
         }
-    }
-
-    override fun showNetworkConnectivityError() {
-        connectErrorSnackbar = uiResolver.getRetrySnack(
-                R.string.order_error_update_no_connection, null, this)
-        connectErrorSnackbar?.show()
     }
 
     override fun toggleCompleteButton(isEnabled: Boolean) {
@@ -132,5 +127,13 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                 }
             }
         }
+    }
+
+    override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
+
+    override fun showNetworkConnectivityError() {
+        connectErrorSnackbar = uiResolver.getRetrySnack(
+                R.string.order_error_update_no_connection, null, this)
+        connectErrorSnackbar?.show()
     }
 }
