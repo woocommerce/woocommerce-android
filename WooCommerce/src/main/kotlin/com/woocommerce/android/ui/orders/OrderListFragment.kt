@@ -29,7 +29,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
-        const val STATE_KEY_ISINIT = "is-init"
+        const val STATE_KEY_LOAD_PENDING = "is-load-pending"
         fun newInstance() = OrderListFragment()
     }
 
@@ -40,9 +40,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private lateinit var listLayoutAnimation: LayoutAnimationController
 
-    private var loadOrdersPending = false // If true, the fragment will refresh its orders when its visible
+    private var loadOrdersPending = true // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
-    private var isInit = false
     private var connectErrorSnackbar: Snackbar? = null // Displays connection errors
 
     override var isActive: Boolean = false
@@ -52,7 +51,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
         super.onCreate(savedInstanceState)
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(STATE_KEY_LIST)
-            isInit = bundle.getBoolean(STATE_KEY_ISINIT, false)
+            loadOrdersPending = bundle.getBoolean(STATE_KEY_LOAD_PENDING, false)
         }
     }
 
@@ -79,7 +78,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
                 setOnRefreshListener {
-                    presenter.loadOrders(context, forceRefresh = true)
+                    loadOrdersPending = true
+                    presenter.loadOrders(forceRefresh = true)
                 }
             }
         }
@@ -115,11 +115,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
         }
 
         presenter.takeView(this)
+        loadOrdersPending = true
         if (isActive) {
-            presenter.loadOrders(context, forceRefresh = !isInit)
-        } else {
-            loadOrdersPending = true
+            presenter.loadOrders(forceRefresh = loadOrdersPending)
         }
+
         listState?.let {
             ordersList.layoutManager.onRestoreInstanceState(listState)
             listState = null
@@ -129,10 +129,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = ordersList.layoutManager.onSaveInstanceState()
 
-        // force an attempt to refresh view when back in foreground.
-        connectErrorSnackbar?.takeIf { it.isShownOrQueued }?.let { isInit = false }
         outState.putParcelable(STATE_KEY_LIST, listState)
-        outState.putBoolean(STATE_KEY_ISINIT, isInit)
+        outState.putBoolean(STATE_KEY_LOAD_PENDING, loadOrdersPending)
         super.onSaveInstanceState(outState)
     }
 
@@ -140,12 +138,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
         super.onBackStackChanged()
         if (isActive) {
             // If this fragment is now visible and we've deferred loading orders due to it not
-            // being visible or the connection error connectErrorSnackbar is not null (meaning we tried to fetch
-            // orders before but were not successful) - go ahead and load the orders.
-            if (loadOrdersPending || connectErrorSnackbar?.isShownOrQueued == true) {
-                connectErrorSnackbar?.dismiss()
-                loadOrdersPending = false
-                presenter.loadOrders(context, true)
+            // being visible or a network connection error, go ahead and load the orders.
+            if (loadOrdersPending) {
+                presenter.loadOrders(true)
             }
         } else {
             connectErrorSnackbar?.dismiss()
@@ -177,7 +172,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
             }
             ordersAdapter.setOrders(orders)
         }
-        isInit = true
+        loadOrdersPending = false
     }
 
     override fun showNoOrders() {
@@ -225,11 +220,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     }
 
     override fun refreshFragmentState() {
-        isInit = false
+        loadOrdersPending = true
         if (isActive) {
-            presenter.loadOrders(context, forceRefresh = true)
-        } else {
-            loadOrdersPending = true
+            presenter.loadOrders(forceRefresh = true)
         }
     }
 
