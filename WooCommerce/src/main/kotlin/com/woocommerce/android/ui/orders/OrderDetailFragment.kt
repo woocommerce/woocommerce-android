@@ -13,6 +13,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
@@ -21,18 +22,17 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
-        const val FIELD_ORIGINAL_ORDER_STATUS = "previous-order-status"
-        const val STATE_KEY_PENDING_COMPLETE_ERROR = "active-mark-order-complete-error"
+        const val FIELD_MARK_COMPLETE = "mark-order-complete"
 
-        fun newInstance(order: WCOrderModel, originalOrderStatus: String?): Fragment {
+        fun newInstance(order: WCOrderModel, markComplete: Boolean = false): Fragment {
             val args = Bundle()
             args.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
 
             // Use for populating the title only, not for record retrieval
             args.putString(FIELD_ORDER_NUMBER, order.number)
 
-            // If order recently completed, this was the order status prior to that change
-            args.putString(FIELD_ORIGINAL_ORDER_STATUS, originalOrderStatus)
+            // True if order fulfillment requested, else false
+            args.putBoolean(FIELD_MARK_COMPLETE, markComplete)
 
             val fragment = OrderDetailFragment()
             fragment.arguments = args
@@ -43,27 +43,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     @Inject lateinit var presenter: OrderDetailContract.Presenter
     @Inject lateinit var uiResolver: UIMessageResolver
 
-    private var originalOrderStatus: String? = null
-    private var errorUpdateStatusSnackbar: Snackbar? = null
-    private var errorFetchNotesSnackbar: Snackbar? = null
+    private var markCompleteCanceled: Boolean = false
+    private var previousOrderStatus: String? = null
+    private var connectErrorSnackbar: Snackbar? = null
+    private var undoMarkCompleteSnackbar: Snackbar? = null
 
-    private val retryFetchNotesListener = View.OnClickListener { v ->
-        // Handler for the RETRY button to retry fetching notes after a connection error.
-        v?.let {
-            context?.let {
-                presenter.loadOrderNotes()
-            }
-        }
-    }
-
-    private val retryUpdateOrderStatusListener = View.OnClickListener { v ->
-        // Handler for the RETRY button to retry submitting order to mark it complete after a
-        // connection error.
-        v?.let {
-            context?.let { context ->
-                pendingUndoOrderComplete()
-            }
-        }
+    // Handler for the RETRY button to retry fetching notes after a connection error.
+    private val retryFetchNotesListener: View.OnClickListener by lazy {
+        View.OnClickListener { v -> v?.let { context?.let { presenter.loadOrderNotes() } } }
     }
 
     override fun onAttach(context: Context?) {
@@ -79,9 +66,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it)
         }
 
-        // Parse out original order status if the user just fulfilled the order
-        originalOrderStatus = arguments?.getString(FIELD_ORIGINAL_ORDER_STATUS, null)
-
         return view
     }
 
@@ -89,38 +73,23 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
+        val markComplete = arguments?.getBoolean(FIELD_MARK_COMPLETE, false) ?: false
+
         context?.let {
             arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
-                presenter.loadOrderDetail(it)
-            }
-
-            // If order was fulfilled, show message to allow user to undo
-            originalOrderStatus?.let {
-                pendingUndoOrderComplete()
-            }
-        }
-
-        savedInstanceState?.let {
-            val isMarkCompleteError = it.getBoolean(STATE_KEY_PENDING_COMPLETE_ERROR, false)
-            if (isMarkCompleteError) {
-                showNetworkErrorForUpdateOrderStatus()
+                presenter.loadOrderDetail(it, markComplete)
             }
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        errorUpdateStatusSnackbar?.takeIf { it.isShownOrQueued }?.let {
-            outState.putBoolean(STATE_KEY_PENDING_COMPLETE_ERROR, true)
-        }
-        super.onSaveInstanceState(outState)
+    override fun onStop() {
+        undoMarkCompleteSnackbar?.dismiss()
+        super.onStop()
     }
 
     override fun onDestroyView() {
-        errorUpdateStatusSnackbar?.dismiss()
-        errorUpdateStatusSnackbar = null
-
-        errorFetchNotesSnackbar?.dismiss()
-        errorFetchNotesSnackbar = null
+        connectErrorSnackbar?.dismiss()
+        connectErrorSnackbar = null
 
         presenter.dropView()
         super.onDestroyView()
@@ -164,62 +133,56 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         orderDetail_noteList.updateView(notes)
     }
 
-    override fun showNetworkErrorForNotes() {
-        errorFetchNotesSnackbar = uiResolver.getRetrySnack(
-                R.string.order_error_fetch_notes_network, null, retryFetchNotesListener)
-        errorFetchNotesSnackbar?.show()
-    }
+    override fun pendingMarkOrderComplete() {
+        markCompleteCanceled = false
 
-    override fun showNetworkErrorForUpdateOrderStatus() {
-        errorUpdateStatusSnackbar = uiResolver.getRetrySnack(
-                R.string.order_error_update_no_connection, null, retryUpdateOrderStatusListener)
-        errorUpdateStatusSnackbar?.show()
-    }
+        presenter.orderModel?.let {
+            previousOrderStatus = it.status
+            orderDetail_orderStatus.updateStatus(OrderStatus.COMPLETED)
 
-    // User has clicked the "UNDO" button to undo order fulfillment.
-    // Submit request to change the order status back to the original value.
-    private fun pendingUndoOrderComplete() {
-        originalOrderStatus?.let { status ->
-            // Listener for the UNDO button in the errorUpdateStatusSnackbar
+            // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
-                context?.let {
-                    // User canceled the action to mark the order complete.
-                    presenter.updateOrderStatus(status)
+                // User canceled the action to mark the order complete.
+                markCompleteCanceled = true
+                arguments?.remove(FIELD_MARK_COMPLETE)
+                previousOrderStatus?.let {
+                    orderDetail_orderStatus.updateStatus(it)
                 }
+                previousOrderStatus = null
             }
 
+            // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
+            // timed out, then process the request to mark this order complete.
             val callback = object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
-                    // Remove the original order status from arguments
-                    context?.let {
-                        arguments?.remove(FIELD_ORIGINAL_ORDER_STATUS)
-                    }
+                    markOrderComplete()
                 }
             }
-
-            errorUpdateStatusSnackbar = uiResolver.getUndoSnack(
-                    R.string.order_fulfill_marked_complete,
-                    null,
-                    actionListener)
-            errorUpdateStatusSnackbar?.addCallback(callback)
-            errorUpdateStatusSnackbar?.show()
+            undoMarkCompleteSnackbar = uiResolver
+                .getUndoSnack(R.string.order_fulfill_marked_complete, null, actionListener).also {
+                    it.addCallback(callback).show()
+                }
         }
     }
 
-    override fun orderStatusUpdateSuccess(order: WCOrderModel) {
-        // Set the order status back to the previous status
-        originalOrderStatus?.let {
-            orderDetail_orderStatus.updateStatus(it)
-            originalOrderStatus = null
+    private fun markOrderComplete() {
+        if (!markCompleteCanceled) {
+            arguments?.remove(FIELD_MARK_COMPLETE)
+            presenter.doMarkOrderComplete()
         }
+    }
 
-        // Update the product list view to display the option
-        // to fulfill order
-        orderDetail_productList.updateView(order, false, this)
+    override fun markOrderCompleteSuccess() {
+        previousOrderStatus = null
+    }
 
-        // Display success snack message
-        uiResolver.showSnack(R.string.order_fulfill_undo_success)
+    override fun markOrderCompleteFailed() {
+        // Set the order status back to the previous status
+        previousOrderStatus?.let {
+            orderDetail_orderStatus.updateStatus(it)
+            previousOrderStatus = null
+        }
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
@@ -239,4 +202,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
+
+    override fun showNetworkConnectivityError() {
+        if (connectErrorSnackbar == null) {
+            connectErrorSnackbar = uiResolver.getRetrySnack(
+                    R.string.order_error_fetch_notes_network, null, retryFetchNotesListener)
+        }
+        connectErrorSnackbar?.show()
+    }
 }

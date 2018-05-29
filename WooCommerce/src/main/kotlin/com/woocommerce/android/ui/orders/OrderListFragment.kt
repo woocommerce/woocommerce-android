@@ -184,17 +184,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     /**
      * Only open the order detail if the list is not actively being refreshed.
      */
-    override fun openOrderDetail(order: WCOrderModel, originalOrderStatus: String?) {
+    override fun openOrderDetail(order: WCOrderModel, markOrderComplete: Boolean) {
         if (!orderRefreshLayout.isRefreshing) {
             val tag = OrderDetailFragment.TAG
             getFragmentFromBackStack(tag)?.let {
                 val args = it.arguments ?: Bundle()
                 args.putString(OrderDetailFragment.FIELD_ORDER_IDENTIFIER, order.getIdentifier())
                 args.putString(OrderDetailFragment.FIELD_ORDER_NUMBER, order.number)
-                args.putString(OrderDetailFragment.FIELD_ORIGINAL_ORDER_STATUS, originalOrderStatus)
+                args.putBoolean(OrderDetailFragment.FIELD_MARK_COMPLETE, markOrderComplete)
                 it.arguments = args
                 popToState(tag)
-            } ?: loadChildFragment(OrderDetailFragment.newInstance(order, originalOrderStatus), tag)
+            } ?: loadChildFragment(OrderDetailFragment.newInstance(order, markOrderComplete), tag)
         }
     }
 

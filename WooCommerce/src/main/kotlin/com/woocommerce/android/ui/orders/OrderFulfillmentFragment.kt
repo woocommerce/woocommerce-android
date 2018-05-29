@@ -22,7 +22,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
         const val STATE_KEY_CONNECTION_ERROR = "connection-error"
-        const val STATE_KEY_PREVIOUS_STATUS = "previous-order-status"
 
         fun newInstance(order: WCOrderModel): Fragment {
             val args = Bundle()
@@ -41,7 +40,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     @Inject lateinit var uiResolver: UIMessageResolver
 
     private var connectErrorSnackbar: Snackbar? = null // Displays connection errors
-    private var originalOrderStatus: String? = null
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -67,8 +65,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         savedInstanceState?.let {
             val connectError = it.getBoolean(STATE_KEY_CONNECTION_ERROR, false)
             if (connectError) { showNetworkConnectivityError() }
-
-            originalOrderStatus = it.getString(STATE_KEY_PREVIOUS_STATUS, null)
         }
     }
 
@@ -76,7 +72,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         connectErrorSnackbar?.takeIf { it.isShownOrQueued }?.let {
             outState.putBoolean(STATE_KEY_CONNECTION_ERROR, true)
         }
-        originalOrderStatus?.let { outState.putString(STATE_KEY_PREVIOUS_STATUS, it) }
         super.onSaveInstanceState(outState)
     }
 
@@ -108,8 +103,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun onClick(v: View?) {
         // User has clicked the button to mark this order complete.
         context?.let {
-            presenter.orderModel?.let { order ->
-                originalOrderStatus = order.status
+            presenter.orderModel?.let {
                 presenter.markOrderComplete()
             }
         }
@@ -119,11 +113,11 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         orderFulfill_btnComplete.isEnabled = isEnabled
     }
 
-    override fun orderFulfilled() {
+    override fun fulfillOrder() {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
                 presenter.orderModel?.let {
-                    router.openOrderDetail(it, originalOrderStatus)
+                    router.openOrderDetail(it, true)
                 }
             }
         }

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.util.Log
 import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -10,6 +9,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -36,11 +36,12 @@ class OrderDetailPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
         if (orderIdentifier.isNotEmpty()) {
             orderView?.let { view ->
-                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also {
-                    view.showOrderDetail(it)
+                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also { order ->
+                    view.showOrderDetail(order)
+                    if (markComplete) view.pendingMarkOrderComplete()
                 }
                 loadOrderNotes() // load order notes
             }
@@ -59,23 +60,16 @@ class OrderDetailPresenter @Inject constructor(
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
                 } else {
                     // No network connectivity, notify user
-                    view.showNetworkErrorForNotes()
+                    view.showNetworkConnectivityError()
                 }
             }
         }
     }
 
-    override fun updateOrderStatus(status: String) {
-        orderView?.let { view ->
-            orderModel?.let { order ->
-                if (view.isNetworkConnected()) {
-                    val payload = UpdateOrderStatusPayload(order, selectedSite.get(), status)
-                    dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-                } else {
-                    // Notify user unable to mark order complete due to no connectivity
-                    view.showNetworkErrorForUpdateOrderStatus()
-                }
-            }
+    override fun doMarkOrderComplete() {
+        orderModel?.let { order ->
+            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), OrderStatus.COMPLETED)
+            dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
         }
     }
 
@@ -83,25 +77,17 @@ class OrderDetailPresenter @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
-            if (event.isError) {
-                // User notified in Main Activity
-                Log.e(this::class.java.simpleName, "Error fetching order notes : ${event.error.message}")
-                return
+            if (!event.isError) {
+                // Load notes from the database and sent to the view.
+                fetchAndLoadNotesFromDb()
             }
-
-            // Load notes from the database and sent to the view.
-            fetchAndLoadNotesFromDb()
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
-                // User notified in main activity
-                Log.e(this::class.java.simpleName, "Error updating order status : ${event.error.message}")
-                return
+                // User notified of error in main activity
+                orderView?.markOrderCompleteFailed()
             } else {
-                orderModel?.let { order ->
-                    orderModel = orderStore.getOrderByIdentifier(order.getIdentifier())?.also {
-                        orderView?.orderStatusUpdateSuccess(it)
-                    }
-                }
+                // Successfully marked order as complete
+                orderView?.markOrderCompleteSuccess()
             }
         }
     }
