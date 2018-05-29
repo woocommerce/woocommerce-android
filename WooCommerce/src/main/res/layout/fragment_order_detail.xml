@@ -8,6 +8,7 @@
     tools:context="com.woocommerce.android.ui.orders.OrderDetailFragment">
 
     <LinearLayout
+        android:id="@+id/orderDetail_container"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -38,7 +39,7 @@
             android:id="@+id/orderDetail_customerInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
+            style="@style/Woo.Card.Expandable"/>
 
         <!-- Payments -->
         <com.woocommerce.android.ui.orders.OrderDetailPaymentView

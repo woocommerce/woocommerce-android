@@ -58,24 +58,30 @@
     <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:fontFamily">@font/roboto</item>
     </style>
 
     <style name="Woo.TextAppearance.Bold">
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Woo.TextAppearance.Title">
+    <style name="Woo.TextAppearance.Large">
         <item name="android:textColor">@color/default_text_title</item>
         <item name="android:textSize">@dimen/text_large</item>
     </style>
 
-    <style name="Woo.TextAppearance.Title.Bold">
+    <style name="Woo.TextAppearance.Large.Bold">
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Woo.TextAppearance.Medium">
         <item name="android:textColor">@color/default_text_title</item>
         <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Medium.Purple">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
     <style name="Woo.TextAppearance.Small">
@@ -146,6 +152,11 @@
         <item name="android:background">@color/card_bgColor</item>
         <item name="android:layout_marginBottom">@dimen/card_gutter</item>
     </style>
+    <style name="Woo.Card.Expandable">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
     <style name="Woo.Card.List">
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>
@@ -163,20 +174,18 @@
         <item name="android:paddingEnd">@dimen/card_padding_end</item>
         <item name="android:paddingTop">@dimen/card_padding_top</item>
         <item name="android:paddingBottom">@dimen/card_item_padding_intra_h</item>
-        <item name="android:textAppearance">@style/Woo.TextAppearance.Title</item>
+        <item name="android:textAppearance">@style/Woo.TextAppearance.Large</item>
     </style>
-    <style name="Woo.TextView.Title.Bold">
-        <item name="android:textAppearance">@style/Woo.TextAppearance.Title.Bold</item>
+    <style name="Woo.TextView.Title.Purple">
+        <item name="android:textAppearance">@style/Woo.TextAppearance.Medium.Purple</item>
     </style>
     <style name="Woo.CardExtenderButton">
-        <item name="android:background">@null</item>
-        <item name="android:textOn">@string/view_less</item>
-        <item name="android:textOff">@string/view_more</item>
+        <item name="android:background">@drawable/card_expander_bg</item>
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:drawableEnd">@drawable/card_expander_selector</item>
-        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingEnd">@dimen/card_padding_end</item>
     </style>
 
     <!--
@@ -248,10 +257,10 @@
     <!--
         OrderDetail Styles
     -->
+    <style name="Woo.OrderDetail.CardTitle" parent="Woo.TextView.Title.Purple"/>
     <style name="Woo.OrderDetail.TextAppearance.Heading" parent="Woo.TextAppearance.Medium"/>
     <style name="Woo.OrderDetail.TextAppearance.Content" parent="Woo.TextAppearance.Small"/>
-    <style name="Woo.OrderDetail.TextAppearance.CardTitle" parent="Woo.TextAppearance.Title"/>
-    <style name="Woo.OrderDetail.TextAppearance.CardTitle.Bold" parent="Woo.TextAppearance.Title.Bold"/>
+    <style name="Woo.OrderDetail.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Large"/>
     <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance"/>
     <style name="Woo.OrderDetail.TextAppearance.Red">
         <item name="android:textColor">@color/wc_red</item>

@@ -57,7 +57,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="@string/orderdetail_order_fulfill"
+        android:text="@string/order_fulfill_order"
         tools:visibility="visible"
         app:layout_constraintEnd_toStartOf="@+id/productList_btnDetails"
         app:layout_constraintStart_toStartOf="parent"
