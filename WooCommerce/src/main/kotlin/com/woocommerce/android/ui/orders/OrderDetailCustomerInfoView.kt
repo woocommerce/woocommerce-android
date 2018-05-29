@@ -16,16 +16,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         View.inflate(context, R.layout.order_detail_customer_info, this)
     }
 
-    fun initView(order: WCOrderModel, listener: OrderCustomerActionListener) {
-        customerInfo_custName.text = context
-                .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
+    fun initView(order: WCOrderModel, shippingOnly: Boolean, listener: OrderCustomerActionListener? = null) {
+        // Populate Shipping information
+        customerInfo_shippingName.text = context
+                .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
 
         val billingAddr = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
-
-        // display billing address info
-        customerInfo_billingAddr.text = billingAddr
-        customerInfo_billingCountry.text = billingCountry
 
         // display shipping address info
         if (order.hasSeparateShippingDetails()) {
@@ -36,30 +33,47 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             customerInfo_shippingCountry.text = billingCountry
         }
 
-        // display email address info
-        customerInfo_emailAddr.text = order.billingEmail
+        if (shippingOnly) {
+            // Only display the shipping information in this card and hide everything else.
+            formatViewAsShippingOnly()
+        } else {
+            // Populate Billing Information
+            customerInfo_billingName.text = context
+                    .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
 
-        // display phone
-        if (!order.billingPhone.isEmpty()) {
-            customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
-        }
+            // display billing address info
+            customerInfo_billingAddr.text = billingAddr
+            customerInfo_billingCountry.text = billingCountry
 
-        // configure more/less button
-        customerInfo_viewMore.setOnCheckedChangeListener { _, isChecked ->
-            customerInfo_morePanel.visibility = if (isChecked) View.VISIBLE else View.GONE
-        }
+            // display email address info
+            customerInfo_emailAddr.text = order.billingEmail
 
-        // Set action button listeners
-        customerInfo_emailBtn.setOnClickListener {
-            listener.createEmail(order.billingEmail)
-        }
+            // display phone
+            if (!order.billingPhone.isEmpty()) {
+                customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
+            }
 
-        customerInfo_phoneBtn.setOnClickListener {
-            listener.dialPhone(order.billingPhone)
-        }
+            // configure more/less button
+            customerInfo_viewMore.setOnCheckedChangeListener { _, isChecked ->
+                customerInfo_morePanel.visibility = if (isChecked) View.VISIBLE else View.GONE
+            }
 
-        customerInfo_hangoutsBtn.setOnClickListener {
-            listener.sendSms(order.billingPhone)
+            // Set action button listeners
+            customerInfo_emailBtn.setOnClickListener {
+                listener?.createEmail(order.billingEmail)
+            }
+
+            customerInfo_phoneBtn.setOnClickListener {
+                listener?.dialPhone(order.billingPhone)
+            }
+
+            customerInfo_hangoutsBtn.setOnClickListener {
+                listener?.sendSms(order.billingPhone)
+            }
         }
+    }
+
+    private fun formatViewAsShippingOnly() {
+        customerInfo_viewMore.visibility = View.GONE
     }
 }

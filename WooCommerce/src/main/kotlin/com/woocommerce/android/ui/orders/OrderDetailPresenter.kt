@@ -6,12 +6,14 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
@@ -19,8 +21,9 @@ class OrderDetailPresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) : OrderDetailContract.Presenter {
+    override var orderModel: WCOrderModel? = null
     private var orderView: OrderDetailContract.View? = null
-    private var orderModel: WCOrderModel? = null
+    private var isNotesInit = false
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
@@ -29,25 +32,48 @@ class OrderDetailPresenter @Inject constructor(
 
     override fun dropView() {
         orderView = null
+        isNotesInit = false
         dispatcher.unregister(this)
     }
 
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
         if (orderIdentifier.isNotEmpty()) {
-            orderView?.let {
-                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderView?.let { view ->
+                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also {
+                    view.showOrderDetail(it)
+                }
+                loadOrderNotes() // load order notes
+            }
+        }
+    }
 
-                // Fetch order notes
-                orderModel?.let { order ->
-                    // Load order notes from database if available
-                    val notes = orderStore.getOrderNotesForOrder(order)
+    override fun loadOrderNotes() {
+        orderView?.let { view ->
+            orderModel?.let { order ->
+                // Preload order notes from database if available
+                fetchAndLoadNotesFromDb()
 
-                    // Display
-                    orderView?.showOrderDetail(order, notes)
-
-                    // Fetch order notes from API in case there are changes available
+                // Attempt to refresh notes from api in the background
+                if (view.isNetworkConnected()) {
                     val payload = FetchOrderNotesPayload(order, selectedSite.get())
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
+                } else {
+                    // No network connectivity, notify user
+                    view.showNetworkErrorForNotes()
+                }
+            }
+        }
+    }
+
+    override fun updateOrderStatus(status: String) {
+        orderView?.let { view ->
+            orderModel?.let { order ->
+                if (view.isNetworkConnected()) {
+                    val payload = UpdateOrderStatusPayload(order, selectedSite.get(), status)
+                    dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
+                } else {
+                    // Notify user unable to mark order complete due to no connectivity
+                    view.showNetworkErrorForUpdateOrderStatus()
                 }
             }
         }
@@ -56,16 +82,41 @@ class OrderDetailPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
-        if (event.isError) {
-            // TODO: Notify the user of the problem
-            Log.e(this::class.java.simpleName, "Error fetching order notes : ${event.error.message}")
-            return
-        }
-
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
-            orderModel?.let { order ->
-                val notes = orderStore.getOrderNotesForOrder(order)
+            if (event.isError) {
+                // User notified in Main Activity
+                Log.e(this::class.java.simpleName, "Error fetching order notes : ${event.error.message}")
+                return
+            }
+
+            // Load notes from the database and sent to the view.
+            fetchAndLoadNotesFromDb()
+        } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
+            if (event.isError) {
+                // User notified in main activity
+                Log.e(this::class.java.simpleName, "Error updating order status : ${event.error.message}")
+                return
+            } else {
+                orderModel?.let { order ->
+                    orderModel = orderStore.getOrderByIdentifier(order.getIdentifier())?.also {
+                        orderView?.orderStatusUpdateSuccess(it)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Fetch the order notes from the device database.
+     */
+    private fun fetchAndLoadNotesFromDb() {
+        orderModel?.let { order ->
+            val notes = orderStore.getOrderNotesForOrder(order)
+            if (isNotesInit) {
                 orderView?.updateOrderNotes(notes)
+            } else {
+                isNotesInit = true
+                orderView?.showOrderNotes(notes)
             }
         }
     }

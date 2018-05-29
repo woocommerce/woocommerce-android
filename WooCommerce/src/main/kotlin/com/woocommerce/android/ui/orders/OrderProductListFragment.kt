@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 class OrderProductListFragment : Fragment(), OrderProductListContract.View {
     companion object {
+        const val TAG = "OrderProductListFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
 

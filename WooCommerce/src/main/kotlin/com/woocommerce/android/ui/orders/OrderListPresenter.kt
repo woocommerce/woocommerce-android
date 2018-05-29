@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.orders
 
-import android.util.Log
 import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
+import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -30,35 +30,60 @@ class OrderListPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadOrders() {
-        orderView?.setLoadingIndicator(true)
-
-        val payload = FetchOrdersPayload(selectedSite.get())
-        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+    override fun loadOrders(forceRefresh: Boolean) {
+        orderView?.let { view ->
+            view.setLoadingIndicator(true)
+            if (forceRefresh) {
+                if (view.isNetworkConnected()) {
+                    val payload = FetchOrdersPayload(selectedSite.get())
+                    dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+                } else {
+                    // Display any orders we have in the database and notify user of
+                    // no connectivity.
+                    fetchAndLoadOrdersFromDb(isForceRefresh = false)
+                    view.showNetworkConnectivityError()
+                }
+            } else {
+                fetchAndLoadOrdersFromDb(isForceRefresh = false)
+            }
+        }
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.isError) {
-            // TODO: Notify the user of the problem
-            Log.e(this::class.java.simpleName, "Error fetching orders : ${event.error.message}")
+            // Basic error messaging is handled by the hosting activity
+            orderView?.setLoadingIndicator(false)
             return
         }
 
-        if (event.causeOfChange == FETCH_ORDERS) {
-            val orders = orderStore.getOrdersForSite(selectedSite.get())
-            if (orders.count() > 0) {
-                orderView?.showOrders(orders)
-            } else {
-                orderView?.showNoOrders()
-            }
-
-            orderView?.setLoadingIndicator(false)
+        when (event.causeOfChange) {
+            FETCH_ORDERS -> fetchAndLoadOrdersFromDb(true)
+            // A child fragment made a change that requires a data refresh.
+            UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
+            else -> {}
         }
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
-        orderView?.openOrderDetail(order)
+        orderView?.openOrderDetail(order, null)
+    }
+
+    /**
+     * Fetch orders from the local database.
+     *
+     * @param isForceRefresh True if orders were refreshed from the API, else false.
+     */
+    override fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean) {
+        val orders = orderStore.getOrdersForSite(selectedSite.get())
+        orderView?.let { view ->
+            if (orders.count() > 0) {
+                view.showOrders(orders, isForceRefresh)
+            } else {
+                view.showNoOrders()
+            }
+            view.setLoadingIndicator(false)
+        }
     }
 }
