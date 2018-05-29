@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.notNull
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
