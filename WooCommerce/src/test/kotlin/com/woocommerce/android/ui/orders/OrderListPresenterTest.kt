@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.notNull
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
@@ -38,27 +39,51 @@ class OrderListPresenterTest {
 
     @Test
     fun `Displays the orders list view correctly`() {
-        // Presenter should dispatch FETCH_ORDERS on startup
+        doReturn(true).whenever(orderListView).isNetworkConnected()
         presenter.takeView(orderListView)
-        presenter.loadOrders()
+        presenter.loadOrders(true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showOrders(orders)
+        verify(orderListView).showOrders(orders, true)
     }
 
     @Test
     fun `Displays the no orders list view correctly`() {
-        // Presenter should dispatch FETCH_ORDERS on startup
+        doReturn(true).whenever(orderListView).isNetworkConnected()
         presenter.takeView(orderListView)
-        presenter.loadOrders()
+        presenter.loadOrders(true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(noOrders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
         verify(orderListView).showNoOrders()
+    }
+
+    @Test
+    fun `Displays no network connection correctly`() {
+        doReturn(false).whenever(orderListView).isNetworkConnected()
+        presenter.takeView(orderListView)
+        presenter.loadOrders(true)
+        verify(orderListView).showNetworkConnectivityError()
+    }
+
+    @Test
+    fun `Fetches orders from DB when forceRefresh is false`() {
+        doReturn(true).whenever(orderListView).isNetworkConnected()
+        presenter.takeView(orderListView)
+        presenter.loadOrders(false)
+        verify(presenter).fetchAndLoadOrdersFromDb(false)
+    }
+
+    @Test
+    fun `Opens order detail view correctly`() {
+        presenter.takeView(orderListView)
+        val orderModel = WCOrderModel()
+        presenter.openOrderDetail(orderModel)
+        verify(orderListView).openOrderDetail(orderModel, null)
     }
 }
