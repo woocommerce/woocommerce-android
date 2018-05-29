@@ -23,6 +23,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnClickListener {
@@ -229,14 +230,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     override fun onClick(v: View?) {
         // Handler for the Connection Error RETRY button
         v?.let {
-            presenter.loadOrders(context, true)
-        }
-    }
-
-    override fun showNetworkErrorFetchOrders() {
-        ordersList?.let {
-            connectErrorSnackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this)
-            connectErrorSnackbar?.show()
+            presenter.loadOrders(true)
         }
     }
 
@@ -267,4 +261,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
         }
     }
     // endregion
+
+    override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
+
+    override fun showNetworkConnectivityError() {
+        ordersList?.let {
+            loadOrdersPending = true
+            connectErrorSnackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this).also {
+                it.show()
+            }
+        }
+    }
 }
