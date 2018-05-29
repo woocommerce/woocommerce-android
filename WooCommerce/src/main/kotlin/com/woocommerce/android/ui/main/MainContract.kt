@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
+import com.woocommerce.android.ui.base.GenericErrorResolution
+import com.woocommerce.android.ui.orders.OrdersErrorResolution
 import org.wordpress.android.fluxc.model.SiteModel
 
 interface MainContract {
@@ -17,4 +19,6 @@ interface MainContract {
         fun showLoginScreen()
         fun updateSelectedSite()
     }
+
+    interface ErrorHandler : OrdersErrorResolution, GenericErrorResolution
 }
