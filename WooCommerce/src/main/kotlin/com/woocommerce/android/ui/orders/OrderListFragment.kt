@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -229,9 +230,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
 
     override fun onClick(v: View?) {
         // Handler for the Connection Error RETRY button
-        v?.let {
-            presenter.loadOrders(true)
-        }
+        presenter.loadOrders(true)
     }
 
     // region OrderCustomerActionListener
@@ -266,9 +265,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
 
     override fun showNetworkConnectivityError() {
         loadOrdersPending = true
-        if (connectErrorSnackbar == null) {
-            connectErrorSnackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this)
+        connectErrorSnackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this).also {
+            it.show()
         }
-        connectErrorSnackbar?.show()
     }
 }

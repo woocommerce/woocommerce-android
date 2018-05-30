@@ -204,10 +204,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
 
     override fun showNetworkConnectivityError() {
-        if (connectErrorSnackbar == null) {
-            connectErrorSnackbar = uiResolver.getRetrySnack(
-                    R.string.order_error_fetch_notes_network, null, retryFetchNotesListener)
-        }
-        connectErrorSnackbar?.show()
+        connectErrorSnackbar = uiResolver.getRetrySnack(
+                R.string.order_error_fetch_notes_network, null, retryFetchNotesListener).also { it.show() }
     }
 }

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +20,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
-        const val STATE_KEY_CONNECTION_ERROR = "connection-error"
 
         fun newInstance(order: WCOrderModel): Fragment {
             val args = Bundle()
@@ -38,8 +36,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
     @Inject lateinit var uiResolver: UIMessageResolver
-
-    private var connectErrorSnackbar: Snackbar? = null // Displays connection errors
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -61,24 +57,10 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
         presenter.takeView(this)
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
-
-        savedInstanceState?.let {
-            val connectError = it.getBoolean(STATE_KEY_CONNECTION_ERROR, false)
-            if (connectError) { showNetworkConnectivityError() }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        connectErrorSnackbar?.takeIf { it.isShownOrQueued }?.let {
-            outState.putBoolean(STATE_KEY_CONNECTION_ERROR, true)
-        }
-        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroyView() {
         presenter.dropView()
-        connectErrorSnackbar?.dismiss()
-        connectErrorSnackbar = null
         super.onDestroyView()
     }
 
@@ -126,10 +108,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
 
     override fun showNetworkConnectivityError() {
-        if (connectErrorSnackbar == null) {
-            connectErrorSnackbar = uiResolver.getRetrySnack(
-                    R.string.order_error_update_no_connection, null, this)
-        }
-        connectErrorSnackbar?.show()
+        uiResolver.showSnack(R.string.order_error_update_no_connection)
     }
 }
