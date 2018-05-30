@@ -126,17 +126,23 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
         presenter.orderModel?.let {
             previousOrderStatus = it.status
+            it.status = OrderStatus.COMPLETED
             orderDetail_orderStatus.updateStatus(OrderStatus.COMPLETED)
+            orderDetail_productList.updateView(it, false, this)
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
                 // User canceled the action to mark the order complete.
                 markCompleteCanceled = true
                 arguments?.remove(FIELD_MARK_COMPLETE)
-                previousOrderStatus?.let {
-                    orderDetail_orderStatus.updateStatus(it)
+                presenter.orderModel?.let { order ->
+                    previousOrderStatus?.let { status ->
+                        order.status = status
+                        orderDetail_orderStatus.updateStatus(status)
+                        orderDetail_productList?.updateView(order, false, OrderDetailFragment@this)
+                    }
+                    previousOrderStatus = null
                 }
-                previousOrderStatus = null
             }
 
             // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
