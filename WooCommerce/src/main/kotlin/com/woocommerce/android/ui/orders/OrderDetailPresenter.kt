@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.util.Log
 import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -73,7 +72,6 @@ class OrderDetailPresenter @Inject constructor(
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             if (event.isError) {
                 // TODO: Notify the user of the problem
-                Log.e(this::class.java.simpleName, "Error fetching order notes : ${event.error.message}")
             } else {
                 orderModel?.let { order ->
                     val notes = orderStore.getOrderNotesForOrder(order)
@@ -83,8 +81,6 @@ class OrderDetailPresenter @Inject constructor(
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
                 // TODO: Notify the user of the problem
-                Log.e(this::class.java.simpleName, "Error updating order status : ${event.error.message}")
-
                 orderView?.markOrderCompleteFailed()
             } else {
                 // Successfully marked order as complete

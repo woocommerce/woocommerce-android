@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
+import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -60,5 +61,29 @@ class OrderListPresenterTest {
         doReturn(noOrders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
         verify(orderListView).showNoOrders()
+    }
+
+    @Test
+    fun `Fetches orders from DB when forceRefresh is false`() {
+        presenter.takeView(orderListView)
+        presenter.loadOrders(false)
+        verify(presenter).fetchAndLoadOrdersFromDb(false)
+    }
+
+    @Test
+    fun `Opens order detail view correctly`() {
+        presenter.takeView(orderListView)
+        val orderModel = WCOrderModel()
+        presenter.openOrderDetail(orderModel)
+        verify(orderListView).openOrderDetail(orderModel)
+    }
+
+    @Test
+    fun `Refreshes fragment state when order status updated`() {
+        presenter.takeView(orderListView)
+
+        // OnOrderChanged callback from FluxC should trigger the appropriate UI update
+        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
+        verify(orderListView, times(1)).refreshFragmentState()
     }
 }
