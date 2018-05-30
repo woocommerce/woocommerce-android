@@ -138,12 +138,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
 
     override fun onBackStackChanged() {
         super.onBackStackChanged()
-        if (isActive) {
-            // If this fragment is now visible and we've deferred loading orders due to it not
-            // being visible or a network connection error, go ahead and load the orders.
-            if (loadOrdersPending) {
-                presenter.loadOrders(true)
-            }
+      
+        // If this fragment is now visible and we've deferred loading orders due to it not
+        // being visible - go ahead and load the orders.
+        if (isActive && loadOrdersPending) {
+            loadOrdersPending = false
+            presenter.loadOrders(true)
         } else {
             connectErrorSnackbar?.dismiss()
         }
