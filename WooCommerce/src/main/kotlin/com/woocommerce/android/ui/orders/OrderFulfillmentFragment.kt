@@ -126,8 +126,10 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
 
     override fun showNetworkConnectivityError() {
-        connectErrorSnackbar = uiResolver.getRetrySnack(
-                R.string.order_error_update_no_connection, null, this)
+        if (connectErrorSnackbar == null) {
+            connectErrorSnackbar = uiResolver.getRetrySnack(
+                    R.string.order_error_update_no_connection, null, this)
+        }
         connectErrorSnackbar?.show()
     }
 }

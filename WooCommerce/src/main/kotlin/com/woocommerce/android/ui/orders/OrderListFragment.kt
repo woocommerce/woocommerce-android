@@ -265,11 +265,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
     override fun isNetworkConnected() = NetworkUtils.isNetworkAvailable(context)
 
     override fun showNetworkConnectivityError() {
-        ordersList?.let {
-            loadOrdersPending = true
-            connectErrorSnackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this).also {
-                it.show()
-            }
+        loadOrdersPending = true
+        if (connectErrorSnackbar == null) {
+            connectErrorSnackbar = uiResolver.getRetrySnack(R.string.orderlist_error_network, null, this)
         }
+        connectErrorSnackbar?.show()
     }
 }
