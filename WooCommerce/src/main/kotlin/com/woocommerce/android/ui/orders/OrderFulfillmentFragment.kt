@@ -7,10 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.R.id.orderFulfill_btnComplete
-import com.woocommerce.android.R.id.orderFulfill_customerInfo
-import com.woocommerce.android.R.id.orderFulfill_customerNote
-import com.woocommerce.android.R.id.orderFulfill_products
 import com.woocommerce.android.R.layout
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
