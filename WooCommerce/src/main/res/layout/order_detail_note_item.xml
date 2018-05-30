@@ -23,7 +23,7 @@
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.CardTitle"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"
         tools:text="Nov 13, 2017 at 9:54 AM"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/orderNote_icon"

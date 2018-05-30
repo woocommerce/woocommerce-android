@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/orderdetail_order_notes"
-        style="@style/Woo.TextView.Title.Bold"
+        style="@style/Woo.OrderDetail.CardTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
