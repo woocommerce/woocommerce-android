@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import com.nhaarman.mockito_kotlin.KArgumentCaptor
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -15,9 +16,19 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.SiteAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.AccountError
+import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.UNSUPPORTED_RESPONSE_TYPE
+import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.DUPLICATE_SITE
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -89,5 +100,31 @@ class MainPresenterTest {
         mainPresenter.onAuthenticationChanged(OnAuthenticationChanged())
 
         verify(mainContractView).showLoginScreen()
+    }
+
+    @Test
+    fun `Processes dispatched authentication errors correctly`() {
+        mainPresenter.onAuthenticationChanged(OnAuthenticationChanged().apply {
+            error = AuthenticationError(UNSUPPORTED_RESPONSE_TYPE, "error")
+        })
+        verify(errorHandler, times(1)).handleGenericError(any())
+    }
+
+    @Test
+    fun `Processes dispatched account errors correctly`() {
+        mainPresenter.onAccountChanged(OnAccountChanged().apply { error = AccountError(GENERIC_ERROR, "error") })
+        verify(errorHandler, times(1)).handleGenericError(any())
+    }
+
+    @Test
+    fun `Processes dispatched site errors correctly`() {
+        mainPresenter.onSiteChanged(OnSiteChanged(6).apply { error = SiteError(DUPLICATE_SITE) })
+        verify(errorHandler, times(1)).handleGenericError(any())
+    }
+
+    @Test
+    fun `Processes dispatched order errors correctly`() {
+        mainPresenter.onOrderChanged(OnOrderChanged(0).apply { error = OrderError(OrderErrorType.GENERIC_ERROR) })
+        verify(errorHandler, times(1)).handleGenericError(any())
     }
 }

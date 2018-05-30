@@ -15,10 +15,10 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 
 class OrderDetailPresenterTest {
@@ -43,18 +43,20 @@ class OrderDetailPresenterTest {
     fun `Displays the order detail view correctly`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-        presenter.loadOrderDetail(orderIdentifier)
+        presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any())
     }
 
     @Test
-    fun `Displays the order notes view correctly`() {
+    fun `Load order notes - Displays the order notes view correctly`() {
         doReturn(true).whenever(orderDetailView).isNetworkConnected()
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-        presenter.loadOrderDetail(orderIdentifier)
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(presenter, times(1)).loadOrderNotes()
+        verify(orderDetailView, times(1)).showOrderNotes(listOf())
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
@@ -64,28 +66,57 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Displays no network error correctly`() {
+    fun `Load order notes - Displays no network error correctly`() {
         doReturn(false).whenever(orderDetailView).isNetworkConnected()
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-        presenter.loadOrderDetail(orderIdentifier)
+        presenter.loadOrderDetail(orderIdentifier, false)
 
         verify(orderDetailView).isNetworkConnected()
     }
 
     @Test
-    fun `Updates and displays order status update success correctly`() {
+    fun `Mark order complete - Displays undo snackbar correctly`() {
+        doReturn(true).whenever(orderDetailView).isNetworkConnected()
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, true)
+
+        verify(orderDetailView).showUndoOrderCompleteSnackbar()
+    }
+
+    @Test
+    fun `Mark order complete - Processes success correctly`() {
         doReturn(true).whenever(orderDetailView).isNetworkConnected()
         doReturn(order).whenever(presenter).orderModel
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
         presenter.takeView(orderDetailView)
-        presenter.updateOrderStatus(OrderStatus.PROCESSING)
+        presenter.doMarkOrderComplete()
         verify(dispatcher, times(1)).dispatch(any<Action<UpdateOrderStatusPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(orderDetailView).orderStatusUpdateSuccess(order)
+        verify(orderDetailView).markOrderCompleteSuccess()
+    }
+
+    @Test
+    fun `Mark order complete - Reverts status after failure correctly`() {
+        doReturn(true).whenever(orderDetailView).isNetworkConnected()
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
+        // from the order store
+        presenter.takeView(orderDetailView)
+        presenter.doMarkOrderComplete()
+        verify(dispatcher, times(1)).dispatch(any<Action<UpdateOrderStatusPayload>>())
+
+        // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = UPDATE_ORDER_STATUS
+            error = OrderError(message = "Error")
+        })
+        verify(orderDetailView).markOrderCompleteFailed()
     }
 }
