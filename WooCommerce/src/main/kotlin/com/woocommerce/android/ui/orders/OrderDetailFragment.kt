@@ -133,7 +133,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         orderDetail_noteList.updateView(notes)
     }
 
-    override fun pendingMarkOrderComplete() {
+    override fun showUndoOrderCompleteSnackbar() {
         markCompleteCanceled = false
 
         presenter.orderModel?.let {

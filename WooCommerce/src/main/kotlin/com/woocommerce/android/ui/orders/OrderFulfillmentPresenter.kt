@@ -30,6 +30,7 @@ class OrderFulfillmentPresenter @Inject constructor(
 
     override fun markOrderComplete() {
         orderView?.let {
+            it.toggleCompleteButton(false)
             if (it.isNetworkConnected()) {
                 // Start the process of fulfilling the order
                 it.fulfillOrder()
@@ -37,6 +38,7 @@ class OrderFulfillmentPresenter @Inject constructor(
                 // Notify user unable to mark order complete due to no connectivity
                 it.showNetworkConnectivityError()
             }
+            it.toggleCompleteButton(true)
         }
     }
 }

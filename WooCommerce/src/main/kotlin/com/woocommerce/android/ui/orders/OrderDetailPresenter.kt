@@ -41,7 +41,7 @@ class OrderDetailPresenter @Inject constructor(
             orderView?.let { view ->
                 orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also { order ->
                     view.showOrderDetail(order)
-                    if (markComplete) view.pendingMarkOrderComplete()
+                    if (markComplete) view.showUndoOrderCompleteSnackbar()
                 }
                 loadOrderNotes() // load order notes
             }
@@ -87,6 +87,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.markOrderCompleteFailed()
             } else {
                 // Successfully marked order as complete
+                orderModel?.status = OrderStatus.COMPLETED
                 orderView?.markOrderCompleteSuccess()
             }
         }

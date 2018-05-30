@@ -19,7 +19,7 @@ interface OrderDetailContract {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
-        fun pendingMarkOrderComplete()
+        fun showUndoOrderCompleteSnackbar()
         fun markOrderCompleteSuccess()
         fun markOrderCompleteFailed()
     }
