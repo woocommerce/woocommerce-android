@@ -1,8 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".ui.orders.OrderFulfillmentFragment">
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/orderRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_window_background"
+    tools:context="com.woocommerce.android.ui.orders.OrderFulfillmentFragment">
 
-</FrameLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Product List -->
+        <com.woocommerce.android.ui.orders.OrderDetailProductListView
+            android:id="@+id/orderFulfill_products"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card.List"/>
+
+        <!-- Customer Provided Note -->
+        <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
+            android:id="@+id/orderFulfill_customerNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card"/>
+
+        <!-- Customer Info -->
+        <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
+            android:id="@+id/orderFulfill_customerInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card.Expandable"/>
+
+        <!-- Button: Mark Order Complete -->
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/orderFulfill_btnComplete"
+            style="@style/Woo.ButtonPurple"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/order_fulfill_mark_complete"/>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
