@@ -22,7 +22,5 @@ class MainErrorHandler @Inject constructor(val uiResolver: UIMessageResolver) : 
         }
     }
 
-    override fun handleGenericError(errorMsg: String) {
-        uiResolver.showSnack(errorMsg)
-    }
+    override fun handleGenericError(errorMsg: String) = uiResolver.showSnack(errorMsg)
 }
