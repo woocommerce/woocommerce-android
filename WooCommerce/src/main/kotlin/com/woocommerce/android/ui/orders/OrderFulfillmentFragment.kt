@@ -110,7 +110,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     override fun toggleCompleteButton(isEnabled: Boolean) {
-        orderFulfill_btnComplete.isEnabled = isEnabled
+        orderFulfill_btnComplete?.isEnabled = isEnabled
     }
 
     override fun fulfillOrder() {
