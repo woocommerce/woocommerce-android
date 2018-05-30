@@ -18,9 +18,14 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
+import com.woocommerce.android.R.id.noOrdersView
+import com.woocommerce.android.R.id.orderRefreshLayout
+import com.woocommerce.android.R.id.ordersList
+import com.woocommerce.android.R.id.ordersView
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
+import io.fabric.sdk.android.services.network.HttpRequest.post
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -138,7 +143,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, View.OnCli
 
     override fun onBackStackChanged() {
         super.onBackStackChanged()
-      
+
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive && loadOrdersPending) {
