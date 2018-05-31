@@ -20,7 +20,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     : LinearLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.dashboard_stats, this)
-        orientation = LinearLayout.VERTICAL
     }
 
     enum class StatsTimeframe { THIS_WEEK, THIS_MONTH, THIS_YEAR, YEARS }
