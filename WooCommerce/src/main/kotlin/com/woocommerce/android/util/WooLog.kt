@@ -8,7 +8,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.ArrayList
 
-typealias Thing = (T, LogLevel, String) -> Unit
+typealias LogListener = (T, LogLevel, String) -> Unit
 
 /**
  * Simple wrapper for Android log calls, enables registering listeners for log events.
@@ -28,9 +28,9 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
-    private val listeners = ArrayList<Thing>(0)
+    private val listeners = ArrayList<LogListener>(0)
 
-    fun addListener(listener: Thing) {
+    fun addListener(listener: LogListener) {
         listeners.add(listener)
     }
 
