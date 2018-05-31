@@ -136,10 +136,10 @@
         <item name="android:paddingTop">@dimen/tag_padding_top</item>
         <item name="android:paddingBottom">@dimen/tag_padding_bottom</item>
         <!-- Custom View Attributes -->
-        <item name="com.woocommerce.android:tagTextColor">@color/tagView_text</item>
-        <item name="com.woocommerce.android:tagTextSize">@dimen/tag_text_size</item>
-        <item name="com.woocommerce.android:tagColor">@color/tagView_bg</item>
-        <item name="com.woocommerce.android:tagBorderColor">@color/tagView_border_bg</item>
+        <item name="tagTextColor">@color/tagView_text</item>
+        <item name="tagTextSize">@dimen/tag_text_size</item>
+        <item name="tagColor">@color/tagView_bg</item>
+        <item name="tagBorderColor">@color/tagView_border_bg</item>
     </style>
     <!--
         Default Card Style
@@ -240,8 +240,8 @@
     <style name="Woo.FlowLayout">
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
-        <item name="com.woocommerce.android:horizontalSpacing">4dp</item>
-        <item name="com.woocommerce.android:verticalSpacing">4dp</item>
+        <item name="horizontalSpacing">4dp</item>
+        <item name="verticalSpacing">4dp</item>
     </style>
     <!--
         Order: List Style

@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -21,7 +23,12 @@ class OrderDetailPresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) : OrderDetailContract.Presenter {
+    companion object {
+        private val TAG: String = OrderDetailPresenter::class.java.simpleName
+    }
+
     override var orderModel: WCOrderModel? = null
+  
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
 
@@ -72,6 +79,7 @@ class OrderDetailPresenter @Inject constructor(
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             if (event.isError) {
                 // TODO: Notify the user of the problem
+                WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
             } else {
                 orderModel?.let { order ->
                     val notes = orderStore.getOrderNotesForOrder(order)
@@ -81,6 +89,7 @@ class OrderDetailPresenter @Inject constructor(
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
                 // TODO: Notify the user of the problem
+                WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
                 orderView?.markOrderCompleteFailed()
             } else {
                 // Successfully marked order as complete

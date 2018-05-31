@@ -1,8 +1,8 @@
 package com.woocommerce.android.util
 
 import android.content.Context
-import android.util.Log
 import com.woocommerce.android.R
+import com.woocommerce.android.util.WooLog.T
 import java.text.DecimalFormat
 import java.util.Currency
 import kotlin.math.absoluteValue
@@ -58,8 +58,7 @@ object CurrencyUtils {
             try {
                 return Currency.getInstance(currencyCode).symbol
             } catch (e: IllegalArgumentException) {
-                Log.e(CurrencyUtils::class.java.simpleName,
-                        "Error finding valid currency symbol for currency code [$currencyCode]", e)
+                WooLog.e(T.UTILS, "Error finding valid currency symbol for currency code [$currencyCode]", e)
             }
             return ""
         }

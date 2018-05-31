@@ -9,8 +9,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
+import com.woocommerce.android.util.WooLog
+import org.wordpress.android.util.AppLog as WordPressAppLog
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.CrashlyticsUtils
 import com.yarolegovich.wellsql.WellSql
 import dagger.MembersInjector
 import dagger.android.AndroidInjector
@@ -53,8 +56,19 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
         AppPrefs.init(this)
 
-        if (!PackageUtils.isDebugBuild()) {
+        @Suppress("ConstantConditionIf")
+        if (!BuildConfig.DEBUG) {
             Fabric.with(this, Crashlytics())
+
+            // Send logs for app events through to Crashlytics
+            WooLog.addListener { tag, logLevel, message ->
+                CrashlyticsUtils.log("$logLevel/${WooLog.TAG}-$tag: $message")
+            }
+
+            // Send logs for library events (FluxC, Login, utils) through to Crashlytics
+            WordPressAppLog.addListener { tag, logLevel, message ->
+                CrashlyticsUtils.log("$logLevel/${WordPressAppLog.TAG}-$tag: $message")
+            }
         }
 
         initAnalytics()
