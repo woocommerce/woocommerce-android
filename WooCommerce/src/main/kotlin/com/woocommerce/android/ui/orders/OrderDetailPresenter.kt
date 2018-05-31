@@ -21,7 +21,7 @@ class OrderDetailPresenter @Inject constructor(
     private val selectedSite: SelectedSite
 ) : OrderDetailContract.Presenter {
     companion object {
-        private val TAG: String = this::class.java.simpleName
+        private val TAG: String = OrderDetailPresenter::class.java.simpleName
     }
 
     private var orderView: OrderDetailContract.View? = null
