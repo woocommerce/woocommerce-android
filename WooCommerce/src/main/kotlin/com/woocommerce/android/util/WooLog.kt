@@ -1,6 +1,5 @@
 package com.woocommerce.android.util
 
-import android.text.TextUtils
 import android.util.Log
 import com.woocommerce.android.util.WooLog.LogLevel
 import com.woocommerce.android.util.WooLog.T
@@ -122,9 +121,8 @@ object WooLog {
      * @param statusCode
      */
     fun e(tag: T, volleyErrorMsg: String, statusCode: Int) {
-        if (TextUtils.isEmpty(volleyErrorMsg)) {
-            return
-        }
+        if (volleyErrorMsg.isEmpty()) return
+
         val logText: String = if (statusCode == -1) {
             volleyErrorMsg
         } else {
