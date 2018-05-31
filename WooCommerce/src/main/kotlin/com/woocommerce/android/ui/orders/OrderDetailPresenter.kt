@@ -84,7 +84,9 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.markOrderCompleteFailed()
             } else {
                 // Successfully marked order as complete
-                orderModel?.status = OrderStatus.COMPLETED
+                orderModel?.let {
+                    orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
+                }
                 orderView?.markOrderCompleteSuccess()
             }
         }
