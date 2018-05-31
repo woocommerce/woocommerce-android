@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import android.support.design.internal.BottomNavigationItemView
 import android.support.design.internal.BottomNavigationMenuView
 import android.support.design.widget.BottomNavigationView
-import android.util.Log
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 
 /**
  * "Shift-mode" removes the labels for every option in the bottom bar except for the selected
@@ -31,9 +32,9 @@ fun BottomNavigationView.disableShiftMode() {
             }
         }
     } catch (e: NoSuchFieldException) {
-        Log.e("BottomNavigationHelper", "Unable to get shift mode field", e)
+        WooLog.e(T.UTILS, "BottomNavigationHelper: Unable to get shift mode field", e)
     } catch (e: IllegalAccessException) {
-        Log.e("BottomNavigationHelper", "Unable to change value of shift mode", e)
+        WooLog.e(T.UTILS, "BottomNavigationHelper: Unable to change value of shift mode", e)
     }
 }
 

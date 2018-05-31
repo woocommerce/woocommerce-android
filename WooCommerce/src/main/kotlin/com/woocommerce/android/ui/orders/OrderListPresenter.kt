@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.orders
 
-import android.util.Log
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -18,6 +19,10 @@ class OrderListPresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) : OrderListContract.Presenter {
+    companion object {
+        private val TAG: String = OrderListPresenter::class.java.simpleName
+    }
+
     private var orderView: OrderListContract.View? = null
 
     override fun takeView(view: OrderListContract.View) {
@@ -46,7 +51,7 @@ class OrderListPresenter @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.isError) {
             // TODO: Notify the user of the problem
-            Log.e(this::class.java.simpleName, "Error fetching orders : ${event.error.message}")
+            WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
             return
         }
 
