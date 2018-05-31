@@ -49,6 +49,9 @@
             android:name="org.wordpress.android.login.LoginWpcomService"
             android:exported="false"
             android:label="Login to WPCOM Service" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts"/>
     </application>
 
 </manifest>

@@ -8,11 +8,18 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface OrderDetailContract {
     interface Presenter : BasePresenter<View> {
-        fun loadOrderDetail(orderIdentifier: OrderIdentifier)
+        var orderModel: WCOrderModel?
+        fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
+        fun loadOrderNotes()
+        fun doMarkOrderComplete()
     }
 
-    interface View : BaseView<Presenter>, OrderCustomerActionListener, OrderActionListener {
-        fun showOrderDetail(order: WCOrderModel?, notes: List<WCOrderNoteModel>)
+    interface View : BaseView<Presenter>, OrderActionListener {
+        fun showOrderDetail(order: WCOrderModel?)
+        fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
+        fun showUndoOrderCompleteSnackbar()
+        fun markOrderCompleteSuccess()
+        fun markOrderCompleteFailed()
     }
 }

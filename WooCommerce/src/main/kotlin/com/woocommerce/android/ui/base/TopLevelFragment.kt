@@ -60,10 +60,18 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         super.onDestroyView()
     }
 
-    override fun loadChildFragment(fragment: Fragment) {
+    override fun getFragmentFromBackStack(tag: String): Fragment? {
+        return childFragmentManager.findFragmentByTag(tag)
+    }
+
+    override fun popToState(tag: String): Boolean {
+        return childFragmentManager.popBackStackImmediate(tag, 0)
+    }
+
+    override fun loadChildFragment(fragment: Fragment, tag: String) {
         childFragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .addToBackStack(null)
+                .replace(R.id.container, fragment, tag)
+                .addToBackStack(tag)
                 .commit()
     }
 

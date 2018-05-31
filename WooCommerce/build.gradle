@@ -1,9 +1,11 @@
 buildscript {
     repositories {
+        jcenter()
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'io.fabric.tools:gradle:1.25.4'
+        classpath 'com.google.gms:google-services:3.2.0'
     }
 }
 
@@ -46,6 +48,19 @@ android {
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
     }
 
+    flavorDimensions "buildType"
+
+    productFlavors {
+        vanilla { // Release version
+            dimension "buildType"
+        }
+
+        wasabi { // Development only version, can be installed along release versions
+            applicationId "com.woocommerce.android.dev"
+            dimension "buildType"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -72,6 +87,8 @@ dependencies {
     }
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
+    implementation 'com.google.android.gms:play-services-auth:12.0.1'
 
     // Support library
     implementation "com.android.support:support-v4:$supportLibraryVersion"
@@ -153,6 +170,13 @@ apiKey=${crashlyticsApiKey}""")
     }
 }
 
+task copyGoogleServicesExampleFile(type: Copy) {
+    from('.')
+    into('.')
+    include('google-services.json-example')
+    rename('google-services.json-example', 'google-services.json')
+}
+
 // Add generateCrashlyticsConfig to all generateBuildConfig tasks (all variants)
 android.applicationVariants.all { variant ->
     variant.generateBuildConfig.dependsOn(generateCrashlyticsConfig)
@@ -171,6 +195,16 @@ android.buildTypes.all { buildType ->
             buildType.resValue "string", property.key.replace("wc.res.", "").replace(".", "_").toLowerCase(),
                     "${property.value}"
         }
+    }
+
+    // If Google services file doesn't exist, copy example file.
+    if (!file("google-services.json").exists()) {
+        tasks.copyGoogleServicesExampleFile.execute()
+    }
+
+    // Print warning message if example Google services file is used.
+    if ((new File('WooCommerce/google-services.json').text) == (new File('WooCommerce/google-services.json-example').text)) {
+        println("WARNING: You're using the example google-services.json file. Google login will fail.")
     }
 }
 
@@ -204,3 +238,6 @@ if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.h
     }
     android.buildTypes.release.signingConfig = android.signingConfigs.release
 }
+
+// Keep this at the bottom (https://stackoverflow.com/a/37565535)
+apply plugin: 'com.google.gms.google-services'

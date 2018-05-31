@@ -8,13 +8,15 @@ interface OrderListContract {
     interface Presenter : BasePresenter<View> {
         fun loadOrders(forceRefresh: Boolean)
         fun openOrderDetail(order: WCOrderModel)
+        fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean)
     }
 
-    interface View : BaseView<Presenter>, OrdersViewRouter {
+    interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
         var isActive: Boolean
 
         fun setLoadingIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean)
         fun showNoOrders()
+        fun refreshFragmentState()
     }
 }
