@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.R.id.orderProducts_list
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 class OrderProductListFragment : Fragment(), OrderProductListContract.View {
     companion object {
+        const val TAG = "OrderProductListFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
 

@@ -7,10 +7,11 @@
         android:id="@+id/orderStatus_orderNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.CardTitle.Bold"
-        tools:text="Order #51"/>
+        android:layout_alignParentTop="true"
+        android:fontFamily="@font/roboto"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"
+        tools:text="#51 Michelle Fredrickson"/>
 
     <TextView
         android:id="@+id/orderStatus_created"
