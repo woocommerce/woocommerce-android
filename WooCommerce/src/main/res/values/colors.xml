@@ -80,6 +80,12 @@
     <!-- Option icon/text color when selected -->
     <color name="bottomBar_fg_checked">@color/colorPrimary</color>
     <!--
+        Default graph colors
+    -->
+    <color name="graph_no_data_test_color">@color/default_text_color</color>
+    <color name="graph_data_color">@color/wc_purple</color>
+    <color name="graph_grid_color">@color/wc_border_color</color>
+    <!--
         Order: status tag background colors
     -->
     <color name="orderStatus_processing_text">@color/tagView_text</color>

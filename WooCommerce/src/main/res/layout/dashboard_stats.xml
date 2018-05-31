@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/label_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:id="@+id/visitors_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/visitors_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dashboard_stats_visitors"
+                android:gravity="center_horizontal"
+                style="@style/Woo.TextAppearance.Title.Small"
+                tools:text="Visitors"/>
+
+            <TextView
+                android:id="@+id/visitors_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                style="@style/Woo.TextAppearance.Label.XL"
+                tools:text="400"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/orders_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/orders_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dashboard_stats_orders"
+                android:gravity="center_horizontal"
+                style="@style/Woo.TextAppearance.Title.Small"
+                tools:text="Orders"/>
+
+            <TextView
+                android:id="@+id/orders_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                style="@style/Woo.TextAppearance.Label.XL"
+                tools:text="10"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/revenue_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/revenue_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dashboard_stats_revenue"
+                android:gravity="center_horizontal"
+                style="@style/Woo.TextAppearance.Title.Small"/>
+
+            <TextView
+                android:id="@+id/revenue_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                style="@style/Woo.TextAppearance.Label.XL"
+                tools:text="$1.6k"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/chart_height">
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ProgressBar
+            android:id="@+id/barchart_progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/chart_progress_bar_padding"
+            android:background="@color/white"
+            tools:visibility="gone"/>
+    </FrameLayout>
+
+</merge>

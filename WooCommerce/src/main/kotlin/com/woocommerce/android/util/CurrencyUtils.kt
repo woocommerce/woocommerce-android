@@ -6,6 +6,7 @@ import com.woocommerce.android.util.WooLog.T
 import java.text.DecimalFormat
 import java.util.Currency
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 /**
  * Since the WooCommerce platform supports some unconventional ways of displaying currency,
@@ -48,6 +49,24 @@ object CurrencyUtils {
 
     fun currencyString(context: Context, rawValue: String?, currencyCode: String) =
             currencyString(context, rawValue?.toDouble() ?: 0.0, currencyCode)
+
+    /**
+     * Rounds the [rawValue] to the nearest int, and returns the value as a currency
+     * string with the appropriate currency symbol.
+     *
+     * @param context The active context
+     * @param rawValue The value to format as currency
+     * @param currencyCode The ISO 4217 currency code (ex: USD)
+     */
+    fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
+        val symbol = getCurrencySymbol(currencyCode)
+        val roundedValue = rawValue.roundToInt()
+        return if (rawValue < 0) {
+            context.getString(R.string.currency_total_negative, symbol, roundedValue.absoluteValue.toString())
+        } else {
+            context.getString(R.string.currency_total, symbol, roundedValue.toString())
+        }
+    }
 
     /**
      * Returns the currency symbol for [currencyCode]. If no match is found, returns

@@ -44,6 +44,13 @@
     <string name="enter_site_address">Enter the address of your WooCommerce store you\'d like to connect.</string>
     <string name="select_woocommerce_store">Select WooCommerce Store:</string>
     <!--
+        Dashboard View
+    -->
+    <string name="dashboard_stats_visitors">Visitors</string>
+    <string name="dashboard_stats_orders">Orders</string>
+    <string name="dashboard_stats_revenue">Revenue</string>
+    <string name="dashboard_state_no_data">No data available</string>
+    <!--
         Order List View
     -->
     <string name="orderlist_no_orders">No Orders</string>
