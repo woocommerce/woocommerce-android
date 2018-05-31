@@ -54,7 +54,7 @@ class OrderListPresenter @Inject constructor(
 
         when (event.causeOfChange) {
             FETCH_ORDERS -> fetchAndLoadOrdersFromDb(true)
-        // A child fragment made a change that requires a data refresh.
+            // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
             else -> {}
         }
