@@ -4,7 +4,7 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
-import android.widget.RelativeLayout
+import android.widget.LinearLayout
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
@@ -17,9 +17,10 @@ import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : RelativeLayout(ctx, attrs) {
+    : LinearLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.dashboard_stats, this)
+        orientation = LinearLayout.VERTICAL
     }
 
     enum class StatsTimeframe { THIS_WEEK, THIS_MONTH, THIS_YEAR, YEARS }
