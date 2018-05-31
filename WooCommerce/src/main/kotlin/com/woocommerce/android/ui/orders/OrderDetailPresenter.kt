@@ -28,7 +28,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override var orderModel: WCOrderModel? = null
-  
+
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
 
