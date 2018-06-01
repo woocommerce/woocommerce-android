@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.PackageUtils
 import javax.inject.Inject
 
@@ -147,6 +148,14 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
             // Wipe user-specific preferences
             AppPrefs.reset()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUnexpectedError(event: OnUnexpectedError) {
+        with (event) {
+            CrashlyticsUtils.logException(exception, message = "FluxC: ${exception.message}: $description")
         }
     }
 
