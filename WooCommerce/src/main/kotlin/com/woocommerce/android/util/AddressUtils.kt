@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import com.google.i18n.addressinput.common.AddressData
 import com.google.i18n.addressinput.common.FormOptions
 import com.google.i18n.addressinput.common.FormatInterpreter
+import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import java.util.Locale
 
@@ -44,10 +45,30 @@ object AddressUtils {
      *      Ramada Plaza
      *      450 Capitol Ave SE
      *      Atlanta, GA 30312
+     *
+     * @return If the provided [address] contains all empty address lines, this method will
+     * return an empty string.
      */
     fun getEnvelopeAddress(address: OrderAddress): String {
         val addressData = getAddressData(address)
-        val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
-        return formatInterpreter.getEnvelopeAddress(addressData).joinToString(System.getProperty("line.separator"))
+        return if (addressData.addressLines.isNotEmpty()) {
+            val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
+            formatInterpreter.getEnvelopeAddress(addressData).joinToString(System.getProperty("line.separator"))
+        } else {
+            orderAddressToString(address)
+        }
+    }
+
+    /**
+     * Takes an [OrderAddress] object and returns its values in a comma-separated string.
+     */
+    private fun orderAddressToString(address: OrderAddress): String {
+        return StringBuilder()
+                .appendWithIfNotEmpty(address.address1)
+                .appendWithIfNotEmpty(address.address2, "\n")
+                .appendWithIfNotEmpty(address.city, "\n")
+                .appendWithIfNotEmpty(address.state)
+                .appendWithIfNotEmpty(address.postcode)
+                .toString()
     }
 }
