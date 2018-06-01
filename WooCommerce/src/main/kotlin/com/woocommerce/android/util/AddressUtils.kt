@@ -46,17 +46,14 @@ object AddressUtils {
      *      450 Capitol Ave SE
      *      Atlanta, GA 30312
      *
-     * @return If the provided [address] contains all empty address lines, this method will
-     * return an empty string.
+     * @return If the provided [address] has an empty country code, this method will return whatever
+     * address fields are available, otherwise, return the address formatted for the region.
      */
     fun getEnvelopeAddress(address: OrderAddress): String {
-        val addressData = getAddressData(address)
-        return if (addressData.addressLines.isNotEmpty()) {
+        return getAddressData(address).takeIf { it.postalCountry != null }?.let {
             val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
-            formatInterpreter.getEnvelopeAddress(addressData).joinToString(System.getProperty("line.separator"))
-        } else {
-            orderAddressToString(address)
-        }
+            formatInterpreter.getEnvelopeAddress(it).joinToString(System.getProperty("line.separator"))
+        } ?: orderAddressToString(address)
     }
 
     /**
