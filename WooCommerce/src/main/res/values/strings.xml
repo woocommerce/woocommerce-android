@@ -51,6 +51,8 @@
     <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
     <string name="enter_site_address">Enter the address of your WooCommerce store you\'d like to connect.</string>
     <string name="select_woocommerce_store">Select WooCommerce Store:</string>
+    <string name="login_jetpack_required">This app requires Jetpack to be able to connect to your WooCommerce store.</string>
+    <string name="login_with_jetpack">Log in with Jetpack</string>
     <!--
         Dashboard View
     -->
