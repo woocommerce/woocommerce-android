@@ -25,7 +25,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="4dp"
         android:layout_above="@+id/prologue_card"
         android:background="@drawable/shadow_top"/>
 
