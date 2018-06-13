@@ -53,6 +53,7 @@
     <string name="select_woocommerce_store">Select WooCommerce Store:</string>
     <string name="login_jetpack_required">This app requires Jetpack to be able to connect to your WooCommerce store.</string>
     <string name="login_with_jetpack">Log in with Jetpack</string>
+    <string name="login_prologue_banner">Your WooCommerce store on the go. Check your sales, fulfill your orders, and get notifications of new sales.</string>
     <!--
         Dashboard View
     -->

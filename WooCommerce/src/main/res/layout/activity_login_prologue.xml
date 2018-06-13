@@ -1,26 +1,36 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/wc_purple"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/wc_purple">
 
     <ImageView
         android:id="@+id/image_prologue"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/prologue_card"
         android:layout_marginLeft="@dimen/margin_medium_large"
         android:layout_marginRight="@dimen/margin_medium_large"
-        android:layout_weight="1"
         android:scaleType="fitEnd"
         app:srcCompat="@drawable/ic_woo_login_screen_with_bleed"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="28dp"
+        android:gravity="center"
+        android:text="@string/login_prologue_banner"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_medium_extra_large"
+        android:textStyle="bold"/>
+
     <RelativeLayout
+        android:id="@+id/prologue_card"
         style="@style/Woo.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="0dp"
-        android:orientation="horizontal"
         android:padding="@dimen/margin_extra_large">
 
         <ImageView
@@ -48,4 +58,4 @@
             android:text="@string/login_with_jetpack"/>
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>
