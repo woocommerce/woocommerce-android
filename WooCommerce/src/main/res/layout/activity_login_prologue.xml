@@ -21,8 +21,13 @@
         android:gravity="center"
         android:text="@string/login_prologue_banner"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_medium_extra_large"
-        android:textStyle="bold"/>
+        android:textSize="@dimen/text_medium_extra_large"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_above="@+id/prologue_card"
+        android:background="@drawable/shadow_top"/>
 
     <RelativeLayout
         android:id="@+id/prologue_card"
@@ -43,7 +48,8 @@
             android:id="@+id/text_jetpack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginEnd="@dimen/margin_extra_large"
+            android:layout_marginStart="@dimen/margin_extra_large"
             android:layout_toEndOf="@+id/image_jetpack"
             android:text="@string/login_jetpack_required"/>
 

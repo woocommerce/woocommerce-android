@@ -180,9 +180,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun showLoginPrologueScreen() {
         val intent = Intent(this, LoginPrologueActivity::class.java)
-        LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_LOGIN_PROLOGUE)
-        finish()
     }
 
     override fun updateSelectedSite() {
