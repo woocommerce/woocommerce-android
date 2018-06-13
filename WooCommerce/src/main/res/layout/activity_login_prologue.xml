@@ -16,10 +16,10 @@
         app:srcCompat="@drawable/ic_woo_login_screen_with_bleed"/>
 
     <RelativeLayout
+        style="@style/Woo.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/card_bgColor"
-        android:elevation="@dimen/card_elevation"
+        android:layout_marginBottom="0dp"
         android:orientation="horizontal"
         android:padding="@dimen/margin_extra_large">
 

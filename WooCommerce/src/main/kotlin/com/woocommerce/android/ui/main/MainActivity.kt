@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginPrologueActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity(),
         BottomNavigationView.OnNavigationItemReselectedListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
+        private const val REQUEST_CODE_LOGIN_PROLOGUE = 200
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
@@ -77,7 +79,7 @@ class MainActivity : AppCompatActivity(),
                 loginProgressDialog = ProgressDialog.show(this, "", getString(R.string.logging_in), true)
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
-                showLoginScreen()
+                showLoginPrologueScreen()
             }
             return
         }
@@ -149,6 +151,11 @@ class MainActivity : AppCompatActivity(),
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
+            REQUEST_CODE_LOGIN_PROLOGUE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    showLoginScreen()
+                }
+            }
             REQUEST_CODE_ADD_ACCOUNT -> {
                 if (resultCode == Activity.RESULT_OK) {
                     // TODO Launch next screen
@@ -168,6 +175,13 @@ class MainActivity : AppCompatActivity(),
         val intent = Intent(this, LoginActivity::class.java)
         LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
+        finish()
+    }
+
+    override fun showLoginPrologueScreen() {
+        val intent = Intent(this, LoginPrologueActivity::class.java)
+        LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
+        startActivityForResult(intent, REQUEST_CODE_LOGIN_PROLOGUE)
         finish()
     }
 
