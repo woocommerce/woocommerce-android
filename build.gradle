@@ -2,8 +2,8 @@ buildscript {
     ext.kotlinVersion = '1.2.41'
 
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.2'
@@ -19,10 +19,8 @@ allprojects {
     apply plugin: 'checkstyle'
 
     repositories {
+        google()
         jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
     }
 
     task checkstyle(type: Checkstyle) {
