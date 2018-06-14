@@ -62,8 +62,9 @@
             android:layout_below="@+id/text_jetpack"
             android:layout_marginTop="@dimen/margin_medium"
             android:background="?attr/selectableItemBackground"
+            android:linksClickable="true"
             android:text="@string/login_configure_link"
-            android:textColor="@color/wc_purple"/>
+            android:textColorLink="@color/wc_purple"/>
 
         <Button
             android:id="@+id/button_login_jetpack"

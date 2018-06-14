@@ -1,15 +1,19 @@
 package com.woocommerce.android.ui.login
 
 import android.app.Activity
-import android.graphics.Paint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.widget.Button
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.util.ActivityUtils
 
 class LoginPrologueActivity : AppCompatActivity() {
+    companion object {
+        private const val JETPACK_HELP_URL = "https://jetpack.com/support/getting-started-with-jetpack/"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_prologue)
@@ -21,10 +25,8 @@ class LoginPrologueActivity : AppCompatActivity() {
         })
 
         val txtConfigLink = findViewById<TextView>(R.id.text_config_link)
-        txtConfigLink.paintFlags = txtConfigLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        txtConfigLink.setOnClickListener {
-            ActivityUtils.openUrlExternal(this,
-                    "https://jetpack.com/support/getting-started-with-jetpack/")
-        }
+        txtConfigLink.movementMethod = LinkMovementMethod.getInstance()
+        txtConfigLink.text = Html.fromHtml(String.format(getString(R.string.login_configure_link),
+                "<a href='" + JETPACK_HELP_URL + "'>", "</a>"))
     }
 }
