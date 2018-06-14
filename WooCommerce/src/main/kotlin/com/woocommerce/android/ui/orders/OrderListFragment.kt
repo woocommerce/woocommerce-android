@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -21,6 +22,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View {
@@ -220,26 +222,30 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun dialPhone(phone: String) {
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phone")
-        startActivity(intent)
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, R.string.error_no_phone_app)
+        }
     }
 
     override fun createEmail(emailAddr: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
-        context?.let { context ->
-            if (intent.resolveActivity(context.packageManager) != null) {
-                startActivity(intent)
-            }
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, R.string.error_no_email_app)
         }
     }
 
     override fun sendSms(phone: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("smsto:$phone")
-        context?.let { context ->
-            if (intent.resolveActivity(context.packageManager) != null) {
-                startActivity(intent)
-            }
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, R.string.error_no_sms_app)
         }
     }
     // endregion
