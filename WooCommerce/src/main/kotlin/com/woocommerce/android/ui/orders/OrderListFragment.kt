@@ -232,28 +232,20 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun createEmail(emailAddr: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
-        context?.let { context ->
-            if (intent.resolveActivity(context.packageManager) != null) {
-                try {
-                    startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    ToastUtils.showToast(context, R.string.error_no_email_app)
-                }
-            }
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, R.string.error_no_email_app)
         }
     }
 
     override fun sendSms(phone: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("smsto:$phone")
-        context?.let { context ->
-            if (intent.resolveActivity(context.packageManager) != null) {
-                try {
-                    startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    ToastUtils.showToast(context, R.string.error_no_sms_app)
-                }
-            }
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, R.string.error_no_sms_app)
         }
     }
     // endregion
