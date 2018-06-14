@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity(),
         BottomNavigationView.OnNavigationItemReselectedListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
-        private const val REQUEST_CODE_LOGIN_PROLOGUE = 200
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
@@ -151,11 +150,6 @@ class MainActivity : AppCompatActivity(),
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_CODE_LOGIN_PROLOGUE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    showLoginScreen()
-                }
-            }
             REQUEST_CODE_ADD_ACCOUNT -> {
                 if (resultCode == Activity.RESULT_OK) {
                     // TODO Launch next screen
@@ -180,7 +174,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun showLoginPrologueScreen() {
         val intent = Intent(this, LoginPrologueActivity::class.java)
-        startActivityForResult(intent, REQUEST_CODE_LOGIN_PROLOGUE)
+        startActivity(intent)
+        finish()
     }
 
     override fun updateSelectedSite() {
