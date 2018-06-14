@@ -5,9 +5,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
 import android.text.method.LinkMovementMethod
-import android.widget.Button
-import android.widget.TextView
 import com.woocommerce.android.R
+import kotlinx.android.synthetic.main.activity_login_prologue.*
 import org.wordpress.android.login.LoginMode
 
 class LoginPrologueActivity : AppCompatActivity() {
@@ -19,17 +18,15 @@ class LoginPrologueActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_prologue)
 
-        val btnLogin = findViewById<Button>(R.id.button_login_jetpack)
-        btnLogin.setOnClickListener({
+        button_login_jetpack.setOnClickListener({
             val intent = Intent(this, LoginActivity::class.java)
             LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
             startActivity(intent)
             finish()
         })
 
-        val txtConfigLink = findViewById<TextView>(R.id.text_config_link)
-        txtConfigLink.movementMethod = LinkMovementMethod.getInstance()
-        txtConfigLink.text = Html.fromHtml(String.format(getString(R.string.login_configure_link),
+        text_config_link.movementMethod = LinkMovementMethod.getInstance()
+        text_config_link.text = Html.fromHtml(String.format(getString(R.string.login_configure_link),
                 "<a href='$JETPACK_HELP_URL'>", "</a>"))
     }
 }
