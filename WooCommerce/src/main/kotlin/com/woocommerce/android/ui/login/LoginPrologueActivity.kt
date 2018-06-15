@@ -21,6 +21,7 @@ class LoginPrologueActivity : AppCompatActivity() {
         button_login_jetpack.setOnClickListener({
             val intent = Intent(this, LoginActivity::class.java)
             LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
+            intent.putExtra(LoginActivity.SHOW_PROLOGUE_ON_BACK_PRESS, true)
             startActivity(intent)
             finish()
         })
