@@ -107,8 +107,9 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.isError) {
-            // TODO: Add specific error handling
-            errorHandler.handleGenericError(event.error.message)
+            event.causeOfChange?.let {
+                errorHandler.handleOrderError(it, event.error.message)
+            } ?: errorHandler.handleGenericError(event.error.message)
         }
     }
 }
