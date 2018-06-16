@@ -62,6 +62,8 @@
     <string name="login_with_jetpack">Log in with Jetpack</string>
     <string name="login_prologue_banner">Your WooCommerce store on the go. Check your sales, fulfill your orders, and get notifications of new sales.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s</string>
+    <string name="login_pick_store">Pick store</string>
+    <string name="login_connected_store">Connected store</string>
     <!--
         Dashboard View
     -->

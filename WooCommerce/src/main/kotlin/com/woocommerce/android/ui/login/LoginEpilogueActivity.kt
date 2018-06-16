@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
+import android.support.v7.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
@@ -35,6 +36,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
         ActivityUtils.setStatusBarColor(this, R.color.grey_lighten_10)
         presenter.takeView(this)
 
+        recycler.layoutManager = LinearLayoutManager(this)
         siteAdapter = SitePickerAdapter(this)
         recycler.adapter = siteAdapter
 
@@ -65,6 +67,10 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
             selectedSite.set(wcSites[0])
         }
 
+        text_list_label.text = if (wcSites.size == 1)
+            getString(R.string.login_connected_store)
+        else
+            getString(R.string.login_pick_store)
         siteAdapter.setSites(selectedSite.get().siteId, wcSites)
     }
 }
