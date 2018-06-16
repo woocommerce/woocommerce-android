@@ -35,6 +35,7 @@ import javax.inject.Inject
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSupportFragmentInjector {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
+        internal const val SHOW_PROLOGUE_ON_BACK_PRESS = "show-prologue-on-back-press"
     }
 
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -80,6 +81,15 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     private fun getLoginEmailFragment(): LoginEmailFragment? {
         val fragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG)
         return if (fragment == null) null else fragment as LoginEmailFragment
+    }
+
+    override fun onBackPressed() {
+        if (intent.getBooleanExtra(SHOW_PROLOGUE_ON_BACK_PRESS, false)) {
+            startActivity(Intent(this, LoginPrologueActivity::class.java))
+            finish()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
