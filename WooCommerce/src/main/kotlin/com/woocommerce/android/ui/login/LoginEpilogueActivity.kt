@@ -25,13 +25,21 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
     @Inject lateinit var accountStore: AccountStore
     @Inject lateinit var selectedSite: SelectedSite
 
+    private lateinit var siteAdapter : SitePickerAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_epilogue)
+
         ActivityUtils.setStatusBarColor(this, R.color.grey_lighten_10)
         presenter.takeView(this)
+
+        siteAdapter = SitePickerAdapter(this)
+        recycler.adapter = siteAdapter
+
         showUserInfo()
+        showSiteList()
     }
 
     override fun showUserInfo() {
@@ -48,7 +56,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
     override fun showSiteList() {
         val wcSites = presenter.getWooCommerceSites()
         if (wcSites.isEmpty()) {
-            // TODO: logout and return to login screen
+            // TODO
             ToastUtils.showToast(this, R.string.no_woocommerce_sites, Duration.LONG)
             return
         }
@@ -56,5 +64,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
         if (!selectedSite.isSet()) {
             selectedSite.set(wcSites[0])
         }
+
+        siteAdapter.setSites(selectedSite.get().siteId, wcSites)
     }
 }
