@@ -7,11 +7,59 @@
 
     <ImageView
         android:id="@+id/image_avatar"
+        android:layout_width="@dimen/login_avatar_size"
+        android:layout_height="@dimen/login_avatar_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="35dp"
+        tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
+
+    <TextView
+        android:id="@+id/text_displayname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_extra_large"
+        android:textSize="@dimen/text_extra_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="98dp"
-        tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/image_avatar"
+        tools:text="text_username"/>
+
+    <TextView
+        android:id="@+id/text_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_displayname"
+        tools:text="text_displayname"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_extra_large"
+        android:background="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/text_username"/>
+
+    <FrameLayout
+        android:id="@+id/frame_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/margin_extra_large"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/button_continue"
+            style="@style/Woo.ButtonPurple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/continue_button"
+            tools:layout_editor_absoluteX="144dp"
+            tools:layout_editor_absoluteY="528dp"/>
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>

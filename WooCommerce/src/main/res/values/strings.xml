@@ -28,6 +28,7 @@
     <string name="details">Details</string>
     <string name="hide_details">Hide Details</string>
     <string name="undo">Undo</string>
+    <string name="continue_button">Continue</string>
     <!--
         Date/Time Labels
     -->
@@ -55,6 +56,7 @@
     <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
     <string name="enter_site_address">Enter the address of your WooCommerce store you\'d like to connect.</string>
     <string name="select_woocommerce_store">Select WooCommerce Store:</string>
+    <string name="at_username">\@%s</string>
     <!--
         Dashboard View
     -->
