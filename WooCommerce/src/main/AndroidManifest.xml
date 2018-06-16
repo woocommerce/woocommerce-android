@@ -33,6 +33,9 @@
                   android:windowSoftInputMode="adjustResize">
         </activity>
 
+        <activity android:name=".ui.login.LoginEpilogueActivity"
+            android:theme="@style/AppTheme.Base"/>
+
         <activity android:name=".ui.login.MagicLinkInterceptActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

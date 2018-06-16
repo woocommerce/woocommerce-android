@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginEpilogueActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -89,6 +90,9 @@ class MainActivity : AppCompatActivity(),
 
         setupBottomNavigation()
         initFragment(savedInstanceState)
+
+        // TODO remove this
+        startActivity(Intent(this, LoginEpilogueActivity::class.java))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
