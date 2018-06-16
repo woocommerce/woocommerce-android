@@ -27,6 +27,7 @@
     <string name="notifications">Notifications</string>
     <string name="details">Details</string>
     <string name="hide_details">Hide Details</string>
+    <string name="retry">Retry</string>
     <string name="undo">Undo</string>
     <!--
         Date/Time Labels
