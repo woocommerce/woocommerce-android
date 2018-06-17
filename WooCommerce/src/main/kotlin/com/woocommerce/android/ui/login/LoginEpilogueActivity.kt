@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
@@ -8,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.SitePickerAdapter.OnSiteClickListener
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
@@ -36,7 +39,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_epilogue)
 
-        ActivityUtils.setStatusBarColor(this, R.color.grey_lighten_20)
+        ActivityUtils.setStatusBarColor(this, R.color.wc_grey_status)
         presenter.takeView(this)
 
         recycler.layoutManager = LinearLayoutManager(this)
@@ -45,6 +48,20 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         showUserInfo()
         showSiteList()
+
+        button_continue.setOnClickListener {
+            showMainActivityAndFinish()
+        }
+    }
+
+    private fun showMainActivityAndFinish() {
+        if (selectedSite.isSet()) {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
     }
 
     override fun showUserInfo() {
