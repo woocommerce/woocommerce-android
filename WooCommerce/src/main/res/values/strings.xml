@@ -64,6 +64,7 @@
     <string name="login_configure_link">Read the %sconfiguration instructions%s</string>
     <string name="login_pick_store">Pick store</string>
     <string name="login_connected_store">Connected store</string>
+    <string name="login_avatar_content_description">Your profile photo</string>
     <!--
         Dashboard View
     -->

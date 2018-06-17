@@ -14,10 +14,14 @@ import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.UrlUtils
 
-class SitePickerAdapter(private val context: Context) :
+class SitePickerAdapter(private val context: Context, private val listener : OnSiteClickListener) :
         RecyclerView.Adapter<SiteViewHolder>() {
-    private val siteList : ArrayList<SiteModel> = ArrayList()
-    private var selectedSiteId : Long = 0
+    private val siteList: ArrayList<SiteModel> = ArrayList()
+    private var selectedSiteId: Long = 0
+
+    interface OnSiteClickListener {
+        fun onSiteClick(siteId : Long)
+    }
 
     init {
         setHasStableIds(true)
@@ -41,18 +45,26 @@ class SitePickerAdapter(private val context: Context) :
         holder.radio.isChecked = site.siteId == selectedSiteId
         holder.txtSiteName.text = if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
         holder.txtSiteDomain.text = UrlUtils.getHost(site.url)
+        if (itemCount > 1) {
+            holder.rootView.setOnClickListener {
+                listener.onSiteClick(site.siteId)
+            }
+        } else {
+            holder.rootView.setOnClickListener(null)
+        }
+    }
+
+    fun setSites(selectedSiteId: Long, siteList: List<SiteModel>) {
+        this.siteList.clear()
+        this.siteList.addAll(siteList)
+        this.selectedSiteId = selectedSiteId
+        notifyDataSetChanged()
     }
 
     class SiteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val rootView = view
         val radio: RadioButton = view.radio
         val txtSiteName: TextView = view.text_site_name
         val txtSiteDomain: TextView = view.text_site_domain
-    }
-
-    fun setSites(selectedSiteId: Long, sites : List<SiteModel>) {
-        siteList.clear()
-        siteList.addAll(sites)
-        this.selectedSiteId = selectedSiteId
-        notifyDataSetChanged()
     }
 }

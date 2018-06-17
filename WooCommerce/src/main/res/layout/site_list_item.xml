@@ -1,42 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent"
-                                             android:paddingBottom="@dimen/margin_large"
-                                             android:paddingTop="@dimen/margin_large">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingBottom="@dimen/margin_large"
+                android:paddingTop="@dimen/margin_large">
 
     <RadioButton
         android:id="@+id/radio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_medium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/margin_large"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/radio"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/radio"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/text_site_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/grey_dark"
             android:textSize="@dimen/text_large"
-            android:textStyle="bold"
             tools:text="text_site_name"/>
 
         <TextView
             android:id="@+id/text_site_domain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/grey_dark"
             android:textSize="@dimen/text_medium"
             tools:text="text_site_domain"/>
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

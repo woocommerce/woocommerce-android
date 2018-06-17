@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
@@ -15,7 +16,7 @@ import org.wordpress.android.util.ToastUtils
 import org.wordpress.android.util.ToastUtils.Duration
 import javax.inject.Inject
 
-class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
+class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, OnSiteClickListener {
     companion object {
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -37,7 +38,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
         presenter.takeView(this)
 
         recycler.layoutManager = LinearLayoutManager(this)
-        siteAdapter = SitePickerAdapter(this)
+        siteAdapter = SitePickerAdapter(this, this)
         recycler.adapter = siteAdapter
 
         showUserInfo()
@@ -72,5 +73,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
         else
             getString(R.string.login_pick_store)
         siteAdapter.setSites(selectedSite.get().siteId, wcSites)
+    }
+
+    override fun onSiteClick(siteId: Long) {
+        // TODO
     }
 }
