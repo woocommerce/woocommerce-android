@@ -33,7 +33,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_epilogue)
 
-        ActivityUtils.setStatusBarColor(this, R.color.grey_lighten_10)
+        ActivityUtils.setStatusBarColor(this, R.color.grey_lighten_20)
         presenter.takeView(this)
 
         recycler.layoutManager = LinearLayoutManager(this)

@@ -37,8 +37,9 @@ class SitePickerAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: SiteViewHolder, position: Int) {
         val site = siteList[position]
+        holder.radio.visibility = if (siteList.size > 1) View.VISIBLE else View.GONE
         holder.radio.isChecked = site.siteId == selectedSiteId
-        holder.txtSiteName.text = if (!TextUtils.isEmpty(site.displayName)) site.displayName else context.getString(R.string.untitled)
+        holder.txtSiteName.text = if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
         holder.txtSiteDomain.text = UrlUtils.getHost(site.url)
     }
 
