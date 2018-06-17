@@ -1,16 +1,16 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/wc_grey_light"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/wc_grey_light"
+                android:orientation="vertical">
 
     <ImageView
         android:id="@+id/image_avatar"
         android:layout_width="@dimen/login_avatar_size"
         android:layout_height="@dimen/login_avatar_size"
-        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         android:contentDescription="@string/login_avatar_content_description"
         tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
@@ -19,7 +19,8 @@
         android:id="@+id/text_displayname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/image_avatar"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/margin_large"
         android:textColor="@color/grey_dark"
         android:textSize="@dimen/text_extra_large"
@@ -29,23 +30,23 @@
         android:id="@+id/text_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/text_displayname"
+        android:layout_centerHorizontal="true"
         android:textColor="@color/grey_dark"
         android:textSize="@dimen/text_large"
         tools:text="text_displayname"/>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_username"
         android:layout_marginBottom="@dimen/margin_extra_small"
         android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
-        android:layout_weight="1"
-        app:cardElevation="@dimen/appbar_elevation">
+        app:cardElevation="@dimen/card_elevation">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="@dimen/margin_extra_large">
 
@@ -65,10 +66,17 @@
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/card_elevation"
+        android:layout_above="@+id/frame_bottom"
+        android:background="@drawable/shadow_top"/>
+
     <FrameLayout
         android:id="@+id/frame_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:padding="@dimen/margin_extra_large">
 
@@ -78,8 +86,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/continue_button"
-            tools:layout_editor_absoluteX="144dp"
-            tools:layout_editor_absoluteY="528dp"/>
+            android:text="@string/continue_button"/>
     </FrameLayout>
-</LinearLayout>
+</RelativeLayout>

@@ -47,7 +47,11 @@ class SitePickerAdapter(private val context: Context, private val listener : OnS
         holder.txtSiteDomain.text = UrlUtils.getHost(site.url)
         if (itemCount > 1) {
             holder.rootView.setOnClickListener {
-                listener.onSiteClick(site.siteId)
+                if (selectedSiteId != site.siteId) {
+                    listener.onSiteClick(site.siteId)
+                    selectedSiteId = site.siteId
+                    notifyDataSetChanged()
+                }
             }
         } else {
             holder.rootView.setOnClickListener(null)

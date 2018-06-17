@@ -12,6 +12,7 @@ import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ToastUtils
 import org.wordpress.android.util.ToastUtils.Duration
 import javax.inject.Inject
@@ -25,6 +26,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
     @Inject lateinit var presenter: LoginEpilogueContract.Presenter
     @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var siteAdapter : SitePickerAdapter
@@ -76,6 +78,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     override fun onSiteClick(siteId: Long) {
-        // TODO
+        val site = siteStore.getSiteBySiteId(siteId)
+        if (site != null) {
+            selectedSite.set(site)
+        }
     }
 }
