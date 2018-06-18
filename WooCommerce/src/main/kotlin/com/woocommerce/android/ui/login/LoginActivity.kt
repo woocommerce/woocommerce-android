@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.woocommerce.android.R
@@ -108,6 +109,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
             if (resultCode == Activity.RESULT_OK) {
                 showMainActivityAndFinish()
             } else {
+                supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
                 startLogin()
             }
         }

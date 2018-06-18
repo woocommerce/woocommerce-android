@@ -43,8 +43,7 @@
         android:layout_below="@+id/text_username"
         android:layout_marginBottom="@dimen/margin_extra_small"
         android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
-        app:cardElevation="@dimen/card_elevation"
-        tools:visibility="gone">
+        app:cardElevation="@dimen/card_elevation">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -92,13 +91,13 @@
             android:gravity="center_horizontal"
             android:text="@string/login_no_stores"
             android:textColor="@color/grey_dark"
-            android:textSize="@dimen/text_medium"
+            android:textSize="@dimen/text_large"
             android:textStyle="bold"/>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/card_elevation"
+        android:layout_height="@dimen/appbar_elevation"
         android:layout_above="@+id/frame_bottom"
         android:background="@drawable/shadow_top"/>
 
