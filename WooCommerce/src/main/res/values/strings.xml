@@ -65,6 +65,7 @@
     <string name="login_pick_store">Pick store</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_avatar_content_description">Your profile photo</string>
+    <string name="login_with_a_different_account">Login with a different account</string>
     <!--
         Dashboard View
     -->

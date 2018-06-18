@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
@@ -13,8 +14,6 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.util.ToastUtils
-import org.wordpress.android.util.ToastUtils.Duration
 import javax.inject.Inject
 
 class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, OnSiteClickListener {
@@ -59,9 +58,8 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
     override fun showSiteList() {
         val wcSites = presenter.getWooCommerceSites()
-        if (wcSites.isEmpty()) {
-            // TODO
-            ToastUtils.showToast(this, R.string.no_woocommerce_sites, Duration.LONG)
+        if (!wcSites.isEmpty()) {
+            showNoStoresView();
             return
         }
 
@@ -81,5 +79,20 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         if (site != null) {
             selectedSite.set(site)
         }
+    }
+
+    private fun showNoStoresView() {
+        card_view.visibility = View.GONE
+        image_no_stores.visibility = View.VISIBLE
+        button_continue.text = getString(R.string.login_with_a_different_account)
+        button_continue.setOnClickListener {
+            signOutAndReturnToLogin()
+        }
+    }
+
+    private fun signOutAndReturnToLogin() {
+        presenter.logout()
+        setResult(Activity.RESULT_CANCELED)
+        finish()
     }
 }

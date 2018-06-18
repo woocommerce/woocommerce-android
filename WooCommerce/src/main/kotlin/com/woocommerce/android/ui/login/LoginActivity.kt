@@ -105,7 +105,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_LOGIN_EPILOGUE && resultCode == Activity.RESULT_OK) {
-            showMainActivity()
+            showMainActivityAndFinish()
         }
     }
 
@@ -126,7 +126,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         startActivityForResult(intent, REQUEST_CODE_LOGIN_EPILOGUE)
     }
 
-    private fun showMainActivity() {
+    private fun showMainActivityAndFinish() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
