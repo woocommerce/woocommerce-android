@@ -14,13 +14,13 @@ import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.UrlUtils
 
-class SitePickerAdapter(private val context: Context, private val listener : OnSiteClickListener) :
+class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
         RecyclerView.Adapter<SiteViewHolder>() {
     private val siteList: ArrayList<SiteModel> = ArrayList()
     private var selectedSiteId: Long = 0
 
     interface OnSiteClickListener {
-        fun onSiteClick(siteId : Long)
+        fun onSiteClick(siteId: Long)
     }
 
     init {

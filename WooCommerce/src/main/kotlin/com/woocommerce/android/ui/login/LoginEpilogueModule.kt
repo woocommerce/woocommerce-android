@@ -8,6 +8,6 @@ import dagger.Module
 internal abstract class LoginEpilogueModule {
     @ActivityScope
     @Binds
-    abstract fun provideLoginEpiloguePresenter(
-        loginEpiloguePresenter: LoginEpiloguePresenter): LoginEpilogueContract.Presenter
+    abstract fun provideLoginEpiloguePresenter(loginEpiloguePresenter: LoginEpiloguePresenter):
+            LoginEpilogueContract.Presenter
 }

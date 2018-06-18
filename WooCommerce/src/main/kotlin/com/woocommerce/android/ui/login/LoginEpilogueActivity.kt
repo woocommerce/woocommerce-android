@@ -22,7 +22,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var selectedSite: SelectedSite
 
-    private lateinit var siteAdapter : SitePickerAdapter
+    private lateinit var siteAdapter: SitePickerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)

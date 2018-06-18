@@ -61,7 +61,7 @@ object ActivityUtils {
         }
     }
 
-    fun setStatusBarColor(activity : Activity, @ColorRes colorRes : Int) {
+    fun setStatusBarColor(activity: Activity, @ColorRes colorRes: Int) {
         if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
             val window = activity.window
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
