@@ -34,8 +34,9 @@ import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSupportFragmentInjector {
     companion object {
-        private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         internal const val SHOW_PROLOGUE_ON_BACK_PRESS = "show-prologue-on-back-press"
+        private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
+        private const val REQUEST_CODE_LOGIN_EPILOGUE = 200
     }
 
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -101,6 +102,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         return false
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_LOGIN_EPILOGUE && resultCode == Activity.RESULT_OK) {
+            showMainActivity()
+        }
+    }
+
     override fun getLoginMode(): LoginMode {
         if (loginMode != null) {
             // returned the cached value
@@ -113,7 +121,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         return loginMode as LoginMode
     }
 
-    private fun loggedInAndFinish() {
+    private fun showLoginEpilogue() {
+        val intent = Intent(this, LoginEpilogueActivity::class.java)
+        startActivityForResult(intent, REQUEST_CODE_LOGIN_EPILOGUE)
+    }
+
+    private fun showMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
@@ -167,7 +180,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
         loginAnalyticsListener.trackLoginSocialSuccess()
-        loggedInAndFinish()
+        showLoginEpilogue()
     }
 
     override fun loginViaWpcomUsernameInstead() {
@@ -224,12 +237,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
-        loggedInAndFinish()
+        showLoginEpilogue()
     }
 
     override fun alreadyLoggedInWpcom(oldSitesIds: ArrayList<Int>) {
         ToastUtils.showToast(this, R.string.already_logged_in_wpcom, ToastUtils.Duration.LONG)
-        loggedInAndFinish()
+        showLoginEpilogue()
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
@@ -263,7 +276,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
-        loggedInAndFinish()
+        showLoginEpilogue()
     }
 
     override fun helpEmailScreen(email: String?) {
