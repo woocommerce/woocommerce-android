@@ -104,8 +104,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_LOGIN_EPILOGUE && resultCode == Activity.RESULT_OK) {
-            showMainActivityAndFinish()
+        if (requestCode == REQUEST_CODE_LOGIN_EPILOGUE) {
+            if (resultCode == Activity.RESULT_OK) {
+                showMainActivityAndFinish()
+            } else {
+                startLogin()
+            }
         }
     }
 

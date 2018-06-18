@@ -38,11 +38,6 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         showUserInfo()
         showSiteList()
-
-        button_continue.setOnClickListener {
-            setResult(Activity.RESULT_OK)
-            finish()
-        }
     }
 
     override fun showUserInfo() {
@@ -58,8 +53,8 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
     override fun showSiteList() {
         val wcSites = presenter.getWooCommerceSites()
-        if (!wcSites.isEmpty()) {
-            showNoStoresView();
+        if (wcSites.isEmpty()) {
+            showNoStoresView()
             return
         }
 
@@ -72,6 +67,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         else
             getString(R.string.login_pick_store)
         siteAdapter.setSites(selectedSite.get().siteId, wcSites)
+
+        button_continue.setOnClickListener {
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
     }
 
     override fun onSiteClick(siteId: Long) {
@@ -83,15 +83,14 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
     private fun showNoStoresView() {
         card_view.visibility = View.GONE
-        image_no_stores.visibility = View.VISIBLE
+        no_stores_view.visibility = View.VISIBLE
         button_continue.text = getString(R.string.login_with_a_different_account)
         button_continue.setOnClickListener {
-            signOutAndReturnToLogin()
+            presenter.logout()
         }
     }
 
-    private fun signOutAndReturnToLogin() {
-        presenter.logout()
+    override fun cancel() {
         setResult(Activity.RESULT_CANCELED)
         finish()
     }

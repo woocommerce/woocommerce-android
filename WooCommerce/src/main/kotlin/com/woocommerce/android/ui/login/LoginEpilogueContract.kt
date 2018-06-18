@@ -8,10 +8,12 @@ interface LoginEpilogueContract {
     interface Presenter : BasePresenter<View> {
         fun getWooCommerceSites(): List<SiteModel>
         fun logout()
+        fun userIsLoggedIn(): Boolean
     }
 
     interface View : BaseView<Presenter> {
         fun showUserInfo()
         fun showSiteList()
+        fun cancel()
     }
 }

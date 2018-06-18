@@ -66,6 +66,7 @@
     <string name="login_connected_store">Connected store</string>
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_with_a_different_account">Login with a different account</string>
+    <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
     <!--
         Dashboard View
     -->
