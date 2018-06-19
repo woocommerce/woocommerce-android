@@ -31,7 +31,9 @@ interface UIMessageResolver {
      * @param [actionListener] Listener to handle the undo button click event
      */
     fun getUndoSnack(
-        @StringRes stringResId: Int, vararg stringArgs: String = arrayOf(), actionListener: OnClickListener
+        @StringRes stringResId: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionListener: OnClickListener
     ): Snackbar {
         return getSnackbarWithAction(
                 snackbarRoot,
@@ -48,7 +50,9 @@ interface UIMessageResolver {
      * @param [actionListener] Listener to handle the retry button click event
      */
     fun getRetrySnack(
-        @StringRes stringResId: Int, vararg stringArgs: String = arrayOf(), actionListener: OnClickListener
+        @StringRes stringResId: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionListener: OnClickListener
     ): Snackbar {
         return getIndefiniteSnackbarWithAction(
                 snackbarRoot,
