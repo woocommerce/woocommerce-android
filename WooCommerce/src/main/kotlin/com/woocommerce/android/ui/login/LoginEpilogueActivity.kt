@@ -84,7 +84,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     private fun showNoStoresView() {
-        card_view.visibility = View.GONE
+        frame_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
         button_continue.text = getString(R.string.login_with_a_different_account)
         button_continue.setOnClickListener {
