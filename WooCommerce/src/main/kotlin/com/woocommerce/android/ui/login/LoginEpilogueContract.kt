@@ -13,7 +13,7 @@ interface LoginEpilogueContract {
 
     interface View : BaseView<Presenter> {
         fun showUserInfo()
-        fun showSiteList()
+        fun showStoreList()
         fun cancel()
     }
 }

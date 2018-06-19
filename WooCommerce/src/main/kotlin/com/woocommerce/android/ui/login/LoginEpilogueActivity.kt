@@ -37,7 +37,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         recycler.adapter = siteAdapter
 
         showUserInfo()
-        showSiteList()
+        showStoreList()
     }
 
     override fun showUserInfo() {
@@ -51,7 +51,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                 .into(findViewById(R.id.image_avatar))
     }
 
-    override fun showSiteList() {
+    override fun showStoreList() {
         val wcSites = presenter.getWooCommerceSites()
         if (wcSites.isEmpty()) {
             showNoStoresView()
