@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginPrologueActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity(),
                 loginProgressDialog = ProgressDialog.show(this, "", getString(R.string.logging_in), true)
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
-                showLoginScreen()
+                showLoginPrologueScreen()
             }
             return
         }
@@ -168,6 +169,12 @@ class MainActivity : AppCompatActivity(),
         val intent = Intent(this, LoginActivity::class.java)
         LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
+        finish()
+    }
+
+    override fun showLoginPrologueScreen() {
+        val intent = Intent(this, LoginPrologueActivity::class.java)
+        startActivity(intent)
         finish()
     }
 
