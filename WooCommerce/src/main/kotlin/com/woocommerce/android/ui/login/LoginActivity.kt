@@ -84,7 +84,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     }
 
     override fun onBackPressed() {
-        if (intent.getBooleanExtra(SHOW_PROLOGUE_ON_BACK_PRESS, false)) {
+        if (supportFragmentManager.backStackEntryCount == 0
+                && intent.getBooleanExtra(SHOW_PROLOGUE_ON_BACK_PRESS, false)) {
             startActivity(Intent(this, LoginPrologueActivity::class.java))
             finish()
         } else {
