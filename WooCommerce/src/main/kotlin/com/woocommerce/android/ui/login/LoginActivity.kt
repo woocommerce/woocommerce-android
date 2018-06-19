@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
@@ -32,10 +33,10 @@ import org.wordpress.android.util.ToastUtils
 import java.util.ArrayList
 import javax.inject.Inject
 
-class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSupportFragmentInjector {
+class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
+        HasSupportFragmentInjector {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
-        internal const val SHOW_PROLOGUE_ON_BACK_PRESS = "show-prologue-on-back-press"
     }
 
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -53,9 +54,19 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
         if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
-            // TODO Check loginMode here and handle different login cases
-            startLogin()
+            showPrologueFragment()
         }
+    }
+
+    private fun showPrologueFragment() {
+        val fragment = LoginPrologueFragment.newInstance()
+        fragment.prologueFinishedListener = this
+        slideInFragment(fragment, true, LoginPrologueFragment.TAG)
+    }
+
+    override fun onPrologueFinished() {
+        // TODO Check loginMode here and handle different login cases
+        startLogin()
     }
 
     private fun showFragment(fragment: Fragment, tag: String) {
@@ -81,16 +92,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
     private fun getLoginEmailFragment(): LoginEmailFragment? {
         val fragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG)
         return if (fragment == null) null else fragment as LoginEmailFragment
-    }
-
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 0 &&
-                intent.getBooleanExtra(SHOW_PROLOGUE_ON_BACK_PRESS, false)) {
-            startActivity(Intent(this, LoginPrologueActivity::class.java))
-            finish()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

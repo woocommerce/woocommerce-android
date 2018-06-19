@@ -33,9 +33,6 @@
                   android:windowSoftInputMode="adjustResize">
         </activity>
 
-        <activity android:name=".ui.login.LoginPrologueActivity"
-            android:screenOrientation="sensorPortrait"/>
-
         <activity android:name=".ui.login.MagicLinkInterceptActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
