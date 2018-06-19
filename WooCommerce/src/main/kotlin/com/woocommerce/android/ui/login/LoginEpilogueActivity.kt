@@ -66,7 +66,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             getString(R.string.login_connected_store)
         else
             getString(R.string.login_pick_store)
-        siteAdapter.setSites(selectedSite.get().siteId, wcSites)
+
+        siteAdapter.selectedSiteId = selectedSite.get().siteId
+        siteAdapter.siteList = wcSites
 
         button_continue.setOnClickListener {
             setResult(Activity.RESULT_OK)

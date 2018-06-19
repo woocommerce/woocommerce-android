@@ -16,8 +16,18 @@ import org.wordpress.android.util.UrlUtils
 
 class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
         RecyclerView.Adapter<SiteViewHolder>() {
-    private val siteList: ArrayList<SiteModel> = ArrayList()
-    private var selectedSiteId: Long = 0
+    var siteList: List<SiteModel> = ArrayList()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+    var selectedSiteId: Long = 0
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
 
     interface OnSiteClickListener {
         fun onSiteClick(siteId: Long)
@@ -46,27 +56,18 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
         holder.txtSiteName.text = if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
         holder.txtSiteDomain.text = UrlUtils.getHost(site.url)
         if (itemCount > 1) {
-            holder.rootView.setOnClickListener {
+            holder.itemView.setOnClickListener {
                 if (selectedSiteId != site.siteId) {
                     listener.onSiteClick(site.siteId)
                     selectedSiteId = site.siteId
-                    notifyDataSetChanged()
                 }
             }
         } else {
-            holder.rootView.setOnClickListener(null)
+            holder.itemView.setOnClickListener(null)
         }
     }
 
-    fun setSites(selectedSiteId: Long, siteList: List<SiteModel>) {
-        this.siteList.clear()
-        this.siteList.addAll(siteList)
-        this.selectedSiteId = selectedSiteId
-        notifyDataSetChanged()
-    }
-
     class SiteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val rootView = view
         val radio: RadioButton = view.radio
         val txtSiteName: TextView = view.text_site_name
         val txtSiteDomain: TextView = view.text_site_domain
