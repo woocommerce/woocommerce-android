@@ -18,8 +18,7 @@ class LoginPrologueFragment : Fragment() {
         const val TAG = "login-prologue-fragment"
 
         fun newInstance(): LoginPrologueFragment {
-            val fragment = LoginPrologueFragment()
-            return fragment
+            return LoginPrologueFragment()
         }
     }
 
@@ -53,7 +52,8 @@ class LoginPrologueFragment : Fragment() {
         })
 
         text_config_link.movementMethod = LinkMovementMethod.getInstance()
-        val html = String.format(getString(R.string.login_configure_link), "<a href='$JETPACK_HELP_URL'>", "</a>")
+
+        val html = getString(R.string.login_configure_link, "<a href='$JETPACK_HELP_URL'>", "</a>")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             text_config_link.text = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
         } else {
