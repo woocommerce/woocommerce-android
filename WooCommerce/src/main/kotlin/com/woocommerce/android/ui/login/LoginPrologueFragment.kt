@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -15,9 +16,9 @@ class LoginPrologueFragment : Fragment() {
     companion object {
         private const val JETPACK_HELP_URL = "https://jetpack.com/support/getting-started-with-jetpack/"
         const val TAG = "login-prologue-fragment"
-        fun newInstance(listener: PrologueFinishedListener): LoginPrologueFragment {
+
+        fun newInstance(): LoginPrologueFragment {
             val fragment = LoginPrologueFragment()
-            fragment.prologueFinishedListener = listener
             return fragment
         }
     }
@@ -26,16 +27,29 @@ class LoginPrologueFragment : Fragment() {
         fun onPrologueFinished()
     }
 
-    private lateinit var prologueFinishedListener: PrologueFinishedListener
+    private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_login_prologue, container, false)
     }
 
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        if (activity is PrologueFinishedListener) {
+            prologueFinishedListener = activity as PrologueFinishedListener
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        prologueFinishedListener = null
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         button_login_jetpack.setOnClickListener({
-            prologueFinishedListener.onPrologueFinished()
+            prologueFinishedListener?.onPrologueFinished()
         })
 
         text_config_link.movementMethod = LinkMovementMethod.getInstance()
