@@ -15,8 +15,10 @@ class LoginPrologueFragment : Fragment() {
     companion object {
         private const val JETPACK_HELP_URL = "https://jetpack.com/support/getting-started-with-jetpack/"
         const val TAG = "login-prologue-fragment"
-        fun newInstance(): LoginPrologueFragment {
-            return LoginPrologueFragment()
+        fun newInstance(listener: PrologueFinishedListener): LoginPrologueFragment {
+            val fragment = LoginPrologueFragment()
+            fragment.prologueFinishedListener = listener
+            return fragment
         }
     }
 
@@ -24,7 +26,7 @@ class LoginPrologueFragment : Fragment() {
         fun onPrologueFinished()
     }
 
-    internal lateinit var prologueFinishedListener: PrologueFinishedListener
+    private lateinit var prologueFinishedListener: PrologueFinishedListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_login_prologue, container, false)

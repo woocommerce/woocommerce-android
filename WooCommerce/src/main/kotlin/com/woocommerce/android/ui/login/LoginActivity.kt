@@ -59,9 +59,11 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun showPrologueFragment() {
-        val fragment = LoginPrologueFragment.newInstance()
-        fragment.prologueFinishedListener = this
-        slideInFragment(fragment, true, LoginPrologueFragment.TAG)
+        val fragment = LoginPrologueFragment.newInstance(this)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
     }
 
     override fun onPrologueFinished() {
