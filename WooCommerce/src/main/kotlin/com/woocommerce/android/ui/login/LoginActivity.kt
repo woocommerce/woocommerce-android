@@ -69,12 +69,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         startLogin()
     }
 
-    private fun showFragment(fragment: Fragment, tag: String) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
-        fragmentTransaction.commit()
-    }
-
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(
@@ -101,6 +95,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         }
 
         return false
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
+        }
     }
 
     override fun getLoginMode(): LoginMode {
@@ -136,7 +137,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             return
         }
 
-        showFragment(LoginEmailFragment(), LoginEmailFragment.TAG)
+        slideInFragment(LoginEmailFragment(), true, LoginEmailFragment.TAG)
     }
 
     //  -- BEGIN: LoginListener implementation methods

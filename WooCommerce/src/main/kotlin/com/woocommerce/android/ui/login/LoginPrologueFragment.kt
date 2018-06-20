@@ -28,13 +28,12 @@ class LoginPrologueFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_login_prologue, container, false)
-        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         button_login_jetpack.setOnClickListener({
-            prologueFinishedListener?.onPrologueFinished()
+            prologueFinishedListener.onPrologueFinished()
         })
 
         text_config_link.movementMethod = LinkMovementMethod.getInstance()
