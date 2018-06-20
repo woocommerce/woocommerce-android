@@ -14,7 +14,6 @@ import com.woocommerce.android.R
  * having to pass directives over to the view, and ui testability.
  *
  * @see com.woocommerce.android.ui.main.MainUIMessageResolver
- * @see com.woocommerce.android.ui.main.MainErrorHandler
  */
 interface UIMessageResolver {
     /**
