@@ -15,7 +15,6 @@ interface MainContract {
     interface View : BaseView<Presenter> {
         fun notifyTokenUpdated()
         fun showLoginScreen()
-        fun showLoginPrologueScreen()
         fun updateSelectedSite()
     }
 }
