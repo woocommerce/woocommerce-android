@@ -40,6 +40,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         showStoreList()
     }
 
+    override fun onBackPressed() {
+        setResult(if (selectedSite.isSet()) RESULT_OK else RESULT_CANCELED)
+        super.onBackPressed()
+    }
+
     override fun showUserInfo() {
         text_displayname.text = accountStore.account?.displayName
         text_username.text = String.format(getString(R.string.at_username), accountStore.account?.userName)
