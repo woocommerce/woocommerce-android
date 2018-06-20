@@ -7,7 +7,9 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -26,6 +28,7 @@ class OrderDetailPresenterTest {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val uiMessageResolver: UIMessageResolver = mock()
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
@@ -34,7 +37,7 @@ class OrderDetailPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite))
+        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite, uiMessageResolver))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
     }
@@ -63,6 +66,21 @@ class OrderDetailPresenterTest {
     }
 
     @Test
+    fun `Display error message on fetch order notes error`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
+
+        // OnOrderChanged callback from FluxC with error should trigger error message
+        presenter.onOrderChanged(OnOrderChanged(0).apply {
+            causeOfChange = FETCH_ORDER_NOTES
+            error = OrderError()
+        })
+        verify(uiMessageResolver, times(1)).showSnack(R.string.order_error_fetch_notes_generic)
+    }
+
+    @Test
     fun `Mark order complete - Displays undo snackbar correctly`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
@@ -84,6 +102,24 @@ class OrderDetailPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = UPDATE_ORDER_STATUS })
         verify(orderDetailView).markOrderCompleteSuccess()
+    }
+
+    @Test
+    fun `Display error message on mark order complete error`() {
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
+        // from the order store
+        presenter.takeView(orderDetailView)
+        presenter.doMarkOrderComplete()
+        verify(dispatcher, times(1)).dispatch(any<Action<UpdateOrderStatusPayload>>())
+
+        // OnOrderChanged callback from FluxC with error should trigger error message
+        presenter.onOrderChanged(OnOrderChanged(0).apply {
+            causeOfChange = UPDATE_ORDER_STATUS
+            error = OrderError()
+        })
+        verify(uiMessageResolver, times(1)).showSnack(R.string.order_error_update_general)
     }
 
     @Test

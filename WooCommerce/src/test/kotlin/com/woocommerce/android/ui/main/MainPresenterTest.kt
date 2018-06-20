@@ -30,7 +30,6 @@ class MainPresenterTest {
     private val accountStore: AccountStore = mock()
     private val siteStore: SiteStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val errorHandler: MainContract.ErrorHandler = mock()
 
     private lateinit var mainPresenter: MainPresenter
 
@@ -38,7 +37,7 @@ class MainPresenterTest {
 
     @Before
     fun setup() {
-        mainPresenter = spy(MainPresenter(dispatcher, accountStore, siteStore, wooCommerceStore, errorHandler))
+        mainPresenter = spy(MainPresenter(dispatcher, accountStore, siteStore, wooCommerceStore))
         mainPresenter.takeView(mainContractView)
 
         actionCaptor = argumentCaptor()
