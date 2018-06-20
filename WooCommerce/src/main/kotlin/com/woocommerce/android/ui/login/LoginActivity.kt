@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
@@ -33,9 +34,9 @@ import org.wordpress.android.util.ToastUtils
 import java.util.ArrayList
 import javax.inject.Inject
 
-class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSupportFragmentInjector {
+class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
+        HasSupportFragmentInjector {
     companion object {
-        internal const val SHOW_PROLOGUE_ON_BACK_PRESS = "show-prologue-on-back-press"
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val REQUEST_CODE_LOGIN_EPILOGUE = 200
     }
@@ -55,15 +56,21 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
 
         if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
-            // TODO Check loginMode here and handle different login cases
-            startLogin()
+            showPrologueFragment()
         }
     }
 
-    private fun showFragment(fragment: Fragment, tag: String) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
-        fragmentTransaction.commit()
+    private fun showPrologueFragment() {
+        val fragment = LoginPrologueFragment.newInstance(this)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
+    }
+
+    override fun onPrologueFinished() {
+        // TODO Check loginMode here and handle different login cases
+        startLogin()
     }
 
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
@@ -85,16 +92,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
         return if (fragment == null) null else fragment as LoginEmailFragment
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 0 &&
-                intent.getBooleanExtra(SHOW_PROLOGUE_ON_BACK_PRESS, false)) {
-            startActivity(Intent(this, LoginPrologueActivity::class.java))
-            finish()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -110,9 +107,15 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
             if (resultCode == Activity.RESULT_OK) {
                 showMainActivityAndFinish()
             } else {
-                supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
-                startLogin()
+                restartLogin()
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
         }
     }
 
@@ -154,7 +157,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, HasSup
             return
         }
 
-        showFragment(LoginEmailFragment(), LoginEmailFragment.TAG)
+        slideInFragment(LoginEmailFragment(), true, LoginEmailFragment.TAG)
+    }
+
+    private fun restartLogin() {
+        supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
+        startLogin()
     }
 
     //  -- BEGIN: LoginListener implementation methods
