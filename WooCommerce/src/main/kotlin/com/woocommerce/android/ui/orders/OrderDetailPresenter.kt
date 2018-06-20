@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
@@ -21,7 +23,8 @@ import javax.inject.Inject
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val uiMessageResolver: UIMessageResolver
 ) : OrderDetailContract.Presenter {
     companion object {
         private val TAG: String = OrderDetailPresenter::class.java.simpleName
@@ -78,8 +81,8 @@ class OrderDetailPresenter @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             if (event.isError) {
-                // TODO: Notify the user of the problem
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
+                uiMessageResolver.showSnack(R.string.order_error_fetch_notes_generic)
             } else {
                 orderModel?.let { order ->
                     val notes = orderStore.getOrderNotesForOrder(order)
@@ -88,8 +91,8 @@ class OrderDetailPresenter @Inject constructor(
             }
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
-                // TODO: Notify the user of the problem
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
+                uiMessageResolver.showSnack(R.string.order_error_update_general)
                 orderView?.markOrderCompleteFailed()
             } else {
                 // Successfully marked order as complete

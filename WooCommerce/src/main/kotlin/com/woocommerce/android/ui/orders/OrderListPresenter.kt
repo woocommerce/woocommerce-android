@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
@@ -18,7 +20,8 @@ import javax.inject.Inject
 class OrderListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val uiMessageResolver: UIMessageResolver
 ) : OrderListContract.Presenter {
     companion object {
         private val TAG: String = OrderListPresenter::class.java.simpleName
@@ -51,14 +54,18 @@ class OrderListPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.isError) {
-            // TODO: Notify the user of the problem
-            WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
             orderView?.setLoadingIndicator(active = false)
-            return
         }
 
         when (event.causeOfChange) {
-            FETCH_ORDERS -> fetchAndLoadOrdersFromDb(true)
+            FETCH_ORDERS -> {
+                if (event.isError) {
+                    WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
+                    uiMessageResolver.showSnack(R.string.orderlist_error_fetch_generic)
+                } else {
+                    fetchAndLoadOrdersFromDb(true)
+                }
+            }
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
             else -> {}
