@@ -41,8 +41,12 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     override fun onBackPressed() {
-        setResult(if (selectedSite.isSet()) RESULT_OK else RESULT_CANCELED)
-        super.onBackPressed()
+        if (selectedSite.isSet()) {
+            setResult(Activity.RESULT_OK)
+            finish()
+        } else {
+            presenter.logout()
+        }
     }
 
     override fun showUserInfo() {

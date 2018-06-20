@@ -161,7 +161,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun restartLogin() {
-        supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
+        supportFragmentManager.popBackStackImmediate(null, POP_BACK_STACK_INCLUSIVE)
         startLogin()
     }
 
