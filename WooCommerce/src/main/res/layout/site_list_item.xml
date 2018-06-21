@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/radio"
+        android:layout_toEndOf="@+id/radio"
         android:orientation="vertical">
 
         <TextView

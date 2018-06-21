@@ -42,7 +42,6 @@
     <!--
         Error Strings
     -->
-    <string name="no_woocommerce_sites">No WooCommerce sites found! Logging out…</string>
     <string name="error_cant_open_url">Unable to open the link</string>
     <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
     <string name="error_no_phone_app">No phone app was found</string>
@@ -56,7 +55,6 @@
     <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
     <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
     <string name="enter_site_address">Enter the address of your WooCommerce store you\'d like to connect.</string>
-    <string name="select_woocommerce_store">Select WooCommerce Store:</string>
     <string name="at_username">\@%s</string>
     <string name="login_jetpack_required">This app requires Jetpack to be able to connect to your WooCommerce store.</string>
     <string name="login_with_jetpack">Log in with Jetpack</string>

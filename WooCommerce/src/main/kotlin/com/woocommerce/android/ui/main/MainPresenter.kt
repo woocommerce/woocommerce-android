@@ -11,7 +11,6 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -20,7 +19,6 @@ import javax.inject.Inject
 class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
-    private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
