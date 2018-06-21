@@ -59,7 +59,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun showPrologueFragment() {
-        val fragment = LoginPrologueFragment.newInstance(this)
+        val fragment = LoginPrologueFragment.newInstance()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
             .addToBackStack(null)
@@ -100,9 +100,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        if (supportFragmentManager.backStackEntryCount == 0) {
+        if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
+        } else {
+            super.onBackPressed()
         }
     }
 
