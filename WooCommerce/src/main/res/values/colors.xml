@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">@color/wc_purple</color>
-    <color name="colorPrimaryDark">@color/wc_grey_dark</color>
+    <color name="colorPrimaryDark">@color/wc_purple_status</color>
     <color name="colorAccent">@color/wc_purple</color>
     <!--
         Default Colors
