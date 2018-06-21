@@ -12,14 +12,12 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
 class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val accountStore: AccountStore,
-    private val wooCommerceStore: WooCommerceStore
+    private val accountStore: AccountStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -36,8 +34,6 @@ class MainPresenter @Inject constructor(
     override fun userIsLoggedIn(): Boolean {
         return accountStore.hasAccessToken()
     }
-
-    override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
 
     override fun storeMagicLinkToken(token: String) {
         // Save Token to the AccountStore. This will trigger an OnAuthenticationChanged.

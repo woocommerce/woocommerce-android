@@ -182,18 +182,8 @@ class MainActivity : AppCompatActivity(),
         loginProgressDialog?.apply { if (isShowing) { cancel() } }
 
         if (!selectedSite.isSet()) {
-            val wcSites = presenter.getWooCommerceSites()
-            when (wcSites.size) {
-                0 -> {
-                    showLoginEpilogueScreen()
-                    return
-                }
-                1 -> selectedSite.set(wcSites[0])
-                else -> {
-                    showLoginEpilogueScreen()
-                    return
-                }
-            }
+            showLoginEpilogueScreen()
+            return
         }
 
         // Complete UI initialization
