@@ -87,6 +87,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/login_nostores_content_description"
             app:srcCompat="@drawable/ic_woo_no_store"/>
 
         <TextView
