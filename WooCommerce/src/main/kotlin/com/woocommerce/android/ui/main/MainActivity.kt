@@ -26,8 +26,6 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
-import org.wordpress.android.util.ToastUtils
-import org.wordpress.android.util.ToastUtils.Duration
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
@@ -37,7 +35,6 @@ class MainActivity : AppCompatActivity(),
         BottomNavigationView.OnNavigationItemReselectedListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
-        private const val REQUEST_CODE_LOGIN_EPILOGUE = 200
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
@@ -80,10 +77,6 @@ class MainActivity : AppCompatActivity(),
                 showLoginScreen()
             }
             return
-        }
-
-        if (savedInstanceState == null) {
-            showLoginEpilogueScreen()
         }
 
         if (!selectedSite.isSet()) {
@@ -159,14 +152,6 @@ class MainActivity : AppCompatActivity(),
                 }
                 return
             }
-            REQUEST_CODE_LOGIN_EPILOGUE -> {
-                if (resultCode == Activity.RESULT_OK) {
-
-                } else {
-                    finish()
-                }
-                return
-            }
         }
     }
 
@@ -189,7 +174,8 @@ class MainActivity : AppCompatActivity(),
      */
     override fun showLoginEpilogueScreen() {
         val intent = Intent(this, LoginEpilogueActivity::class.java)
-        startActivityForResult(intent, REQUEST_CODE_LOGIN_EPILOGUE)
+        startActivity(intent)
+        finish()
     }
 
     override fun updateSelectedSite() {
@@ -199,8 +185,7 @@ class MainActivity : AppCompatActivity(),
             val wcSites = presenter.getWooCommerceSites()
             when (wcSites.size) {
                 0 -> {
-                    ToastUtils.showToast(this, R.string.no_woocommerce_sites, Duration.LONG)
-                    presenter.logout()
+                    showLoginEpilogueScreen()
                     return
                 }
                 1 -> selectedSite.set(wcSites[0])

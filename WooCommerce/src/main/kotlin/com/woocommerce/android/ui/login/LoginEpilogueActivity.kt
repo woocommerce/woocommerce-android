@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.login
 
-import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -9,11 +9,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.SitePickerAdapter.OnSiteClickListener
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, OnSiteClickListener {
@@ -42,8 +44,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
     override fun onBackPressed() {
         if (selectedSite.isSet()) {
-            setResult(Activity.RESULT_OK)
-            finish()
+            showMainActivityAndFinish()
         } else {
             presenter.logout()
         }
@@ -80,8 +81,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         siteAdapter.siteList = wcSites
 
         button_continue.setOnClickListener {
-            setResult(Activity.RESULT_OK)
-            finish()
+            showMainActivityAndFinish()
         }
     }
 
@@ -101,8 +101,23 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         }
     }
 
+    /**
+     * called by the presenter after logout completes
+     */
     override fun cancel() {
-        setResult(Activity.RESULT_CANCELED)
+        showLoginActivityAndFinish()
+    }
+
+    private fun showLoginActivityAndFinish() {
+        val intent = Intent(this, LoginActivity::class.java)
+        LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun showMainActivityAndFinish() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
         finish()
     }
 }

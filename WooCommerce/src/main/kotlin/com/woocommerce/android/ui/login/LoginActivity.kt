@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.woocommerce.android.R
@@ -38,7 +37,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         HasSupportFragmentInjector {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
-        private const val REQUEST_CODE_LOGIN_EPILOGUE = 200
     }
 
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -101,17 +99,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         return false
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_LOGIN_EPILOGUE) {
-            if (resultCode == Activity.RESULT_OK) {
-                showMainActivityAndFinish()
-            } else {
-                restartLogin()
-            }
-        }
-    }
-
     override fun onBackPressed() {
         super.onBackPressed()
         if (supportFragmentManager.backStackEntryCount == 0) {
@@ -129,11 +116,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         loginMode = LoginMode.fromIntent(intent)
 
         return loginMode as LoginMode
-    }
-
-    private fun showLoginEpilogue() {
-        val intent = Intent(this, LoginEpilogueActivity::class.java)
-        startActivityForResult(intent, REQUEST_CODE_LOGIN_EPILOGUE)
     }
 
     private fun showMainActivityAndFinish() {
@@ -158,11 +140,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         }
 
         slideInFragment(LoginEmailFragment(), true, LoginEmailFragment.TAG)
-    }
-
-    private fun restartLogin() {
-        supportFragmentManager.popBackStackImmediate(null, POP_BACK_STACK_INCLUSIVE)
-        startLogin()
     }
 
     //  -- BEGIN: LoginListener implementation methods
@@ -195,7 +172,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
         loginAnalyticsListener.trackLoginSocialSuccess()
-        showLoginEpilogue()
+        showMainActivityAndFinish()
     }
 
     override fun loginViaWpcomUsernameInstead() {
@@ -252,12 +229,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
-        showLoginEpilogue()
+        showMainActivityAndFinish()
     }
 
     override fun alreadyLoggedInWpcom(oldSitesIds: ArrayList<Int>) {
         ToastUtils.showToast(this, R.string.already_logged_in_wpcom, ToastUtils.Duration.LONG)
-        showLoginEpilogue()
+        showMainActivityAndFinish()
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
@@ -291,7 +268,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
-        showLoginEpilogue()
+        showMainActivityAndFinish()
     }
 
     override fun helpEmailScreen(email: String?) {
