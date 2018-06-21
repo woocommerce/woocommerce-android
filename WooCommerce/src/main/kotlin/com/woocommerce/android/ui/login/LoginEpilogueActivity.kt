@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.woocommerce.android.R
@@ -95,6 +96,10 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     private fun showNoStoresView() {
         frame_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
+
+        val noStoresImage = AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
+        no_stores_view.setCompoundDrawablesWithIntrinsicBounds(null, noStoresImage, null, null)
+
         button_continue.text = getString(R.string.login_with_a_different_account)
         button_continue.setOnClickListener {
             presenter.logout()
