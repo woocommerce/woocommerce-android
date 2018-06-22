@@ -25,6 +25,7 @@ class OrderListPresenter @Inject constructor(
     }
 
     private var orderView: OrderListContract.View? = null
+    private var isLoadingOrders = false
 
     override fun takeView(view: OrderListContract.View) {
         orderView = view
@@ -40,11 +41,23 @@ class OrderListPresenter @Inject constructor(
         orderView?.setLoadingIndicator(active = true)
 
         if (forceRefresh) {
+            isLoadingOrders = true
             val payload = FetchOrdersPayload(selectedSite.get())
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
             fetchAndLoadOrdersFromDb(isForceRefresh = false)
         }
+    }
+
+    override fun isLoadingOrders(): Boolean {
+        return isLoadingOrders
+    }
+
+    override fun loadMoreOrders() {
+        isLoadingOrders = true
+        val payload = FetchOrdersPayload(selectedSite.get())
+        payload.loadMore = true
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
     }
 
     @Suppress("unused")
@@ -58,7 +71,10 @@ class OrderListPresenter @Inject constructor(
         }
 
         when (event.causeOfChange) {
-            FETCH_ORDERS -> fetchAndLoadOrdersFromDb(true)
+            FETCH_ORDERS -> {
+                isLoadingOrders = false
+                fetchAndLoadOrdersFromDb(true)
+            }
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
             else -> {}
