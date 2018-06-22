@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +11,6 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
@@ -40,10 +38,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
 
-    private var markCompleteCanceled: Boolean = false
-    private var previousOrderStatus: String? = null
-    private var undoMarkCompleteSnackbar: Snackbar? = null
-
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -65,6 +59,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
         presenter.takeView(this)
         val markComplete = arguments?.getBoolean(FIELD_MARK_COMPLETE, false) ?: false
+        arguments?.remove(FIELD_MARK_COMPLETE)
 
         context?.let {
             arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
@@ -74,7 +69,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     override fun onStop() {
-        undoMarkCompleteSnackbar?.dismiss()
+        presenter.onStop()
         super.onStop()
     }
 
@@ -121,68 +116,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         orderDetail_noteList.updateView(notes)
     }
 
-    override fun showUndoOrderCompleteSnackbar() {
-        markCompleteCanceled = false
-
-        presenter.orderModel?.let {
-            previousOrderStatus = it.status
-            it.status = OrderStatus.COMPLETED
-            orderDetail_orderStatus.updateStatus(OrderStatus.COMPLETED)
-            orderDetail_productList.updateView(it, false, this)
-
-            // Listener for the UNDO button in the snackbar
-            val actionListener = View.OnClickListener {
-                // User canceled the action to mark the order complete.
-                markCompleteCanceled = true
-                arguments?.remove(FIELD_MARK_COMPLETE)
-                presenter.orderModel?.let { order ->
-                    previousOrderStatus?.let { status ->
-                        order.status = status
-                        orderDetail_orderStatus.updateStatus(status)
-                        orderDetail_productList?.updateView(order, false, OrderDetailFragment@this)
-                    }
-                    previousOrderStatus = null
-                }
-            }
-
-            // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
-            // timed out, then process the request to mark this order complete.
-            val callback = object : Snackbar.Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    markOrderComplete()
-                }
-            }
-
-            undoMarkCompleteSnackbar = Snackbar
-                    .make(orderDetail_container, R.string.order_fulfill_marked_complete, Snackbar.LENGTH_LONG)
-                    .also {
-                        it.setAction(R.string.undo, actionListener)
-                        it.addCallback(callback)
-                        it.show()
-                    }
-        }
-    }
-
-    private fun markOrderComplete() {
-        if (!markCompleteCanceled) {
-            arguments?.remove(FIELD_MARK_COMPLETE)
-            presenter.doMarkOrderComplete()
-        }
-    }
-
-    override fun markOrderCompleteSuccess() {
-        previousOrderStatus = null
-    }
-
-    override fun markOrderCompleteFailed() {
-        // Set the order status back to the previous status
-        previousOrderStatus?.let {
-            orderDetail_orderStatus.updateStatus(it)
-            previousOrderStatus = null
-        }
-    }
-
     override fun openOrderFulfillment(order: WCOrderModel) {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
@@ -197,5 +130,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
                 router.openOrderProductList(order)
             }
         }
+    }
+
+    override fun updateOrderStatus(orderModel: WCOrderModel, status: String) {
+        orderDetail_orderStatus.updateStatus(status)
+        orderDetail_productList.updateView(orderModel, false, this)
     }
 }

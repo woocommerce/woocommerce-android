@@ -61,7 +61,7 @@ class OrderListPresenter @Inject constructor(
             FETCH_ORDERS -> {
                 if (event.isError) {
                     WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
-                    uiMessageResolver.showSnack(R.string.orderlist_error_fetch_generic)
+                    uiMessageResolver.getSnack(R.string.orderlist_error_fetch_generic).show()
                 } else {
                     fetchAndLoadOrdersFromDb(true)
                 }

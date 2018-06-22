@@ -61,15 +61,13 @@ interface UIMessageResolver {
     }
 
     /**
-     * Display a snackbar with the provided message.
+     * Create and return a snackbar with the provided message.
      *
      * @param [stringResId] The string resource id of the base message
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
-    fun showSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) {
-        Snackbar.make(
-                snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), Snackbar.LENGTH_LONG).show()
-    }
+    fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
+                snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), Snackbar.LENGTH_LONG)
 
     /**
      * Display a snackbar with the provided message.

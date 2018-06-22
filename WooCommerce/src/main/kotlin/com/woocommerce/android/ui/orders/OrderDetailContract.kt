@@ -12,14 +12,13 @@ interface OrderDetailContract {
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
         fun doMarkOrderComplete()
+        fun onStop()
     }
 
     interface View : BaseView<Presenter>, OrderActionListener {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
-        fun showUndoOrderCompleteSnackbar()
-        fun markOrderCompleteSuccess()
-        fun markOrderCompleteFailed()
+        fun updateOrderStatus(orderModel: WCOrderModel, status: String)
     }
 }

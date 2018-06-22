@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -77,7 +78,7 @@ class OrderDetailPresenterTest {
             causeOfChange = FETCH_ORDER_NOTES
             error = OrderError()
         })
-        verify(uiMessageResolver, times(1)).showSnack(R.string.order_error_fetch_notes_generic)
+        verify(uiMessageResolver, times(1)).getSnack(R.string.order_error_fetch_notes_generic)
     }
 
     @Test
@@ -86,7 +87,7 @@ class OrderDetailPresenterTest {
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, true)
 
-        verify(orderDetailView).showUndoOrderCompleteSnackbar()
+        verify(uiMessageResolver).getUndoSnack(any(), actionListener = any())
     }
 
     @Test
@@ -101,7 +102,7 @@ class OrderDetailPresenterTest {
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(orderDetailView).markOrderCompleteSuccess()
+        verify(orderDetailView).updateOrderStatus(any(), OrderStatus.COMPLETED)
     }
 
     @Test
@@ -119,12 +120,13 @@ class OrderDetailPresenterTest {
             causeOfChange = UPDATE_ORDER_STATUS
             error = OrderError()
         })
-        verify(uiMessageResolver, times(1)).showSnack(R.string.order_error_update_general)
+        verify(uiMessageResolver, times(1)).getSnack(R.string.order_error_update_general)
     }
 
     @Test
     fun `Mark order complete - Reverts status after failure correctly`() {
         doReturn(order).whenever(presenter).orderModel
+        val previousStatus = order.status
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
@@ -137,6 +139,6 @@ class OrderDetailPresenterTest {
             causeOfChange = UPDATE_ORDER_STATUS
             error = OrderError(message = "Error")
         })
-        verify(orderDetailView).markOrderCompleteFailed()
+        verify(orderDetailView).updateOrderStatus(any(), previousStatus)
     }
 }

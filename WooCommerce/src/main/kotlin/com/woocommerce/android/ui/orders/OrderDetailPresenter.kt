@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders
 
+import android.support.design.widget.Snackbar
+import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -34,6 +36,11 @@ class OrderDetailPresenter @Inject constructor(
 
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
+    private var notesSnack: Snackbar? = null
+    private var previousOrderStatus: String? = null
+    private var markCompleteCanceled: Boolean = false
+    private var undoMarkCompleteSnackbar: Snackbar? = null
+    private var pendingNotesError = false
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
@@ -52,7 +59,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also { order ->
                     view.showOrderDetail(order)
                 }
-                if (markComplete) view.showUndoOrderCompleteSnackbar()
+                if (markComplete) showUndoOrderCompleteSnackbar()
                 loadOrderNotes() // load order notes
             }
         }
@@ -76,13 +83,69 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
+    override fun onStop() {
+        undoMarkCompleteSnackbar?.dismiss()
+    }
+
+    private fun showUndoOrderCompleteSnackbar() {
+        markCompleteCanceled = false
+
+        orderModel?.let {
+            previousOrderStatus = it.status
+            it.status = OrderStatus.COMPLETED
+
+            // artificially set order status to Complete
+            orderView?.updateOrderStatus(it, OrderStatus.COMPLETED)
+
+            // Listener for the UNDO button in the snackbar
+            val actionListener = View.OnClickListener {
+                // User canceled the action to mark the order complete.
+                markCompleteCanceled = true
+
+                orderModel?.let { order ->
+                    previousOrderStatus?.let { status ->
+                        order.status = status
+                        orderView?.updateOrderStatus(order, status)
+                    }
+                    previousOrderStatus = null
+                }
+            }
+
+            // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
+            // timed out, then process the request to mark this order complete.
+            val callback = object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (pendingNotesError) {
+                        notesSnack?.show()
+                    }
+                    if (!markCompleteCanceled) {
+                        doMarkOrderComplete()
+                    }
+                }
+            }
+            undoMarkCompleteSnackbar = uiMessageResolver
+                .getUndoSnack(R.string.order_fulfill_marked_complete, actionListener = actionListener)
+                .also {
+                    it.addCallback(callback)
+                    it.show()
+                }
+        }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
-                uiMessageResolver.showSnack(R.string.order_error_fetch_notes_generic)
+                notesSnack = uiMessageResolver.getSnack(R.string.order_error_fetch_notes_generic)
+
+                if ((undoMarkCompleteSnackbar?.isShownOrQueued) == true) {
+                    pendingNotesError = true
+                } else {
+                    notesSnack?.show()
+                }
             } else {
                 orderModel?.let { order ->
                     val notes = orderStore.getOrderNotesForOrder(order)
@@ -92,14 +155,19 @@ class OrderDetailPresenter @Inject constructor(
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
-                uiMessageResolver.showSnack(R.string.order_error_update_general)
-                orderView?.markOrderCompleteFailed()
+                uiMessageResolver.getSnack(R.string.order_error_update_general).show()
+                orderModel?.let {
+                    previousOrderStatus?.let { status ->
+                        orderView?.updateOrderStatus(it, status)
+                    }
+                }
+                previousOrderStatus = null
             } else {
                 // Successfully marked order as complete
                 orderModel?.let {
                     orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
                 }
-                orderView?.markOrderCompleteSuccess()
+                previousOrderStatus = null
             }
         }
     }
