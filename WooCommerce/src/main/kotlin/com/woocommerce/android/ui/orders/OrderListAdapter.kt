@@ -102,9 +102,9 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             itemHolder.orderTagList.removeAllViews()
             processTagView(ctx, order.status, itemHolder)
 
-            if (presenter.canLoadMore()
-                    && position == itemCount - 1
-                    && !presenter.isLoadingOrders()) {
+            if (presenter.canLoadMore() &&
+                    position == itemCount - 1 &&
+                    !presenter.isLoadingOrders()) {
                 presenter.loadMoreOrders()
             }
         }
