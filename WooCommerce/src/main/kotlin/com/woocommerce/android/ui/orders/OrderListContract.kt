@@ -9,6 +9,7 @@ interface OrderListContract {
         fun loadOrders(forceRefresh: Boolean)
         fun loadMoreOrders()
         fun isLoadingOrders(): Boolean
+        fun canLoadMore(): Boolean
         fun openOrderDetail(order: WCOrderModel)
         fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean)
     }

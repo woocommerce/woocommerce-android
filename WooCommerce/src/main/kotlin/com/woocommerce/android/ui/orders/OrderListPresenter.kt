@@ -26,6 +26,7 @@ class OrderListPresenter @Inject constructor(
 
     private var orderView: OrderListContract.View? = null
     private var isLoadingOrders = false
+    private var canLoadMore = true
 
     override fun takeView(view: OrderListContract.View) {
         orderView = view
@@ -53,6 +54,10 @@ class OrderListPresenter @Inject constructor(
         return isLoadingOrders
     }
 
+    override fun canLoadMore(): Boolean {
+        return canLoadMore
+    }
+
     override fun loadMoreOrders() {
         isLoadingOrders = true
         val payload = FetchOrdersPayload(selectedSite.get())
@@ -63,6 +68,10 @@ class OrderListPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
+        if (event.causeOfChange == FETCH_ORDERS) {
+            isLoadingOrders = false
+        }
+
         if (event.isError) {
             // TODO: Notify the user of the problem
             WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
@@ -72,7 +81,7 @@ class OrderListPresenter @Inject constructor(
 
         when (event.causeOfChange) {
             FETCH_ORDERS -> {
-                isLoadingOrders = false
+                canLoadMore = event.canLoadMore
                 fetchAndLoadOrdersFromDb(true)
             }
             // A child fragment made a change that requires a data refresh.

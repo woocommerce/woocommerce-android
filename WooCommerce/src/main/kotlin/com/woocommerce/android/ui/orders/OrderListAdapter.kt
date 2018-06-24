@@ -24,8 +24,6 @@ import javax.inject.Inject
  */
 class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
     : SectionedRecyclerViewAdapter() {
-    internal var canLoadMore = true
-
     fun setOrders(orders: List<WCOrderModel>) {
         // clear all the current data from the adapter
         removeAllSections()
@@ -104,7 +102,9 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             itemHolder.orderTagList.removeAllViews()
             processTagView(ctx, order.status, itemHolder)
 
-            if (canLoadMore && position == itemCount - 1 && !presenter.isLoadingOrders()) {
+            if (presenter.canLoadMore()
+                    && position == itemCount - 1
+                    && !presenter.isLoadingOrders()) {
                 presenter.loadMoreOrders()
             }
         }
