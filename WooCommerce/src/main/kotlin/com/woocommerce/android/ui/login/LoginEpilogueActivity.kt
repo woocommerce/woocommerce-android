@@ -14,15 +14,11 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, OnSiteClickListener {
     @Inject lateinit var presenter: LoginEpilogueContract.Presenter
-    @Inject lateinit var accountStore: AccountStore
-    @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var siteAdapter: SiteListAdapter
@@ -53,11 +49,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     override fun showUserInfo() {
-        text_displayname.text = accountStore.account?.displayName
-        text_username.text = String.format(getString(R.string.at_username), accountStore.account?.userName)
+        text_displayname.text = presenter.getUserDisplayName()
+        text_username.text = String.format(getString(R.string.at_username), presenter.getUserName())
 
         GlideApp.with(this)
-                .load(accountStore.account?.avatarUrl)
+                .load(presenter.getUserAvatarUrl())
                 .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp)
                 .circleCrop()
                 .into(image_avatar)
@@ -84,7 +80,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         siteAdapter.siteList = wcSites
 
         button_continue.setOnClickListener {
-            val site = siteStore.getSiteBySiteId(siteAdapter.selectedSiteId)
+            val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
             if (site != null) {
                 selectedSite.set(site)
                 showMainActivityAndFinish()
@@ -93,7 +89,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     override fun onSiteClick(siteId: Long) {
-        val site = siteStore.getSiteBySiteId(siteId)
+        val site = presenter.getSiteBySiteId(siteId)
         if (site != null) {
             selectedSite.set(site)
         }

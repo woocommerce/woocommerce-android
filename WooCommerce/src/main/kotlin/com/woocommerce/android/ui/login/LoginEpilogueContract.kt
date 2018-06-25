@@ -7,6 +7,10 @@ import org.wordpress.android.fluxc.model.SiteModel
 interface LoginEpilogueContract {
     interface Presenter : BasePresenter<View> {
         fun getWooCommerceSites(): List<SiteModel>
+        fun getSiteBySiteId(siteId: Long): SiteModel?
+        fun getUserAvatarUrl(): String?
+        fun getUserName(): String?
+        fun getUserDisplayName(): String?
         fun logout()
         fun userIsLoggedIn(): Boolean
     }

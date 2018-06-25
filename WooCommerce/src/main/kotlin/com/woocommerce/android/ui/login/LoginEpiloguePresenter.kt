@@ -5,14 +5,17 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class LoginEpiloguePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
+    private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore
 ) : LoginEpilogueContract.Presenter {
     private var loginEpilogueView: LoginEpilogueContract.View? = null
@@ -28,6 +31,14 @@ class LoginEpiloguePresenter @Inject constructor(
     }
 
     override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
+
+    override fun getSiteBySiteId(siteId: Long): SiteModel? = siteStore.getSiteBySiteId(siteId)
+
+    override fun getUserAvatarUrl() = accountStore.account?.avatarUrl
+
+    override fun getUserName() = accountStore.account?.userName
+
+    override fun getUserDisplayName() = accountStore.account?.displayName
 
     override fun logout() {
         dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
