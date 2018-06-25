@@ -18,6 +18,7 @@ interface OrderListContract {
         var isActive: Boolean
 
         fun setLoadingIndicator(active: Boolean)
+        fun setLoadingMoreIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean)
         fun showNoOrders()
         fun refreshFragmentState()

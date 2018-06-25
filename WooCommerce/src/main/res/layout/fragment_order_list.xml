@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/orderRefreshLayout">
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/ordersContainer"
@@ -40,5 +40,12 @@
                 android:gravity="center"
                 android:text="@string/orderlist_no_orders"/>
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/load_more_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

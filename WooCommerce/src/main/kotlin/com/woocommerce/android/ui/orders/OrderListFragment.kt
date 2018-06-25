@@ -153,6 +153,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         }
     }
 
+    override fun setLoadingMoreIndicator(active: Boolean) {
+        if (isAdded) {
+            load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
+        }
+    }
+
     override fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean) {
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
