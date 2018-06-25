@@ -9,7 +9,7 @@ import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.SitePickerAdapter.OnSiteClickListener
+import com.woocommerce.android.ui.login.SiteListAdapter.OnSiteClickListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
@@ -25,7 +25,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var selectedSite: SelectedSite
 
-    private lateinit var siteAdapter: SitePickerAdapter
+    private lateinit var siteAdapter: SiteListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -36,7 +36,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         presenter.takeView(this)
 
         recycler.layoutManager = LinearLayoutManager(this)
-        siteAdapter = SitePickerAdapter(this, this)
+        siteAdapter = SiteListAdapter(this, this)
         recycler.adapter = siteAdapter
 
         showUserInfo()

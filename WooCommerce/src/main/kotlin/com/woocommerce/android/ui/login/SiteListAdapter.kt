@@ -9,12 +9,12 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.login.SitePickerAdapter.SiteViewHolder
+import com.woocommerce.android.ui.login.SiteListAdapter.SiteViewHolder
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.UrlUtils
 
-class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
+class SiteListAdapter(private val context: Context, private val listener: OnSiteClickListener) :
         RecyclerView.Adapter<SiteViewHolder>() {
     var siteList: List<SiteModel> = ArrayList()
         set(value) {
