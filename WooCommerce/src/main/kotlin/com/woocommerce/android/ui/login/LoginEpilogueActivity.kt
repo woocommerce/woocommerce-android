@@ -60,7 +60,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                 .load(accountStore.account?.avatarUrl)
                 .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp)
                 .circleCrop()
-                .into(findViewById(R.id.image_avatar))
+                .into(image_avatar)
     }
 
     override fun showStoreList() {
