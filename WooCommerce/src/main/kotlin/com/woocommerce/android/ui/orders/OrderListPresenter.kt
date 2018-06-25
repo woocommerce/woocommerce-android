@@ -26,7 +26,7 @@ class OrderListPresenter @Inject constructor(
 
     private var orderView: OrderListContract.View? = null
     private var isLoadingOrders = false
-    private var canLoadMore = true
+    private var canLoadMore = false
 
     override fun takeView(view: OrderListContract.View) {
         orderView = view
@@ -110,7 +110,7 @@ class OrderListPresenter @Inject constructor(
                 view.showNoOrders()
             }
             view.setLoadingIndicator(active = false)
-            view.setLoadingMoreIndicator(false)
+            view.setLoadingMoreIndicator(active = false)
         }
     }
 }
