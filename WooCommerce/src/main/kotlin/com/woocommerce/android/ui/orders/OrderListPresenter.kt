@@ -26,6 +26,7 @@ class OrderListPresenter @Inject constructor(
 
     private var orderView: OrderListContract.View? = null
     private var isLoadingOrders = false
+    private var isLoadingMoreOrders = false
     private var canLoadMore = false
 
     override fun takeView(view: OrderListContract.View) {
@@ -46,12 +47,12 @@ class OrderListPresenter @Inject constructor(
             val payload = FetchOrdersPayload(selectedSite.get())
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
-            fetchAndLoadOrdersFromDb(isForceRefresh = false)
+            fetchAndLoadOrdersFromDb(clearExisting = false)
         }
     }
 
-    override fun isLoadingOrders(): Boolean {
-        return isLoadingOrders
+    override fun isLoading(): Boolean {
+        return isLoadingOrders || isLoadingMoreOrders
     }
 
     override fun canLoadMore(): Boolean {
@@ -60,7 +61,7 @@ class OrderListPresenter @Inject constructor(
 
     override fun loadMoreOrders() {
         orderView?.setLoadingMoreIndicator(true)
-        isLoadingOrders = true
+        isLoadingMoreOrders = true
         val payload = FetchOrdersPayload(selectedSite.get())
         payload.loadMore = true
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
@@ -69,26 +70,28 @@ class OrderListPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
-        if (event.causeOfChange == FETCH_ORDERS) {
-            isLoadingOrders = false
-        }
-
         if (event.isError) {
             // TODO: Notify the user of the problem
             WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
-            orderView?.setLoadingIndicator(active = false)
-            orderView?.setLoadingMoreIndicator(false)
-            return
+        } else {
+            when (event.causeOfChange) {
+                FETCH_ORDERS -> {
+                    canLoadMore = event.canLoadMore
+                    val clearExisting = !isLoadingMoreOrders
+                    fetchAndLoadOrdersFromDb(clearExisting)
+                }
+                // A child fragment made a change that requires a data refresh.
+                UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
+                else -> {
+                }
+            }
         }
 
-        when (event.causeOfChange) {
-            FETCH_ORDERS -> {
-                canLoadMore = event.canLoadMore
-                fetchAndLoadOrdersFromDb(true)
-            }
-            // A child fragment made a change that requires a data refresh.
-            UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
-            else -> {}
+        if (event.causeOfChange == FETCH_ORDERS) {
+            isLoadingOrders = false
+            isLoadingMoreOrders = false
+            orderView?.setLoadingIndicator(active = false)
+            orderView?.setLoadingMoreIndicator(false)
         }
     }
 
@@ -99,18 +102,16 @@ class OrderListPresenter @Inject constructor(
     /**
      * Fetch orders from the local database.
      *
-     * @param isForceRefresh True if orders were refreshed from the API, else false.
+     * @param clearExisting True if existing orders should be cleared from the view
      */
-    override fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean) {
+    override fun fetchAndLoadOrdersFromDb(clearExisting: Boolean) {
         val orders = orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
             if (orders.count() > 0) {
-                view.showOrders(orders, isForceRefresh)
+                view.showOrders(orders, clearExisting)
             } else {
                 view.showNoOrders()
             }
-            view.setLoadingIndicator(active = false)
-            view.setLoadingMoreIndicator(active = false)
         }
     }
 }

@@ -8,10 +8,10 @@ interface OrderListContract {
     interface Presenter : BasePresenter<View> {
         fun loadOrders(forceRefresh: Boolean)
         fun loadMoreOrders()
-        fun isLoadingOrders(): Boolean
         fun canLoadMore(): Boolean
+        fun isLoading(): Boolean
         fun openOrderDetail(order: WCOrderModel)
-        fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean)
+        fun fetchAndLoadOrdersFromDb(clearExisting: Boolean)
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
@@ -19,7 +19,7 @@ interface OrderListContract {
 
         fun setLoadingIndicator(active: Boolean)
         fun setLoadingMoreIndicator(active: Boolean)
-        fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean)
+        fun showOrders(orders: List<WCOrderModel>, clearExisting: Boolean)
         fun showNoOrders()
         fun refreshFragmentState()
     }
