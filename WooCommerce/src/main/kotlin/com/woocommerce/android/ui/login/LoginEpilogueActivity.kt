@@ -44,11 +44,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     override fun onBackPressed() {
-        if (selectedSite.isSet()) {
-            showMainActivityAndFinish()
-        } else {
-            presenter.logout()
-        }
+        finish()
     }
 
     override fun showUserInfo() {
@@ -69,20 +65,25 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             return
         }
 
-        if (!selectedSite.isSet()) {
-            selectedSite.set(wcSites[0])
-        }
-
         text_list_label.text = if (wcSites.size == 1)
             getString(R.string.login_connected_store)
         else
             getString(R.string.login_pick_store)
 
-        siteAdapter.selectedSiteId = selectedSite.get().siteId
+        if (selectedSite.isSet()) {
+            siteAdapter.selectedSiteId = selectedSite.get().siteId
+        } else {
+            siteAdapter.selectedSiteId = wcSites[0].siteId
+        }
+
         siteAdapter.siteList = wcSites
 
         button_continue.setOnClickListener {
-            showMainActivityAndFinish()
+            val site = siteStore.getSiteBySiteId(siteAdapter.selectedSiteId)
+            if (site != null) {
+                selectedSite.set(site)
+                showMainActivityAndFinish()
+            }
         }
     }
 
