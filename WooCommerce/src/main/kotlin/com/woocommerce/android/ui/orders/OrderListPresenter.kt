@@ -59,6 +59,7 @@ class OrderListPresenter @Inject constructor(
     }
 
     override fun loadMoreOrders() {
+        orderView?.setLoadingMoreIndicator(true)
         isLoadingOrders = true
         val payload = FetchOrdersPayload(selectedSite.get())
         payload.loadMore = true
@@ -76,6 +77,7 @@ class OrderListPresenter @Inject constructor(
             // TODO: Notify the user of the problem
             WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
             orderView?.setLoadingIndicator(active = false)
+            orderView?.setLoadingMoreIndicator(false)
             return
         }
 
@@ -108,6 +110,7 @@ class OrderListPresenter @Inject constructor(
                 view.showNoOrders()
             }
             view.setLoadingIndicator(active = false)
+            view.setLoadingMoreIndicator(false)
         }
     }
 }

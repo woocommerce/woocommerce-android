@@ -70,6 +70,13 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         notifyDataSetChanged()
     }
 
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
+        if (presenter.canLoadMore() && !presenter.isLoadingOrders() && position == itemCount - 1) {
+            presenter.loadMoreOrders()
+        }
+    }
+
     /**
      * Custom class represents a single [TimeGroup] and it's assigned list of [WCOrderModel]. Responsible
      * for providing and populating the header and item view holders.
@@ -101,10 +108,6 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             // clear existing tags and add new ones
             itemHolder.orderTagList.removeAllViews()
             processTagView(ctx, order.status, itemHolder)
-
-            if (position == itemCount - 1 && presenter.canLoadMore() && !presenter.isLoadingOrders()) {
-                presenter.loadMoreOrders()
-            }
         }
 
         override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
