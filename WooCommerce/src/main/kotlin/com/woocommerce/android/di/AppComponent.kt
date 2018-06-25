@@ -3,7 +3,6 @@ package com.woocommerce.android.di
 import android.app.Application
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
-import com.woocommerce.android.ui.login.LoginEpilogueModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
@@ -27,8 +26,7 @@ import javax.inject.Singleton
         SelectedSiteModule::class,
         ActivityBindingModule::class,
         LoginAnalyticsModule::class,
-        LoginServiceModule::class,
-        LoginEpilogueModule::class))
+        LoginServiceModule::class))
 interface AppComponent : AndroidInjector<WooCommerce> {
     override fun inject(app: WooCommerce)
 
