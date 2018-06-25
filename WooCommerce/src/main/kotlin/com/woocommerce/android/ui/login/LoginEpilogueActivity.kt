@@ -43,6 +43,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         showStoreList()
     }
 
+    override fun onDestroy() {
+        presenter.dropView()
+        super.onDestroy()
+    }
+
     override fun onBackPressed() {
         finish()
     }
