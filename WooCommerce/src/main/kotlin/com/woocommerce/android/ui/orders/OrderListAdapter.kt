@@ -24,7 +24,14 @@ import javax.inject.Inject
  */
 class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
     : SectionedRecyclerViewAdapter() {
+    private val previousOrderList: ArrayList<WCOrderModel> = ArrayList()
+
     fun setOrders(orders: List<WCOrderModel>) {
+        if (isSameAsPreviousList(orders)) return
+
+        previousOrderList.clear()
+        previousOrderList.addAll(orders)
+
         // clear all the current data from the adapter
         removeAllSections()
 
@@ -67,7 +74,31 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         if (listMonth.size > 0) {
             addSection(OrderListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
+
         notifyDataSetChanged()
+    }
+
+    private fun isSameAsPreviousList(orders: List<WCOrderModel>): Boolean {
+        if (orders.size != previousOrderList.size) {
+            return false
+        }
+
+        val didMatch = fun(order: WCOrderModel): Boolean {
+            previousOrderList.forEach {
+                if (it.remoteOrderId == order.remoteOrderId) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        orders.forEach {
+            if (!didMatch(it)) {
+                return false
+            }
+        }
+
+        return true
     }
 
     /**
