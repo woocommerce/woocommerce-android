@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
@@ -19,16 +18,14 @@ import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginEpilogueActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
-import org.wordpress.android.util.ToastUtils
-import org.wordpress.android.util.ToastUtils.Duration
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
@@ -153,6 +150,7 @@ class MainActivity : AppCompatActivity(),
                 if (resultCode == Activity.RESULT_OK) {
                     // TODO Launch next screen
                 }
+                return
             }
         }
     }
@@ -171,30 +169,26 @@ class MainActivity : AppCompatActivity(),
         finish()
     }
 
+    /**
+     * displays the login epilogue activity which enables choosing a site
+     */
+    override fun showLoginEpilogueScreen() {
+        val intent = Intent(this, LoginEpilogueActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
     override fun updateSelectedSite() {
         loginProgressDialog?.apply { if (isShowing) { cancel() } }
 
-        val onUpdated = {
-            // Complete UI initialization
-            setupBottomNavigation()
-            initFragment(null)
+        if (!selectedSite.isSet()) {
+            showLoginEpilogueScreen()
+            return
         }
 
-        val wcSites = presenter.getWooCommerceSites()
-        when (wcSites.size) {
-            0 -> {
-                ToastUtils.showToast(this, R.string.no_woocommerce_sites, Duration.LONG)
-                presenter.logout()
-                return
-            }
-            1 -> selectedSite.set(wcSites[0])
-            else -> {
-                showSiteSelector(wcSites, onUpdated)
-                return
-            }
-        }
-
-        onUpdated()
+        // Complete UI initialization
+        setupBottomNavigation()
+        initFragment(null)
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -207,23 +201,6 @@ class MainActivity : AppCompatActivity(),
     private fun getAuthTokenFromIntent(): String? {
         val uri = intent.data
         return uri?.getQueryParameter(TOKEN_PARAMETER)
-    }
-
-    private fun showSiteSelector(storeList: List<SiteModel>, onUpdated: () -> Unit ) {
-        val builder = AlertDialog.Builder(this).apply {
-            setTitle(R.string.select_woocommerce_store)
-            val siteNames = storeList.map { it.displayName ?: it.name ?: it.url }.toTypedArray()
-            setItems(siteNames, { _, which ->
-                selectedSite.set(storeList[which])
-                onUpdated()
-            })
-        }
-
-        val dialog = builder.create().apply {
-            setCancelable(false)
-            setCanceledOnTouchOutside(false)
-        }
-        dialog.show()
     }
 
     // region Bottom Navigation

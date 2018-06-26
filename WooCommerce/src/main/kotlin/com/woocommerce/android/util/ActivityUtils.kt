@@ -1,10 +1,16 @@
 package com.woocommerce.android.util
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
+import android.support.annotation.ColorRes
+import android.support.v4.content.ContextCompat
+import android.view.WindowManager
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
@@ -52,6 +58,15 @@ object ActivityUtils {
                 val chooser = Intent.createChooser(intent, context.getString(R.string.error_please_choose_browser))
                 context.startActivity(chooser)
             }
+        }
+    }
+
+    fun setStatusBarColor(activity: Activity, @ColorRes colorRes: Int) {
+        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+            val window = activity.window
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = ContextCompat.getColor(activity, colorRes)
         }
     }
 }
