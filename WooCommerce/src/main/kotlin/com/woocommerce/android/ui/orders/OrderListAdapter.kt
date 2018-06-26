@@ -87,8 +87,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
         val didMatch = fun(order: WCOrderModel): Boolean {
             orderList.forEach {
-                if (it.remoteOrderId == order.remoteOrderId
-                        && it.status == order.status) {
+                if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
                     return true
                 }
             }
