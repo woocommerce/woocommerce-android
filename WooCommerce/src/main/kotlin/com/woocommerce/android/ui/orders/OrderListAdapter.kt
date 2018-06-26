@@ -82,7 +82,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
      * Custom class represents a single [TimeGroup] and it's assigned list of [WCOrderModel]. Responsible
      * for providing and populating the header and item view holders.
      */
-    private inner class OrderListSection(val title: String, var list: List<WCOrderModel>) : StatelessSection(
+    private inner class OrderListSection(val title: String, val list: List<WCOrderModel>) : StatelessSection(
             SectionParameters.Builder(R.layout.order_list_item).headerResourceId(R.layout.order_list_header).build()
     ) {
         override fun getContentItemsTotal() = list.size
