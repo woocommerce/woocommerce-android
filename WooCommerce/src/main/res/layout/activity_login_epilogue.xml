@@ -1,0 +1,117 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/wc_grey_light"
+                android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/image_avatar"
+        android:layout_width="@dimen/login_avatar_size"
+        android:layout_height="@dimen/login_avatar_size"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:contentDescription="@string/login_avatar_content_description"
+        tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
+
+    <TextView
+        android:id="@+id/text_displayname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/image_avatar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_large"
+        android:textColor="@color/grey_dark"
+        android:textSize="@dimen/text_extra_large"
+        tools:text="text_username"/>
+
+    <TextView
+        android:id="@+id/text_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_displayname"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/grey_dark"
+        android:textSize="@dimen/text_large"
+        tools:text="text_displayname"/>
+
+    <FrameLayout
+        android:id="@+id/frame_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/frame_bottom"
+        android:layout_below="@+id/text_username">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_extra_small"
+            android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
+            app:cardElevation="@dimen/card_elevation">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/margin_extra_large">
+
+                <TextView
+                    android:id="@+id/text_list_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_pick_store"
+                    android:textColor="@color/wc_purple"
+                    android:textSize="@dimen/text_large"
+                    android:textStyle="bold"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/no_stores_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_username"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="@dimen/margin_extra_large"
+        android:layout_marginStart="@dimen/margin_extra_large"
+        android:layout_marginTop="@dimen/margin_extra_extra_large"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:text="@string/login_no_stores"
+        android:textColor="@color/grey_dark"
+        android:textSize="@dimen/text_large"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:drawableTop="@drawable/ic_woo_no_store"
+        tools:visibility="visible"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/appbar_elevation"
+        android:layout_above="@+id/frame_bottom"
+        android:background="@drawable/shadow_top"/>
+
+    <FrameLayout
+        android:id="@+id/frame_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:padding="@dimen/margin_extra_large">
+
+        <Button
+            android:id="@+id/button_continue"
+            style="@style/Woo.ButtonPurple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/continue_button"/>
+    </FrameLayout>
+</RelativeLayout>

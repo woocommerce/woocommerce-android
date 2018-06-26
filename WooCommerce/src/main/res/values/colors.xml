@@ -62,7 +62,7 @@
     <color name="list_item_text">@color/default_text</color>
     <color name="list_item_text_title">@color/default_text_title</color>
     <color name="list_item_bg">@color/white</color>
-    <color name="List_header_text">@color/wc_grey_mild</color>
+    <color name="List_header_text">@color/wc_grey_mid</color>
     <color name="list_header_bg">@color/wc_grey_light</color>
     <color name="list_header_border">@color/wc_grey_17</color>
 

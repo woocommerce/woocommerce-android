@@ -119,7 +119,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         return loginMode as LoginMode
     }
 
-    private fun loggedInAndFinish() {
+    private fun showMainActivityAndFinish() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
@@ -173,7 +173,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
         loginAnalyticsListener.trackLoginSocialSuccess()
-        loggedInAndFinish()
+        showMainActivityAndFinish()
     }
 
     override fun loginViaWpcomUsernameInstead() {
@@ -230,12 +230,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
-        loggedInAndFinish()
+        showMainActivityAndFinish()
     }
 
     override fun alreadyLoggedInWpcom(oldSitesIds: ArrayList<Int>) {
         ToastUtils.showToast(this, R.string.already_logged_in_wpcom, ToastUtils.Duration.LONG)
-        loggedInAndFinish()
+        showMainActivityAndFinish()
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
@@ -269,7 +269,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
-        loggedInAndFinish()
+        showMainActivityAndFinish()
     }
 
     override fun helpEmailScreen(email: String?) {
