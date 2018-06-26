@@ -157,13 +157,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
 
-        ordersList?.let { listView ->
-            if (isForceRefresh) {
-                ordersList.scrollToPosition(0)
-                listView.layoutAnimation = listLayoutAnimation
+        if (!ordersAdapter.isSameOrderList(orders)) {
+            ordersList?.let { listView ->
+                if (isForceRefresh) {
+                    ordersList.scrollToPosition(0)
+                    listView.layoutAnimation = listLayoutAnimation
+                }
+                ordersAdapter.setOrders(orders)
             }
-            ordersAdapter.setOrders(orders)
         }
+
         loadOrdersPending = false
     }
 
