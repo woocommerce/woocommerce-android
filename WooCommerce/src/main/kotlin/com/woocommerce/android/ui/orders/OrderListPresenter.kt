@@ -40,10 +40,9 @@ class OrderListPresenter @Inject constructor(
     }
 
     override fun loadOrders(forceRefresh: Boolean) {
-        orderView?.setLoadingIndicator(active = true)
-
         if (forceRefresh) {
             isLoadingOrders = true
+            orderView?.setLoadingIndicator(active = true)
             val payload = FetchOrdersPayload(selectedSite.get())
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
@@ -88,10 +87,13 @@ class OrderListPresenter @Inject constructor(
         }
 
         if (event.causeOfChange == FETCH_ORDERS) {
-            isLoadingOrders = false
-            isLoadingMoreOrders = false
-            orderView?.setLoadingIndicator(active = false)
-            orderView?.setLoadingMoreIndicator(false)
+            if (isLoadingMoreOrders) {
+                isLoadingMoreOrders = false
+                orderView?.setLoadingMoreIndicator(active = false)
+            } else {
+                isLoadingOrders = false
+                orderView?.setLoadingIndicator(active = false)
+            }
         }
     }
 
