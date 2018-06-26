@@ -28,8 +28,4 @@ class NotificationsFragment : TopLevelFragment() {
     override fun refreshFragmentState() {
         // todo reset any scrolling
     }
-
-    override fun scrollToTop() {
-        TODO( "scroll the contents to the top")
-    }
 }
