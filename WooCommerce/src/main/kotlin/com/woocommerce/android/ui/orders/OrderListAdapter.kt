@@ -27,9 +27,6 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
 
     fun setOrders(orders: List<WCOrderModel>) {
-        orderList.clear()
-        orderList.addAll(orders)
-
         // clear all the current data from the adapter
         removeAllSections()
 
@@ -74,8 +71,15 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         }
 
         notifyDataSetChanged()
+
+        // remember these orders for comparison in isSameOrderList() below
+        orderList.clear()
+        orderList.addAll(orders)
     }
 
+    /**
+     * returns true if the passed list of orders is the same as the current list
+     */
     fun isSameOrderList(orders: List<WCOrderModel>): Boolean {
         if (orders.size != orderList.size) {
             return false
