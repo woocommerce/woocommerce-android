@@ -219,7 +219,10 @@ class MainActivity : AppCompatActivity(),
     override fun onNavigationItemReselected(item: MenuItem) {
         val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
         clearFragmentBackStack(activeFragment)
-        (activeFragment as TopLevelFragment).refreshFragmentState()
+        (activeFragment as TopLevelFragment).let {
+            it.scrollToTop()
+            it.refreshFragmentState()
+        }
     }
 
     // endregion

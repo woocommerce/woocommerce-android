@@ -87,6 +87,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         super.onDestroyView()
     }
 
+    override fun scrollToTop() {
+        TODO( "scroll the contents to the top")
+    }
+
     override fun setLoadingIndicator(active: Boolean) {
         with(dashboard_refresh_layout) {
             // Make sure this is called after the layout is done with everything else.

@@ -44,6 +44,11 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener {
     fun refreshFragmentState()
 
     /**
+     * Scroll the contents of this top-level fragment to the top
+     */
+    fun scrollToTop()
+
+    /**
      * Pop fragments on back stack until the one labeled with this state tag
      * is reached.
      *
