@@ -24,11 +24,9 @@ import javax.inject.Inject
  */
 class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
     : SectionedRecyclerViewAdapter() {
-    fun setOrders(orders: List<WCOrderModel>, clearExisting: Boolean) {
+    fun setOrders(orders: List<WCOrderModel>) {
         // clear all the current data from the adapter
-        if (clearExisting) {
-            removeAllSections()
-        }
+        removeAllSections()
 
         // Build a list for each [TimeGroup] section
         val listToday = ArrayList<WCOrderModel>()
@@ -51,34 +49,26 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         }
 
         if (listToday.size > 0) {
-            addOrReuseSection(TimeGroup.GROUP_TODAY.name, listToday)
+            addSection(OrderListSection(TimeGroup.GROUP_TODAY.name, listToday))
         }
 
         if (listYesterday.size > 0) {
-            addOrReuseSection(TimeGroup.GROUP_YESTERDAY.name, listYesterday)
+            addSection(OrderListSection(TimeGroup.GROUP_YESTERDAY.name, listYesterday))
         }
 
         if (listTwoDays.size > 0) {
-            addOrReuseSection(TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays)
+            addSection(OrderListSection(TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays))
         }
 
         if (listWeek.size > 0) {
-            addOrReuseSection(TimeGroup.GROUP_OLDER_WEEK.name, listWeek)
+            addSection(OrderListSection(TimeGroup.GROUP_OLDER_WEEK.name, listWeek))
         }
 
         if (listMonth.size > 0) {
-            addOrReuseSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth)
+            addSection(OrderListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
-        notifyDataSetChanged()
-    }
 
-    private fun addOrReuseSection(tag: String, orders: List<WCOrderModel>) {
-        if (getSection(tag) == null) {
-            addSection(tag, OrderListSection(tag, orders))
-        } else {
-            val orderListSection: OrderListSection = getSection(tag) as OrderListSection
-            orderListSection.setOrders(orders)
-        }
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -99,11 +89,6 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
         override fun getItemViewHolder(view: View): RecyclerView.ViewHolder {
             return ItemViewHolder(view)
-        }
-
-        fun setOrders(orders: List<WCOrderModel>) {
-            list = orders
-            notifyDataSetChanged()
         }
 
         override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

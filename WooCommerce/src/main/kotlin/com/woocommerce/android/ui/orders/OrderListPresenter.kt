@@ -47,7 +47,7 @@ class OrderListPresenter @Inject constructor(
             val payload = FetchOrdersPayload(selectedSite.get())
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
-            fetchAndLoadOrdersFromDb(clearExisting = false)
+            fetchAndLoadOrdersFromDb(false)
         }
     }
 
@@ -77,8 +77,8 @@ class OrderListPresenter @Inject constructor(
             when (event.causeOfChange) {
                 FETCH_ORDERS -> {
                     canLoadMore = event.canLoadMore
-                    val clearExisting = !isLoadingMoreOrders
-                    fetchAndLoadOrdersFromDb(clearExisting)
+                    val isForceRefresh = !isLoadingMoreOrders
+                    fetchAndLoadOrdersFromDb(isForceRefresh)
                 }
                 // A child fragment made a change that requires a data refresh.
                 UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
@@ -102,13 +102,13 @@ class OrderListPresenter @Inject constructor(
     /**
      * Fetch orders from the local database.
      *
-     * @param clearExisting True if existing orders should be cleared from the view
+     * @param isForceRefresh True if orders were refreshed from the API, else false.
      */
-    override fun fetchAndLoadOrdersFromDb(clearExisting: Boolean) {
+    override fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean) {
         val orders = orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
             if (orders.count() > 0) {
-                view.showOrders(orders, clearExisting)
+                view.showOrders(orders, isForceRefresh)
             } else {
                 view.showNoOrders()
             }

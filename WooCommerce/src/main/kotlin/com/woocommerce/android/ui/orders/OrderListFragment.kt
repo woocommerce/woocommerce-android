@@ -159,16 +159,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         }
     }
 
-    override fun showOrders(orders: List<WCOrderModel>, clearExisting: Boolean) {
+    override fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean) {
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
 
         ordersList?.let { listView ->
-            if (clearExisting) {
+            if (isForceRefresh) {
                 ordersList.scrollToPosition(0)
                 listView.layoutAnimation = listLayoutAnimation
             }
-            ordersAdapter.setOrders(orders, clearExisting)
+            ordersAdapter.setOrders(orders)
         }
         loadOrdersPending = false
     }
