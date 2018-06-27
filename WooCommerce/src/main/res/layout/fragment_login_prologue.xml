@@ -53,25 +53,12 @@
             android:layout_toEndOf="@+id/image_jetpack"
             android:text="@string/login_jetpack_required"/>
 
-        <TextView
-            android:id="@+id/text_config_link"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/text_jetpack"
-            android:layout_alignStart="@+id/text_jetpack"
-            android:layout_below="@+id/text_jetpack"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:background="?attr/selectableItemBackground"
-            android:linksClickable="true"
-            android:text="@string/login_configure_link"
-            android:textColorLink="@color/wc_purple"/>
-
         <Button
             android:id="@+id/button_login_jetpack"
             style="@style/Woo.ButtonPurple"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_config_link"
+            android:layout_below="@+id/text_jetpack"
             android:layout_marginTop="@dimen/margin_extra_large"
             android:padding="@dimen/margin_extra_large"
             android:text="@string/login_with_jetpack"/>

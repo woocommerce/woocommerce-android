@@ -49,29 +49,21 @@
             android:id="@+id/image_jetpack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/text_jetpack"
             app:srcCompat="@drawable/ic_jetpack_icon"/>
 
         <TextView
             android:id="@+id/text_jetpack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/margin_extra_large"
             android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_toLeftOf="@+id/button_login_jetpack"
-            android:layout_toRightOf="@+id/image_jetpack"
-            android:text="@string/login_jetpack_required"/>
-
-        <TextView
-            android:id="@+id/text_config_link"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/text_jetpack"
-            android:layout_below="@+id/text_jetpack"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:layout_toLeftOf="@+id/button_login_jetpack"
-            android:background="?attr/selectableItemBackground"
+            android:layout_toEndOf="@+id/image_jetpack"
+            android:layout_toStartOf="@+id/button_login_jetpack"
             android:linksClickable="true"
-            android:text="@string/login_configure_link"
+            android:text="@string/login_jetpack_required"
             android:textColorLink="@color/wc_purple"/>
 
         <Button
@@ -79,7 +71,7 @@
             style="@style/Woo.ButtonPurple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:padding="@dimen/margin_extra_large"
             android:text="@string/login_with_jetpack"/>
     </RelativeLayout>
