@@ -7,6 +7,7 @@ import com.automattic.android.tracks.TracksClient
 import android.preference.PreferenceManager
 import java.util.UUID
 import org.json.JSONObject
+import org.wordpress.android.fluxc.model.SiteModel
 
 class AnalyticsTracker private constructor(private val context: Context) {
     enum class Stat {
@@ -149,6 +150,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
+        private const val BLOG_ID_KEY = "blog_id"
+        private const val IS_WPCOM_STORE = "is_wpcom_store"
+
         fun init(context: Context) {
             instance = AnalyticsTracker(context.applicationContext)
         }
@@ -174,6 +178,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
             props["error_type"] = errorType
             props["error_description"] = errorDescription
             track(stat, props)
+        }
+
+        fun trackWithSiteDetails(stat: Stat, site: SiteModel, properties: MutableMap<String, Any> = mutableMapOf()) {
+            properties[BLOG_ID_KEY] = site.siteId
+            properties[IS_WPCOM_STORE] = site.isWpComStore
+
+            AnalyticsTracker.track(stat, properties)
         }
 
         fun flush() {
