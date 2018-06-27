@@ -52,10 +52,10 @@ class LoginPrologueFragment : Fragment() {
             prologueFinishedListener?.onPrologueFinished()
         })
 
-        text_jetpack.movementMethod = LinkMovementMethod.getInstance()
         val separator = if (DisplayUtils.isLandscape(activity)) " " else "<br><br>"
         val html = getString(R.string.login_jetpack_required) + separator +
                 getString(R.string.login_configure_link, "<a href='$JETPACK_HELP_URL'>", "</a>")
+        text_jetpack.movementMethod = LinkMovementMethod.getInstance()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             text_jetpack.text = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
         } else {
