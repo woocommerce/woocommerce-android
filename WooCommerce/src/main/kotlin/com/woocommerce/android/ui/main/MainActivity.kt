@@ -216,10 +216,15 @@ class MainActivity : AppCompatActivity(),
         return switchFragment(navPosition)
     }
 
+    /**
+     * when a bottom nav item is reselected we clear the active fragment's backstack,
+     * or if there is no backstack we scroll the fragment to the top and refresh it
+     */
     override fun onNavigationItemReselected(item: MenuItem) {
         val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
-        clearFragmentBackStack(activeFragment)
-        (activeFragment as TopLevelFragment).refreshFragmentState()
+        if (!clearFragmentBackStack(activeFragment)) {
+            (activeFragment as TopLevelFragment).refreshFragmentState()
+        }
     }
 
     // endregion
@@ -290,13 +295,18 @@ class MainActivity : AppCompatActivity(),
 
     /**
      * Pop all child fragments to return to the top-level view.
+     * returns true if child fragments existed.
      */
-    private fun clearFragmentBackStack(fragment: Fragment?) {
+    private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
         fragment?.let {
-            while (it.childFragmentManager.backStackEntryCount > 0) {
-                it.childFragmentManager.popBackStackImmediate()
+            if (it.childFragmentManager.backStackEntryCount > 0) {
+                while (it.childFragmentManager.backStackEntryCount > 0) {
+                    it.childFragmentManager.popBackStackImmediate()
+                }
+                return true
             }
         }
+        return false
     }
     // endregion
 }
