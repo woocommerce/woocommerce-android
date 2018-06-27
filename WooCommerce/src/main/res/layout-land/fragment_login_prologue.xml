@@ -51,8 +51,8 @@
             android:id="@+id/image_jetpack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/text_jetpack"
             android:layout_alignParentStart="true"
+            android:layout_marginTop="@dimen/margin_large"
             app:srcCompat="@drawable/ic_jetpack_icon"/>
 
         <TextView
