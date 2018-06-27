@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
@@ -213,6 +214,14 @@ class MainActivity : AppCompatActivity(),
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val navPosition = findNavigationPositionById(item.itemId)
+
+        val stat = when (navPosition) {
+            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.OPENED_DASHBOARD
+            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.OPENED_ORDER_LIST
+            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.OPENED_NOTIFICATIONS
+        }
+        AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
+
         return switchFragment(navPosition)
     }
 

@@ -64,7 +64,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SIGNUP_SOCIAL_TO_LOGIN,
         ADDED_SELF_HOSTED_SITE,
         CREATED_ACCOUNT,
-        LOGIN_EPILOGUE_VIEWED
+        LOGIN_EPILOGUE_VIEWED,
+
+        OPENED_DASHBOARD,
+        OPENED_ORDER_LIST,
+        OPENED_NOTIFICATIONS
     }
 
     private var tracksClient = TracksClient.getClient(context)
