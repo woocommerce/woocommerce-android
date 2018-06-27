@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -67,6 +69,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun doMarkOrderComplete() {
+        AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
         orderModel?.let { order ->
             val payload = UpdateOrderStatusPayload(order, selectedSite.get(), OrderStatus.COMPLETED)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
