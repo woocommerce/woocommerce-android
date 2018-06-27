@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.orders
 
-import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
@@ -20,8 +18,7 @@ import javax.inject.Inject
 class OrderListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
-    private val selectedSite: SelectedSite,
-    private val uiMessageResolver: UIMessageResolver
+    private val selectedSite: SelectedSite
 ) : OrderListContract.Presenter {
     companion object {
         private val TAG: String = OrderListPresenter::class.java.simpleName
@@ -61,7 +58,7 @@ class OrderListPresenter @Inject constructor(
             FETCH_ORDERS -> {
                 if (event.isError) {
                     WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
-                    uiMessageResolver.getSnack(R.string.orderlist_error_fetch_generic).show()
+                    orderView?.showLoadOrdersError()
                 } else {
                     fetchAndLoadOrdersFromDb(true)
                 }

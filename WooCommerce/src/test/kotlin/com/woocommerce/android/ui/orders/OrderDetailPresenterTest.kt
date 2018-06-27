@@ -7,9 +7,7 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -17,7 +15,6 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -29,7 +26,6 @@ class OrderDetailPresenterTest {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val uiMessageResolver: UIMessageResolver = mock()
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
@@ -38,7 +34,7 @@ class OrderDetailPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite, uiMessageResolver))
+        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
     }
@@ -78,7 +74,7 @@ class OrderDetailPresenterTest {
             causeOfChange = FETCH_ORDER_NOTES
             error = OrderError()
         })
-        verify(uiMessageResolver, times(1)).getSnack(R.string.order_error_fetch_notes_generic)
+        verify(orderDetailView, times(1)).showNotesErrorSnack()
     }
 
     @Test
@@ -87,7 +83,7 @@ class OrderDetailPresenterTest {
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, true)
 
-        verify(uiMessageResolver).getUndoSnack(any(), actionListener = any())
+        verify(orderDetailView, times(1)).showUndoOrderCompleteSnackbar()
     }
 
     @Test
@@ -102,7 +98,7 @@ class OrderDetailPresenterTest {
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(orderDetailView).updateOrderStatus(any(), OrderStatus.COMPLETED)
+        verify(orderDetailView, times(1)).markOrderCompleteSuccess()
     }
 
     @Test
@@ -120,13 +116,12 @@ class OrderDetailPresenterTest {
             causeOfChange = UPDATE_ORDER_STATUS
             error = OrderError()
         })
-        verify(uiMessageResolver, times(1)).getSnack(R.string.order_error_update_general)
+        verify(orderDetailView, times(1)).showCompleteOrderError()
     }
 
     @Test
     fun `Mark order complete - Reverts status after failure correctly`() {
         doReturn(order).whenever(presenter).orderModel
-        val previousStatus = order.status
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
@@ -139,6 +134,6 @@ class OrderDetailPresenterTest {
             causeOfChange = UPDATE_ORDER_STATUS
             error = OrderError(message = "Error")
         })
-        verify(orderDetailView).updateOrderStatus(any(), previousStatus)
+        verify(orderDetailView).markOrderCompleteFailed()
     }
 }

@@ -2,15 +2,18 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View {
@@ -37,6 +40,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private var markCompleteCanceled: Boolean = false
+    private var undoMarkCompleteSnackbar: Snackbar? = null
+    private var previousOrderStatus: String? = null
+    private var notesSnack: Snackbar? = null
+    private var pendingNotesError = false
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -69,7 +79,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     override fun onStop() {
-        presenter.onStop()
+        undoMarkCompleteSnackbar?.dismiss()
+        notesSnack?.dismiss()
         super.onStop()
     }
 
@@ -132,8 +143,86 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         }
     }
 
-    override fun updateOrderStatus(orderModel: WCOrderModel, status: String) {
+    override fun updateOrderStatus(status: String) {
         orderDetail_orderStatus.updateStatus(status)
-        orderDetail_productList.updateView(orderModel, false, this)
+        presenter.orderModel?.let {
+            orderDetail_productList.updateView(it, false, this)
+        }
+    }
+
+    override fun showUndoOrderCompleteSnackbar() {
+        markCompleteCanceled = false
+
+        presenter.orderModel?.let {
+            previousOrderStatus = it.status
+            it.status = OrderStatus.COMPLETED
+
+            // artificially set order status to Complete
+            updateOrderStatus(OrderStatus.COMPLETED)
+
+            // Listener for the UNDO button in the snackbar
+            val actionListener = View.OnClickListener {
+                // User canceled the action to mark the order complete.
+                markCompleteCanceled = true
+
+                presenter.orderModel?.let { order ->
+                    previousOrderStatus?.let { status ->
+                        order.status = status
+                        updateOrderStatus(status)
+                    }
+                    previousOrderStatus = null
+                }
+            }
+
+            // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
+            // timed out, then process the request to mark this order complete.
+            val callback = object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (pendingNotesError) {
+                        notesSnack?.show()
+                    }
+                    if (!markCompleteCanceled) {
+                        presenter.doMarkOrderComplete()
+                    }
+                }
+            }
+            undoMarkCompleteSnackbar = uiMessageResolver
+                    .getUndoSnack(R.string.order_fulfill_marked_complete, actionListener = actionListener)
+                    .also {
+                        it.addCallback(callback)
+                        it.show()
+                    }
+        }
+    }
+
+    override fun markOrderCompleteSuccess() {
+        previousOrderStatus = null
+    }
+
+    override fun markOrderCompleteFailed() {
+        // Set the order status back to the previous status
+        previousOrderStatus?.let {
+            orderDetail_orderStatus.updateStatus(it)
+            previousOrderStatus = null
+        }
+    }
+
+    override fun showNotesErrorSnack() {
+        notesSnack = uiMessageResolver.getSnack(R.string.order_error_fetch_notes_generic)
+
+        if ((undoMarkCompleteSnackbar?.isShownOrQueued) == true) {
+            pendingNotesError = true
+        } else {
+            notesSnack?.show()
+        }
+    }
+
+    override fun showCompleteOrderError() {
+        uiMessageResolver.getSnack(R.string.order_error_update_general).show()
+        previousOrderStatus?.let { status ->
+            updateOrderStatus(status)
+        }
+        previousOrderStatus = null
     }
 }
