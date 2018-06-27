@@ -7,6 +7,8 @@ import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.SiteListAdapter.OnSiteClickListener
@@ -37,6 +39,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         showUserInfo()
         showStoreList()
+
+        if (savedInstanceState == null) {
+            AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_VIEWED,
+                    mapOf("number_of_stores" to presenter.getWooCommerceSites().size))
+        }
     }
 
     override fun onDestroy() {
