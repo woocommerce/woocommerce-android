@@ -46,7 +46,7 @@ class OrderListPresenter @Inject constructor(
             val payload = FetchOrdersPayload(selectedSite.get())
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
-            fetchAndLoadOrdersFromDb(false)
+            fetchAndLoadOrdersFromDb(isForceRefresh = false)
         }
     }
 
@@ -61,8 +61,7 @@ class OrderListPresenter @Inject constructor(
     override fun loadMoreOrders() {
         orderView?.setLoadingMoreIndicator(true)
         isLoadingMoreOrders = true
-        val payload = FetchOrdersPayload(selectedSite.get())
-        payload.loadMore = true
+        val payload = FetchOrdersPayload(selectedSite.get(), loadMore = true)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
     }
 
