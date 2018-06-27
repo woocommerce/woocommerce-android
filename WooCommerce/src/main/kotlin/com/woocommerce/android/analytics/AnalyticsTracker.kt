@@ -5,6 +5,8 @@ import android.content.Context
 import java.util.HashMap
 import com.automattic.android.tracks.TracksClient
 import android.preference.PreferenceManager
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import java.util.UUID
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
@@ -128,6 +130,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         val propertiesJson = JSONObject(properties)
         tracksClient.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+
+        if (propertiesJson.length() > 0) {
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
+        } else {
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+        }
     }
 
     private fun flush() {
