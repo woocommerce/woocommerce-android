@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -39,10 +40,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var markCompleteCanceled: Boolean = false
-    private var previousOrderStatus: String? = null
     private var undoMarkCompleteSnackbar: Snackbar? = null
+    private var previousOrderStatus: String? = null
+    private var notesSnack: Snackbar? = null
+    private var pendingNotesError = false
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -65,6 +69,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
         presenter.takeView(this)
         val markComplete = arguments?.getBoolean(FIELD_MARK_COMPLETE, false) ?: false
+        arguments?.remove(FIELD_MARK_COMPLETE)
 
         context?.let {
             arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
@@ -75,6 +80,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
     override fun onStop() {
         undoMarkCompleteSnackbar?.dismiss()
+        notesSnack?.dismiss()
         super.onStop()
     }
 
@@ -121,25 +127,48 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         orderDetail_noteList.updateView(notes)
     }
 
+    override fun openOrderFulfillment(order: WCOrderModel) {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                router.openOrderFulfillment(order)
+            }
+        }
+    }
+
+    override fun openOrderProductList(order: WCOrderModel) {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                router.openOrderProductList(order)
+            }
+        }
+    }
+
+    override fun updateOrderStatus(status: String) {
+        orderDetail_orderStatus.updateStatus(status)
+        presenter.orderModel?.let {
+            orderDetail_productList.updateView(it, false, this)
+        }
+    }
+
     override fun showUndoOrderCompleteSnackbar() {
         markCompleteCanceled = false
 
         presenter.orderModel?.let {
             previousOrderStatus = it.status
             it.status = OrderStatus.COMPLETED
-            orderDetail_orderStatus.updateStatus(OrderStatus.COMPLETED)
-            orderDetail_productList.updateView(it, false, this)
+
+            // artificially set order status to Complete
+            updateOrderStatus(OrderStatus.COMPLETED)
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
                 // User canceled the action to mark the order complete.
                 markCompleteCanceled = true
-                arguments?.remove(FIELD_MARK_COMPLETE)
+
                 presenter.orderModel?.let { order ->
                     previousOrderStatus?.let { status ->
                         order.status = status
-                        orderDetail_orderStatus.updateStatus(status)
-                        orderDetail_productList?.updateView(order, false, OrderDetailFragment@this)
+                        updateOrderStatus(status)
                     }
                     previousOrderStatus = null
                 }
@@ -150,24 +179,20 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
             val callback = object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
-                    markOrderComplete()
+                    if (pendingNotesError) {
+                        notesSnack?.show()
+                    }
+                    if (!markCompleteCanceled) {
+                        presenter.doMarkOrderComplete()
+                    }
                 }
             }
-
-            undoMarkCompleteSnackbar = Snackbar
-                    .make(orderDetail_container, R.string.order_fulfill_marked_complete, Snackbar.LENGTH_LONG)
+            undoMarkCompleteSnackbar = uiMessageResolver
+                    .getUndoSnack(R.string.order_fulfill_marked_complete, actionListener = actionListener)
                     .also {
-                        it.setAction(R.string.undo, actionListener)
                         it.addCallback(callback)
                         it.show()
                     }
-        }
-    }
-
-    private fun markOrderComplete() {
-        if (!markCompleteCanceled) {
-            arguments?.remove(FIELD_MARK_COMPLETE)
-            presenter.doMarkOrderComplete()
         }
     }
 
@@ -183,19 +208,21 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         }
     }
 
-    override fun openOrderFulfillment(order: WCOrderModel) {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                router.openOrderFulfillment(order)
-            }
+    override fun showNotesErrorSnack() {
+        notesSnack = uiMessageResolver.getSnack(R.string.order_error_fetch_notes_generic)
+
+        if ((undoMarkCompleteSnackbar?.isShownOrQueued) == true) {
+            pendingNotesError = true
+        } else {
+            notesSnack?.show()
         }
     }
 
-    override fun openOrderProductList(order: WCOrderModel) {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                router.openOrderProductList(order)
-            }
+    override fun showCompleteOrderError() {
+        uiMessageResolver.getSnack(R.string.order_error_update_general).show()
+        previousOrderStatus?.let { status ->
+            updateOrderStatus(status)
         }
+        previousOrderStatus = null
     }
 }

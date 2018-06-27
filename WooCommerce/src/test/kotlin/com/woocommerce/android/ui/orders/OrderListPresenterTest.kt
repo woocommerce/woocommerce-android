@@ -9,6 +9,7 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -20,12 +21,14 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 
 class OrderListPresenterTest {
     private val orderListView: OrderListContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val uiMessageResolver: UIMessageResolver = mock()
 
     private val orders = OrderTestUtils.generateOrders()
     private val noOrders = emptyList<WCOrderModel>()
@@ -87,5 +90,19 @@ class OrderListPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
         verify(orderListView, times(1)).refreshFragmentState()
+    }
+
+    @Test
+    fun `Displays error message on fetch orders error`() {
+        presenter.takeView(orderListView)
+        presenter.loadOrders(true)
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
+
+        // OnOrderChanged callback from FluxC with error should trigger error message
+        presenter.onOrderChanged(OnOrderChanged(0).apply {
+            causeOfChange = FETCH_ORDERS
+            error = OrderError()
+        })
+        verify(orderListView, times(1)).showLoadOrdersError()
     }
 }
