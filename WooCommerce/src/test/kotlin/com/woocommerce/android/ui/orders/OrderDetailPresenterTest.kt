@@ -63,12 +63,27 @@ class OrderDetailPresenterTest {
     }
 
     @Test
+    fun `Display error message on fetch order notes error`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
+
+        // OnOrderChanged callback from FluxC with error should trigger error message
+        presenter.onOrderChanged(OnOrderChanged(0).apply {
+            causeOfChange = FETCH_ORDER_NOTES
+            error = OrderError()
+        })
+        verify(orderDetailView, times(1)).showNotesErrorSnack()
+    }
+
+    @Test
     fun `Mark order complete - Displays undo snackbar correctly`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, true)
 
-        verify(orderDetailView).showUndoOrderCompleteSnackbar()
+        verify(orderDetailView, times(1)).showUndoOrderCompleteSnackbar()
     }
 
     @Test
@@ -83,7 +98,25 @@ class OrderDetailPresenterTest {
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(orderDetailView).markOrderCompleteSuccess()
+        verify(orderDetailView, times(1)).markOrderCompleteSuccess()
+    }
+
+    @Test
+    fun `Display error message on mark order complete error`() {
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
+        // from the order store
+        presenter.takeView(orderDetailView)
+        presenter.doMarkOrderComplete()
+        verify(dispatcher, times(1)).dispatch(any<Action<UpdateOrderStatusPayload>>())
+
+        // OnOrderChanged callback from FluxC with error should trigger error message
+        presenter.onOrderChanged(OnOrderChanged(0).apply {
+            causeOfChange = UPDATE_ORDER_STATUS
+            error = OrderError()
+        })
+        verify(orderDetailView, times(1)).showCompleteOrderError()
     }
 
     @Test
