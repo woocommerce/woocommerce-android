@@ -18,5 +18,6 @@ interface OrderListContract {
         fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean)
         fun showNoOrders()
         fun refreshFragmentState()
+        fun showLoadOrdersError()
     }
 }

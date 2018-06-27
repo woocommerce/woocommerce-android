@@ -18,6 +18,7 @@ import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -35,6 +36,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
 
     @Inject lateinit var presenter: OrderListContract.Presenter
     @Inject lateinit var ordersAdapter: OrderListAdapter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private lateinit var listLayoutAnimation: LayoutAnimationController
@@ -157,13 +159,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
 
-        ordersList?.let { listView ->
-            if (isForceRefresh) {
-                ordersList.scrollToPosition(0)
-                listView.layoutAnimation = listLayoutAnimation
+        if (!ordersAdapter.isSameOrderList(orders)) {
+            ordersList?.let { listView ->
+                if (isForceRefresh) {
+                    ordersList.scrollToPosition(0)
+                    listView.layoutAnimation = listLayoutAnimation
+                }
+                ordersAdapter.setOrders(orders)
             }
-            ordersAdapter.setOrders(orders)
         }
+
         loadOrdersPending = false
     }
 
@@ -214,8 +219,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     override fun refreshFragmentState() {
         loadOrdersPending = true
         if (isActive) {
+            ordersList.smoothScrollToPosition(0)
             presenter.loadOrders(forceRefresh = true)
         }
+    }
+
+    override fun showLoadOrdersError() {
+        uiMessageResolver.getSnack(R.string.orderlist_error_fetch_generic).show()
     }
 
     // region OrderCustomerActionListener

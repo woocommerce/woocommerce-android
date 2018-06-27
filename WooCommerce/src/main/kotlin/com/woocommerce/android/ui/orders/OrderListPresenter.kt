@@ -51,14 +51,18 @@ class OrderListPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.isError) {
-            // TODO: Notify the user of the problem
-            WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
             orderView?.setLoadingIndicator(active = false)
-            return
         }
 
         when (event.causeOfChange) {
-            FETCH_ORDERS -> fetchAndLoadOrdersFromDb(true)
+            FETCH_ORDERS -> {
+                if (event.isError) {
+                    WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
+                    orderView?.showLoadOrdersError()
+                } else {
+                    fetchAndLoadOrdersFromDb(true)
+                }
+            }
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
             else -> {}

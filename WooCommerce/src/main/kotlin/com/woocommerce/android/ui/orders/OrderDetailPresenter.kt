@@ -49,7 +49,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also { order ->
                     view.showOrderDetail(order)
                 }
-                if (markComplete) view.showUndoOrderCompleteSnackbar()
+                if (markComplete) orderView?.showUndoOrderCompleteSnackbar()
                 loadOrderNotes() // load order notes
             }
         }
@@ -78,8 +78,8 @@ class OrderDetailPresenter @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             if (event.isError) {
-                // TODO: Notify the user of the problem
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
+                orderView?.showNotesErrorSnack()
             } else {
                 orderModel?.let { order ->
                     val notes = orderStore.getOrderNotesForOrder(order)
@@ -88,9 +88,11 @@ class OrderDetailPresenter @Inject constructor(
             }
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
-                // TODO: Notify the user of the problem
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
-                orderView?.markOrderCompleteFailed()
+                orderView?.let {
+                    it.showCompleteOrderError()
+                    it.markOrderCompleteFailed()
+                }
             } else {
                 // Successfully marked order as complete
                 orderModel?.let {
