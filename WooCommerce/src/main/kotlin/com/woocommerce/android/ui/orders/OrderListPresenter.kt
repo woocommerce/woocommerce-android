@@ -27,6 +27,9 @@ class OrderListPresenter @Inject constructor(
     }
 
     private var orderView: OrderListContract.View? = null
+    private var isLoadingOrders = false
+    private var isLoadingMoreOrders = false
+    private var canLoadMore = false
 
     override fun takeView(view: OrderListContract.View) {
         orderView = view
@@ -39,9 +42,9 @@ class OrderListPresenter @Inject constructor(
     }
 
     override fun loadOrders(forceRefresh: Boolean) {
-        orderView?.setLoadingIndicator(active = true)
-
         if (forceRefresh) {
+            isLoadingOrders = true
+            orderView?.setLoadingIndicator(active = true)
             val payload = FetchOrdersPayload(selectedSite.get())
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
@@ -49,25 +52,49 @@ class OrderListPresenter @Inject constructor(
         }
     }
 
+    override fun isLoading(): Boolean {
+        return isLoadingOrders || isLoadingMoreOrders
+    }
+
+    override fun canLoadMore(): Boolean {
+        return canLoadMore
+    }
+
+    override fun loadMoreOrders() {
+        orderView?.setLoadingMoreIndicator(true)
+        isLoadingMoreOrders = true
+        val payload = FetchOrdersPayload(selectedSite.get(), loadMore = true)
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.isError) {
-            orderView?.setLoadingIndicator(active = false)
-        }
-
-        when (event.causeOfChange) {
-            FETCH_ORDERS -> {
-                if (event.isError) {
-                    WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
-                    orderView?.showLoadOrdersError()
-                } else {
-                    fetchAndLoadOrdersFromDb(true)
+            // TODO: Notify the user of the problem
+            WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
+        } else {
+            when (event.causeOfChange) {
+                FETCH_ORDERS -> {
+                    canLoadMore = event.canLoadMore
+                    val isForceRefresh = !isLoadingMoreOrders
+                    fetchAndLoadOrdersFromDb(isForceRefresh)
+                }
+                // A child fragment made a change that requires a data refresh.
+                UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
+                else -> {
                 }
             }
-            // A child fragment made a change that requires a data refresh.
-            UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
-            else -> {}
+        }
+
+        if (event.causeOfChange == FETCH_ORDERS) {
+            if (isLoadingMoreOrders) {
+                isLoadingMoreOrders = false
+                orderView?.setLoadingMoreIndicator(active = false)
+            } else {
+                isLoadingOrders = false
+                orderView?.setLoadingIndicator(active = false)
+            }
         }
     }
 
@@ -89,7 +116,6 @@ class OrderListPresenter @Inject constructor(
             } else {
                 view.showNoOrders()
             }
-            view.setLoadingIndicator(active = false)
         }
     }
 }

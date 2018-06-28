@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.fragment_login_prologue.*
+import org.wordpress.android.util.DisplayUtils
 
 class LoginPrologueFragment : Fragment() {
     companion object {
@@ -51,13 +52,14 @@ class LoginPrologueFragment : Fragment() {
             prologueFinishedListener?.onPrologueFinished()
         })
 
-        text_config_link.movementMethod = LinkMovementMethod.getInstance()
-
-        val html = getString(R.string.login_configure_link, "<a href='$JETPACK_HELP_URL'>", "</a>")
+        val separator = if (DisplayUtils.isLandscape(activity)) " " else "<br><br>"
+        val html = getString(R.string.login_jetpack_required) + separator +
+                getString(R.string.login_configure_link, "<a href='$JETPACK_HELP_URL'>", "</a>")
+        text_jetpack.movementMethod = LinkMovementMethod.getInstance()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            text_config_link.text = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
+            text_jetpack.text = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
         } else {
-            text_config_link.text = Html.fromHtml(html)
+            text_jetpack.text = Html.fromHtml(html)
         }
     }
 }

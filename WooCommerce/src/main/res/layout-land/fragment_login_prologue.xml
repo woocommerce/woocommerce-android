@@ -4,24 +4,33 @@
                 android:layout_height="match_parent"
                 android:background="@color/wc_purple">
 
-    <ImageView
-        android:id="@+id/image_prologue"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/prologue_card"
-        android:layout_marginLeft="@dimen/margin_medium_large"
-        android:layout_marginRight="@dimen/margin_medium_large"
-        android:scaleType="fitEnd"
-        app:srcCompat="@drawable/ic_woo_login_screen_with_bleed"/>
+        android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="28dp"
-        android:gravity="center"
-        android:text="@string/login_prologue_banner"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_medium_extra_large"/>
+        <ImageView
+            android:id="@+id/image_prologue"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:layout_weight="4"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_woo_login_screen_with_bleed"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/margin_extra_large"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:text="@string/login_prologue_banner"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_medium_extra_large"/>
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
@@ -42,24 +51,29 @@
             android:id="@+id/image_jetpack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="@dimen/margin_large"
             app:srcCompat="@drawable/ic_jetpack_icon"/>
 
         <TextView
             android:id="@+id/text_jetpack"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/margin_extra_large"
             android:layout_marginStart="@dimen/margin_extra_large"
             android:layout_toEndOf="@+id/image_jetpack"
-            android:text="@string/login_jetpack_required"/>
+            android:layout_toStartOf="@+id/button_login_jetpack"
+            android:linksClickable="true"
+            android:text="@string/login_jetpack_required"
+            android:textColorLink="@color/wc_purple"/>
 
         <Button
             android:id="@+id/button_login_jetpack"
             style="@style/Woo.ButtonPurple"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_jetpack"
-            android:layout_marginTop="@dimen/margin_extra_large"
+            android:layout_alignParentEnd="true"
             android:padding="@dimen/margin_extra_large"
             android:text="@string/login_with_jetpack"/>
     </RelativeLayout>

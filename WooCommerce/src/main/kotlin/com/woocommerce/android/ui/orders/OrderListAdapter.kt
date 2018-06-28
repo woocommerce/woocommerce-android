@@ -24,6 +24,8 @@ import javax.inject.Inject
  */
 class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
     : SectionedRecyclerViewAdapter() {
+    private val orderList: ArrayList<WCOrderModel> = ArrayList()
+
     fun setOrders(orders: List<WCOrderModel>) {
         // clear all the current data from the adapter
         removeAllSections()
@@ -67,7 +69,45 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         if (listMonth.size > 0) {
             addSection(OrderListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
+
         notifyDataSetChanged()
+
+        // remember these orders for comparison in isSameOrderList() below
+        orderList.clear()
+        orderList.addAll(orders)
+    }
+
+    /**
+     * returns true if the passed list of orders is the same as the current list
+     */
+    fun isSameOrderList(orders: List<WCOrderModel>): Boolean {
+        if (orders.size != orderList.size) {
+            return false
+        }
+
+        val didMatch = fun(order: WCOrderModel): Boolean {
+            orderList.forEach {
+                if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        orders.forEach {
+            if (!didMatch(it)) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
+        if (presenter.canLoadMore() && !presenter.isLoading() && position == itemCount - 1) {
+            presenter.loadMoreOrders()
+        }
     }
 
     /**
