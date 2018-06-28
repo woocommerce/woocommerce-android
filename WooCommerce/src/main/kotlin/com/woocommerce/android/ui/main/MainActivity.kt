@@ -229,6 +229,13 @@ class MainActivity : AppCompatActivity(),
         val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
         clearFragmentBackStack(activeFragment)
         (activeFragment as TopLevelFragment).refreshFragmentState()
+
+        val stat = when (activeNavPosition) {
+            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.RESELECTED_DASHBOARD
+            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.RESELECTED_ORDER_LIST
+            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.RESELECTED_NOTIFICATIONS
+        }
+        AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
     }
 
     // endregion

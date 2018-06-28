@@ -68,9 +68,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CREATED_ACCOUNT,
         LOGIN_EPILOGUE_VIEWED,
 
+        // -- Top-level navigation
         OPENED_DASHBOARD,
         OPENED_ORDER_LIST,
         OPENED_NOTIFICATIONS,
+        RESELECTED_DASHBOARD,
+        RESELECTED_ORDER_LIST,
+        RESELECTED_NOTIFICATIONS,
+
         OPENED_ORDER_DETAIL,
         FULFILLED_ORDER
     }
