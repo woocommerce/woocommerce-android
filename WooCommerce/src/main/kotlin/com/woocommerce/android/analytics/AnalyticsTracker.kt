@@ -66,6 +66,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SIGNUP_SOCIAL_TO_LOGIN,
         ADDED_SELF_HOSTED_SITE,
         CREATED_ACCOUNT,
+        LOGIN_PROLOGUE_OPENED_JETPACK_LINK,
         LOGIN_EPILOGUE_VIEWED,
 
         // -- Top-level navigation
