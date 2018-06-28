@@ -259,11 +259,11 @@ class MainActivity : AppCompatActivity(),
 
         // Grab the requested top-level fragment and load if not already
         // in the current view.
-        val fragment = supportFragmentManager.findFragment(navPosition)
+        val fragment = supportFragmentManager.findFragment(navPosition) as TopLevelFragment
         if (fragment.isHidden || !fragment.isAdded) {
             // Remove the active fragment and replace with this newly selected one
-            hideParentFragment(activeFragment)
-            showTopLevelFragment(fragment as TopLevelFragment, navPosition.getTag())
+            hideParentFragment(activeFragment as TopLevelFragment?)
+            showTopLevelFragment(fragment, navPosition.getTag())
             supportFragmentManager.executePendingTransactions()
             activeNavPosition = navPosition
             return true
@@ -276,6 +276,7 @@ class MainActivity : AppCompatActivity(),
      * only be used with top-level fragments.
      */
     private fun showTopLevelFragment(fragment: TopLevelFragment, tag: String) {
+        fragment.isActive = true
         if (fragment.isHidden) {
             supportFragmentManager.beginTransaction().show(fragment).commit()
         } else {
@@ -287,8 +288,9 @@ class MainActivity : AppCompatActivity(),
      * Hide the provided fragment in the fragment container. This
      * should only be used with top-level fragments.
      */
-    private fun hideParentFragment(fragment: Fragment?) {
+    private fun hideParentFragment(fragment: TopLevelFragment?) {
         fragment?.let {
+            it.isActive = false
             supportFragmentManager.beginTransaction().hide(it).commit()
         }
     }

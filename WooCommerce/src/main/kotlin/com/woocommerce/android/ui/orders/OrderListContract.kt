@@ -15,8 +15,6 @@ interface OrderListContract {
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
-        var isActive: Boolean
-
         fun setLoadingIndicator(active: Boolean)
         fun setLoadingMoreIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean)

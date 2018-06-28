@@ -44,9 +44,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     private var loadOrdersPending = true // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
 
-    override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.let { bundle ->

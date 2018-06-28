@@ -21,6 +21,10 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         // fragment is currently hosting a child fragment (drilled in).
         const val CHILD_FRAGMENT_ACTIVE = "child-fragment-active"
     }
+
+    var isActive: Boolean = false
+        get() = field && childFragmentManager.backStackEntryCount == 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         childFragmentManager.addOnBackStackChangedListener(this)
