@@ -5,8 +5,11 @@ import android.content.Context
 import java.util.HashMap
 import com.automattic.android.tracks.TracksClient
 import android.preference.PreferenceManager
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import java.util.UUID
 import org.json.JSONObject
+import org.wordpress.android.fluxc.model.SiteModel
 
 class AnalyticsTracker private constructor(private val context: Context) {
     enum class Stat {
@@ -62,7 +65,19 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SIGNUP_SOCIAL_BUTTON_FAILURE,
         SIGNUP_SOCIAL_TO_LOGIN,
         ADDED_SELF_HOSTED_SITE,
-        CREATED_ACCOUNT
+        CREATED_ACCOUNT,
+        LOGIN_EPILOGUE_VIEWED,
+
+        // -- Top-level navigation
+        OPENED_DASHBOARD,
+        OPENED_ORDER_LIST,
+        OPENED_NOTIFICATIONS,
+        RESELECTED_DASHBOARD,
+        RESELECTED_ORDER_LIST,
+        RESELECTED_NOTIFICATIONS,
+
+        OPENED_ORDER_DETAIL,
+        FULFILLED_ORDER
     }
 
     private var tracksClient = TracksClient.getClient(context)
@@ -120,6 +135,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         val propertiesJson = JSONObject(properties)
         tracksClient.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+
+        if (propertiesJson.length() > 0) {
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
+        } else {
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+        }
     }
 
     private fun flush() {
@@ -148,6 +169,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
+        private const val BLOG_ID_KEY = "blog_id"
+        private const val IS_WPCOM_STORE = "is_wpcom_store"
+
         fun init(context: Context) {
             instance = AnalyticsTracker(context.applicationContext)
         }
@@ -173,6 +197,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
             props["error_type"] = errorType
             props["error_description"] = errorDescription
             track(stat, props)
+        }
+
+        fun trackWithSiteDetails(stat: Stat, site: SiteModel, properties: MutableMap<String, Any> = mutableMapOf()) {
+            properties[BLOG_ID_KEY] = site.siteId
+            properties[IS_WPCOM_STORE] = site.isWpComStore
+
+            AnalyticsTracker.track(stat, properties)
         }
 
         fun flush() {
