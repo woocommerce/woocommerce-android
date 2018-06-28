@@ -7,6 +7,9 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 interface OrderListContract {
     interface Presenter : BasePresenter<View> {
         fun loadOrders(forceRefresh: Boolean)
+        fun loadMoreOrders()
+        fun canLoadMore(): Boolean
+        fun isLoading(): Boolean
         fun openOrderDetail(order: WCOrderModel)
         fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean)
     }
@@ -15,6 +18,7 @@ interface OrderListContract {
         var isActive: Boolean
 
         fun setLoadingIndicator(active: Boolean)
+        fun setLoadingMoreIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean)
         fun showNoOrders()
         fun refreshFragmentState()

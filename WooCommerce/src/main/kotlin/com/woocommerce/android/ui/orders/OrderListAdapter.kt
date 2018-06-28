@@ -103,6 +103,13 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         return true
     }
 
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
+        if (presenter.canLoadMore() && !presenter.isLoading() && position == itemCount - 1) {
+            presenter.loadMoreOrders()
+        }
+    }
+
     /**
      * Custom class represents a single [TimeGroup] and it's assigned list of [WCOrderModel]. Responsible
      * for providing and populating the header and item view holders.
