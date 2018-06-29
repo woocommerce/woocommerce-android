@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.login
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.text.method.LinkMovementMethod
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,7 @@ import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.fragment_login_prologue.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.setHtmlText
+import com.woocommerce.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 
 class LoginPrologueFragment : Fragment() {
@@ -56,7 +57,15 @@ class LoginPrologueFragment : Fragment() {
         val separator = if (DisplayUtils.isLandscape(activity)) " " else "<br><br>"
         val html = getString(R.string.login_jetpack_required) + separator +
                 getString(R.string.login_configure_link, "<a href='$JETPACK_HELP_URL'>", "</a>")
-        text_jetpack.movementMethod = LinkMovementMethod.getInstance()
-        text_jetpack.setHtmlText(html) { AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_OPENED_JETPACK_LINK) }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            text_jetpack.text = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            text_jetpack.text = Html.fromHtml(html)
+        }
+
+        text_jetpack.setOnClickListener {
+            AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_OPENED_JETPACK_LINK)
+            ActivityUtils.openUrlExternal(activity as Context, JETPACK_HELP_URL)
+        }
     }
 }
