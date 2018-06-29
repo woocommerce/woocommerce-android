@@ -39,5 +39,10 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
 
     fun isSet() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1) != -1
 
+    fun reset() {
+        selectedSite = null
+        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
+    }
+
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 }
