@@ -316,9 +316,7 @@ class MainActivity : AppCompatActivity(),
     private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
         fragment?.let {
             if (it.childFragmentManager.backStackEntryCount > 0) {
-                while (it.childFragmentManager.backStackEntryCount > 0) {
-                    it.childFragmentManager.popBackStackImmediate()
-                }
+                it.childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 return true
             }
         }
