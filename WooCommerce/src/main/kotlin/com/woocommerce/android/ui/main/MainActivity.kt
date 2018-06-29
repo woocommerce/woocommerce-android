@@ -13,8 +13,6 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.active
-import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
@@ -23,7 +21,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -302,9 +299,7 @@ class MainActivity : AppCompatActivity(),
     private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
         fragment?.let {
             if (it.childFragmentManager.backStackEntryCount > 0) {
-                while (it.childFragmentManager.backStackEntryCount > 0) {
-                    it.childFragmentManager.popBackStackImmediate()
-                }
+                it.childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 return true
             }
         }
