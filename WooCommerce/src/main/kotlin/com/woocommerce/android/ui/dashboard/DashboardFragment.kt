@@ -25,9 +25,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
 
     private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
 
-    override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0
-
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)

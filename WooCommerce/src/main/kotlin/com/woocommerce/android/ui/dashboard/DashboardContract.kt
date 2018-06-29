@@ -12,8 +12,6 @@ interface DashboardContract {
     }
 
     interface View : BaseView<Presenter> {
-        var isActive: Boolean
-
         fun setLoadingIndicator(active: Boolean)
         fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Int>, granularity: StatsGranularity)
     }
