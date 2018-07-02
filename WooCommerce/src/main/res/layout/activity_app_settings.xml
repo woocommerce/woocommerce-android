@@ -6,31 +6,12 @@
               android:orientation="vertical">
 
     <include
-        layout="@layout/view_toolbar"
-        android:id="@+id/toolbar"/>
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"/>
 
-    <TextView
-        android:id="@+id/textPrivacySettings"
-        style="@style/Woo.Settings.Label"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/privacy_settings"/>
-
-    <TextView
-        android:id="@+id/textDeviceSettings"
-        style="@style/Woo.Settings.Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/device_settings"/>
-
-    <View
-        style="@style/Woo.Settings.Divider"/>
-
-    <TextView
-        android:id="@+id/textLogout"
-        style="@style/Woo.Settings.Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/signout"/>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

@@ -32,6 +32,7 @@
     <string name="continue_button">Continue</string>
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
+    <string name="learn_more">Learn More</string>
     <!--
         Date/Time Labels
     -->
@@ -138,5 +139,9 @@
     <string name="app_settings">App settings</string>
     <string name="privacy_settings">Privacy settings</string>
     <string name="device_settings">Open device settings</string>
-    <string name="confirm_signout_message">Log out of WooCommerce?</string>
+    <string name="settings_confirm_signout">Log out of WooCommerce?</string>
+    <string name="settings_collect_information">Collect information</string>
+    <string name="settings_collect_information_detail">Share information with out analytics tool about your use of services while logged in to your WooCommerce account</string>
+    <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
+    <string name="settings_privacy_policy">Read privacy policy</string>
 </resources>
