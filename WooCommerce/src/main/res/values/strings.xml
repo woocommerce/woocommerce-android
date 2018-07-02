@@ -133,5 +133,8 @@
     <!--
         Settings
     -->
-    <string name="app_settings_title">App settings</string>
+    <string name="settings">Settings</string>
+    <string name="app_settings">App settings</string>
+    <string name="privacy_settings">Privacy settings</string>
+    <string name="device_settings">Open device settings</string>
 </resources>

@@ -1,7 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical">
+
+    <include
+        layout="@layout/view_toolbar"
+        android:id="@+id/toolbar"/>
+
+    <TextView
+        android:id="@+id/textPrivacySettings"
+        style="@style/Woo.Settings.Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_settings"/>
+
+    <TextView
+        android:id="@+id/textDeviceSettings"
+        style="@style/Woo.Settings.Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/device_settings"/>
+
+    <View
+        style="@style/Woo.Settings.Divider"/>
+
+    <TextView
+        android:id="@+id/textLogout"
+        style="@style/Woo.Settings.Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/signout"/>
 
 </LinearLayout>

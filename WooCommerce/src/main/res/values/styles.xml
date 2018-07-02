@@ -279,4 +279,22 @@
     <style name="Woo.OrderDetail.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
     <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
     <style name="Woo.OrderDetail.TextAppearance.Label.Bold" parent="Woo.TextAppearance.Label.Bold"/>
+    <!--
+        Settings Styles
+    -->
+    <style name="Woo.Settings"/>
+
+    <style name="Woo.Settings.Label" parent="Woo.TextAppearance">
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:padding">@dimen/margin_extra_large</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Woo.Settings.Divider">
+        <item name="android:layout_marginTop">@dimen/margin_large</item>
+        <item name="android:layout_marginBottom">@dimen/margin_large</item>
+        <item name="android:background">@color/gray</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+    </style>
 </resources>
