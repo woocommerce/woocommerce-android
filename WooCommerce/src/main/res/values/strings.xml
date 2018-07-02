@@ -31,6 +31,7 @@
     <string name="undo">Undo</string>
     <string name="continue_button">Continue</string>
     <string name="untitled">Untitled</string>
+    <string name="cancel">Cancel</string>
     <!--
         Date/Time Labels
     -->
@@ -137,4 +138,5 @@
     <string name="app_settings">App settings</string>
     <string name="privacy_settings">Privacy settings</string>
     <string name="device_settings">Open device settings</string>
+    <string name="confirm_signout_message">Log out of WooCommerce?</string>
 </resources>

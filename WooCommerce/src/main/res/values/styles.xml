@@ -297,4 +297,13 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
     </style>
+
+    <!--
+        Other
+    -->
+    <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+    </style>
 </resources>

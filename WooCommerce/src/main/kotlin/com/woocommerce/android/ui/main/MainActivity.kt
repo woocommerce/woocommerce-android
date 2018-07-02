@@ -155,6 +155,13 @@ class MainActivity : AppCompatActivity(),
                 }
                 return
             }
+            REQUEST_CODE_SETTINGS -> {
+                val shouldLogout = data?.getBooleanExtra(AppSettingsActivity.KEY_LOGOUT, false)
+                if (shouldLogout!!) {
+                    presenter.logout()
+                    return
+                }
+            }
         }
     }
 
