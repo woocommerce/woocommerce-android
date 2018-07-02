@@ -130,4 +130,8 @@
     <string name="orderstatus_hold">On-Hold</string>
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
+    <!--
+        Settings
+    -->
+    <string name="app_settings_title">App settings</string>
 </resources>
