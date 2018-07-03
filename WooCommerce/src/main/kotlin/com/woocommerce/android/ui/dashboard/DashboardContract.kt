@@ -2,12 +2,11 @@ package com.woocommerce.android.ui.dashboard
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
-import com.woocommerce.android.ui.dashboard.DashboardStatsView.StatsTimeframe
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 interface DashboardContract {
     interface Presenter : BasePresenter<View> {
-        fun loadStats(period: StatsTimeframe, forced: Boolean = false)
+        fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun getStatsCurrency(): String?
     }
 

@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
@@ -22,18 +23,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         View.inflate(context, R.layout.dashboard_stats, this)
     }
 
-    enum class StatsTimeframe { THIS_WEEK, THIS_MONTH, THIS_YEAR, YEARS }
-
     fun initView() {
         barchart_progress.visibility = View.VISIBLE
-        // TODO: Init tab layout with StatsTimeframe values
+        // TODO: Init tab layout with StatsGranularity values
     }
 
     fun populateView(
         revenueStats: Map<String, Double>,
         orderStats: Map<String, Int>,
         currencyCode: String?,
-        timeframe: StatsTimeframe = getActiveTimeframe()
+        timeframe: StatsGranularity = getActiveGranularity()
     ) {
         barchart_progress.visibility = View.GONE
 
@@ -49,14 +48,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         val entries = when (timeframe) {
-            StatsTimeframe.THIS_WEEK -> TODO()
-            StatsTimeframe.THIS_MONTH -> {
-                revenueStats.map({
+            StatsGranularity.DAYS -> {
+                revenueStats.map {
                     BarEntry(it.key.substringAfterLast("-").toFloat(), it.value.toFloat())
-                })
+                }
             }
-            StatsTimeframe.THIS_YEAR -> TODO()
-            StatsTimeframe.YEARS -> TODO()
+            StatsGranularity.WEEKS -> TODO()
+            StatsGranularity.MONTHS -> TODO()
+            StatsGranularity.YEARS -> TODO()
         }
 
         val dataSet = BarDataSet(entries, "").apply {
@@ -108,26 +107,26 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    fun getActiveTimeframe(): StatsTimeframe {
+    fun getActiveGranularity(): StatsGranularity {
         // TODO: Return state of timeframe selector
-        return StatsTimeframe.THIS_MONTH
+        return StatsGranularity.DAYS
     }
 
     // TODO For certain currencies/locales, replace the thousands mark with k
     private fun formatCurrencyAmountForDisplay(amount: Double, currencyCode: String?) =
             CurrencyUtils.currencyStringRounded(context, amount, currencyCode ?: "")
 
-    private fun formatXAxisValueRange(chart: BarChart, timeframe: StatsTimeframe, dateList: Set<String>) {
-        when (timeframe) {
-            StatsTimeframe.THIS_WEEK -> TODO()
-            StatsTimeframe.THIS_MONTH -> {
+    private fun formatXAxisValueRange(chart: BarChart, granularity: StatsGranularity, dateList: Set<String>) {
+        when (granularity) {
+            StatsGranularity.DAYS -> {
                 // Expand the x-axis up to the total days in the current month
                 // (regardless of the current day of the month)
                 val daysInMonth = DateUtils.getNumberOfDaysInMonth(dateList.first())
                 chart.setVisibleXRangeMinimum(daysInMonth.toFloat())
             }
-            StatsTimeframe.THIS_YEAR -> TODO()
-            StatsTimeframe.YEARS -> TODO()
+            StatsGranularity.WEEKS -> TODO()
+            StatsGranularity.MONTHS -> TODO()
+            StatsGranularity.YEARS -> TODO()
         }
     }
 }

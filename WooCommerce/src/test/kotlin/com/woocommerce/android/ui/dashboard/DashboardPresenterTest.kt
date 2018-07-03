@@ -11,7 +11,6 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardStatsView.StatsTimeframe
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -49,7 +48,7 @@ class DashboardPresenterTest {
     @Test
     fun `Requests order stats data correctly`() {
         presenter.takeView(dashboardView)
-        presenter.loadStats(StatsTimeframe.THIS_MONTH)
+        presenter.loadStats(StatsGranularity.DAYS)
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
         assertEquals(WCStatsAction.FETCH_ORDER_STATS, actionCaptor.firstValue.type)
