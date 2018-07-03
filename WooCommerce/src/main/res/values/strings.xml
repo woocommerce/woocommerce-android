@@ -136,7 +136,6 @@
         Settings
     -->
     <string name="settings">Settings</string>
-    <string name="app_settings">App settings</string>
     <string name="settings_send_stats">Send statistics</string>
     <string name="settings_send_stats_detail">Automatically send usage statistics to help us improve WooCommerce for Android</string>
     <string name="settings_signout">Logout account</string>

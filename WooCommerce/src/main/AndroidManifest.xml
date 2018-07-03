@@ -50,8 +50,7 @@
         </activity>
 
         <activity
-            android:name=".ui.prefs.AppSettingsActivity"
-            android:label="@string/app_settings"/>
+            android:name=".ui.prefs.AppSettingsActivity"/>
 
         <!-- Services -->
         <service

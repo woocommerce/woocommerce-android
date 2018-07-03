@@ -49,6 +49,6 @@ class AppSettingsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        activity?.setTitle(R.string.app_settings)
+        activity?.setTitle(R.string.settings)
     }
 }
