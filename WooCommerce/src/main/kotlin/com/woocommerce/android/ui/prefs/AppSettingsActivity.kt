@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ContextThemeWrapper
 import android.support.v7.widget.Toolbar
+import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.prefs.AppSettingsFragment.AppSettingsListener
 import kotlinx.android.synthetic.main.activity_app_settings.*
@@ -23,11 +24,30 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_app_settings)
         setSupportActionBar(toolbar as Toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null) {
             showAppSettingsFragment()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            return true
+        }
+
+        return false
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            finish()
+        } else {
+            super.onBackPressed()
         }
     }
 
