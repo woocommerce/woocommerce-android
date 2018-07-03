@@ -119,4 +119,3 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
                 .commitAllowingStateLoss()
     }
 }
-

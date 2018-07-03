@@ -10,7 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.ActivityUtils
 import kotlinx.android.synthetic.main.fragment_privacy_settings.*
 
-class PrivacySettingsFragment: Fragment() {
+class PrivacySettingsFragment : Fragment() {
     companion object {
         private const val PRIVACY_POLICY_URL = "https://woocommerce.com/privacy-policy/"
         const val TAG = "privacy_settings"
@@ -36,4 +36,3 @@ class PrivacySettingsFragment: Fragment() {
         ActivityUtils.openUrlExternal(activity as Context, PRIVACY_POLICY_URL)
     }
 }
-
