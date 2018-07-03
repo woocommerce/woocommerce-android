@@ -6,12 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.activity_app_settings.*
+import com.woocommerce.android.analytics.AnalyticsTracker
 import kotlinx.android.synthetic.main.fragment_app_settings.*
 
 class AppSettingsFragment : Fragment() {
     companion object {
-        private const val PRIVACY_POLICY_URL = "https://woocommerce.com/privacy-policy/"
         const val TAG = "app-settings"
 
         fun newInstance(): AppSettingsFragment {
@@ -21,8 +20,6 @@ class AppSettingsFragment : Fragment() {
 
     interface AppSettingsListener {
         fun onRequestLogout()
-        fun onRequestShowPrivacySettings()
-        fun onRequestShowDeviceSettings()
     }
 
     private lateinit var listener: AppSettingsListener
@@ -40,14 +37,13 @@ class AppSettingsFragment : Fragment() {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
 
-        textPrivacySettings.setOnClickListener {
-            listener.onRequestShowPrivacySettings()
-        }
-        textDeviceSettings.setOnClickListener {
-            listener.onRequestShowDeviceSettings()
-        }
         textLogout.setOnClickListener {
             listener.onRequestLogout()
+        }
+
+        switchSendStats.isChecked = AnalyticsTracker.sendUsageStats
+        switchSendStats.setOnClickListener {
+            AnalyticsTracker.sendUsageStats = switchSendStats.isChecked
         }
     }
 

@@ -2,11 +2,8 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ContextThemeWrapper
@@ -16,7 +13,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.prefs.AppSettingsFragment.AppSettingsListener
 import kotlinx.android.synthetic.main.activity_app_settings.*
-import org.wordpress.android.util.AppLog
 
 class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
     companion object {
@@ -57,22 +53,9 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
         confirmLogout()
     }
 
-    override fun onRequestShowPrivacySettings() {
-        showPrivacySettingsFragment()
-    }
-
-    override fun onRequestShowDeviceSettings() {
-        showDeviceSettings()
-    }
-
     private fun showAppSettingsFragment() {
         val fragment = AppSettingsFragment.newInstance()
-        showFragment(fragment, PrivacySettingsFragment.TAG, false)
-    }
-
-    private fun showPrivacySettingsFragment() {
-        val fragment = PrivacySettingsFragment.newInstance()
-        showFragment(fragment, PrivacySettingsFragment.TAG, true)
+        showFragment(fragment, AppSettingsFragment.TAG, false)
     }
 
     private fun confirmLogout() {
@@ -91,20 +74,6 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
         data.putExtra(KEY_LOGOUT_ON_RETURN, true)
         setResult(Activity.RESULT_OK)
         finish()
-    }
-
-    private fun showDeviceSettings() {
-        try {
-            // open specific app info screen
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:$packageName")
-            startActivity(intent)
-        } catch (exception: ActivityNotFoundException) {
-            AppLog.w(AppLog.T.SETTINGS, exception.message)
-            // open generic apps screen
-            val intent = Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
-            startActivity(intent)
-        }
     }
 
     private fun showFragment(fragment: Fragment, tag: String, animate: Boolean) {

@@ -1,40 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/white"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textPrivacySettings"
-        style="@style/Woo.Settings.Label"
+    <LinearLayout
+        android:id="@+id/settingsView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/privacy_settings"/>
+        android:background="@color/white"
+        android:orientation="vertical">
 
-    <View
-        style="@style/Woo.Settings.Divider"/>
+        <TextView
+            android:id="@+id/textSendStats"
+            style="@style/Woo.Settings.LabelWithDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_send_stats"/>
 
-    <TextView
-        android:id="@+id/textDeviceSettings"
-        style="@style/Woo.Settings.Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/device_settings"/>
+        <Switch
+            android:id="@+id/switchSendStats"
+            style="@style/Woo.Settings.Label.Detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_send_stats_detail"/>
 
-    <View
-        style="@style/Woo.Settings.Divider"/>
+        <View
+            style="@style/Woo.Settings.Divider"/>
+    </LinearLayout>
 
-    <TextView
+    <Button
         android:id="@+id/textLogout"
-        style="@style/Woo.Settings.Label"
-        android:layout_width="match_parent"
+        style="@style/Woo.ButtonPurple"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/signout"/>
+        android:layout_below="@+id/settingsView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/settings_padding"
+        android:text="@string/settings_signout"/>
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+</RelativeLayout>
