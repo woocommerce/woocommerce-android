@@ -12,6 +12,9 @@
         android:layout_height="wrap_content"
         android:text="@string/privacy_settings"/>
 
+    <View
+        style="@style/Woo.Settings.Divider"/>
+
     <TextView
         android:id="@+id/textDeviceSettings"
         style="@style/Woo.Settings.Label"

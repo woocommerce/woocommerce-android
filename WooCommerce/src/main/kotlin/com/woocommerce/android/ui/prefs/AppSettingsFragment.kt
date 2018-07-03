@@ -50,4 +50,9 @@ class AppSettingsFragment : Fragment() {
             listener.onRequestLogout()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.setTitle(R.string.app_settings)
+    }
 }

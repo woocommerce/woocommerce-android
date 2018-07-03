@@ -38,6 +38,11 @@ class PrivacySettingsFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        activity?.setTitle(R.string.privacy_settings)
+    }
+
     private fun showPrivacyPolicy() {
         ActivityUtils.openUrlExternal(activity as Context, PRIVACY_POLICY_URL)
     }
