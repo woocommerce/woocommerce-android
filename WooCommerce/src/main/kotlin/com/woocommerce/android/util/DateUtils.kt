@@ -5,11 +5,15 @@ import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
 import org.wordpress.android.util.DateTimeUtils
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
+import java.util.Locale
 
 object DateUtils {
+    private val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
+
     /**
      * Returns a string in the format of {date} at {time}.
      */
@@ -61,5 +65,16 @@ object DateUtils {
         } catch (e: IndexOutOfBoundsException) {
             throw IllegalArgumentException("Date string is not of format YYYY-MM-DD: $iso8601Date")
         }
+    }
+
+    /**
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in "MMM d" format.
+     *
+     * For example, given 2018-07-03 returns "Jul 3", and given 2018-07-28 returns "Jul 28".
+     */
+    fun getFriendlyMonthDayString(iso8601Date: String): String {
+        val (year, month, day) = iso8601Date.split("-")
+        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+        return friendlyMonthDayFormat.format(date)
     }
 }

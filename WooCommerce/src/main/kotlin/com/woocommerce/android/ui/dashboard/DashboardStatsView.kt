@@ -49,8 +49,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         val entries = when (timeframe) {
             StatsGranularity.DAYS -> {
-                revenueStats.map {
-                    BarEntry(it.key.substringAfterLast("-").toFloat(), it.value.toFloat())
+                revenueStats.values.mapIndexed { index, value ->
+                    BarEntry((index + 1).toFloat(), value.toFloat())
                 }
             }
             StatsGranularity.WEEKS -> TODO()
@@ -72,6 +72,22 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
+
+                setLabelCount(2, true) // Only show first and last date
+
+                valueFormatter = if (timeframe == StatsGranularity.DAYS) {
+                    IAxisValueFormatter { value, axis ->
+                        when (value) {
+                            axis.mEntries.first() ->
+                                DateUtils.getFriendlyMonthDayString(revenueStats.keys.first())
+                            axis.mEntries.max() ->
+                                DateUtils.getFriendlyMonthDayString(revenueStats.keys.last())
+                            else -> ""
+                        }
+                    }
+                } else {
+                    null
+                }
             }
 
             // Format the X-axis value range according to the current timeframe and given values
@@ -118,12 +134,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private fun formatXAxisValueRange(chart: BarChart, granularity: StatsGranularity, dateList: Set<String>) {
         when (granularity) {
-            StatsGranularity.DAYS -> {
-                // Expand the x-axis up to the total days in the current month
-                // (regardless of the current day of the month)
-                val daysInMonth = DateUtils.getNumberOfDaysInMonth(dateList.first())
-                chart.setVisibleXRangeMinimum(daysInMonth.toFloat())
-            }
+            StatsGranularity.DAYS -> chart.setVisibleXRangeMinimum(30F)
             StatsGranularity.WEEKS -> TODO()
             StatsGranularity.MONTHS -> TODO()
             StatsGranularity.YEARS -> TODO()
