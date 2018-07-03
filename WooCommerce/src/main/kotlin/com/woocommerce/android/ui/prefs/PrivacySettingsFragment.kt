@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
 import kotlinx.android.synthetic.main.fragment_privacy_settings.*
 
@@ -26,6 +27,11 @@ class PrivacySettingsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        switchCollectInformation.isChecked = AnalyticsTracker.sendUsageStats
+        switchCollectInformation.setOnClickListener {
+            AnalyticsTracker.sendUsageStats = switchCollectInformation.isChecked
+        }
 
         buttonPrivacyPolicy.setOnClickListener {
             showPrivacyPolicy()

@@ -173,8 +173,21 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val BLOG_ID_KEY = "blog_id"
         private const val IS_WPCOM_STORE = "is_wpcom_store"
 
+        private const val PREFKEY_SEND_USAGE_STATS = "wp_pref_send_usage_stats"
+
+        var sendUsageStats: Boolean = true
+            set(value) {
+                if (value != field) {
+                    field = value
+                    val prefs = PreferenceManager.getDefaultSharedPreferences(instance.context)
+                    prefs.edit().putBoolean(PREFKEY_SEND_USAGE_STATS, field).apply()
+                }
+            }
+
         fun init(context: Context) {
             instance = AnalyticsTracker(context.applicationContext)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+            sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
 
         fun track(stat: Stat) {
@@ -182,7 +195,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         fun track(stat: Stat, properties: Map<String, *>) {
-            instance.track(stat, properties)
+            if (sendUsageStats) {
+                instance.track(stat, properties)
+            }
         }
 
         /**
