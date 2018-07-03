@@ -140,4 +140,5 @@
     <string name="settings_send_stats">Send statistics</string>
     <string name="settings_send_stats_detail">Automatically send usage statistics to help us improve WooCommerce for Android</string>
     <string name="settings_signout">Logout account</string>
+    <string name="settings_confirm_signout">Log out of WooCommerce?</string>
 </resources>
