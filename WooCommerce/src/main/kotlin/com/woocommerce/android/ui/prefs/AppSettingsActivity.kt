@@ -13,6 +13,7 @@ import android.support.v7.view.ContextThemeWrapper
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.prefs.AppSettingsFragment.AppSettingsListener
 import kotlinx.android.synthetic.main.activity_app_settings.*
 import org.wordpress.android.util.AppLog
@@ -31,6 +32,7 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
 
         if (savedInstanceState == null) {
             showAppSettingsFragment()
+            AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS)
         }
     }
 

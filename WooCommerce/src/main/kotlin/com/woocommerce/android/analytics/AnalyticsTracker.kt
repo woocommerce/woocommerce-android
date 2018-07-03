@@ -78,7 +78,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         RESELECTED_NOTIFICATIONS,
 
         OPENED_ORDER_DETAIL,
-        FULFILLED_ORDER
+        FULFILLED_ORDER,
+
+        OPENED_SETTINGS
     }
 
     private var tracksClient = TracksClient.getClient(context)
