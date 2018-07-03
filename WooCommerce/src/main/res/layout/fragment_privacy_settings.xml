@@ -1,5 +1,6 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,45 +9,80 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <Switch
-            android:id="@+id/switchCollectInformation"
-            style="@style/Woo.Settings.Label"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_collect_information"/>
+            android:orientation="horizontal">
+
+            <ImageView
+                style="@style/Woo.Settings.Icon"
+                app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
+
+            <Switch
+                android:id="@+id/switchCollectInformation"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_collect_information"/>
+        </LinearLayout>
 
         <View
             style="@style/Woo.Settings.Divider"/>
 
-        <TextView
-            style="@style/Woo.Settings.Label.WithButton"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_collect_information_detail"/>
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/buttonLearnMore"
-            style="@style/Woo.Settings.Button"
-            android:layout_gravity="end"
-            android:text="@string/learn_more"/>
+            <ImageView
+                android:id="@+id/imageInfo"
+                style="@style/Woo.Settings.Icon"
+                app:srcCompat="@drawable/ic_info_outline_grey_min_24dp"/>
+
+            <TextView
+                android:id="@+id/textInfoDetail"
+                style="@style/Woo.Settings.Label.WithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/imageInfo"
+                android:text="@string/settings_collect_information_detail"/>
+
+            <TextView
+                android:id="@+id/buttonLearnMore"
+                style="@style/Woo.Settings.Button"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/textInfoDetail"
+                android:text="@string/learn_more"/>
+        </RelativeLayout>
 
         <View
             style="@style/Woo.Settings.Divider"/>
 
-        <TextView
-            style="@style/Woo.Settings.Label.WithButton"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_privacy_detail"/>
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/buttonPrivacyPolicy"
-            style="@style/Woo.Settings.Button"
-            android:layout_gravity="end"
-            android:text="@string/settings_privacy_policy"/>
+            <ImageView
+                android:id="@+id/imageUser"
+                style="@style/Woo.Settings.Icon"
+                app:srcCompat="@drawable/ic_user_circle_grey_min_24dp"/>
+
+            <TextView
+                android:id="@+id/textPrivacyDetail"
+                style="@style/Woo.Settings.Label.WithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/imageUser"
+                android:text="@string/settings_privacy_detail"/>
+
+            <TextView
+                android:id="@+id/buttonPrivacyPolicy"
+                style="@style/Woo.Settings.Button"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/textPrivacyDetail"
+                android:text="@string/settings_privacy_policy"/>
+        </RelativeLayout>
 
         <View
             style="@style/Woo.Settings.Divider"/>
-
     </LinearLayout>
 </ScrollView>

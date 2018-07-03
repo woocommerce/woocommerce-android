@@ -290,6 +290,12 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
+    <style name="Woo.Settings.Icon">
+        <item name="android:padding">18dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="Woo.Settings.Label.WithButton" parent="Woo.Settings.Label">
         <item name="android:paddingBottom">0dp</item>
     </style>

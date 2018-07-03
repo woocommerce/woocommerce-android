@@ -156,8 +156,8 @@ class MainActivity : AppCompatActivity(),
                 return
             }
             REQUEST_CODE_SETTINGS -> {
-                if (data != null && data.hasExtra(AppSettingsActivity.KEY_LOGOUT)) {
-                    val shouldLogout = data.getBooleanExtra(AppSettingsActivity.KEY_LOGOUT, false)
+                if (data != null && data.hasExtra(AppSettingsActivity.KEY_LOGOUT_ON_RETURN)) {
+                    val shouldLogout = data.getBooleanExtra(AppSettingsActivity.KEY_LOGOUT_ON_RETURN, false)
                     if (shouldLogout) {
                         presenter.logout()
                         return

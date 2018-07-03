@@ -20,7 +20,7 @@ import org.wordpress.android.util.AppLog
 
 class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
     companion object {
-        const val KEY_LOGOUT = "logout"
+        const val KEY_LOGOUT_ON_RETURN = "logout_on_return"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +88,7 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
     private fun logout() {
         // the actual logout will be handled by the main activity
         val data = Intent()
-        data.putExtra(KEY_LOGOUT, true)
+        data.putExtra(KEY_LOGOUT_ON_RETURN, true)
         setResult(Activity.RESULT_OK)
         finish()
     }
