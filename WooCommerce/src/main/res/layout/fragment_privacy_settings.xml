@@ -39,6 +39,7 @@
             android:text="@string/settings_privacy_detail"/>
 
         <TextView
+            android:id="@+id/buttonPrivacyPolicy"
             style="@style/Woo.Settings.Button"
             android:layout_gravity="end"
             android:text="@string/settings_privacy_policy"/>

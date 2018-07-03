@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.prefs
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.util.ActivityUtils
+import kotlinx.android.synthetic.main.fragment_privacy_settings.*
 
 class PrivacySettingsFragment: Fragment() {
     companion object {
@@ -23,6 +26,14 @@ class PrivacySettingsFragment: Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        buttonPrivacyPolicy.setOnClickListener {
+            showPrivacyPolicy()
+        }
+    }
+
+    private fun showPrivacyPolicy() {
+        ActivityUtils.openUrlExternal(activity as Context, PRIVACY_POLICY_URL)
     }
 }
 
