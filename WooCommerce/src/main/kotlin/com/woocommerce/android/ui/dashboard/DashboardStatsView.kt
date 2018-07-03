@@ -129,8 +129,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     // TODO For certain currencies/locales, replace the thousands mark with k
-    private fun formatCurrencyAmountForDisplay(amount: Double, currencyCode: String?) =
+    private fun formatCurrencyAmountForDisplay(amount: Double, currencyCode: String?): String {
+        return amount.takeIf { it > 0 }?.let {
             CurrencyUtils.currencyStringRounded(context, amount, currencyCode ?: "")
+        } ?: ""
+    }
 
     private fun formatXAxisValueRange(chart: BarChart, granularity: StatsGranularity, dateList: Set<String>) {
         when (granularity) {
