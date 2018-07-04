@@ -50,7 +50,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
                 }
                 setOnRefreshListener {
                     setLoadingIndicator(true)
-                    presenter.loadStats(dashboard_stats.getActiveTimeframe())
+                    presenter.loadStats(dashboard_stats.getActiveTimeframe(), forced = true)
                 }
             }
         }
@@ -119,7 +119,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
     override fun refreshFragmentState() {
         if (isActive) {
             setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.getActiveTimeframe())
+            presenter.loadStats(dashboard_stats.getActiveTimeframe(), forced = true)
         } else {
             loadDataPending = true
         }
