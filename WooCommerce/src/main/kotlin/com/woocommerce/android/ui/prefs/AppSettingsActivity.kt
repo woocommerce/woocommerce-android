@@ -61,18 +61,18 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
     private fun confirmLogout() {
         AlertDialog.Builder(ContextThemeWrapper(this, R.style.Woo_Dialog))
                 .setMessage(R.string.settings_confirm_signout)
-                .setTitle(R.string.signout)
                 .setPositiveButton(R.string.signout) { dialog, whichButton -> logout() }
                 .setNegativeButton(R.string.cancel, null)
                 .setCancelable(true)
-                .create().show()
+                .create()
+                .show()
     }
 
     private fun logout() {
         // the actual logout will be handled by the main activity
         val data = Intent()
         data.putExtra(KEY_LOGOUT_ON_RETURN, true)
-        setResult(Activity.RESULT_OK)
+        setResult(Activity.RESULT_OK, data)
         finish()
     }
 
