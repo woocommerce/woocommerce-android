@@ -29,7 +29,7 @@ class DashboardPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadStats(period: StatsTimeframe) {
+    override fun loadStats(period: StatsTimeframe, forced: Boolean) {
         val granularity = when (period) {
             StatsTimeframe.THIS_WEEK -> StatsGranularity.DAYS
             StatsTimeframe.THIS_MONTH -> StatsGranularity.DAYS
@@ -37,7 +37,7 @@ class DashboardPresenter @Inject constructor(
             StatsTimeframe.YEARS -> StatsGranularity.YEARS
         }
 
-        val payload = FetchOrderStatsPayload(selectedSite.get(), granularity)
+        val payload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
     }
 
