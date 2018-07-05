@@ -166,7 +166,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
     companion object {
         // Guaranteed to hold a reference to the application context, which is safe
         @SuppressLint("StaticFieldLeak")
-        private lateinit var instance: AnalyticsTracker
+        private var instance: AnalyticsTracker? = null
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
@@ -182,7 +182,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         fun track(stat: Stat, properties: Map<String, *>) {
-            instance.track(stat, properties)
+            instance?.track(stat, properties)
         }
 
         /**
@@ -208,15 +208,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         fun flush() {
-            instance.flush()
+            instance?.flush()
         }
 
         fun clearAllData() {
-            instance.clearAllData()
+            instance?.clearAllData()
         }
 
         fun refreshMetadata(username: String?) {
-            instance.refreshMetadata(username)
+            instance?.refreshMetadata(username)
         }
     }
 }
