@@ -72,6 +72,11 @@
     <!--
         Dashboard View
     -->
+    <string name="dashboard_stats_granularity_days">Days</string>
+    <string name="dashboard_stats_granularity_weeks">Weeks</string>
+    <string name="dashboard_stats_granularity_months">Months</string>
+    <string name="dashboard_stats_granularity_years">Years</string>
+
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
     <string name="dashboard_stats_revenue">Revenue</string>

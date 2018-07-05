@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
-class DashboardFragment : TopLevelFragment(), DashboardContract.View {
+class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
@@ -63,7 +63,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
 
         if (isActive) {
             setLoadingIndicator(true)
-            dashboard_stats.initView()
+            dashboard_stats.initView(listener = this)
             presenter.loadStats(dashboard_stats.getActiveGranularity())
         } else {
             loadDataPending = true
@@ -116,5 +116,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         } else {
             loadDataPending = true
         }
+    }
+
+    override fun loadStats(period: StatsGranularity) {
+        presenter.loadStats(period)
     }
 }

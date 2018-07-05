@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.support.annotation.StringRes
+import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
@@ -23,9 +25,32 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         View.inflate(context, R.layout.dashboard_stats, this)
     }
 
-    fun initView() {
+    fun initView(period: StatsGranularity = StatsGranularity.DAYS, listener: DashboardStatsListener) {
         barchart_progress.visibility = View.VISIBLE
-        // TODO: Init tab layout with StatsGranularity values
+
+        StatsGranularity.values().forEach { granularity ->
+            val tab = tab_layout.newTab().apply {
+                setText(getStringForGranularity(granularity))
+                tag = granularity
+            }
+            tab_layout.addTab(tab)
+
+            // Start with the given time period selected
+            if (granularity == period) {
+                tab.select()
+            }
+        }
+
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                barchart_progress.visibility = View.VISIBLE
+                listener.loadStats(tab.tag as StatsGranularity)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
     }
 
     fun populateView(
@@ -124,8 +149,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun getActiveGranularity(): StatsGranularity {
-        // TODO: Return state of timeframe selector
-        return StatsGranularity.DAYS
+        return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
+            it.tag as StatsGranularity
+        } ?: StatsGranularity.DAYS
     }
 
     // TODO For certain currencies/locales, replace the thousands mark with k
@@ -141,6 +167,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsGranularity.WEEKS -> TODO()
             StatsGranularity.MONTHS -> TODO()
             StatsGranularity.YEARS -> TODO()
+        }
+    }
+
+    @StringRes
+    private fun getStringForGranularity(timeframe: StatsGranularity): Int {
+        return when (timeframe) {
+            StatsGranularity.DAYS -> R.string.dashboard_stats_granularity_days
+            StatsGranularity.WEEKS -> R.string.dashboard_stats_granularity_weeks
+            StatsGranularity.MONTHS -> R.string.dashboard_stats_granularity_months
+            StatsGranularity.YEARS -> R.string.dashboard_stats_granularity_years
         }
     }
 }
