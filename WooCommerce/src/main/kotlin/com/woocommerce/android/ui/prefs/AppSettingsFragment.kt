@@ -37,7 +37,7 @@ class AppSettingsFragment : Fragment() {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
 
-        textLogout.setOnClickListener {
+        buttonLogout.setOnClickListener {
             listener.onRequestLogout()
         }
 

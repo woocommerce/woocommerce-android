@@ -320,7 +320,7 @@
 
 
     <style name="Woo.Settings.Divider">
-        <item name="android:background">@color/gray</item>
+        <item name="android:background">@color/grey_lighten_20</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
     </style>
