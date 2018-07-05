@@ -78,7 +78,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     BarEntry((index + 1).toFloat(), value.toFloat())
                 }
             }
-            StatsGranularity.WEEKS -> TODO()
+            StatsGranularity.WEEKS -> {
+                revenueStats.values.mapIndexed { index, value ->
+                    BarEntry((index + 1).toFloat(), value.toFloat())
+                }
+            }
             StatsGranularity.MONTHS -> TODO()
             StatsGranularity.YEARS -> TODO()
         }
@@ -100,18 +104,31 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
                 setLabelCount(2, true) // Only show first and last date
 
-                valueFormatter = if (timeframe == StatsGranularity.DAYS) {
-                    IAxisValueFormatter { value, axis ->
+                valueFormatter = when (timeframe) {
+                    StatsGranularity.DAYS -> IAxisValueFormatter { value, axis ->
                         when (value) {
-                            axis.mEntries.first() ->
+                            axis.mEntries.first() -> {
                                 DateUtils.getFriendlyMonthDayString(revenueStats.keys.first())
-                            axis.mEntries.max() ->
+                            }
+                            axis.mEntries.max() -> {
                                 DateUtils.getFriendlyMonthDayString(revenueStats.keys.last())
+                            }
                             else -> ""
                         }
                     }
-                } else {
-                    null
+                    StatsGranularity.WEEKS -> IAxisValueFormatter { value, axis ->
+                        when (value) {
+                            axis.mEntries.first() -> {
+                                DateUtils.getFriendlyMonthDayStringForWeek(revenueStats.keys.first())
+                            }
+                            axis.mEntries.max() -> {
+                                DateUtils.getFriendlyMonthDayStringForWeek(revenueStats.keys.last())
+                            }
+                            else -> ""
+                        }
+                    }
+                    StatsGranularity.MONTHS -> TODO()
+                    StatsGranularity.YEARS -> TODO()
                 }
             }
 
@@ -164,7 +181,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private fun formatXAxisValueRange(chart: BarChart, granularity: StatsGranularity, dateList: Set<String>) {
         when (granularity) {
             StatsGranularity.DAYS -> chart.setVisibleXRangeMinimum(30F)
-            StatsGranularity.WEEKS -> TODO()
+            StatsGranularity.WEEKS -> chart.setVisibleXRangeMinimum(17F)
             StatsGranularity.MONTHS -> TODO()
             StatsGranularity.YEARS -> TODO()
         }

@@ -13,6 +13,7 @@ import java.util.Locale
 
 object DateUtils {
     private val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
+    private val dayOfWeekOfYearFormat by lazy { SimpleDateFormat("yyyy-'W'ww-u", Locale.getDefault()) }
 
     /**
      * Returns a string in the format of {date} at {time}.
@@ -75,6 +76,17 @@ object DateUtils {
     fun getFriendlyMonthDayString(iso8601Date: String): String {
         val (year, month, day) = iso8601Date.split("-")
         val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+        return friendlyMonthDayFormat.format(date)
+    }
+
+    /**
+     * Given a date of format YYYY-'W'WW, returns the String in "MMM d" format, with the day being the first
+     * day of that week (a Monday, by ISO8601 convention).
+     *
+     * For example, given 2018-W11, returns "Mar 12".
+     */
+    fun getFriendlyMonthDayStringForWeek(iso8601Week: String): String {
+        val date = dayOfWeekOfYearFormat.parse("$iso8601Week-1")
         return friendlyMonthDayFormat.format(date)
     }
 }
