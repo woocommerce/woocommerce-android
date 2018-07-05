@@ -18,7 +18,7 @@
 
             <ImageView
                 style="@style/Woo.Settings.Icon"
-                app:srcCompat="@drawable/ic_info_outline_grey_min_24dp"/>
+                app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
 
             <Switch
                 android:id="@+id/switchSendStats"
@@ -38,11 +38,11 @@
             <ImageView
                 android:id="@+id/imageInfo"
                 style="@style/Woo.Settings.Icon"
-                app:srcCompat="@drawable/ic_user_circle_grey_min_24dp"/>
+                app:srcCompat="@drawable/ic_info_outline_grey_min_24dp"/>
 
             <TextView
                 android:id="@+id/textInfo"
-                style="@style/Woo.Settings.Label"
+                style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/imageInfo"
@@ -50,7 +50,7 @@
 
             <Button
                 android:id="@+id/buttonLearnMore"
-                style="@style/Woo.Button"
+                style="@style/Woo.Settings.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -73,7 +73,7 @@
 
             <TextView
                 android:id="@+id/textPrivacyPolicy"
-                style="@style/Woo.Settings.Label"
+                style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/imagePrivacyPolicy"
@@ -81,7 +81,7 @@
 
             <Button
                 android:id="@+id/buttonPrivacyPolicy"
-                style="@style/Woo.Button"
+                style="@style/Woo.Settings.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -100,11 +100,11 @@
             <ImageView
                 android:id="@+id/imageTracking"
                 style="@style/Woo.Settings.Icon"
-                app:srcCompat="@drawable/ic_user_circle_grey_min_24dp"/>
+                app:srcCompat="@drawable/ic_briefcase_grey_min_24dp"/>
 
             <TextView
                 android:id="@+id/textTracking"
-                style="@style/Woo.Settings.Label"
+                style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/imageTracking"
@@ -112,7 +112,7 @@
 
             <Button
                 android:id="@+id/buttonTracking"
-                style="@style/Woo.Button"
+                style="@style/Woo.Settings.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

@@ -297,6 +297,13 @@
         <item name="android:paddingBottom">4dp</item>
     </style>
 
+    <style name="Woo.Settings.Button" parent="Woo.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/margin_medium</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
     <style name="Woo.Settings.Label.Detail" parent="Woo.TextAppearance">
         <item name="android:textSize">@dimen/text_medium</item>
         <item name="android:paddingStart">@dimen/settings_padding</item>
@@ -306,9 +313,9 @@
     </style>
 
     <style name="Woo.Settings.Icon">
-        <item name="android:padding">18dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/settings_padding</item>
     </style>
 
 

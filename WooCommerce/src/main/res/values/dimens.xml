@@ -98,6 +98,6 @@
     <!--
         Settings
     -->
-    <dimen name="settings_padding">18dp</dimen>
+    <dimen name="settings_padding">16dp</dimen>
 
 </resources>
