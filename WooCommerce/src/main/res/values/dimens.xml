@@ -95,4 +95,9 @@
     -->
     <dimen name="login_avatar_size">64dp</dimen>
 
+    <!--
+        Settings
+    -->
+    <dimen name="settings_padding">18dp</dimen>
+
 </resources>
