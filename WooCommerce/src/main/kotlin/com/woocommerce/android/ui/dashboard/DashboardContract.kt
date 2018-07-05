@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 interface DashboardContract {
     interface Presenter : BasePresenter<View> {
-        fun loadStats(period: StatsTimeframe)
+        fun loadStats(period: StatsTimeframe, forced: Boolean = false)
         fun getStatsCurrency(): String?
     }
 
