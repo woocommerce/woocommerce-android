@@ -176,7 +176,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val BLOG_ID_KEY = "blog_id"
         private const val IS_WPCOM_STORE = "is_wpcom_store"
 
-        private const val PREFKEY_SEND_USAGE_STATS = "wp_pref_send_usage_stats"
+        private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
         var sendUsageStats: Boolean = true
             set(value) {
