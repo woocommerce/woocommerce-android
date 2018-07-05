@@ -80,7 +80,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         OPENED_ORDER_DETAIL,
         FULFILLED_ORDER,
 
-        OPENED_SETTINGS
+        OPENED_SETTINGS,
+        OPENED_PRIVACY_SETTINGS
     }
 
     private var tracksClient = TracksClient.getClient(context)

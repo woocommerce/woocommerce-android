@@ -28,7 +28,6 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
 
         if (savedInstanceState == null) {
             showAppSettingsFragment()
-            AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS)
         }
     }
 
@@ -60,11 +59,13 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
     private fun showAppSettingsFragment() {
         val fragment = AppSettingsFragment.newInstance()
         showFragment(fragment, AppSettingsFragment.TAG, false)
+        AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS)
     }
 
     private fun showPrivacySettingsFragment() {
         val fragment = PrivacySettingsFragment.newInstance()
         showFragment(fragment, PrivacySettingsFragment.TAG, true)
+        AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_PRIVACY_SETTINGS)
     }
 
     private fun confirmLogout() {
