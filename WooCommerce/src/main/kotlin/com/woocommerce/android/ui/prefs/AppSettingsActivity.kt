@@ -52,7 +52,7 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
         confirmLogout()
     }
 
-    override fun onRequestPrivacySettings() {
+    override fun onRequestShowPrivacySettings() {
         showPrivacySettingsFragment()
     }
 

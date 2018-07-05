@@ -19,7 +19,7 @@ class AppSettingsFragment : Fragment() {
 
     interface AppSettingsListener {
         fun onRequestLogout()
-        fun onRequestPrivacySettings()
+        fun onRequestShowPrivacySettings()
     }
 
     private lateinit var listener: AppSettingsListener
@@ -42,7 +42,7 @@ class AppSettingsFragment : Fragment() {
         }
 
         textPrivacySettings.setOnClickListener {
-            listener.onRequestPrivacySettings()
+            listener.onRequestShowPrivacySettings()
         }
     }
 
