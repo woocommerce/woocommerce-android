@@ -75,24 +75,23 @@ class OrderListPresenter @Inject constructor(
                 if (event.isError) {
                     WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
                     orderView?.showLoadOrdersError()
+                } else {
+                    canLoadMore = event.canLoadMore
+                    val isForceRefresh = !isLoadingMoreOrders
+                    fetchAndLoadOrdersFromDb(isForceRefresh)
                 }
-                canLoadMore = event.canLoadMore
-                val isForceRefresh = !isLoadingMoreOrders
-                fetchAndLoadOrdersFromDb(isForceRefresh)
+
+                if (isLoadingMoreOrders) {
+                    isLoadingMoreOrders = false
+                    orderView?.setLoadingMoreIndicator(active = false)
+                } else {
+                    isLoadingOrders = false
+                    orderView?.setLoadingIndicator(active = false)
+                }
             }
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
             else -> {}
-        }
-
-        if (event.causeOfChange == FETCH_ORDERS) {
-            if (isLoadingMoreOrders) {
-                isLoadingMoreOrders = false
-                orderView?.setLoadingMoreIndicator(active = false)
-            } else {
-                isLoadingOrders = false
-                orderView?.setLoadingIndicator(active = false)
-            }
         }
     }
 
