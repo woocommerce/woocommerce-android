@@ -94,8 +94,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         with (chart) {
-            data = BarData(dataSet)
-
             with (xAxis) {
                 position = XAxisPosition.BOTTOM
                 setDrawGridLines(false)
@@ -132,9 +130,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 }
             }
 
-            // Format the X-axis value range according to the current timeframe and given values
-            formatXAxisValueRange(this, timeframe, revenueStats.keys)
-
             with (axisLeft) {
                 setDrawAxisLine(false)
 
@@ -161,6 +156,12 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             // We can reenable it, but we'll probably want to disable pull-to-refresh inside the graph view
             setTouchEnabled(false)
 
+            // Set the data after everything is configured to prevent a premature redrawing of the chart
+            data = BarData(dataSet)
+
+            // Format the X-axis value range according to the current timeframe and given values
+            formatXAxisValueRange(this, timeframe, revenueStats.keys)
+
             invalidate() // Draw the graph
         }
     }
@@ -179,6 +180,12 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun formatXAxisValueRange(chart: BarChart, granularity: StatsGranularity, dateList: Set<String>) {
+        with (chart.xAxis) {
+            resetAxisMinimum()
+            resetAxisMaximum()
+            calculate(chart.data.xMin, chart.data.xMax)
+        }
+
         when (granularity) {
             StatsGranularity.DAYS -> chart.setVisibleXRangeMinimum(30F)
             StatsGranularity.WEEKS -> chart.setVisibleXRangeMinimum(17F)
