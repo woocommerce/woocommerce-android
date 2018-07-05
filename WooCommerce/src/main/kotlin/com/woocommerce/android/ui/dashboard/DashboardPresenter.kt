@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardStatsView.StatsTimeframe
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -29,14 +28,7 @@ class DashboardPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadStats(period: StatsTimeframe, forced: Boolean) {
-        val granularity = when (period) {
-            StatsTimeframe.THIS_WEEK -> StatsGranularity.DAYS
-            StatsTimeframe.THIS_MONTH -> StatsGranularity.DAYS
-            StatsTimeframe.THIS_YEAR -> StatsGranularity.MONTHS
-            StatsTimeframe.YEARS -> StatsGranularity.YEARS
-        }
-
+    override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
         val payload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
     }
@@ -53,8 +45,8 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
-        val revenueStats = wcStatsStore.getRevenueStatsForCurrentMonth(selectedSite.get())
-        val orderStats = wcStatsStore.getOrderStatsForCurrentMonth(selectedSite.get())
+        val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity)
+        val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
 
         dashboardView?.showStats(revenueStats, orderStats, event.granularity)
     }
