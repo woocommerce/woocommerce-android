@@ -22,8 +22,8 @@ install:
   - cp gradle.properties-example gradle.properties
 
 script:
-  - ./gradlew assembleDebug assembleRelease
+  - ./gradlew assembleVanillaRelease
   - ./gradlew testVanillaRelease
-  - ./gradlew lint || (grep -A20 -B2 'severity="Error"' */build/**/*.xml; exit 1)
+  - ./gradlew lintVanillaRelease || (grep -A20 -B2 'severity="Error"' */build/**/*.xml; exit 1)
   - ./gradlew checkstyle
   - ./gradlew ktlint
