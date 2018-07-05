@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.dashboard.DashboardStatsView.StatsTimeframe
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -50,7 +49,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
                 }
                 setOnRefreshListener {
                     setLoadingIndicator(true)
-                    presenter.loadStats(dashboard_stats.getActiveTimeframe(), forced = true)
+                    presenter.loadStats(dashboard_stats.getActiveGranularity(), forced = true)
                 }
             }
         }
@@ -65,7 +64,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         if (isActive) {
             setLoadingIndicator(true)
             dashboard_stats.initView()
-            presenter.loadStats(dashboard_stats.getActiveTimeframe())
+            presenter.loadStats(dashboard_stats.getActiveGranularity())
         } else {
             loadDataPending = true
         }
@@ -78,7 +77,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         if (isActive && loadDataPending) {
             loadDataPending = false
             setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.getActiveTimeframe())
+            presenter.loadStats(dashboard_stats.getActiveGranularity())
         }
     }
 
@@ -100,13 +99,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
-        val update = when (dashboard_stats.getActiveTimeframe()) {
-            StatsTimeframe.THIS_WEEK, StatsTimeframe.THIS_MONTH -> granularity == StatsGranularity.DAYS
-            StatsTimeframe.THIS_YEAR -> granularity == StatsGranularity.MONTHS
-            StatsTimeframe.YEARS -> granularity == StatsGranularity.YEARS
-        }
-
-        if (update) {
+        if (dashboard_stats.getActiveGranularity() == granularity) {
             dashboard_stats.populateView(revenueStats, salesStats, presenter.getStatsCurrency())
             setLoadingIndicator(false)
         }
@@ -119,7 +112,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
     override fun refreshFragmentState() {
         if (isActive) {
             setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.getActiveTimeframe(), forced = true)
+            presenter.loadStats(dashboard_stats.getActiveGranularity(), forced = true)
         } else {
             loadDataPending = true
         }

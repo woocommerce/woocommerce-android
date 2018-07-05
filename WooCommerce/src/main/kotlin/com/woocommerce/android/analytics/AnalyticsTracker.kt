@@ -78,9 +78,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         RESELECTED_NOTIFICATIONS,
 
         OPENED_ORDER_DETAIL,
-        FULFILLED_ORDER,
-
-        OPENED_SETTINGS
+        FULFILLED_ORDER
     }
 
     private var tracksClient = TracksClient.getClient(context)
@@ -168,28 +166,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
     companion object {
         // Guaranteed to hold a reference to the application context, which is safe
         @SuppressLint("StaticFieldLeak")
-        private lateinit var instance: AnalyticsTracker
+        private var instance: AnalyticsTracker? = null
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
         private const val BLOG_ID_KEY = "blog_id"
         private const val IS_WPCOM_STORE = "is_wpcom_store"
 
-        private const val PREFKEY_SEND_USAGE_STATS = "wp_pref_send_usage_stats"
-
-        var sendUsageStats: Boolean = true
-            set(value) {
-                if (value != field) {
-                    field = value
-                    val prefs = PreferenceManager.getDefaultSharedPreferences(instance.context)
-                    prefs.edit().putBoolean(PREFKEY_SEND_USAGE_STATS, field).apply()
-                }
-            }
-
         fun init(context: Context) {
             instance = AnalyticsTracker(context.applicationContext)
-            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-            sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
 
         fun track(stat: Stat) {
@@ -197,9 +182,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         fun track(stat: Stat, properties: Map<String, *>) {
-            if (sendUsageStats) {
-                instance.track(stat, properties)
-            }
+            instance?.track(stat, properties)
         }
 
         /**
@@ -225,15 +208,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         fun flush() {
-            instance.flush()
+            instance?.flush()
         }
 
         fun clearAllData() {
-            instance.clearAllData()
+            instance?.clearAllData()
         }
 
         fun refreshMetadata(username: String?) {
-            instance.refreshMetadata(username)
+            instance?.refreshMetadata(username)
         }
     }
 }
