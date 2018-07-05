@@ -12,21 +12,15 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textSendStats"
-            style="@style/Woo.Settings.LabelWithDetail"
+            android:id="@+id/textPrivacySettings"
+            style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_send_stats"/>
-
-        <Switch
-            android:id="@+id/switchSendStats"
-            style="@style/Woo.Settings.Label.Detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_send_stats_detail"/>
+            android:text="@string/privacy_settings"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
+
     </LinearLayout>
 
     <Button

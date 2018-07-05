@@ -53,9 +53,18 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
         confirmLogout()
     }
 
+    override fun onRequestPrivacySettings() {
+        showPrivacySettingsFragment()
+    }
+
     private fun showAppSettingsFragment() {
         val fragment = AppSettingsFragment.newInstance()
         showFragment(fragment, AppSettingsFragment.TAG, false)
+    }
+
+    private fun showPrivacySettingsFragment() {
+        val fragment = PrivacySettingsFragment.newInstance()
+        showFragment(fragment, PrivacySettingsFragment.TAG, true)
     }
 
     private fun confirmLogout() {

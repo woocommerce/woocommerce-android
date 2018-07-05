@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import kotlinx.android.synthetic.main.fragment_app_settings.*
 
 class AppSettingsFragment : Fragment() {
@@ -20,6 +19,7 @@ class AppSettingsFragment : Fragment() {
 
     interface AppSettingsListener {
         fun onRequestLogout()
+        fun onRequestPrivacySettings()
     }
 
     private lateinit var listener: AppSettingsListener
@@ -41,9 +41,8 @@ class AppSettingsFragment : Fragment() {
             listener.onRequestLogout()
         }
 
-        switchSendStats.isChecked = AnalyticsTracker.sendUsageStats
-        switchSendStats.setOnClickListener {
-            AnalyticsTracker.sendUsageStats = switchSendStats.isChecked
+        textPrivacySettings.setOnClickListener {
+            listener.onRequestPrivacySettings()
         }
     }
 
