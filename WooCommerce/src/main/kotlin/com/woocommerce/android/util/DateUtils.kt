@@ -5,6 +5,7 @@ import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
 import org.wordpress.android.util.DateTimeUtils
+import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -14,6 +15,7 @@ import java.util.Locale
 object DateUtils {
     private val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
     private val dayOfWeekOfYearFormat by lazy { SimpleDateFormat("yyyy-'W'ww-u", Locale.getDefault()) }
+    private val shortMonths by lazy { DateFormatSymbols().shortMonths }
 
     /**
      * Returns a string in the format of {date} at {time}.
@@ -88,5 +90,15 @@ object DateUtils {
     fun getFriendlyMonthDayStringForWeek(iso8601Week: String): String {
         val date = dayOfWeekOfYearFormat.parse("$iso8601Week-1")
         return friendlyMonthDayFormat.format(date)
+    }
+
+    /**
+     * Given a date of format YYYY-MM, returns the corresponding short month format.
+     *
+     * For example, given 2018-07, returns "Jul".
+     */
+    fun getFriendlyMonthString(iso8601Month: String): String {
+        val month = iso8601Month.split("-").last()
+        return shortMonths[month.toInt() - 1]
     }
 }

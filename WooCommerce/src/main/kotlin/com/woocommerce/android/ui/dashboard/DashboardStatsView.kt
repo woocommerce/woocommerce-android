@@ -73,17 +73,15 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         val entries = when (timeframe) {
-            StatsGranularity.DAYS -> {
+            StatsGranularity.DAYS,
+            StatsGranularity.WEEKS,
+            StatsGranularity.MONTHS -> {
                 revenueStats.values.mapIndexed { index, value ->
                     BarEntry((index + 1).toFloat(), value.toFloat())
                 }
             }
-            StatsGranularity.WEEKS -> {
-                revenueStats.values.mapIndexed { index, value ->
-                    BarEntry((index + 1).toFloat(), value.toFloat())
                 }
             }
-            StatsGranularity.MONTHS -> TODO()
             StatsGranularity.YEARS -> TODO()
         }
 
@@ -125,7 +123,17 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                             else -> ""
                         }
                     }
-                    StatsGranularity.MONTHS -> TODO()
+                    StatsGranularity.MONTHS -> IAxisValueFormatter { value, axis ->
+                        when (value) {
+                            axis.mEntries.first() -> {
+                                DateUtils.getFriendlyMonthString(revenueStats.keys.first())
+                            }
+                            axis.mEntries.max() -> {
+                                DateUtils.getFriendlyMonthString(revenueStats.keys.last())
+                            }
+                            else -> ""
+                        }
+                    }
                     StatsGranularity.YEARS -> TODO()
                 }
             }
@@ -189,7 +197,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         when (granularity) {
             StatsGranularity.DAYS -> chart.setVisibleXRangeMinimum(30F)
             StatsGranularity.WEEKS -> chart.setVisibleXRangeMinimum(17F)
-            StatsGranularity.MONTHS -> TODO()
+            StatsGranularity.MONTHS -> chart.setVisibleXRangeMinimum(12F)
             StatsGranularity.YEARS -> TODO()
         }
     }
