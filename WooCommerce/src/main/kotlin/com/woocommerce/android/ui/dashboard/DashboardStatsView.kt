@@ -105,10 +105,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     StatsGranularity.DAYS -> IAxisValueFormatter { value, axis ->
                         when (value) {
                             axis.mEntries.first() -> {
-                                DateUtils.getFriendlyMonthDayString(revenueStats.keys.first())
+                                DateUtils.getShortMonthDayString(revenueStats.keys.first())
                             }
                             axis.mEntries.max() -> {
-                                DateUtils.getFriendlyMonthDayString(revenueStats.keys.last())
+                                DateUtils.getShortMonthDayString(revenueStats.keys.last())
                             }
                             else -> ""
                         }
@@ -116,10 +116,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     StatsGranularity.WEEKS -> IAxisValueFormatter { value, axis ->
                         when (value) {
                             axis.mEntries.first() -> {
-                                DateUtils.getFriendlyMonthDayStringForWeek(revenueStats.keys.first())
+                                DateUtils.getShortMonthDayStringForWeek(revenueStats.keys.first())
                             }
                             axis.mEntries.max() -> {
-                                DateUtils.getFriendlyMonthDayStringForWeek(revenueStats.keys.last())
+                                DateUtils.getShortMonthDayStringForWeek(revenueStats.keys.last())
                             }
                             else -> ""
                         }
@@ -127,10 +127,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     StatsGranularity.MONTHS -> IAxisValueFormatter { value, axis ->
                         when (value) {
                             axis.mEntries.first() -> {
-                                DateUtils.getFriendlyMonthString(revenueStats.keys.first())
+                                DateUtils.getShortMonthString(revenueStats.keys.first())
                             }
                             axis.mEntries.max() -> {
-                                DateUtils.getFriendlyMonthString(revenueStats.keys.last())
+                                DateUtils.getShortMonthString(revenueStats.keys.last())
                             }
                             else -> ""
                         }

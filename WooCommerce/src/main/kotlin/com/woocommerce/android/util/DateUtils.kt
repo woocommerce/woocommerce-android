@@ -71,23 +71,23 @@ object DateUtils {
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in "MMM d" format.
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in short month ("MMM d") format.
      *
      * For example, given 2018-07-03 returns "Jul 3", and given 2018-07-28 returns "Jul 28".
      */
-    fun getFriendlyMonthDayString(iso8601Date: String): String {
+    fun getShortMonthDayString(iso8601Date: String): String {
         val (year, month, day) = iso8601Date.split("-")
         val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
         return friendlyMonthDayFormat.format(date)
     }
 
     /**
-     * Given a date of format YYYY-'W'WW, returns the String in "MMM d" format, with the day being the first
-     * day of that week (a Monday, by ISO8601 convention).
+     * Given a date of format YYYY-'W'WW, returns the String in short month ("MMM d") format,
+     * with the day being the first day of that week (a Monday, by ISO8601 convention).
      *
      * For example, given 2018-W11, returns "Mar 12".
      */
-    fun getFriendlyMonthDayStringForWeek(iso8601Week: String): String {
+    fun getShortMonthDayStringForWeek(iso8601Week: String): String {
         val date = dayOfWeekOfYearFormat.parse("$iso8601Week-1")
         return friendlyMonthDayFormat.format(date)
     }
@@ -97,7 +97,7 @@ object DateUtils {
      *
      * For example, given 2018-07, returns "Jul".
      */
-    fun getFriendlyMonthString(iso8601Month: String): String {
+    fun getShortMonthString(iso8601Month: String): String {
         val month = iso8601Month.split("-").last()
         return shortMonths[month.toInt() - 1]
     }
