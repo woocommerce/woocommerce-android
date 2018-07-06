@@ -12,14 +12,24 @@ import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.prefs.AppSettingsFragment.AppSettingsListener
+import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_app_settings.*
+import javax.inject.Inject
 
-class AppSettingsActivity : AppCompatActivity(), AppSettingsListener {
+class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupportFragmentInjector {
     companion object {
         const val KEY_LOGOUT_ON_RETURN = "logout_on_return"
     }
 
+    @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_app_settings)

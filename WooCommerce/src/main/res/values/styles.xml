@@ -284,6 +284,14 @@
     -->
     <style name="Woo.Settings"/>
 
+    <style name="Woo.Settings.Caption" parent="Woo.TextAppearance">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingStart">@dimen/settings_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_padding</item>
+    </style>
+
     <style name="Woo.Settings.Label" parent="Woo.TextAppearance">
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:paddingStart">@dimen/settings_padding</item>
@@ -291,6 +299,12 @@
         <item name="android:paddingBottom">@dimen/settings_padding</item>
         <item name="android:paddingTop">@dimen/settings_padding</item>
         <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Woo.Settings.Label.Small" parent="Woo.Settings.Label">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:paddingBottom">@dimen/margin_small</item>
+        <item name="android:paddingTop">@dimen/margin_small</item>
     </style>
 
     <style name="Woo.Settings.LabelWithButton" parent="Woo.Settings.Label">
@@ -303,6 +317,8 @@
         <item name="android:layout_marginBottom">@dimen/margin_medium</item>
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
+
+    <style name="Woo.Settings.LabelWithDetail" parent="Woo.Settings.LabelWithButton"/>
 
     <style name="Woo.Settings.Label.Detail" parent="Woo.TextAppearance">
         <item name="android:textSize">@dimen/text_medium</item>

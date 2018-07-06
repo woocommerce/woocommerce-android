@@ -1,12 +1,18 @@
 package com.woocommerce.android.ui.prefs
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_app_settings.*
+import org.wordpress.android.util.UrlUtils
+import javax.inject.Inject
 
 class AppSettingsFragment : Fragment() {
     companion object {
@@ -17,12 +23,19 @@ class AppSettingsFragment : Fragment() {
         }
     }
 
+    @Inject lateinit internal var selectedSite: SelectedSite
+
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onRequestShowPrivacySettings()
     }
 
     private lateinit var listener: AppSettingsListener
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_app_settings, container, false)
@@ -36,6 +49,9 @@ class AppSettingsFragment : Fragment() {
         } else {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
+
+        textPrimaryStoreDomain.text = UrlUtils.getHost(selectedSite.get().url)
+        textPrimaryStoreUsername.text = selectedSite.get().username
 
         buttonLogout.setOnClickListener {
             listener.onRequestLogout()

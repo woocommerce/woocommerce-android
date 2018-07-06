@@ -3,6 +3,7 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:orientation="vertical">
 
     <LinearLayout
@@ -11,6 +12,29 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:orientation="vertical">
+
+        <TextView
+            style="@style/Woo.Settings.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_primary_store"/>
+
+        <TextView
+            android:id="@+id/textPrimaryStoreDomain"
+            style="@style/Woo.Settings.LabelWithDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="textPrimaryStoreDomain"/>
+
+        <TextView
+            android:id="@+id/textPrimaryStoreUsername"
+            style="@style/Woo.Settings.Label.Detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="textPrimaryStoreUsername"/>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
 
         <TextView
             android:id="@+id/textPrivacySettings"
