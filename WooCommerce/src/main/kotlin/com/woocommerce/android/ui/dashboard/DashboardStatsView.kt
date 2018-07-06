@@ -17,6 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
+import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -195,9 +196,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         when (granularity) {
-            StatsGranularity.DAYS -> chart.setVisibleXRangeMinimum(30F)
-            StatsGranularity.WEEKS -> chart.setVisibleXRangeMinimum(17F)
-            StatsGranularity.MONTHS -> chart.setVisibleXRangeMinimum(12F)
+            StatsGranularity.DAYS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_DAYS.toFloat())
+            StatsGranularity.WEEKS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_WEEKS.toFloat())
+            StatsGranularity.MONTHS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_MONTHS.toFloat())
             StatsGranularity.YEARS -> TODO()
         }
     }
