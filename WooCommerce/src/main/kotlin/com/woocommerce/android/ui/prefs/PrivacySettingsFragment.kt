@@ -34,17 +34,9 @@ class PrivacySettingsFragment : Fragment() {
             AnalyticsTracker.sendUsageStats = switchSendStats.isChecked
         }
 
-        buttonLearnMore.setOnClickListener {
-            showCookiePolicy()
-        }
-
-        buttonPrivacyPolicy.setOnClickListener {
-            showPrivacyPolicy()
-        }
-
-        buttonTracking.setOnClickListener {
-            showCookiePolicy()
-        }
+        buttonLearnMore.setOnClickListener { showCookiePolicy() }
+        buttonPrivacyPolicy.setOnClickListener { showPrivacyPolicy() }
+        buttonTracking.setOnClickListener { showCookiePolicy() }
     }
 
     override fun onResume() {
