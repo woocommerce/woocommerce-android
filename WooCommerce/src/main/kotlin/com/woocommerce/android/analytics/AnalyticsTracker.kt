@@ -188,6 +188,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
                 if (value != field) {
                     field = value
                     instance?.storeUsagePref()
+                    if (!field) {
+                        instance?.clearAllData()
+                    }
                 }
             }
 
