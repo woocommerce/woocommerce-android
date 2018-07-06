@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +52,11 @@ class AppSettingsFragment : Fragment() {
         }
 
         textPrimaryStoreDomain.text = UrlUtils.getHost(selectedSite.get().url)
-        textPrimaryStoreUsername.text = selectedSite.get().username
+        if (TextUtils.isEmpty(selectedSite.get().username)) {
+            textPrimaryStoreUsername.visibility = View.GONE
+        } else {
+            textPrimaryStoreUsername.text = selectedSite.get().username
+        }
 
         buttonLogout.setOnClickListener {
             listener.onRequestLogout()

@@ -287,7 +287,8 @@
     <style name="Woo.Settings.Caption" parent="Woo.TextAppearance">
         <item name="android:textSize">@dimen/text_medium</item>
         <item name="android:textColor">@color/wc_purple</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingTop">@dimen/settings_padding</item>
         <item name="android:paddingStart">@dimen/settings_padding</item>
         <item name="android:paddingEnd">@dimen/settings_padding</item>
     </style>
