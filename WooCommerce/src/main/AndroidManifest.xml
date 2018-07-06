@@ -49,6 +49,9 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.prefs.AppSettingsActivity"/>
+
         <!-- Services -->
         <service
             android:name="org.wordpress.android.login.LoginWpcomService"
