@@ -12,7 +12,7 @@ import com.woocommerce.android.R
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class MainSettingsFragment : Fragment(), MainSettingsFragmentContract.View {
+class MainSettingsFragment : Fragment(), MainSettingsContract.View {
     companion object {
         const val TAG = "app-settings"
 
@@ -21,7 +21,7 @@ class MainSettingsFragment : Fragment(), MainSettingsFragmentContract.View {
         }
     }
 
-    @Inject lateinit var presenter: MainSettingsFragmentContract.Presenter
+    @Inject lateinit var presenter: MainSettingsContract.Presenter
 
     interface AppSettingsListener {
         fun onRequestLogout()
@@ -31,8 +31,8 @@ class MainSettingsFragment : Fragment(), MainSettingsFragmentContract.View {
     private lateinit var listener: AppSettingsListener
 
     override fun onAttach(context: Context?) {
-        super.onAttach(context)
         AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

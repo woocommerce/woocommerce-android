@@ -7,11 +7,11 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-internal abstract class MainSettingsFragmentModule {
+internal abstract class MainSettingsModule {
     @FragmentScope
     @Binds
-    abstract fun provideMainSettingsFragmentPresenter(
-        mainSettingsFragmentPresenter: MainSettingsFragmentPresenter): MainSettingsFragmentContract.Presenter
+    abstract fun provideMainSettingsPresenter(
+        mainSettingsPresenter: MainSettingsPresenter): MainSettingsContract.Presenter
 
     @FragmentScope
     @ContributesAndroidInjector

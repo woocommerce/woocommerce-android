@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_privacy.*
 import javax.inject.Inject
 
@@ -29,8 +30,14 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsFragmentContract.View
         return inflater.inflate(R.layout.fragment_settings_privacy, container, false)
     }
 
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        presenter.takeView(this)
 
         switchSendStats.isChecked = AnalyticsTracker.sendUsageStats
         switchSendStats.setOnClickListener {
@@ -40,6 +47,11 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsFragmentContract.View
         buttonLearnMore.setOnClickListener { showCookiePolicy() }
         buttonPrivacyPolicy.setOnClickListener { showPrivacyPolicy() }
         buttonTracking.setOnClickListener { showCookiePolicy() }
+    }
+
+    override fun onDestroyView() {
+        presenter.dropView()
+        super.onDestroyView()
     }
 
     override fun onResume() {

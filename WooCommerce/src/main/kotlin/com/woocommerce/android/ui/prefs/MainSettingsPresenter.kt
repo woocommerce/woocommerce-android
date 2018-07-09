@@ -5,13 +5,13 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
-class MainSettingsFragmentPresenter @Inject constructor(
+class MainSettingsPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore
-) : MainSettingsFragmentContract.Presenter {
-    private var appSettingsFragmentView: MainSettingsFragmentContract.View? = null
+) : MainSettingsContract.Presenter {
+    private var appSettingsFragmentView: MainSettingsContract.View? = null
 
-    override fun takeView(view: MainSettingsFragmentContract.View) {
+    override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
     }
 
