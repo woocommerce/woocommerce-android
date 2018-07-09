@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -17,14 +15,19 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_app_settings.*
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.generated.SiteActionBuilder
+import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import javax.inject.Inject
 
 class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupportFragmentInjector {
-    companion object {
-        const val KEY_LOGOUT_ON_RETURN = "logout_on_return"
-    }
-
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject internal lateinit var dispatcher: Dispatcher
+    @Inject internal lateinit var accountStore: AccountStore
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
@@ -36,9 +39,16 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupport
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        dispatcher.register(this)
+
         if (savedInstanceState == null) {
             showAppSettingsFragment()
         }
+    }
+
+    override fun onDestroy() {
+        dispatcher.unregister(this)
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -89,11 +99,10 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupport
     }
 
     private fun logout() {
-        // the actual logout will be handled by the main activity
-        val data = Intent()
-        data.putExtra(KEY_LOGOUT_ON_RETURN, true)
-        setResult(Activity.RESULT_OK, data)
-        finish()
+        // Reset default account
+        dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
+        // Delete wpcom and jetpack sites
+        dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
     }
 
     private fun showFragment(fragment: Fragment, tag: String, animate: Boolean) {
@@ -108,5 +117,14 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupport
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAuthenticationChanged(event: OnAuthenticationChanged) {
+        // if user logged out, return to the main activity so it can show the login screen
+        if (!accountStore.hasAccessToken()) {
+            finish()
+        }
     }
 }

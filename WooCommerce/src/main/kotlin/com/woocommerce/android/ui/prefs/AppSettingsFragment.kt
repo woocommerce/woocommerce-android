@@ -24,7 +24,7 @@ class AppSettingsFragment : Fragment() {
         }
     }
 
-    @Inject lateinit internal var selectedSite: SelectedSite
+    @Inject internal lateinit var selectedSite: SelectedSite
 
     interface AppSettingsListener {
         fun onRequestLogout()

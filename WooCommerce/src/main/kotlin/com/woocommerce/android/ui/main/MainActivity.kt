@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity(),
                 onBackPressed()
                 true
             }
-            // User selected the logout menu option
+            // User selected the settings menu option
             R.id.menu_settings -> {
                 showSettingsScreen()
                 true
@@ -154,15 +154,6 @@ class MainActivity : AppCompatActivity(),
                     // TODO Launch next screen
                 }
                 return
-            }
-            REQUEST_CODE_SETTINGS -> {
-                if (data != null && data.hasExtra(AppSettingsActivity.KEY_LOGOUT_ON_RETURN)) {
-                    val shouldLogout = data.getBooleanExtra(AppSettingsActivity.KEY_LOGOUT_ON_RETURN, false)
-                    if (shouldLogout) {
-                        presenter.logout()
-                        return
-                    }
-                }
             }
         }
     }

@@ -42,13 +42,6 @@ class MainPresenter @Inject constructor(
         dispatcher.dispatch(AccountActionBuilder.newUpdateAccessTokenAction(UpdateTokenPayload(token)))
     }
 
-    override fun logout() {
-        // Reset default account
-        dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
-        // Delete wpcom and jetpack sites
-        dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
-    }
-
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
