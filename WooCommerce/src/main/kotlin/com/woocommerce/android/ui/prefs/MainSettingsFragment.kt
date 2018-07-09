@@ -3,28 +3,25 @@ package com.woocommerce.android.ui.prefs
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
 import dagger.android.support.AndroidSupportInjection
-import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
-class AppSettingsFragment : Fragment() {
+class MainSettingsFragment : Fragment(), MainSettingsFragmentContract.View {
     companion object {
         const val TAG = "app-settings"
 
-        fun newInstance(): AppSettingsFragment {
-            return AppSettingsFragment()
+        fun newInstance(): MainSettingsFragment {
+            return MainSettingsFragment()
         }
     }
 
-    @Inject internal lateinit var selectedSite: SelectedSite
+    @Inject lateinit var presenter: MainSettingsFragmentContract.Presenter
 
     interface AppSettingsListener {
         fun onRequestLogout()
@@ -39,7 +36,7 @@ class AppSettingsFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_app_settings, container, false)
+        return inflater.inflate(R.layout.fragment_settings_main, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -57,14 +54,8 @@ class AppSettingsFragment : Fragment() {
         val textPrivacySettings = view!!.findViewById<TextView>(R.id.textPrivacySettings)
         val buttonLogout = view!!.findViewById<Button>(R.id.buttonLogout)
 
-        textPrimaryStoreDomain.text = UrlUtils.getHost(selectedSite.get().url)
-        if (TextUtils.isEmpty(selectedSite.get().username)) {
-            textPrimaryStoreUsername.visibility = View.GONE
-            val padding = resources.getDimensionPixelSize(R.dimen.settings_padding)
-            textPrimaryStoreDomain.setPadding(padding, padding, padding, padding)
-        } else {
-            textPrimaryStoreUsername.text = selectedSite.get().username
-        }
+        textPrimaryStoreDomain.text = presenter.getStoreDomainName()
+        textPrimaryStoreUsername.text = presenter.getUserDisplayName()
 
         buttonLogout.setOnClickListener {
             listener.onRequestLogout()

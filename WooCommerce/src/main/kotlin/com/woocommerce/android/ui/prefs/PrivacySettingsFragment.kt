@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
-import kotlinx.android.synthetic.main.fragment_privacy_settings.*
+import kotlinx.android.synthetic.main.fragment_settings_privacy.*
 
 class PrivacySettingsFragment : Fragment() {
     companion object {
@@ -23,7 +23,7 @@ class PrivacySettingsFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_privacy_settings, container, false)
+        return inflater.inflate(R.layout.fragment_settings_privacy, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

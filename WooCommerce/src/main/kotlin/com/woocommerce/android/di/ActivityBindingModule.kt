@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderListModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.prefs.MainSettingsFragmentModule
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -44,6 +45,6 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(
             AppSettingsModule::class,
-            AppSettingsFragmentModule::class))
+            MainSettingsFragmentModule::class))
     abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
 }
