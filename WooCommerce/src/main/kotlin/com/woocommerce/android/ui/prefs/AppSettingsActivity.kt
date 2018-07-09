@@ -14,34 +14,26 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import javax.inject.Inject
 
-class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupportFragmentInjector {
-    @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
-    @Inject internal lateinit var dispatcher: Dispatcher
-    @Inject internal lateinit var accountStore: AccountStore
-
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+class AppSettingsActivity : AppCompatActivity(),
+        AppSettingsListener,
+        AppSettingsContract.View,
+        HasSupportFragmentInjector {
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var presenter: AppSettingsContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_app_settings)
+        presenter.takeView(this)
 
         // TODO: replace with synthetics once Kotlin plugin bug is fixed
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        dispatcher.register(this)
 
         if (savedInstanceState == null) {
             showAppSettingsFragment()
@@ -49,7 +41,7 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupport
     }
 
     override fun onDestroy() {
-        dispatcher.unregister(this)
+        presenter.dropView()
         super.onDestroy()
     }
 
@@ -78,33 +70,32 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupport
         showPrivacySettingsFragment()
     }
 
-    private fun showAppSettingsFragment() {
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+
+    override fun close() {
+        finish()
+    }
+
+    override fun showAppSettingsFragment() {
         val fragment = AppSettingsFragment.newInstance()
         showFragment(fragment, AppSettingsFragment.TAG, false)
         AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS)
     }
 
-    private fun showPrivacySettingsFragment() {
+    override fun showPrivacySettingsFragment() {
         val fragment = PrivacySettingsFragment.newInstance()
         showFragment(fragment, PrivacySettingsFragment.TAG, true)
         AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_PRIVACY_SETTINGS)
     }
 
-    private fun confirmLogout() {
+    override fun confirmLogout() {
         AlertDialog.Builder(ContextThemeWrapper(this, R.style.Woo_Dialog))
                 .setMessage(R.string.settings_confirm_signout)
-                .setPositiveButton(R.string.signout) { dialog, whichButton -> logout() }
+                .setPositiveButton(R.string.signout) { dialog, whichButton -> presenter.logout() }
                 .setNegativeButton(R.string.cancel, null)
                 .setCancelable(true)
                 .create()
                 .show()
-    }
-
-    private fun logout() {
-        // Reset default account
-        dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
-        // Delete wpcom and jetpack sites
-        dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
     }
 
     private fun showFragment(fragment: Fragment, tag: String, animate: Boolean) {
@@ -119,14 +110,5 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupport
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAuthenticationChanged(event: OnAuthenticationChanged) {
-        // if user logged out, return to the main activity so it can show the login screen
-        if (!accountStore.hasAccessToken()) {
-            finish()
-        }
     }
 }
