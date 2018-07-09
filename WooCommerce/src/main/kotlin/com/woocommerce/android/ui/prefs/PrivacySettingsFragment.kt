@@ -39,7 +39,7 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
         super.onActivityCreated(savedInstanceState)
         presenter.takeView(this)
 
-        switchSendStats.isChecked = AnalyticsTracker.sendUsageStats
+        switchSendStats.isChecked = presenter.getSendUsageStats()
         switchSendStats.setOnClickListener {
             presenter.setSendUsageStats(switchSendStats.isChecked)
         }
