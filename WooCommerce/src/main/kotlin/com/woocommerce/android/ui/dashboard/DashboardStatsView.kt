@@ -64,7 +64,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     ) {
         barchart_progress.visibility = View.GONE
 
-        revenue_value.text = formatCurrencyAmountForDisplay(revenueStats.values.sum(), currencyCode)
+        revenue_value.text = formatAmountForDisplay(revenueStats.values.sum(), currencyCode)
         orders_value.text = orderStats.values.sum().toString()
 
         if (revenueStats.isEmpty()) {
@@ -172,7 +172,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 axisMinimum = 0F
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
-                    formatCurrencyAmountForDisplay(value.toDouble(), currencyCode)
+                    formatAmountForDisplay(value.toDouble(), currencyCode, allowZero = false)
                 }
             }
 
@@ -201,9 +201,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     // TODO For certain currencies/locales, replace the thousands mark with k
-    private fun formatCurrencyAmountForDisplay(amount: Double, currencyCode: String?): String {
-        return amount.takeIf { it > 0 }?.let {
-            CurrencyUtils.currencyStringRounded(context, amount, currencyCode ?: "")
+    private fun formatAmountForDisplay(amount: Double, currencyCode: String?, allowZero: Boolean = true): String {
+        return amount.takeIf { allowZero || it > 0 }?.let {
+            CurrencyUtils.currencyStringRounded(context, amount, currencyCode.orEmpty())
         } ?: ""
     }
 
