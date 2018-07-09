@@ -166,6 +166,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
     }
 
+    private fun storeUsagePref() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs.edit().putBoolean(PREFKEY_SEND_USAGE_STATS, sendUsageStats).apply()
+    }
+
     companion object {
         // Guaranteed to hold a reference to the application context, which is safe
         @SuppressLint("StaticFieldLeak")
@@ -182,8 +187,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
             set(value) {
                 if (value != field) {
                     field = value
-                    val prefs = PreferenceManager.getDefaultSharedPreferences(instance?.context)
-                    prefs.edit().putBoolean(PREFKEY_SEND_USAGE_STATS, field).apply()
+                    instance?.storeUsagePref()
+                    if (!field) {
+                        instance?.clearAllData()
+                    }
                 }
             }
 
