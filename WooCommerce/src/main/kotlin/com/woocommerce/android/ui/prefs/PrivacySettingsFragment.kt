@@ -10,8 +10,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
 import kotlinx.android.synthetic.main.fragment_settings_privacy.*
+import javax.inject.Inject
 
-class PrivacySettingsFragment : Fragment() {
+class PrivacySettingsFragment : Fragment(), PrivacySettingsFragmentContract.View {
     companion object {
         const val TAG = "privacy-settings"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
@@ -22,6 +23,8 @@ class PrivacySettingsFragment : Fragment() {
         }
     }
 
+    @Inject lateinit var presenter: PrivacySettingsFragmentContract.Presenter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_settings_privacy, container, false)
     }
@@ -31,7 +34,7 @@ class PrivacySettingsFragment : Fragment() {
 
         switchSendStats.isChecked = AnalyticsTracker.sendUsageStats
         switchSendStats.setOnClickListener {
-            AnalyticsTracker.sendUsageStats = switchSendStats.isChecked
+            presenter.updateUsagePref(switchSendStats.isChecked)
         }
 
         buttonLearnMore.setOnClickListener { showCookiePolicy() }
@@ -44,11 +47,11 @@ class PrivacySettingsFragment : Fragment() {
         activity?.setTitle(R.string.privacy_settings)
     }
 
-    private fun showCookiePolicy() {
+    override fun showCookiePolicy() {
         ActivityUtils.openUrlExternal(activity as Context, URL_COOKIE_POLICY)
     }
 
-    private fun showPrivacyPolicy() {
+    override fun showPrivacyPolicy() {
         ActivityUtils.openUrlExternal(activity as Context, URL_PRIVACY_POLICY)
     }
 }
