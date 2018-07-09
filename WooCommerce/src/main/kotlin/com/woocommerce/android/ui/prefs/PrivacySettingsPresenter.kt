@@ -26,15 +26,17 @@ class PrivacySettingsPresenter @Inject constructor(
         privacySettingsFragmentView = null
     }
 
-    override fun updateUsagePref(allowUsageTracking: Boolean) {
-        AnalyticsTracker.sendUsageStats = allowUsageTracking
+    override fun getSendUsageStats() = !accountStore.account.tracksOptOut
+
+    override fun setSendUsageStats(sendUsageStats: Boolean) {
+        AnalyticsTracker.sendUsageStats = sendUsageStats
 
         // sync with wpcom if a token is available
         if (accountStore.hasAccessToken()) {
-            accountStore.getAccount().setTracksOptOut(!allowUsageTracking)
+            accountStore.account.tracksOptOut = !sendUsageStats
             val payload = PushAccountSettingsPayload()
             payload.params = HashMap<String, Any>()
-            payload.params.put("tracks_opt_out", !allowUsageTracking)
+            payload.params["tracks_opt_out"] = !sendUsageStats
             dispatcher.dispatch(AccountActionBuilder.newPushSettingsAction(payload))
         }
     }

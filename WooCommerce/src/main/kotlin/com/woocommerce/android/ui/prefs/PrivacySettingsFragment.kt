@@ -41,7 +41,7 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
 
         switchSendStats.isChecked = AnalyticsTracker.sendUsageStats
         switchSendStats.setOnClickListener {
-            presenter.updateUsagePref(switchSendStats.isChecked)
+            presenter.setSendUsageStats(switchSendStats.isChecked)
         }
 
         buttonLearnMore.setOnClickListener { showCookiePolicy() }

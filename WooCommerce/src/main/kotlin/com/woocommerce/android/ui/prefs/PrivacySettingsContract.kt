@@ -5,7 +5,8 @@ import com.woocommerce.android.ui.base.BaseView
 
 interface PrivacySettingsContract {
     interface Presenter : BasePresenter<View> {
-        fun updateUsagePref(allowUsageTracking: Boolean)
+        fun getSendUsageStats(): Boolean
+        fun setSendUsageStats(sendUsageStats: Boolean)
     }
 
     interface View : BaseView<Presenter> {
