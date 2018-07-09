@@ -38,7 +38,7 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupport
 
         // TODO: replace with synthetics once Kotlin plugin bug is fixed
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar as Toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         dispatcher.register(this)
