@@ -13,7 +13,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_privacy.*
 import javax.inject.Inject
 
-class PrivacySettingsFragment : Fragment(), PrivacySettingsFragmentContract.View {
+class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
     companion object {
         const val TAG = "privacy-settings"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
@@ -24,7 +24,7 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsFragmentContract.View
         }
     }
 
-    @Inject lateinit var presenter: PrivacySettingsFragmentContract.Presenter
+    @Inject lateinit var presenter: PrivacySettingsContract.Presenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_settings_privacy, container, false)

@@ -7,11 +7,11 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-internal abstract class PrivacySettingsFragmentModule {
+internal abstract class PrivacySettingsModule {
     @FragmentScope
     @Binds
-    abstract fun providePrivacySettingsFragmentPresenter(
-        privacySettingsFragmentPresenter: PrivacySettingsFragmentPresenter): PrivacySettingsFragmentContract.Presenter
+    abstract fun providePrivacySettingsPresenter(
+        privacySettingsPresenter: PrivacySettingsPresenter): PrivacySettingsContract.Presenter
 
     @FragmentScope
     @ContributesAndroidInjector

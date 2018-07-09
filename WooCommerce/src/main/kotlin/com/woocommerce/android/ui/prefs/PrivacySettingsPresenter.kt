@@ -7,12 +7,12 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import javax.inject.Inject
 
-class PrivacySettingsFragmentPresenter @Inject constructor(
+class PrivacySettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher
-) : PrivacySettingsFragmentContract.Presenter {
-    private var privacySettingsFragmentView: PrivacySettingsFragmentContract.View? = null
+) : PrivacySettingsContract.Presenter {
+    private var privacySettingsFragmentView: PrivacySettingsContract.View? = null
 
-    override fun takeView(view: PrivacySettingsFragmentContract.View) {
+    override fun takeView(view: PrivacySettingsContract.View) {
         dispatcher.register(this)
         privacySettingsFragmentView = view
     }
