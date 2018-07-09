@@ -53,6 +53,8 @@ class AppSettingsFragment : Fragment() {
         textPrimaryStoreDomain.text = UrlUtils.getHost(selectedSite.get().url)
         if (TextUtils.isEmpty(selectedSite.get().username)) {
             textPrimaryStoreUsername.visibility = View.GONE
+            val padding = resources.getDimensionPixelSize(R.dimen.settings_padding)
+            textPrimaryStoreDomain.setPadding(padding, padding, padding, padding)
         } else {
             textPrimaryStoreUsername.text = selectedSite.get().username
         }
