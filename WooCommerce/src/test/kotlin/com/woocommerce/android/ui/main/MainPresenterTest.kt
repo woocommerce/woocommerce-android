@@ -12,7 +12,6 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
-import org.wordpress.android.fluxc.action.SiteAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
@@ -70,21 +69,5 @@ class MainPresenterTest {
         // Check that the final OnSiteChanged triggers a site update
         mainPresenter.onSiteChanged(OnSiteChanged(6))
         verify(mainContractView).updateSelectedSite()
-    }
-
-    @Test
-    fun `Prompts UI to show login screen on logout`() {
-        mainPresenter.logout()
-
-        // Logging out needs to trigger both an account signout and stored WordPress.com site removal
-        verify(dispatcher, times(2)).dispatch(actionCaptor.capture())
-        assertEquals(AccountAction.SIGN_OUT, actionCaptor.firstValue.type)
-        assertEquals(SiteAction.REMOVE_WPCOM_AND_JETPACK_SITES, actionCaptor.secondValue.type)
-
-        // Simulate access token cleared, and the resulting OnAuthenticationChanged
-        doReturn(false).whenever(accountStore).hasAccessToken()
-        mainPresenter.onAuthenticationChanged(OnAuthenticationChanged())
-
-        verify(mainContractView).showLoginScreen()
     }
 }
