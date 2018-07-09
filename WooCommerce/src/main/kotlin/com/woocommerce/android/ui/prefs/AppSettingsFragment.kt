@@ -7,10 +7,11 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_app_settings.*
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
@@ -49,6 +50,12 @@ class AppSettingsFragment : Fragment() {
         } else {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
+
+        // TODO: replace with synthetics once Kotlin plugin bug is fixed
+        val textPrimaryStoreDomain = view!!.findViewById<TextView>(R.id.textPrimaryStoreDomain)
+        val textPrimaryStoreUsername = view!!.findViewById<TextView>(R.id.textPrimaryStoreUsername)
+        val textPrivacySettings = view!!.findViewById<TextView>(R.id.textPrivacySettings)
+        val buttonLogout = view!!.findViewById<Button>(R.id.buttonLogout)
 
         textPrimaryStoreDomain.text = UrlUtils.getHost(selectedSite.get().url)
         if (TextUtils.isEmpty(selectedSite.get().username)) {

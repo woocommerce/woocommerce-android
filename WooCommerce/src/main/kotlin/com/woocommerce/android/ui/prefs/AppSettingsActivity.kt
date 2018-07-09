@@ -14,7 +14,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-import kotlinx.android.synthetic.main.activity_app_settings.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -36,6 +35,9 @@ class AppSettingsActivity : AppCompatActivity(), AppSettingsListener, HasSupport
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_app_settings)
+
+        // TODO: replace with synthetics once Kotlin plugin bug is fixed
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
