@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class MainSettingsFragment : Fragment(), MainSettingsContract.View {
     companion object {
-        const val TAG = "app-settings"
+        const val TAG = "main-settings"
 
         fun newInstance(): MainSettingsFragment {
             return MainSettingsFragment()
