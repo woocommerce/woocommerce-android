@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.prefs
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import dagger.android.support.AndroidSupportInjection
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
@@ -25,6 +25,7 @@ class AppSettingsFragment : Fragment() {
     }
 
     @Inject internal lateinit var selectedSite: SelectedSite
+    @Inject internal lateinit var accountStore: AccountStore
 
     interface AppSettingsListener {
         fun onRequestLogout()
@@ -58,13 +59,7 @@ class AppSettingsFragment : Fragment() {
         val buttonLogout = view!!.findViewById<Button>(R.id.buttonLogout)
 
         textPrimaryStoreDomain.text = UrlUtils.getHost(selectedSite.get().url)
-        if (TextUtils.isEmpty(selectedSite.get().username)) {
-            textPrimaryStoreUsername.visibility = View.GONE
-            val padding = resources.getDimensionPixelSize(R.dimen.settings_padding)
-            textPrimaryStoreDomain.setPadding(padding, padding, padding, padding)
-        } else {
-            textPrimaryStoreUsername.text = selectedSite.get().username
-        }
+        textPrimaryStoreUsername.text = accountStore.account.userName
 
         buttonLogout.setOnClickListener {
             listener.onRequestLogout()
