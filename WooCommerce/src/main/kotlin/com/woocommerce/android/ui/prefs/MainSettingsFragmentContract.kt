@@ -10,6 +10,6 @@ interface MainSettingsFragmentContract {
     }
 
     interface View : BaseView<Presenter> {
-        // TODO
+        // TODO: empty for now but will be added to as more settings are added
     }
 }
