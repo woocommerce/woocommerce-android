@@ -26,6 +26,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         View.inflate(context, R.layout.dashboard_stats, this)
     }
 
+    private var chartRevenueStats = mapOf<String, Double>()
+
     fun initView(period: StatsGranularity = StatsGranularity.DAYS, listener: DashboardStatsListener) {
         barchart_progress.visibility = View.VISIBLE
 
@@ -77,13 +79,24 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsGranularity.DAYS,
             StatsGranularity.WEEKS,
             StatsGranularity.MONTHS -> {
-                revenueStats.values.mapIndexed { index, value ->
+                chartRevenueStats = revenueStats
+                chartRevenueStats.values.mapIndexed { index, value ->
                     BarEntry((index + 1).toFloat(), value.toFloat())
                 }
             }
+            StatsGranularity.YEARS -> {
+                // Clean up leading empty years and start from first year with non-zero sales
+                // (but always include current year)
+                val modifiedRevenueStats = revenueStats.toMutableMap()
+                for (entry in revenueStats) {
+                    if (entry.value != 0.0 || entry.key == revenueStats.keys.last()) {
+                        break
+                    }
+                    modifiedRevenueStats.remove(entry.key)
                 }
+                chartRevenueStats = modifiedRevenueStats
+                chartRevenueStats.map { BarEntry(it.key.toFloat(), it.value.toFloat()) }
             }
-            StatsGranularity.YEARS -> TODO()
         }
 
         val dataSet = BarDataSet(entries, "").apply {
@@ -105,10 +118,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     StatsGranularity.DAYS -> IAxisValueFormatter { value, axis ->
                         when (value) {
                             axis.mEntries.first() -> {
-                                DateUtils.getShortMonthDayString(revenueStats.keys.first())
+                                DateUtils.getShortMonthDayString(chartRevenueStats.keys.first())
                             }
                             axis.mEntries.max() -> {
-                                DateUtils.getShortMonthDayString(revenueStats.keys.last())
+                                DateUtils.getShortMonthDayString(chartRevenueStats.keys.last())
                             }
                             else -> ""
                         }
@@ -116,10 +129,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     StatsGranularity.WEEKS -> IAxisValueFormatter { value, axis ->
                         when (value) {
                             axis.mEntries.first() -> {
-                                DateUtils.getShortMonthDayStringForWeek(revenueStats.keys.first())
+                                DateUtils.getShortMonthDayStringForWeek(chartRevenueStats.keys.first())
                             }
                             axis.mEntries.max() -> {
-                                DateUtils.getShortMonthDayStringForWeek(revenueStats.keys.last())
+                                DateUtils.getShortMonthDayStringForWeek(chartRevenueStats.keys.last())
                             }
                             else -> ""
                         }
@@ -127,15 +140,21 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     StatsGranularity.MONTHS -> IAxisValueFormatter { value, axis ->
                         when (value) {
                             axis.mEntries.first() -> {
-                                DateUtils.getShortMonthString(revenueStats.keys.first())
+                                DateUtils.getShortMonthString(chartRevenueStats.keys.first())
                             }
                             axis.mEntries.max() -> {
-                                DateUtils.getShortMonthString(revenueStats.keys.last())
+                                DateUtils.getShortMonthString(chartRevenueStats.keys.last())
                             }
                             else -> ""
                         }
                     }
-                    StatsGranularity.YEARS -> TODO()
+                    StatsGranularity.YEARS -> IAxisValueFormatter { value, axis ->
+                        when (value) {
+                            axis.mEntries.first() -> chartRevenueStats.keys.first()
+                            axis.mEntries.max() -> chartRevenueStats.keys.last()
+                            else -> ""
+                        }
+                    }
                 }
             }
 
@@ -199,7 +218,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsGranularity.DAYS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_DAYS.toFloat())
             StatsGranularity.WEEKS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_WEEKS.toFloat())
             StatsGranularity.MONTHS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_MONTHS.toFloat())
-            StatsGranularity.YEARS -> TODO()
+            StatsGranularity.YEARS -> {}
         }
     }
 
