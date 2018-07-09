@@ -1,6 +1,4 @@
-package com.woocommerce.android.di;
-
-import com.woocommerce.android.ui.prefs.AppSettingsFragment;
+package com.woocommerce.android.ui.prefs;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
