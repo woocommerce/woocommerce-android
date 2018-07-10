@@ -146,4 +146,9 @@
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic</string>
     <string name="settings_primary_store">Primary store</string>
+    <!--
+        Help and support
+    -->
+    <string name="contact_support">Contact support</string>
+    <string name="support_email_subject">WooCommerce Android %d support</string>
 </resources>

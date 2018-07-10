@@ -15,5 +15,6 @@ interface MainContract {
         fun showLoginEpilogueScreen()
         fun updateSelectedSite()
         fun showSettingsScreen()
+        fun contactSupport()
     }
 }
