@@ -87,6 +87,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
 
                 setLabelCount(2, true) // Only show first and last date
+
+                valueFormatter = StartEndDateAxisFormatter()
             }
 
             with (axisLeft) {
@@ -164,10 +166,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         with (chart) {
-            with (xAxis) {
-                valueFormatter = StartEndDateAxisFormatter()
-            }
-
             // Set the data after everything is configured to prevent a premature redrawing of the chart
             data = BarData(dataSet)
 
