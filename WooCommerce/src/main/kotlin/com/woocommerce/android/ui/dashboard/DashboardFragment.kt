@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -21,6 +22,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     @Inject lateinit var presenter: DashboardContract.Presenter
+    @Inject lateinit var selectedSite: SelectedSite
 
     private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
 
@@ -100,7 +102,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (dashboard_stats.getActiveGranularity() == granularity) {
-            dashboard_stats.populateView(revenueStats, salesStats, presenter.getStatsCurrency())
+            dashboard_stats.populateView(revenueStats, salesStats, presenter.getStatsCurrency(), selectedSite.get())
             setLoadingIndicator(false)
         }
     }

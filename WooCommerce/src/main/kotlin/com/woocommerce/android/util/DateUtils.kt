@@ -13,7 +13,7 @@ import java.util.GregorianCalendar
 import java.util.Locale
 
 object DateUtils {
-    private val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
+    val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
     private val dayOfWeekOfYearFormat by lazy { SimpleDateFormat("yyyy-'W'ww-u", Locale.getDefault()) }
     private val shortMonths by lazy { DateFormatSymbols().shortMonths }
 

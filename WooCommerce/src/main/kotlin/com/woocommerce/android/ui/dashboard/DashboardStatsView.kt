@@ -17,8 +17,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.utils.SiteUtils
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
@@ -60,6 +62,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         revenueStats: Map<String, Double>,
         orderStats: Map<String, Int>,
         currencyCode: String?,
+        site: SiteModel,
         timeframe: StatsGranularity = getActiveGranularity()
     ) {
         barchart_progress.visibility = View.GONE
@@ -132,7 +135,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                                 DateUtils.getShortMonthDayStringForWeek(chartRevenueStats.keys.first())
                             }
                             axis.mEntries.max() -> {
-                                DateUtils.getShortMonthDayStringForWeek(chartRevenueStats.keys.last())
+                                SiteUtils.getCurrentDateTimeForSite(site, DateUtils.friendlyMonthDayFormat)
                             }
                             else -> ""
                         }
