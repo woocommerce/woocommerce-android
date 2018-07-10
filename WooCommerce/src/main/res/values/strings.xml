@@ -150,5 +150,5 @@
         Help and support
     -->
     <string name="contact_support">Contact support</string>
-    <string name="support_email_subject">WooCommerce Android %d support</string>
+    <string name="support_email_subject">WooCommerce Android %s support</string>
 </resources>

@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun contactSupport() {
-        val subject = String.format(getString(R.string.support_email_subject), BuildConfig.VERSION_CODE)
+        val subject = String.format(getString(R.string.support_email_subject), BuildConfig.VERSION_NAME)
         val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
         if (emailIntent.resolveActivity(getPackageManager()) != null) {
