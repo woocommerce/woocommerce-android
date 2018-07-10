@@ -108,12 +108,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    fun populateView(
+    fun updateView(
         revenueStats: Map<String, Double>,
         orderStats: Map<String, Int>,
         currencyCode: String?,
-        site: SiteModel,
-        timeframe: StatsGranularity = activeGranularity
+        site: SiteModel
     ) {
         barchart_progress.visibility = View.GONE
 
@@ -162,7 +161,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         with (chart) {
             with (xAxis) {
-                valueFormatter = when (timeframe) {
+                valueFormatter = when (activeGranularity) {
                     StatsGranularity.DAYS -> IAxisValueFormatter { value, axis ->
                         when (value) {
                             axis.mEntries.first() -> {
