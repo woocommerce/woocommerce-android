@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -18,7 +17,6 @@ import com.woocommerce.android.util.CurrencyUtils
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
 
@@ -190,9 +188,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             // Set the data after everything is configured to prevent a premature redrawing of the chart
             data = BarData(dataSet)
 
-            // Format the X-axis value range according to the current timeframe and given values
-            formatXAxisValueRange(this, timeframe, revenueStats.keys)
-
             invalidate() // Draw the graph
         }
     }
@@ -208,21 +203,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         return amount.takeIf { allowZero || it > 0 }?.let {
             CurrencyUtils.currencyStringRounded(context, amount, currencyCode.orEmpty())
         } ?: ""
-    }
-
-    private fun formatXAxisValueRange(chart: BarChart, granularity: StatsGranularity, dateList: Set<String>) {
-        with (chart.xAxis) {
-            resetAxisMinimum()
-            resetAxisMaximum()
-            calculate(chart.data.xMin, chart.data.xMax)
-        }
-
-        when (granularity) {
-            StatsGranularity.DAYS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_DAYS.toFloat())
-            StatsGranularity.WEEKS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_WEEKS.toFloat())
-            StatsGranularity.MONTHS -> chart.setVisibleXRangeMinimum(WCStatsStore.STATS_QUANTITY_MONTHS.toFloat())
-            StatsGranularity.YEARS -> {}
-        }
     }
 
     @StringRes
