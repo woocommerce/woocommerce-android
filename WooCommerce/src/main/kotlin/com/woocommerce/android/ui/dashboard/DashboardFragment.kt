@@ -65,7 +65,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         if (isActive) {
             setLoadingIndicator(true)
-            dashboard_stats.initView(listener = this)
+            dashboard_stats.initView(listener = this, selectedSite = selectedSite)
             presenter.loadStats(dashboard_stats.activeGranularity)
         } else {
             loadDataPending = true
@@ -102,7 +102,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (dashboard_stats.activeGranularity == granularity) {
-            dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency(), selectedSite.get())
+            dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
             setLoadingIndicator(false)
         }
     }

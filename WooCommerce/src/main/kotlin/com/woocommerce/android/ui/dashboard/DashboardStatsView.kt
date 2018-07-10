@@ -7,16 +7,17 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyUtils
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
 
@@ -33,11 +34,19 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             } ?: StatsGranularity.DAYS
         }
 
+    private lateinit var selectedSite: SelectedSite
+
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
 
-    fun initView(period: StatsGranularity = StatsGranularity.DAYS, listener: DashboardStatsListener) {
+    fun initView(
+        period: StatsGranularity = StatsGranularity.DAYS,
+        listener: DashboardStatsListener,
+        selectedSite: SelectedSite
+    ) {
         barchart_progress.visibility = View.VISIBLE
+
+        this.selectedSite = selectedSite
 
         StatsGranularity.values().forEach { granularity ->
             val tab = tab_layout.newTab().apply {
@@ -108,12 +117,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    fun updateView(
-        revenueStats: Map<String, Double>,
-        orderStats: Map<String, Int>,
-        currencyCode: String?,
-        site: SiteModel
-    ) {
+    fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         barchart_progress.visibility = View.GONE
 
         chartCurrencyCode = currencyCode
@@ -161,48 +165,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         with (chart) {
             with (xAxis) {
-                valueFormatter = when (activeGranularity) {
-                    StatsGranularity.DAYS -> IAxisValueFormatter { value, axis ->
-                        when (value) {
-                            axis.mEntries.first() -> {
-                                DateUtils.getShortMonthDayString(chartRevenueStats.keys.first())
-                            }
-                            axis.mEntries.max() -> {
-                                DateUtils.getShortMonthDayString(chartRevenueStats.keys.last())
-                            }
-                            else -> ""
-                        }
-                    }
-                    StatsGranularity.WEEKS -> IAxisValueFormatter { value, axis ->
-                        when (value) {
-                            axis.mEntries.first() -> {
-                                DateUtils.getShortMonthDayStringForWeek(chartRevenueStats.keys.first())
-                            }
-                            axis.mEntries.max() -> {
-                                SiteUtils.getCurrentDateTimeForSite(site, DateUtils.friendlyMonthDayFormat)
-                            }
-                            else -> ""
-                        }
-                    }
-                    StatsGranularity.MONTHS -> IAxisValueFormatter { value, axis ->
-                        when (value) {
-                            axis.mEntries.first() -> {
-                                DateUtils.getShortMonthString(chartRevenueStats.keys.first())
-                            }
-                            axis.mEntries.max() -> {
-                                DateUtils.getShortMonthString(chartRevenueStats.keys.last())
-                            }
-                            else -> ""
-                        }
-                    }
-                    StatsGranularity.YEARS -> IAxisValueFormatter { value, axis ->
-                        when (value) {
-                            axis.mEntries.first() -> chartRevenueStats.keys.first()
-                            axis.mEntries.max() -> chartRevenueStats.keys.last()
-                            else -> ""
-                        }
-                    }
-                }
+                valueFormatter = StartEndDateAxisFormatter()
             }
 
             // Set the data after everything is configured to prevent a premature redrawing of the chart
@@ -226,6 +189,37 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsGranularity.WEEKS -> R.string.dashboard_stats_granularity_weeks
             StatsGranularity.MONTHS -> R.string.dashboard_stats_granularity_months
             StatsGranularity.YEARS -> R.string.dashboard_stats_granularity_years
+        }
+    }
+
+    private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
+        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+            return when (value) {
+                axis.mEntries.first() -> getStartValue()
+                axis.mEntries.max() -> getEndValue()
+                else -> ""
+            }
+        }
+
+        fun getStartValue(): String {
+            val dateString = chartRevenueStats.keys.first()
+            return when (activeGranularity) {
+                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(dateString)
+                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
+                StatsGranularity.YEARS -> dateString
+            }
+        }
+
+        fun getEndValue(): String {
+            val dateString = chartRevenueStats.keys.last()
+            return when (activeGranularity) {
+                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.WEEKS ->
+                    SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
+                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
+                StatsGranularity.YEARS -> dateString
+            }
         }
     }
 }
