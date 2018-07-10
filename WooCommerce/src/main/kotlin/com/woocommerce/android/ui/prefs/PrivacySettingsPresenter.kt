@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class PrivacySettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
-        private val accountStore: AccountStore
+    private val accountStore: AccountStore
 ) : PrivacySettingsContract.Presenter {
     private var privacySettingsFragmentView: PrivacySettingsContract.View? = null
 
