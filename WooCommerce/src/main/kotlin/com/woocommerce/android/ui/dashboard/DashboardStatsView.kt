@@ -34,6 +34,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
     private var chartRevenueStats = mapOf<String, Double>()
+    private var chartCurrencyCode: String? = null
 
     fun initView(period: StatsGranularity = StatsGranularity.DAYS, listener: DashboardStatsListener) {
         barchart_progress.visibility = View.VISIBLE
@@ -61,6 +62,50 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
+
+        initChart()
+    }
+
+    /**
+     * One-time chart initialization with settings common to all granularities.
+     */
+    private fun initChart() {
+        with (chart) {
+            with (xAxis) {
+                position = XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+                granularity = 1f // Don't break x axis values down further than 1 unit of time
+
+                setLabelCount(2, true) // Only show first and last date
+            }
+
+            with (axisLeft) {
+                setDrawAxisLine(false)
+
+                setDrawGridLines(true)
+                enableGridDashedLine(10F, 10F, 0F)
+                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+
+                setDrawZeroLine(true)
+                zeroLineWidth = 1F
+                zeroLineColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+
+                axisMinimum = 0F
+
+                valueFormatter = IAxisValueFormatter { value, _ ->
+                    formatAmountForDisplay(value.toDouble(), chartCurrencyCode, allowZero = false)
+                }
+            }
+
+            axisRight.isEnabled = false
+            description.isEnabled = false
+            legend.isEnabled = false
+
+            // This disables pinch to zoom and swiping through the zoomed graph
+            // We can reenable it, but we'll probably want to disable pull-to-refresh inside the graph view
+            setTouchEnabled(false)
+        }
     }
 
     fun populateView(
@@ -71,6 +116,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         timeframe: StatsGranularity = activeGranularity
     ) {
         barchart_progress.visibility = View.GONE
+
+        chartCurrencyCode = currencyCode
 
         revenue_value.text = formatAmountForDisplay(revenueStats.values.sum(), currencyCode)
         orders_value.text = orderStats.values.sum().toString()
@@ -115,13 +162,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         with (chart) {
             with (xAxis) {
-                position = XAxisPosition.BOTTOM
-                setDrawGridLines(false)
-                setDrawAxisLine(false)
-                granularity = 1f // Don't break x axis values down further than 1 unit of time
-
-                setLabelCount(2, true) // Only show first and last date
-
                 valueFormatter = when (timeframe) {
                     StatsGranularity.DAYS -> IAxisValueFormatter { value, axis ->
                         when (value) {
@@ -165,32 +205,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                     }
                 }
             }
-
-            with (axisLeft) {
-                setDrawAxisLine(false)
-
-                setDrawGridLines(true)
-                enableGridDashedLine(10F, 10F, 0F)
-                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
-
-                setDrawZeroLine(true)
-                zeroLineWidth = 1F
-                zeroLineColor = ContextCompat.getColor(context, R.color.graph_grid_color)
-
-                axisMinimum = 0F
-
-                valueFormatter = IAxisValueFormatter { value, _ ->
-                    formatAmountForDisplay(value.toDouble(), currencyCode, allowZero = false)
-                }
-            }
-
-            axisRight.isEnabled = false
-            description.isEnabled = false
-            legend.isEnabled = false
-
-            // This disables pinch to zoom and swiping through the zoomed graph
-            // We can reenable it, but we'll probably want to disable pull-to-refresh inside the graph view
-            setTouchEnabled(false)
 
             // Set the data after everything is configured to prevent a premature redrawing of the chart
             data = BarData(dataSet)
