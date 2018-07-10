@@ -135,7 +135,21 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             return
         }
 
-        val entries = when (activeGranularity) {
+        val dataSet = generateBarDataSet(revenueStats).apply {
+            color = ContextCompat.getColor(context, R.color.graph_data_color)
+            setDrawValues(false)
+            isHighlightEnabled = false
+        }
+
+        with (chart) {
+            data = BarData(dataSet)
+
+            invalidate() // Draw/redraw the graph
+        }
+    }
+
+    private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
+        val barEntries = when (activeGranularity) {
             StatsGranularity.DAYS,
             StatsGranularity.WEEKS,
             StatsGranularity.MONTHS -> {
@@ -159,18 +173,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             }
         }
 
-        val dataSet = BarDataSet(entries, "").apply {
-            color = ContextCompat.getColor(context, R.color.graph_data_color)
-            setDrawValues(false)
-            isHighlightEnabled = false
-        }
-
-        with (chart) {
-            // Set the data after everything is configured to prevent a premature redrawing of the chart
-            data = BarData(dataSet)
-
-            invalidate() // Draw the graph
-        }
+        return BarDataSet(barEntries, "")
     }
 
     // TODO For certain currencies/locales, replace the thousands mark with k
