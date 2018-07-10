@@ -14,7 +14,17 @@ import java.util.Locale
 
 object DateUtils {
     val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
-    private val dayOfWeekOfYearFormat by lazy { SimpleDateFormat("yyyy-'W'ww-u", Locale.getDefault()) }
+    private val weekOfYearStartingMondayFormat by lazy {
+        SimpleDateFormat("yyyy-'W'ww", Locale.getDefault()).apply {
+            calendar = Calendar.getInstance().apply {
+                // Ensure the date formatter follows ISO8601 week standards:
+                // the first day of a week is a Monday, and the first week of the year starts on the first Monday
+                // (and not on the Monday of the week containing January 1st, which may be in the previous year)
+                firstDayOfWeek = Calendar.MONDAY
+                minimalDaysInFirstWeek = 7
+            }
+        }
+    }
     private val shortMonths by lazy { DateFormatSymbols().shortMonths }
 
     /**
@@ -88,7 +98,7 @@ object DateUtils {
      * For example, given 2018-W11, returns "Mar 12".
      */
     fun getShortMonthDayStringForWeek(iso8601Week: String): String {
-        val date = dayOfWeekOfYearFormat.parse("$iso8601Week-1")
+        val date = weekOfYearStartingMondayFormat.parse(iso8601Week)
         return friendlyMonthDayFormat.format(date)
     }
 
