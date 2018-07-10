@@ -51,7 +51,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 }
                 setOnRefreshListener {
                     setLoadingIndicator(true)
-                    presenter.loadStats(dashboard_stats.getActiveGranularity(), forced = true)
+                    presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
                 }
             }
         }
@@ -66,7 +66,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive) {
             setLoadingIndicator(true)
             dashboard_stats.initView(listener = this)
-            presenter.loadStats(dashboard_stats.getActiveGranularity())
+            presenter.loadStats(dashboard_stats.activeGranularity)
         } else {
             loadDataPending = true
         }
@@ -79,7 +79,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive && loadDataPending) {
             loadDataPending = false
             setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.getActiveGranularity())
+            presenter.loadStats(dashboard_stats.activeGranularity)
         }
     }
 
@@ -101,7 +101,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
-        if (dashboard_stats.getActiveGranularity() == granularity) {
+        if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.populateView(revenueStats, salesStats, presenter.getStatsCurrency(), selectedSite.get())
             setLoadingIndicator(false)
         }
@@ -114,7 +114,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun refreshFragmentState() {
         if (isActive) {
             setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.getActiveGranularity(), forced = true)
+            presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
         } else {
             loadDataPending = true
         }

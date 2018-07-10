@@ -26,6 +26,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         View.inflate(context, R.layout.dashboard_stats, this)
     }
 
+    var activeGranularity: StatsGranularity = StatsGranularity.DAYS
+        get() {
+            return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
+                it.tag as StatsGranularity
+            } ?: StatsGranularity.DAYS
+        }
+
     private var chartRevenueStats = mapOf<String, Double>()
 
     fun initView(period: StatsGranularity = StatsGranularity.DAYS, listener: DashboardStatsListener) {
@@ -61,7 +68,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         orderStats: Map<String, Int>,
         currencyCode: String?,
         site: SiteModel,
-        timeframe: StatsGranularity = getActiveGranularity()
+        timeframe: StatsGranularity = activeGranularity
     ) {
         barchart_progress.visibility = View.GONE
 
@@ -76,7 +83,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             return
         }
 
-        val entries = when (timeframe) {
+        val entries = when (activeGranularity) {
             StatsGranularity.DAYS,
             StatsGranularity.WEEKS,
             StatsGranularity.MONTHS -> {
@@ -190,12 +197,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
             invalidate() // Draw the graph
         }
-    }
-
-    fun getActiveGranularity(): StatsGranularity {
-        return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
-            it.tag as StatsGranularity
-        } ?: StatsGranularity.DAYS
     }
 
     // TODO For certain currencies/locales, replace the thousands mark with k
