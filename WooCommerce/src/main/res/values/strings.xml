@@ -31,6 +31,8 @@
     <string name="undo">Undo</string>
     <string name="continue_button">Continue</string>
     <string name="untitled">Untitled</string>
+    <string name="cancel">Cancel</string>
+    <string name="learn_more">Learn More</string>
     <!--
         Date/Time Labels
     -->
@@ -130,4 +132,18 @@
     <string name="orderstatus_hold">On-Hold</string>
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
+    <!--
+        Settings
+    -->
+    <string name="settings">Settings</string>
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="settings_signout">Logout account</string>
+    <string name="settings_confirm_signout">Log out of WooCommerce?</string>
+    <string name="settings_send_stats">Collect information</string>
+    <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
+    <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
+    <string name="settings_privacy_policy">Read privacy policy</string>
+    <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
+    <string name="settings_footer">Made with love by Automattic</string>
+    <string name="settings_primary_store">Primary store</string>
 </resources>

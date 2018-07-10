@@ -7,7 +7,6 @@ interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun userIsLoggedIn(): Boolean
         fun storeMagicLinkToken(token: String)
-        fun logout()
     }
 
     interface View : BaseView<Presenter> {
@@ -15,5 +14,6 @@ interface MainContract {
         fun showLoginScreen()
         fun showLoginEpilogueScreen()
         fun updateSelectedSite()
+        fun showSettingsScreen()
     }
 }

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/settingsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                style="@style/Woo.Settings.Icon"
+                app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
+
+            <Switch
+                android:id="@+id/switchSendStats"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_send_stats"/>
+        </LinearLayout>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imageInfo"
+                style="@style/Woo.Settings.Icon"
+                app:srcCompat="@drawable/ic_info_outline_grey_min_24dp"/>
+
+            <TextView
+                android:id="@+id/textInfo"
+                style="@style/Woo.Settings.LabelWithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/imageInfo"
+                android:text="@string/settings_send_stats_detail"/>
+
+            <Button
+                android:id="@+id/buttonLearnMore"
+                style="@style/Woo.Settings.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/textInfo"
+                android:text="@string/learn_more"/>
+
+        </RelativeLayout>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imagePrivacyPolicy"
+                style="@style/Woo.Settings.Icon"
+                app:srcCompat="@drawable/ic_user_circle_grey_min_24dp"/>
+
+            <TextView
+                android:id="@+id/textPrivacyPolicy"
+                style="@style/Woo.Settings.LabelWithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/imagePrivacyPolicy"
+                android:text="@string/settings_privacy_detail"/>
+
+            <Button
+                android:id="@+id/buttonPrivacyPolicy"
+                style="@style/Woo.Settings.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/textPrivacyPolicy"
+                android:text="@string/settings_privacy_policy"/>
+
+        </RelativeLayout>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imageTracking"
+                style="@style/Woo.Settings.Icon"
+                app:srcCompat="@drawable/ic_briefcase_grey_min_24dp"/>
+
+            <TextView
+                android:id="@+id/textTracking"
+                style="@style/Woo.Settings.LabelWithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/imageTracking"
+                android:text="@string/settings_tracking"/>
+
+            <Button
+                android:id="@+id/buttonTracking"
+                style="@style/Woo.Settings.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/textTracking"
+                android:text="@string/learn_more"/>
+
+        </RelativeLayout>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+    </LinearLayout>
+</ScrollView>

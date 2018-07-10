@@ -279,4 +279,75 @@
     <style name="Woo.OrderDetail.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
     <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
     <style name="Woo.OrderDetail.TextAppearance.Label.Bold" parent="Woo.TextAppearance.Label.Bold"/>
+    <!--
+        Settings Styles
+    -->
+    <style name="Woo.Settings"/>
+
+    <style name="Woo.Settings.Caption" parent="Woo.TextAppearance">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingTop">@dimen/settings_padding</item>
+        <item name="android:paddingStart">@dimen/settings_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_padding</item>
+    </style>
+
+    <style name="Woo.Settings.Label" parent="Woo.TextAppearance">
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:paddingStart">@dimen/settings_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_padding</item>
+        <item name="android:paddingBottom">@dimen/settings_padding</item>
+        <item name="android:paddingTop">@dimen/settings_padding</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Woo.Settings.Label.Small" parent="Woo.Settings.Label">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:paddingBottom">@dimen/margin_small</item>
+        <item name="android:paddingTop">@dimen/margin_small</item>
+    </style>
+
+    <style name="Woo.Settings.LabelWithButton" parent="Woo.Settings.Label">
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="Woo.Settings.Button" parent="Woo.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/margin_medium</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Woo.Settings.LabelWithDetail" parent="Woo.Settings.LabelWithButton"/>
+
+    <style name="Woo.Settings.Label.Detail" parent="Woo.TextAppearance">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:paddingStart">@dimen/settings_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_padding</item>
+        <item name="android:paddingBottom">@dimen/settings_padding</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Woo.Settings.Icon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/settings_padding</item>
+    </style>
+
+
+    <style name="Woo.Settings.Divider">
+        <item name="android:background">@color/grey_lighten_20</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+    </style>
+
+    <!--
+        Other
+    -->
+    <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+    </style>
 </resources>
