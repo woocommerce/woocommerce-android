@@ -33,7 +33,7 @@ class OrderDetailAddNoteFragment : Fragment(), OrderDetailAddNoteContract.View {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_order_detail, container, false)
+        return inflater.inflate(R.layout.fragment_order_detail_add_note, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -198,7 +198,16 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onRequestAddNote() {
-        // TODO
+        showAddOrderNote()
+    }
+
+    override fun showAddOrderNote() {
+        val tag = OrderDetailAddNoteFragment.TAG
+        val fragment = OrderDetailAddNoteFragment.newInstance(presenter.orderModel!!)
+        childFragmentManager.beginTransaction()
+                .replace(R.id.container, fragment, tag)
+                .addToBackStack(tag)
+                .commit()
     }
 
     override fun markOrderCompleteSuccess() {
