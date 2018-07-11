@@ -27,11 +27,15 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         View.inflate(context, R.layout.dashboard_stats, this)
     }
 
-    var activeGranularity: StatsGranularity = StatsGranularity.DAYS
+    companion object {
+        private val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
+    }
+
+    var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
         get() {
             return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
                 it.tag as StatsGranularity
-            } ?: StatsGranularity.DAYS
+            } ?: DEFAULT_STATS_GRANULARITY
         }
 
     private lateinit var selectedSite: SelectedSite
@@ -40,7 +44,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var chartCurrencyCode: String? = null
 
     fun initView(
-        period: StatsGranularity = StatsGranularity.DAYS,
+        period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
         selectedSite: SelectedSite
     ) {
