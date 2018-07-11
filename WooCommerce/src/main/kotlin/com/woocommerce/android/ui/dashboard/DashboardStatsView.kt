@@ -66,7 +66,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 revenue_value.text = ""
                 orders_value.text = ""
                 barchart_progress.visibility = View.VISIBLE
-                listener.loadStats(tab.tag as StatsGranularity)
+                listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
