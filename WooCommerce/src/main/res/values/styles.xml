@@ -260,7 +260,7 @@
     <style name="Woo.TabLayout" parent="Widget.Design.TabLayout">
         <item name="tabMode">scrollable</item>
         <item name="tabTextAppearance">@style/Woo.TabLayout.Text</item>
-        <item name="tabTextColor">@color/default_text_label_color</item>
+        <item name="tabTextColor">@color/wc_grey_mid</item>
         <item name="tabContentStart">48dp</item>
         <item name="tabPaddingStart">40dp</item>
         <item name="tabPaddingEnd">40dp</item>
