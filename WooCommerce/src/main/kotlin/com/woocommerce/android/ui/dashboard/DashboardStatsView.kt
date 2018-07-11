@@ -20,6 +20,8 @@ import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
+import java.util.Timer
+import java.util.TimerTask
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
@@ -29,6 +31,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     companion object {
         private val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
+        private const val PROGRESS_DELAY_TIME_MS = 200L
     }
 
     var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
@@ -42,6 +45,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
+
+    private var progressDelayTimer: Timer? = null
+    private var progressDelayTimerTask: TimerTask? = null
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -69,7 +75,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             override fun onTabSelected(tab: TabLayout.Tab) {
                 revenue_value.text = ""
                 orders_value.text = ""
-                barchart_progress.visibility = View.VISIBLE
+                // Show the progress view after some delay
+                // This gives us a chance to never show it at all when the stats data is cached and returns quickly,
+                // preventing glitchy behavior
+                showProgressDelayed()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -126,6 +135,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
+        progressDelayTimer?.cancel()
+        progressDelayTimerTask?.cancel()
         barchart_progress.visibility = View.GONE
 
         chartCurrencyCode = currencyCode
@@ -196,6 +207,20 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsGranularity.WEEKS -> R.string.dashboard_stats_granularity_weeks
             StatsGranularity.MONTHS -> R.string.dashboard_stats_granularity_months
             StatsGranularity.YEARS -> R.string.dashboard_stats_granularity_years
+        }
+    }
+
+    private fun showProgressDelayed() {
+        progressDelayTimerTask = object : TimerTask() {
+            override fun run() {
+                this@DashboardStatsView.post {
+                    barchart_progress.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        progressDelayTimer = Timer().apply {
+            schedule(progressDelayTimerTask, PROGRESS_DELAY_TIME_MS)
         }
     }
 
