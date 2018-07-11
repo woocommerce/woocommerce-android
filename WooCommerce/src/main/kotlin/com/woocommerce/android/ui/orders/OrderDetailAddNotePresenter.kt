@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.tools.SelectedSite
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.action.WCOrderAction.POSTED_ORDER_NOTE
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
 class OrderDetailAddNotePresenter @Inject constructor(
@@ -25,5 +28,15 @@ class OrderDetailAddNotePresenter @Inject constructor(
     override fun dropView() {
         addNoteView = null
         dispatcher.unregister(this)
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderChanged(event: OnOrderChanged) {
+        when (event.causeOfChange) {
+            POSTED_ORDER_NOTE -> {
+                // TODO
+            }
+        }
     }
 }

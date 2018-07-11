@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -23,6 +24,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
+        const val REQUEST_CODE_ADD_NOTE = 100
 
         fun newInstance(order: WCOrderModel, markComplete: Boolean = false): Fragment {
             val args = Bundle()
@@ -202,12 +204,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun showAddOrderNote() {
-        val tag = OrderDetailAddNoteFragment.TAG
-        val fragment = OrderDetailAddNoteFragment.newInstance(presenter.orderModel!!)
-        childFragmentManager.beginTransaction()
-                .replace(R.id.container, fragment, tag)
-                .addToBackStack(tag)
-                .commit()
+        val intent = Intent(activity, OrderDetailAddNoteActivity::class.java)
+        intent.putExtra(OrderDetailAddNoteActivity.FIELD_ORDER_IDENTIFIER, presenter.orderModel?.getIdentifier())
+        startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
     }
 
     override fun markOrderCompleteSuccess() {

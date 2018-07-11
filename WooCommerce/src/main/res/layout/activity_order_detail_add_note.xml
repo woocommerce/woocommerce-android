@@ -7,13 +7,18 @@
     android:layout_height="match_parent"
     android:background="@color/default_window_background"
     android:orientation="vertical"
-    tools:context="com.woocommerce.android.ui.orders.OrderDetailAddNoteFragment">
+    tools:context="com.woocommerce.android.ui.orders.OrderDetailAddNoteActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"/>
 
     <LinearLayout
         android:id="@+id/addNote_editContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/addNote_editDivider"
+        android:layout_above="@+id/addNote_divider"
+        android:layout_below="@+id/toolbar"
         android:background="@color/white"
         android:orientation="horizontal"
         android:padding="@dimen/margin_large">
@@ -34,7 +39,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/addNote_editDivider"
+        android:id="@+id/addNote_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_above="@+id/addNote_switchContainer"

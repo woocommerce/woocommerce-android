@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.login.LoginEpilogueModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
+import com.woocommerce.android.ui.orders.OrderDetailAddNoteActivity
 import com.woocommerce.android.ui.orders.OrderDetailAddNoteModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
@@ -26,7 +27,6 @@ abstract class ActivityBindingModule {
             DashboardModule::class,
             OrderListModule::class,
             OrderDetailModule::class,
-            OrderDetailAddNoteModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
@@ -46,4 +46,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(AppSettingsFragmentModule::class))
     abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = arrayOf(OrderDetailAddNoteModule::class))
+    abstract fun provideOrderDetailAddNoteActivity(): OrderDetailAddNoteActivity
 }
