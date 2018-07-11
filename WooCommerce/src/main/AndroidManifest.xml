@@ -54,7 +54,7 @@
 
         <activity
             android:name=".ui.orders.OrderDetailAddNoteActivity"
-            android:windowSoftInputMode="stateVisible"/>
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
 
 
         <!-- Services -->
