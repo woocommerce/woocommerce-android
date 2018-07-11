@@ -131,7 +131,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         if (revenueStats.isEmpty()) {
             // TODO Replace with custom empty view
-            chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_test_color))
+            chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
             chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             chart.clear()
             return
