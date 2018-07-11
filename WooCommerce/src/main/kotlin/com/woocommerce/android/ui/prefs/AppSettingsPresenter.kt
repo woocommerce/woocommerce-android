@@ -6,7 +6,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import javax.inject.Inject
 
 class AppSettingsPresenter @Inject constructor(
@@ -36,7 +36,7 @@ class AppSettingsPresenter @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAccountChanged(event: OnAccountChanged) {
+    fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (!event.isError && !userIsLoggedIn()) {
             appSettingsView?.close()
         }
