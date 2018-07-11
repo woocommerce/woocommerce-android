@@ -12,7 +12,9 @@ import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderListModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.ui.prefs.AppSettingsFragmentModule
+import com.woocommerce.android.ui.prefs.MainSettingsModule
+import com.woocommerce.android.ui.prefs.AppSettingsModule
+import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule
@@ -42,6 +44,9 @@ abstract class ActivityBindingModule {
     abstract fun provideMagicLinkInterceptActivityInjector(): MagicLinkInterceptActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(AppSettingsFragmentModule::class))
+    @ContributesAndroidInjector(modules = arrayOf(
+            AppSettingsModule::class,
+            MainSettingsModule::class,
+            PrivacySettingsModule::class))
     abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
 }

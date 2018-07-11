@@ -7,11 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
-import kotlinx.android.synthetic.main.fragment_privacy_settings.*
+import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_settings_privacy.*
+import javax.inject.Inject
 
-class PrivacySettingsFragment : Fragment() {
+class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
     companion object {
         const val TAG = "privacy-settings"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
@@ -22,16 +23,24 @@ class PrivacySettingsFragment : Fragment() {
         }
     }
 
+    @Inject lateinit var presenter: PrivacySettingsContract.Presenter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_privacy_settings, container, false)
+        return inflater.inflate(R.layout.fragment_settings_privacy, container, false)
+    }
+
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        presenter.takeView(this)
 
-        switchSendStats.isChecked = AnalyticsTracker.sendUsageStats
+        switchSendStats.isChecked = presenter.getSendUsageStats()
         switchSendStats.setOnClickListener {
-            AnalyticsTracker.sendUsageStats = switchSendStats.isChecked
+            presenter.setSendUsageStats(switchSendStats.isChecked)
         }
 
         buttonLearnMore.setOnClickListener { showCookiePolicy() }
@@ -39,16 +48,21 @@ class PrivacySettingsFragment : Fragment() {
         buttonTracking.setOnClickListener { showCookiePolicy() }
     }
 
+    override fun onDestroyView() {
+        presenter.dropView()
+        super.onDestroyView()
+    }
+
     override fun onResume() {
         super.onResume()
         activity?.setTitle(R.string.privacy_settings)
     }
 
-    private fun showCookiePolicy() {
+    override fun showCookiePolicy() {
         ActivityUtils.openUrlExternal(activity as Context, URL_COOKIE_POLICY)
     }
 
-    private fun showPrivacyPolicy() {
+    override fun showPrivacyPolicy() {
         ActivityUtils.openUrlExternal(activity as Context, URL_PRIVACY_POLICY)
     }
 }
