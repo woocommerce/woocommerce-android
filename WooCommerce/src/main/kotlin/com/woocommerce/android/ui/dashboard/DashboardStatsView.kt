@@ -63,6 +63,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
+                revenue_value.text = ""
+                orders_value.text = ""
                 barchart_progress.visibility = View.VISIBLE
                 listener.loadStats(tab.tag as StatsGranularity)
             }
