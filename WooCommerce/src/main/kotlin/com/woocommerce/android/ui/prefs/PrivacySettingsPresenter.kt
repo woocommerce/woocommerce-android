@@ -42,7 +42,7 @@ class PrivacySettingsPresenter @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun OnAuthenticationChanged(event: OnAuthenticationChanged) {
+    fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         /*
          * this is empty but is necessary because the event bus requires at least one
          * public method with the @Subscribe annotation
