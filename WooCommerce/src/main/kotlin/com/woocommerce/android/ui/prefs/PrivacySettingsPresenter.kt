@@ -6,7 +6,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.PushAccountSettingsPayload
 import javax.inject.Inject
 
@@ -42,7 +42,7 @@ class PrivacySettingsPresenter @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAccountChanged(event: OnAccountChanged) {
+    fun OnAuthenticationChanged(event: OnAuthenticationChanged) {
         /*
          * this is empty but is necessary because the event bus requires at least one
          * public method with the @Subscribe annotation
