@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -14,13 +15,14 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
-class DashboardFragment : TopLevelFragment(), DashboardContract.View {
+class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
     }
 
     @Inject lateinit var presenter: DashboardContract.Presenter
+    @Inject lateinit var selectedSite: SelectedSite
 
     private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
 
@@ -49,7 +51,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
                 }
                 setOnRefreshListener {
                     setLoadingIndicator(true)
-                    presenter.loadStats(dashboard_stats.getActiveGranularity(), forced = true)
+                    presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
                 }
             }
         }
@@ -63,8 +65,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
 
         if (isActive) {
             setLoadingIndicator(true)
-            dashboard_stats.initView()
-            presenter.loadStats(dashboard_stats.getActiveGranularity())
+            dashboard_stats.initView(listener = this, selectedSite = selectedSite)
+            presenter.loadStats(dashboard_stats.activeGranularity)
         } else {
             loadDataPending = true
         }
@@ -77,7 +79,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         if (isActive && loadDataPending) {
             loadDataPending = false
             setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.getActiveGranularity())
+            presenter.loadStats(dashboard_stats.activeGranularity)
         }
     }
 
@@ -99,8 +101,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
-        if (dashboard_stats.getActiveGranularity() == granularity) {
-            dashboard_stats.populateView(revenueStats, salesStats, presenter.getStatsCurrency())
+        if (dashboard_stats.activeGranularity == granularity) {
+            dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
             setLoadingIndicator(false)
         }
     }
@@ -112,9 +114,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View {
     override fun refreshFragmentState() {
         if (isActive) {
             setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.getActiveGranularity(), forced = true)
+            presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
         } else {
             loadDataPending = true
         }
+    }
+
+    override fun onRequestLoadStats(period: StatsGranularity) {
+        presenter.loadStats(period)
     }
 }

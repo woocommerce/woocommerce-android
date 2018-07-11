@@ -82,7 +82,7 @@
     <!--
         Default graph colors
     -->
-    <color name="graph_no_data_test_color">@color/default_text_color</color>
+    <color name="graph_no_data_text_color">@color/default_text_color</color>
     <color name="graph_data_color">@color/wc_purple</color>
     <color name="graph_grid_color">@color/wc_border_color</color>
     <!--
