@@ -17,7 +17,7 @@
         android:id="@+id/addNote_editContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/addNote_divider"
+        android:layout_above="@+id/addNote_editDivider"
         android:layout_below="@+id/toolbar"
         android:background="@color/white"
         android:orientation="horizontal"
@@ -35,11 +35,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            android:drawablePadding="@dimen/margin_medium"/>
+            android:gravity="top"/>
     </LinearLayout>
 
     <View
-        android:id="@+id/addNote_divider"
+        android:id="@+id/addNote_editDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_above="@+id/addNote_switchContainer"
@@ -50,7 +50,7 @@
         android:id="@+id/addNote_switchContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/addNote_switchDivider"
         android:background="@color/white"
         android:orientation="vertical"
         android:padding="@dimen/margin_large">
@@ -69,4 +69,12 @@
             android:text="@string/orderdetail_add_note_sublabel"
             android:textColor="@color/grey_dark"/>
     </LinearLayout>
+
+    <View
+        android:id="@+id/addNote_switchDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:background="@color/list_divider"/>
 </RelativeLayout>
