@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.login.LoginEpilogueModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
+import com.woocommerce.android.ui.orders.OrderDetailAddNoteModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderListModule
@@ -25,6 +26,7 @@ abstract class ActivityBindingModule {
             DashboardModule::class,
             OrderListModule::class,
             OrderDetailModule::class,
+            OrderDetailAddNoteModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class))
     abstract fun provideMainActivityInjector(): MainActivity

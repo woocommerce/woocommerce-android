@@ -22,7 +22,15 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         View.inflate(context, R.layout.order_detail_note_list, this)
     }
 
-    fun initView(notes: List<WCOrderNoteModel>) {
+    interface OrderDetailNoteListener {
+        fun onRequestAddNote()
+    }
+
+    private lateinit var listener: OrderDetailNoteListener
+
+    fun initView(notes: List<WCOrderNoteModel>, orderDetailListener: OrderDetailNoteListener) {
+        listener = orderDetailListener
+
         if (notes.isNotEmpty()) {
             notesList_progress.visibility = View.GONE
         }
@@ -34,6 +42,13 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
         ContextCompat.getDrawable(context, R.drawable.list_divider)?.let { drawable ->
             divider.setDrawable(drawable)
+        }
+
+        ContextCompat.getDrawable(context, R.drawable.ic_gridicons_add_outline_purple)?.let { drawable ->
+            noteList_addNote.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+        }
+        noteList_addNote.setOnClickListener {
+            listener.onRequestAddNote()
         }
 
         notesList_notes.apply {

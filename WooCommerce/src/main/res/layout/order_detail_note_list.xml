@@ -8,37 +8,63 @@
 
     <TextView
         android:id="@+id/notesList_lblNotes"
+        style="@style/Woo.OrderDetail.CardTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/orderdetail_order_notes"
-        style="@style/Woo.OrderDetail.CardTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:minHeight="@dimen/list_item_height"
-        app:layout_constraintTop_toBottomOf="@+id/notesList_lblNotes"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/notesList_lblNotes">
+
+        <!-- Add a note -->
+        <TextView
+            android:id="@+id/noteList_addNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:drawablePadding="@dimen/margin_medium"
+            android:gravity="center_vertical"
+            android:padding="@dimen/list_item_padding_start"
+            android:text="@string/orderdetail_add_note"
+            android:textAllCaps="true"
+            android:textColor="@color/wc_purple"
+            tools:drawableStart="@drawable/ic_gridicons_add_outline_purple"/>
+
+        <View
+            android:id="@+id/noteList_addNote_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/noteList_addNote"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:background="@color/list_divider"
+            android:paddingEnd="@dimen/list_item_padding_end"
+            android:paddingStart="@dimen/list_item_padding_start"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/notesList_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/noteList_addNote_divider"
             android:nestedScrollingEnabled="false"
-            tools:listitem="@layout/order_detail_note_list_item"
             tools:itemCount="4"
+            tools:listitem="@layout/order_detail_note_list_item"
             tools:targetApi="lollipop"/>
 
         <ProgressBar
             android:id="@+id/notesList_progress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/list_item_padding_intra_h"
             android:background="@color/white"
+            android:padding="@dimen/list_item_padding_intra_h"
             tools:visibility="gone"/>
-    </FrameLayout>
+    </RelativeLayout>
 </merge>
