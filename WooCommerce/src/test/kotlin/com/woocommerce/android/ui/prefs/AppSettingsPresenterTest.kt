@@ -8,6 +8,8 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.ui.main.MainContract
+import com.woocommerce.android.ui.main.MainPresenter
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -17,23 +19,26 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class AppSettingsPresenterTest {
     private val appSettingsContractView: AppSettingsContract.View = mock()
+    private val mainContractView: MainContract.View = mock()
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
+    private val siteStore: SiteStore = mock()
 
     private lateinit var appSettingsPresenter: AppSettingsPresenter
+    private lateinit var mainPresenter: MainPresenter
 
     private lateinit var actionCaptor: KArgumentCaptor<Action<*>>
 
     @Before
     fun setup() {
+        mainPresenter = spy(MainPresenter(dispatcher, accountStore, siteStore))
+        mainPresenter.takeView(mainContractView)
+
         appSettingsPresenter = spy(AppSettingsPresenter(dispatcher, accountStore))
         appSettingsPresenter.takeView(appSettingsContractView)
 
@@ -41,7 +46,7 @@ class AppSettingsPresenterTest {
     }
 
     @Test
-    fun `Prompts UI to show login screen on logout`() {
+    fun `Verifies that logging out from settings results in the main presenter showing the login screen`() {
         appSettingsPresenter.logout()
 
         // Logging out needs to trigger both an account signout and stored WordPress.com site removal
@@ -52,6 +57,7 @@ class AppSettingsPresenterTest {
         // Simulate access token cleared, and the resulting OnAuthenticationChanged
         doReturn(false).whenever(accountStore).hasAccessToken()
         appSettingsPresenter.onAuthenticationChanged(OnAuthenticationChanged())
+        mainPresenter.onAuthenticationChanged(OnAuthenticationChanged())
 
         verify(mainContractView).showLoginScreen()
     }
