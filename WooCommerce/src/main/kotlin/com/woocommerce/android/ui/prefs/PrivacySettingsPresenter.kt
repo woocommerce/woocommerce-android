@@ -33,7 +33,6 @@ class PrivacySettingsPresenter @Inject constructor(
 
         // sync with wpcom if a token is available
         if (accountStore.hasAccessToken()) {
-            accountStore.account.tracksOptOut = !sendUsageStats
             val payload = PushAccountSettingsPayload()
             payload.params = HashMap<String, Any>()
             payload.params["tracks_opt_out"] = !sendUsageStats
