@@ -113,14 +113,14 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         addNote_switch.isEnabled = false
     }
 
-    override fun doAfterAddNote(didSucced: Boolean) {
+    override fun doAfterAddNote(didSucceed: Boolean) {
         isAddingNote = false
 
         progressBar.visibility = View.GONE
         addNote_editor.isEnabled = true
         addNote_switch.isEnabled = true
 
-        if (didSucced) {
+        if (didSucceed) {
             setResult(Activity.RESULT_OK)
             finish()
         } else {

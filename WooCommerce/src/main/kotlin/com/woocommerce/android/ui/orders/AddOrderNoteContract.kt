@@ -11,7 +11,7 @@ interface AddOrderNoteContract {
 
     interface View : BaseView<Presenter> {
         fun doBeforeAddNote()
-        fun doAfterAddNote(didSucced: Boolean)
+        fun doAfterAddNote(didSucceed: Boolean)
         fun showNullOrderError()
     }
 }
