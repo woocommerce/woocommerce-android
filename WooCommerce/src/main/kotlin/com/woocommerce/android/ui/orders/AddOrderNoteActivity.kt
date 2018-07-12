@@ -38,23 +38,24 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
+        addNote_switch.setOnCheckedChangeListener { buttonView, isChecked ->
+            val drawableId = if (isChecked) R.drawable.ic_note_public else R.drawable.ic_note_private
+            addNote_icon.setImageDrawable(ContextCompat.getDrawable(this, drawableId))
+        }
+
         if (savedInstanceState == null) {
             orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER)
             orderNumber = intent.getStringExtra(FIELD_ORDER_NUMBER)
         } else {
             orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER)
             orderNumber = savedInstanceState.getString(FIELD_ORDER_NUMBER)
-            isAddingNote = savedInstanceState.getBoolean(FIELD_IS_ADDING_NOTE)
             addNote_switch.isChecked = savedInstanceState.getBoolean(FIELD_IS_CUSTOMER_NOTE)
+            if (savedInstanceState.getBoolean(FIELD_IS_ADDING_NOTE)) {
+                doBeforeAddNote()
+            }
         }
 
         title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
-
-        addNote_switch.setOnClickListener {
-            val isPublic = addNote_switch.isChecked
-            val drawableId = if (isPublic) R.drawable.ic_note_public else R.drawable.ic_note_private
-            addNote_icon.setImageDrawable(ContextCompat.getDrawable(this, drawableId))
-        }
 
         presenter.takeView(this)
     }
@@ -97,6 +98,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         outState?.putString(FIELD_ORDER_IDENTIFIER, orderId)
         outState?.putString(FIELD_ORDER_NUMBER, orderNumber)
         outState?.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch.isChecked)
+        outState?.putBoolean(FIELD_IS_ADDING_NOTE, isAddingNote)
         super.onSaveInstanceState(outState)
     }
 
