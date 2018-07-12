@@ -208,10 +208,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onRequestAddNote() {
-        showAddOrderNote()
+        showAddOrderNoteScreen()
     }
 
-    override fun showAddOrderNote() {
+    override fun showAddOrderNoteScreen() {
         val intent = Intent(activity, AddOrderNoteActivity::class.java)
         intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_IDENTIFIER, presenter.orderModel?.getIdentifier())
         intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_NUMBER, presenter.orderModel?.number)
