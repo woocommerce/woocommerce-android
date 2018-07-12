@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -79,6 +80,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                 presenter.loadOrderDetail(it, markComplete)
             }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
+            presenter.loadOrderNotes()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onStop() {
@@ -206,6 +214,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showAddOrderNote() {
         val intent = Intent(activity, OrderDetailAddNoteActivity::class.java)
         intent.putExtra(OrderDetailAddNoteActivity.FIELD_ORDER_IDENTIFIER, presenter.orderModel?.getIdentifier())
+        intent.putExtra(OrderDetailAddNoteActivity.FIELD_ORDER_NUMBER, presenter.orderModel?.number)
         startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
     }
 

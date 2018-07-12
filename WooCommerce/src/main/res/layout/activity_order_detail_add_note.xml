@@ -2,7 +2,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_window_background"
@@ -28,11 +27,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_large"
-            app:srcCompat="@drawable/ic_note_public"/>
+            app:srcCompat="@drawable/ic_note_private"/>
 
         <EditText
             android:id="@+id/addNote_editor"
             android:layout_width="match_parent"
+            android:inputType="textAutoComplete|textShortMessage"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:gravity="top"/>
@@ -77,4 +77,14 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/margin_large"
         android:background="@color/list_divider"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
 </RelativeLayout>

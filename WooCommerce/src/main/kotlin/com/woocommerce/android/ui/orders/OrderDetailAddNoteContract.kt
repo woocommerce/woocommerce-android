@@ -8,10 +8,12 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface OrderDetailAddNoteContract {
     interface Presenter : BasePresenter<View> {
-        // TODO
+        fun pushOrderNote(orderId: OrderIdentifier, noteText: String, isCustomerNote: Boolean)
     }
 
     interface View : BaseView<Presenter> {
-        // TODO ?
+        fun doBeforeAddNote()
+        fun doAfterAddNote(didSucced: Boolean)
+        fun showNullOrderError()
     }
 }
