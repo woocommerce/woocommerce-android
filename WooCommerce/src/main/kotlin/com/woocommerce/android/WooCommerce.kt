@@ -13,11 +13,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
-import com.woocommerce.android.util.WooLog
-import org.wordpress.android.util.AppLog as WordPressAppLog
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashlyticsUtils
+import com.woocommerce.android.util.WooLog
 import com.yarolegovich.wellsql.WellSql
 import dagger.MembersInjector
 import dagger.android.AndroidInjector
@@ -28,12 +27,14 @@ import io.fabric.sdk.android.Fabric
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.PackageUtils
 import javax.inject.Inject
+import org.wordpress.android.util.AppLog as WordPressAppLog
 
 open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceInjector, ApplicationLifecycleListener {
     @Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
@@ -148,6 +149,12 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
             // Wipe user-specific preferences
             AppPrefs.reset()
+        } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
+            // make sure local usage tracking matches the account setting
+            val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
+            if (hasUserOptedOut != accountStore.account.tracksOptOut) {
+                AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+            }
         }
     }
 

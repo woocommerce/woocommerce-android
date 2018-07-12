@@ -9,23 +9,19 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
 import dagger.android.support.AndroidSupportInjection
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
-class AppSettingsFragment : Fragment() {
+class MainSettingsFragment : Fragment(), MainSettingsContract.View {
     companion object {
-        const val TAG = "app-settings"
+        const val TAG = "main-settings"
 
-        fun newInstance(): AppSettingsFragment {
-            return AppSettingsFragment()
+        fun newInstance(): MainSettingsFragment {
+            return MainSettingsFragment()
         }
     }
 
-    @Inject internal lateinit var selectedSite: SelectedSite
-    @Inject internal lateinit var accountStore: AccountStore
+    @Inject lateinit var presenter: MainSettingsContract.Presenter
 
     interface AppSettingsListener {
         fun onRequestLogout()
@@ -40,7 +36,7 @@ class AppSettingsFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_app_settings, container, false)
+        return inflater.inflate(R.layout.fragment_settings_main, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -58,8 +54,8 @@ class AppSettingsFragment : Fragment() {
         val textPrivacySettings = view!!.findViewById<TextView>(R.id.textPrivacySettings)
         val buttonLogout = view!!.findViewById<Button>(R.id.buttonLogout)
 
-        textPrimaryStoreDomain.text = UrlUtils.getHost(selectedSite.get().url)
-        textPrimaryStoreUsername.text = accountStore.account.userName
+        textPrimaryStoreDomain.text = presenter.getStoreDomainName()
+        textPrimaryStoreUsername.text = presenter.getUserDisplayName()
 
         buttonLogout.setOnClickListener {
             listener.onRequestLogout()
