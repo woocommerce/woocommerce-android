@@ -123,16 +123,19 @@
     <string name="orderdetail_show_billing">Show Billing</string>
     <string name="orderdetail_hide_billing">Hide Billing</string>
     <string name="orderdetail_add_note">Add a note</string>
-    <string name="orderdetail_add_note_label">Email note to customer</string>
-    <string name="orderdetail_add_note_sublabel">If disabled will add the note as private</string>
-    <string name="orderdetail_add_note_menu_item">Add</string>
-    <string name="orderdetail_add_note_error">Unable to add note</string>
-    <string name="orderdetail_add_note_null_order_error">Unable to locate order</string>
     <string name="order_fulfill_order">Fulfill Order</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
     <string name="order_error_update_general">Error completing order</string>
+    <!--
+        Add Order Note
+    -->
+    <string name="add_order_note_label">Email note to customer</string>
+    <string name="add_order_note_sublabel">If disabled will add the note as private</string>
+    <string name="add_order_note_menu_item">Add</string>
+    <string name="add_order_note_error">Unable to add note</string>
+    <string name="add_order_note_null_order_error">Unable to locate order</string>
     <!--
         Order Status Labels
     -->

@@ -12,14 +12,14 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
-class OrderDetailAddNotePresenter @Inject constructor(
+class AddOrderNotePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
-) : OrderDetailAddNoteContract.Presenter {
-    private var addNoteView: OrderDetailAddNoteContract.View? = null
+) : AddOrderNoteContract.Presenter {
+    private var addNoteView: AddOrderNoteContract.View? = null
 
-    override fun takeView(view: OrderDetailAddNoteContract.View) {
+    override fun takeView(view: AddOrderNoteContract.View) {
         addNoteView = view
         dispatcher.register(this)
     }

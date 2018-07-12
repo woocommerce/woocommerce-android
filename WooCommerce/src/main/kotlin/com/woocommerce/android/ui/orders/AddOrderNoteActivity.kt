@@ -10,13 +10,13 @@ import android.view.MenuItem
 import android.view.View
 import com.woocommerce.android.R
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_order_detail_add_note.*
+import kotlinx.android.synthetic.main.activity_add_order_note.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-class OrderDetailAddNoteActivity : AppCompatActivity(), OrderDetailAddNoteContract.View {
+class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
     companion object {
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
@@ -24,7 +24,7 @@ class OrderDetailAddNoteActivity : AppCompatActivity(), OrderDetailAddNoteContra
         const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
     }
 
-    @Inject lateinit var presenter: OrderDetailAddNoteContract.Presenter
+    @Inject lateinit var presenter: AddOrderNoteContract.Presenter
     private lateinit var orderId: OrderIdentifier
     private lateinit var orderNumber: String
     private var isAddingNote = false
@@ -32,7 +32,7 @@ class OrderDetailAddNoteActivity : AppCompatActivity(), OrderDetailAddNoteContra
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_order_detail_add_note)
+        setContentView(R.layout.activity_add_order_note)
 
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -101,7 +101,7 @@ class OrderDetailAddNoteActivity : AppCompatActivity(), OrderDetailAddNoteContra
     }
 
     override fun showNullOrderError() {
-        ToastUtils.showToast(this, R.string.orderdetail_add_note_null_order_error)
+        ToastUtils.showToast(this, R.string.add_order_note_null_order_error)
     }
 
     override fun doBeforeAddNote() {
@@ -122,7 +122,7 @@ class OrderDetailAddNoteActivity : AppCompatActivity(), OrderDetailAddNoteContra
             setResult(Activity.RESULT_OK)
             finish()
         } else {
-            ToastUtils.showToast(this, R.string.orderdetail_add_note_error)
+            ToastUtils.showToast(this, R.string.add_order_note_error)
         }
     }
 }

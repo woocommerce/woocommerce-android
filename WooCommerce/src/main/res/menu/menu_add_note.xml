@@ -4,6 +4,6 @@
 
     <item
         android:id="@+id/menu_add"
-        android:title="@string/orderdetail_add_note_menu_item"
+        android:title="@string/add_order_note_menu_item"
         app:showAsAction="always"/>
 </menu>

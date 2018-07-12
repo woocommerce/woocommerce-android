@@ -53,7 +53,7 @@
             android:name=".ui.prefs.AppSettingsActivity"/>
 
         <activity
-            android:name=".ui.orders.OrderDetailAddNoteActivity"
+            android:name=".ui.orders.AddOrderNoteActivity"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
 
 
