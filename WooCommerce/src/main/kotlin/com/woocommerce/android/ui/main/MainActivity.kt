@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.main
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.active
@@ -21,6 +23,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEpilogueActivity
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -42,6 +45,7 @@ class MainActivity : AppCompatActivity(),
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
         private const val STATE_KEY_POSITION = "key-position"
+        private const val SUPPORT_EMAIL = "mobile-support@woocommerce.com"
 
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -93,6 +97,9 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_action_bar, menu)
+        if (!ActivityUtils.isEmailClientAvailable(this)) {
+            menu?.removeItem(R.id.menu_support)
+        }
         return true
     }
 
@@ -140,6 +147,10 @@ class MainActivity : AppCompatActivity(),
                 showSettingsScreen()
                 true
             }
+            R.id.menu_support -> {
+                contactSupport()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -185,6 +196,15 @@ class MainActivity : AppCompatActivity(),
     override fun showSettingsScreen() {
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, REQUEST_CODE_SETTINGS)
+    }
+
+    override fun contactSupport() {
+        val subject = String.format(getString(R.string.support_email_subject), BuildConfig.VERSION_NAME)
+        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        if (emailIntent.resolveActivity(packageManager) != null) {
+            startActivity(emailIntent)
+        }
     }
 
     override fun updateSelectedSite() {
