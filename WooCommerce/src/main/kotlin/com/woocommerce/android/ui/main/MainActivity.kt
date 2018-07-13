@@ -16,8 +16,6 @@ import android.view.MenuItem
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.active
-import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
@@ -28,7 +26,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -202,7 +199,7 @@ class MainActivity : AppCompatActivity(),
         val subject = String.format(getString(R.string.support_email_subject), BuildConfig.VERSION_NAME)
         val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
-        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+        if (emailIntent.resolveActivity(packageManager) != null) {
             startActivity(emailIntent)
         }
     }
