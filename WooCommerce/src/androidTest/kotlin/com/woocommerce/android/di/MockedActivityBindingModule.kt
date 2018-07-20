@@ -1,5 +1,6 @@
 package com.woocommerce.android.di
 
+import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
@@ -15,6 +16,7 @@ abstract class MockedActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(
             MockedMainModule::class,
+            DashboardModule::class,
             OrderListModule::class,
             OrderDetailModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
