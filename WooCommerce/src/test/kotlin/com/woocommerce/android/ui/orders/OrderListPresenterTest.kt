@@ -9,7 +9,6 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -28,7 +27,6 @@ class OrderListPresenterTest {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val uiMessageResolver: UIMessageResolver = mock()
 
     private val orders = OrderTestUtils.generateOrders()
     private val noOrders = emptyList<WCOrderModel>()
@@ -43,22 +41,33 @@ class OrderListPresenterTest {
 
     @Test
     fun `Displays the orders list view correctly`() {
-        // Presenter should dispatch FETCH_ORDERS on startup
         presenter.takeView(orderListView)
-        presenter.loadOrders(true)
+        presenter.loadOrders(forceRefresh = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showOrders(orders, true)
+        verify(orderListView).showOrders(orders, isForceRefresh = true)
+    }
+
+    @Test
+    fun `Passes applied order status filter to view correctly`() {
+        val orderFilter = "processing"
+        presenter.takeView(orderListView)
+        presenter.loadOrders(orderFilter, forceRefresh = true)
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
+
+        // OnOrderChanged callback from FluxC should trigger the appropriate UI update
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any(), any())
+        presenter.onOrderChanged(OnOrderChanged(orders.size, orderFilter).apply { causeOfChange = FETCH_ORDERS })
+        verify(orderListView).showOrders(orders, orderFilter, isForceRefresh = true)
     }
 
     @Test
     fun `Displays the no orders list view correctly`() {
-        // Presenter should dispatch FETCH_ORDERS on startup
         presenter.takeView(orderListView)
-        presenter.loadOrders(true)
+        presenter.loadOrders(forceRefresh = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
@@ -70,8 +79,17 @@ class OrderListPresenterTest {
     @Test
     fun `Fetches orders from DB when forceRefresh is false`() {
         presenter.takeView(orderListView)
-        presenter.loadOrders(false)
-        verify(presenter).fetchAndLoadOrdersFromDb(false)
+        presenter.loadOrders(forceRefresh = false)
+        verify(presenter).fetchAndLoadOrdersFromDb(isForceRefresh = false)
+        verify(dispatcher, never()).dispatch(any())
+    }
+
+    @Test
+    fun `Fetches orders from DB with filter when forceRefresh is false`() {
+        val orderFilter = "processing"
+        presenter.takeView(orderListView)
+        presenter.loadOrders(orderFilter, forceRefresh = false)
+        verify(presenter).fetchAndLoadOrdersFromDb(orderFilter, isForceRefresh = false)
         verify(dispatcher, never()).dispatch(any())
     }
 
@@ -95,7 +113,7 @@ class OrderListPresenterTest {
     @Test
     fun `Displays error message on fetch orders error`() {
         presenter.takeView(orderListView)
-        presenter.loadOrders(true)
+        presenter.loadOrders(forceRefresh = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
