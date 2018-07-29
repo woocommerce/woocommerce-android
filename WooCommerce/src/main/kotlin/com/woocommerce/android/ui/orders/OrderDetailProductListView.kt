@@ -43,7 +43,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         val viewAdapter = ProductListAdapter(order.getLineItemList(), order.currency, expanded)
 
         listener?.let {
-            if (order.status == OrderStatus.PROCESSING) {
+            if (order.status == OrderStatus.PROCESSING.value) {
                 productList_btnFulfill.visibility = View.VISIBLE
                 productList_btnDetails.visibility = View.GONE
                 productList_btnDetails.setOnClickListener(null)
@@ -74,7 +74,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
 
     fun updateView(order: WCOrderModel, expanded: Boolean, listener: OrderActionListener? = null) {
         listener?.let {
-            if (order.status == OrderStatus.PROCESSING) {
+            if (order.status == OrderStatus.PROCESSING.value) {
                 productList_btnFulfill.visibility = View.VISIBLE
                 productList_btnDetails.visibility = View.GONE
                 productList_btnDetails.setOnClickListener(null)

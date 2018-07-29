@@ -155,10 +155,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
         presenter.orderModel?.let {
             previousOrderStatus = it.status
-            it.status = OrderStatus.COMPLETED
+            it.status = OrderStatus.COMPLETED.value
 
             // artificially set order status to Complete
-            updateOrderStatus(OrderStatus.COMPLETED)
+            updateOrderStatus(OrderStatus.COMPLETED.value)
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {

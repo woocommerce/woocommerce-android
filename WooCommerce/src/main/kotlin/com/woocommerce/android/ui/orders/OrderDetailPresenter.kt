@@ -71,7 +71,7 @@ class OrderDetailPresenter @Inject constructor(
     override fun doMarkOrderComplete() {
         AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
         orderModel?.let { order ->
-            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), OrderStatus.COMPLETED)
+            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), OrderStatus.COMPLETED.value)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
         }
     }

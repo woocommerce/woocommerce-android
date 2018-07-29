@@ -128,16 +128,6 @@
     <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
     <string name="order_error_update_general">Error completing order</string>
     <!--
-        Order Status Labels
-    -->
-    <string name="orderstatus_processing">Processing</string>
-    <string name="orderstatus_pending">Pending Payment</string>
-    <string name="orderstatus_failed">Failed</string>
-    <string name="orderstatus_completed">Completed</string>
-    <string name="orderstatus_hold">On-Hold</string>
-    <string name="orderstatus_cancelled">Cancelled</string>
-    <string name="orderstatus_refunded">Refunded</string>
-    <!--
         Settings
     -->
     <string name="settings">Settings</string>
