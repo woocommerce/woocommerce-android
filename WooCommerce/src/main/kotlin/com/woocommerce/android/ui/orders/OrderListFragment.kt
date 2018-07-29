@@ -54,6 +54,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var loadOrdersPending = true // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var activeOrderStatusFilter: String? = null // Order status filter
+    private var filterMenuButton: MenuItem? = null
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0
@@ -70,6 +71,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
+        filterMenuButton = menu?.findItem(R.id.menu_filter)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -166,11 +168,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // being visible - go ahead and load the orders.
         if (isActive) {
             presenter.loadOrders(activeOrderStatusFilter, forceRefresh = loadOrdersPending)
+            filterMenuButton?.isVisible = true
+        } else {
+            filterMenuButton?.isVisible = false
         }
     }
 
     override fun onDestroyView() {
         presenter.dropView()
+        filterMenuButton = null
         super.onDestroyView()
     }
 
