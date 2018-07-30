@@ -26,7 +26,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
@@ -301,13 +301,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // region Filtering
     private fun showFilterDialog() {
         val orderStatus = activeOrderStatusFilter?.let {
-            OrderStatus.fromValue(it)
+            CoreOrderStatus.fromValue(it)
         } ?: null
         OrderStatusFilterDialog.newInstance(orderStatus, listener = this)
                 .show(fragmentManager, OrderStatusFilterDialog.TAG)
     }
 
-    override fun filterSelected(orderStatus: OrderStatus?) {
+    override fun filterSelected(orderStatus: CoreOrderStatus?) {
         activeOrderStatusFilter = orderStatus?.value
         presenter.loadOrders(activeOrderStatusFilter, true)
     }
