@@ -64,6 +64,13 @@
             android:exported="false" />
 
         <service
+            android:name=".push.InstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
             android:name="org.wordpress.android.login.LoginWpcomService"
             android:exported="false"
             android:label="Login to WPCOM Service" />
