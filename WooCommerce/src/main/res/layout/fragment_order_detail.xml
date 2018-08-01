@@ -9,50 +9,50 @@
 
     <LinearLayout
         android:id="@+id/orderDetail_container"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <!-- Order Status -->
         <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
             android:id="@+id/orderDetail_orderStatus"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
+            android:layout_height="wrap_content"/>
 
         <!-- Product List -->
         <com.woocommerce.android.ui.orders.OrderDetailProductListView
             android:id="@+id/orderDetail_productList"
+            style="@style/Woo.Card.List"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card.List"/>
+            android:layout_height="wrap_content"/>
 
         <!-- Customer Note -->
         <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
             android:id="@+id/orderDetail_customerNote"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
+            android:layout_height="wrap_content"/>
 
         <!-- Customer Info -->
         <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
             android:id="@+id/orderDetail_customerInfo"
+            style="@style/Woo.Card.Expandable"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card.Expandable"/>
+            android:layout_height="wrap_content"/>
 
         <!-- Payments -->
         <com.woocommerce.android.ui.orders.OrderDetailPaymentView
             android:id="@+id/orderDetail_paymentInfo"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card"/>
+            android:layout_height="wrap_content"/>
 
         <!-- Order Notes -->
         <com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView
             android:id="@+id/orderDetail_noteList"
+            style="@style/Woo.Card.List"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Woo.Card.List"/>
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -9,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -16,12 +19,13 @@ import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : Fragment(), OrderDetailContract.View {
+class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener {
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
+        const val REQUEST_CODE_ADD_NOTE = 100
 
         fun newInstance(order: WCOrderModel, markComplete: Boolean = false): Fragment {
             val args = Bundle()
@@ -78,6 +82,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
+            presenter.loadOrderNotes()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun onStop() {
         undoMarkCompleteSnackbar?.dismiss()
         notesSnack?.dismiss()
@@ -119,7 +130,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
         // Populate order notes card
-        orderDetail_noteList.initView(notes)
+        orderDetail_noteList.initView(notes, this)
     }
 
     override fun updateOrderNotes(notes: List<WCOrderNoteModel>) {
@@ -194,6 +205,17 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View {
                         it.show()
                     }
         }
+    }
+
+    override fun onRequestAddNote() {
+        showAddOrderNoteScreen()
+    }
+
+    override fun showAddOrderNoteScreen() {
+        val intent = Intent(activity, AddOrderNoteActivity::class.java)
+        intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_IDENTIFIER, presenter.orderModel?.getIdentifier())
+        intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_NUMBER, presenter.orderModel?.number)
+        startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
     }
 
     override fun markOrderCompleteSuccess() {
