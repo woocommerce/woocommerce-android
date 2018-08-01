@@ -6,6 +6,7 @@ import android.os.Build
 import android.preference.PreferenceManager
 import android.support.v4.app.JobIntentService
 import com.google.firebase.iid.FirebaseInstanceId
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.android.AndroidInjection
@@ -23,6 +24,8 @@ class FCMRegistrationIntentService : JobIntentService() {
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var accountStore: AccountStore
     @Inject internal lateinit var notificationStore: NotificationStore
+
+    @Inject internal lateinit var selectedSite: SelectedSite
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
@@ -67,9 +70,9 @@ class FCMRegistrationIntentService : JobIntentService() {
     }
 
     private fun sendRegistrationToken(gcmToken: String) {
-        WooLog.i(T.NOTIFS, "Sending GCM token to our remote services: $gcmToken")
-        // Register to WordPress.com notifications
-        if (accountStore.hasAccessToken()) {
+        if (accountStore.hasAccessToken() && selectedSite.isSet()) {
+            // Register to WordPress.com notifications
+            WooLog.i(T.NOTIFS, "Sending GCM token to our remote services: $gcmToken")
             // Get or create UUID for WP.com notes API
             val uuid = sharedPreferences.getString(WPCOM_PUSH_DEVICE_UUID, null) ?: generateAndStoreUUID()
 
@@ -97,7 +100,8 @@ class FCMRegistrationIntentService : JobIntentService() {
                 "app_version" to PackageUtils.getVersionName(this),
                 "version_code" to PackageUtils.getVersionCode(this).toString(),
                 "os_version" to Build.VERSION.RELEASE,
-                "device_uuid" to uuid
+                "device_uuid" to uuid,
+                "selected_blog_id" to selectedSite.get().siteId.toString()
         )
     }
 }
