@@ -46,6 +46,14 @@ class AddOrderNotePresenter @Inject constructor(
         addNoteView?.doBeforeAddNote()
     }
 
+    override fun hasBillingEmail(orderId: OrderIdentifier): Boolean {
+        if (orderId.isNotEmpty()) {
+            val email = orderStore.getOrderByIdentifier(orderId)?.billingEmail
+            return email != null && email.isNotEmpty()
+        }
+        return false
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {

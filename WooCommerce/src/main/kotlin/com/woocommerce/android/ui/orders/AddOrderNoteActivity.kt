@@ -38,11 +38,6 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
-        addNote_switch.setOnCheckedChangeListener { buttonView, isChecked ->
-            val drawableId = if (isChecked) R.drawable.ic_note_public else R.drawable.ic_note_private
-            addNote_icon.setImageDrawable(ContextCompat.getDrawable(this, drawableId))
-        }
-
         if (savedInstanceState == null) {
             orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER)
             orderNumber = intent.getStringExtra(FIELD_ORDER_NUMBER)
@@ -53,6 +48,17 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
             if (savedInstanceState.getBoolean(FIELD_IS_ADDING_NOTE)) {
                 doBeforeAddNote()
             }
+        }
+
+        if (presenter.hasBillingEmail(orderId)) {
+            addNote_switch.setOnCheckedChangeListener { buttonView, isChecked ->
+                val drawableId = if (isChecked) R.drawable.ic_note_public else R.drawable.ic_note_private
+                addNote_icon.setImageDrawable(ContextCompat.getDrawable(this, drawableId))
+            }
+        } else {
+            addNote_switchContainer.visibility = View.GONE
+            addNote_switchDivider.visibility = View.GONE
+            addNote_editDivider.visibility = View.GONE
         }
 
         title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)

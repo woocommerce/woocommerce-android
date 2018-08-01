@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/addNote_editDivider"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_below="@+id/toolbar"
         android:background="@color/white"
         android:orientation="horizontal"
@@ -32,10 +33,10 @@
         <EditText
             android:id="@+id/addNote_editor"
             android:layout_width="match_parent"
-            android:inputType="textAutoComplete|textShortMessage|textMultiLine"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            android:gravity="top"/>
+            android:gravity="top"
+            android:inputType="textAutoComplete|textShortMessage|textMultiLine"/>
     </LinearLayout>
 
     <View
