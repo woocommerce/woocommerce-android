@@ -46,10 +46,10 @@ class AddOrderNotePresenter @Inject constructor(
         noteModel.isCustomerNote = isCustomerNote
         noteModel.note = noteText
 
+        addNoteView?.doBeforeAddNote()
+
         val payload = WCOrderStore.PostOrderNotePayload(orderModel, selectedSite.get(), noteModel)
         dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
-
-        addNoteView?.doBeforeAddNote()
     }
 
     override fun hasBillingEmail(orderId: OrderIdentifier): Boolean {
