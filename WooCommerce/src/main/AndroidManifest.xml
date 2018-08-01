@@ -52,6 +52,11 @@
         <activity
             android:name=".ui.prefs.AppSettingsActivity"/>
 
+        <activity
+            android:name=".ui.orders.AddOrderNoteActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
+
+
         <!-- Services -->
         <service
             android:name="org.wordpress.android.login.LoginWpcomService"

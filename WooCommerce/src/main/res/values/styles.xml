@@ -89,6 +89,11 @@
         <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
+    <style name="Woo.TextAppearance.Large">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
     <style name="Woo.TextAppearance.Small">
         <item name="android:textColor">@color/default_text</item>
         <item name="android:textSize">@dimen/text_small</item>
@@ -112,6 +117,8 @@
     <style name="Woo.TextAppearance.Button">
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textColor">@color/default_button_fg_color</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
     </style>
     <!--
         Button Styles

@@ -60,10 +60,10 @@ class OrderListPresenter @Inject constructor(
         return canLoadMore
     }
 
-    override fun loadMoreOrders(orderStatusFilter: String?) {
+    override fun loadMoreOrders(filterByStatus: String?) {
         orderView?.setLoadingMoreIndicator(true)
         isLoadingMoreOrders = true
-        val payload = FetchOrdersPayload(selectedSite.get(), orderStatusFilter, loadMore = true)
+        val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus, loadMore = true)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
     }
 
@@ -103,16 +103,16 @@ class OrderListPresenter @Inject constructor(
     /**
      * Fetch orders from the local database.
      *
-     * @param orderStatusFilter If not null, only pull orders whose status matches this filter. Default null.
+     * @param filterByStatus If not null, only pull orders whose status matches this filter. Default null.
      * @param isForceRefresh True if orders were refreshed from the API, else false.
      */
-    override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean) {
-        val orders = orderStatusFilter?.let {
+    override fun fetchAndLoadOrdersFromDb(filterByStatus: String?, isForceRefresh: Boolean) {
+        val orders = filterByStatus?.let {
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
             if (orders.count() > 0) {
-                view.showOrders(orders, orderStatusFilter, isForceRefresh)
+                view.showOrders(orders, filterByStatus, isForceRefresh)
             } else {
                 view.showNoOrders()
             }

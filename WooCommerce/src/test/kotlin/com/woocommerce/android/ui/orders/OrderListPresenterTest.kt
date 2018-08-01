@@ -53,15 +53,15 @@ class OrderListPresenterTest {
 
     @Test
     fun `Passes applied order status filter to view correctly`() {
-        val orderFilter = "processing"
+        val orderStatusFilter = "processing"
         presenter.takeView(orderListView)
-        presenter.loadOrders(orderFilter, forceRefresh = true)
+        presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any(), any())
-        presenter.onOrderChanged(OnOrderChanged(orders.size, orderFilter).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showOrders(orders, orderFilter, isForceRefresh = true)
+        presenter.onOrderChanged(OnOrderChanged(orders.size, orderStatusFilter).apply { causeOfChange = FETCH_ORDERS })
+        verify(orderListView).showOrders(orders, orderStatusFilter, isForceRefresh = true)
     }
 
     @Test
