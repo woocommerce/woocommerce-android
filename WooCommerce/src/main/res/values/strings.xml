@@ -123,6 +123,7 @@
     <string name="orderdetail_show_billing">Show Billing</string>
     <string name="orderdetail_hide_billing">Hide Billing</string>
     <string name="orderdetail_add_note">Add a note</string>
+    <string name="orderdetail_addnote_contentdesc">Add an order note</string>
     <string name="order_fulfill_order">Fulfill Order</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
