@@ -1,7 +1,5 @@
 package com.woocommerce.android.push
 
-import android.content.Intent
-
 import com.google.firebase.iid.FirebaseInstanceIdService
 
 class InstanceIDService : FirebaseInstanceIdService() {
@@ -13,6 +11,6 @@ class InstanceIDService : FirebaseInstanceIdService() {
      */
     override fun onTokenRefresh() {
         // Register for Cloud messaging
-        FCMRegistrationIntentService.enqueueWork(this, Intent(this, FCMRegistrationIntentService::class.java))
+        FCMRegistrationIntentService.enqueueWork(this)
     }
 }
