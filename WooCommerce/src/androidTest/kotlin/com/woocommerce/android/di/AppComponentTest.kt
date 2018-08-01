@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import dagger.BindsInstance
 import dagger.Component
@@ -23,6 +24,7 @@ import javax.inject.Singleton
         ReleaseOkHttpClientModule::class,
         MockedActivityBindingModule::class,
         MockedSelectedSiteModule::class,
+        FCMServiceModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class,
         NetworkStatusModule::class))
