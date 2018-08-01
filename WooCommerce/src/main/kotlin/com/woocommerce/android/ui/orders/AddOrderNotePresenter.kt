@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -17,6 +19,10 @@ class AddOrderNotePresenter @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) : AddOrderNoteContract.Presenter {
+    companion object {
+        private val TAG: String = AddOrderNotePresenter::class.java.simpleName
+    }
+
     private var addNoteView: AddOrderNoteContract.View? = null
 
     override fun takeView(view: AddOrderNoteContract.View) {
@@ -58,6 +64,9 @@ class AddOrderNotePresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == POST_ORDER_NOTE) {
+            if (event.isError) {
+                WooLog.e(T.ORDERS, "${AddOrderNotePresenter.TAG} - Error posting order note : ${event.error.message}")
+            }
             val didSucceed = !event.isError
             addNoteView?.doAfterAddNote(didSucceed)
         }

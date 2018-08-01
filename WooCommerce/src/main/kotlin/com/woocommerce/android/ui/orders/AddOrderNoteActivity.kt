@@ -9,11 +9,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_order_note.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.NetworkUtils
-import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
@@ -25,6 +25,8 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
     }
 
     @Inject lateinit var presenter: AddOrderNoteContract.Presenter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     private lateinit var orderId: OrderIdentifier
     private lateinit var orderNumber: String
     private var isAddingNote = false
@@ -109,7 +111,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
     }
 
     override fun showNullOrderError() {
-        ToastUtils.showToast(this, R.string.add_order_note_null_order_error)
+        uiMessageResolver.getSnack(R.string.add_order_note_null_order_error).show()
     }
 
     override fun doBeforeAddNote() {
@@ -130,7 +132,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
             setResult(Activity.RESULT_OK)
             finish()
         } else {
-            ToastUtils.showToast(this, R.string.add_order_note_error)
+            uiMessageResolver.getSnack(R.string.add_order_note_error).show()
         }
     }
 }
