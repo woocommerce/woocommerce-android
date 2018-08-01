@@ -44,6 +44,7 @@
                 app:srcCompat="@drawable/ic_gridicons_add_outline_purple"/>
 
             <TextView
+                style="@style/Woo.TextAppearance.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -51,9 +52,7 @@
                 android:layout_marginStart="@dimen/card_section_padding_h"
                 android:layout_marginTop="@dimen/margin_extra_small"
                 android:paddingBottom="@dimen/card_item_padding_intra_v"
-                android:text="@string/orderdetail_add_note"
-                android:textAllCaps="true"
-                android:textColor="@color/wc_purple"/>
+                android:text="@string/orderdetail_add_note"/>
 
         </LinearLayout>
 

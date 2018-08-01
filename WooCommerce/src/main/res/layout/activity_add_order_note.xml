@@ -58,18 +58,17 @@
         android:padding="@dimen/margin_large">
 
         <TextView
+            style="@style/Woo.TextAppearance.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_order_note_label"
-            android:textColor="@color/grey_dark"
-            android:textSize="@dimen/text_large"/>
+            android:text="@string/add_order_note_label"/>
 
         <Switch
             android:id="@+id/addNote_switch"
+            style="@style/Woo.TextAppearance.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_order_note_sublabel"
-            android:textColor="@color/grey_dark"/>
+            android:text="@string/add_order_note_sublabel"/>
     </LinearLayout>
 
     <View
