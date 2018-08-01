@@ -60,10 +60,10 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@+id/noteList_addNoteContainer"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:background="@color/list_divider"
-            android:paddingEnd="@dimen/list_item_padding_end"
-            android:paddingStart="@dimen/list_item_padding_start"/>
+            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_marginEnd="@dimen/list_item_padding_end"
+            android:layout_marginStart="56dp"
+            android:background="@color/list_divider"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/notesList_notes"
