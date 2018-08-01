@@ -32,7 +32,7 @@
         <EditText
             android:id="@+id/addNote_editor"
             android:layout_width="match_parent"
-            android:inputType="textAutoComplete|textShortMessage"
+            android:inputType="textAutoComplete|textShortMessage|textMultiLine"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:gravity="top"/>
