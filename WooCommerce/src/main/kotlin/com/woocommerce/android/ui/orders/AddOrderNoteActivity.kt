@@ -91,7 +91,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                 true
             }
             R.id.menu_add -> {
-                val noteText = addNote_editor.text.toString()
+                val noteText = addNote_editor.text.toString().trim()
                 if (!noteText.isEmpty() && NetworkUtils.checkConnection(this)) {
                     val isCustomerNote = addNote_switch.isChecked
                     presenter.pushOrderNote(orderId, noteText, isCustomerNote)
