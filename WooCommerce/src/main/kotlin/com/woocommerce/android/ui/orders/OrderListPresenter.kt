@@ -41,14 +41,14 @@ class OrderListPresenter @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    override fun loadOrders(forceRefresh: Boolean) {
+    override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
         if (forceRefresh) {
             isLoadingOrders = true
             orderView?.setLoadingIndicator(active = true)
-            val payload = FetchOrdersPayload(selectedSite.get())
+            val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
-            fetchAndLoadOrdersFromDb(isForceRefresh = false)
+            fetchAndLoadOrdersFromDb(filterByStatus, isForceRefresh = false)
         }
     }
 
@@ -60,10 +60,10 @@ class OrderListPresenter @Inject constructor(
         return canLoadMore
     }
 
-    override fun loadMoreOrders() {
+    override fun loadMoreOrders(filterByStatus: String?) {
         orderView?.setLoadingMoreIndicator(true)
         isLoadingMoreOrders = true
-        val payload = FetchOrdersPayload(selectedSite.get(), loadMore = true)
+        val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus, loadMore = true)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
     }
 
@@ -78,7 +78,7 @@ class OrderListPresenter @Inject constructor(
                 } else {
                     canLoadMore = event.canLoadMore
                     val isForceRefresh = !isLoadingMoreOrders
-                    fetchAndLoadOrdersFromDb(isForceRefresh)
+                    fetchAndLoadOrdersFromDb(event.statusFilter, isForceRefresh)
                 }
 
                 if (isLoadingMoreOrders) {
@@ -103,13 +103,16 @@ class OrderListPresenter @Inject constructor(
     /**
      * Fetch orders from the local database.
      *
+     * @param filterByStatus If not null, only pull orders whose status matches this filter. Default null.
      * @param isForceRefresh True if orders were refreshed from the API, else false.
      */
-    override fun fetchAndLoadOrdersFromDb(isForceRefresh: Boolean) {
-        val orders = orderStore.getOrdersForSite(selectedSite.get())
+    override fun fetchAndLoadOrdersFromDb(filterByStatus: String?, isForceRefresh: Boolean) {
+        val orders = filterByStatus?.let {
+            orderStore.getOrdersForSite(selectedSite.get(), it)
+        } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
             if (orders.count() > 0) {
-                view.showOrders(orders, isForceRefresh)
+                view.showOrders(orders, filterByStatus, isForceRefresh)
             } else {
                 view.showNoOrders()
             }

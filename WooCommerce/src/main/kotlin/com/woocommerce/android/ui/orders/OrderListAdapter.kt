@@ -25,8 +25,11 @@ import javax.inject.Inject
 class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
     : SectionedRecyclerViewAdapter() {
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
+    private var orderStatusFilter: String? = null
 
-    fun setOrders(orders: List<WCOrderModel>) {
+    fun setOrders(orders: List<WCOrderModel>, filterByStatus: String?) {
+        orderStatusFilter = filterByStatus
+
         // clear all the current data from the adapter
         removeAllSections()
 
@@ -106,7 +109,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         if (presenter.canLoadMore() && !presenter.isLoading() && position == itemCount - 1) {
-            presenter.loadMoreOrders()
+            presenter.loadMoreOrders(orderStatusFilter)
         }
     }
 

@@ -31,7 +31,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_LOAD_PENDING = "is-load-pending"
-        fun newInstance() = OrderListFragment()
+        const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
+
+        fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
+            val fragment = OrderListFragment()
+            fragment.orderStatusFilter = orderStatusFilter
+            return fragment
+        }
     }
 
     @Inject lateinit var presenter: OrderListContract.Presenter
@@ -43,6 +49,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
 
     private var loadOrdersPending = true // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
+    private var orderStatusFilter: String? = null // Order status filter
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0
@@ -52,6 +59,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(STATE_KEY_LIST)
             loadOrdersPending = bundle.getBoolean(STATE_KEY_LOAD_PENDING, false)
+            orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
         }
     }
 
@@ -79,7 +87,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                 scrollUpChild = ordersList
                 setOnRefreshListener {
                     loadOrdersPending = true
-                    presenter.loadOrders(forceRefresh = true)
+                    presenter.loadOrders(orderStatusFilter, forceRefresh = true)
                 }
             }
         }
@@ -116,7 +124,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
 
         presenter.takeView(this)
         if (isActive) {
-            presenter.loadOrders(forceRefresh = loadOrdersPending)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = loadOrdersPending)
         }
 
         listState?.let {
@@ -139,7 +147,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive) {
-            presenter.loadOrders(loadOrdersPending)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = loadOrdersPending)
         }
     }
 
@@ -159,7 +167,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
 
-    override fun showOrders(orders: List<WCOrderModel>, isForceRefresh: Boolean) {
+    override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isForceRefresh: Boolean) {
+        orderStatusFilter = filterByStatus
+
         ordersView.visibility = View.VISIBLE
         noOrdersView.visibility = View.GONE
 
@@ -169,7 +179,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
                     ordersList.scrollToPosition(0)
                     listView.layoutAnimation = listLayoutAnimation
                 }
-                ordersAdapter.setOrders(orders)
+                ordersAdapter.setOrders(orders, orderStatusFilter)
             }
         }
 
@@ -224,7 +234,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         loadOrdersPending = true
         if (isActive) {
             ordersList.smoothScrollToPosition(0)
-            presenter.loadOrders(forceRefresh = true)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }
 
