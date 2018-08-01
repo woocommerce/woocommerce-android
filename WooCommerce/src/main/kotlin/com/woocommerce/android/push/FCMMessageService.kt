@@ -1,5 +1,6 @@
 package com.woocommerce.android.push
 
+import android.os.Bundle
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.woocommerce.android.util.WooLog
@@ -22,7 +23,13 @@ class FCMMessageService : FirebaseMessagingService() {
         if (!accountStore.hasAccessToken()) return
 
         message?.data?.let {
-            // TODO Build and show notification
+            NotificationHandler.buildAndShowNotificationFromNoteData(this, convertMapToBundle(it), accountStore.account)
         } ?: WooLog.d(T.NOTIFS, "No notification message content received. Aborting.")
+    }
+
+    private fun convertMapToBundle(data: Map<String, String>): Bundle {
+        return Bundle().apply {
+            data.forEach { key, value -> putString(key, value) }
+        }
     }
 }
