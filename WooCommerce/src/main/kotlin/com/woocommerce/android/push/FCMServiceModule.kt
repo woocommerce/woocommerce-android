@@ -7,4 +7,7 @@ import dagger.android.ContributesAndroidInjector
 abstract class FCMServiceModule {
     @ContributesAndroidInjector
     internal abstract fun fcmRegistrationIntentService(): FCMRegistrationIntentService
+
+    @ContributesAndroidInjector
+    internal abstract fun fcmMessageService(): FCMMessageService
 }
