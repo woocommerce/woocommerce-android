@@ -300,7 +300,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     // region Filtering
     private fun showFilterDialog() {
-        val orderStatus = activeOrderStatusFilter?.let {
+        val orderStatus = orderStatusFilter?.let {
             CoreOrderStatus.fromValue(it)
         } ?: null
         OrderStatusFilterDialog.newInstance(orderStatus, listener = this)
@@ -308,8 +308,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun filterSelected(orderStatus: CoreOrderStatus?) {
-        activeOrderStatusFilter = orderStatus?.value
-        presenter.loadOrders(activeOrderStatusFilter, true)
+        orderStatusFilter = orderStatus?.value
+        presenter.loadOrders(orderStatusFilter, true)
     }
     // endregion
 }
