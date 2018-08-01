@@ -44,10 +44,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
             divider.setDrawable(drawable)
         }
 
-        ContextCompat.getDrawable(context, R.drawable.ic_gridicons_add_outline_purple)?.let { drawable ->
-            noteList_addNote.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
-        }
-        noteList_addNote.setOnClickListener {
+        noteList_addNoteContainer.setOnClickListener {
             listener.onRequestAddNote()
         }
 

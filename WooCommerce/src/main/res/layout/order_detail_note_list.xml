@@ -26,24 +26,40 @@
         app:layout_constraintTop_toBottomOf="@+id/notesList_lblNotes">
 
         <!-- Add a note -->
-        <TextView
-            android:id="@+id/noteList_addNote"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/noteList_addNoteContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
-            android:drawablePadding="@dimen/margin_medium"
-            android:gravity="center_vertical"
-            android:padding="@dimen/list_item_padding_start"
-            android:text="@string/orderdetail_add_note"
-            android:textAllCaps="true"
-            android:textColor="@color/wc_purple"
-            tools:drawableStart="@drawable/ic_gridicons_add_outline_purple"/>
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_medium"
+            android:paddingTop="@dimen/margin_medium">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/list_item_padding_start"
+                app:srcCompat="@drawable/ic_gridicons_add_outline_purple"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+                android:layout_marginStart="@dimen/card_section_padding_h"
+                android:paddingBottom="@dimen/card_item_padding_intra_v"
+                android:text="@string/orderdetail_add_note"
+                android:textAllCaps="true"
+                android:textColor="@color/wc_purple"/>
+
+        </LinearLayout>
 
         <View
             android:id="@+id/noteList_addNote_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/noteList_addNote"
+            android:layout_below="@+id/noteList_addNoteContainer"
             android:layout_marginBottom="@dimen/margin_medium"
             android:background="@color/list_divider"
             android:paddingEnd="@dimen/list_item_padding_end"
