@@ -38,6 +38,7 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.DeviceRegistrationErrorType
 import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceRegistered
@@ -169,6 +170,15 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             notificationManager.createNotificationChannel(generalChannel)
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAuthenticationChanged(event: OnAuthenticationChanged) {
+        if (accountStore.hasAccessToken()) {
+            // Make sure the Push Notification token is sent to our servers after a successful login
+            FCMRegistrationIntentService.enqueueWork(this)
         }
     }
 
