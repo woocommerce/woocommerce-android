@@ -38,11 +38,12 @@ object NotificationHandler {
         }
 
         val wpcomNoteID = data.getString(PUSH_ARG_NOTE_ID, "")
-        if (wpcomNoteID.isNullOrEmpty()) {
-            // At this point 'note_id' is always available in the notification bundle.
-            WooLog.e(T.NOTIFS, "Push notification received without a valid note_id in the payload!")
-            return
-        }
+        // TODO Temporarily disabled so it's easier to test spoofed notifications, restore
+//        if (wpcomNoteID.isNullOrEmpty()) {
+//            // At this point 'note_id' is always available in the notification bundle.
+//            WooLog.e(T.NOTIFS, "Push notification received without a valid note_id in the payload!")
+//            return
+//        }
 
         val pushUserId = data.getString(PUSH_ARG_USER)
         // pushUserId is always set server side, but better to double check it here.
