@@ -11,6 +11,9 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
@@ -23,10 +26,11 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-class OrderListFragment : TopLevelFragment(), OrderListContract.View {
+class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -50,17 +54,25 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
     private var loadOrdersPending = true // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
+    private var filterMenuButton: MenuItem? = null
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(STATE_KEY_LIST)
             loadOrdersPending = bundle.getBoolean(STATE_KEY_LOAD_PENDING, false)
             orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_order_list_fragment, menu)
+        filterMenuButton = menu?.findItem(R.id.menu_filter)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onAttach(context: Context?) {
@@ -133,11 +145,20 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
+        R.id.menu_filter -> {
+            showFilterDialog()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = ordersList.layoutManager.onSaveInstanceState()
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_LOAD_PENDING, loadOrdersPending)
+        outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
         super.onSaveInstanceState(outState)
     }
 
@@ -148,11 +169,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         // being visible - go ahead and load the orders.
         if (isActive) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = loadOrdersPending)
+            filterMenuButton?.isVisible = true
+        } else {
+            filterMenuButton?.isVisible = false
         }
     }
 
     override fun onDestroyView() {
         presenter.dropView()
+        filterMenuButton = null
         super.onDestroyView()
     }
 
@@ -271,6 +296,22 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View {
         } catch (e: ActivityNotFoundException) {
             ToastUtils.showToast(context, R.string.error_no_sms_app)
         }
+    }
+    // endregion
+
+    // region Filtering
+    private fun showFilterDialog() {
+        val orderStatus = orderStatusFilter?.let {
+            CoreOrderStatus.fromValue(it)
+        } ?: null
+        OrderStatusFilterDialog.newInstance(orderStatus, listener = this)
+                .show(fragmentManager, OrderStatusFilterDialog.TAG)
+    }
+
+    override fun onFilterSelected(orderStatus: CoreOrderStatus?) {
+        orderStatusFilter = orderStatus?.value
+        ordersAdapter.clearAdapterData()
+        presenter.loadOrders(orderStatusFilter, true)
     }
     // endregion
 }

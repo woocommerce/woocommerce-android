@@ -15,7 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
@@ -43,7 +43,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         val viewAdapter = ProductListAdapter(order.getLineItemList(), order.currency, expanded)
 
         listener?.let {
-            if (order.status == OrderStatus.PROCESSING) {
+            if (order.status == CoreOrderStatus.PROCESSING.value) {
                 productList_btnFulfill.visibility = View.VISIBLE
                 productList_btnDetails.visibility = View.GONE
                 productList_btnDetails.setOnClickListener(null)
@@ -74,7 +74,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
 
     fun updateView(order: WCOrderModel, expanded: Boolean, listener: OrderActionListener? = null) {
         listener?.let {
-            if (order.status == OrderStatus.PROCESSING) {
+            if (order.status == CoreOrderStatus.PROCESSING.value) {
                 productList_btnFulfill.visibility = View.VISIBLE
                 productList_btnDetails.visibility = View.GONE
                 productList_btnDetails.setOnClickListener(null)

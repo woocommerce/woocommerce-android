@@ -16,7 +16,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatus
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener {
@@ -166,10 +166,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
         presenter.orderModel?.let {
             previousOrderStatus = it.status
-            it.status = OrderStatus.COMPLETED
+            it.status = CoreOrderStatus.COMPLETED.value
 
             // artificially set order status to Complete
-            updateOrderStatus(OrderStatus.COMPLETED)
+            updateOrderStatus(CoreOrderStatus.COMPLETED.value)
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
