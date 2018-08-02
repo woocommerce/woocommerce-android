@@ -52,7 +52,10 @@ class OrderStatusFilterDialog : DialogFragment() {
                     selectedFilter = CoreOrderStatus.fromLabel(selectedLabel)
                 }
                 .setPositiveButton(R.string.orderlist_filter_apply) { dialog, _ ->
-                    listener?.onFilterSelected(selectedFilter)
+                    val newSelectedIndex = selectedFilter?.ordinal?.inc() ?: 0
+                    if (newSelectedIndex != selectedIndex) {
+                        listener?.onFilterSelected(selectedFilter)
+                    }
                     dialog.cancel()
                 }.create()
     }
