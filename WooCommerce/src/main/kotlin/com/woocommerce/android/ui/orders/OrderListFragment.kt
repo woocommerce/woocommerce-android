@@ -310,6 +310,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onFilterSelected(orderStatus: CoreOrderStatus?) {
         orderStatusFilter = orderStatus?.value
+        ordersAdapter.clearAdapterData()
         presenter.loadOrders(orderStatusFilter, true)
     }
     // endregion
