@@ -158,6 +158,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_LOAD_PENDING, loadOrdersPending)
+        outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
         super.onSaveInstanceState(outState)
     }
 
