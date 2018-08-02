@@ -31,7 +31,7 @@ class OrderStatusFilterDialog : DialogFragment() {
     }
 
     interface OrderListFilterListener {
-        fun filterSelected(orderStatus: CoreOrderStatus?)
+        fun onFilterSelected(orderStatus: CoreOrderStatus?)
     }
 
     val filterOptions: Array<String> by lazy {
@@ -52,7 +52,7 @@ class OrderStatusFilterDialog : DialogFragment() {
                     selectedFilter = CoreOrderStatus.fromLabel(selectedLabel)
                 }
                 .setPositiveButton(R.string.orderlist_filter_apply) { dialog, _ ->
-                    listener?.filterSelected(selectedFilter)
+                    listener?.onFilterSelected(selectedFilter)
                     dialog.cancel()
                 }.create()
     }

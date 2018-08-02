@@ -308,7 +308,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 .show(fragmentManager, OrderStatusFilterDialog.TAG)
     }
 
-    override fun filterSelected(orderStatus: CoreOrderStatus?) {
+    override fun onFilterSelected(orderStatus: CoreOrderStatus?) {
         orderStatusFilter = orderStatus?.value
         presenter.loadOrders(orderStatusFilter, true)
     }
