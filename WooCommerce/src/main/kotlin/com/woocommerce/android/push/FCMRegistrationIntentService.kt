@@ -95,6 +95,7 @@ class FCMRegistrationIntentService : JobIntentService() {
         return mapOf(
                 "device_token" to gcmToken,
                 "device_family" to "android",
+                "app_secret_key" to "com.woocommerce.android",
                 "device_name" to deviceName,
                 "device_model" to "${Build.MANUFACTURER} ${Build.MODEL}",
                 "app_version" to PackageUtils.getVersionName(this),
