@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ContextThemeWrapper
@@ -9,6 +10,7 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -23,6 +25,8 @@ class AppSettingsActivity : AppCompatActivity(),
         HasSupportFragmentInjector {
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: AppSettingsContract.Presenter
+
+    private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -101,6 +105,14 @@ class AppSettingsActivity : AppCompatActivity(),
                 .setCancelable(true)
                 .create()
                 .show()
+    }
+
+    override fun clearNotificationPreferences() {
+        sharedPreferences.edit().apply {
+            remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_UUID)
+            remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN)
+            apply()
+        }
     }
 
     private fun showFragment(fragment: Fragment, tag: String, animate: Boolean) {
