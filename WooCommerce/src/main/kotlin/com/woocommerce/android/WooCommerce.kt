@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Build
-import android.preference.PreferenceManager
 import android.support.multidex.MultiDexApplication
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -38,9 +37,6 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.DeviceRegistrationErrorType
-import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceRegistered
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.PackageUtils
 import javax.inject.Inject
@@ -53,7 +49,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
-    @Inject lateinit var notificationStore: NotificationStore
 
     @Inject lateinit var selectedSite: SelectedSite
 
@@ -191,34 +186,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
             }
-        }
-    }
-
-    /**
-     * Triggered when device has been registered for push notifications with WordPress.com
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onDeviceRegistered(onDeviceRegistered: OnDeviceRegistered) {
-        with (onDeviceRegistered) {
-            if (isError || deviceId.isNullOrEmpty()) {
-                when (error.type) {
-                    DeviceRegistrationErrorType.MISSING_DEVICE_ID ->
-                        WooLog.e(T.NOTIFS, "Server response missing device_id - registration skipped!")
-                    DeviceRegistrationErrorType.GENERIC_ERROR ->
-                        WooLog.e(T.NOTIFS, "Error trying to register device: ${error.type} - ${error.message}")
-                }
-                return
-            }
-        }
-
-        onDeviceRegistered.deviceId.let {
-            val settings = PreferenceManager.getDefaultSharedPreferences(this)
-            with (settings.edit()) {
-                putString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_SERVER_ID, it)
-                apply()
-            }
-            WooLog.i(T.NOTIFS, "Server response OK. Device ID: $it")
         }
     }
 

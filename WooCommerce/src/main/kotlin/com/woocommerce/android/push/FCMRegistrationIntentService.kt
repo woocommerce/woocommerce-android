@@ -34,7 +34,6 @@ class FCMRegistrationIntentService : JobIntentService() {
 
         const val WPCOM_PUSH_DEVICE_UUID = "WC_PREF_NOTIFICATIONS_UUID"
         const val WPCOM_PUSH_DEVICE_TOKEN = "WC_PREF_NOTIFICATIONS_TOKEN"
-        const val WPCOM_PUSH_DEVICE_SERVER_ID = "WC_PREF_NOTIFICATIONS_SERVER_ID"
 
         fun enqueueWork(context: Context) {
             val work = Intent(context, FCMRegistrationIntentService::class.java)
