@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.dashboard
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -16,6 +18,10 @@ class DashboardPresenter @Inject constructor(
     private val wcStatsStore: WCStatsStore,
     private val selectedSite: SelectedSite
 ) : DashboardContract.Presenter {
+    companion object {
+        private val TAG = DashboardPresenter::class.java
+    }
+
     private var dashboardView: DashboardContract.View? = null
 
     override fun takeView(view: DashboardContract.View) {
@@ -39,6 +45,7 @@ class DashboardPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
         if (event.isError) {
+            WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
             // TODO: Notify the user of the problem
             // For now, send empty data so views aren't stuck in loading mode
             dashboardView?.showStats(emptyMap(), emptyMap(), event.granularity)
