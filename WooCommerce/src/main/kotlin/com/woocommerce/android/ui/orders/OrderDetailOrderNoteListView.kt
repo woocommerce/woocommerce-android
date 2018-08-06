@@ -54,7 +54,6 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         notesList_notes.apply {
             setHasFixedSize(false)
             layoutManager = viewManager
-            itemAnimator = DefaultItemAnimator()
             addItemDecoration(divider)
             adapter = viewAdapter
         }
@@ -64,6 +63,11 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         notesList_progress.visibility = View.VISIBLE
 
         val adapter = notesList_notes.adapter as OrderNotesAdapter
+        if (adapter.itemCount > 0) {
+            notesList_notes.itemAnimator = null
+        } else {
+            notesList_notes.itemAnimator = DefaultItemAnimator()
+        }
         adapter.setNotes(notes)
 
         notesList_progress.visibility = View.GONE
