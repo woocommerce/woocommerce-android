@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -53,7 +54,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         notesList_notes.apply {
             setHasFixedSize(false)
             layoutManager = viewManager
-            itemAnimator = null
+            itemAnimator = DefaultItemAnimator()
             addItemDecoration(divider)
             adapter = viewAdapter
         }
@@ -61,6 +62,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
     fun updateView(notes: List<WCOrderNoteModel>) {
         val adapter = notesList_notes.adapter as OrderNotesAdapter
+        notesList_notes.itemAnimator = if (adapter.itemCount == 0) DefaultItemAnimator() else null
         adapter.setNotes(notes)
         notesList_progress.visibility = View.GONE
     }
@@ -87,7 +89,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         }
 
         fun setNotes(newList: List<WCOrderNoteModel>) {
-            if (newList != notes) {
+            if (!isSameNoteList(newList)) {
                 notes.clear()
                 notes.addAll(newList)
                 notifyDataSetChanged()
@@ -114,6 +116,27 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         fun addNote(noteModel: WCOrderNoteModel) {
             notes.add(0, noteModel)
             notifyItemChanged(0)
+        }
+
+        private fun isSameNoteList(otherNotes: List<WCOrderNoteModel>): Boolean {
+            if (otherNotes.size != notes.size) {
+                return false
+            }
+
+            for (i in 0 until notes.size) {
+                val thisNote = notes[i]
+                val thatNote = otherNotes[i]
+                if (thisNote.localOrderId != thatNote.localOrderId ||
+                        thisNote.localSiteId != thatNote.localSiteId ||
+                        thisNote.remoteNoteId != thatNote.remoteNoteId ||
+                        thisNote.isCustomerNote != thatNote.isCustomerNote ||
+                        thisNote.note != thatNote.note ||
+                        thisNote.dateCreated != thatNote.dateCreated) {
+                    return false
+                }
+            }
+
+            return true
         }
     }
 }
