@@ -54,7 +54,6 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         notesList_notes.apply {
             setHasFixedSize(false)
             layoutManager = viewManager
-            itemAnimator = DefaultItemAnimator()
             addItemDecoration(divider)
             adapter = viewAdapter
         }
@@ -62,7 +61,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
     fun updateView(notes: List<WCOrderNoteModel>) {
         val adapter = notesList_notes.adapter as OrderNotesAdapter
-        notesList_notes.itemAnimator = if (adapter.itemCount == 0) DefaultItemAnimator() else null
+        enableItemAnimator(adapter.itemCount == 0)
         adapter.setNotes(notes)
         notesList_progress.visibility = View.GONE
     }
@@ -72,12 +71,17 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
      * add the note has completed - this enables us to be optimistic about connectivity
      */
     fun addLocalNote(noteText: String, isCustomerNote: Boolean) {
+        enableItemAnimator(false)
         val noteModel = WCOrderNoteModel(nextLocalNoteId)
         noteModel.note = noteText
         noteModel.isCustomerNote = isCustomerNote
         (notesList_notes.adapter as OrderNotesAdapter).addNote(noteModel)
         nextLocalNoteId--
         notesList_notes.scrollToPosition(0)
+    }
+
+    private fun enableItemAnimator(enable: Boolean) {
+        notesList_notes.itemAnimator = if (enable) DefaultItemAnimator() else null
     }
 
     class OrderNotesAdapter(private val notes: MutableList<WCOrderNoteModel>)
@@ -115,7 +119,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
         fun addNote(noteModel: WCOrderNoteModel) {
             notes.add(0, noteModel)
-            notifyItemChanged(0)
+            notifyItemInserted(0)
         }
 
         private fun isSameNoteList(otherNotes: List<WCOrderNoteModel>): Boolean {
