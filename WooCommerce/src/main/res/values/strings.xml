@@ -140,7 +140,6 @@
     <string name="add_order_note_sublabel">If disabled will add the note as private</string>
     <string name="add_order_note_menu_item">Add</string>
     <string name="add_order_note_error">Unable to add note</string>
-    <string name="add_order_note_null_order_error">Unable to locate order</string>
     <!--
         Order Status Labels
     -->
