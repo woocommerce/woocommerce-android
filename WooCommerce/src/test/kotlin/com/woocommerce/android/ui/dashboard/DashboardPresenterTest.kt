@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCStatsAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
@@ -30,6 +31,7 @@ class DashboardPresenterTest {
     private val dashboardView: DashboardContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val wcStatsStore: WCStatsStore = mock()
+    private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
 
     private lateinit var presenter: DashboardPresenter
@@ -38,7 +40,7 @@ class DashboardPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(DashboardPresenter(dispatcher, wcStatsStore, selectedSite))
+        presenter = spy(DashboardPresenter(dispatcher, wcStatsStore, wcOrderStore, selectedSite))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
 

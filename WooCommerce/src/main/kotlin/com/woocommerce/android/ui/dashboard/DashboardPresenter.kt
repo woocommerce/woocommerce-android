@@ -7,6 +7,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class DashboardPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wcStatsStore: WCStatsStore,
+    private val wcOrderStore: WCOrderStore, // Required to ensure the WCOrderStore is initialized!
     private val selectedSite: SelectedSite
 ) : DashboardContract.Presenter {
     companion object {
