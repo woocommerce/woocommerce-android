@@ -12,6 +12,7 @@ interface OrderDetailContract {
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
         fun doMarkOrderComplete()
+        fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
     }
 
     interface View : BaseView<Presenter>, OrderActionListener {
@@ -22,6 +23,7 @@ interface OrderDetailContract {
         fun updateOrderStatus(status: String)
         fun showUndoOrderCompleteSnackbar()
         fun showNotesErrorSnack()
+        fun showAddOrderNoteErrorSnack()
         fun showCompleteOrderError()
         fun markOrderCompleteSuccess()
         fun markOrderCompleteFailed()
