@@ -70,6 +70,10 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         : RecyclerView.Adapter<OrderNotesAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailOrderNoteItemView) : RecyclerView.ViewHolder(view)
 
+        init {
+            setHasStableIds(true)
+        }
+
         fun setNotes(newList: List<WCOrderNoteModel>) {
             if (newList != notes) {
                 notes.clear()
@@ -90,5 +94,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         }
 
         override fun getItemCount() = notes.size
+
+        override fun getItemId(position: Int): Long = notes.get(position).id.toLong()
     }
 }
