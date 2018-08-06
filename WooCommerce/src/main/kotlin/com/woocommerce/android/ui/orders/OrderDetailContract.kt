@@ -23,6 +23,7 @@ interface OrderDetailContract {
         fun updateOrderStatus(status: String)
         fun showUndoOrderCompleteSnackbar()
         fun showNotesErrorSnack()
+        fun showAddOrderNoteSnack()
         fun showAddOrderNoteErrorSnack()
         fun showCompleteOrderError()
         fun markOrderCompleteSuccess()

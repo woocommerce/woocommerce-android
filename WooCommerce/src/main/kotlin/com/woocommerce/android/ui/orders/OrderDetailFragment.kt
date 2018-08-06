@@ -89,6 +89,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             val noteText = data.getStringExtra(FIELD_NOTE_TEXT)
             val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
             presenter.pushOrderNote(noteText, isCustomerNote)
+            showAddOrderNoteSnack()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -220,6 +221,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_IDENTIFIER, presenter.orderModel?.getIdentifier())
         intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_NUMBER, presenter.orderModel?.number)
         startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+    }
+
+    override fun showAddOrderNoteSnack() {
+        uiMessageResolver.getSnack(R.string.add_order_note_added).show()
     }
 
     override fun showAddOrderNoteErrorSnack() {

@@ -139,6 +139,7 @@
     <string name="add_order_note_label">Email note to customer</string>
     <string name="add_order_note_sublabel">If disabled will add the note as private</string>
     <string name="add_order_note_menu_item">Add</string>
+    <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
     <!--
         Order Status Labels
