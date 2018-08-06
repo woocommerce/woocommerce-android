@@ -118,9 +118,9 @@ class OrderDetailPresenter @Inject constructor(
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error posting order note : ${event.error.message}")
                 orderView?.showAddOrderNoteErrorSnack()
-            } else {
-                loadOrderNotes()
             }
+            // note that we refresh even on error to make sure the "fake" note is removed from the note list
+            fetchAndLoadNotesFromDb()
         }
     }
 

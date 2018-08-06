@@ -66,6 +66,14 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         notesList_progress.visibility = View.GONE
     }
 
+    /*
+     * a "local" note is a temporary placeholder created after the user adds a note but before the request to
+     * add the note has completed - this enables us to be optimistic about connectivity
+     */
+    fun addLocalNote(noteText: String, isCustomerNote: Boolean) {
+        (notesList_notes.adapter as OrderNotesAdapter).addLocalNote(noteText, isCustomerNote)
+    }
+
     class OrderNotesAdapter(private val notes: MutableList<WCOrderNoteModel>)
         : RecyclerView.Adapter<OrderNotesAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailOrderNoteItemView) : RecyclerView.ViewHolder(view)
@@ -73,6 +81,9 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         init {
             setHasStableIds(true)
         }
+
+        // negative IDs denote local notes
+        private var nextLocalNoteId = -1
 
         fun setNotes(newList: List<WCOrderNoteModel>) {
             if (newList != notes) {
@@ -96,5 +107,14 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         override fun getItemCount() = notes.size
 
         override fun getItemId(position: Int): Long = notes.get(position).id.toLong()
+
+        fun addLocalNote(noteText: String, isCustomerNote: Boolean) {
+            val noteModel = WCOrderNoteModel(nextLocalNoteId)
+            noteModel.note = noteText
+            noteModel.isCustomerNote = isCustomerNote
+            notes.add(0, noteModel)
+            notifyItemChanged(0)
+            nextLocalNoteId--
+        }
     }
 }

@@ -90,6 +90,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
             presenter.pushOrderNote(noteText, isCustomerNote)
             showAddOrderNoteSnack()
+            orderDetail_noteList.addLocalNote(noteText, isCustomerNote)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
