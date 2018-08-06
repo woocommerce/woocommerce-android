@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -54,22 +53,15 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         notesList_notes.apply {
             setHasFixedSize(false)
             layoutManager = viewManager
+            itemAnimator = null
             addItemDecoration(divider)
             adapter = viewAdapter
         }
     }
 
     fun updateView(notes: List<WCOrderNoteModel>) {
-        notesList_progress.visibility = View.VISIBLE
-
         val adapter = notesList_notes.adapter as OrderNotesAdapter
-        if (adapter.itemCount > 0) {
-            notesList_notes.itemAnimator = null
-        } else {
-            notesList_notes.itemAnimator = DefaultItemAnimator()
-        }
         adapter.setNotes(notes)
-
         notesList_progress.visibility = View.GONE
     }
 
@@ -83,6 +75,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         noteModel.isCustomerNote = isCustomerNote
         (notesList_notes.adapter as OrderNotesAdapter).addNote(noteModel)
         nextLocalNoteId--
+        notesList_notes.scrollToPosition(0)
     }
 
     class OrderNotesAdapter(private val notes: MutableList<WCOrderNoteModel>)
@@ -109,12 +102,14 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.view.initView(notes[position])
+            // we show a progress bar for local notes that are being added
+            val showProgress = notes[position].localOrderId < 0
+            holder.view.initView(notes[position], showProgress)
         }
 
         override fun getItemCount() = notes.size
 
-        override fun getItemId(position: Int): Long = notes.get(position).id.toLong()
+        override fun getItemId(position: Int): Long = notes[position].id.toLong()
 
         fun addNote(noteModel: WCOrderNoteModel) {
             notes.add(0, noteModel)

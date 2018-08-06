@@ -10,8 +10,8 @@
         android:id="@+id/orderNote_icon"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:contentDescription="@string/orderdetail_note_icon_contentdesc"
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
+        android:contentDescription="@string/orderdetail_note_icon_contentdesc"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_note_private"/>
@@ -24,10 +24,10 @@
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"
-        tools:text="Nov 13, 2017 at 9:54 AM"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Nov 13, 2017 at 9:54 AM"/>
 
     <TextView
         android:id="@+id/orderNote_type"
@@ -37,10 +37,10 @@
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
-        tools:text="Private Note"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
-        app:layout_constraintTop_toBottomOf="@+id/orderNote_created"/>
+        app:layout_constraintTop_toBottomOf="@+id/orderNote_created"
+        tools:text="Private Note"/>
 
     <TextView
         android:id="@+id/orderNote_note"
@@ -50,8 +50,19 @@
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        tools:text="Order status changed from pending payment to processing."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
-        app:layout_constraintTop_toBottomOf="@+id/orderNote_type"/>
+        app:layout_constraintTop_toBottomOf="@+id/orderNote_type"
+        tools:text="Order status changed from pending payment to processing."/>
+
+    <ProgressBar
+        android:id="@+id/orderNote_progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="@dimen/card_item_padding_intra_v"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"/>
 </merge>
