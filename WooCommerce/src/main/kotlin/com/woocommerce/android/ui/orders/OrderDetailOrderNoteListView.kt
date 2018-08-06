@@ -28,6 +28,9 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
     private lateinit var listener: OrderDetailNoteListener
 
+    // negative IDs denote local notes
+    private var nextLocalNoteId = -1
+
     fun initView(notes: List<WCOrderNoteModel>, orderDetailListener: OrderDetailNoteListener) {
         listener = orderDetailListener
 
@@ -71,7 +74,11 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
      * add the note has completed - this enables us to be optimistic about connectivity
      */
     fun addLocalNote(noteText: String, isCustomerNote: Boolean) {
-        (notesList_notes.adapter as OrderNotesAdapter).addLocalNote(noteText, isCustomerNote)
+        val noteModel = WCOrderNoteModel(nextLocalNoteId)
+        noteModel.note = noteText
+        noteModel.isCustomerNote = isCustomerNote
+        (notesList_notes.adapter as OrderNotesAdapter).addNote(noteModel)
+        nextLocalNoteId--
     }
 
     class OrderNotesAdapter(private val notes: MutableList<WCOrderNoteModel>)
@@ -81,9 +88,6 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         init {
             setHasStableIds(true)
         }
-
-        // negative IDs denote local notes
-        private var nextLocalNoteId = -1
 
         fun setNotes(newList: List<WCOrderNoteModel>) {
             if (newList != notes) {
@@ -108,13 +112,9 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
         override fun getItemId(position: Int): Long = notes.get(position).id.toLong()
 
-        fun addLocalNote(noteText: String, isCustomerNote: Boolean) {
-            val noteModel = WCOrderNoteModel(nextLocalNoteId)
-            noteModel.note = noteText
-            noteModel.isCustomerNote = isCustomerNote
+        fun addNote(noteModel: WCOrderNoteModel) {
             notes.add(0, noteModel)
             notifyItemChanged(0)
-            nextLocalNoteId--
         }
     }
 }
