@@ -8,6 +8,7 @@ interface DashboardContract {
     interface Presenter : BasePresenter<View> {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun getStatsCurrency(): String?
+        fun loadOrdersToFulfillCount()
     }
 
     interface View : BaseView<Presenter> {
@@ -15,5 +16,7 @@ interface DashboardContract {
 
         fun setLoadingIndicator(active: Boolean)
         fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Int>, granularity: StatsGranularity)
+        fun hideOrdersCard()
+        fun showOrdersCard(count: Int)
     }
 }

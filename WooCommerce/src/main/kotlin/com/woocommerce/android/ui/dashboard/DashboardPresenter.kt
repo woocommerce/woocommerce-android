@@ -6,8 +6,13 @@ import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
@@ -43,6 +48,11 @@ class DashboardPresenter @Inject constructor(
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
+    override fun loadOrdersToFulfillCount() {
+        val payload = FetchOrdersCountPayload(selectedSite.get(), CoreOrderStatus.PROCESSING.value)
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
@@ -58,5 +68,22 @@ class DashboardPresenter @Inject constructor(
         val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
 
         dashboardView?.showStats(revenueStats, orderStats, event.granularity)
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderChanged(event: OnOrderChanged) {
+        event.causeOfChange?.takeIf { it == WCOrderAction.FETCH_ORDERS_COUNT }?.let { _ ->
+            if (event.isError) {
+                WooLog.e(T.DASHBOARD,
+                        "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")
+                dashboardView?.hideOrdersCard()
+                return
+            }
+
+            event.rowsAffected.takeIf { it > 0 }?.let { count ->
+                dashboardView?.showOrdersCard(count)
+            } ?: dashboardView?.hideOrdersCard()
+        }
     }
 }

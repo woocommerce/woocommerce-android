@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -23,6 +24,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     @Inject lateinit var presenter: DashboardContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
 
@@ -52,6 +54,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 setOnRefreshListener {
                     setLoadingIndicator(true)
                     presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
+                    presenter.loadOrdersToFulfillCount()
                 }
             }
         }
@@ -66,7 +69,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive) {
             setLoadingIndicator(true)
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
+            dashboard_orders.initView(object : DashboardFulfillOrdersCard.Listener {
+                override fun onViewOrdersClicked() {
+                    // TODO - open orders view filtered by processing
+                    uiMessageResolver.showSnack("View Orders clicked!")
+                }
+            })
             presenter.loadStats(dashboard_stats.activeGranularity)
+            presenter.loadOrdersToFulfillCount()
         } else {
             loadDataPending = true
         }
@@ -80,6 +90,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             loadDataPending = false
             setLoadingIndicator(true)
             presenter.loadStats(dashboard_stats.activeGranularity)
+            presenter.loadOrdersToFulfillCount()
         }
     }
 
@@ -115,6 +126,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive) {
             setLoadingIndicator(true)
             presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
+            presenter.loadOrdersToFulfillCount()
         } else {
             loadDataPending = true
         }
@@ -122,5 +134,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onRequestLoadStats(period: StatsGranularity) {
         presenter.loadStats(period)
+    }
+
+    override fun hideOrdersCard() {
+        dashboard_orders.visibility = View.GONE
+    }
+
+    override fun showOrdersCard(count: Int) {
+        dashboard_orders.updateOrdersCount(count)
+        dashboard_orders.visibility = View.VISIBLE
     }
 }
