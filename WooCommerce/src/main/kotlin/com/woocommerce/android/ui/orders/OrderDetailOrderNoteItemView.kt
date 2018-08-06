@@ -19,7 +19,7 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
         View.inflate(context, R.layout.order_detail_note_item, this)
     }
 
-    fun initView(note: WCOrderNoteModel, showProgress: Boolean) {
+    fun initView(note: WCOrderNoteModel) {
         orderNote_created.text = DateUtils.getFriendlyLongDateAtTimeString(context, note.dateCreated).capitalize()
         orderNote_note.text = getHtmlText(note.note)
 
@@ -30,9 +30,6 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
             orderNote_type.text = context.getString(R.string.orderdetail_note_private)
             orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_private))
         }
-
-        orderNote_progress.visibility = if (showProgress) View.VISIBLE else View.GONE
-        orderNote_icon.visibility = if (showProgress) View.INVISIBLE else View.VISIBLE
     }
 
     private fun getHtmlText(txt: String): Spanned {

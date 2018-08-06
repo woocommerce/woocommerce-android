@@ -108,9 +108,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            // we show a progress bar for local notes that are being added
-            val showProgress = notes[position].localOrderId < 0
-            holder.view.initView(notes[position], showProgress)
+            holder.view.initView(notes[position])
         }
 
         override fun getItemCount() = notes.size
