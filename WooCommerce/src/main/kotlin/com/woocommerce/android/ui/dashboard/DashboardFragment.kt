@@ -29,7 +29,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
 
     override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0
+        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -83,8 +83,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
-    override fun onBackStackChanged() {
-        super.onBackStackChanged()
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && loadDataPending) {
