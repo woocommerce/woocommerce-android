@@ -351,4 +351,7 @@ class MainActivity : AppCompatActivity(),
         return false
     }
     // endregion
+
+    override fun showOrderList(orderStatusFilter: String?) {
+    }
 }
