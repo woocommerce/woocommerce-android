@@ -135,7 +135,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
 
         presenter.takeView(this)
-        if (isActive) {
+
+        if (isActive && !deferInit) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = loadOrdersPending)
         }
 
