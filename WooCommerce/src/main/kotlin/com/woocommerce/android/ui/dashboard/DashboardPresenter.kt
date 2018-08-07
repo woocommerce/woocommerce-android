@@ -80,10 +80,11 @@ class DashboardPresenter @Inject constructor(
                 dashboardView?.hideOrdersCard()
                 return
             }
-
             event.rowsAffected.takeIf { it > 0 }?.let { count ->
                 dashboardView?.showOrdersCard(count)
             } ?: dashboardView?.hideOrdersCard()
+        } ?: if (!event.isError && event.causeOfChange != WCOrderAction.FETCH_ORDER_NOTES) {
+            dashboardView?.refreshDashboard()
         }
     }
 }

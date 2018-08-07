@@ -76,8 +76,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     }
                 }
             })
-            presenter.loadStats(dashboard_stats.activeGranularity)
             presenter.loadOrdersToFulfillCount()
+            presenter.loadStats(dashboard_stats.activeGranularity)
         } else {
             loadDataPending = true
         }
@@ -89,10 +89,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && loadDataPending) {
+            hideOrdersCard()
             loadDataPending = false
             setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.activeGranularity)
             presenter.loadOrdersToFulfillCount()
+            presenter.loadStats(dashboard_stats.activeGranularity)
         }
     }
 
@@ -125,6 +126,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun refreshFragmentState() {
+        refreshDashboard()
+    }
+
+    override fun refreshDashboard() {
         if (isActive) {
             setLoadingIndicator(true)
             presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
@@ -139,11 +144,17 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun hideOrdersCard() {
-        dashboard_orders.visibility = View.GONE
+        with(dashboard_orders) {
+            post { visibility = View.GONE }
+        }
     }
 
     override fun showOrdersCard(count: Int) {
-        dashboard_orders.updateOrdersCount(count)
-        dashboard_orders.visibility = View.VISIBLE
+        with(dashboard_orders) {
+            post {
+                updateOrdersCount(count)
+                visibility = View.VISIBLE
+            }
+        }
     }
 }
