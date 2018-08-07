@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity(),
     override fun onNavigationItemReselected(item: MenuItem) {
         val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
         if (!clearFragmentBackStack(activeFragment)) {
-            (activeFragment as TopLevelFragment).refreshFragmentState()
+            (activeFragment as? TopLevelFragment)?.refreshFragmentState()
         }
 
         val stat = when (activeNavPosition) {
@@ -284,8 +284,8 @@ class MainActivity : AppCompatActivity(),
      * Extension function for retrieving an existing fragment from the [FragmentManager]
      * if one exists, if not, create a new instance of the requested fragment.
      */
-    private fun FragmentManager.findFragment(position: BottomNavigationPosition): Fragment {
-        return findFragmentByTag(position.getTag()) ?: position.createFragment()
+    private fun FragmentManager.findFragment(position: BottomNavigationPosition): TopLevelFragment? {
+        return (findFragmentByTag(position.getTag()) ?: position.createFragment()) as? TopLevelFragment
     }
 
     /**
@@ -309,17 +309,18 @@ class MainActivity : AppCompatActivity(),
 
         // Grab the requested top-level fragment and load if not already
         // in the current view.
-        val fragment = supportFragmentManager.findFragment(navPosition)
-        (fragment as TopLevelFragment).deferInit = deferInit
-
-        if (fragment.isHidden || !fragment.isAdded) {
-            // Remove the active fragment and replace with this newly selected one
-            hideParentFragment(activeFragment)
-            showTopLevelFragment(fragment as TopLevelFragment, navPosition.getTag())
-            supportFragmentManager.executePendingTransactions()
-            activeNavPosition = navPosition
-            return true
+        supportFragmentManager.findFragment(navPosition)?.let { frag ->
+            frag.deferInit = deferInit
+            if (frag.isHidden || !frag.isAdded) {
+                // Remove the active fragment and replace with this newly selected one
+                hideParentFragment(activeFragment)
+                showTopLevelFragment(frag, navPosition.getTag())
+                supportFragmentManager.executePendingTransactions()
+                activeNavPosition = navPosition
+                return true
+            }
         }
+
         return false
     }
 
