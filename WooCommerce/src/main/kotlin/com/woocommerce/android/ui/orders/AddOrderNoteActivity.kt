@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -73,6 +74,14 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         return true
     }
 
+    override fun onBackPressed() {
+        if (getNoteText().isNotEmpty()) {
+            confirmDiscard()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             android.R.id.home -> {
@@ -80,7 +89,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                 true
             }
             R.id.menu_add -> {
-                val noteText = addNote_editor.text.toString().trim()
+                val noteText = getNoteText()
                 if (!noteText.isEmpty() && NetworkUtils.checkConnection(this)) {
                     val isCustomerNote = addNote_switch.isChecked
                     val data = Intent()
@@ -100,5 +109,18 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         outState?.putString(FIELD_ORDER_NUMBER, orderNumber)
         outState?.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch.isChecked)
         super.onSaveInstanceState(outState)
+    }
+
+    override fun getNoteText(): String = addNote_editor.text.toString().trim()
+
+    override fun confirmDiscard() {
+        AlertDialog.Builder(this)
+                .setMessage(R.string.add_order_note_confirm_discard)
+                .setCancelable(true)
+                .setPositiveButton(R.string.discard) { dialog, _ ->
+                    finish()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
     }
 }
