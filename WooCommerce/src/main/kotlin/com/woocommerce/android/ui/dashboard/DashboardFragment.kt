@@ -71,9 +71,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
             dashboard_orders.initView(object : DashboardFulfillOrdersCard.Listener {
                 override fun onViewOrdersClicked() {
-                    if (activity is TopLevelFragmentRouter) {
-                        (activity as TopLevelFragmentRouter).showOrderList(CoreOrderStatus.PROCESSING.value)
-                    }
+                    (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
                 }
             })
             presenter.loadOrdersToFulfillCount()
