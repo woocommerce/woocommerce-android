@@ -145,13 +145,29 @@ class OrderDetailPresenterTest {
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
 
         presenter.takeView(orderDetailView)
-        presenter.pushOrderNote(noteText = "Test order note", isCustomerNote = false)
+        presenter.pushOrderNote(noteText = "Test order note #1", isCustomerNote = false)
         verify(dispatcher, times(1)).dispatch(any<Action<PostOrderNotePayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(1).apply {
             causeOfChange = POST_ORDER_NOTE
-            error = OrderError(message = "Error")
+            error = OrderError()
         })
         verify(orderDetailView, times(1)).showAddOrderNoteSnack()
+    }
+
+    @Test
+    fun `Display error message on add order note error`() {
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+
+        presenter.takeView(orderDetailView)
+        presenter.pushOrderNote(noteText = "Test order note #2", isCustomerNote = false)
+        verify(dispatcher, times(1)).dispatch(any<Action<PostOrderNotePayload>>())
+
+        presenter.onOrderChanged(OnOrderChanged(0).apply {
+            causeOfChange = POST_ORDER_NOTE
+            error = OrderError()
+        })
+        verify(orderDetailView, times(1)).showAddOrderNoteErrorSnack()
     }
 }
