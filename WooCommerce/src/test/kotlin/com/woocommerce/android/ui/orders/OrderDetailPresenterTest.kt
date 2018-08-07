@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
+import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
@@ -19,6 +20,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 
 class OrderDetailPresenterTest {
@@ -135,5 +137,21 @@ class OrderDetailPresenterTest {
             error = OrderError(message = "Error")
         })
         verify(orderDetailView).markOrderCompleteFailed()
+    }
+
+    @Test
+    fun `Add an order note - Displays add note snackbar correctly`() {
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+
+        presenter.takeView(orderDetailView)
+        presenter.pushOrderNote(noteText = "Test order note", isCustomerNote = false)
+        verify(dispatcher, times(1)).dispatch(any<Action<PostOrderNotePayload>>())
+
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = POST_ORDER_NOTE
+            error = OrderError(message = "Error")
+        })
+        verify(orderDetailView, times(1)).showAddOrderNoteSnack()
     }
 }
