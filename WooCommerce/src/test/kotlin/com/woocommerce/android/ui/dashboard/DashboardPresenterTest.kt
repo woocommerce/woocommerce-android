@@ -164,6 +164,8 @@ class DashboardPresenterTest {
 
     @Test
     fun `Handles UPDATE-ORDER-STATUS order event correctly`() {
+        presenter.takeView(dashboardView)
+
         // Simulate onOrderChanged event: UPDATE-ORDER-STATUS - Dashboard should refresh
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
         verify(dashboardView, times(0)).showOrdersCard(any())
@@ -173,6 +175,8 @@ class DashboardPresenterTest {
 
     @Test
     fun `Handles FETCH-ORDER-NOTES order event correctly`() {
+        presenter.takeView(dashboardView)
+
         // Simulate onOrderChanged event: FETCH-ORDER-NOTES - Dashboard should ignore
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDER_NOTES })
         verify(dashboardView, times(0)).showOrdersCard(any())
@@ -182,6 +186,8 @@ class DashboardPresenterTest {
 
     @Test
     fun `Handles FETCH-ORDERS order event with error correctly`() {
+        presenter.takeView(dashboardView)
+
         // Simulate onOrderChanged event: FETCH-ORDERS w/error - Dashboard should ignore
         presenter.onOrderChanged(OnOrderChanged(0).apply {
             causeOfChange = FETCH_ORDERS
