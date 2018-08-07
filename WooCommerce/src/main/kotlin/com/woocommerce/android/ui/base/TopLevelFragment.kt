@@ -113,7 +113,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
      * and set the title to the active child fragments title.
      */
     private fun updateParentViewState(childActive: Boolean) {
-        val mainActivity: AppCompatActivity? = activity as AppCompatActivity
+        val mainActivity: AppCompatActivity? = activity as? AppCompatActivity
         if (childActive) {
             container.getChildAt(0).visibility = View.GONE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)

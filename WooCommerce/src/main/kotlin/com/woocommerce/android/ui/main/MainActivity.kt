@@ -369,9 +369,7 @@ class MainActivity : AppCompatActivity(),
             bottom_nav.active(navPos)
 
             val fragment = supportFragmentManager.findFragment(ORDERS)
-            with (fragment as OrderListFragment) {
-                onFilterSelected(orderStatusFilter)
-            }
+            (fragment as? OrderListFragment)?.onFilterSelected(orderStatusFilter)
         }
     }
 }
