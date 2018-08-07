@@ -85,6 +85,8 @@ class OrderDetailPresenter @Inject constructor(
 
         val payload = WCOrderStore.PostOrderNotePayload(orderModel!!, selectedSite.get(), noteModel)
         dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
+
+        orderView?.showAddOrderNoteSnack()
     }
 
     @Suppress("unused")
