@@ -57,7 +57,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var filterMenuButton: MenuItem? = null
 
     override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0
+        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
