@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.dashboard_fulfill_orders.view.*
 
 /**
@@ -28,10 +29,12 @@ class DashboardFulfillOrdersCard @JvmOverloads constructor(ctx: Context, attrs: 
     }
 
     fun updateOrdersCount(count: Int) {
-        val titleTxt = resources.getQuantityString(R.plurals.dashboard_fulfill_orders_title, count, count)
+        val titleTxt = StringUtils.getQuantityString(
+                context, count, R.string.dashboard_fulfill_orders_title, one = R.string.dashboard_fulfill_order_title)
         alertAction_title.text = titleTxt
 
-        val buttonTxt = resources.getQuantityString(R.plurals.dashboard_action_view_orders, count, count)
+        val buttonTxt = StringUtils.getQuantityString(
+                context, count, R.string.dashboard_action_view_orders, one = R.string.dashboard_action_view_order)
         alertAction_action.text = buttonTxt
     }
 }
