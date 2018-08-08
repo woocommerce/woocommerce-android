@@ -71,7 +71,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
      * add the note has completed - this enables us to be optimistic about connectivity
      */
     fun addLocalNote(noteText: String, isCustomerNote: Boolean) {
-        enableItemAnimator(false)
+        enableItemAnimator(true)
         val noteModel = WCOrderNoteModel(nextLocalNoteId)
         noteModel.note = noteText
         noteModel.isCustomerNote = isCustomerNote
