@@ -48,7 +48,7 @@ class DashboardPresenter @Inject constructor(
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
-    override fun loadOrdersToFulfillCount() {
+    override fun fetchUnfilledOrderCount() {
         val payload = FetchOrdersCountPayload(selectedSite.get(), CoreOrderStatus.PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
@@ -77,12 +77,12 @@ class DashboardPresenter @Inject constructor(
             if (event.isError) {
                 WooLog.e(T.DASHBOARD,
                         "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")
-                dashboardView?.hideOrdersCard()
+                dashboardView?.hideUnfilledOrdersCard()
                 return
             }
             event.rowsAffected.takeIf { it > 0 }?.let { count ->
-                dashboardView?.showOrdersCard(count)
-            } ?: dashboardView?.hideOrdersCard()
+                dashboardView?.showUnfilledOrdersCard(count)
+            } ?: dashboardView?.hideUnfilledOrdersCard()
         } ?: if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
             dashboardView?.refreshDashboard()
         }

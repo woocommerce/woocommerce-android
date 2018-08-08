@@ -6,16 +6,16 @@ import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
-import kotlinx.android.synthetic.main.dashboard_fulfill_orders.view.*
+import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
 
 /**
  * Dashboard card that displays the total number of orders awaiting fulfillment and a button to display
  * those orders.
  */
-class DashboardFulfillOrdersCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
+class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
     init {
-        View.inflate(context, R.layout.dashboard_fulfill_orders, this)
+        View.inflate(context, R.layout.dashboard_unfilled_orders, this)
     }
 
     interface Listener {

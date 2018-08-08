@@ -69,12 +69,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive) {
             setLoadingIndicator(true)
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
-            dashboard_orders.initView(object : DashboardFulfillOrdersCard.Listener {
+            dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
                 override fun onViewOrdersClicked() {
                     (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
                 }
             })
-            presenter.loadOrdersToFulfillCount()
+            presenter.fetchUnfilledOrderCount()
             presenter.loadStats(dashboard_stats.activeGranularity)
         } else {
             loadDataPending = true
@@ -87,11 +87,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && loadDataPending) {
-            hideOrdersCard()
             loadDataPending = false
             setLoadingIndicator(true)
             presenter.loadOrdersToFulfillCount()
             presenter.loadStats(dashboard_stats.activeGranularity)
+            hideUnfilledOrdersCard()
         }
     }
 
@@ -141,14 +141,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         presenter.loadStats(period)
     }
 
-    override fun hideOrdersCard() {
-        with(dashboard_orders) {
+    override fun hideUnfilledOrdersCard() {
+        with(dashboard_unfilled_orders) {
             post { visibility = View.GONE }
         }
     }
 
-    override fun showOrdersCard(count: Int) {
-        with(dashboard_orders) {
+    override fun showUnfilledOrdersCard(count: Int) {
+        with(dashboard_unfilled_orders) {
             post {
                 updateOrdersCount(count)
                 visibility = View.VISIBLE

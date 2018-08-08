@@ -24,14 +24,13 @@
                 style="@style/Woo.Card"/>
 
             <!-- Orders waiting fulfillment -->
-            <com.woocommerce.android.ui.dashboard.DashboardFulfillOrdersCard
-                android:id="@+id/dashboard_orders"
+            <com.woocommerce.android.ui.dashboard.DashboardUnfilledOrdersCard
+                android:id="@+id/dashboard_unfilled_orders"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
                 style="@style/Woo.Card"
                 tools:visibility="visible"/>
-
         </LinearLayout>
     </ScrollView>
 </android.support.v4.widget.SwipeRefreshLayout>

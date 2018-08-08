@@ -96,7 +96,7 @@ class DashboardPresenterTest {
     @Test
     fun `Requests orders to fulfill count correctly`() {
         presenter.takeView(dashboardView)
-        presenter.loadOrdersToFulfillCount()
+        presenter.fetchUnfilledOrderCount()
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
         assertEquals(WCOrderAction.FETCH_ORDERS_COUNT, actionCaptor.firstValue.type)
@@ -110,14 +110,14 @@ class DashboardPresenterTest {
         val totalOrders = 25
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.loadOrdersToFulfillCount()
+        presenter.fetchUnfilledOrderCount()
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
             causeOfChange = FETCH_ORDERS_COUNT
         })
 
-        verify(dashboardView).showOrdersCard(totalOrders)
+        verify(dashboardView).showUnfilledOrdersCard(totalOrders)
     }
 
     @Test
@@ -125,14 +125,14 @@ class DashboardPresenterTest {
         val totalOrders = 0
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.loadOrdersToFulfillCount()
+        presenter.fetchUnfilledOrderCount()
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
             causeOfChange = FETCH_ORDERS_COUNT
         })
 
-        verify(dashboardView).hideOrdersCard()
+        verify(dashboardView).hideUnfilledOrdersCard()
     }
 
     @Test
@@ -140,7 +140,7 @@ class DashboardPresenterTest {
         val totalOrders = 25
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.loadOrdersToFulfillCount()
+        presenter.fetchUnfilledOrderCount()
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
@@ -148,7 +148,7 @@ class DashboardPresenterTest {
             error = OrderError()
         })
 
-        verify(dashboardView).hideOrdersCard()
+        verify(dashboardView).hideUnfilledOrdersCard()
     }
 
     @Test
@@ -157,8 +157,8 @@ class DashboardPresenterTest {
 
         // Simulate onOrderChanged event: FETCH-ORDERS - Dashboard should refresh
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
-        verify(dashboardView, times(0)).showOrdersCard(any())
-        verify(dashboardView, times(0)).hideOrdersCard()
+        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
+        verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(1)).refreshDashboard()
     }
 
@@ -168,8 +168,8 @@ class DashboardPresenterTest {
 
         // Simulate onOrderChanged event: UPDATE-ORDER-STATUS - Dashboard should refresh
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(dashboardView, times(0)).showOrdersCard(any())
-        verify(dashboardView, times(0)).hideOrdersCard()
+        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
+        verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(1)).refreshDashboard()
     }
 
@@ -179,8 +179,8 @@ class DashboardPresenterTest {
 
         // Simulate onOrderChanged event: FETCH-ORDER-NOTES - Dashboard should ignore
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDER_NOTES })
-        verify(dashboardView, times(0)).showOrdersCard(any())
-        verify(dashboardView, times(0)).hideOrdersCard()
+        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
+        verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard()
     }
 
@@ -193,8 +193,8 @@ class DashboardPresenterTest {
             causeOfChange = FETCH_ORDERS
             error = OrderError()
         })
-        verify(dashboardView, times(0)).showOrdersCard(any())
-        verify(dashboardView, times(0)).hideOrdersCard()
+        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
+        verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard()
     }
 }
