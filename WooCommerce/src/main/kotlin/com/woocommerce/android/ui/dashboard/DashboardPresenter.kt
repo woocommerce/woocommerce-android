@@ -83,8 +83,17 @@ class DashboardPresenter @Inject constructor(
             event.rowsAffected.takeIf { it > 0 }?.let { count ->
                 dashboardView?.showOrdersCard(count)
             } ?: dashboardView?.hideOrdersCard()
-        } ?: if (!event.isError && event.causeOfChange != WCOrderAction.FETCH_ORDER_NOTES) {
+        } ?: if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
             dashboardView?.refreshDashboard()
         }
+    }
+
+    /**
+     * Use this function to add [OnOrderChanged] events that should be ignored.
+     */
+    private fun isIgnoredOrderEvent(actionType: WCOrderAction?): Boolean {
+        return actionType == null ||
+                actionType == WCOrderAction.FETCH_ORDER_NOTES ||
+                actionType == WCOrderAction.POST_ORDER_NOTE
     }
 }
