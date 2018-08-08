@@ -52,9 +52,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     )
                 }
                 setOnRefreshListener {
-                    setLoadingIndicator(true)
-                    presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
-                    presenter.loadOrdersToFulfillCount()
+                    refreshDashboard()
                 }
             }
         }
@@ -87,11 +85,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && loadDataPending) {
-            loadDataPending = false
-            setLoadingIndicator(true)
-            presenter.loadOrdersToFulfillCount()
-            presenter.loadStats(dashboard_stats.activeGranularity)
             hideUnfilledOrdersCard()
+            refreshDashboard()
         }
     }
 
@@ -128,12 +123,16 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun refreshDashboard() {
-        if (isActive) {
-            setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
-            presenter.loadOrdersToFulfillCount()
-        } else {
-            loadDataPending = true
+        // If this fragment is currently active, force a refresh of data. If not, set
+        // a flag to force a refresh when it becomes active
+        when {
+            isActive -> {
+                loadDataPending = false
+                setLoadingIndicator(true)
+                presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
+                presenter.fetchUnfilledOrderCount()
+            }
+            else -> loadDataPending = true
         }
     }
 
