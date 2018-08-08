@@ -28,8 +28,8 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
     private lateinit var listener: OrderDetailNoteListener
 
-    // negative IDs denote local notes
-    private var nextLocalNoteId = -1
+    // negative IDs denote transient notes
+    private var nextTransientNoteId = -1
 
     fun initView(notes: List<WCOrderNoteModel>, orderDetailListener: OrderDetailNoteListener) {
         listener = orderDetailListener
@@ -67,16 +67,16 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
     }
 
     /*
-     * a "local" note is a temporary placeholder created after the user adds a note but before the request to
+     * a transient note is a temporary placeholder created after the user adds a note but before the request to
      * add the note has completed - this enables us to be optimistic about connectivity
      */
-    fun addLocalNote(noteText: String, isCustomerNote: Boolean) {
-        enableItemAnimator(false)
-        val noteModel = WCOrderNoteModel(nextLocalNoteId)
+    fun addTransientNote(noteText: String, isCustomerNote: Boolean) {
+        enableItemAnimator(true)
+        val noteModel = WCOrderNoteModel(nextTransientNoteId)
         noteModel.note = noteText
         noteModel.isCustomerNote = isCustomerNote
         (notesList_notes.adapter as OrderNotesAdapter).addNote(noteModel)
-        nextLocalNoteId--
+        nextTransientNoteId--
         notesList_notes.scrollToPosition(0)
     }
 
