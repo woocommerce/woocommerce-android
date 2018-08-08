@@ -205,7 +205,7 @@ android.buildTypes.all { buildType ->
     }
 
     // Print warning message if example Google services file is used.
-    if ((new File('WooCommerce/google-services.json').text) == (new File('WooCommerce/google-services.json-example').text)) {
+    if ((file("google-services.json").text) == (file("google-services.json-example").text)) {
         println("WARNING: You're using the example google-services.json file. Google login will fail.")
     }
 }
