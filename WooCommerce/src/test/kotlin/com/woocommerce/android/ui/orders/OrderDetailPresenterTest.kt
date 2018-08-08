@@ -169,5 +169,10 @@ class OrderDetailPresenterTest {
             error = OrderError()
         })
         verify(orderDetailView, times(1)).showAddOrderNoteErrorSnack()
+
+        // we also want to verify that notes are loaded even on error because the UI adds
+        // a transient note while the note is pushed and it won't be removed from the
+        // note list until notes are loaded
+        verify(presenter, times(1)).fetchAndLoadNotesFromDb()
     }
 }
