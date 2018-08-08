@@ -28,6 +28,9 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
     private lateinit var listener: OrderDetailNoteListener
 
+    // negative IDs denote transient notes
+    private var nextTransientNoteId = -1
+
     fun initView(notes: List<WCOrderNoteModel>, orderDetailListener: OrderDetailNoteListener) {
         listener = orderDetailListener
 
@@ -51,27 +54,46 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         notesList_notes.apply {
             setHasFixedSize(false)
             layoutManager = viewManager
-            itemAnimator = DefaultItemAnimator()
             addItemDecoration(divider)
             adapter = viewAdapter
         }
     }
 
     fun updateView(notes: List<WCOrderNoteModel>) {
-        notesList_progress.visibility = View.VISIBLE
-
         val adapter = notesList_notes.adapter as OrderNotesAdapter
+        enableItemAnimator(adapter.itemCount == 0)
         adapter.setNotes(notes)
-
         notesList_progress.visibility = View.GONE
+    }
+
+    /*
+     * a transient note is a temporary placeholder created after the user adds a note but before the request to
+     * add the note has completed - this enables us to be optimistic about connectivity
+     */
+    fun addTransientNote(noteText: String, isCustomerNote: Boolean) {
+        enableItemAnimator(true)
+        val noteModel = WCOrderNoteModel(nextTransientNoteId)
+        noteModel.note = noteText
+        noteModel.isCustomerNote = isCustomerNote
+        (notesList_notes.adapter as OrderNotesAdapter).addNote(noteModel)
+        nextTransientNoteId--
+        notesList_notes.scrollToPosition(0)
+    }
+
+    private fun enableItemAnimator(enable: Boolean) {
+        notesList_notes.itemAnimator = if (enable) DefaultItemAnimator() else null
     }
 
     class OrderNotesAdapter(private val notes: MutableList<WCOrderNoteModel>)
         : RecyclerView.Adapter<OrderNotesAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailOrderNoteItemView) : RecyclerView.ViewHolder(view)
 
+        init {
+            setHasStableIds(true)
+        }
+
         fun setNotes(newList: List<WCOrderNoteModel>) {
-            if (newList != notes) {
+            if (!isSameNoteList(newList)) {
                 notes.clear()
                 notes.addAll(newList)
                 notifyDataSetChanged()
@@ -90,5 +112,33 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         }
 
         override fun getItemCount() = notes.size
+
+        override fun getItemId(position: Int): Long = notes[position].id.toLong()
+
+        fun addNote(noteModel: WCOrderNoteModel) {
+            notes.add(0, noteModel)
+            notifyItemInserted(0)
+        }
+
+        private fun isSameNoteList(otherNotes: List<WCOrderNoteModel>): Boolean {
+            if (otherNotes.size != notes.size) {
+                return false
+            }
+
+            for (i in 0 until notes.size) {
+                val thisNote = notes[i]
+                val thatNote = otherNotes[i]
+                if (thisNote.localOrderId != thatNote.localOrderId ||
+                        thisNote.localSiteId != thatNote.localSiteId ||
+                        thisNote.remoteNoteId != thatNote.remoteNoteId ||
+                        thisNote.isCustomerNote != thatNote.isCustomerNote ||
+                        thisNote.note != thatNote.note ||
+                        thisNote.dateCreated != thatNote.dateCreated) {
+                    return false
+                }
+            }
+
+            return true
+        }
     }
 }

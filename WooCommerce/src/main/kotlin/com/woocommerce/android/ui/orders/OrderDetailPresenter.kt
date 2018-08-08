@@ -9,9 +9,11 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -76,6 +78,17 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
+    override fun pushOrderNote(noteText: String, isCustomerNote: Boolean) {
+        val noteModel = WCOrderNoteModel()
+        noteModel.isCustomerNote = isCustomerNote
+        noteModel.note = noteText
+
+        val payload = WCOrderStore.PostOrderNotePayload(orderModel!!, selectedSite.get(), noteModel)
+        dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
+
+        orderView?.showAddOrderNoteSnack()
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -103,6 +116,14 @@ class OrderDetailPresenter @Inject constructor(
                 }
                 orderView?.markOrderCompleteSuccess()
             }
+        } else if (event.causeOfChange == POST_ORDER_NOTE) {
+            if (event.isError) {
+                WooLog.e(T.ORDERS, "$TAG - Error posting order note : ${event.error.message}")
+                orderView?.showAddOrderNoteErrorSnack()
+            }
+            // note that we refresh even on error to make sure the transient note is removed
+            // from the note list
+            fetchAndLoadNotesFromDb()
         }
     }
 
