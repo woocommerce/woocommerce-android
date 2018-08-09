@@ -1,25 +1,35 @@
 <android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dashboard_refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/dashboard_refresh_layout">
+    android:background="@color/default_window_background">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <!-- Order stats -->
             <com.woocommerce.android.ui.dashboard.DashboardStatsView
                 android:id="@+id/dashboard_stats"
+                style="@style/Woo.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                style="@style/Woo.Card"/>
+                android:orientation="vertical"/>
+
+            <!-- Top earner stats -->
+            <com.woocommerce.android.ui.dashboard.DashboardTopEarnersView
+                android:id="@+id/dashboard_top_earners"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:orientation="vertical"/>
 
         </LinearLayout>
     </ScrollView>

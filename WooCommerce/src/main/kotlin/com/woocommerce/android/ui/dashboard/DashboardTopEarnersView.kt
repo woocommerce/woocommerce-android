@@ -13,7 +13,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Timer
 import java.util.TimerTask
 
-class DashboardTopEarnersStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
+class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.dashboard_top_earners, this)
@@ -21,12 +21,11 @@ class DashboardTopEarnersStatsView @JvmOverloads constructor(ctx: Context, attrs
 
     companion object {
         private val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
-        private const val PROGRESS_DELAY_TIME_MS = 200L
     }
 
     var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
         get() {
-            return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
+            return tab_layout.getTabAt(topEarners_tab_layout.selectedTabPosition)?.let {
                 it.tag as StatsGranularity
             } ?: DEFAULT_STATS_GRANULARITY
         }
@@ -47,7 +46,7 @@ class DashboardTopEarnersStatsView @JvmOverloads constructor(ctx: Context, attrs
         this.selectedSite = selectedSite
 
         StatsGranularity.values().forEach { granularity ->
-            val tab = tab_layout.newTab().apply {
+            val tab = topEarners_tab_layout.newTab().apply {
                 setText(DashboardUtils.getStringForGranularity(granularity))
                 tag = granularity
             }

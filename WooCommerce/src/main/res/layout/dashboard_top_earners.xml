@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.design.widget.TabLayout
         android:id="@+id/topEarners_tab_layout"
@@ -18,22 +19,61 @@
         android:background="@color/list_divider"
         app:srcCompat="@drawable/list_divider"/>
 
+    <TextView
+        style="@style/Woo.TextAppearance.Title.Bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/dashboard_top_earners_title"/>
+
+    <TextView
+        style="@style/Woo.TextAppearance.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_small"
+        android:text="@string/dashboard_top_earners_description"/>
+
     <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/Woo.TextAppearance.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/product"/>
+
+        <TextView
+            style="@style/Woo.TextAppearance.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/total_spend"/>
+    </FrameLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/topEarners_Recycler"
+            android:id="@+id/topEarners_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <ProgressBar
-            android:id="@+id/barchart_progress"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:padding="@dimen/chart_progress_bar_padding"
-            tools:visibility="gone"/>
-    </FrameLayout>
+            android:id="@+id/topEarners_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+    </RelativeLayout>
 
-</merge>
+</LinearLayout>

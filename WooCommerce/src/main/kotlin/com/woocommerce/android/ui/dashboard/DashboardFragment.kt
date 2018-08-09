@@ -52,6 +52,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 setOnRefreshListener {
                     setLoadingIndicator(true)
                     presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
+                    presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
                 }
             }
         }
@@ -66,6 +67,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive) {
             setLoadingIndicator(true)
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
+            dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
             presenter.loadStats(dashboard_stats.activeGranularity)
         } else {
             loadDataPending = true
