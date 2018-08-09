@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
+import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
@@ -67,8 +68,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive) {
             setLoadingIndicator(true)
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
-            dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
             presenter.loadStats(dashboard_stats.activeGranularity)
+            dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
+            presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity)
         } else {
             loadDataPending = true
         }
@@ -82,6 +84,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             loadDataPending = false
             setLoadingIndicator(true)
             presenter.loadStats(dashboard_stats.activeGranularity)
+            presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity)
         }
     }
 
@@ -109,6 +112,17 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
+        if (dashboard_top_earners.activeGranularity == granularity) {
+            dashboard_top_earners.updateView(topEarnerList, granularity)
+            dashboard_top_earners.visibility = View.VISIBLE
+        }
+    }
+
+    override fun hideTopEarners() {
+        dashboard_top_earners.visibility = View.GONE
+    }
+
     override fun getFragmentTitle(): String {
         return getString(R.string.dashboard)
     }
@@ -117,6 +131,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive) {
             setLoadingIndicator(true)
             presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
+            presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
         } else {
             loadDataPending = true
         }

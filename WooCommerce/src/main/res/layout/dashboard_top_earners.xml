@@ -55,7 +55,7 @@
             android:layout_gravity="end"
             android:layout_marginBottom="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/total_spend"/>
+            android:text="@string/dashboard_top_earners_total_spend"/>
     </FrameLayout>
 
     <RelativeLayout
@@ -65,6 +65,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/topEarners_recycler"
             android:layout_width="match_parent"
+            tools:listItem="@layout/top_earner_list_item"
             android:layout_height="wrap_content"/>
 
         <ProgressBar
