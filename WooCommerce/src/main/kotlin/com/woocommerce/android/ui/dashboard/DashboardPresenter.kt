@@ -33,6 +33,10 @@ class DashboardPresenter @Inject constructor(
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
     }
 
+    override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
+        // TODO
+    }
+
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
     @Suppress("unused")

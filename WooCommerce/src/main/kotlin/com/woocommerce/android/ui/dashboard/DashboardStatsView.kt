@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
-import android.support.annotation.StringRes
 import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -60,7 +59,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         StatsGranularity.values().forEach { granularity ->
             val tab = tab_layout.newTab().apply {
-                setText(getStringForGranularity(granularity))
+                setText(DashboardUtils.getStringForGranularity(granularity))
                 tag = granularity
             }
             tab_layout.addTab(tab)
@@ -198,16 +197,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         return amount.takeIf { allowZero || it > 0 }?.let {
             CurrencyUtils.currencyStringRounded(context, amount, currencyCode.orEmpty())
         } ?: ""
-    }
-
-    @StringRes
-    private fun getStringForGranularity(timeframe: StatsGranularity): Int {
-        return when (timeframe) {
-            StatsGranularity.DAYS -> R.string.dashboard_stats_granularity_days
-            StatsGranularity.WEEKS -> R.string.dashboard_stats_granularity_weeks
-            StatsGranularity.MONTHS -> R.string.dashboard_stats_granularity_months
-            StatsGranularity.YEARS -> R.string.dashboard_stats_granularity_years
-        }
     }
 
     private fun showProgressDelayed() {
