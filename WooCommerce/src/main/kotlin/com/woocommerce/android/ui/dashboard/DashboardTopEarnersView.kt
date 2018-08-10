@@ -14,6 +14,7 @@ import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
@@ -114,9 +115,12 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
             val topEarner = topEarnerList[position]
+            val quantity = String.format(orderString, FormatUtils.formatDecimal(topEarner.quantity))
+            val price = formatAmountForDisplay(holder.itemView.context, topEarner.price, topEarner.currency)
+
             holder.productNameText.text = topEarner.name
-            holder.productOrdersText.text = String.format(orderString, FormatUtils.formatDecimal(topEarner.quantity))
-            holder.totalSpendText.text = topEarner.price.toString() // TODO: format using currency
+            holder.productOrdersText.text = quantity
+            holder.totalSpendText.text = price
 
             // strip the image query params and add a width param that matches our desired size
             val imageUrl = UrlUtils.removeQuery(topEarner.image) + "?w=$imageSize"

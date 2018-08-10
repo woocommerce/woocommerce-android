@@ -14,7 +14,7 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.CurrencyUtils
+import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -119,7 +119,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 axisMinimum = 0F
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
-                    formatAmountForDisplay(value.toDouble(), chartCurrencyCode, allowZero = false)
+                    formatAmountForDisplay(context, value.toDouble(), chartCurrencyCode, allowZero = false)
                 }
             }
 
@@ -140,7 +140,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         chartCurrencyCode = currencyCode
 
-        revenue_value.text = formatAmountForDisplay(revenueStats.values.sum(), currencyCode)
+        revenue_value.text = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
         orders_value.text = orderStats.values.sum().toString()
 
         if (revenueStats.isEmpty()) {
@@ -190,13 +190,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         return BarDataSet(barEntries, "")
-    }
-
-    // TODO For certain currencies/locales, replace the thousands mark with k
-    private fun formatAmountForDisplay(amount: Double, currencyCode: String?, allowZero: Boolean = true): String {
-        return amount.takeIf { allowZero || it > 0 }?.let {
-            CurrencyUtils.currencyStringRounded(context, amount, currencyCode.orEmpty())
-        } ?: ""
     }
 
     private fun showProgressDelayed() {
