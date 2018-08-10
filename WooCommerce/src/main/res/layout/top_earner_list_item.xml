@@ -9,6 +9,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerVertical="true"
+        android:contentDescription="@string/dashboard_top_earners_content_description"
         tools:src="@drawable/ic_jetpack_icon"/>
 
     <LinearLayout
@@ -25,15 +26,10 @@
             android:id="@+id/text_ProductName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
             tools:text="text_ProductName"/>
-
-        <TextView
-            android:id="@+id/text_ProductDetails"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title"
-            tools:text="text_ProductDetails"/>
 
         <TextView
             android:id="@+id/text_ProductOrders"
@@ -50,6 +46,6 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
-        tools:text="text_TotalSpend"/>
+        tools:text="$150"/>
 
 </RelativeLayout>

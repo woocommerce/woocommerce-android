@@ -14,7 +14,6 @@ import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
-import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
@@ -72,13 +71,12 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         })
     }
 
-    fun updateView(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
+    fun updateView(topEarnerList: List<WCTopEarnerModel>) {
         topEarners_recycler.adapter = TopEarnersAdapter(context, topEarnerList)
     }
 
     class TopEarnersViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var productNameText: TextView = view.text_ProductName
-        var productDetailsText: TextView = view.text_ProductDetails
         var productOrdersText: TextView = view.text_ProductOrders
         var totalSpendText: TextView = view.text_TotalSpend
         var productImage: ImageView = view.image_product
@@ -104,7 +102,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
             val topEarner = topEarnerList[position]
             holder.productNameText.text = topEarner.name
-            // TODO: is this in the response>? --> holder.productDetailsText.setText(topEarner.)
             holder.productOrdersText.text = String.format(orderString, topEarner.quantity)
             holder.totalSpendText.text = topEarner.price.toString() // TODO: format using currency
 
