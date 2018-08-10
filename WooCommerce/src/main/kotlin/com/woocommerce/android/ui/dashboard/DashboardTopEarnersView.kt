@@ -81,6 +81,10 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         adapter.setTopEarnersList(topEarnerList)
     }
 
+    fun clearView() {
+        adapter.clear()
+    }
+
     class TopEarnersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var productNameText: TextView = view.text_ProductName
         var productOrdersText: TextView = view.text_ProductOrders
@@ -103,6 +107,13 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             topEarnerList.clear()
             topEarnerList.addAll(newList)
             notifyDataSetChanged()
+        }
+
+        fun clear() {
+            if (itemCount > 0) {
+                topEarnerList.clear()
+                notifyDataSetChanged()
+            }
         }
 
         override fun getItemCount() = topEarnerList.size

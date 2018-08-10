@@ -39,6 +39,7 @@ class DashboardPresenter @Inject constructor(
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
+        dashboardView?.clearTopEarners()
         val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS_TO_REQUEST, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
@@ -65,6 +66,7 @@ class DashboardPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCTopEarnersChanged(event: OnWCTopEarnersChanged) {
         if (event.isError) {
+            // TODO: notify user of the problem?
             dashboardView?.hideTopEarners()
         } else {
             dashboardView?.showTopEarners(event.topEarners, event.granularity)

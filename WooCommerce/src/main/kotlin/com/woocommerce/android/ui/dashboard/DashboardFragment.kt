@@ -123,6 +123,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_top_earners.visibility = View.GONE
     }
 
+    override fun clearTopEarners() {
+        dashboard_top_earners.clearView()
+    }
+
     override fun getFragmentTitle(): String {
         return getString(R.string.dashboard)
     }
