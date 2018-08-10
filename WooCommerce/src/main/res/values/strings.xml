@@ -86,7 +86,7 @@
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
     <string name="dashboard_fulfill_order_title">You have 1 order to fulfill</string>
-    <string name="dashboard_fulfill_orders_title">You have %1$d orders to fulfill</string>
+    <string name="dashboard_fulfill_orders_title">You have %1$d%2$s orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Your customers are waiting. The faster you ship it out, the happier you\'ll make them.</string>
     <!--
         Order List View

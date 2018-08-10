@@ -81,7 +81,7 @@ class DashboardPresenter @Inject constructor(
                 return
             }
             event.rowsAffected.takeIf { it > 0 }?.let { count ->
-                dashboardView?.showUnfilledOrdersCard(count)
+                dashboardView?.showUnfilledOrdersCard(count, event.canLoadMore)
             } ?: dashboardView?.hideUnfilledOrdersCard()
         } ?: if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
             dashboardView?.refreshDashboard()

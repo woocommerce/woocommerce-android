@@ -146,10 +146,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
-    override fun showUnfilledOrdersCard(count: Int) {
+    override fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean) {
         with(dashboard_unfilled_orders) {
             post {
-                updateOrdersCount(count)
+                updateOrdersCount(count, canLoadMore)
                 visibility = View.VISIBLE
             }
         }
