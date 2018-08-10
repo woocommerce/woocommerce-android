@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.UrlUtils
 
 class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -114,7 +115,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
             val topEarner = topEarnerList[position]
             holder.productNameText.text = topEarner.name
-            holder.productOrdersText.text = String.format(orderString, topEarner.quantity) // TODO: format using locale
+            holder.productOrdersText.text = String.format(orderString, FormatUtils.formatDecimal(topEarner.quantity))
             holder.totalSpendText.text = topEarner.price.toString() // TODO: format using currency
 
             // strip the image query params and add a width param that matches our desired size

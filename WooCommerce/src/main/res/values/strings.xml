@@ -87,7 +87,7 @@
     <string name="dashboard_top_earners_title">Top performers</string>
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
     <string name="dashboard_top_earners_total_spend">Total spend</string>
-    <string name="dashboard_top_earners_total_orders">Total product order: %d</string>
+    <string name="dashboard_top_earners_total_orders">Total product order: %s</string>
     <string name="dashboard_top_earners_content_description">Product image</string>
     <!--
         Order List View
