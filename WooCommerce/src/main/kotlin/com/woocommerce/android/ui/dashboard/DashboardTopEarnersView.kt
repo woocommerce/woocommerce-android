@@ -38,6 +38,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         }
 
     private lateinit var selectedSite: SelectedSite
+    private lateinit var adapter: TopEarnersAdapter
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -46,7 +47,9 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     ) {
         this.selectedSite = selectedSite
 
+        adapter = TopEarnersAdapter(context)
         topEarners_recycler.layoutManager = LinearLayoutManager(context)
+        topEarners_recycler.adapter = adapter
 
         StatsGranularity.values().forEach { granularity ->
             val tab = topEarners_tab_layout.newTab().apply {
@@ -73,7 +76,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     }
 
     fun updateView(topEarnerList: List<WCTopEarnerModel>) {
-        topEarners_recycler.adapter = TopEarnersAdapter(context, topEarnerList)
+        adapter.setTopEarnersList(topEarnerList)
     }
 
     class TopEarnersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -83,15 +86,21 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         var productImage: ImageView = view.image_product
     }
 
-    class TopEarnersAdapter(context: Context, private val topEarnerList: List<WCTopEarnerModel>)
-        : RecyclerView.Adapter<TopEarnersViewHolder>() {
+    class TopEarnersAdapter(context: Context) : RecyclerView.Adapter<TopEarnersViewHolder>() {
         private val orderString: String
         private val imageSize: Int
+        private val topEarnerList: ArrayList<WCTopEarnerModel> = ArrayList()
 
         init {
             setHasStableIds(true)
             orderString = context.getString(R.string.dashboard_top_earners_total_orders)
             imageSize = context.resources.getDimensionPixelSize(R.dimen.top_earner_product_image_sz)
+        }
+
+        fun setTopEarnersList(newList: List<WCTopEarnerModel>) {
+            topEarnerList.clear()
+            topEarnerList.addAll(newList)
+            notifyDataSetChanged()
         }
 
         override fun getItemCount() = topEarnerList.size
@@ -105,11 +114,11 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
             val topEarner = topEarnerList[position]
             holder.productNameText.text = topEarner.name
-            holder.productOrdersText.text = String.format(orderString, topEarner.quantity)
+            holder.productOrdersText.text = String.format(orderString, topEarner.quantity) // TODO: format using locale
             holder.totalSpendText.text = topEarner.price.toString() // TODO: format using currency
 
             // strip the image query params and add a width param that matches our desired size
-            val imageUrl = UrlUtils.removeQuery(topEarner.image) + "?w=${imageSize}"
+            val imageUrl = UrlUtils.removeQuery(topEarner.image) + "?w=$imageSize"
             GlideApp.with(holder.itemView.context)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)
