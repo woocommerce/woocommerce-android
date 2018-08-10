@@ -29,7 +29,7 @@
                 android:id="@+id/dashboard_unfilled_orders"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"
+                android:visibility="gone"
                 style="@style/Woo.Card"
                 tools:visibility="visible"/>
         </LinearLayout>
