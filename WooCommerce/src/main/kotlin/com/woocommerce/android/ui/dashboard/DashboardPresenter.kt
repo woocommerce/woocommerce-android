@@ -20,7 +20,7 @@ class DashboardPresenter @Inject constructor(
 ) : DashboardContract.Presenter {
     private var dashboardView: DashboardContract.View? = null
     companion object {
-        val NUM_TOP_EARNERS = 10
+        private val NUM_TOP_EARNERS_TO_REQUEST = 3
     }
 
     override fun takeView(view: DashboardContract.View) {
@@ -39,7 +39,7 @@ class DashboardPresenter @Inject constructor(
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
-        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, forced)
+        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS_TO_REQUEST, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
 
