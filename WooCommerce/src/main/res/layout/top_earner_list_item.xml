@@ -2,15 +2,27 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Woo.OrderList.Item">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/margin_large"
+    android:paddingTop="@dimen/margin_large">
 
-    <ImageView
-        android:id="@+id/image_product"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+    <FrameLayout
+        android:id="@+id/frame_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:contentDescription="@string/dashboard_top_earners_content_description"
-        tools:src="@drawable/ic_jetpack_icon"/>
+        android:background="@drawable/picture_frame"
+        android:padding="2dp">
+
+        <ImageView
+            android:id="@+id/image_product"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/dashboard_top_earners_content_description"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_jetpack_icon"/>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,34 +30,33 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginStart="@dimen/margin_large"
-        android:layout_toEndOf="@+id/image_product"
+        android:layout_toEndOf="@+id/frame_product"
         android:layout_toStartOf="@+id/text_TotalSpend"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/text_ProductName"
+            style="@style/Woo.TextAppearance.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
             tools:text="text_ProductName"/>
 
         <TextView
             android:id="@+id/text_ProductOrders"
+            style="@style/Woo.TextAppearance.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title"
             tools:text="text_ProductOrders"/>
     </LinearLayout>
 
     <TextView
         android:id="@+id/text_TotalSpend"
+        style="@style/Woo.TextAppearance.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
         tools:text="$150"/>
 
 </RelativeLayout>

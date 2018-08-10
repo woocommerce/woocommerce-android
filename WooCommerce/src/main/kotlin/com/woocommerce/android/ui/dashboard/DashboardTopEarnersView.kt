@@ -75,7 +75,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         topEarners_recycler.adapter = TopEarnersAdapter(context, topEarnerList)
     }
 
-    class TopEarnersViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class TopEarnersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var productNameText: TextView = view.text_ProductName
         var productOrdersText: TextView = view.text_ProductOrders
         var totalSpendText: TextView = view.text_TotalSpend
