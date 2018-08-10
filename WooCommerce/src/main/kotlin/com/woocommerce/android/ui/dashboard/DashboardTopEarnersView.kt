@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.util.UrlUtils
 
 class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
@@ -84,11 +85,13 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     class TopEarnersAdapter(context: Context, private val topEarnerList: List<WCTopEarnerModel>)
         : RecyclerView.Adapter<TopEarnersViewHolder>() {
-        private var orderString: String
+        private val orderString: String
+        private val imageSize: Int
 
         init {
             setHasStableIds(true)
             orderString = context.getString(R.string.dashboard_top_earners_total_orders)
+            imageSize = context.resources.getDimensionPixelSize(R.dimen.top_earner_product_image_sz)
         }
 
         override fun getItemCount() = topEarnerList.size
@@ -105,9 +108,11 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             holder.productOrdersText.text = String.format(orderString, topEarner.quantity)
             holder.totalSpendText.text = topEarner.price.toString() // TODO: format using currency
 
+            // strip the image query params and add a width param that matches our desired size
+            val imageUrl = UrlUtils.removeQuery(topEarner.image) + "?w=${imageSize}"
             GlideApp.with(holder.itemView.context)
-                    .load(topEarner.image)
-                    .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp) // TODO: placeholder
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
                     .into(holder.productImage)
         }
     }

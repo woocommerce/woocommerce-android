@@ -17,11 +17,11 @@
 
         <ImageView
             android:id="@+id/image_product"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/top_earner_product_image_sz"
+            android:layout_height="@dimen/top_earner_product_image_sz"
             android:contentDescription="@string/dashboard_top_earners_content_description"
             android:scaleType="centerCrop"
-            tools:src="@drawable/ic_jetpack_icon"/>
+            tools:src="@drawable/ic_product"/>
     </FrameLayout>
 
     <LinearLayout
