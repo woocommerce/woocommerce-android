@@ -117,19 +117,19 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         super.onSaveInstanceState(outState)
     }
 
-    override fun getNoteText(): String = addNote_editor.text.toString().trim()
+    override fun getNoteText() = addNote_editor.text.toString().trim()
 
     override fun confirmDiscard() {
         isConfirmingDiscard = true
         AlertDialog.Builder(this)
                 .setMessage(R.string.add_order_note_confirm_discard)
                 .setCancelable(true)
-                .setPositiveButton(R.string.discard) { dialog, _ ->
+                .setPositiveButton(R.string.discard) { _, _ ->
                     finish()
                 }
-                .setNegativeButton(R.string.cancel, { dialog, _ ->
+                .setNegativeButton(R.string.cancel) { _, _ ->
                     isConfirmingDiscard = false
-                })
+                }
                 .show()
     }
 }
