@@ -70,8 +70,9 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
+                hideEmptyView()
                 showProgressDelayed()
+                listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -92,10 +93,18 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         didHideProgress = true
     }
 
+    private fun showEmptyView() {
+        topEarners_emptyView.visibility = View.VISIBLE
+    }
+
+    private fun hideEmptyView() {
+        topEarners_emptyView.visibility = View.GONE
+    }
+
     fun updateView(topEarnerList: List<WCTopEarnerModel>) {
         hideProgress()
         adapter.setTopEarnersList(topEarnerList)
-        topEarners_emptyView.visibility = if (topEarnerList.isEmpty()) View.VISIBLE else View.GONE
+        if (topEarnerList.isEmpty()) showEmptyView() else hideEmptyView()
     }
 
     fun clearView() {
