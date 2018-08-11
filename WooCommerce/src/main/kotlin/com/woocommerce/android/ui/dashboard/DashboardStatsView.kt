@@ -14,6 +14,7 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
@@ -29,7 +30,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     companion object {
-        private val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
         private const val PROGRESS_DELAY_TIME_MS = 200L
     }
 

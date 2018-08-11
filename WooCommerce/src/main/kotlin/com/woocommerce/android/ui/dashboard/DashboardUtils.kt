@@ -7,6 +7,8 @@ import com.woocommerce.android.util.CurrencyUtils
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 object DashboardUtils {
+    val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
+
     @StringRes
     fun getStringForGranularity(timeframe: StatsGranularity): Int {
         return when (timeframe) {

@@ -16,6 +16,7 @@ import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
@@ -28,10 +29,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     : LinearLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.dashboard_top_earners, this)
-    }
-
-    companion object {
-        private val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
 
     var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
@@ -76,13 +73,15 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
                 showProgressDelayed()
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
-
             override fun onTabUnselected(tab: TabLayout.Tab) {}
-
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
     }
 
+    /**
+     * show the progress bar if after a brief delay it hasn't already been hidden - this is to avoid it appearing
+     * and then immediately disappearing when the request quickly returns cached data
+     */
     private fun showProgressDelayed() {
         didHideProgress = false
         Handler().postDelayed({
