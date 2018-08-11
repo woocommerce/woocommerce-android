@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/margin_large"
     android:paddingTop="@dimen/margin_large">
 
     <FrameLayout
@@ -21,13 +20,15 @@
             android:layout_height="@dimen/top_earner_product_image_sz"
             android:contentDescription="@string/dashboard_top_earners_content_description"
             android:scaleType="centerCrop"
-            tools:src="@drawable/ic_product"/>
+            tools:src="@drawable/ic_stats_grey_min_24dp"/>
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/product_contaimer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/margin_large"
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_toEndOf="@+id/frame_product"
@@ -58,5 +59,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         tools:text="$150"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/product_contaimer"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_toEndOf="@+id/frame_product"
+        android:background="@color/list_divider"/>
 
 </RelativeLayout>

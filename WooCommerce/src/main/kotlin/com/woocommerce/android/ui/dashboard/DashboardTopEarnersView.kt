@@ -116,6 +116,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         var productOrdersText: TextView = view.text_ProductOrders
         var totalSpendText: TextView = view.text_TotalSpend
         var productImage: ImageView = view.image_product
+        var divider: View =  view.divider
     }
 
     class TopEarnersAdapter(context: Context) : RecyclerView.Adapter<TopEarnersViewHolder>() {
@@ -158,6 +159,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             holder.productNameText.text = topEarner.name
             holder.productOrdersText.text = quantity
             holder.totalSpendText.text = price
+            holder.divider.visibility = if (position < itemCount - 1) View.VISIBLE else View.GONE
 
             // strip the image query params and add a width param that matches our desired size
             val imageUrl = UrlUtils.removeQuery(topEarner.image) + "?w=$imageSize"
