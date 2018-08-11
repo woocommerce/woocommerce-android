@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="@dimen/margin_large"
+        android:layout_marginBottom="@dimen/margin_extra_large"
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_toEndOf="@+id/frame_product"

@@ -69,7 +69,7 @@
             android:id="@+id/topEarners_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="220dp"
+            android:minHeight="224dp"
             tools:listitem="@layout/top_earner_list_item"/>
 
         <ProgressBar

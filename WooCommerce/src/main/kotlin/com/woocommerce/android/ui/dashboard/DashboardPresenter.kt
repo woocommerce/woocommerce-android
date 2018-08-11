@@ -57,7 +57,6 @@ class DashboardPresenter @Inject constructor(
         }
         WooLog.d(DASHBOARD, "Forcing top earners $granularity = $shouldForce")
 
-        dashboardView?.clearTopEarners()
         val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
@@ -85,7 +84,7 @@ class DashboardPresenter @Inject constructor(
     fun onWCTopEarnersChanged(event: OnWCTopEarnersChanged) {
         if (event.isError) {
             // TODO: notify user of the problem?
-            dashboardView?.hideTopEarners()
+            dashboardView?.showTopEarners(emptyList(), event.granularity)
         } else {
             dashboardView?.showTopEarners(event.topEarners, event.granularity)
         }

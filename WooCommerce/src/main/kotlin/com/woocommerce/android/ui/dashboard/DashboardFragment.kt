@@ -115,16 +115,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
         if (dashboard_top_earners.activeGranularity == granularity) {
             dashboard_top_earners.updateView(topEarnerList)
-            dashboard_top_earners.visibility = View.VISIBLE
         }
-    }
-
-    override fun hideTopEarners() {
-        dashboard_top_earners.visibility = View.GONE
-    }
-
-    override fun clearTopEarners() {
-        dashboard_top_earners.clearView()
     }
 
     override fun getFragmentTitle(): String {
