@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.dashboard
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -20,8 +22,11 @@ class DashboardPresenter @Inject constructor(
 ) : DashboardContract.Presenter {
     private var dashboardView: DashboardContract.View? = null
     companion object {
-        private val NUM_TOP_EARNERS_TO_REQUEST = 3
+        private const val NUM_TOP_EARNERS = 3
+        private const val FORCE_REQUEST_FREQUENCY = (1000 * 60) * 5 // force request every 5 minutes
     }
+
+    private val topEarnersLastForceTime = LongArray(StatsGranularity.values().size)
 
     override fun takeView(view: DashboardContract.View) {
         dashboardView = view
@@ -39,8 +44,21 @@ class DashboardPresenter @Inject constructor(
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
+        val shouldForce = if (forced) {
+            true
+        } else {
+            // is it time to force an update for this granularity?
+            val lastForced = topEarnersLastForceTime[granularity.ordinal]
+            val diff = System.currentTimeMillis() - lastForced
+            lastForced == 0L || diff >= FORCE_REQUEST_FREQUENCY
+        }
+        if (shouldForce) {
+            topEarnersLastForceTime[granularity.ordinal] = System.currentTimeMillis()
+        }
+        WooLog.d(DASHBOARD, "Forcing top earners $granularity = $shouldForce")
+
         dashboardView?.clearTopEarners()
-        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS_TO_REQUEST, forced)
+        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
 
