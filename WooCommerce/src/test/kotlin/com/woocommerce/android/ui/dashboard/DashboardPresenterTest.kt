@@ -115,9 +115,10 @@ class DashboardPresenterTest {
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
             causeOfChange = FETCH_ORDERS_COUNT
+            canLoadMore = true
         })
 
-        verify(dashboardView).showUnfilledOrdersCard(totalOrders, any())
+        verify(dashboardView).showUnfilledOrdersCard(totalOrders, true)
     }
 
     @Test
