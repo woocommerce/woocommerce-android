@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.dashboard
 import android.content.Context
 import android.os.Handler
 import android.support.design.widget.TabLayout
+import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -54,6 +55,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         adapter = TopEarnersAdapter(context)
         topEarners_recycler.layoutManager = LinearLayoutManager(context)
         topEarners_recycler.adapter = adapter
+        topEarners_recycler.itemAnimator = DefaultItemAnimator()
 
         StatsGranularity.values().forEach { granularity ->
             val tab = topEarners_tab_layout.newTab().apply {
@@ -116,7 +118,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         var productOrdersText: TextView = view.text_ProductOrders
         var totalSpendText: TextView = view.text_TotalSpend
         var productImage: ImageView = view.image_product
-        var divider: View =  view.divider
+        var divider: View = view.divider
     }
 
     class TopEarnersAdapter(context: Context) : RecyclerView.Adapter<TopEarnersViewHolder>() {
