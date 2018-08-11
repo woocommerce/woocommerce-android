@@ -79,6 +79,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     fun updateView(topEarnerList: List<WCTopEarnerModel>) {
         adapter.setTopEarnersList(topEarnerList)
+        topEarners_emptyView.visibility = if (topEarnerList.size == 0) View.VISIBLE else View.GONE
     }
 
     fun clearView() {

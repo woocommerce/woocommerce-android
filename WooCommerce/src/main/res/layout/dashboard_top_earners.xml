@@ -65,14 +65,24 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/topEarners_recycler"
             android:layout_width="match_parent"
-            tools:listItem="@layout/top_earner_list_item"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:listItem="@layout/top_earner_list_item"/>
 
         <ProgressBar
             android:id="@+id/topEarners_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/topEarners_emptyView"
+            style="@style/Woo.Settings.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/dashboard_top_earners_empty"
             android:visibility="gone"
             tools:visibility="visible"/>
     </RelativeLayout>
