@@ -70,7 +70,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 hideEmptyView()
-                showProgressDelayed()
+                clearAdapterAndShowProgressDelayed()
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -79,13 +79,16 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     }
 
     /**
-     * show the progress bar if after a brief delay it hasn't already been hidden - this is to avoid it appearing
-     * and then immediately disappearing when the request quickly returns cached data
+     * show the progress bar and clears the adapter if after a brief delay it hasn't already been done - this way
+     * we don't unnecessarily perform these actions when the request quickly returns cached data
      */
-    private fun showProgressDelayed() {
+    private fun clearAdapterAndShowProgressDelayed() {
         didHideProgress = false
         Handler().postDelayed({
-            if (!didHideProgress) topEarners_progress.visibility = View.VISIBLE
+            if (!didHideProgress) {
+                topEarners_progress.visibility = View.VISIBLE
+                adapter.clear()
+            }
         }, 250)
     }
 
@@ -106,10 +109,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         hideProgress()
         adapter.setTopEarnersList(topEarnerList)
         if (topEarnerList.isEmpty()) showEmptyView() else hideEmptyView()
-    }
-
-    fun clearView() {
-        adapter.clear()
     }
 
     class TopEarnersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
