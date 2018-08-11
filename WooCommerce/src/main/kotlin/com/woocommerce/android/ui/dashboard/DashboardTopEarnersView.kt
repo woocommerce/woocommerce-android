@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.os.Handler
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -41,6 +42,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var adapter: TopEarnersAdapter
+    private var didHideProgress = false
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -69,6 +71,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
+                showProgressDelayed()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -77,9 +80,22 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         })
     }
 
+    private fun showProgressDelayed() {
+        didHideProgress = false
+        Handler().postDelayed({
+            if (!didHideProgress) topEarners_progress.visibility = View.VISIBLE
+        }, 250)
+    }
+
+    private fun hideProgress() {
+        topEarners_progress.visibility = View.GONE
+        didHideProgress = true
+    }
+
     fun updateView(topEarnerList: List<WCTopEarnerModel>) {
+        hideProgress()
         adapter.setTopEarnersList(topEarnerList)
-        topEarners_emptyView.visibility = if (topEarnerList.size == 0) View.VISIBLE else View.GONE
+        topEarners_emptyView.visibility = if (topEarnerList.isEmpty()) View.VISIBLE else View.GONE
     }
 
     fun clearView() {
