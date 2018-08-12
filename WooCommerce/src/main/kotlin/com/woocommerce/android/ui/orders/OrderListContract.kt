@@ -23,5 +23,6 @@ interface OrderListContract {
         fun showNoOrders()
         fun refreshFragmentState()
         fun showLoadOrdersError()
+        fun onFilterSelected(orderStatus: String?)
     }
 }

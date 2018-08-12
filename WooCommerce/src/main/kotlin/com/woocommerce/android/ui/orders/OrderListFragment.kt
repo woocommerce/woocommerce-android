@@ -57,7 +57,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var filterMenuButton: MenuItem? = null
 
     override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0
+        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,7 +135,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
 
         presenter.takeView(this)
-        if (isActive) {
+
+        if (isActive && !deferInit) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = loadOrdersPending)
         }
 
@@ -303,13 +304,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private fun showFilterDialog() {
         val orderStatus = orderStatusFilter?.let {
             CoreOrderStatus.fromValue(it)
-        } ?: null
+        }
         OrderStatusFilterDialog.newInstance(orderStatus, listener = this)
                 .show(fragmentManager, OrderStatusFilterDialog.TAG)
     }
 
-    override fun onFilterSelected(orderStatus: CoreOrderStatus?) {
-        orderStatusFilter = orderStatus?.value
+    override fun onFilterSelected(orderStatus: String?) {
+        orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
         presenter.loadOrders(orderStatusFilter, true)
     }
