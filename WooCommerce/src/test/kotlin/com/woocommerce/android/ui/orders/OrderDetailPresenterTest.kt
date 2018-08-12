@@ -148,10 +148,7 @@ class OrderDetailPresenterTest {
         presenter.pushOrderNote(noteText = "Test order note #1", isCustomerNote = false)
         verify(dispatcher, times(1)).dispatch(any<Action<PostOrderNotePayload>>())
 
-        presenter.onOrderChanged(OnOrderChanged(1).apply {
-            causeOfChange = POST_ORDER_NOTE
-            error = OrderError()
-        })
+        presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = POST_ORDER_NOTE })
         verify(orderDetailView, times(1)).showAddOrderNoteSnack()
     }
 
