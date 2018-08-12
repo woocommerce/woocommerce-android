@@ -22,6 +22,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEpilogueActivity
+import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
@@ -260,7 +262,7 @@ class MainActivity : AppCompatActivity(),
     override fun onNavigationItemReselected(item: MenuItem) {
         val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
         if (!clearFragmentBackStack(activeFragment)) {
-            (activeFragment as TopLevelFragment).refreshFragmentState()
+            (activeFragment as? TopLevelFragment)?.refreshFragmentState()
         }
 
         val stat = when (activeNavPosition) {
@@ -282,8 +284,8 @@ class MainActivity : AppCompatActivity(),
      * Extension function for retrieving an existing fragment from the [FragmentManager]
      * if one exists, if not, create a new instance of the requested fragment.
      */
-    private fun FragmentManager.findFragment(position: BottomNavigationPosition): Fragment {
-        return findFragmentByTag(position.getTag()) ?: position.createFragment()
+    private fun FragmentManager.findFragment(position: BottomNavigationPosition): TopLevelFragment? {
+        return (findFragmentByTag(position.getTag()) ?: position.createFragment()) as? TopLevelFragment
     }
 
     /**
@@ -294,8 +296,12 @@ class MainActivity : AppCompatActivity(),
      * hide the current top-level fragment and add/show the destination top-level fragment.
      *
      * Immediately execute transactions with FragmentManager#executePendingTransactions.
+     *
+     * @param navPosition The [BottomNavigationPosition] to activate
+     * @param deferInit If true, the [TopLevelFragment] may use this variable to defer a part of its
+     * normal initialization until manually requested.
      */
-    private fun switchFragment(navPosition: BottomNavigationPosition): Boolean {
+    private fun switchFragment(navPosition: BottomNavigationPosition, deferInit: Boolean = false): Boolean {
         val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
 
         // Remove any child fragments in the back stack
@@ -303,15 +309,18 @@ class MainActivity : AppCompatActivity(),
 
         // Grab the requested top-level fragment and load if not already
         // in the current view.
-        val fragment = supportFragmentManager.findFragment(navPosition)
-        if (fragment.isHidden || !fragment.isAdded) {
-            // Remove the active fragment and replace with this newly selected one
-            hideParentFragment(activeFragment)
-            showTopLevelFragment(fragment as TopLevelFragment, navPosition.getTag())
-            supportFragmentManager.executePendingTransactions()
-            activeNavPosition = navPosition
-            return true
+        supportFragmentManager.findFragment(navPosition)?.let { frag ->
+            frag.deferInit = deferInit
+            if (frag.isHidden || !frag.isAdded) {
+                // Remove the active fragment and replace with this newly selected one
+                hideParentFragment(activeFragment)
+                showTopLevelFragment(frag, navPosition.getTag())
+                supportFragmentManager.executePendingTransactions()
+                activeNavPosition = navPosition
+                return true
+            }
         }
+
         return false
     }
 
@@ -351,4 +360,16 @@ class MainActivity : AppCompatActivity(),
         return false
     }
     // endregion
+
+    override fun showOrderList(orderStatusFilter: String?) {
+        val navPos = BottomNavigationPosition.ORDERS.position
+
+        if (switchFragment(ORDERS, true)) {
+            // Set the active bottom bar selection without firing its changed event
+            bottom_nav.active(navPos)
+
+            val fragment = supportFragmentManager.findFragment(ORDERS)
+            (fragment as? OrderListFragment)?.onFilterSelected(orderStatusFilter)
+        }
+    }
 }

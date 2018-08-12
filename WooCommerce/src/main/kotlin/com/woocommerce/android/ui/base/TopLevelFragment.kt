@@ -21,6 +21,13 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         // fragment is currently hosting a child fragment (drilled in).
         const val CHILD_FRAGMENT_ACTIVE = "child-fragment-active"
     }
+
+    /**
+     * The extending class may use this variable to defer a part of its
+     * normal initialization until manually requested.
+     */
+    var deferInit: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         childFragmentManager.addOnBackStackChangedListener(this)
@@ -106,7 +113,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
      * and set the title to the active child fragments title.
      */
     private fun updateParentViewState(childActive: Boolean) {
-        val mainActivity: AppCompatActivity? = activity as AppCompatActivity
+        val mainActivity: AppCompatActivity? = activity as? AppCompatActivity
         if (childActive) {
             container.getChildAt(0).visibility = View.GONE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)

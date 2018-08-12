@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
+import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 
 interface MainContract {
     interface Presenter : BasePresenter<View> {
@@ -9,7 +10,7 @@ interface MainContract {
         fun storeMagicLinkToken(token: String)
     }
 
-    interface View : BaseView<Presenter> {
+    interface View : BaseView<Presenter>, TopLevelFragmentRouter {
         fun notifyTokenUpdated()
         fun showLoginScreen()
         fun showLoginEpilogueScreen()

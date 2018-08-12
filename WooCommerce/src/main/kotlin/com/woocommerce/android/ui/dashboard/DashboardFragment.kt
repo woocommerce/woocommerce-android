@@ -9,9 +9,11 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
@@ -27,7 +29,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
 
     override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0
+        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -50,8 +52,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     )
                 }
                 setOnRefreshListener {
-                    setLoadingIndicator(true)
-                    presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
+                    refreshDashboard()
                 }
             }
         }
@@ -66,20 +67,26 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive) {
             setLoadingIndicator(true)
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
+            dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
+                override fun onViewOrdersClicked() {
+                    (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
+                }
+            })
+            presenter.fetchUnfilledOrderCount()
             presenter.loadStats(dashboard_stats.activeGranularity)
         } else {
             loadDataPending = true
         }
     }
 
-    override fun onBackStackChanged() {
-        super.onBackStackChanged()
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && loadDataPending) {
-            loadDataPending = false
-            setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.activeGranularity)
+            hideUnfilledOrdersCard()
+            refreshDashboard()
         }
     }
 
@@ -112,15 +119,39 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun refreshFragmentState() {
-        if (isActive) {
-            setLoadingIndicator(true)
-            presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
-        } else {
-            loadDataPending = true
+        refreshDashboard()
+    }
+
+    override fun refreshDashboard() {
+        // If this fragment is currently active, force a refresh of data. If not, set
+        // a flag to force a refresh when it becomes active
+        when {
+            isActive -> {
+                loadDataPending = false
+                setLoadingIndicator(true)
+                presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
+                presenter.fetchUnfilledOrderCount()
+            }
+            else -> loadDataPending = true
         }
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
         presenter.loadStats(period)
+    }
+
+    override fun hideUnfilledOrdersCard() {
+        with(dashboard_unfilled_orders) {
+            post { visibility = View.GONE }
+        }
+    }
+
+    override fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean) {
+        with(dashboard_unfilled_orders) {
+            post {
+                updateOrdersCount(count, canLoadMore)
+                visibility = View.VISIBLE
+            }
+        }
     }
 }
