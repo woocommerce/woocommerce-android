@@ -89,7 +89,7 @@
     <string name="dashboard_top_earners_total_spend">Total spend</string>
     <string name="dashboard_top_earners_total_orders">Total product order: %s</string>
     <string name="dashboard_top_earners_content_description">Product image</string>
-    <string name="dashboard_top_earners_empty">No data for this period</string>
+    <string name="dashboard_top_earners_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
