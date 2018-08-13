@@ -165,12 +165,12 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
             val topEarner = topEarnerList[position]
-            val quantity = String.format(orderString, FormatUtils.formatDecimal(topEarner.quantity))
-            val price = formatAmountForDisplay(holder.itemView.context, topEarner.price, topEarner.currency)
+            val numOrders = String.format(orderString, FormatUtils.formatDecimal(topEarner.quantity))
+            val total = formatAmountForDisplay(holder.itemView.context, topEarner.total, topEarner.currency)
 
             holder.productNameText.text = topEarner.name
-            holder.productOrdersText.text = quantity
-            holder.totalSpendText.text = price
+            holder.productOrdersText.text = numOrders
+            holder.totalSpendText.text = total
             holder.divider.visibility = if (position < itemCount - 1) View.VISIBLE else View.GONE
 
             // strip the image query params and add a width param that matches our desired size
