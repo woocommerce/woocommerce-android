@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -22,12 +23,14 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         const val FIELD_ORDER_NUMBER = "order-number"
         const val FIELD_NOTE_TEXT = "note_text"
         const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
+        const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
     @Inject lateinit var presenter: AddOrderNoteContract.Presenter
 
     private lateinit var orderId: OrderIdentifier
     private lateinit var orderNumber: String
+    private var isConfirmingDiscard = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -45,6 +48,9 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
             orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER)
             orderNumber = savedInstanceState.getString(FIELD_ORDER_NUMBER)
             addNote_switch.isChecked = savedInstanceState.getBoolean(FIELD_IS_CUSTOMER_NOTE)
+            if (savedInstanceState.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
+                confirmDiscard()
+            }
         }
 
         if (presenter.hasBillingEmail(orderId)) {
@@ -73,6 +79,14 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         return true
     }
 
+    override fun onBackPressed() {
+        if (getNoteText().isNotEmpty()) {
+            confirmDiscard()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             android.R.id.home -> {
@@ -80,7 +94,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                 true
             }
             R.id.menu_add -> {
-                val noteText = addNote_editor.text.toString().trim()
+                val noteText = getNoteText()
                 if (!noteText.isEmpty() && NetworkUtils.checkConnection(this)) {
                     val isCustomerNote = addNote_switch.isChecked
                     val data = Intent()
@@ -99,6 +113,23 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         outState?.putString(FIELD_ORDER_IDENTIFIER, orderId)
         outState?.putString(FIELD_ORDER_NUMBER, orderNumber)
         outState?.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch.isChecked)
+        outState?.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         super.onSaveInstanceState(outState)
+    }
+
+    override fun getNoteText() = addNote_editor.text.toString().trim()
+
+    override fun confirmDiscard() {
+        isConfirmingDiscard = true
+        AlertDialog.Builder(this)
+                .setMessage(R.string.add_order_note_confirm_discard)
+                .setCancelable(true)
+                .setPositiveButton(R.string.discard) { _, _ ->
+                    finish()
+                }
+                .setNegativeButton(R.string.cancel) { _, _ ->
+                    isConfirmingDiscard = false
+                }
+                .show()
     }
 }
