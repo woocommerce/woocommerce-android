@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.dashboard
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -64,7 +63,6 @@ class DashboardPresenter @Inject constructor(
         if (shouldForce) {
             topEarnersLastForceTime[granularity.ordinal] = System.currentTimeMillis()
         }
-        WooLog.d(DASHBOARD, "Forcing top earners $granularity = $shouldForce")
 
         val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
