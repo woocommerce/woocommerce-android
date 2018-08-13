@@ -39,6 +39,7 @@
     <string name="this_week">This Week</string>
     <string name="this_month">This Month</string>
     <string name="this_year">This Year</string>
+    <string name="discard">Discard</string>
     <!--
         Date/Time Labels
     -->
@@ -159,6 +160,7 @@
     <string name="add_order_note_menu_item">Add</string>
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
+    <string name="add_order_note_confirm_discard">Discard this note?</string>
     <!--
         Order Status Labels
     -->
