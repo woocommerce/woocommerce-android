@@ -57,7 +57,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         StatsGranularity.values().forEach { granularity ->
             val tab = topEarners_tab_layout.newTab().apply {
-                setText(DashboardUtils.getStringForGranularity(granularity))
+                setText(getTabTitleResForGranularity(granularity))
                 tag = granularity
             }
             topEarners_tab_layout.addTab(tab)
@@ -72,7 +72,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             override fun onTabSelected(tab: TabLayout.Tab) {
                 hideEmptyView()
                 clearAdapterAndShowProgressDelayed()
-                topEarners_title.text = context.getString(getTitleResForGranularity(tab.tag as StatsGranularity))
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -114,12 +113,12 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     }
 
     @StringRes
-    private fun getTitleResForGranularity(granularity: StatsGranularity): Int {
+    private fun getTabTitleResForGranularity(granularity: StatsGranularity): Int {
         return when (granularity) {
-            StatsGranularity.DAYS -> R.string.dashboard_top_earners_title_days
-            StatsGranularity.WEEKS -> R.string.dashboard_top_earners_title_weeks
-            StatsGranularity.MONTHS -> R.string.dashboard_top_earners_title_months
-            StatsGranularity.YEARS -> R.string.dashboard_top_earners_title_years
+            StatsGranularity.DAYS -> R.string.today
+            StatsGranularity.WEEKS -> R.string.this_week
+            StatsGranularity.MONTHS -> R.string.this_month
+            StatsGranularity.YEARS -> R.string.this_year
         }
     }
 
