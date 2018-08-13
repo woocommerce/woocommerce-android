@@ -10,6 +10,7 @@ interface AddOrderNoteContract {
     }
 
     interface View : BaseView<Presenter> {
-        // noop for now
+        fun getNoteText(): String
+        fun confirmDiscard()
     }
 }

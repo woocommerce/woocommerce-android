@@ -34,6 +34,7 @@
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
     <string name="learn_more">Learn More</string>
+    <string name="discard">Discard</string>
     <!--
         Date/Time Labels
     -->
@@ -147,6 +148,7 @@
     <string name="add_order_note_menu_item">Add</string>
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
+    <string name="add_order_note_confirm_discard">Discard this note?</string>
     <!--
         Order Status Labels
     -->
