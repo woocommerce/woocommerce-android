@@ -84,7 +84,10 @@
     <string name="dashboard_stats_revenue">Revenue</string>
     <string name="dashboard_state_no_data">No data available</string>
 
-    <string name="dashboard_top_earners_title">Top performers</string>
+    <string name="dashboard_top_earners_title_days">Top performers today</string>
+    <string name="dashboard_top_earners_title_weeks">Top performers this week</string>
+    <string name="dashboard_top_earners_title_months">Top performers this month</string>
+    <string name="dashboard_top_earners_title_years">Top performers this year</string>
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
     <string name="dashboard_top_earners_total_spend">Total spend</string>
     <string name="dashboard_top_earners_total_orders">Total product order: %s</string>

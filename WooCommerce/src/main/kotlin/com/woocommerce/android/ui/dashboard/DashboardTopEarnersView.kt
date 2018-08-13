@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
 import android.os.Handler
+import android.support.annotation.StringRes
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -71,6 +72,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             override fun onTabSelected(tab: TabLayout.Tab) {
                 hideEmptyView()
                 clearAdapterAndShowProgressDelayed()
+                topEarners_title.text = context.getString(getTitleResForGranularity(tab.tag as StatsGranularity))
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -109,6 +111,16 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         hideProgress()
         adapter.setTopEarnersList(topEarnerList)
         if (topEarnerList.isEmpty()) showEmptyView() else hideEmptyView()
+    }
+
+    @StringRes
+    private fun getTitleResForGranularity(granularity: StatsGranularity): Int {
+        return when (granularity) {
+            StatsGranularity.DAYS -> R.string.dashboard_top_earners_title_days
+            StatsGranularity.WEEKS -> R.string.dashboard_top_earners_title_weeks
+            StatsGranularity.MONTHS -> R.string.dashboard_top_earners_title_months
+            StatsGranularity.YEARS -> R.string.dashboard_top_earners_title_years
+        }
     }
 
     class TopEarnersViewHolder(view: View) : RecyclerView.ViewHolder(view) {

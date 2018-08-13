@@ -18,11 +18,12 @@
         android:background="@color/list_divider"/>
 
     <TextView
+        android:id="@+id/topEarners_title"
         style="@style/Woo.TextAppearance.Title.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/dashboard_top_earners_title"/>
+        android:text="@string/dashboard_top_earners_title_days"/>
 
     <TextView
         style="@style/Woo.TextAppearance.Medium"
