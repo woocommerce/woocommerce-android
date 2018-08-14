@@ -7,7 +7,7 @@ import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AccelerateInterpolator
+import android.view.animation.LinearInterpolator
 
 object WooAniUtils {
     enum class Duration {
@@ -26,37 +26,61 @@ object WooAniUtils {
 
     private val DEFAULT_DURATION = Duration.MEDIUM
 
-    fun scaleIn(target: View, duration: Duration = DEFAULT_DURATION) {
+    fun fadeIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
+        with (ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
+            duration = animDuration.toMillis(target.context)
+            interpolator = LinearInterpolator()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    target.visibility = View.VISIBLE
+                }
+            })
+            start()
+        }
+    }
+
+    fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION) {
+        with (ObjectAnimator.ofFloat(target, View.ALPHA, 1.0f, 0.0f)) {
+            duration = animDuration.toMillis(target.context)
+            interpolator = LinearInterpolator()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    target.visibility = View.GONE
+                }
+            })
+            start()
+        }
+    }
+
+    fun scaleIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
         val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 0f, 1f)
         val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f, 1f)
 
-        val animator = ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)
-        animator.duration = duration.toMillis(target.context)
-        animator.interpolator = AccelerateDecelerateInterpolator()
-
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator) {
-                target.visibility = View.VISIBLE
-            }
-        })
-
-        animator.start()
+        with (ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
+            duration = animDuration.toMillis(target.context)
+            interpolator = AccelerateDecelerateInterpolator()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    target.visibility = View.VISIBLE
+                }
+            })
+            start()
+        }
     }
 
-    fun scaleOut(target: View, duration: Duration = DEFAULT_DURATION) {
+    fun scaleOut(target: View, animDuration: Duration = DEFAULT_DURATION) {
         val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 0f)
         val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0f)
 
-        val animator = ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)
-        animator.duration = duration.toMillis(target.context)
-        animator.interpolator = AccelerateInterpolator()
-
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                target.visibility = View.GONE
-            }
-        })
-
-        animator.start()
+        with (ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
+            duration = animDuration.toMillis(target.context)
+            interpolator = AccelerateDecelerateInterpolator()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    target.visibility = View.GONE
+                }
+            })
+            start()
+        }
     }
 }
