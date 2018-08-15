@@ -23,5 +23,6 @@ interface DashboardContract {
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
+        fun showUnfilledOrdersProgress(show: Boolean)
     }
 }

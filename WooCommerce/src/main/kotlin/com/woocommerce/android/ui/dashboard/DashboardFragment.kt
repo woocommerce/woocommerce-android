@@ -89,7 +89,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && loadDataPending) {
-            hideUnfilledOrdersCard()
             refreshDashboard()
         }
     }
@@ -166,5 +165,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAniUtils.scaleIn(dashboard_unfilled_orders)
         }
+    }
+
+    override fun showUnfilledOrdersProgress(show: Boolean) {
+        dashboard_unfilled_orders.showProgress(show)
     }
 }
