@@ -21,4 +21,11 @@
         <attr name="tagViewStyle" format="reference"/>
         <attr name="flowLayoutStyle" format="reference"/>
     </declare-styleable>
+    
+    <declare-styleable name="WCTextViewCompat">
+        <attr name="drawableStartCompat" format="reference"/>
+        <attr name="drawableEndCompat" format="reference"/>
+        <attr name="drawableTopCompat" format="reference"/>
+        <attr name="drawableBottomCompat" format="reference"/>
+    </declare-styleable>
 </resources>
