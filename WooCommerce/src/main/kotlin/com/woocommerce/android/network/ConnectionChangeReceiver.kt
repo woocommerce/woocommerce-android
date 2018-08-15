@@ -20,6 +20,8 @@ class ConnectionChangeReceiver @Inject constructor() : BroadcastReceiver() {
     companion object {
         private var isFirstReceive = true
         private var wasConnected = true
+
+        fun getEventBus() = EventBus.getDefault()
     }
 
     class ConnectionChangeEvent(var isConnected: Boolean)

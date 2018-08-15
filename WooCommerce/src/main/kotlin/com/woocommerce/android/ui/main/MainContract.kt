@@ -17,5 +17,6 @@ interface MainContract {
         fun updateSelectedSite()
         fun showSettingsScreen()
         fun contactSupport()
+        fun updateOfflineStatusBar(isConnected: Boolean)
     }
 }
