@@ -12,6 +12,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.util.WooAniUtils
+import com.woocommerce.android.util.WooAniUtils.Duration
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -66,14 +67,24 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     private fun demoUnfilledOrderCard() {
         hideUnfilledOrdersCard()
-        setLoadingIndicator(false)
+        setLoadingIndicator(true)
         Handler().postDelayed({
-            showUnfilledOrdersCard(1, false)
+            showUnfilledOrdersCard(2, false)
+            setLoadingIndicator(false)
             Handler().postDelayed({
                 showUnfilledOrdersProgress(true)
                 Handler().postDelayed({
-                    showUnfilledOrdersProgress(false)
-                    hideUnfilledOrdersCard()
+                    Handler().postDelayed({
+                        showUnfilledOrdersProgress(false)
+                        showUnfilledOrdersCard(1, false)
+                        Handler().postDelayed({
+                            showUnfilledOrdersProgress(true)
+                            Handler().postDelayed({
+                                showUnfilledOrdersProgress(false)
+                                hideUnfilledOrdersCard()
+                            }, 1500)
+                        }, 1500)
+                    }, 1500)
                 }, 1500)
             }, 1500)
         }, 3000)
@@ -173,14 +184,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun hideUnfilledOrdersCard() {
         if (dashboard_unfilled_orders.visibility == View.VISIBLE) {
-            WooAniUtils.scaleOut(dashboard_unfilled_orders)
+            WooAniUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)
         }
     }
 
     override fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean) {
         dashboard_unfilled_orders.updateOrdersCount(count, canLoadMore)
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
-            WooAniUtils.scaleIn(dashboard_unfilled_orders)
+            WooAniUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
     }
 

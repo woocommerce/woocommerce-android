@@ -24,7 +24,7 @@ object WooAniUtils {
         }
     }
 
-    private val DEFAULT_DURATION = Duration.MEDIUM
+    private val DEFAULT_DURATION = Duration.SHORT
 
     fun fadeIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
         with (ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
