@@ -84,4 +84,5 @@ ext {
     constraintLayoutVersion = '1.1.0'
     multidexVersion = '1.0.3'
     libaddressinputVersion = '0.0.2'
+    eventBusVersion = '3.1.1'
 }
