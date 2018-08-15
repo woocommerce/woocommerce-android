@@ -25,7 +25,6 @@
         android:text="@string/dashboard_top_earners_title"/>
 
     <TextView
-        style="@style/Woo.TextAppearance.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_large"
@@ -38,22 +37,22 @@
         android:orientation="horizontal">
 
         <TextView
-            style="@style/Woo.TextAppearance.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_marginBottom="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/product"/>
+            android:text="@string/product"
+            android:textStyle="bold"/>
 
         <TextView
-            style="@style/Woo.TextAppearance.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginBottom="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/dashboard_top_earners_total_spend"/>
+            android:text="@string/dashboard_top_earners_total_spend"
+            android:textStyle="bold"/>
     </FrameLayout>
 
     <View
