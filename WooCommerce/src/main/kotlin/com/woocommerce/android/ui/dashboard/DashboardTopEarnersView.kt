@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULA
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
+import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.FormatUtils
@@ -167,7 +168,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             val numOrders = String.format(orderString, FormatUtils.formatDecimal(topEarner.quantity))
             val total = formatAmountForDisplay(holder.itemView.context, topEarner.total, topEarner.currency)
 
-            holder.productNameText.text = topEarner.name
+            holder.productNameText.text = StringEscapeUtils.unescapeHtml4(topEarner.name)
             holder.productOrdersText.text = numOrders
             holder.totalSpendText.text = total
             holder.divider.visibility = if (position < itemCount - 1) View.VISIBLE else View.GONE
