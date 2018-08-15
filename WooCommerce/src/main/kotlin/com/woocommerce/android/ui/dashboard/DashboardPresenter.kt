@@ -68,6 +68,16 @@ class DashboardPresenter @Inject constructor(
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
 
+    /**
+     * clears the timestamps we use to determine whether to force top earners to refresh - this
+     * way all top earner stats will force refresh the next time they're loaded
+     */
+    override fun resetTopEarnersTimestamps() {
+        for (i in 0 until topEarnersLastForceTime.size) {
+            topEarnersLastForceTime[i] = 0
+        }
+    }
+
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
     override fun fetchUnfilledOrderCount() {

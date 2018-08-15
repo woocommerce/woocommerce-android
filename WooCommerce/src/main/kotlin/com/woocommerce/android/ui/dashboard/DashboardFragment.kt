@@ -53,6 +53,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     )
                 }
                 setOnRefreshListener {
+                    presenter.resetTopEarnersTimestamps()
                     refreshDashboard()
                 }
             }
