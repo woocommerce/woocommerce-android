@@ -54,6 +54,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     )
                 }
                 setOnRefreshListener {
+                    presenter.resetTopEarnersTimestamps()
                     refreshDashboard()
                 }
             }
@@ -88,7 +89,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && loadDataPending) {
-            loadDataPending = false
             hideUnfilledOrdersCard()
             refreshDashboard()
         }
@@ -129,12 +129,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun refreshFragmentState() {
-        if (isActive) {
-            setLoadingIndicator(true)
-            refreshDashboard()
-        } else {
-            loadDataPending = true
-        }
+        refreshDashboard()
     }
 
     override fun refreshDashboard() {
