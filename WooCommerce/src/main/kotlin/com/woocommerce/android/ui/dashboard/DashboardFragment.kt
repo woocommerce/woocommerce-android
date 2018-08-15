@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
@@ -54,12 +55,28 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     )
                 }
                 setOnRefreshListener {
-                    presenter.resetTopEarnersTimestamps()
-                    refreshDashboard()
+                    // presenter.resetTopEarnersTimestamps()
+                    // refreshDashboard()
+                    demoUnfilledOrderCard()
                 }
             }
         }
         return view
+    }
+
+    private fun demoUnfilledOrderCard() {
+        hideUnfilledOrdersCard()
+        setLoadingIndicator(false)
+        Handler().postDelayed({
+            showUnfilledOrdersCard(1, false)
+            Handler().postDelayed({
+                showUnfilledOrdersProgress(true)
+                Handler().postDelayed({
+                    showUnfilledOrdersProgress(false)
+                    hideUnfilledOrdersCard()
+                }, 1500)
+            }, 1500)
+        }, 3000)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
