@@ -5,6 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Build
 import android.support.multidex.MultiDexApplication
 import com.crashlytics.android.Crashlytics
@@ -13,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
+import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashlyticsUtils
@@ -44,6 +47,10 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
+
+    // Listens for changes in device connectivity
+    @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
+    private var connectionReceiverRegistered = false
 
     protected open val component: AppComponent by lazy {
         DaggerAppComponent.builder()
@@ -90,10 +97,20 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     override fun onAppComesFromBackground() {
         AnalyticsTracker.track(Stat.APPLICATION_OPENED)
+
+        if (!connectionReceiverRegistered) {
+            connectionReceiverRegistered = true
+            registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        }
     }
 
     override fun onAppGoesToBackground() {
         AnalyticsTracker.track(Stat.APPLICATION_CLOSED)
+
+        if (connectionReceiverRegistered) {
+            connectionReceiverRegistered = false
+            unregisterReceiver(connectionReceiver)
+        }
     }
 
     private fun initAnalytics() {
