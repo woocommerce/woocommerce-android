@@ -33,6 +33,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
@@ -103,6 +104,12 @@ class MainActivity : AppCompatActivity(),
             menu?.removeItem(R.id.menu_support)
         }
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        checkConnection()
     }
 
     public override fun onDestroy() {
@@ -371,5 +378,13 @@ class MainActivity : AppCompatActivity(),
             val fragment = supportFragmentManager.findFragment(ORDERS)
             (fragment as? OrderListFragment)?.onFilterSelected(orderStatusFilter)
         }
+    }
+
+    override fun updateOfflineStatusBar(isConnected: Boolean) {
+        if (isConnected) offline_bar.hide() else offline_bar.show()
+    }
+
+    private fun checkConnection() {
+        updateOfflineStatusBar(NetworkUtils.isNetworkAvailable(this))
     }
 }

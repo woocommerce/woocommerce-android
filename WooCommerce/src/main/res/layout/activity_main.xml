@@ -28,6 +28,15 @@
             android:layout_height="match_parent"/>
     </android.support.design.widget.CoordinatorLayout>
 
+    <com.woocommerce.android.ui.network.OfflineStatusBarView
+        android:id="@+id/offline_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="0dp"
