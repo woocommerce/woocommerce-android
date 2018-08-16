@@ -39,7 +39,7 @@ class ConnectionChangeReceiver @Inject constructor() : BroadcastReceiver() {
             WooLog.i(T.DEVICE, "Connection Changed to $isConnected")
             wasConnected = isConnected
             isFirstReceive = false
-            EventBus.getDefault().post(ConnectionChangeEvent(isConnected))
+            getEventBus().post(ConnectionChangeEvent(isConnected))
         }
     }
 }
