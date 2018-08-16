@@ -75,6 +75,7 @@ class OrderListPresenter @Inject constructor(
                 if (event.isError) {
                     WooLog.e(T.ORDERS, "$TAG - Error fetching orders : ${event.error.message}")
                     orderView?.showLoadOrdersError()
+                    fetchAndLoadOrdersFromDb(event.statusFilter, false)
                 } else {
                     canLoadMore = event.canLoadMore
                     val isForceRefresh = !isLoadingMoreOrders
