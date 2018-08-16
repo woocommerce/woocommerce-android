@@ -59,6 +59,9 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         if (!hidden) {
             // Update the activity title
             activity?.title = getFragmentTitle()
+
+            // Run the same logic as when the fragment comes to the foreground
+            onBackStackChanged()
         }
     }
 
