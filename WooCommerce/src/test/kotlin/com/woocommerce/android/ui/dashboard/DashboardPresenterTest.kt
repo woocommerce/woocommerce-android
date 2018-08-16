@@ -202,20 +202,7 @@ class DashboardPresenterTest {
     }
 
     @Test
-    fun `Verify loadTopEarnerStats - not forced`() {
-        presenter.takeView(dashboardView)
-        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = false)
-
-        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
-        assertEquals(WCStatsAction.FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
-
-        val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
-        assertEquals(StatsGranularity.DAYS, payload.granularity)
-        assertFalse(payload.forced)
-    }
-
-    @Test
-    fun `Verify loadTopEarnerStats - forced`() {
+    fun `Requests top earners stats data correctly - forced`() {
         presenter.takeView(dashboardView)
         presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
 
@@ -225,5 +212,18 @@ class DashboardPresenterTest {
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
         assertTrue(payload.forced)
+    }
+
+    @Test
+    fun `Requests top earners stats data correctly - not forced`() {
+        presenter.takeView(dashboardView)
+        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = false)
+
+        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
+        assertEquals(WCStatsAction.FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
+
+        val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
+        assertEquals(StatsGranularity.DAYS, payload.granularity)
+        assertFalse(payload.forced)
     }
 }
