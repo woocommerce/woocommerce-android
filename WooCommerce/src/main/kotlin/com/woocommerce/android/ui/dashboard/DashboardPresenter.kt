@@ -30,11 +30,9 @@ class DashboardPresenter @Inject constructor(
     companion object {
         private val TAG = DashboardPresenter::class.java
         private const val NUM_TOP_EARNERS = 3
-        private const val FORCE_REQUEST_FREQUENCY = (1000 * 60) * 5 // force request every 5 minutes
     }
 
     private var dashboardView: DashboardContract.View? = null
-    private val topEarnersLastForceTime = LongArray(StatsGranularity.values().size)
 
     override fun takeView(view: DashboardContract.View) {
         dashboardView = view
@@ -52,34 +50,8 @@ class DashboardPresenter @Inject constructor(
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
-        val shouldForce = if (forced) {
-            true
-        } else {
-            // is it time to force an update for this granularity?
-            val lastForced = topEarnersLastForceTime[granularity.ordinal]
-            val diff = System.currentTimeMillis() - lastForced
-            lastForced == 0L || diff >= FORCE_REQUEST_FREQUENCY
-        }
-        if (shouldForce) {
-            topEarnersLastForceTime[granularity.ordinal] = System.currentTimeMillis()
-        }
-
-        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
+        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
-    }
-
-    /**
-     * clears the timestamps we use to determine whether to force top earners to refresh - this
-     * way all top earner stats will force refresh the next time they're loaded
-     */
-    override fun resetTopEarnersTimestamps() {
-        for (i in 0 until topEarnersLastForceTime.size) {
-            topEarnersLastForceTime[i] = 0
-        }
-    }
-
-    override fun getTopEarnersTimeStamp(granularity: StatsGranularity): Long {
-        return topEarnersLastForceTime[granularity.ordinal]
     }
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
