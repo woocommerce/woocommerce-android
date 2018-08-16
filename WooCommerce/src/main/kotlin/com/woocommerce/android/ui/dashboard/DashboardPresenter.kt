@@ -106,8 +106,7 @@ class DashboardPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCTopEarnersChanged(event: OnWCTopEarnersChanged) {
         if (event.isError) {
-            // TODO: notify user of the problem?
-            dashboardView?.showTopEarners(emptyList(), event.granularity)
+            dashboardView?.showTopEarnersError(event.granularity)
         } else {
             dashboardView?.showTopEarners(event.topEarners, event.granularity)
         }

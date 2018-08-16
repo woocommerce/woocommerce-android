@@ -123,6 +123,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun showTopEarnersError(granularity: StatsGranularity) {
+        // TODO: notify user of the problem?
+        if (dashboard_top_earners.activeGranularity == granularity) {
+            dashboard_top_earners.updateView(emptyList())
+        }
+    }
+
     override fun getFragmentTitle(): String {
         return getString(R.string.dashboard)
     }

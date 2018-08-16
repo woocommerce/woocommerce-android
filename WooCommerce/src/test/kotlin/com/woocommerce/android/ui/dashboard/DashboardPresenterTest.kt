@@ -19,7 +19,8 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
-import org.wordpress.android.fluxc.action.WCStatsAction
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -31,6 +32,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
+import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -64,7 +66,7 @@ class DashboardPresenterTest {
         presenter.loadStats(StatsGranularity.DAYS)
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
-        assertEquals(WCStatsAction.FETCH_ORDER_STATS, actionCaptor.firstValue.type)
+        assertEquals(FETCH_ORDER_STATS, actionCaptor.firstValue.type)
 
         val payload = actionCaptor.firstValue.payload as FetchOrderStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
@@ -207,7 +209,7 @@ class DashboardPresenterTest {
         presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
-        assertEquals(WCStatsAction.FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
+        assertEquals(FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
 
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
@@ -220,10 +222,32 @@ class DashboardPresenterTest {
         presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = false)
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
-        assertEquals(WCStatsAction.FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
+        assertEquals(FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
 
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
         assertFalse(payload.forced)
+    }
+
+    @Test
+    fun `Handles FETCH_TOP_EARNERS_STATS event correctly`() {
+        presenter.takeView(dashboardView)
+
+        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
+            causeOfChange = FETCH_TOP_EARNERS_STATS
+        })
+        verify(dashboardView, times(1)).showTopEarners(emptyList(), StatsGranularity.DAYS)
+    }
+
+    @Test
+    fun `Handles FETCH_TOP_EARNERS_STATS error event correctly`() {
+        presenter.takeView(dashboardView)
+
+        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
+            causeOfChange = FETCH_TOP_EARNERS_STATS
+            error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
+        })
+        verify(dashboardView, times(0)).showTopEarners(emptyList(), StatsGranularity.DAYS)
+        verify(dashboardView, times(1)).showTopEarnersError(StatsGranularity.DAYS)
     }
 }

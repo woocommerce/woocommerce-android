@@ -21,6 +21,7 @@ interface DashboardContract {
         fun setLoadingIndicator(active: Boolean)
         fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Int>, granularity: StatsGranularity)
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
+        fun showTopEarnersError(granularity: StatsGranularity)
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
     }
