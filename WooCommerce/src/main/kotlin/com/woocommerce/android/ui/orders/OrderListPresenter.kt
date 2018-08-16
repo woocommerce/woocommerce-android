@@ -103,16 +103,16 @@ class OrderListPresenter @Inject constructor(
     /**
      * Fetch orders from the local database.
      *
-     * @param filterByStatus If not null, only pull orders whose status matches this filter. Default null.
+     * @param orderStatusFilter If not null, only pull orders whose status matches this filter. Default null.
      * @param isForceRefresh True if orders were refreshed from the API, else false.
      */
-    override fun fetchAndLoadOrdersFromDb(filterByStatus: String?, isForceRefresh: Boolean) {
-        val orders = filterByStatus?.let {
+    override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean) {
+        val orders = orderStatusFilter?.let {
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
             if (orders.count() > 0) {
-                view.showOrders(orders, filterByStatus, isForceRefresh)
+                view.showOrders(orders, orderStatusFilter, isForceRefresh)
             } else {
                 view.showNoOrders()
             }

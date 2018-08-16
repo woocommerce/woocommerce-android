@@ -48,7 +48,7 @@ class OrderListPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showOrders(orders, isForceRefresh = true)
+        verify(orderListView).showOrders(orders, isFreshData = true)
     }
 
     @Test
@@ -61,7 +61,7 @@ class OrderListPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any(), any())
         presenter.onOrderChanged(OnOrderChanged(orders.size, orderStatusFilter).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showOrders(orders, orderStatusFilter, isForceRefresh = true)
+        verify(orderListView).showOrders(orders, orderStatusFilter, isFreshData = true)
     }
 
     @Test
