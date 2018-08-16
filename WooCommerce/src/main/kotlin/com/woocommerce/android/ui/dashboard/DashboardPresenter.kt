@@ -78,6 +78,10 @@ class DashboardPresenter @Inject constructor(
         }
     }
 
+    override fun getTopEarnersTimeStamp(granularity: StatsGranularity): Long {
+        return topEarnersLastForceTime[granularity.ordinal]
+    }
+
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
     override fun fetchUnfilledOrderCount() {

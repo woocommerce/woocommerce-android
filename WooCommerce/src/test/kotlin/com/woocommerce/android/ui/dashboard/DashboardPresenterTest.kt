@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
@@ -38,6 +39,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class DashboardPresenterTest {
@@ -206,6 +208,7 @@ class DashboardPresenterTest {
     @Test
     fun `Requests top earners stats data correctly - forced`() {
         presenter.takeView(dashboardView)
+        val timestamp = presenter.getTopEarnersTimeStamp(StatsGranularity.DAYS)
         presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
@@ -214,11 +217,15 @@ class DashboardPresenterTest {
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
         assertTrue(payload.forced)
+
+        // make sure the cache timestamp has changed since refresh was forced
+        assertNotEquals(timestamp, presenter.getTopEarnersTimeStamp(StatsGranularity.DAYS))
     }
 
     @Test
     fun `Requests top earners stats data correctly - not forced`() {
         presenter.takeView(dashboardView)
+        val timestamp = presenter.getTopEarnersTimeStamp(StatsGranularity.DAYS)
         presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = false)
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
@@ -227,16 +234,21 @@ class DashboardPresenterTest {
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
         assertFalse(payload.forced)
+
+        // make sure the cache timestamp has NOT changed (only changes when forced)
+        assertEquals(timestamp, presenter.getTopEarnersTimeStamp(StatsGranularity.DAYS))
     }
 
     @Test
     fun `Handles FETCH_TOP_EARNERS_STATS event correctly`() {
         presenter.takeView(dashboardView)
 
-        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
+        val topEarners = ArrayList<WCTopEarnerModel>()
+        topEarners.add(WCTopEarnerModel())
+        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(topEarners, StatsGranularity.DAYS).apply {
             causeOfChange = FETCH_TOP_EARNERS_STATS
         })
-        verify(dashboardView, times(1)).showTopEarners(emptyList(), StatsGranularity.DAYS)
+        verify(dashboardView, times(1)).showTopEarners(topEarners, StatsGranularity.DAYS)
     }
 
     @Test
@@ -247,7 +259,6 @@ class DashboardPresenterTest {
             causeOfChange = FETCH_TOP_EARNERS_STATS
             error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
         })
-        verify(dashboardView, times(0)).showTopEarners(emptyList(), StatsGranularity.DAYS)
         verify(dashboardView, times(1)).showTopEarnersError(StatsGranularity.DAYS)
     }
 }

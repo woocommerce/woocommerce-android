@@ -124,7 +124,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showTopEarnersError(granularity: StatsGranularity) {
-        // TODO: notify user of the problem?
+        // TODO: for now we pass an empty list to force the empty view to appear, but at some point
+        // we may want to alert the user to the problem
         if (dashboard_top_earners.activeGranularity == granularity) {
             dashboard_top_earners.updateView(emptyList())
         }

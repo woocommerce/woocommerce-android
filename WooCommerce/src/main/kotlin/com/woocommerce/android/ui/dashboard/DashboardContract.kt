@@ -10,6 +10,7 @@ interface DashboardContract {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
         fun resetTopEarnersTimestamps()
+        fun getTopEarnersTimeStamp(granularity: StatsGranularity): Long
         fun getStatsCurrency(): String?
         fun fetchUnfilledOrderCount()
     }
