@@ -29,12 +29,14 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class DashboardPresenterTest {
     private val dashboardView: DashboardContract.View = mock()
@@ -197,5 +199,31 @@ class DashboardPresenterTest {
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard()
+    }
+
+    @Test
+    fun `Verify loadTopEarnerStats - not forced`() {
+        presenter.takeView(dashboardView)
+        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = false)
+
+        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
+        assertEquals(WCStatsAction.FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
+
+        val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
+        assertEquals(StatsGranularity.DAYS, payload.granularity)
+        assertFalse(payload.forced)
+    }
+
+    @Test
+    fun `Verify loadTopEarnerStats - forced`() {
+        presenter.takeView(dashboardView)
+        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
+
+        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
+        assertEquals(WCStatsAction.FETCH_TOP_EARNERS_STATS, actionCaptor.firstValue.type)
+
+        val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
+        assertEquals(StatsGranularity.DAYS, payload.granularity)
+        assertTrue(payload.forced)
     }
 }
