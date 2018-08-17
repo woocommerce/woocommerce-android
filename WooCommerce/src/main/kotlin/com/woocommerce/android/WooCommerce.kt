@@ -60,13 +60,14 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
         initAnalytics()
         CrashlyticsUtils.initCrashlytics(this)
-        trackStartupAnalytics()
 
         createNotificationChannelsOnSdk26()
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
         registerComponentCallbacks(lifecycleMonitor)
+
+        trackStartupAnalytics()
     }
 
     override fun onAppComesFromBackground() {
