@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 /**
  * Global network connection change receiver - The implementing Application must register this receiver in either it's
- * Application class (if it wants to manage connectivity status globally, or inside the activity that wishes to
+ * Application class (if it wants to manage connectivity status globally) or inside the activity that wishes to
  * monitor connectivity.
  */
 @Singleton
