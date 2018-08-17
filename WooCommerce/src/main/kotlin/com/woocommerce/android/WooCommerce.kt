@@ -7,7 +7,6 @@ import android.app.Service
 import android.content.Context
 import android.os.Build
 import android.support.multidex.MultiDexApplication
-import com.crashlytics.android.Crashlytics
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.AppComponent
@@ -16,14 +15,12 @@ import com.woocommerce.android.di.WooCommerceGlideModule
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashlyticsUtils
-import com.woocommerce.android.util.WooLog
 import com.yarolegovich.wellsql.WellSql
 import dagger.MembersInjector
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
-import io.fabric.sdk.android.Fabric
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -34,7 +31,6 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.PackageUtils
 import javax.inject.Inject
-import org.wordpress.android.util.AppLog as WordPressAppLog
 
 open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceInjector, ApplicationLifecycleListener {
     @Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
@@ -62,30 +58,15 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
         AppPrefs.init(this)
 
-        @Suppress("ConstantConditionIf")
-        if (!BuildConfig.DEBUG) {
-            Fabric.with(this, Crashlytics())
-
-            // Send logs for app events through to Crashlytics
-            WooLog.addListener { tag, logLevel, message ->
-                CrashlyticsUtils.log("$logLevel/${WooLog.TAG}-$tag: $message")
-            }
-
-            // Send logs for library events (FluxC, Login, utils) through to Crashlytics
-            WordPressAppLog.addListener { tag, logLevel, message ->
-                CrashlyticsUtils.log("$logLevel/${WordPressAppLog.TAG}-$tag: $message")
-            }
-        }
-
         initAnalytics()
+        CrashlyticsUtils.initCrashlytics(this)
+        trackStartupAnalytics()
 
         createNotificationChannelsOnSdk26()
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
         registerComponentCallbacks(lifecycleMonitor)
-
-        trackStartupAnalytics()
     }
 
     override fun onAppComesFromBackground() {
