@@ -57,6 +57,7 @@ class DashboardPresenter @Inject constructor(
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
     override fun fetchUnfilledOrderCount() {
+        dashboardView?.showUnfilledOrdersProgress(true)
         val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
@@ -92,6 +93,7 @@ class DashboardPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         event.causeOfChange?.takeIf { it == WCOrderAction.FETCH_ORDERS_COUNT }?.let { _ ->
+            dashboardView?.showUnfilledOrdersProgress(false)
             if (event.isError) {
                 WooLog.e(T.DASHBOARD,
                         "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")

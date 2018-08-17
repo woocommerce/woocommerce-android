@@ -28,6 +28,10 @@ class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs:
         }
     }
 
+    fun showProgress(show: Boolean) {
+        alertAction_progress.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
     /**
      * Updates the title of the unfilled orders dashboard card using strings that match the
      * quantity of the order count.

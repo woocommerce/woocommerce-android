@@ -23,5 +23,6 @@ interface DashboardContract {
         fun showTopEarnersError(granularity: StatsGranularity)
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
+        fun showUnfilledOrdersProgress(show: Boolean)
     }
 }
