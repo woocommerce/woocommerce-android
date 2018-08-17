@@ -10,8 +10,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
-import com.woocommerce.android.util.WooAniUtils
-import com.woocommerce.android.util.WooAniUtils.Duration
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -157,14 +157,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun hideUnfilledOrdersCard() {
         if (dashboard_unfilled_orders.visibility == View.VISIBLE) {
-            WooAniUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)
+            WooAnimUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)
         }
     }
 
     override fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean) {
         dashboard_unfilled_orders.updateOrdersCount(count, canLoadMore)
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
-            WooAniUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
+            WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
     }
 

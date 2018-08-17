@@ -9,7 +9,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.LinearInterpolator
 
-object WooAniUtils {
+object WooAnimUtils {
     enum class Duration {
         SHORT,
         MEDIUM,
