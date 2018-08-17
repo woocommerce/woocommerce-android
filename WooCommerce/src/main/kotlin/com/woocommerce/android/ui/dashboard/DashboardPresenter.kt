@@ -30,11 +30,10 @@ class DashboardPresenter @Inject constructor(
     companion object {
         private val TAG = DashboardPresenter::class.java
         private const val NUM_TOP_EARNERS = 3
-        private const val FORCE_REQUEST_FREQUENCY = (1000 * 60) * 5 // force request every 5 minutes
     }
 
     private var dashboardView: DashboardContract.View? = null
-    private val topEarnersLastForceTime = LongArray(StatsGranularity.values().size)
+    private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
     override fun takeView(view: DashboardContract.View) {
         dashboardView = view
@@ -52,16 +51,10 @@ class DashboardPresenter @Inject constructor(
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
-        val shouldForce = if (forced) {
-            true
-        } else {
-            // is it time to force an update for this granularity?
-            val lastForced = topEarnersLastForceTime[granularity.ordinal]
-            val diff = System.currentTimeMillis() - lastForced
-            lastForced == 0L || diff >= FORCE_REQUEST_FREQUENCY
-        }
+        // should we force a refresh?
+        val shouldForce = forced || topEarnersForceRefresh[granularity.ordinal]
         if (shouldForce) {
-            topEarnersLastForceTime[granularity.ordinal] = System.currentTimeMillis()
+            topEarnersForceRefresh[granularity.ordinal] = false
         }
 
         val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
@@ -69,18 +62,19 @@ class DashboardPresenter @Inject constructor(
     }
 
     /**
-     * clears the timestamps we use to determine whether to force top earners to refresh - this
-     * way all top earner stats will force refresh the next time they're loaded
+     * this tells the presenter to force a refresh for all top earner granularities on the next request - this is
+     * used after a swipe-to-refresh on the dashboard to ensure we don't get cached top earners
      */
-    override fun resetTopEarnersTimestamps() {
-        for (i in 0 until topEarnersLastForceTime.size) {
-            topEarnersLastForceTime[i] = 0
+    override fun resetTopEarnersForceRefresh() {
+        for (i in 0 until topEarnersForceRefresh.size) {
+            topEarnersForceRefresh[i] = true
         }
     }
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
     override fun fetchUnfilledOrderCount() {
+        dashboardView?.showUnfilledOrdersProgress(true)
         val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
@@ -106,8 +100,7 @@ class DashboardPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCTopEarnersChanged(event: OnWCTopEarnersChanged) {
         if (event.isError) {
-            // TODO: notify user of the problem?
-            dashboardView?.showTopEarners(emptyList(), event.granularity)
+            dashboardView?.showTopEarnersError(event.granularity)
         } else {
             dashboardView?.showTopEarners(event.topEarners, event.granularity)
         }
@@ -117,6 +110,7 @@ class DashboardPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         event.causeOfChange?.takeIf { it == WCOrderAction.FETCH_ORDERS_COUNT }?.let { _ ->
+            dashboardView?.showUnfilledOrdersProgress(false)
             if (event.isError) {
                 WooLog.e(T.DASHBOARD,
                         "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")
