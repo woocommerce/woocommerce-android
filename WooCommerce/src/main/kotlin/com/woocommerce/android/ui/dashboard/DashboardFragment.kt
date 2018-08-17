@@ -55,6 +55,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     )
                 }
                 setOnRefreshListener {
+                    presenter.resetTopEarnersForceRefresh()
                     refreshDashboard()
                 }
             }

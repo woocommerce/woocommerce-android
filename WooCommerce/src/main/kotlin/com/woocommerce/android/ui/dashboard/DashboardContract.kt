@@ -9,6 +9,7 @@ interface DashboardContract {
     interface Presenter : BasePresenter<View> {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
+        fun resetTopEarnersForceRefresh()
         fun getStatsCurrency(): String?
         fun fetchUnfilledOrderCount()
     }

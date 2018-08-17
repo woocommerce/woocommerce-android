@@ -33,6 +33,7 @@ class DashboardPresenter @Inject constructor(
     }
 
     private var dashboardView: DashboardContract.View? = null
+    private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
     override fun takeView(view: DashboardContract.View) {
         dashboardView = view
@@ -50,8 +51,24 @@ class DashboardPresenter @Inject constructor(
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
-        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, forced)
+        // should we force a refresh?
+        val shouldForce = forced || topEarnersForceRefresh[granularity.ordinal]
+        if (shouldForce) {
+            topEarnersForceRefresh[granularity.ordinal] = false
+        }
+
+        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
+    }
+
+    /**
+     * this tells the presenter to force a refresh for all top earner granularities on the next request - this is
+     * used after a swipe-to-refresh on the dashboard to ensure we don't get cached top earners
+     */
+    override fun resetTopEarnersForceRefresh() {
+        for (i in 0 until topEarnersForceRefresh.size) {
+            topEarnersForceRefresh[i] = true
+        }
     }
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
