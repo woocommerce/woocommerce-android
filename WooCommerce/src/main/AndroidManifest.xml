@@ -45,7 +45,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="magic-login"
-                    android:scheme="wordpress" />
+                    android:scheme="woocommerce" />
             </intent-filter>
         </activity>
 
