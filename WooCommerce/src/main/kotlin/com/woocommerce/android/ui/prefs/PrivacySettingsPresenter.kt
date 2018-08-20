@@ -29,6 +29,7 @@ class PrivacySettingsPresenter @Inject constructor(
     override fun getSendUsageStats() = !accountStore.account.tracksOptOut
 
     override fun setSendUsageStats(sendUsageStats: Boolean) {
+        // note that we don't init/disable Crashlytics here because that requires the app to be restarted
         AnalyticsTracker.sendUsageStats = sendUsageStats
 
         // sync with wpcom if a token is available

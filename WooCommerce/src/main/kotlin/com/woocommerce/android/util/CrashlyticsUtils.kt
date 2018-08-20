@@ -1,16 +1,40 @@
 package com.woocommerce.android.util
 
+import android.content.Context
 import com.crashlytics.android.Crashlytics
+import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.WooLog.T
 
 import io.fabric.sdk.android.Fabric
+import org.wordpress.android.util.AppLog as WordPressAppLog
 
 object CrashlyticsUtils {
     private const val TAG_KEY = "tag"
     private const val MESSAGE_KEY = "message"
 
+    private fun isCrashlyticsAllowed(): Boolean {
+        return AnalyticsTracker.sendUsageStats && !BuildConfig.DEBUG
+    }
+
+    fun initCrashlytics(context: Context) {
+        if (!isCrashlyticsAllowed()) { return }
+
+        Fabric.with(context, Crashlytics())
+
+        // Send logs for app events through to Crashlytics
+        WooLog.addListener { tag, logLevel, message ->
+            CrashlyticsUtils.log("$logLevel/${WooLog.TAG}-$tag: $message")
+        }
+
+        // Send logs for library events (FluxC, Login, utils) through to Crashlytics
+        WordPressAppLog.addListener { tag, logLevel, message ->
+            CrashlyticsUtils.log("$logLevel/${WordPressAppLog.TAG}-$tag: $message")
+        }
+    }
+
     fun logException(tr: Throwable, tag: T? = null, message: String? = null) {
-        if (!Fabric.isInitialized()) { return }
+        if (!Fabric.isInitialized() || !isCrashlyticsAllowed()) { return }
 
         tag?.let { Crashlytics.setString(TAG_KEY, it.name) }
 
@@ -20,7 +44,7 @@ object CrashlyticsUtils {
     }
 
     fun log(message: String) {
-        if (!Fabric.isInitialized()) { return }
+        if (!Fabric.isInitialized() || !isCrashlyticsAllowed()) { return }
 
         Crashlytics.log(message)
     }
