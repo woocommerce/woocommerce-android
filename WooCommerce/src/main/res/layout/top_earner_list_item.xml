@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/margin_large">
+
+    <FrameLayout
+        android:id="@+id/frame_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:background="@drawable/picture_frame"
+        android:padding="2dp">
+
+        <ImageView
+            android:id="@+id/image_product"
+            android:layout_width="@dimen/top_earner_product_image_sz"
+            android:layout_height="@dimen/top_earner_product_image_sz"
+            android:contentDescription="@string/dashboard_top_earners_content_description"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_stats_grey_min_24dp"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/product_contaimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/margin_extra_large"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_toEndOf="@+id/frame_product"
+        android:layout_toStartOf="@+id/text_TotalSpend"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_ProductName"
+            style="@style/Woo.TextAppearance.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            tools:text="text_ProductName"/>
+
+        <TextView
+            android:id="@+id/text_ProductOrders"
+            style="@style/Woo.TextAppearance.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="text_ProductOrders"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_TotalSpend"
+        style="@style/Woo.TextAppearance.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        tools:text="$150"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/product_contaimer"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_toEndOf="@+id/frame_product"
+        android:background="@color/list_divider"/>
+
+</RelativeLayout>

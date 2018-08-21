@@ -36,6 +36,12 @@
     <string name="learn_more">Learn More</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable.\nCheck your data or wifi connection.</string>
+    <string name="product">Product</string>
+    <string name="today">Today</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
+    <string name="this_year">This Year</string>
+    <string name="discard">Discard</string>
     <!--
         Date/Time Labels
     -->
@@ -84,6 +90,13 @@
     <string name="dashboard_stats_orders">Orders</string>
     <string name="dashboard_stats_revenue">Revenue</string>
     <string name="dashboard_state_no_data">No data available</string>
+
+    <string name="dashboard_top_earners_title">Top performers</string>
+    <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
+    <string name="dashboard_top_earners_total_spend">Total spend</string>
+    <string name="dashboard_top_earners_total_orders">Total product order: %s</string>
+    <string name="dashboard_top_earners_content_description">Product image</string>
+    <string name="dashboard_top_earners_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -149,6 +162,7 @@
     <string name="add_order_note_menu_item">Add</string>
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
+    <string name="add_order_note_confirm_discard">Discard this note?</string>
     <!--
         Order Status Labels
     -->

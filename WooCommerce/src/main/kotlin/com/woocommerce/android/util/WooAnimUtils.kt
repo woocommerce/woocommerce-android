@@ -6,9 +6,9 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.TranslateAnimation
-import com.woocommerce.android.util.AnimUtils.Duration.SHORT
+import com.woocommerce.android.util.WooAnimUtils.Duration.SHORT
 
-object AnimUtils {
+object WooAnimUtils {
     enum class Duration {
         SHORT,
         MEDIUM,

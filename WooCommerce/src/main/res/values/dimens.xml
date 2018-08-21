@@ -100,4 +100,9 @@
     -->
     <dimen name="settings_padding">16dp</dimen>
 
+    <!--
+        Stats and Top earners
+    -->
+    <dimen name="top_earner_product_image_sz">40dp</dimen>
+
 </resources>

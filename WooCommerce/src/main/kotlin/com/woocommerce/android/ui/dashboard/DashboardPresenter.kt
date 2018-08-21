@@ -11,13 +11,15 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
+import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
@@ -29,9 +31,12 @@ class DashboardPresenter @Inject constructor(
 ) : DashboardContract.Presenter {
     companion object {
         private val TAG = DashboardPresenter::class.java
+        private const val NUM_TOP_EARNERS = 3
+        private const val FORCE_REQUEST_FREQUENCY = (1000 * 60) * 5 // force request every 5 minutes
     }
 
     private var dashboardView: DashboardContract.View? = null
+    private val topEarnersLastForceTime = LongArray(StatsGranularity.values().size)
 
     override fun takeView(view: DashboardContract.View) {
         dashboardView = view
@@ -50,10 +55,37 @@ class DashboardPresenter @Inject constructor(
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
     }
 
+    override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
+        val shouldForce = if (forced) {
+            true
+        } else {
+            // is it time to force an update for this granularity?
+            val lastForced = topEarnersLastForceTime[granularity.ordinal]
+            val diff = System.currentTimeMillis() - lastForced
+            lastForced == 0L || diff >= FORCE_REQUEST_FREQUENCY
+        }
+        if (shouldForce) {
+            topEarnersLastForceTime[granularity.ordinal] = System.currentTimeMillis()
+        }
+
+        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
+    }
+
+    /**
+     * clears the timestamps we use to determine whether to force top earners to refresh - this
+     * way all top earner stats will force refresh the next time they're loaded
+     */
+    override fun resetTopEarnersTimestamps() {
+        for (i in 0 until topEarnersLastForceTime.size) {
+            topEarnersLastForceTime[i] = 0
+        }
+    }
+
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
     override fun fetchUnfilledOrderCount() {
-        val payload = FetchOrdersCountPayload(selectedSite.get(), CoreOrderStatus.PROCESSING.value)
+        val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
 
@@ -72,6 +104,17 @@ class DashboardPresenter @Inject constructor(
         val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
 
         dashboardView?.showStats(revenueStats, orderStats, event.granularity)
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWCTopEarnersChanged(event: OnWCTopEarnersChanged) {
+        if (event.isError) {
+            // TODO: notify user of the problem?
+            dashboardView?.showTopEarners(emptyList(), event.granularity)
+        } else {
+            dashboardView?.showTopEarners(event.topEarners, event.granularity)
+        }
     }
 
     @Suppress("unused")

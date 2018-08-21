@@ -154,7 +154,7 @@ class OrderDetailPresenter @Inject constructor(
     /**
      * Fetch the order notes from the device database.
      */
-    private fun fetchAndLoadNotesFromDb() {
+    fun fetchAndLoadNotesFromDb() {
         orderModel?.let { order ->
             val notes = orderStore.getOrderNotesForOrder(order)
             if (isNotesInit) {

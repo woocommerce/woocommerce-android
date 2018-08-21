@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.util.AnimUtils
+import com.woocommerce.android.util.WooAnimUtils
 import org.wordpress.android.util.NetworkUtils
 
 class OfflineStatusBarView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -13,7 +13,7 @@ class OfflineStatusBarView @JvmOverloads constructor(ctx: Context, attrs: Attrib
     init {
         View.inflate(context, R.layout.offline_status_bar, this)
         setOnClickListener {
-            AnimUtils.animateBottomBar(this, false)
+            WooAnimUtils.animateBottomBar(this, false)
             postDelayed({
                 if (NetworkUtils.isNetworkAvailable(context)) {
                     hide()
@@ -26,13 +26,13 @@ class OfflineStatusBarView @JvmOverloads constructor(ctx: Context, attrs: Attrib
 
     fun show() {
         if (visibility != View.VISIBLE) {
-            AnimUtils.animateBottomBar(this, show = true)
+            WooAnimUtils.animateBottomBar(this, show = true)
         }
     }
 
     fun hide() {
         if (visibility == View.VISIBLE) {
-            AnimUtils.animateBottomBar(this, show = false)
+            WooAnimUtils.animateBottomBar(this, show = false)
         }
     }
 }
