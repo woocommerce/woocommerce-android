@@ -10,6 +10,7 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
 import org.junit.Test
@@ -196,6 +197,24 @@ class DashboardPresenterTest {
         })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
+        verify(dashboardView, times(0)).refreshDashboard()
+    }
+
+    @Test
+    fun `Refreshes dashboard on network connected event correctly`() {
+        presenter.takeView(dashboardView)
+
+        // Simulate the network connected event
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(dashboardView, times(1)).refreshDashboard()
+    }
+
+    @Test
+    fun `Ignores network disconnected event correctly`() {
+        presenter.takeView(dashboardView)
+
+        // Simulate the network disconnected event
+        presenter.onEventMainThread(ConnectionChangeEvent(false))
         verify(dashboardView, times(0)).refreshDashboard()
     }
 }

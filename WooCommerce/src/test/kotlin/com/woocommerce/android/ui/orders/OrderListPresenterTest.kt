@@ -8,6 +8,7 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
@@ -125,5 +126,43 @@ class OrderListPresenterTest {
             error = OrderError()
         })
         verify(orderListView, times(1)).showLoadOrdersError()
+    }
+
+    @Test
+    fun `Refreshes dashboard on network connected event`() {
+        presenter.takeView(orderListView)
+
+        // mock a network status change
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(orderListView, times(1)).refreshFragmentState()
+    }
+
+    @Test
+    fun `Do nothing on network disconnected event`() {
+        presenter.takeView(orderListView)
+
+        // mock a network status change
+        presenter.onEventMainThread(ConnectionChangeEvent(false))
+        verify(orderListView, times(0)).refreshFragmentState()
+    }
+
+    @Test
+    fun `Load cached orders if not connected to network`() {
+        presenter.takeView(orderListView)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        // mock a network status change
+        presenter.loadOrders(null, true)
+        verify(presenter, times(1)).fetchAndLoadOrdersFromDb(null, false)
+    }
+
+    @Test
+    fun `Do not fetch more orders if not connected to network`() {
+        presenter.takeView(orderListView)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        // mock a network status change
+        presenter.loadMoreOrders(null)
+        verify(presenter, times(0)).fetchAndLoadOrdersFromDb(any(), any())
     }
 }

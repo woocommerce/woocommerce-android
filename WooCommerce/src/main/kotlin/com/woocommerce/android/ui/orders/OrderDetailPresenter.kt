@@ -169,7 +169,7 @@ class OrderDetailPresenter @Inject constructor(
     /**
      * Request a fresh copy of order notes from the api.
      */
-    private fun requestOrderNotesFromApi(order: WCOrderModel) {
+    fun requestOrderNotesFromApi(order: WCOrderModel) {
         val payload = FetchOrderNotesPayload(order, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
     }

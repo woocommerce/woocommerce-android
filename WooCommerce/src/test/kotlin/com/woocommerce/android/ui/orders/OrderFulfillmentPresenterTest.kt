@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
+import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.tools.NetworkStatus
@@ -47,5 +48,16 @@ class OrderFulfillmentPresenterTest {
         presenter.markOrderComplete()
         verify(view).toggleCompleteButton(isEnabled = false)
         verify(view).fulfillOrder()
+    }
+
+    @Test
+    fun `Show offline message on request to mark order complete if not connected`() {
+        presenter.takeView(view)
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(false).whenever(networkStatus).isConnected()
+        presenter.markOrderComplete()
+        verify(view, times(0)).toggleCompleteButton(any())
+        verify(view, times(0)).fulfillOrder()
+        verify(uiMessageResolver, times(1)).showOfflineSnack()
     }
 }
