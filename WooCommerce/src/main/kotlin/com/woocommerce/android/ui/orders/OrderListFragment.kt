@@ -20,15 +20,11 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
-import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.ToastUtils
@@ -113,9 +109,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Listen for network connectivity changes
-        ConnectionChangeReceiver.getEventBus().register(this)
-
         // Set the divider decoration for the list
         ordersDividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
 
@@ -184,7 +177,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onDestroyView() {
-        ConnectionChangeReceiver.getEventBus().unregister(this)
         presenter.dropView()
         filterMenuButton = null
         super.onDestroyView()
@@ -325,13 +317,4 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         presenter.loadOrders(orderStatusFilter, true)
     }
     // endregion
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: ConnectionChangeEvent) {
-        if (isActive && event.isConnected && forceRefresh) {
-            // Refresh data if needed now that a connection is active
-            presenter.loadOrders(orderStatusFilter, true)
-        }
-    }
 }

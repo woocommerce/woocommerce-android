@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -20,7 +23,8 @@ import javax.inject.Inject
 class OrderListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val networkStatus: NetworkStatus
 ) : OrderListContract.Presenter {
     companion object {
         private val TAG: String = OrderListPresenter::class.java.simpleName
@@ -34,15 +38,17 @@ class OrderListPresenter @Inject constructor(
     override fun takeView(view: OrderListContract.View) {
         orderView = view
         dispatcher.register(this)
+        ConnectionChangeReceiver.getEventBus().register(this)
     }
 
     override fun dropView() {
         orderView = null
         dispatcher.unregister(this)
+        ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
     override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
-        if (forceRefresh) {
+        if (networkStatus.isConnected() && forceRefresh) {
             isLoadingOrders = true
             orderView?.setLoadingIndicator(active = true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
@@ -60,10 +66,12 @@ class OrderListPresenter @Inject constructor(
         return canLoadMore
     }
 
-    override fun loadMoreOrders(filterByStatus: String?) {
+    override fun loadMoreOrders(orderStatusFilter: String?) {
+        if (!networkStatus.isConnected()) return
+
         orderView?.setLoadingMoreIndicator(true)
         isLoadingMoreOrders = true
-        val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus, loadMore = true)
+        val payload = FetchOrdersPayload(selectedSite.get(), orderStatusFilter, loadMore = true)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
     }
 
@@ -112,11 +120,19 @@ class OrderListPresenter @Inject constructor(
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
+            view.setLoadingIndicator(false)
             if (orders.count() > 0) {
                 view.showOrders(orders, orderStatusFilter, isForceRefresh)
             } else {
                 view.showNoOrders()
             }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: ConnectionChangeEvent) {
+        if (event.isConnected) {
+            // Refresh data now that a connection is active
+            orderView?.refreshFragmentState()
         }
     }
 }
