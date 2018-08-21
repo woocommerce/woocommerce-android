@@ -133,7 +133,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun getFragmentTitle(): String {
-        return getString(R.string.dashboard)
+        return getString(R.string.my_store)
     }
 
     override fun refreshFragmentState() {

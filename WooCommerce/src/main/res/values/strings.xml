@@ -14,7 +14,7 @@
     <string name="all">All</string>
     <string name="logging_in">Logging in</string>
     <string name="signout">Log out</string>
-    <string name="dashboard">Dashboard</string>
+    <string name="my_store">My store</string>
     <string name="orders">Orders</string>
     <string name="email_address">Email Address</string>
     <string name="currency_total">%1$s%2$s</string>
