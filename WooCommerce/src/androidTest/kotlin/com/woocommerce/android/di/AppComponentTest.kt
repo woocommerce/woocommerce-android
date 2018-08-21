@@ -24,7 +24,8 @@ import javax.inject.Singleton
         MockedActivityBindingModule::class,
         MockedSelectedSiteModule::class,
         LoginAnalyticsModule::class,
-        LoginServiceModule::class))
+        LoginServiceModule::class,
+        NetworkStatusModule::class))
 interface AppComponentTest : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {
