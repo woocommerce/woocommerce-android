@@ -8,6 +8,7 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +28,7 @@ class OrderListPresenterTest {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val networkStatus: NetworkStatus = mock()
 
     private val orders = OrderTestUtils.generateOrders()
     private val noOrders = emptyList<WCOrderModel>()
@@ -34,9 +36,10 @@ class OrderListPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderListPresenter(dispatcher, orderStore, selectedSite))
+        presenter = spy(OrderListPresenter(dispatcher, orderStore, selectedSite, networkStatus))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
+        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     @Test

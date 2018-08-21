@@ -7,7 +7,9 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -28,6 +30,8 @@ class OrderDetailPresenterTest {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val uiMessageResolver: UIMessageResolver = mock()
+    private val networkStatus: NetworkStatus = mock()
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
@@ -36,9 +40,10 @@ class OrderDetailPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite))
+        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite, uiMessageResolver, networkStatus))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
+        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     @Test

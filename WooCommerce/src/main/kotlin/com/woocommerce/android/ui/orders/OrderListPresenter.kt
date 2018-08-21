@@ -127,6 +127,7 @@ class OrderListPresenter @Inject constructor(
                 view.showNoOrders()
             }
         }
+    }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
