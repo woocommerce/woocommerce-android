@@ -10,6 +10,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_order_note.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -25,6 +27,8 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
     }
 
     @Inject lateinit var presenter: AddOrderNoteContract.Presenter
+    @Inject lateinit var networkStatus: NetworkStatus
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var orderId: OrderIdentifier
     private lateinit var orderNumber: String
@@ -80,14 +84,18 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                 true
             }
             R.id.menu_add -> {
-                val noteText = addNote_editor.text.toString().trim()
-                if (!noteText.isEmpty() && NetworkUtils.checkConnection(this)) {
-                    val isCustomerNote = addNote_switch.isChecked
-                    val data = Intent()
-                    data.putExtra(FIELD_NOTE_TEXT, noteText)
-                    data.putExtra(FIELD_IS_CUSTOMER_NOTE, isCustomerNote)
-                    setResult(Activity.RESULT_OK, data)
-                    finish()
+                if (!networkStatus.isConnected()) {
+                    uiMessageResolver.showOfflineSnack()
+                } else {
+                    val noteText = addNote_editor.text.toString().trim()
+                    if (!noteText.isEmpty() && NetworkUtils.checkConnection(this)) {
+                        val isCustomerNote = addNote_switch.isChecked
+                        val data = Intent()
+                        data.putExtra(FIELD_NOTE_TEXT, noteText)
+                        data.putExtra(FIELD_IS_CUSTOMER_NOTE, isCustomerNote)
+                        setResult(Activity.RESULT_OK, data)
+                        finish()
+                    }
                 }
                 true
             }
