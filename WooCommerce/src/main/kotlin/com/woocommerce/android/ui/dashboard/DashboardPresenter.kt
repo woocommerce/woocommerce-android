@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.dashboard
 
+import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -34,11 +36,13 @@ class DashboardPresenter @Inject constructor(
     override fun takeView(view: DashboardContract.View) {
         dashboardView = view
         dispatcher.register(this)
+        ConnectionChangeReceiver.getEventBus().register(this)
     }
 
     override fun dropView() {
         dashboardView = null
         dispatcher.unregister(this)
+        ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
     override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
@@ -84,6 +88,15 @@ class DashboardPresenter @Inject constructor(
                 dashboardView?.showUnfilledOrdersCard(count, event.canLoadMore)
             } ?: dashboardView?.hideUnfilledOrdersCard()
         } ?: if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
+            dashboardView?.refreshDashboard()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: ConnectionChangeEvent) {
+        if (event.isConnected) {
+            // Refresh data if needed now that a connection is active
             dashboardView?.refreshDashboard()
         }
     }
