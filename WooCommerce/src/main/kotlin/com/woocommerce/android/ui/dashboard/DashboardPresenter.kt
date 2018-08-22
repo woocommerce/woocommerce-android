@@ -121,7 +121,7 @@ class DashboardPresenter @Inject constructor(
                 WooLog.e(T.DASHBOARD,
                         "$TAG - Error fetching whether orders exist: ${event.error.message}")
             } else {
-                // TODO: toggle image depending on whether orders exist
+                // TODO: toggle image depending on whether orders exist (if rowsAffected > 0 then orders exist)
             }
         } else {
             event.causeOfChange?.takeIf { it == WCOrderAction.FETCH_ORDERS_COUNT }?.let { _ ->
