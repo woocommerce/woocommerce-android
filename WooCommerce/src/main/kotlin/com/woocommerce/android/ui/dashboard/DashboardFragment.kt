@@ -122,6 +122,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (dashboard_stats.activeGranularity == granularity) {
+            dashboard_stats.showErrorView(false)
             dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
             setLoadingIndicator(false)
         }
@@ -131,6 +132,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_stats.activeGranularity == granularity) {
             showStats(emptyMap(), emptyMap(), granularity)
             showErrorSnack()
+            dashboard_stats.showErrorView(true)
         }
     }
 
