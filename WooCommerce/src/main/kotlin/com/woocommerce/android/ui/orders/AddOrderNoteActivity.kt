@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_order_note.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
@@ -102,7 +101,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                     uiMessageResolver.showOfflineSnack()
                 } else {
                     val noteText = getNoteText()
-                    if (!noteText.isEmpty() && NetworkUtils.checkConnection(this)) {
+                    if (!noteText.isEmpty()) {
                         val isCustomerNote = addNote_switch.isChecked
                         val data = Intent()
                         data.putExtra(FIELD_NOTE_TEXT, noteText)
