@@ -137,7 +137,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
         // Populate order notes card
-        orderDetail_noteList.initView(notes, networkStatus, this)
+        orderDetail_noteList.initView(notes, this)
     }
 
     override fun updateOrderNotes(notes: List<WCOrderNoteModel>) {

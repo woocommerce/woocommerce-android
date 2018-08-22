@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_note_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
@@ -32,17 +31,10 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
     // negative IDs denote transient notes
     private var nextTransientNoteId = -1
 
-    fun initView(
-        notes: List<WCOrderNoteModel>,
-        networkStatus: NetworkStatus,
-        orderDetailListener: OrderDetailNoteListener
-    ) {
+    fun initView(notes: List<WCOrderNoteModel>, orderDetailListener: OrderDetailNoteListener) {
         listener = orderDetailListener
 
         if (notes.isNotEmpty()) {
-            notesList_progress.visibility = View.GONE
-        } else if (!networkStatus.isConnected()) {
-            // TODO - maybe display an offline message or symbol?
             notesList_progress.visibility = View.GONE
         }
 
