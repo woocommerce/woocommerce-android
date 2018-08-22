@@ -88,6 +88,7 @@
     <string name="dashboard_stats_orders">Orders</string>
     <string name="dashboard_stats_revenue">Revenue</string>
     <string name="dashboard_state_no_data">No data available</string>
+    <string name="dashboard_stats_error">Error fetching data</string>
 
     <string name="dashboard_top_earners_title">Top performers</string>
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
