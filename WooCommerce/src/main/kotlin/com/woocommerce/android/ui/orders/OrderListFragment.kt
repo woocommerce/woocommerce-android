@@ -51,7 +51,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private lateinit var listLayoutAnimation: LayoutAnimationController
 
-    private var forceRefresh = true // If true, the fragment will refresh its orders when its visible
+    override var forceRefresh = true // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuButton: MenuItem? = null
@@ -214,9 +214,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
     }
 
+    /**
+     * No orders exist for the selected store. Show the "no orders" view.
+     */
     override fun showNoOrders() {
         ordersView.visibility = View.GONE
         noOrdersView.visibility = View.VISIBLE
+        forceRefresh = false
     }
 
     /**

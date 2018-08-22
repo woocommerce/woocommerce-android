@@ -133,8 +133,12 @@ class OrderListPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            // Refresh data now that a connection is active
-            orderView?.refreshFragmentState()
+            // Refresh data now that a connection is active if needed
+            orderView?.let { order ->
+                if (order.forceRefresh) {
+                    order.refreshFragmentState()
+                }
+            }
         }
     }
 }

@@ -42,6 +42,7 @@ class OrderDetailPresenter @Inject constructor(
 
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
+    private var isUsingCached = false
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
@@ -76,6 +77,9 @@ class OrderDetailPresenter @Inject constructor(
             if (networkStatus.isConnected()) {
                 // Attempt to refresh notes from api in the background
                 requestOrderNotesFromApi(order)
+            } else {
+                // Track so when the device is connected notes can be refreshed
+                isUsingCached = true
             }
         }
     }
@@ -122,6 +126,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showNotesErrorSnack()
             } else {
                 orderModel?.let { order ->
+                    isUsingCached = false
                     val notes = orderStore.getOrderNotesForOrder(order)
                     orderView?.updateOrderNotes(notes)
                 }
@@ -178,8 +183,12 @@ class OrderDetailPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            // Refresh order notes now that a connection is active
-            orderModel?.let { requestOrderNotesFromApi(it) }
+            // Refresh order notes now that a connection is active is needed
+            orderModel?.let { order ->
+                if (isUsingCached) {
+                    requestOrderNotesFromApi(order)
+                }
+            }
         }
     }
 }
