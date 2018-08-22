@@ -370,11 +370,11 @@
     <style name="Woo.StatusBar"/>
     <style name="Woo.StatusBar.Background">
         <item name="android:background">@color/wc_grey_medium</item>
-        <item name="android:padding">4dp</item>
+        <item name="android:padding">@dimen/offline_status_bar_padding</item>
     </style>
     <style name="Woo.StatusBar.Label">
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">@dimen/text_caption</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center</item>
     </style>
