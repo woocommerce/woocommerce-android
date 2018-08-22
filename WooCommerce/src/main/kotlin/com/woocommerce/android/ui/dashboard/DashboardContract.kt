@@ -12,6 +12,7 @@ interface DashboardContract {
         fun resetTopEarnersForceRefresh()
         fun getStatsCurrency(): String?
         fun fetchUnfilledOrderCount()
+        fun fetchHasOrders()
     }
 
     interface View : BaseView<Presenter> {
