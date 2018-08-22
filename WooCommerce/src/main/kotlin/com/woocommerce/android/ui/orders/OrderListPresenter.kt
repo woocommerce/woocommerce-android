@@ -124,7 +124,13 @@ class OrderListPresenter @Inject constructor(
             if (orders.count() > 0) {
                 view.showOrders(orders, orderStatusFilter, isForceRefresh)
             } else {
-                view.showNoOrders()
+                if (!networkStatus.isConnected()) {
+                    // if the device if offline with no cached orders to display, show the loading
+                    // indicator until a successful online refresh.
+                    view.setLoadingIndicator(true)
+                } else {
+                    view.showNoOrders()
+                }
             }
         }
     }
