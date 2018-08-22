@@ -183,10 +183,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
+        dashboard_stats.showErrorView(false)
         presenter.loadStats(period)
     }
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
+        dashboard_top_earners.showErrorView(false)
         presenter.loadTopEarnerStats(period)
     }
 
