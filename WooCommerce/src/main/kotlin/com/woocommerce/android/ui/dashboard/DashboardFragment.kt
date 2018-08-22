@@ -131,13 +131,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun showStatsError(granularity: StatsGranularity) {
         if (dashboard_stats.activeGranularity == granularity) {
             showStats(emptyMap(), emptyMap(), granularity)
-            showErrorSnack()
             dashboard_stats.showErrorView(true)
+            showErrorSnack()
         }
     }
 
     override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
         if (dashboard_top_earners.activeGranularity == granularity) {
+            dashboard_top_earners.showErrorView(false)
             dashboard_top_earners.updateView(topEarnerList)
         }
     }
@@ -145,6 +146,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun showTopEarnersError(granularity: StatsGranularity) {
         if (dashboard_top_earners.activeGranularity == granularity) {
             dashboard_top_earners.updateView(emptyList())
+            dashboard_top_earners.showErrorView(true)
             showErrorSnack()
         }
     }

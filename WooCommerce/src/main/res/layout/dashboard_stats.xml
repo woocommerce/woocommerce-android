@@ -127,7 +127,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/dashboard_stats_error_content_description"
-            app:srcCompat="@drawable/ic_woo_error_state"/>
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_woo_error_state"
+            tools:visibility="visible"/>
 
         <ProgressBar
             android:id="@+id/barchart_progress"

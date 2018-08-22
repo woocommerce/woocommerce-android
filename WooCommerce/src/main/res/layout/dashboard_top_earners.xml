@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -62,14 +63,25 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:minHeight="224dp">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/topEarners_recycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:minHeight="224dp"
             tools:listitem="@layout/top_earner_list_item"/>
+
+        <ImageView
+            android:id="@+id/topEarners_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/dashboard_stats_error_content_description"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_woo_error_state"
+            tools:visibility="visible"/>
 
         <ProgressBar
             android:id="@+id/topEarners_progress"
