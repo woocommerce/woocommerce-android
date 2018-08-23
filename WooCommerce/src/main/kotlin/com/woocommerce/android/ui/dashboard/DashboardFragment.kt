@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
@@ -181,12 +182,24 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_unfilled_orders.showProgress(show)
     }
 
+    override fun shareStoreUrl() {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, selectedSite.get().url)
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(sendIntent, resources.getText(R.string.dashboard_no_orders_share_url_title)))
+    }
+
     /**
      * shows the "waiting for customers" view that appears for stores that have never had any orders
      */
     override fun showNoOrdersView(show: Boolean) {
         if (show && no_orders_view.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(no_orders_view, Duration.LONG)
+            no_orders_share_button.setOnClickListener {
+                shareStoreUrl()
+            }
         } else if (!show && no_orders_view.visibility == View.VISIBLE) {
             WooAnimUtils.fadeOut(no_orders_view, Duration.LONG)
         }

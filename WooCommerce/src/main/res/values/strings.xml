@@ -105,6 +105,7 @@
 
     <string name="dashboard_no_orders">Waiting for customers…</string>
     <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
+    <string name="dashboard_no_orders_share_url_title">Share your store\'s URL</string>
     <!--
         Order List View
     -->
