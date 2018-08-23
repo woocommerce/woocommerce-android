@@ -102,7 +102,6 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
-        dashboardView?.hideUnfilledOrdersCard()
         val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
