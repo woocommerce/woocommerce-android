@@ -22,7 +22,7 @@ import org.junit.Before
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class AppNavigationTest : TestBase() {
+class MainNavigationTest : TestBase() {
     @Rule
     @JvmField var activityTestRule = MainActivityTestRule()
 
