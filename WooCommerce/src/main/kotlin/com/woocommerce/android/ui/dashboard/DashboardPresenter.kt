@@ -123,8 +123,7 @@ class DashboardPresenter @Inject constructor(
                 WooLog.e(T.DASHBOARD,
                         "$TAG - Error fetching whether orders exist: ${event.error.message}")
             } else {
-                // show the "waiting for customers" view if there have never been any orders
-                val hasNoOrders = event.rowsAffected != 0 // TODO: == 0
+                val hasNoOrders = event.rowsAffected == 0
                 dashboardView?.showNoOrdersView(hasNoOrders)
             }
         } else {

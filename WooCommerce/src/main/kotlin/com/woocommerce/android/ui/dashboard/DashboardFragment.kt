@@ -181,14 +181,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_unfilled_orders.showProgress(show)
     }
 
+    /**
+     * shows the "waiting for customers" view that appears for stores that have never had any orders
+     */
     override fun showNoOrdersView(show: Boolean) {
-        val duration = Duration.LONG
         if (show && no_orders_view.visibility != View.VISIBLE) {
-            WooAnimUtils.fadeIn(no_orders_view, duration)
-            WooAnimUtils.fadeOut(scroll_view, duration)
+            WooAnimUtils.fadeIn(no_orders_view, Duration.LONG)
         } else if (!show && no_orders_view.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(no_orders_view, duration)
-            WooAnimUtils.fadeIn(scroll_view, duration)
+            WooAnimUtils.fadeOut(no_orders_view, Duration.LONG)
         }
     }
 }
