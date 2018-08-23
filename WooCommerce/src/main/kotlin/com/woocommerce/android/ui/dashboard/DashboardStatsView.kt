@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.os.Handler
 import android.support.annotation.StringRes
 import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
@@ -19,8 +20,11 @@ import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULA
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
+import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
+import org.wordpress.android.util.DateTimeUtils
+import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
 
@@ -32,6 +36,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     companion object {
         private const val PROGRESS_DELAY_TIME_MS = 200L
+        private const val UPDATE_DELAY_TIME_MS = 30 * 1000 // TODO 60
     }
 
     var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
@@ -48,6 +53,15 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private var progressDelayTimer: Timer? = null
     private var progressDelayTimerTask: TimerTask? = null
+
+    private lateinit var updateRunnable: Runnable
+    private lateinit var updateHandler: Handler
+
+    var dateUpdated: Date? = null
+    set(value) {
+        field = value
+        updateRecencyMessage()
+    }
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -88,6 +102,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         })
 
         initChart()
+
+        updateHandler = Handler()
+        updateRunnable = Runnable {
+            updateRecencyMessage()
+            updateHandler.postDelayed({ updateRunnable }, UPDATE_DELAY_TIME_MS)
+        }
+        updateHandler.postDelayed({ updateRunnable }, UPDATE_DELAY_TIME_MS)
     }
 
     /**
@@ -163,6 +184,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
             invalidate() // Draw/redraw the graph
         }
+    }
+
+    private fun updateRecencyMessage() {
+        if (dateUpdated == null) {
+            dashboard_recency_text.text = null
+            return
+        }
+
+        val dateStr = DateTimeUtils.javaDateToTimeSpan(dateUpdated, context)
+        dashboard_recency_text.text = dateStr
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
