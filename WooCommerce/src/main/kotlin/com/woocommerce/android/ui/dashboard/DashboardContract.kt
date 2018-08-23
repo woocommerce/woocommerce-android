@@ -26,5 +26,6 @@ interface DashboardContract {
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
         fun showUnfilledOrdersProgress(show: Boolean)
+        fun showNoOrdersView(show: Boolean)
     }
 }

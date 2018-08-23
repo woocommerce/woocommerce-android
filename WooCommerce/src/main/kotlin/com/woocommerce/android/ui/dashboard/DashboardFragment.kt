@@ -180,4 +180,15 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun showUnfilledOrdersProgress(show: Boolean) {
         dashboard_unfilled_orders.showProgress(show)
     }
+
+    override fun showNoOrdersView(show: Boolean) {
+        val duration = Duration.LONG
+        if (show && no_orders_view.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(no_orders_view, duration)
+            WooAnimUtils.fadeOut(scroll_view, duration)
+        } else if (!show && no_orders_view.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(no_orders_view, duration)
+            WooAnimUtils.fadeIn(scroll_view, duration)
+        }
+    }
 }

@@ -7,7 +7,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
@@ -81,6 +80,9 @@ class DashboardPresenter @Inject constructor(
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
 
+    /**
+     * dispatches a FETCH_HAS_ORDERS action which tells us whether this store has *ever* had any orders
+     */
     override fun fetchHasOrders() {
         val payload = FetchHasOrdersPayload(selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchHasOrdersAction(payload))
@@ -116,12 +118,14 @@ class DashboardPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
-        if (event.causeOfChange == FETCH_HAS_ORDERS) {
+        if (event.causeOfChange == WCOrderAction.FETCH_HAS_ORDERS) {
             if (event.isError) {
                 WooLog.e(T.DASHBOARD,
                         "$TAG - Error fetching whether orders exist: ${event.error.message}")
             } else {
-                // TODO: toggle image depending on whether orders exist (if rowsAffected > 0 then orders exist)
+                // show the "waiting for customers" view if there have never been any orders
+                val hasNoOrders = event.rowsAffected != 0 // TODO: == 0
+                dashboardView?.showNoOrdersView(hasNoOrders)
             }
         } else {
             event.causeOfChange?.takeIf { it == WCOrderAction.FETCH_ORDERS_COUNT }?.let { _ ->

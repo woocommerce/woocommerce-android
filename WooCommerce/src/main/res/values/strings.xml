@@ -40,6 +40,7 @@
     <string name="this_month">This Month</string>
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
+    <string name="share">Share</string>
     <!--
         Date/Time Labels
     -->
@@ -101,6 +102,9 @@
     <string name="dashboard_fulfill_order_title">You have 1 order to fulfill</string>
     <string name="dashboard_fulfill_orders_title">You have %1$d%2$s orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Your customers are waiting. The faster you ship it out, the happier you\'ll make them.</string>
+
+    <string name="dashboard_no_orders">Waiting for customers…</string>
+    <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
     <!--
         Order List View
     -->
