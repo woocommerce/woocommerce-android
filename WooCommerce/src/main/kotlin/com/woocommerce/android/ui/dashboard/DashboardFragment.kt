@@ -27,8 +27,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     @Inject lateinit var presenter: DashboardContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
 
-    private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
-
+    override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
@@ -67,7 +66,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         presenter.takeView(this)
 
         if (isActive) {
-            setLoadingIndicator(true)
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
             dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
                 override fun onViewOrdersClicked() {
@@ -78,7 +76,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
             refreshDashboard()
         } else {
-            loadDataPending = true
+            isRefreshPending = true
         }
     }
 
@@ -87,8 +85,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
-        if (isActive && loadDataPending) {
-            hideUnfilledOrdersCard()
+        if (isActive && isRefreshPending) {
             refreshDashboard()
         }
     }
@@ -136,13 +133,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // a flag to force a refresh when it becomes active
         when {
             isActive -> {
-                loadDataPending = false
-                setLoadingIndicator(true)
+                isRefreshPending = false
                 presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
                 presenter.fetchUnfilledOrderCount()
             }
-            else -> loadDataPending = true
+            else -> isRefreshPending = true
         }
     }
 

@@ -10,6 +10,8 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
 import org.junit.Test
@@ -42,6 +44,7 @@ class DashboardPresenterTest {
     private val wcStatsStore: WCStatsStore = mock()
     private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val networkStatus: NetworkStatus = mock()
 
     private lateinit var presenter: DashboardPresenter
 
@@ -49,10 +52,10 @@ class DashboardPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(DashboardPresenter(dispatcher, wcStatsStore, wcOrderStore, selectedSite))
+        presenter = spy(DashboardPresenter(dispatcher, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
-
+        doReturn(true).whenever(networkStatus).isConnected()
         actionCaptor = argumentCaptor()
     }
 
@@ -133,7 +136,7 @@ class DashboardPresenterTest {
             causeOfChange = FETCH_ORDERS_COUNT
         })
 
-        verify(dashboardView).hideUnfilledOrdersCard()
+        verify(dashboardView, times(1)).hideUnfilledOrdersCard()
     }
 
     @Test
@@ -149,7 +152,7 @@ class DashboardPresenterTest {
             error = OrderError()
         })
 
-        verify(dashboardView).hideUnfilledOrdersCard()
+        verify(dashboardView, times(1)).hideUnfilledOrdersCard()
     }
 
     @Test
@@ -197,5 +200,36 @@ class DashboardPresenterTest {
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard()
+    }
+
+    @Test
+    fun `Refreshes dashboard on network connected event if needed`() {
+        presenter.takeView(dashboardView)
+        doReturn(true).whenever(dashboardView).isRefreshPending
+
+        // Simulate the network connected event
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(dashboardView, times(1)).refreshDashboard()
+    }
+
+    @Test
+    fun `Does not refresh dashboard on network connected event if not needed`() {
+        presenter.takeView(dashboardView)
+        doReturn(false).whenever(dashboardView).isRefreshPending
+
+        // Simulate the network connected event
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).setLoadingIndicator(any())
+    }
+
+    @Test
+    fun `Ignores network disconnected event correctly`() {
+        presenter.takeView(dashboardView)
+
+        // Simulate the network disconnected event
+        presenter.onEventMainThread(ConnectionChangeEvent(false))
+        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(1)).setLoadingIndicator(false)
     }
 }

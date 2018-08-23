@@ -34,6 +34,8 @@
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
     <string name="learn_more">Learn More</string>
+    <string name="offline_message">Offline \u2014 using cached data</string>
+    <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
     <string name="product">Product</string>
     <string name="today">Today</string>
     <string name="this_week">This Week</string>
@@ -190,5 +192,4 @@
     -->
     <string name="contact_support">Contact support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
-    <string name="offline_message">Offline \u2014 using cached data</string>
 </resources>
