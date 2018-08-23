@@ -39,10 +39,10 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override var orderModel: WCOrderModel? = null
+    override var isUsingCached = false
 
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
-    private var isUsingCached = false
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view

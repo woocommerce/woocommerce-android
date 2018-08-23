@@ -129,12 +129,23 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Refreshes dashboard on network connected event`() {
+    fun `Refreshes order on network connected event`() {
         presenter.takeView(orderListView)
+        doReturn(true).whenever(orderListView).forceRefresh
 
         // mock a network status change
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(orderListView, times(1)).refreshFragmentState()
+    }
+
+    @Test
+    fun `Do not refresh orders on network connected if a force refresh is not pending`() {
+        presenter.takeView(orderListView)
+        doReturn(false).whenever(orderListView).forceRefresh
+
+        // mock a network status change
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(orderListView, times(0)).refreshFragmentState()
     }
 
     @Test
