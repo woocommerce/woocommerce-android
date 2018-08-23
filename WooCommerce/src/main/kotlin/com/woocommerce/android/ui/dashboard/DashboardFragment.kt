@@ -66,7 +66,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         presenter.takeView(this)
 
         if (isActive) {
-            setLoadingIndicator(true)
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
             dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
                 override fun onViewOrdersClicked() {
@@ -87,7 +86,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && isRefreshPending) {
-            hideUnfilledOrdersCard()
             refreshDashboard()
         }
     }
@@ -136,7 +134,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         when {
             isActive -> {
                 isRefreshPending = false
-                setLoadingIndicator(true)
                 presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
                 presenter.fetchUnfilledOrderCount()

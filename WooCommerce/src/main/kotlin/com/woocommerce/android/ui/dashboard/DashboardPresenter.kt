@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard
 
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -27,7 +28,8 @@ class DashboardPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wcStatsStore: WCStatsStore,
     private val wcOrderStore: WCOrderStore, // Required to ensure the WCOrderStore is initialized!
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val networkStatus: NetworkStatus
 ) : DashboardContract.Presenter {
     companion object {
         private val TAG = DashboardPresenter::class.java
@@ -51,11 +53,21 @@ class DashboardPresenter @Inject constructor(
     }
 
     override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
+        if (!networkStatus.isConnected()) {
+            dashboardView?.isRefreshPending = true
+            return
+        }
+
         val payload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
+        if (!networkStatus.isConnected()) {
+            dashboardView?.isRefreshPending = true
+            return
+        }
+
         val shouldForce = if (forced) {
             true
         } else {
@@ -85,6 +97,12 @@ class DashboardPresenter @Inject constructor(
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
     override fun fetchUnfilledOrderCount() {
+        if (!networkStatus.isConnected()) {
+            dashboardView?.isRefreshPending = true
+            return
+        }
+
+        dashboardView?.hideUnfilledOrdersCard()
         val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
@@ -142,9 +160,13 @@ class DashboardPresenter @Inject constructor(
             // Refresh data if needed now that a connection is active
             dashboardView?.let { view ->
                 if (view.isRefreshPending) {
+                    view.setLoadingIndicator(true)
                     view.refreshDashboard()
                 }
             }
+        } else {
+            // Hide the loading indicator if not connected
+            dashboardView?.setLoadingIndicator(false)
         }
     }
 
