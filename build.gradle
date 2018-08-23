@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.2.51'
+    ext.kotlinVersion = '1.2.61'
 
     repositories {
         google()
@@ -52,7 +52,7 @@ subprojects {
     }
 
     dependencies {
-        ktlint 'com.github.shyiko:ktlint:0.21.0'
+        ktlint 'com.github.shyiko:ktlint:0.22.0'
     }
 
     task ktlint(type: JavaExec) {
