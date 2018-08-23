@@ -140,7 +140,11 @@ class DashboardPresenter @Inject constructor(
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh data if needed now that a connection is active
-            dashboardView?.refreshDashboard()
+            dashboardView?.let { view ->
+                if (view.isRefreshPending) {
+                    view.refreshDashboard()
+                }
+            }
         }
     }
 
