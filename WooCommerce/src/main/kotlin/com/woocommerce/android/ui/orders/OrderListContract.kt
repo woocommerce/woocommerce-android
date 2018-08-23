@@ -16,7 +16,7 @@ interface OrderListContract {
 
     interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
         var isActive: Boolean
-        var forceRefresh: Boolean
+        var isRefreshPending: Boolean
 
         fun setLoadingIndicator(active: Boolean)
         fun setLoadingMoreIndicator(active: Boolean)

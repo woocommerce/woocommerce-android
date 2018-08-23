@@ -131,7 +131,7 @@ class OrderListPresenterTest {
     @Test
     fun `Refreshes order on network connected event`() {
         presenter.takeView(orderListView)
-        doReturn(true).whenever(orderListView).forceRefresh
+        doReturn(true).whenever(orderListView).isRefreshPending
 
         // mock a network status change
         presenter.onEventMainThread(ConnectionChangeEvent(true))
@@ -141,7 +141,7 @@ class OrderListPresenterTest {
     @Test
     fun `Do not refresh orders on network connected if a force refresh is not pending`() {
         presenter.takeView(orderListView)
-        doReturn(false).whenever(orderListView).forceRefresh
+        doReturn(false).whenever(orderListView).isRefreshPending
 
         // mock a network status change
         presenter.onEventMainThread(ConnectionChangeEvent(true))

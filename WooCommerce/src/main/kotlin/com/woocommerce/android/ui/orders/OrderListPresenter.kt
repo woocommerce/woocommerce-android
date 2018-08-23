@@ -141,7 +141,7 @@ class OrderListPresenter @Inject constructor(
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
             orderView?.let { order ->
-                if (order.forceRefresh) {
+                if (order.isRefreshPending) {
                     order.refreshFragmentState()
                 }
             }
