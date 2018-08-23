@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 interface OrderDetailContract {
     interface Presenter : BasePresenter<View> {
         var orderModel: WCOrderModel?
-        var isUsingCached: Boolean
+        var isUsingCachedNotes: Boolean
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
         fun doMarkOrderComplete()

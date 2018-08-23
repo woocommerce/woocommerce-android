@@ -39,7 +39,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override var orderModel: WCOrderModel? = null
-    override var isUsingCached = false
+    override var isUsingCachedNotes = false
 
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
@@ -79,7 +79,7 @@ class OrderDetailPresenter @Inject constructor(
                 requestOrderNotesFromApi(order)
             } else {
                 // Track so when the device is connected notes can be refreshed
-                isUsingCached = true
+                isUsingCachedNotes = true
             }
         }
     }
@@ -126,7 +126,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showNotesErrorSnack()
             } else {
                 orderModel?.let { order ->
-                    isUsingCached = false
+                    isUsingCachedNotes = false
                     val notes = orderStore.getOrderNotesForOrder(order)
                     orderView?.updateOrderNotes(notes)
                 }
@@ -185,7 +185,7 @@ class OrderDetailPresenter @Inject constructor(
         if (event.isConnected) {
             // Refresh order notes now that a connection is active is needed
             orderModel?.let { order ->
-                if (isUsingCached) {
+                if (isUsingCachedNotes) {
                     requestOrderNotesFromApi(order)
                 }
             }

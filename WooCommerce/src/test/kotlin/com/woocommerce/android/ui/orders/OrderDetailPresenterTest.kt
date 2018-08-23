@@ -202,7 +202,7 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Request fresh notes from api on network connected event if using non-updated cached data`() {
-        doReturn(true).whenever(presenter).isUsingCached
+        doReturn(true).whenever(presenter).isUsingCachedNotes
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(orderDetailView)
 
@@ -212,7 +212,7 @@ class OrderDetailPresenterTest {
 
     @Test
     fun `Do not refresh notes on network connected event if cached data already refreshed`() {
-        doReturn(false).whenever(presenter).isUsingCached
+        doReturn(false).whenever(presenter).isUsingCachedNotes
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(orderDetailView)
 
