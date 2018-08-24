@@ -36,7 +36,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     companion object {
         private const val PROGRESS_DELAY_TIME_MS = 200L
-        private const val UPDATE_DELAY_TIME_MS = 30 * 1000L // TODO 60
+        private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
 
     var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
