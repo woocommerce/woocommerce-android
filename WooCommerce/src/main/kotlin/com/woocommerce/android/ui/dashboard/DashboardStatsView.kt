@@ -184,66 +184,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         resetLastUpdated()
     }
 
-    private fun clearLastUpdated() {
-        lastUpdated = null
-        updateRecencyMessage()
-    }
-
-    private fun resetLastUpdated() {
-        lastUpdated = Date()
-        updateRecencyMessage()
-    }
-
-    private fun updateRecencyMessage() {
-        dashboard_recency_text.text = getRecencyMessage()
-
-        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
-        if (lastUpdated != null) {
-            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
-        }
-    }
-
-    /**
-     * Returns the text to use for the "recency message" which tells the user when stats were last updated
-     */
-    private fun getRecencyMessage(): String? {
-        if (lastUpdated == null) { return null }
-
-        val now = Date()
-
-        // up to 2 minutes -> "Updated moments ago"
-        val minutes = DateTimeUtils.minutesBetween(now, lastUpdated)
-        if (minutes <= 2) {
-            return context.getString(R.string.dashboard_stats_updated_now)
-        }
-
-        // up to 59 minutes -> "Updated 5 minutes ago"
-        if (minutes <= 59) {
-            return String.format(context.getString(R.string.dashboard_stats_updated_minutes), minutes)
-        }
-
-        // 1 hour -> "Updated 1 hour ago"
-        val hours = DateTimeUtils.hoursBetween(now, lastUpdated)
-        if (hours == 1) {
-            return context.getString(R.string.dashboard_stats_updated_one_hour)
-        }
-
-        // up to 23 hours -> "Updated 5 hours ago"
-        if (hours <= 23) {
-            return String.format(context.getString(R.string.dashboard_stats_updated_hours), hours)
-        }
-
-        // up to 47 hours -> "Updated 1 day ago"
-        if (hours <= 47) {
-            return context.getString(R.string.dashboard_stats_updated_one_day)
-        }
-
-        // otherwise date & time
-        val dateStr = DateFormat.getDateFormat(context).format(lastUpdated)
-        val timeStr = DateFormat.getTimeFormat(context).format(lastUpdated)
-        return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
-    }
-
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
         val barEntries = when (activeGranularity) {
             StatsGranularity.DAYS,
@@ -295,6 +235,68 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsGranularity.MONTHS -> R.string.dashboard_stats_granularity_months
             StatsGranularity.YEARS -> R.string.dashboard_stats_granularity_years
         }
+    }
+
+    private fun clearLastUpdated() {
+        lastUpdated = null
+        updateRecencyMessage()
+    }
+
+    private fun resetLastUpdated() {
+        lastUpdated = Date()
+        updateRecencyMessage()
+    }
+
+    private fun updateRecencyMessage() {
+        dashboard_recency_text.text = getRecencyMessage()
+        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+
+        if (lastUpdated != null) {
+            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+        }
+    }
+
+    /**
+     * Returns the text to use for the "recency message" which tells the user when stats were last updated
+     */
+    private fun getRecencyMessage(): String? {
+        if (lastUpdated == null) {
+            return null
+        }
+
+        val now = Date()
+
+        // up to 2 minutes -> "Updated moments ago"
+        val minutes = DateTimeUtils.minutesBetween(now, lastUpdated)
+        if (minutes <= 2) {
+            return context.getString(R.string.dashboard_stats_updated_now)
+        }
+
+        // up to 59 minutes -> "Updated 5 minutes ago"
+        if (minutes <= 59) {
+            return String.format(context.getString(R.string.dashboard_stats_updated_minutes), minutes)
+        }
+
+        // 1 hour -> "Updated 1 hour ago"
+        val hours = DateTimeUtils.hoursBetween(now, lastUpdated)
+        if (hours == 1) {
+            return context.getString(R.string.dashboard_stats_updated_one_hour)
+        }
+
+        // up to 23 hours -> "Updated 5 hours ago"
+        if (hours <= 23) {
+            return String.format(context.getString(R.string.dashboard_stats_updated_hours), hours)
+        }
+
+        // up to 47 hours -> "Updated 1 day ago"
+        if (hours <= 47) {
+            return context.getString(R.string.dashboard_stats_updated_one_day)
+        }
+
+        // otherwise date & time
+        val dateStr = DateFormat.getDateFormat(context).format(lastUpdated)
+        val timeStr = DateFormat.getTimeFormat(context).format(lastUpdated)
+        return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
     }
 
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
