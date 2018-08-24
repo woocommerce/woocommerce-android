@@ -16,12 +16,15 @@ interface DashboardContract {
 
     interface View : BaseView<Presenter> {
         var isActive: Boolean
+        var isRefreshPending: Boolean
 
         fun refreshDashboard()
         fun setLoadingIndicator(active: Boolean)
         fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Int>, granularity: StatsGranularity)
+        fun showStatsError(granularity: StatsGranularity)
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
         fun showTopEarnersError(granularity: StatsGranularity)
+        fun showErrorSnack()
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
         fun showUnfilledOrdersProgress(show: Boolean)

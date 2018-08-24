@@ -112,6 +112,7 @@
     </LinearLayout>
 
     <FrameLayout
+        android:id="@+id/chart_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chart_height">
 
@@ -119,6 +120,16 @@
             android:id="@+id/chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+        <ImageView
+            android:id="@+id/dashboard_stats_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/dashboard_stats_error_content_description"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_woo_error_state"
+            tools:visibility="visible"/>
 
         <ProgressBar
             android:id="@+id/barchart_progress"

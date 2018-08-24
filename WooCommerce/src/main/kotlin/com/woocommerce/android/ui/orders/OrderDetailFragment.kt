@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
@@ -47,6 +48,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var networkStatus: NetworkStatus
 
     private var markCompleteCanceled: Boolean = false
     private var undoMarkCompleteSnackbar: Snackbar? = null
@@ -213,6 +215,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onRequestAddNote() {
+        if (!networkStatus.isConnected()) {
+            // If offline, show generic offline message and exit without opening add note screen
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
         showAddOrderNoteScreen()
     }
 

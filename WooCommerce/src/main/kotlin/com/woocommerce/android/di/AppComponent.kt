@@ -26,7 +26,8 @@ import javax.inject.Singleton
         SelectedSiteModule::class,
         ActivityBindingModule::class,
         LoginAnalyticsModule::class,
-        LoginServiceModule::class))
+        LoginServiceModule::class,
+        NetworkStatusModule::class))
 interface AppComponent : AndroidInjector<WooCommerce> {
     override fun inject(app: WooCommerce)
 

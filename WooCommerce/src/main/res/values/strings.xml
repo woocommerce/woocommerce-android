@@ -14,7 +14,7 @@
     <string name="all">All</string>
     <string name="logging_in">Logging in</string>
     <string name="signout">Log out</string>
-    <string name="dashboard">Dashboard</string>
+    <string name="my_store">My store</string>
     <string name="orders">Orders</string>
     <string name="email_address">Email Address</string>
     <string name="currency_total">%1$s%2$s</string>
@@ -34,6 +34,8 @@
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
     <string name="learn_more">Learn More</string>
+    <string name="offline_message">Offline \u2014 using cached data</string>
+    <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
     <string name="product">Product</string>
     <string name="today">Today</string>
     <string name="this_week">This Week</string>
@@ -88,6 +90,8 @@
     <string name="dashboard_stats_orders">Orders</string>
     <string name="dashboard_stats_revenue">Revenue</string>
     <string name="dashboard_state_no_data">No data available</string>
+    <string name="dashboard_stats_error">Error fetching data</string>
+    <string name="dashboard_stats_error_content_description">Error image</string>
 
     <string name="dashboard_stats_updated_now">Updated moments ago</string>
     <string name="dashboard_stats_updated_minutes">Updated %d minutes ago</string>

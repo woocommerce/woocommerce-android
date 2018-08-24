@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
@@ -29,8 +31,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     @Inject lateinit var presenter: DashboardContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private var loadDataPending = false // If true, the fragment will refresh its data when it's visible
+    override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
+    private var errorSnackbar: Snackbar? = null
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
@@ -70,7 +74,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         presenter.takeView(this)
 
         if (isActive) {
-            setLoadingIndicator(true)
             dashboard_stats.initView(listener = this, selectedSite = selectedSite)
             dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
                 override fun onViewOrdersClicked() {
@@ -81,7 +84,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
             refreshDashboard()
         } else {
-            loadDataPending = true
+            isRefreshPending = true
         }
     }
 
@@ -90,9 +93,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
-        if (isActive && loadDataPending) {
+        if (isActive && isRefreshPending) {
             refreshDashboard()
         }
+    }
+
+    override fun onStop() {
+        errorSnackbar?.dismiss()
+        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -114,31 +122,50 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (dashboard_stats.activeGranularity == granularity) {
+            dashboard_stats.showErrorView(false)
             dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
             dashboard_stats.lastUpdated = Date()
             setLoadingIndicator(false)
         }
     }
 
+    override fun showStatsError(granularity: StatsGranularity) {
+        if (dashboard_stats.activeGranularity == granularity) {
+            showStats(emptyMap(), emptyMap(), granularity)
+            dashboard_stats.showErrorView(true)
+            showErrorSnack()
+        }
+    }
+
     override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
         if (dashboard_top_earners.activeGranularity == granularity) {
+            dashboard_top_earners.showErrorView(false)
             dashboard_top_earners.updateView(topEarnerList)
         }
     }
 
     override fun showTopEarnersError(granularity: StatsGranularity) {
-        // TODO: for now we pass an empty list to force the empty view to appear, but at some point
-        // we may want to alert the user to the problem
         if (dashboard_top_earners.activeGranularity == granularity) {
             dashboard_top_earners.updateView(emptyList())
+            dashboard_top_earners.showErrorView(true)
+            showErrorSnack()
         }
     }
 
+    override fun showErrorSnack() {
+        if (errorSnackbar?.isShownOrQueued() == true) {
+            return
+        }
+        errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
+        errorSnackbar?.show()
+    }
+
     override fun getFragmentTitle(): String {
-        return getString(R.string.dashboard)
+        return getString(R.string.my_store)
     }
 
     override fun refreshFragmentState() {
+        presenter.resetTopEarnersForceRefresh()
         refreshDashboard()
     }
 
@@ -147,21 +174,22 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // a flag to force a refresh when it becomes active
         when {
             isActive -> {
-                loadDataPending = false
-                setLoadingIndicator(true)
+                isRefreshPending = false
                 presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
                 presenter.fetchUnfilledOrderCount()
             }
-            else -> loadDataPending = true
+            else -> isRefreshPending = true
         }
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
+        dashboard_stats.showErrorView(false)
         presenter.loadStats(period)
     }
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
+        dashboard_top_earners.showErrorView(false)
         presenter.loadTopEarnerStats(period)
     }
 

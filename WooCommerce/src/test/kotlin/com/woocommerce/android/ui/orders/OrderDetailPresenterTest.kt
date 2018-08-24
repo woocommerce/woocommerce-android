@@ -7,7 +7,10 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -28,6 +31,8 @@ class OrderDetailPresenterTest {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val uiMessageResolver: UIMessageResolver = mock()
+    private val networkStatus: NetworkStatus = mock()
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
@@ -36,9 +41,10 @@ class OrderDetailPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite))
+        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite, uiMessageResolver, networkStatus))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
+        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     @Test
@@ -171,5 +177,46 @@ class OrderDetailPresenterTest {
         // a transient note while the note is pushed and it won't be removed from the
         // note list until notes are loaded
         verify(presenter, times(1)).fetchAndLoadNotesFromDb()
+    }
+
+    @Test
+    fun `Do not mark order complete and just show offline message`() {
+        presenter.takeView(orderDetailView)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        presenter.doMarkOrderComplete()
+        verify(uiMessageResolver, times(1)).showOfflineSnack()
+        verify(presenter, times(0)).fetchAndLoadNotesFromDb()
+    }
+
+    @Test
+    fun `Do not request order notes from api when not connected`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        presenter.loadOrderNotes()
+        verify(presenter, times(1)).fetchAndLoadNotesFromDb()
+        verify(presenter, times(0)).requestOrderNotesFromApi(any())
+    }
+
+    @Test
+    fun `Request fresh notes from api on network connected event if using non-updated cached data`() {
+        doReturn(true).whenever(presenter).isUsingCachedNotes
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(presenter, times(1)).requestOrderNotesFromApi(any())
+    }
+
+    @Test
+    fun `Do not refresh notes on network connected event if cached data already refreshed`() {
+        doReturn(false).whenever(presenter).isUsingCachedNotes
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(presenter, times(0)).requestOrderNotesFromApi(any())
     }
 }
