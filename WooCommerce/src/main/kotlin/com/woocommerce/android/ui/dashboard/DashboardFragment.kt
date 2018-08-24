@@ -135,6 +135,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun refreshFragmentState() {
+        presenter.resetTopEarnersForceRefresh()
         refreshDashboard()
     }
 
