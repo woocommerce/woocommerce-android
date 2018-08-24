@@ -89,7 +89,7 @@ object WooAnimUtils {
         }
     }
 
-    fun animateBottomBar(view: View, show: Boolean, duration: Duration = SHORT) {
+    fun animateBottomBar(view: View, show: Boolean, duration: Duration = DEFAULT_DURATION) {
         animateBar(view, show, false, duration)
     }
 
