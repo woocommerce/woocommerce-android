@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULA
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
-import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
@@ -36,7 +35,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     companion object {
         private const val PROGRESS_DELAY_TIME_MS = 200L
-        private const val UPDATE_DELAY_TIME_MS = 30 * 1000 // TODO 60
+        private const val UPDATE_DELAY_TIME_MS = 30 * 1000L // TODO 60
     }
 
     var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
@@ -54,14 +53,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var progressDelayTimer: Timer? = null
     private var progressDelayTimerTask: TimerTask? = null
 
-    private lateinit var updateRunnable: Runnable
-    private lateinit var updateHandler: Handler
+    private lateinit var lastUpdatedRunnable: Runnable
+    private lateinit var lastUpdatedHandler: Handler
 
-    var dateUpdated: Date? = null
-    set(value) {
-        field = value
-        updateRecencyMessage()
-    }
+    var lastUpdated: Date? = null
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -93,6 +88,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 // This gives us a chance to never show it at all when the stats data is cached and returns quickly,
                 // preventing glitchy behavior
                 showProgressDelayed()
+                clearLastUpdated()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -103,12 +99,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         initChart()
 
-        updateHandler = Handler()
-        updateRunnable = Runnable {
+        lastUpdatedHandler = Handler()
+        lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            updateHandler.postDelayed({ updateRunnable }, UPDATE_DELAY_TIME_MS)
+            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
         }
-        updateHandler.postDelayed({ updateRunnable }, UPDATE_DELAY_TIME_MS)
     }
 
     /**
@@ -170,6 +165,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
             chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             chart.clear()
+            clearLastUpdated()
             return
         }
 
@@ -184,16 +180,32 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
             invalidate() // Draw/redraw the graph
         }
+
+        resetLastUpdated()
+    }
+
+    private fun clearLastUpdated() {
+        lastUpdated = null
+        updateRecencyMessage()
+    }
+
+    private fun resetLastUpdated() {
+        lastUpdated = Date()
+        updateRecencyMessage()
     }
 
     private fun updateRecencyMessage() {
-        if (dateUpdated == null) {
+        if (lastUpdated == null) {
             dashboard_recency_text.text = null
+            lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
             return
         }
 
-        val dateStr = DateTimeUtils.javaDateToTimeSpan(dateUpdated, context)
+        val dateStr = DateTimeUtils.javaDateToTimeSpan(lastUpdated, context)
         dashboard_recency_text.text = dateStr
+
+        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
