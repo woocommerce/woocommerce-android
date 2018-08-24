@@ -58,9 +58,9 @@ class MainNavigationTest : TestBase() {
             } ?: throw noMatchException
         }
 
-        // Verify the toolbar title is Dashboard
+        // Verify the toolbar title is 'My Store'
         onView(withId(R.id.toolbar)).check(matches(
-                WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.dashboard)))))
+                WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.my_store)))))
     }
 
     @Test
@@ -91,9 +91,9 @@ class MainNavigationTest : TestBase() {
         // Select the dashboard bottom bar option
         onView(withId(R.id.dashboard)).perform(click())
 
-        // Verify the toolbar title has changed to Dashboard
+        // Verify the toolbar title has changed to 'My Store'
         onView(withId(R.id.toolbar)).check(matches(
-                WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.dashboard)))))
+                WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.my_store)))))
     }
 
     private fun assertPressingBackExitsApp() {
