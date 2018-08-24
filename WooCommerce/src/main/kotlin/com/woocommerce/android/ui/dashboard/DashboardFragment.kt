@@ -33,7 +33,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
-    private var errorSnackbar: Snackbar? = null  
+    private var errorSnackbar: Snackbar? = null
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
