@@ -49,7 +49,7 @@ class FCMRegistrationIntentService : JobIntentService() {
             token?.takeIf { it.isNotEmpty() }?.let {
                 sendRegistrationToken(it)
             } ?: run {
-                WooLog.w(T.NOTIFS, "Empty GCM token, can't register the id on remote services")
+                WooLog.w(T.NOTIFS, "Empty FCM token, can't register the id on remote services")
                 sharedPreferences.edit().remove(WPCOM_PUSH_DEVICE_TOKEN).apply()
             }
         } catch (e: Exception) {
@@ -64,14 +64,14 @@ class FCMRegistrationIntentService : JobIntentService() {
         return true
     }
 
-    private fun sendRegistrationToken(gcmToken: String) {
+    private fun sendRegistrationToken(fcmToken: String) {
         if (accountStore.hasAccessToken() && selectedSite.isSet()) {
             // Register to WordPress.com notifications
-            WooLog.i(T.NOTIFS, "Sending GCM token to our remote services: $gcmToken")
+            WooLog.i(T.NOTIFS, "Sending FCM token to our remote services: $fcmToken")
 
-            sharedPreferences.edit().putString(WPCOM_PUSH_DEVICE_TOKEN, gcmToken).apply()
+            sharedPreferences.edit().putString(WPCOM_PUSH_DEVICE_TOKEN, fcmToken).apply()
 
-            val payload = RegisterDevicePayload(gcmToken, WOOCOMMERCE, selectedSite.get())
+            val payload = RegisterDevicePayload(fcmToken, WOOCOMMERCE, selectedSite.get())
             dispatcher.dispatch(NotificationActionBuilder.newRegisterDeviceAction(payload))
         }
     }
