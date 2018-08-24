@@ -130,7 +130,7 @@
 
     <color name="status_bar_tint">@color/colorPrimaryDark</color>
     <color name="login_theme_accent_color">@color/colorAccent</color>
-    <color name="login_background_color">@color/wc_border_color</color>
+    <color name="login_background_color">@color/wc_grey_light</color>
 
     <color name="login_toolbar_color">@color/colorPrimary</color>
     <color name="login_primary_button_normal_color">@color/colorAccent</color>
