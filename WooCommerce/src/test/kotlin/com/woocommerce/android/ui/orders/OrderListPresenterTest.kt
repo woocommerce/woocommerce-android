@@ -8,6 +8,8 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +29,7 @@ class OrderListPresenterTest {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val networkStatus: NetworkStatus = mock()
 
     private val orders = OrderTestUtils.generateOrders()
     private val noOrders = emptyList<WCOrderModel>()
@@ -34,9 +37,10 @@ class OrderListPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderListPresenter(dispatcher, orderStore, selectedSite))
+        presenter = spy(OrderListPresenter(dispatcher, orderStore, selectedSite, networkStatus))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
+        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     @Test
@@ -48,7 +52,7 @@ class OrderListPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showOrders(orders, isForceRefresh = true)
+        verify(orderListView).showOrders(orders, isFreshData = true)
     }
 
     @Test
@@ -61,7 +65,7 @@ class OrderListPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orders).whenever(orderStore).getOrdersForSite(any(), any())
         presenter.onOrderChanged(OnOrderChanged(orders.size, orderStatusFilter).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showOrders(orders, orderStatusFilter, isForceRefresh = true)
+        verify(orderListView).showOrders(orders, orderStatusFilter, isFreshData = true)
     }
 
     @Test
@@ -122,5 +126,54 @@ class OrderListPresenterTest {
             error = OrderError()
         })
         verify(orderListView, times(1)).showLoadOrdersError()
+    }
+
+    @Test
+    fun `Refreshes order on network connected event`() {
+        presenter.takeView(orderListView)
+        doReturn(true).whenever(orderListView).isRefreshPending
+
+        // mock a network status change
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(orderListView, times(1)).refreshFragmentState()
+    }
+
+    @Test
+    fun `Do not refresh orders on network connected if a force refresh is not pending`() {
+        presenter.takeView(orderListView)
+        doReturn(false).whenever(orderListView).isRefreshPending
+
+        // mock a network status change
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(orderListView, times(0)).refreshFragmentState()
+    }
+
+    @Test
+    fun `Do nothing on network disconnected event`() {
+        presenter.takeView(orderListView)
+
+        // mock a network status change
+        presenter.onEventMainThread(ConnectionChangeEvent(false))
+        verify(orderListView, times(0)).refreshFragmentState()
+    }
+
+    @Test
+    fun `Load cached orders if not connected to network`() {
+        presenter.takeView(orderListView)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        // mock a network status change
+        presenter.loadOrders(null, true)
+        verify(presenter, times(1)).fetchAndLoadOrdersFromDb(null, false)
+    }
+
+    @Test
+    fun `Do not fetch more orders if not connected to network`() {
+        presenter.takeView(orderListView)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        // mock a network status change
+        presenter.loadMoreOrders(null)
+        verify(presenter, times(0)).fetchAndLoadOrdersFromDb(any(), any())
     }
 }

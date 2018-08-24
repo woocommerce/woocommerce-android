@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -26,11 +28,13 @@ class MainPresenter @Inject constructor(
     override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
+        ConnectionChangeReceiver.getEventBus().register(this)
     }
 
     override fun dropView() {
         mainView = null
         dispatcher.unregister(this)
+        ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
     override fun userIsLoggedIn(): Boolean {
@@ -88,5 +92,11 @@ class MainPresenter @Inject constructor(
 
         // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
         mainView?.updateSelectedSite()
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: ConnectionChangeEvent) {
+        mainView?.updateOfflineStatusBar(event.isConnected)
     }
 }
