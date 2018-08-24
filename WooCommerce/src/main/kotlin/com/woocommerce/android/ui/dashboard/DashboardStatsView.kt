@@ -5,6 +5,7 @@ import android.os.Handler
 import android.support.annotation.StringRes
 import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
+import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -195,17 +196,45 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun updateRecencyMessage() {
-        if (lastUpdated == null) {
-            dashboard_recency_text.text = null
-            lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
-            return
-        }
-
-        val dateStr = DateTimeUtils.javaDateToTimeSpan(lastUpdated, context)
-        dashboard_recency_text.text = dateStr
+        dashboard_recency_text.text = getRecencyMessage()
 
         lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
-        lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+        if (lastUpdated != null) {
+            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+        }
+    }
+
+    private fun getRecencyMessage(): String? {
+        if (lastUpdated == null) { return null }
+
+        val now = Date()
+
+        // up to 2 minutes -> "Updated moments ago"
+        val minutes = DateTimeUtils.minutesBetween(now, lastUpdated)
+        if (minutes <= 2) {
+            return context.getString(R.string.dashboard_stats_updated_now)
+        }
+
+        // up to 59 minutes -> "Updated 5 minutes ago"
+        if (minutes <= 59) {
+            return String.format(context.getString(R.string.dashboard_stats_updated_minutes), minutes)
+        }
+
+        // up to 23 hours -> "Updated 5 hours ago"
+        val hours = DateTimeUtils.hoursBetween(now, lastUpdated)
+        if (hours <= 23) {
+            return String.format(context.getString(R.string.dashboard_stats_updated_hours), hours)
+        }
+
+        // up to 47 hours -> "Updated 1 day ago"
+        if (hours <= 47) {
+            return context.getString(R.string.dashboard_stats_updated_one_day)
+        }
+
+        // otherwise date & time
+        val dateStr = DateFormat.getDateFormat(context).format(lastUpdated)
+        val timeStr = DateFormat.getTimeFormat(context).format(lastUpdated)
+        return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {

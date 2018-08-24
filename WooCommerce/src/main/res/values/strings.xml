@@ -89,11 +89,11 @@
     <string name="dashboard_stats_revenue">Revenue</string>
     <string name="dashboard_state_no_data">No data available</string>
 
-    <string name="dashboard_state_updated_now">Updated moments ago</string>
-    <string name="dashboard_state_updated_minutes">Updated %d minutes ago</string>
-    <string name="dashboard_state_updated_hours">Updated %d hours ago</string>
-    <string name="dashboard_state_updated_days">Updated %d days ago</string>
-    <string name="dashboard_state_updated_date_time">Updated on %1$s %2$s</string>
+    <string name="dashboard_stats_updated_now">Updated moments ago</string>
+    <string name="dashboard_stats_updated_minutes">Updated %d minutes ago</string>
+    <string name="dashboard_stats_updated_hours">Updated %d hours ago</string>
+    <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
+    <string name="dashboard_stats_updated_date_time">Updated on %s</string>
 
     <string name="dashboard_top_earners_title">Top performers</string>
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
