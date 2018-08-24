@@ -10,6 +10,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
@@ -52,7 +54,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     )
                 }
                 setOnRefreshListener {
-                    presenter.resetTopEarnersTimestamps()
+                    presenter.resetTopEarnersForceRefresh()
                     refreshDashboard()
                 }
             }
@@ -120,6 +122,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun showTopEarnersError(granularity: StatsGranularity) {
+        // TODO: for now we pass an empty list to force the empty view to appear, but at some point
+        // we may want to alert the user to the problem
+        if (dashboard_top_earners.activeGranularity == granularity) {
+            dashboard_top_earners.updateView(emptyList())
+        }
+    }
+
     override fun getFragmentTitle(): String {
         return getString(R.string.dashboard)
     }
@@ -151,17 +161,19 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun hideUnfilledOrdersCard() {
-        with(dashboard_unfilled_orders) {
-            post { visibility = View.GONE }
+        if (dashboard_unfilled_orders.visibility == View.VISIBLE) {
+            WooAnimUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)
         }
     }
 
     override fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean) {
-        with(dashboard_unfilled_orders) {
-            post {
-                updateOrdersCount(count, canLoadMore)
-                visibility = View.VISIBLE
-            }
+        dashboard_unfilled_orders.updateOrdersCount(count, canLoadMore)
+        if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
+            WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
+    }
+
+    override fun showUnfilledOrdersProgress(show: Boolean) {
+        dashboard_unfilled_orders.showProgress(show)
     }
 }

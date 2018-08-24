@@ -16,6 +16,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
+import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -147,7 +148,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun gotWpcomEmail(email: String?) {
         if (getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT) {
-            val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment.newInstance(email, false, null)
+            val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment.newInstance(email,
+                    AuthEmailPayloadScheme.WOOCOMMERCE, false, null)
             slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
         } else {
             val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
