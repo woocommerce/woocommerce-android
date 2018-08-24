@@ -2,7 +2,6 @@ package com.woocommerce.android.push
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.preference.PreferenceManager
 import android.support.v4.app.JobIntentService
 import com.google.firebase.iid.FirebaseInstanceId
@@ -14,10 +13,8 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.NotificationStore.NotificationAppKey.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.NotificationStore.RegisterDevicePayload
-import org.wordpress.android.util.DeviceUtils
-import org.wordpress.android.util.PackageUtils
-import java.util.UUID
 import javax.inject.Inject
 
 class FCMRegistrationIntentService : JobIntentService() {
@@ -32,7 +29,6 @@ class FCMRegistrationIntentService : JobIntentService() {
     companion object {
         private const val JOB_FCM_REGISTRATION_SERVICE_ID = 1000
 
-        const val WPCOM_PUSH_DEVICE_UUID = "WC_PREF_NOTIFICATIONS_UUID"
         const val WPCOM_PUSH_DEVICE_TOKEN = "WC_PREF_NOTIFICATIONS_TOKEN"
 
         fun enqueueWork(context: Context) {
@@ -72,36 +68,11 @@ class FCMRegistrationIntentService : JobIntentService() {
         if (accountStore.hasAccessToken() && selectedSite.isSet()) {
             // Register to WordPress.com notifications
             WooLog.i(T.NOTIFS, "Sending GCM token to our remote services: $gcmToken")
-            // Get or create UUID for WP.com notes API
-            val uuid = sharedPreferences.getString(WPCOM_PUSH_DEVICE_UUID, null) ?: generateAndStoreUUID()
 
             sharedPreferences.edit().putString(WPCOM_PUSH_DEVICE_TOKEN, gcmToken).apply()
 
-            val payload = RegisterDevicePayload(createDeviceRegistrationStruct(uuid, gcmToken))
+            val payload = RegisterDevicePayload(gcmToken, WOOCOMMERCE, selectedSite.get())
             dispatcher.dispatch(NotificationActionBuilder.newRegisterDeviceAction(payload))
         }
-    }
-
-    private fun generateAndStoreUUID(): String {
-        return UUID.randomUUID().toString().also {
-            sharedPreferences.edit().putString(WPCOM_PUSH_DEVICE_UUID, it).apply()
-        }
-    }
-
-    private fun createDeviceRegistrationStruct(uuid: String, gcmToken: String): Map<String, String> {
-        val deviceName = DeviceUtils.getInstance().getDeviceName(this)
-        // TODO: Replace hardcoded values with RegisterDevicePayload properties
-        return mapOf(
-                "device_token" to gcmToken,
-                "device_family" to "android",
-                "app_secret_key" to "com.woocommerce.android",
-                "device_name" to deviceName,
-                "device_model" to "${Build.MANUFACTURER} ${Build.MODEL}",
-                "app_version" to PackageUtils.getVersionName(this),
-                "version_code" to PackageUtils.getVersionCode(this).toString(),
-                "os_version" to Build.VERSION.RELEASE,
-                "device_uuid" to uuid,
-                "selected_blog_id" to selectedSite.get().siteId.toString()
-        )
     }
 }

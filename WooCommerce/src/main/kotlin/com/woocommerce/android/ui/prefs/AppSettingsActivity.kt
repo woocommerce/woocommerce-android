@@ -108,11 +108,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun clearNotificationPreferences() {
-        sharedPreferences.edit().apply {
-            remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_UUID)
-            remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN)
-            apply()
-        }
+        sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
     }
 
     private fun showFragment(fragment: Fragment, tag: String, animate: Boolean) {
