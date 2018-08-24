@@ -89,7 +89,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 // This gives us a chance to never show it at all when the stats data is cached and returns quickly,
                 // preventing glitchy behavior
                 showProgressDelayed()
-                clearLastUpdated()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -204,6 +203,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
+    /**
+     * Returns the text to use for the "recency message" which tells the user when stats were last updated
+     */
     private fun getRecencyMessage(): String? {
         if (lastUpdated == null) { return null }
 
@@ -220,8 +222,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             return String.format(context.getString(R.string.dashboard_stats_updated_minutes), minutes)
         }
 
-        // up to 23 hours -> "Updated 5 hours ago"
+        // 1 hour -> "Updated 1 hour ago"
         val hours = DateTimeUtils.hoursBetween(now, lastUpdated)
+        if (hours == 1) {
+            return context.getString(R.string.dashboard_stats_updated_one_hour)
+        }
+
+        // up to 23 hours -> "Updated 5 hours ago"
         if (hours <= 23) {
             return String.format(context.getString(R.string.dashboard_stats_updated_hours), hours)
         }
@@ -270,6 +277,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             override fun run() {
                 this@DashboardStatsView.post {
                     barchart_progress.visibility = View.VISIBLE
+                    clearLastUpdated()
                 }
             }
         }

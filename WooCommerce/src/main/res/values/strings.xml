@@ -91,6 +91,7 @@
 
     <string name="dashboard_stats_updated_now">Updated moments ago</string>
     <string name="dashboard_stats_updated_minutes">Updated %d minutes ago</string>
+    <string name="dashboard_stats_updated_one_hour">Updated 1 hour ago</string>
     <string name="dashboard_stats_updated_hours">Updated %d hours ago</string>
     <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
     <string name="dashboard_stats_updated_date_time">Updated on %s</string>
