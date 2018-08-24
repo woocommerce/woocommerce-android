@@ -97,8 +97,7 @@ class DashboardPresenterTest {
             error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
         }
         presenter.onWCStatsChanged(onChanged)
-
-        verify(dashboardView).showStats(eq(emptyMap()), eq(emptyMap()), eq(StatsGranularity.DAYS))
+        verify(dashboardView, times(1)).showStatsError(StatsGranularity.DAYS)
     }
 
     @Test

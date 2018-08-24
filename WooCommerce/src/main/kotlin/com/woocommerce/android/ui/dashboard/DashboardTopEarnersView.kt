@@ -113,6 +113,12 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         if (topEarnerList.isEmpty()) showEmptyView() else hideEmptyView()
     }
 
+    fun showErrorView(show: Boolean) {
+        hideEmptyView()
+        topEarners_error.visibility = if (show) View.VISIBLE else View.GONE
+        topEarners_recycler.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
     @StringRes
     private fun getTabTitleResForGranularity(granularity: StatsGranularity): Int {
         return when (granularity) {

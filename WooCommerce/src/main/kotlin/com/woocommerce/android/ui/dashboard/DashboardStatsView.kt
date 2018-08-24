@@ -165,6 +165,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
+    fun showErrorView(show: Boolean) {
+        dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
+        chart.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
         val barEntries = when (activeGranularity) {
             StatsGranularity.DAYS,
