@@ -4,7 +4,7 @@
     <item
         android:id="@+id/dashboard"
         android:icon="@drawable/ic_menu_dashboard"
-        android:title="@string/dashboard"/>
+        android:title="@string/my_store"/>
 
     <item
         android:id="@+id/orders"
