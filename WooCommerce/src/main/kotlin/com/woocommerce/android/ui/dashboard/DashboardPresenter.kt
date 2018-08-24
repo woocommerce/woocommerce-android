@@ -84,9 +84,7 @@ class DashboardPresenter @Inject constructor(
     fun onWCStatsChanged(event: OnWCStatsChanged) {
         if (event.isError) {
             WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
-            // TODO: Notify the user of the problem
-            // For now, send empty data so views aren't stuck in loading mode
-            dashboardView?.showStats(emptyMap(), emptyMap(), event.granularity)
+            dashboardView?.showStatsError(event.granularity)
             return
         }
 
