@@ -57,7 +57,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private lateinit var lastUpdatedRunnable: Runnable
     private lateinit var lastUpdatedHandler: Handler
 
-    var lastUpdated: Date? = null
+    private var lastUpdated: Date? = null
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,

@@ -20,7 +20,6 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import java.util.Date
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
@@ -124,7 +123,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showErrorView(false)
             dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
-            dashboard_stats.lastUpdated = Date()
             setLoadingIndicator(false)
         }
     }
