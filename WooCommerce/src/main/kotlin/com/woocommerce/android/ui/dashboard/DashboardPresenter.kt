@@ -10,6 +10,8 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
@@ -137,16 +139,17 @@ class DashboardPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
-        if (event.causeOfChange == WCOrderAction.FETCH_HAS_ORDERS) {
-            if (event.isError) {
-                WooLog.e(T.DASHBOARD,
-                        "$TAG - Error fetching whether orders exist: ${event.error.message}")
-            } else {
-                val hasNoOrders = event.rowsAffected == 0
-                dashboardView?.showNoOrdersView(hasNoOrders)
+        when (event.causeOfChange) {
+            FETCH_HAS_ORDERS -> {
+                if (event.isError) {
+                    WooLog.e(T.DASHBOARD,
+                            "$TAG - Error fetching whether orders exist: ${event.error.message}")
+                } else {
+                    val hasNoOrders = event.rowsAffected == 0
+                    dashboardView?.showNoOrdersView(hasNoOrders)
+                }
             }
-        } else {
-            event.causeOfChange?.takeIf { it == WCOrderAction.FETCH_ORDERS_COUNT }?.let { _ ->
+            FETCH_ORDERS_COUNT -> {
                 dashboardView?.showUnfilledOrdersProgress(false)
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD,
@@ -157,8 +160,11 @@ class DashboardPresenter @Inject constructor(
                 event.rowsAffected.takeIf { it > 0 }?.let { count ->
                     dashboardView?.showUnfilledOrdersCard(count, event.canLoadMore)
                 } ?: dashboardView?.hideUnfilledOrdersCard()
-            } ?: if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
-                dashboardView?.refreshDashboard()
+            }
+            else -> {
+                if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
+                    dashboardView?.refreshDashboard()
+                }
             }
         }
     }
