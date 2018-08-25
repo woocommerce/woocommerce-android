@@ -233,7 +233,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             putExtra(Intent.EXTRA_TEXT, selectedSite.get().url)
             type = "text/plain"
         }
-        startActivity(Intent.createChooser(sendIntent, resources.getText(R.string.dashboard_no_orders_share_store_title)))
+        startActivity(Intent.createChooser(sendIntent,
+                resources.getText(R.string.dashboard_no_orders_share_store_title)))
     }
 
     /**
