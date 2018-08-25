@@ -94,6 +94,13 @@
     <string name="dashboard_stats_error">Error fetching data</string>
     <string name="dashboard_stats_error_content_description">Error image</string>
 
+    <string name="dashboard_stats_updated_now">Updated moments ago</string>
+    <string name="dashboard_stats_updated_minutes">Updated %d minutes ago</string>
+    <string name="dashboard_stats_updated_one_hour">Updated 1 hour ago</string>
+    <string name="dashboard_stats_updated_hours">Updated %d hours ago</string>
+    <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
+    <string name="dashboard_stats_updated_date_time">Updated on %s</string>
+
     <string name="dashboard_top_earners_title">Top performers</string>
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
     <string name="dashboard_top_earners_total_spend">Total spend</string>
