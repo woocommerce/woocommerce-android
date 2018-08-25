@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.os.Handler
 import android.support.annotation.StringRes
 import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
+import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -21,6 +23,8 @@ import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
+import org.wordpress.android.util.DateTimeUtils
+import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
 
@@ -32,6 +36,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     companion object {
         private const val PROGRESS_DELAY_TIME_MS = 200L
+        private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
 
     var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
@@ -48,6 +53,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private var progressDelayTimer: Timer? = null
     private var progressDelayTimerTask: TimerTask? = null
+
+    private lateinit var lastUpdatedRunnable: Runnable
+    private lateinit var lastUpdatedHandler: Handler
+
+    private var lastUpdated: Date? = null
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -88,6 +98,12 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         })
 
         initChart()
+
+        lastUpdatedHandler = Handler()
+        lastUpdatedRunnable = Runnable {
+            updateRecencyMessage()
+            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+        }
     }
 
     /**
@@ -149,6 +165,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
             chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             chart.clear()
+            clearLastUpdated()
             return
         }
 
@@ -163,6 +180,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
             invalidate() // Draw/redraw the graph
         }
+
+        resetLastUpdated()
     }
 
     fun showErrorView(show: Boolean) {
@@ -203,6 +222,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             override fun run() {
                 this@DashboardStatsView.post {
                     barchart_progress.visibility = View.VISIBLE
+                    clearLastUpdated()
                 }
             }
         }
@@ -220,6 +240,68 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsGranularity.MONTHS -> R.string.dashboard_stats_granularity_months
             StatsGranularity.YEARS -> R.string.dashboard_stats_granularity_years
         }
+    }
+
+    private fun clearLastUpdated() {
+        lastUpdated = null
+        updateRecencyMessage()
+    }
+
+    private fun resetLastUpdated() {
+        lastUpdated = Date()
+        updateRecencyMessage()
+    }
+
+    private fun updateRecencyMessage() {
+        dashboard_recency_text.text = getRecencyMessage()
+        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+
+        if (lastUpdated != null) {
+            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+        }
+    }
+
+    /**
+     * Returns the text to use for the "recency message" which tells the user when stats were last updated
+     */
+    private fun getRecencyMessage(): String? {
+        if (lastUpdated == null) {
+            return null
+        }
+
+        val now = Date()
+
+        // up to 2 minutes -> "Updated moments ago"
+        val minutes = DateTimeUtils.minutesBetween(now, lastUpdated)
+        if (minutes <= 2) {
+            return context.getString(R.string.dashboard_stats_updated_now)
+        }
+
+        // up to 59 minutes -> "Updated 5 minutes ago"
+        if (minutes <= 59) {
+            return String.format(context.getString(R.string.dashboard_stats_updated_minutes), minutes)
+        }
+
+        // 1 hour -> "Updated 1 hour ago"
+        val hours = DateTimeUtils.hoursBetween(now, lastUpdated)
+        if (hours == 1) {
+            return context.getString(R.string.dashboard_stats_updated_one_hour)
+        }
+
+        // up to 23 hours -> "Updated 5 hours ago"
+        if (hours <= 23) {
+            return String.format(context.getString(R.string.dashboard_stats_updated_hours), hours)
+        }
+
+        // up to 47 hours -> "Updated 1 day ago"
+        if (hours <= 47) {
+            return context.getString(R.string.dashboard_stats_updated_one_day)
+        }
+
+        // otherwise date & time
+        val dateStr = DateFormat.getDateFormat(context).format(lastUpdated)
+        val timeStr = DateFormat.getTimeFormat(context).format(lastUpdated)
+        return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
     }
 
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {

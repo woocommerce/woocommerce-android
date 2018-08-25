@@ -140,4 +140,11 @@
             tools:visibility="gone"/>
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/dashboard_recency_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        tools:text="dashboard_recency_text"/>
+
 </merge>
