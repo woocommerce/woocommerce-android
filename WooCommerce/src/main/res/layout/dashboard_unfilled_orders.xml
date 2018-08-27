@@ -9,9 +9,10 @@
     <!-- Title -->
     <TextView
         android:id="@+id/alertAction_title"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/Woo.TextAppearance.Title.Bold"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,10 +21,11 @@
     <!-- Message -->
     <TextView
         android:id="@+id/alertAction_msg"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:text="@string/dashboard_fulfill_orders_msg"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/alertAction_title"/>
@@ -49,7 +51,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"/>
-
+        tools:visibility="gone"/>
 
 </merge>
