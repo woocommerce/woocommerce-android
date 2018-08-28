@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -42,4 +42,4 @@
         app:layout_constraintTop_toBottomOf="@+id/customerNote_lblTitle"
         app:layout_constrainedWidth="true"
         tools:text="Hey! Can you please wrap this as a gift. It's a friends birthday, and I want it to be uber special. Thanks!"/>
-</android.support.constraint.ConstraintLayout>
+</merge>
