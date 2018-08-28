@@ -99,7 +99,7 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
-        dashboardView?.showUnfilledOrdersProgress(true)
+        dashboardView?.showUnfilledOrdersSkeleton(true)
         val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
@@ -153,7 +153,7 @@ class DashboardPresenter @Inject constructor(
                 }
             }
             FETCH_ORDERS_COUNT -> {
-                dashboardView?.showUnfilledOrdersProgress(false)
+                dashboardView?.showUnfilledOrdersSkeleton(false)
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD,
                             "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")
