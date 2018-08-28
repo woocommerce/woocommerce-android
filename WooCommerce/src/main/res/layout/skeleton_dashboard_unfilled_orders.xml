@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Title -->
+    <View
+        android:layout_width="240dp"
+        android:layout_height="@dimen/text_large"
+        android:background="@color/skeleton_color"/>
+
+    <!-- Message -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/text_large"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/text_large"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:background="@color/skeleton_color"/>
+
+    <!-- Action Button -->
+    <View
+        style="@style/Woo.Button"
+        android:layout_width="160dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:background="@color/skeleton_color"/>
+
+</LinearLayout>

@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.widgets.WPSkeletonView
 import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
 
 /**
@@ -14,6 +15,8 @@ import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
  */
 class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
+    private val skeletonView = WPSkeletonView()
+
     init {
         View.inflate(context, R.layout.dashboard_unfilled_orders, this)
     }
@@ -29,7 +32,11 @@ class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs:
     }
 
     fun showProgress(show: Boolean) {
-        alertAction_progress.visibility = if (show) View.VISIBLE else View.GONE
+        if (show) {
+            skeletonView.show(unfilled_card, R.layout.skeleton_dashboard_unfilled_orders)
+        } else {
+            skeletonView.hide()
+        }
     }
 
     /**
