@@ -1,17 +1,15 @@
 package com.woocommerce.android.widgets
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 
 class WPSkeletonView {
     private lateinit var parentView: ViewGroup
@@ -68,21 +66,8 @@ class WPSkeletonView {
         parentView.removeView(shimmerView)
 
         // fade in the source view
-        fadeIn(actualView)
+        WooAnimUtils.fadeIn(actualView, Duration.MEDIUM)
 
         isShowing = false
-    }
-
-    private fun fadeIn(target: View, animDuration: Long = 300) {
-        with (ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
-            duration = animDuration
-            interpolator = LinearInterpolator()
-            addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator) {
-                    target.visibility = View.VISIBLE
-                }
-            })
-            start()
-        }
     }
 }

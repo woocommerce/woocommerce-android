@@ -26,6 +26,6 @@ interface OrderListContract {
         fun showLoadOrdersError()
         fun onFilterSelected(orderStatus: String?)
 
-        fun showSkeletonView(show: Boolean)
+        fun showSkeleton(show: Boolean)
     }
 }

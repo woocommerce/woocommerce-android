@@ -52,15 +52,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
 
-    private var skeletanDelayTimer: Timer? = null
-    private var skeletanDelayTimerTask: TimerTask? = null
+    private var skeletonDelayTimer: Timer? = null
+    private var skeletonDelayTimerTask: TimerTask? = null
+    private var skeletonView = WPSkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
     private lateinit var lastUpdatedHandler: Handler
 
     private var lastUpdated: Date? = null
-
-    private var skeletonView = WPSkeletonView()
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -162,8 +161,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
-        skeletanDelayTimer?.cancel()
-        skeletanDelayTimerTask?.cancel()
+        skeletonDelayTimer?.cancel()
+        skeletonDelayTimerTask?.cancel()
         showSkeleton(false)
 
         chartCurrencyCode = currencyCode
@@ -229,7 +228,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun showSkeletonDelayed() {
-        skeletanDelayTimerTask = object : TimerTask() {
+        skeletonDelayTimerTask = object : TimerTask() {
             override fun run() {
                 this@DashboardStatsView.post {
                     showSkeleton(true)
@@ -238,8 +237,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             }
         }
 
-        skeletanDelayTimer = Timer().apply {
-            schedule(skeletanDelayTimerTask, PROGRESS_DELAY_TIME_MS)
+        skeletonDelayTimer = Timer().apply {
+            schedule(skeletonDelayTimerTask, PROGRESS_DELAY_TIME_MS)
         }
     }
 

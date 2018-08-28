@@ -190,14 +190,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             // Make sure this is called after the layout is done with everything else.
             post { isRefreshing = active }
         }
-        showSkeletonView(active)
+        showSkeleton(active)
     }
 
     override fun setLoadingMoreIndicator(active: Boolean) {
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
 
-    override fun showSkeletonView(show: Boolean) {
+    override fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(ordersView, R.layout.skeleton_order_list)
         } else {
@@ -215,7 +215,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             ordersList?.let { listView ->
                 if (isFreshData) {
                     ordersList.scrollToPosition(0)
-                    listView.layoutAnimation = listLayoutAnimation
+                    // TODO: do we want this animation still?
+                    // listView.layoutAnimation = listLayoutAnimation
                 }
                 ordersAdapter.setOrders(orders, orderStatusFilter)
             }

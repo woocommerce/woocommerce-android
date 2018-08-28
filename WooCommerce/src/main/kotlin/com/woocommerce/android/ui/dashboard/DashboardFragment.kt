@@ -227,7 +227,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
-    override fun showUnfilledOrdersProgress(show: Boolean) {
+    override fun showUnfilledOrdersSkeleton(show: Boolean) {
         dashboard_unfilled_orders.showSkeleton(show)
     }
 
