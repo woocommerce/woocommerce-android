@@ -10,10 +10,13 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -100,6 +103,14 @@ class DashboardPresenter @Inject constructor(
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
 
+    /**
+     * dispatches a FETCH_HAS_ORDERS action which tells us whether this store has *ever* had any orders
+     */
+    override fun fetchHasOrders() {
+        val payload = FetchHasOrdersPayload(selectedSite.get())
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchHasOrdersAction(payload))
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
@@ -128,19 +139,33 @@ class DashboardPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
-        event.causeOfChange?.takeIf { it == WCOrderAction.FETCH_ORDERS_COUNT }?.let { _ ->
-            dashboardView?.showUnfilledOrdersProgress(false)
-            if (event.isError) {
-                WooLog.e(T.DASHBOARD,
-                        "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")
-                dashboardView?.hideUnfilledOrdersCard()
-                return
+        when (event.causeOfChange) {
+            FETCH_HAS_ORDERS -> {
+                if (event.isError) {
+                    WooLog.e(T.DASHBOARD,
+                            "$TAG - Error fetching whether orders exist: ${event.error.message}")
+                } else {
+                    val hasNoOrders = event.rowsAffected == 0
+                    dashboardView?.showNoOrdersView(hasNoOrders)
+                }
             }
-            event.rowsAffected.takeIf { it > 0 }?.let { count ->
-                dashboardView?.showUnfilledOrdersCard(count, event.canLoadMore)
-            } ?: dashboardView?.hideUnfilledOrdersCard()
-        } ?: if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
-            dashboardView?.refreshDashboard()
+            FETCH_ORDERS_COUNT -> {
+                dashboardView?.showUnfilledOrdersProgress(false)
+                if (event.isError) {
+                    WooLog.e(T.DASHBOARD,
+                            "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")
+                    dashboardView?.hideUnfilledOrdersCard()
+                    return
+                }
+                event.rowsAffected.takeIf { it > 0 }?.let { count ->
+                    dashboardView?.showUnfilledOrdersCard(count, event.canLoadMore)
+                } ?: dashboardView?.hideUnfilledOrdersCard()
+            }
+            else -> {
+                if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
+                    dashboardView?.refreshDashboard()
+                }
+            }
         }
     }
 

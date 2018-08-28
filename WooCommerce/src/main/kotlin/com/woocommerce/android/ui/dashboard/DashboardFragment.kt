@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.content.Intent
+import android.content.res.Configuration
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
@@ -20,6 +23,7 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
@@ -63,6 +67,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     refreshDashboard()
                 }
             }
+            no_orders_image.visibility =
+                    if (DisplayUtils.isLandscape(activity)) View.GONE else View.VISIBLE
         }
         return view
     }
@@ -94,6 +100,18 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // being visible - go ahead and load the data.
         if (isActive && isRefreshPending) {
             refreshDashboard()
+        }
+    }
+
+    /**
+     * the main activity has `android:configChanges="orientation|screenSize"` in the manifest, so we have to
+     * handle screen rotation here
+     */
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        newConfig?.let {
+            no_orders_image.visibility =
+                    if (it.orientation == ORIENTATION_LANDSCAPE) View.GONE else View.VISIBLE
         }
     }
 
@@ -176,6 +194,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
                 presenter.fetchUnfilledOrderCount()
+                presenter.fetchHasOrders()
             }
             else -> isRefreshPending = true
         }
@@ -206,5 +225,29 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun showUnfilledOrdersProgress(show: Boolean) {
         dashboard_unfilled_orders.showProgress(show)
+    }
+
+    override fun shareStoreUrl() {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, selectedSite.get().url)
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(sendIntent,
+                resources.getText(R.string.dashboard_no_orders_share_store_title)))
+    }
+
+    /**
+     * shows the "waiting for customers" view that appears for stores that have never had any orders
+     */
+    override fun showNoOrdersView(show: Boolean) {
+        if (show && no_orders_view.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(no_orders_view, Duration.LONG)
+            no_orders_share_button.setOnClickListener {
+                shareStoreUrl()
+            }
+        } else if (!show && no_orders_view.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(no_orders_view, Duration.LONG)
+        }
     }
 }

@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
@@ -284,5 +285,19 @@ class DashboardPresenterTest {
             error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
         })
         verify(dashboardView, times(1)).showTopEarnersError(StatsGranularity.DAYS)
+    }
+
+    @Test
+    fun `Handles FETCH_HAS_ORDERS when there aren't any orders`() {
+        presenter.takeView(dashboardView)
+        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_HAS_ORDERS })
+        verify(dashboardView, times(1)).showNoOrdersView(true)
+    }
+
+    @Test
+    fun `Handles FETCH_HAS_ORDERS when there are orders`() {
+        presenter.takeView(dashboardView)
+        presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = FETCH_HAS_ORDERS })
+        verify(dashboardView, times(1)).showNoOrdersView(false)
     }
 }

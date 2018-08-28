@@ -12,6 +12,7 @@ interface DashboardContract {
         fun resetTopEarnersForceRefresh()
         fun getStatsCurrency(): String?
         fun fetchUnfilledOrderCount()
+        fun fetchHasOrders()
     }
 
     interface View : BaseView<Presenter> {
@@ -28,5 +29,7 @@ interface DashboardContract {
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
         fun showUnfilledOrdersProgress(show: Boolean)
+        fun showNoOrdersView(show: Boolean)
+        fun shareStoreUrl()
     }
 }

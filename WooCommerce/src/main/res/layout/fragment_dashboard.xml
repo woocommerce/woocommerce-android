@@ -1,48 +1,90 @@
 <android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dashboard_refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_window_background">
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:descendantFocusability="blocksDescendants"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <!-- Order stats -->
-            <com.woocommerce.android.ui.dashboard.DashboardStatsView
-                android:id="@+id/dashboard_stats"
-                style="@style/Woo.Card"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:animateLayoutChanges="true"
+                android:descendantFocusability="blocksDescendants"
+                android:orientation="vertical">
 
-            <!-- Orders waiting fulfillment -->
-            <com.woocommerce.android.ui.dashboard.DashboardUnfilledOrdersCard
-                android:id="@+id/dashboard_unfilled_orders"
-                style="@style/Woo.Card"
-                android:layout_width="match_parent"
+                <!-- Order stats -->
+                <com.woocommerce.android.ui.dashboard.DashboardStatsView
+                    android:id="@+id/dashboard_stats"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+
+                <!-- Orders waiting fulfillment -->
+                <com.woocommerce.android.ui.dashboard.DashboardUnfilledOrdersCard
+                    android:id="@+id/dashboard_unfilled_orders"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+
+                <!-- Top earner stats -->
+                <com.woocommerce.android.ui.dashboard.DashboardTopEarnersView
+                    android:id="@+id/dashboard_top_earners"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:orientation="vertical"/>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/no_orders_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/default_window_background"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/no_orders_image"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
+                android:layout_gravity="center"
+                android:contentDescription="@string/dashboard_no_orders_contentdesc"
+                app:srcCompat="@drawable/ic_woo_waiting_customers"
                 tools:visibility="visible"/>
 
-            <!-- Top earner stats -->
-            <com.woocommerce.android.ui.dashboard.DashboardTopEarnersView
-                android:id="@+id/dashboard_top_earners"
-                style="@style/Woo.Card"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
+            <TextView
+                style="@style/Woo.TextAppearance.Bold"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"/>
+                android:layout_marginTop="@dimen/margin_large"
+                android:text="@string/dashboard_no_orders"/>
 
+            <Button
+                android:id="@+id/no_orders_share_button"
+                style="@style/Woo.ButtonPurple"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
+                android:text="@string/dashboard_no_orders_share_store"/>
         </LinearLayout>
-    </ScrollView>
+    </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>
