@@ -9,20 +9,20 @@
     <View
         android:layout_width="240dp"
         android:layout_height="@dimen/text_large"
-        android:background="@color/skeleton_color"/>
+        android:background="@drawable/skeleton_background"/>
 
     <!-- Message -->
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/text_large"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:background="@color/skeleton_color"/>
+        android:background="@drawable/skeleton_background"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/text_large"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:background="@color/skeleton_color"/>
+        android:background="@drawable/skeleton_background"/>
 
     <!-- Action Button -->
     <View
@@ -31,6 +31,6 @@
         android:layout_height="40dp"
         android:layout_gravity="end"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:background="@color/skeleton_color"/>
+        android:background="@drawable/skeleton_background"/>
 
 </LinearLayout>

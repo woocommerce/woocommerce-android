@@ -14,7 +14,7 @@
             android:layout_width="100dp"
             android:layout_height="@dimen/text_large"
             android:layout_marginTop="8dp"
-            android:background="@color/skeleton_color"/>
+            android:background="@drawable/skeleton_background"/>
 
         <View
             android:layout_width="0dp"
@@ -23,14 +23,14 @@
             android:layout_marginStart="@dimen/list_item_padding_intra_h"
             android:layout_marginTop="8dp"
             android:layout_weight="3"
-            android:background="@color/skeleton_color"/>
+            android:background="@drawable/skeleton_background"/>
 
         <View
             android:layout_width="0dp"
             android:layout_height="@dimen/text_large"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:background="@color/skeleton_color"/>
+            android:background="@drawable/skeleton_background"/>
 
     </LinearLayout>
 
@@ -38,5 +38,5 @@
         android:layout_width="100dp"
         android:layout_height="@dimen/text_large"
         android:layout_marginTop="8dp"
-        android:background="@color/skeleton_color"/>
+        android:background="@drawable/skeleton_background"/>
 </LinearLayout>
