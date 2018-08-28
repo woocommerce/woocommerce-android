@@ -4,15 +4,27 @@
     android:id="@+id/ordersView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:orientation="vertical">
 
+    <!-- group one -->
+    <include layout="@layout/skeleton_order_list_header"/>
+
     <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <!-- group two -->
+    <include layout="@layout/skeleton_order_list_header"/>
 
     <include layout="@layout/skeleton_order_list_item"/>
 
     <include layout="@layout/skeleton_order_list_item"/>
 
     <include layout="@layout/skeleton_order_list_item"/>
+
+    <!-- group three -->
+    <include layout="@layout/skeleton_order_list_header"/>
 
     <include layout="@layout/skeleton_order_list_item"/>
 

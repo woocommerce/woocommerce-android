@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout"
-    style="@style/Woo.OrderList.Item">
+    style="@style/Woo.OrderList.Item"
+    android:layout_marginBottom="@dimen/margin_large"
+    android:layout_marginTop="@dimen/margin_large"
+    android:orientation="horizontal">
 
-    <TextView
+    <View
         android:id="@+id/orderNum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/text_large"
         android:layout_marginTop="8dp"
-        android:background="@color/skeleton_color"
-        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
-        android:textColor="@color/transparent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="#51"/>
+        android:layout_weight="1"
+        android:background="@color/skeleton_color"/>
 
     <TextView
         android:id="@+id/orderName"
@@ -25,35 +21,16 @@
         android:layout_marginEnd="@dimen/list_item_padding_intra_h"
         android:layout_marginStart="@dimen/list_item_padding_intra_h"
         android:layout_marginTop="8dp"
-        android:background="@color/skeleton_color"
-        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
-        android:textColor="@color/transparent"
-        app:layout_constraintEnd_toStartOf="@+id/orderTotal"
-        app:layout_constraintStart_toEndOf="@+id/orderNum"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="John Doe"/>
-
-    <TextView
-        android:id="@+id/orderTotal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@color/skeleton_color"
-        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title"
-        android:textColor="@color/transparent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="$100"/>
+        android:layout_weight="3"
+        android:background="@color/skeleton_color"/>
 
     <View
-        android:id="@+id/orderTags"
-        android:layout_width="40dp"
-        android:layout_height="12dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/skeleton_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/orderName"/>
+        android:id="@+id/orderTotal"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/text_large"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:background="@color/skeleton_color"/>
 
-</android.support.constraint.ConstraintLayout>
+
+</LinearLayout>
