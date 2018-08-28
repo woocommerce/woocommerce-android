@@ -20,6 +20,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.widgets.WPSkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
@@ -59,13 +60,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private var lastUpdated: Date? = null
 
+    private var skeletonView = WPSkeletonView()
+
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
         selectedSite: SelectedSite
     ) {
-        barchart_progress.visibility = View.VISIBLE
-
         this.selectedSite = selectedSite
 
         StatsGranularity.values().forEach { granularity ->
@@ -104,6 +105,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             updateRecencyMessage()
             lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
         }
+    }
+
+    fun showChartSkeleton() {
+        dashboard_recency_text.text = null
+        skeletonView.show(chart_container, R.layout.dashboard_stats_chart_skeleton)
+    }
+
+    fun hideChartSkeleton() {
+        skeletonView.hide()
+        updateRecencyMessage()
     }
 
     /**
@@ -153,7 +164,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         progressDelayTimer?.cancel()
         progressDelayTimerTask?.cancel()
-        barchart_progress.visibility = View.GONE
+        hideChartSkeleton()
 
         chartCurrencyCode = currencyCode
 
@@ -221,7 +232,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         progressDelayTimerTask = object : TimerTask() {
             override fun run() {
                 this@DashboardStatsView.post {
-                    barchart_progress.visibility = View.VISIBLE
+                    showChartSkeleton()
                     clearLastUpdated()
                 }
             }

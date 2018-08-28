@@ -200,6 +200,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun hideChartSkeleton() {
+        dashboard_stats.hideChartSkeleton()
+    }
+
+    override fun showChartSkeleton() {
+        dashboard_stats.showChartSkeleton()
+    }
+
     override fun onRequestLoadStats(period: StatsGranularity) {
         dashboard_stats.showErrorView(false)
         presenter.loadStats(period)

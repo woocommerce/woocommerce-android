@@ -31,5 +31,8 @@ interface DashboardContract {
         fun showUnfilledOrdersProgress(show: Boolean)
         fun showNoOrdersView(show: Boolean)
         fun shareStoreUrl()
+
+        fun hideChartSkeleton()
+        fun showChartSkeleton()
     }
 }

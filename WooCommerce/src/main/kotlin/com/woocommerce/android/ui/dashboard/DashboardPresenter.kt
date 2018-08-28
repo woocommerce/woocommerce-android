@@ -60,6 +60,7 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
+        dashboardView?.showChartSkeleton()
         val payload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
     }
@@ -114,6 +115,8 @@ class DashboardPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
+        dashboardView?.hideChartSkeleton()
+
         if (event.isError) {
             WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
             dashboardView?.showStatsError(event.granularity)

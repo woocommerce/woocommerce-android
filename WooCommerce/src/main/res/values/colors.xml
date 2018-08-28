@@ -152,4 +152,6 @@
     <color name="login_input_icon_color">@color/wc_grey_30</color>
     <color name="login_input_password_icon_color">@color/wc_grey_30</color>
     <color name="login_notification_accent_color">@color/colorPrimary</color>
+
+    <color name="skeleton_color">#24000000</color>
 </resources>

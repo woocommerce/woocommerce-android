@@ -122,6 +122,8 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
+    implementation 'com.facebook.shimmer:shimmer:0.3.0'
+
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
