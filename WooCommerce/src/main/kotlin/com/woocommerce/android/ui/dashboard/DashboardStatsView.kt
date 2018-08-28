@@ -109,7 +109,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     fun showChartSkeleton() {
         dashboard_recency_text.text = null
-        skeletonView.show(chart_container, R.layout.dashboard_stats_chart_skeleton)
+        skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats)
     }
 
     fun hideChartSkeleton() {

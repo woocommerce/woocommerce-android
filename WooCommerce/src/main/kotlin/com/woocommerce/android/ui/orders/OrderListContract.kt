@@ -25,5 +25,8 @@ interface OrderListContract {
         fun refreshFragmentState()
         fun showLoadOrdersError()
         fun onFilterSelected(orderStatus: String?)
+
+        fun hideSkeletonView()
+        fun showSkeletonView()
     }
 }

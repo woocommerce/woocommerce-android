@@ -22,6 +22,7 @@ import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.widgets.WPSkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -55,6 +56,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuButton: MenuItem? = null
+
+    private val skeletonView = WPSkeletonView()
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
@@ -187,10 +190,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             // Make sure this is called after the layout is done with everything else.
             post { isRefreshing = active }
         }
+        if (active) showSkeletonView() else hideSkeletonView()
     }
 
     override fun setLoadingMoreIndicator(active: Boolean) {
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
+    }
+
+    override fun hideSkeletonView() {
+        skeletonView.hide()
+    }
+
+    override fun showSkeletonView() {
+        skeletonView.show(ordersView, R.layout.skeleton_order_list)
     }
 
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
