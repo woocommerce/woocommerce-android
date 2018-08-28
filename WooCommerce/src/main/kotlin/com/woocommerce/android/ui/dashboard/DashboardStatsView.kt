@@ -89,7 +89,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 // Show the progress view after some delay
                 // This gives us a chance to never show it at all when the stats data is cached and returns quickly,
                 // preventing glitchy behavior
-                showProgressDelayed()
+                showSkeletonDelayed()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -107,7 +107,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    fun showChartSkeleton(show: Boolean) {
+    fun showSkeleton(show: Boolean) {
         if (show) {
             dashboard_recency_text.text = null
             skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats)
@@ -164,7 +164,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         skeletanDelayTimer?.cancel()
         skeletanDelayTimerTask?.cancel()
-        showChartSkeleton(false)
+        showSkeleton(false)
 
         chartCurrencyCode = currencyCode
 
@@ -228,11 +228,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         return BarDataSet(barEntries, "")
     }
 
-    private fun showProgressDelayed() {
+    private fun showSkeletonDelayed() {
         skeletanDelayTimerTask = object : TimerTask() {
             override fun run() {
                 this@DashboardStatsView.post {
-                    showChartSkeleton(true)
+                    showSkeleton(true)
                     clearLastUpdated()
                 }
             }

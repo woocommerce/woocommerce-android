@@ -201,7 +201,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showChartSkeleton(show: Boolean) {
-        dashboard_stats.showChartSkeleton(show)
+        dashboard_stats.showSkeleton(show)
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
@@ -228,7 +228,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showUnfilledOrdersProgress(show: Boolean) {
-        dashboard_unfilled_orders.showProgress(show)
+        dashboard_unfilled_orders.showSkeleton(show)
     }
 
     override fun shareStoreUrl() {

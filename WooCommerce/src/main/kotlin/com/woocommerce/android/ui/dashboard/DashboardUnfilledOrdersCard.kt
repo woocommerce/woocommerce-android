@@ -31,7 +31,7 @@ class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs:
         }
     }
 
-    fun showProgress(show: Boolean) {
+    fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(unfilled_card, R.layout.skeleton_dashboard_unfilled_orders)
         } else {
