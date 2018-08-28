@@ -32,7 +32,6 @@ interface DashboardContract {
         fun showNoOrdersView(show: Boolean)
         fun shareStoreUrl()
 
-        fun hideChartSkeleton()
-        fun showChartSkeleton()
+        fun showChartSkeleton(show: Boolean)
     }
 }

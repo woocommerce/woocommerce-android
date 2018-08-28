@@ -15,7 +15,7 @@ import com.facebook.shimmer.ShimmerFrameLayout
 
 class WPSkeletonView {
     private lateinit var parentView: ViewGroup
-    private lateinit var dataView: ViewGroup
+    private lateinit var actualView: ViewGroup
     private lateinit var skeletonView: View
     private lateinit var shimmerView: ShimmerFrameLayout
 
@@ -26,16 +26,16 @@ class WPSkeletonView {
      * Replaces the passed ViewGroup with a skeleton view inflated from the passed layout id
      * and starts a shimmer animation on the skeleton view
      *
-     * @param dataViewGroup The view containing the "real" data which will be hidden
-     * @param layoutId The resource id of the skeleton layout which will replace the dataViewGroup view
+     * @param view The view containing the "real" data which will be hidden
+     * @param layoutId The resource id of the skeleton layout which will replace the above view
      */
-    fun show(dataViewGroup: ViewGroup, @LayoutRes layoutId: Int) {
+    fun show(view: ViewGroup, @LayoutRes layoutId: Int) {
         if (isShowing) { return }
 
-        val viewParent = dataViewGroup.parent ?: throw IllegalStateException("Source view isn't attached")
+        val viewParent = view.parent ?: throw IllegalStateException("Source view isn't attached")
 
         parentView = viewParent as ViewGroup
-        dataView = dataViewGroup
+        actualView = view
         skeletonLayoutId = layoutId
 
         // create the shimmer view
@@ -46,8 +46,8 @@ class WPSkeletonView {
         skeletonView = LayoutInflater.from(parentView.context).inflate(layoutId, parentView, false)
         shimmerView.addView(skeletonView)
 
-        // hide the dataViewGroup view and add the shimmer
-        dataView.visibility = View.GONE
+        // hide the view view and add the shimmer
+        actualView.visibility = View.GONE
         parentView.addView(shimmerView)
 
         // start the shimmer animation
@@ -68,7 +68,7 @@ class WPSkeletonView {
         parentView.removeView(shimmerView)
 
         // fade in the source view
-        fadeIn(dataView)
+        fadeIn(actualView)
 
         isShowing = false
     }

@@ -52,8 +52,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
 
-    private var progressDelayTimer: Timer? = null
-    private var progressDelayTimerTask: TimerTask? = null
+    private var skeletanDelayTimer: Timer? = null
+    private var skeletanDelayTimerTask: TimerTask? = null
 
     private lateinit var lastUpdatedRunnable: Runnable
     private lateinit var lastUpdatedHandler: Handler
@@ -107,14 +107,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    fun showChartSkeleton() {
-        dashboard_recency_text.text = null
-        skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats)
-    }
-
-    fun hideChartSkeleton() {
-        skeletonView.hide()
-        updateRecencyMessage()
+    fun showChartSkeleton(show: Boolean) {
+        if (show) {
+            dashboard_recency_text.text = null
+            skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats)
+        } else {
+            skeletonView.hide()
+            updateRecencyMessage()
+        }
     }
 
     /**
@@ -162,9 +162,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
-        progressDelayTimer?.cancel()
-        progressDelayTimerTask?.cancel()
-        hideChartSkeleton()
+        skeletanDelayTimer?.cancel()
+        skeletanDelayTimerTask?.cancel()
+        showChartSkeleton(false)
 
         chartCurrencyCode = currencyCode
 
@@ -229,17 +229,17 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun showProgressDelayed() {
-        progressDelayTimerTask = object : TimerTask() {
+        skeletanDelayTimerTask = object : TimerTask() {
             override fun run() {
                 this@DashboardStatsView.post {
-                    showChartSkeleton()
+                    showChartSkeleton(true)
                     clearLastUpdated()
                 }
             }
         }
 
-        progressDelayTimer = Timer().apply {
-            schedule(progressDelayTimerTask, PROGRESS_DELAY_TIME_MS)
+        skeletanDelayTimer = Timer().apply {
+            schedule(skeletanDelayTimerTask, PROGRESS_DELAY_TIME_MS)
         }
     }
 

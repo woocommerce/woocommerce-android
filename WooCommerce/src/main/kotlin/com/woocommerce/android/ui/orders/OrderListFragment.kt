@@ -190,19 +190,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             // Make sure this is called after the layout is done with everything else.
             post { isRefreshing = active }
         }
-        if (active) showSkeletonView() else hideSkeletonView()
+        showSkeletonView(active)
     }
 
     override fun setLoadingMoreIndicator(active: Boolean) {
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
 
-    override fun hideSkeletonView() {
-        skeletonView.hide()
-    }
-
-    override fun showSkeletonView() {
-        skeletonView.show(ordersView, R.layout.skeleton_order_list)
+    override fun showSkeletonView(show: Boolean) {
+        if (show) {
+            skeletonView.show(ordersView, R.layout.skeleton_order_list)
+        } else {
+            skeletonView.hide()
+        }
     }
 
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
