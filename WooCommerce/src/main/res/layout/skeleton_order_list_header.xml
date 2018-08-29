@@ -3,5 +3,4 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/linearLayout"
     style="@style/Woo.OrderList.Header"
-    android:background="@drawable/skeleton_background"/>
-
+    android:background="@color/skeleton_color"/>
