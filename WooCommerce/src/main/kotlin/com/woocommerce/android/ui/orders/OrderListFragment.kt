@@ -190,7 +190,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             // Make sure this is called after the layout is done with everything else.
             post { isRefreshing = active }
         }
-        showSkeleton(active)
     }
 
     override fun setLoadingMoreIndicator(active: Boolean) {

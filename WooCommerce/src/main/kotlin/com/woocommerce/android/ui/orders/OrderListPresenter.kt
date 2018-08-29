@@ -51,6 +51,7 @@ class OrderListPresenter @Inject constructor(
         if (networkStatus.isConnected() && forceRefresh) {
             isLoadingOrders = true
             orderView?.setLoadingIndicator(active = true)
+            orderView?.showSkeleton(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
@@ -78,6 +79,7 @@ class OrderListPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
+        orderView?.showSkeleton(false)
         when (event.causeOfChange) {
             FETCH_ORDERS -> {
                 if (event.isError) {
