@@ -17,10 +17,10 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
@@ -225,7 +225,6 @@ class DashboardPresenterTest {
         // Simulate the network connected event
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(dashboardView, times(0)).refreshDashboard()
-        verify(dashboardView, times(0)).setLoadingIndicator(any())
     }
 
     @Test
@@ -235,7 +234,6 @@ class DashboardPresenterTest {
         // Simulate the network disconnected event
         presenter.onEventMainThread(ConnectionChangeEvent(false))
         verify(dashboardView, times(0)).refreshDashboard()
-        verify(dashboardView, times(1)).setLoadingIndicator(false)
     }
 
     @Test
