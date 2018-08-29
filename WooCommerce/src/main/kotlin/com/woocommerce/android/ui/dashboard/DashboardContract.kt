@@ -33,5 +33,6 @@ interface DashboardContract {
 
         fun showChartSkeleton(show: Boolean)
         fun showUnfilledOrdersSkeleton(show: Boolean)
+        fun showTopEarnersSkeleton(show: Boolean)
     }
 }

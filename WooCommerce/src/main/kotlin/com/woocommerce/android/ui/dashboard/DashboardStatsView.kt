@@ -26,8 +26,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
@@ -36,7 +34,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     companion object {
-        private const val PROGRESS_DELAY_TIME_MS = 200L
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
 
@@ -52,8 +49,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
 
-    private var skeletonDelayTimer: Timer? = null
-    private var skeletonDelayTimerTask: TimerTask? = null
     private var skeletonView = WPSkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
@@ -85,10 +80,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             override fun onTabSelected(tab: TabLayout.Tab) {
                 revenue_value.text = ""
                 orders_value.text = ""
-                // Show the progress view after some delay
-                // This gives us a chance to never show it at all when the stats data is cached and returns quickly,
-                // preventing glitchy behavior
-                showSkeletonDelayed()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -108,8 +99,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     fun showSkeleton(show: Boolean) {
         if (show) {
-            dashboard_recency_text.text = null
             skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats)
+            clearLastUpdated()
         } else {
             skeletonView.hide()
             updateRecencyMessage()
@@ -161,10 +152,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
-        skeletonDelayTimer?.cancel()
-        skeletonDelayTimerTask?.cancel()
-        showSkeleton(false)
-
         chartCurrencyCode = currencyCode
 
         revenue_value.text = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
@@ -225,21 +212,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         return BarDataSet(barEntries, "")
-    }
-
-    private fun showSkeletonDelayed() {
-        skeletonDelayTimerTask = object : TimerTask() {
-            override fun run() {
-                this@DashboardStatsView.post {
-                    showSkeleton(true)
-                    clearLastUpdated()
-                }
-            }
-        }
-
-        skeletonDelayTimer = Timer().apply {
-            schedule(skeletonDelayTimerTask, PROGRESS_DELAY_TIME_MS)
-        }
     }
 
     @StringRes

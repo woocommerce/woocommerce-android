@@ -204,6 +204,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_stats.showSkeleton(show)
     }
 
+    override fun showTopEarnersSkeleton(show: Boolean) {
+        dashboard_top_earners.showSkeleton(show)
+    }
+
+    override fun showUnfilledOrdersSkeleton(show: Boolean) {
+        dashboard_unfilled_orders.showSkeleton(show)
+    }
+
     override fun onRequestLoadStats(period: StatsGranularity) {
         dashboard_stats.showErrorView(false)
         presenter.loadStats(period)
@@ -225,10 +233,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
-    }
-
-    override fun showUnfilledOrdersSkeleton(show: Boolean) {
-        dashboard_unfilled_orders.showSkeleton(show)
     }
 
     override fun shareStoreUrl() {

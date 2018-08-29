@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/Woo.OrderList.Item"
-    android:layout_marginBottom="@dimen/margin_medium"
-    android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/margin_large">
 
     <View
-        android:layout_width="@dimen/min_tap_target"
-        android:layout_height="@dimen/min_tap_target"
+        android:layout_width="@dimen/top_earner_product_image_sz"
+        android:layout_height="@dimen/top_earner_product_image_sz"
         android:layout_gravity="center_vertical"
         android:background="@drawable/skeleton_background"/>
 
     <View
         android:layout_width="0dp"
-        android:layout_height="@dimen/min_tap_target"
+        android:layout_height="@dimen/top_earner_product_image_sz"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginStart="@dimen/margin_large"
@@ -22,7 +23,7 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="@dimen/min_tap_target"
+        android:layout_height="@dimen/top_earner_product_image_sz"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:background="@drawable/skeleton_background"/>

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
-import android.os.Handler
 import android.support.annotation.StringRes
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.DefaultItemAnimator
@@ -44,7 +43,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     private lateinit var selectedSite: SelectedSite
     private lateinit var adapter: TopEarnersAdapter
 
-    private var didHideSkeleton = false
     private var skeletonView = WPSkeletonView()
 
     fun initView(
@@ -74,8 +72,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                hideEmptyView()
-                clearAdapterAndShowSkeletonDelayed()
+                showEmptyView(false)
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -83,45 +80,25 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         })
     }
 
-    /**
-     * show the skeleton and clears the adapter if after a brief delay it hasn't already been done - this way
-     * we don't unnecessarily perform these actions when the request quickly returns cached data
-     */
-    private fun clearAdapterAndShowSkeletonDelayed() {
-        didHideSkeleton = false
-        Handler().postDelayed({
-            if (!didHideSkeleton) {
-                showSkeleton(true)
-                adapter.clear()
-            }
-        }, 250)
-    }
-
-    private fun showSkeleton(show: Boolean) {
+    fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(dashboard_top_earners_container, R.layout.skeleton_dashboard_top_earners)
         } else {
             skeletonView.hide()
-            didHideSkeleton = true
         }
     }
 
-    private fun showEmptyView() {
-        topEarners_emptyView.visibility = View.VISIBLE
-    }
-
-    private fun hideEmptyView() {
-        topEarners_emptyView.visibility = View.GONE
+    private fun showEmptyView(show: Boolean) {
+        topEarners_emptyView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     fun updateView(topEarnerList: List<WCTopEarnerModel>) {
-        showSkeleton(false)
         adapter.setTopEarnersList(topEarnerList)
-        if (topEarnerList.isEmpty()) showEmptyView() else hideEmptyView()
+        showEmptyView(topEarnerList.isEmpty())
     }
 
     fun showErrorView(show: Boolean) {
-        hideEmptyView()
+        showEmptyView(false)
         topEarners_error.visibility = if (show) View.VISIBLE else View.GONE
         topEarners_recycler.visibility = if (show) View.GONE else View.VISIBLE
     }
@@ -159,13 +136,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             topEarnerList.clear()
             topEarnerList.addAll(newList)
             notifyDataSetChanged()
-        }
-
-        fun clear() {
-            if (itemCount > 0) {
-                topEarnerList.clear()
-                notifyDataSetChanged()
-            }
         }
 
         override fun getItemCount() = topEarnerList.size
