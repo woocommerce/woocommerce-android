@@ -6,12 +6,6 @@
     <solid
         android:color="@color/skeleton_color"/>
 
-    <padding
-        android:bottom="4dp"
-        android:left="4dp"
-        android:right="4dp"
-        android:top="4dp"/>
-
     <corners
         android:radius="8dp"/>
 

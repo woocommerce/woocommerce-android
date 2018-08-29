@@ -6,27 +6,32 @@
     android:orientation="vertical">
 
     <!-- Title -->
-    <View
-        android:layout_width="240dp"
-        android:layout_height="@dimen/text_extra_large"
-        android:background="@drawable/skeleton_background"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/skeleton_background"
+        android:text="@string/dashboard_fulfill_order_title"
+        android:textAppearance="@style/Woo.TextAppearance.Title.Bold"
+        android:textColor="@color/transparent"/>
 
     <!-- Message -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/min_tap_target"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:background="@drawable/skeleton_background"/>
+        android:background="@drawable/skeleton_background"
+        android:text="@string/dashboard_fulfill_orders_msg"
+        android:textColor="@color/transparent"/>
 
     <!-- Action Button -->
     <Button
+        android:id="@+id/alertAction_action"
         style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:background="@drawable/skeleton_background"
-        android:enabled="false"
         android:text="@string/dashboard_action_view_orders"
         android:textColor="@color/transparent"/>
 
