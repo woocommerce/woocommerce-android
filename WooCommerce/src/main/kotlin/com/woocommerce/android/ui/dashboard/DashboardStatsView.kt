@@ -100,10 +100,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats)
-            clearLastUpdated()
+            dashboard_recency_text.text = null
         } else {
             skeletonView.hide()
-            updateRecencyMessage()
         }
     }
 

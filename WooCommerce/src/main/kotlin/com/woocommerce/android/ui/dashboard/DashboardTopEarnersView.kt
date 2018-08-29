@@ -73,6 +73,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 showEmptyView(false)
+                adapter.clear()
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -139,6 +140,13 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         }
 
         override fun getItemCount() = topEarnerList.size
+
+        fun clear() {
+            if (itemCount > 0) {
+                topEarnerList.clear()
+                notifyDataSetChanged()
+            }
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopEarnersViewHolder {
             val view = LayoutInflater.from(parent.context)
