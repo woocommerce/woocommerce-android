@@ -101,6 +101,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
                 setOnRefreshListener {
+                    orderRefreshLayout.isRefreshing = false
                     isRefreshPending = true
                     presenter.loadOrders(orderStatusFilter, forceRefresh = true)
                 }
@@ -183,13 +184,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         presenter.dropView()
         filterMenuButton = null
         super.onDestroyView()
-    }
-
-    override fun setLoadingIndicator(active: Boolean) {
-        with(orderRefreshLayout) {
-            // Make sure this is called after the layout is done with everything else.
-            post { isRefreshing = active }
-        }
     }
 
     override fun setLoadingMoreIndicator(active: Boolean) {

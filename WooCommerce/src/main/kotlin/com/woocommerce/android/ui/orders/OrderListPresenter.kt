@@ -50,7 +50,6 @@ class OrderListPresenter @Inject constructor(
     override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
         if (networkStatus.isConnected() && forceRefresh) {
             isLoadingOrders = true
-            orderView?.setLoadingIndicator(active = true)
             orderView?.showSkeleton(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
@@ -97,7 +96,6 @@ class OrderListPresenter @Inject constructor(
                     orderView?.setLoadingMoreIndicator(active = false)
                 } else {
                     isLoadingOrders = false
-                    orderView?.setLoadingIndicator(active = false)
                 }
             }
             // A child fragment made a change that requires a data refresh.
@@ -122,14 +120,13 @@ class OrderListPresenter @Inject constructor(
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
-            view.setLoadingIndicator(false)
             if (orders.count() > 0) {
                 view.showOrders(orders, orderStatusFilter, isForceRefresh)
             } else {
                 if (!networkStatus.isConnected()) {
                     // if the device if offline with no cached orders to display, show the loading
                     // indicator until a successful online refresh.
-                    view.setLoadingIndicator(true)
+                    view.showSkeleton(true)
                 } else {
                     view.showNoOrders()
                 }
