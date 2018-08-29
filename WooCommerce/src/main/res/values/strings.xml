@@ -149,7 +149,7 @@
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_customer_provided_note">Customer Provided Note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
-    <string name="orderdetail_note_icon_contentdesc">Note Icon</string>
+    <string name="orderdetail_note_hint">Compose an order note</string>
     <string name="orderdetail_note_private">Private Note</string>
     <string name="orderdetail_note_public">Public Note</string>
     <string name="orderdetail_order_notes">Order Notes</string>

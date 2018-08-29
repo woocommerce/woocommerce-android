@@ -38,6 +38,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:gravity="top"
+            android:hint="@string/orderdetail_note_hint"
             android:inputType="textAutoComplete|textShortMessage|textMultiLine"/>
     </LinearLayout>
 
