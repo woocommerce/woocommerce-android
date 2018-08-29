@@ -123,5 +123,7 @@
     <!--
         Skeletons
     -->
+    <dimen name="skeleton_bar_chart_padding">30dp</dimen>
     <dimen name="skeleton_bar_chart_bar_width">20dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
 </resources>
