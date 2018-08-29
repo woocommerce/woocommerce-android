@@ -4,82 +4,91 @@
     android:id="@+id/chart_skeleton"
     android:layout_width="match_parent"
     android:layout_height="@dimen/chart_height"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingEnd="@dimen/skeleton_bar_chart_bar_width"
+    android:paddingStart="@dimen/skeleton_bar_chart_bar_width">
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="40dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="60dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="100dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="40dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="0dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="40dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="160dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="100dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
+        android:layout_height="@dimen/skeleton_bar_chart_bar_width"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="0dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
         android:layout_height="40dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/margin_medium"
         android:background="@color/skeleton_color"/>
 </LinearLayout>

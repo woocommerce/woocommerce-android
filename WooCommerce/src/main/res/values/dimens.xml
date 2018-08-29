@@ -119,4 +119,9 @@
         Offline Status Bar
     -->
     <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>
+
+    <!--
+        Skeletons
+    -->
+    <dimen name="skeleton_bar_chart_bar_width">20dp</dimen>
 </resources>
