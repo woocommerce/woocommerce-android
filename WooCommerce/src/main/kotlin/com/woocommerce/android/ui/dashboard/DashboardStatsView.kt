@@ -78,8 +78,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                revenue_value.text = ""
-                orders_value.text = ""
+                clearLabelValues()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -97,9 +96,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
+    fun clearLabelValues() {
+        visitors_value.text = ""
+        revenue_value.text = ""
+        orders_value.text = ""
+    }
+
+
     fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats)
+            skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats, delayed = true)
             dashboard_recency_text.text = null
         } else {
             skeletonView.hide()

@@ -192,7 +192,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(ordersView, R.layout.skeleton_order_list)
+            skeletonView.show(ordersView, R.layout.skeleton_order_list, delayed = true)
         } else {
             skeletonView.hide()
         }

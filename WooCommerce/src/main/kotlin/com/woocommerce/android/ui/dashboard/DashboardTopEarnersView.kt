@@ -83,7 +83,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(dashboard_top_earners_container, R.layout.skeleton_dashboard_top_earners)
+            skeletonView.show(dashboard_top_earners_container, R.layout.skeleton_dashboard_top_earners, delayed = true)
         } else {
             skeletonView.hide()
         }

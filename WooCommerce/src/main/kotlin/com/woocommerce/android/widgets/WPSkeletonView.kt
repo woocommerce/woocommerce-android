@@ -32,7 +32,7 @@ class WPSkeletonView {
      * @param delayed Whether to show the skeleton after a brief delay, which avoids the skeleton appearing
      * and then immediately disappearing if the network request completes very quickly
      */
-    fun show(view: ViewGroup, @LayoutRes layoutId: Int, delayed: Boolean = true) {
+    fun show(view: ViewGroup, @LayoutRes layoutId: Int, delayed: Boolean = false) {
         if (isShowing) { return }
 
         val viewParent = view.parent ?: throw IllegalStateException("Source view isn't attached")
@@ -54,7 +54,8 @@ class WPSkeletonView {
 
         isShowing = true
 
-        // add the shimmer view then start the shimmer animation
+        // add the shimmer view then start the shimmer animation - if we're delayed, add the shimmer view
+        // as invisible then start it after a brief delay unless a call to hide() was made in the interim
         if (delayed) {
             shimmerView.visibility = View.INVISIBLE
             parentView.addView(shimmerView)
