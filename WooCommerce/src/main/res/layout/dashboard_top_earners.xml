@@ -62,15 +62,15 @@
         android:background="@color/list_divider"/>
 
     <RelativeLayout
+        android:id="@+id/dashboard_top_earners_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="224dp">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/topEarners_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minHeight="224dp"
+            android:minHeight="@dimen/top_earner_min_height"
             tools:listitem="@layout/top_earner_list_item"/>
 
         <ImageView
@@ -81,14 +81,6 @@
             android:contentDescription="@string/dashboard_stats_error_content_description"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_woo_error_state"
-            tools:visibility="visible"/>
-
-        <ProgressBar
-            android:id="@+id/topEarners_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone"
             tools:visibility="visible"/>
 
         <TextView

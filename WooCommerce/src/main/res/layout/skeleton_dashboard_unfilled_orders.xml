@@ -14,7 +14,7 @@
     <!-- Message -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/min_tap_target"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:background="@drawable/skeleton_background"/>
 

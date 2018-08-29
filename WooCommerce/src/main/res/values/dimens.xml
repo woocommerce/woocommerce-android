@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="min_tap_target">48dp</dimen>
+
     <!--
         Text Sizes
     -->
@@ -113,6 +115,7 @@
     <!--
         Stats and Top earners
     -->
+    <dimen name="top_earner_min_height">224dp</dimen>
     <dimen name="top_earner_product_image_sz">40dp</dimen>
 
     <!--

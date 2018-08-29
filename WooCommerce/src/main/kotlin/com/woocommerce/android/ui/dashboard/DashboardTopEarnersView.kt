@@ -19,6 +19,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
+import com.woocommerce.android.widgets.WPSkeletonView
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
 import org.apache.commons.text.StringEscapeUtils
@@ -42,7 +43,9 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var adapter: TopEarnersAdapter
-    private var didHideProgress = false
+
+    private var didHideSkeleton = false
+    private var skeletonView = WPSkeletonView()
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -72,7 +75,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 hideEmptyView()
-                clearAdapterAndShowProgressDelayed()
+                clearAdapterAndShowSkeletonDelayed()
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -81,22 +84,26 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     }
 
     /**
-     * show the progress bar and clears the adapter if after a brief delay it hasn't already been done - this way
+     * show the skeleton and clears the adapter if after a brief delay it hasn't already been done - this way
      * we don't unnecessarily perform these actions when the request quickly returns cached data
      */
-    private fun clearAdapterAndShowProgressDelayed() {
-        didHideProgress = false
+    private fun clearAdapterAndShowSkeletonDelayed() {
+        didHideSkeleton = false
         Handler().postDelayed({
-            if (!didHideProgress) {
-                topEarners_progress.visibility = View.VISIBLE
+            if (!didHideSkeleton) {
+                showSkeleton(true)
                 adapter.clear()
             }
         }, 250)
     }
 
-    private fun hideProgress() {
-        topEarners_progress.visibility = View.GONE
-        didHideProgress = true
+    private fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(dashboard_top_earners_container, R.layout.skeleton_dashboard_top_earners)
+        } else {
+            skeletonView.hide()
+            didHideSkeleton = true
+        }
     }
 
     private fun showEmptyView() {
@@ -108,7 +115,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     }
 
     fun updateView(topEarnerList: List<WCTopEarnerModel>) {
-        hideProgress()
+        showSkeleton(false)
         adapter.setTopEarnersList(topEarnerList)
         if (topEarnerList.isEmpty()) showEmptyView() else hideEmptyView()
     }
