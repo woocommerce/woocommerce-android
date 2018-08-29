@@ -8,29 +8,26 @@
     <!-- Title -->
     <View
         android:layout_width="240dp"
-        android:layout_height="@dimen/text_large"
+        android:layout_height="@dimen/text_extra_large"
         android:background="@drawable/skeleton_background"/>
 
     <!-- Message -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/text_large"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:background="@drawable/skeleton_background"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/text_large"
+        android:layout_height="48dp"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:background="@drawable/skeleton_background"/>
 
     <!-- Action Button -->
-    <View
+    <Button
         style="@style/Woo.Button"
-        android:layout_width="160dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:background="@drawable/skeleton_background"/>
+        android:background="@drawable/skeleton_background"
+        android:enabled="false"
+        android:text="@string/dashboard_action_view_orders"
+        android:textColor="@color/transparent"/>
 
 </LinearLayout>
