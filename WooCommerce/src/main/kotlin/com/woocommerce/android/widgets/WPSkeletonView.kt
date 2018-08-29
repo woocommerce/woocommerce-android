@@ -22,7 +22,6 @@ class WPSkeletonView {
 
     private var skeletonLayoutId: Int = 0
     private var isShowing = false
-    private var wasHidden = false
 
     /**
      * Replaces the passed ViewGroup with a skeleton view inflated from the passed layout id
@@ -35,16 +34,6 @@ class WPSkeletonView {
      */
     fun show(view: ViewGroup, @LayoutRes layoutId: Int, delayed: Boolean = true) {
         if (isShowing) { return }
-
-        if (delayed) {
-            wasHidden = false
-            handler.postDelayed({
-                if (!wasHidden) {
-                    show(view, layoutId, false)
-                }
-            }, 250)
-            return
-        }
 
         val viewParent = view.parent ?: throw IllegalStateException("Source view isn't attached")
 
@@ -60,20 +49,31 @@ class WPSkeletonView {
         skeletonView = LayoutInflater.from(parentView.context).inflate(layoutId, parentView, false)
         shimmerView.addView(skeletonView)
 
-        // hide the data view, add the shimmer view, then start the shimmer animation
+        // hide the data view
         dataView.visibility = View.GONE
-        parentView.addView(shimmerView)
-        shimmerView.startShimmer()
 
         isShowing = true
+
+        // add the shimmer view then start the shimmer animation
+        if (delayed) {
+            shimmerView.visibility = View.INVISIBLE
+            parentView.addView(shimmerView)
+            handler.postDelayed({
+                if (isShowing) {
+                    shimmerView.visibility = View.VISIBLE
+                    shimmerView.startShimmer()
+                }
+            }, 250)
+        } else {
+            parentView.addView(shimmerView)
+            shimmerView.startShimmer()
+        }
     }
 
     /**
      * hides the shimmer and skeleton layout then restores the real data layout
      */
     fun hide() {
-        wasHidden = true
-
         if (!isShowing) { return }
 
         // stop the shimmer, remove the skeleton view, then remove the shimmer view from the parent
