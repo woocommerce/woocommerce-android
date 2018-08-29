@@ -11,7 +11,7 @@
         android:layout_width="26dp"
         android:layout_height="26dp"
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
-        android:contentDescription="@string/orderdetail_note_icon_contentdesc"
+        android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_note_private"/>
