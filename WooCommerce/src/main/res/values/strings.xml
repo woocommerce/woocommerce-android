@@ -196,6 +196,9 @@
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic</string>
     <string name="settings_primary_store">Primary store</string>
+    <string name="settings_privacy_policy_header">Privacy Policy</string>
+    <string name="settings_cookie_policy_header">Cookie Policy</string>
+    <string name="settings_third_party_policy_header">Third Party Policy</string>
     <!--
         Help and support
     -->
