@@ -102,7 +102,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         orders_value.text = ""
     }
 
-
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats, delayed = true)
