@@ -72,8 +72,8 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                showEmptyView(false)
                 adapter.clear()
+                showEmptyView(false)
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
