@@ -20,7 +20,6 @@ interface DashboardContract {
         var isRefreshPending: Boolean
 
         fun refreshDashboard()
-        fun setLoadingIndicator(active: Boolean)
         fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Int>, granularity: StatsGranularity)
         fun showStatsError(granularity: StatsGranularity)
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)

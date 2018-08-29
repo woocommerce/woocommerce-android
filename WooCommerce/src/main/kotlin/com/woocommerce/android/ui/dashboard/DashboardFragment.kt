@@ -64,6 +64,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 }
                 setOnRefreshListener {
                     presenter.resetTopEarnersForceRefresh()
+                    dashboard_refresh_layout.isRefreshing = false
                     refreshDashboard()
                 }
             }
@@ -125,13 +126,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onDestroyView()
     }
 
-    override fun setLoadingIndicator(active: Boolean) {
-        with(dashboard_refresh_layout) {
-            // Make sure this is called after the layout is done with everything else.
-            post { isRefreshing = active }
-        }
-    }
-
     override fun showStats(
         revenueStats: Map<String, Double>,
         salesStats: Map<String, Int>,
@@ -141,7 +135,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showErrorView(false)
             dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
-            setLoadingIndicator(false)
         }
     }
 

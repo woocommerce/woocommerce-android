@@ -181,13 +181,9 @@ class DashboardPresenter @Inject constructor(
             // Refresh data if needed now that a connection is active
             dashboardView?.let { view ->
                 if (view.isRefreshPending) {
-                    view.setLoadingIndicator(true)
                     view.refreshDashboard()
                 }
             }
-        } else {
-            // Hide the loading indicator if not connected
-            dashboardView?.setLoadingIndicator(false)
         }
     }
 
