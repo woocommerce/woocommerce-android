@@ -139,7 +139,7 @@
     <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
-    <string name="orderdetail_product_image_contentdesc">Product Icon</string>
+    <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary">Payment of %1$s received via %2$s</string>
@@ -196,6 +196,9 @@
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic</string>
     <string name="settings_primary_store">Primary store</string>
+    <string name="settings_privacy_policy_header">Privacy Policy</string>
+    <string name="settings_cookie_policy_header">Cookie Policy</string>
+    <string name="settings_third_party_policy_header">Third Party Policy</string>
     <!--
         Help and support
     -->

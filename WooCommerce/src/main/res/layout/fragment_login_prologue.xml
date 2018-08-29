@@ -12,6 +12,7 @@
         android:layout_marginLeft="@dimen/margin_medium_large"
         android:layout_marginRight="@dimen/margin_medium_large"
         android:scaleType="fitEnd"
+        android:importantForAccessibility="no"
         app:srcCompat="@drawable/ic_woo_login_screen_with_bleed"/>
 
     <TextView
@@ -42,6 +43,7 @@
             android:id="@+id/image_jetpack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_jetpack_icon"/>
 
         <TextView
