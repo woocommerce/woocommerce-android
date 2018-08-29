@@ -13,7 +13,7 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 
 class WPSkeletonView {
     private lateinit var parentView: ViewGroup
-    private lateinit var actualView: ViewGroup
+    private lateinit var dataView: ViewGroup
     private lateinit var skeletonView: View
     private lateinit var shimmerView: ShimmerFrameLayout
 
@@ -33,40 +33,38 @@ class WPSkeletonView {
         val viewParent = view.parent ?: throw IllegalStateException("Source view isn't attached")
 
         parentView = viewParent as ViewGroup
-        actualView = view
+        dataView = view
         skeletonLayoutId = layoutId
 
         // create the shimmer view
         shimmerView = ShimmerFrameLayout(parentView.context)
         shimmerView.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
 
-        // add our skeleton layout to the shimmer
+        // add our skeleton layout to the shimmer view
         skeletonView = LayoutInflater.from(parentView.context).inflate(layoutId, parentView, false)
         shimmerView.addView(skeletonView)
 
-        // hide the view view and add the shimmer
-        actualView.visibility = View.GONE
+        // hide the data view, add the shimmer view, then start the shimmer animation
+        dataView.visibility = View.GONE
         parentView.addView(shimmerView)
-
-        // start the shimmer animation
         shimmerView.startShimmer()
 
         isShowing = true
     }
 
     /**
-     * hides the shimmer and skeleton layout, and restore the real data layout
+     * hides the shimmer and skeleton layout then restores the real data layout
      */
     fun hide() {
         if (!isShowing) { return }
 
-        // stop the shimmer, remove the skeleton view, then and remove the shimmer from the parent
+        // stop the shimmer, remove the skeleton view, then remove the shimmer view from the parent
         shimmerView.stopShimmer()
         shimmerView.removeView(skeletonView)
         parentView.removeView(shimmerView)
 
-        // fade in the source view
-        WooAnimUtils.fadeIn(actualView, Duration.MEDIUM)
+        // fade in the real data view
+        WooAnimUtils.fadeIn(dataView, Duration.MEDIUM)
 
         isShowing = false
     }
