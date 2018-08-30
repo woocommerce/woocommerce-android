@@ -126,6 +126,9 @@
         Skeletons
     -->
     <dimen name="skeleton_bar_chart_padding">30dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width">20dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_days">14dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_weeks">18dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
     <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
 </resources>

@@ -7,7 +7,9 @@ import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.text.format.DateFormat
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
@@ -104,11 +106,29 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(chart_container, R.layout.skeleton_dashboard_stats, delayed = true)
+            // inflate the skeleton view and adjust the bar widths based on the granularity
+            val inflater = LayoutInflater.from(context)
+            val skeleton = inflater.inflate(R.layout.skeleton_dashboard_stats, chart_container, false) as ViewGroup
+            val barWidth = getSkeletonBarWidth()
+            for (i in 0 until skeleton.childCount) {
+                skeleton.getChildAt(i).layoutParams.width = barWidth
+            }
+
+            skeletonView.show(chart_container, skeleton, delayed = true)
             dashboard_recency_text.text = null
         } else {
             skeletonView.hide()
         }
+    }
+
+    private fun getSkeletonBarWidth(): Int {
+        val resId = when (activeGranularity) {
+            StatsGranularity.DAYS -> R.dimen.skeleton_bar_chart_bar_width_days
+            StatsGranularity.WEEKS -> R.dimen.skeleton_bar_chart_bar_width_weeks
+            StatsGranularity.MONTHS -> R.dimen.skeleton_bar_chart_bar_width_months
+            StatsGranularity.YEARS -> R.dimen.skeleton_bar_chart_bar_width_years
+        }
+        return context.resources.getDimensionPixelSize(resId)
     }
 
     /**
