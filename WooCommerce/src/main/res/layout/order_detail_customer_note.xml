@@ -7,13 +7,15 @@
 
     <TextView
         android:id="@+id/customerNote_lblTitle"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/orderdetail_customer_provided_note"
         android:textAppearance="@style/Woo.TextAppearance.Medium.Purple"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constrainedWidth="true"/>
 
     <ImageView
         android:id="@+id/customerNote_avatar"
@@ -29,14 +31,15 @@
 
     <TextView
         android:id="@+id/customerNote_msg"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/card_item_padding_intra_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:layout_marginBottom="@dimen/card_item_padding_intra_h"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/customerNote_avatar"
         app:layout_constraintTop_toBottomOf="@+id/customerNote_lblTitle"
-        tools:text="Hey! Can you please wrap this as a gift. It's a friends birthday, and I want it to be uber special. Thanks!" />
+        app:layout_constrainedWidth="true"
+        tools:text="Hey! Can you please wrap this as a gift. It's a friends birthday, and I want it to be uber special. Thanks!"/>
 </merge>
