@@ -14,47 +14,45 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 
 class WPSkeletonView {
     private lateinit var parentView: ViewGroup
-    private lateinit var dataView: ViewGroup
+    private lateinit var actualView: ViewGroup
     private lateinit var skeletonView: View
     private lateinit var shimmerView: ShimmerFrameLayout
 
     private val handler = Handler()
 
-    private var skeletonLayoutId: Int = 0
     private var isShowing = false
 
     /**
-     * Replaces the passed ViewGroup with a skeleton view inflated from the passed layout id
-     * and starts a shimmer animation on the skeleton view
+     * Replaces the passed ViewGroup with a skeleton viewActual inflated from the passed layout id
+     * and starts a shimmer animation on the skeleton viewActual
      *
-     * @param view The view containing the "real" data which will be hidden
-     * @param layoutId The resource id of the skeleton layout which will replace the above view
+     * @param viewActual The view containing the data which will be hidden during loading
+     * @param viewSkeleton The skeleton view which will replace the actual view during loading
      * @param delayed Whether to show the skeleton after a brief delay, which avoids the skeleton appearing
      * and then immediately disappearing if the network request completes very quickly
      */
-    fun show(view: ViewGroup, @LayoutRes layoutId: Int, delayed: Boolean = false) {
+    fun show(viewActual: ViewGroup, viewSkeleton: View, delayed: Boolean = false) {
         if (isShowing) { return }
 
-        val viewParent = view.parent ?: throw IllegalStateException("Source view isn't attached")
+        val viewParent = viewActual.parent ?: throw IllegalStateException("Source view isn't attached")
 
         parentView = viewParent as ViewGroup
-        dataView = view
-        skeletonLayoutId = layoutId
+        actualView = viewActual
 
-        // create the shimmer view
+        // create the shimmer viewActual
         shimmerView = ShimmerFrameLayout(parentView.context)
         shimmerView.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
 
-        // add our skeleton layout to the shimmer view
-        skeletonView = LayoutInflater.from(parentView.context).inflate(layoutId, parentView, false)
+        // add our skeleton layout to the shimmer viewActual
+        skeletonView = viewSkeleton
         shimmerView.addView(skeletonView)
 
-        // hide the data view
-        dataView.visibility = View.GONE
+        // hide the data viewActual
+        actualView.visibility = View.GONE
 
         isShowing = true
 
-        // add the shimmer view then start the shimmer animation - if we're delayed, add the shimmer view
+        // add the shimmer viewActual then start the shimmer animation - if we're delayed, add the shimmer viewActual
         // as invisible then start it after a brief delay unless a call to hide() was made in the interim
         if (delayed) {
             shimmerView.visibility = View.INVISIBLE
@@ -72,6 +70,17 @@ class WPSkeletonView {
     }
 
     /**
+     * Wrapper for show() which accepts a layoutId for the skeleton view
+     */
+    fun show(viewActual: ViewGroup, @LayoutRes layoutId: Int, delayed: Boolean = false) {
+        if (isShowing) { return }
+
+        val viewParent = viewActual.parent ?: throw IllegalStateException("Source view isn't attached")
+        val viewSkeleton = LayoutInflater.from(viewActual.context).inflate(layoutId, viewParent as ViewGroup, false)
+        show(viewActual, viewSkeleton, delayed)
+    }
+
+    /**
      * hides the shimmer and skeleton layout then restores the real data layout
      */
     fun hide() {
@@ -83,7 +92,7 @@ class WPSkeletonView {
         parentView.removeView(shimmerView)
 
         // fade in the real data view
-        WooAnimUtils.fadeIn(dataView, Duration.MEDIUM)
+        WooAnimUtils.fadeIn(actualView, Duration.MEDIUM)
 
         isShowing = false
     }
