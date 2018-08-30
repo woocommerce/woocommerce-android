@@ -100,7 +100,6 @@
         Default Chart
     -->
     <dimen name="chart_height">200dp</dimen>
-    <dimen name="chart_progress_bar_padding">80dp</dimen>
 
     <!--
         Login
