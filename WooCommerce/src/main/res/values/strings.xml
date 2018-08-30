@@ -182,6 +182,7 @@
     <string name="orderstatus_hold">On-Hold</string>
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
+    <string name="orderstatus_contentDesc">Order status</string>
     <!--
         Settings
     -->
