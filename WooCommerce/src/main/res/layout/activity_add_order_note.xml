@@ -69,6 +69,7 @@
             style="@style/Woo.TextAppearance.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
             android:text="@string/add_order_note_sublabel"/>
     </LinearLayout>
 
