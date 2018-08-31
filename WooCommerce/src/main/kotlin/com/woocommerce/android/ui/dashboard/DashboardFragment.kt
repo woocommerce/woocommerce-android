@@ -7,6 +7,7 @@ import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,11 +69,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 }
             }
 
-            // disable swipe-to-refresh when the user has scrolled down - note that we have to do it this
-            // way because you can't use setOnScrollChangedListener on a ScrollView below API23
-            scroll_view.viewTreeObserver.addOnScrollChangedListener {
-                dashboard_refresh_layout.isEnabled = scroll_view.scrollY == 0
-            }
+            // only enable swipe-to-refresh if the user hasn't scrolled down
+            scroll_view.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
+                v, scrollX, scrollY, oldScrollX, oldScrollY ->
+                dashboard_refresh_layout.isEnabled = scrollY == 0
+            })
 
             no_orders_image.visibility =
                     if (DisplayUtils.isLandscape(activity)) View.GONE else View.VISIBLE
