@@ -8,14 +8,18 @@
     android:orientation="vertical">
 
     <!-- group one -->
-    <include layout="@layout/skeleton_order_list_header"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_group_header_height"/>
 
     <include layout="@layout/skeleton_order_list_item"/>
 
     <include layout="@layout/skeleton_order_list_item"/>
 
     <!-- group two -->
-    <include layout="@layout/skeleton_order_list_header"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_group_header_height"/>
 
     <include layout="@layout/skeleton_order_list_item"/>
 
@@ -24,7 +28,9 @@
     <include layout="@layout/skeleton_order_list_item"/>
 
     <!-- group three -->
-    <include layout="@layout/skeleton_order_list_header"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_group_header_height"/>
 
     <include layout="@layout/skeleton_order_list_item"/>
 
