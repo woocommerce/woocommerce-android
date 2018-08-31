@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
@@ -35,6 +36,11 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
         val orderTag = OrderStatusTag(text)
         val tagView = TagView(context)
         tagView.tag = orderTag
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            tagView.isFocusableInTouchMode = true
+        } else {
+            tagView.focusable = View.FOCUSABLE
+        }
         return tagView
     }
 }

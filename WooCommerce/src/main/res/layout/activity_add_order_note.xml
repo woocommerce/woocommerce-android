@@ -38,6 +38,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:gravity="top"
+            android:hint="@string/orderdetail_note_hint"
             android:inputType="textAutoComplete|textShortMessage|textMultiLine"/>
     </LinearLayout>
 
@@ -56,13 +57,15 @@
         android:layout_above="@+id/addNote_switchDivider"
         android:background="@color/white"
         android:orientation="vertical"
+        android:focusable="true"
         android:padding="@dimen/margin_large">
 
         <TextView
             style="@style/Woo.TextAppearance.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_order_note_label"/>
+            android:text="@string/add_order_note_label"
+            android:labelFor="@+id/addNote_switch"/>
 
         <Switch
             android:id="@+id/addNote_switch"

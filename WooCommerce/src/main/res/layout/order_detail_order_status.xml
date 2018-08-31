@@ -25,8 +25,9 @@
 
     <com.woocommerce.android.widgets.FlowLayout
         android:id="@+id/orderStatus_orderTags"
+        android:layout_below="@+id/orderStatus_created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/orderStatus_created"/>
+        android:contentDescription="@string/orderstatus_contentDesc"/>
 </merge>
 
