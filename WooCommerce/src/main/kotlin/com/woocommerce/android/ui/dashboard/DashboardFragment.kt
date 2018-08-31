@@ -67,6 +67,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     refreshDashboard()
                 }
             }
+
+            // disable swipe-to-refresh when the user has scrolled down - note that we have to do it this
+            // way because you can't use setOnScrollChangedListener on a ScrollView below API23
+            scroll_view.viewTreeObserver.addOnScrollChangedListener {
+                dashboard_refresh_layout.isEnabled = scroll_view.scrollY == 0
+            }
+
             no_orders_image.visibility =
                     if (DisplayUtils.isLandscape(activity)) View.GONE else View.VISIBLE
         }
