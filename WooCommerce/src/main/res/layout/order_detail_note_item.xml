@@ -18,40 +18,46 @@
 
     <TextView
         android:id="@+id/orderNote_created"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constrainedWidth="true"
         tools:text="Nov 13, 2017 at 9:54 AM"/>
 
     <TextView
         android:id="@+id/orderNote_type"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
         app:layout_constraintTop_toBottomOf="@+id/orderNote_created"
+        app:layout_constrainedWidth="true"
         tools:text="Private Note"/>
 
     <TextView
         android:id="@+id/orderNote_note"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
         app:layout_constraintTop_toBottomOf="@+id/orderNote_type"
+        app:layout_constrainedWidth="true"
         tools:text="Order status changed from pending payment to processing."/>
 </merge>

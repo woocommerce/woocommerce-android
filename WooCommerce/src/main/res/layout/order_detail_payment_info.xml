@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,9 +14,7 @@
         android:layout_height="wrap_content"
         android:text="@string/payment"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
-        android:textAppearance="@style/Woo.TextAppearance.Medium.Purple"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:textAppearance="@style/Woo.TextAppearance.Medium.Purple"/>
 
     <!-- Subtotal -->
     <LinearLayout
@@ -140,9 +138,6 @@
         android:layout_marginBottom="@dimen/card_item_padding_intra_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:background="@color/list_divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_lblTaxes"
         app:srcCompat="@drawable/list_divider"/>
 
     <!-- Total -->
@@ -238,9 +233,6 @@
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:background="@color/list_divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_refundSection"
         app:srcCompat="@drawable/list_divider"/>
 
     <!-- Payment Method -->
@@ -248,12 +240,10 @@
         android:id="@+id/paymentInfo_paymentMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/paymentInfo_divider2"
         tools:text="Payment of $49.00 received via credit card (PayPal)"/>
-</LinearLayout>
+</merge>

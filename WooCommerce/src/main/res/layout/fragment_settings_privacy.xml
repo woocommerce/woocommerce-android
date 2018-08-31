@@ -18,6 +18,7 @@
 
             <ImageView
                 style="@style/Woo.Settings.Icon"
+                android:importantForAccessibility="no"
                 app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
 
             <Switch
@@ -38,6 +39,7 @@
             <ImageView
                 android:id="@+id/imageInfo"
                 style="@style/Woo.Settings.Icon"
+                android:contentDescription="@string/settings_cookie_policy_header"
                 app:srcCompat="@drawable/ic_info_outline_grey_min_24dp"/>
 
             <TextView
@@ -69,6 +71,7 @@
             <ImageView
                 android:id="@+id/imagePrivacyPolicy"
                 style="@style/Woo.Settings.Icon"
+                android:contentDescription="@string/settings_privacy_policy_header"
                 app:srcCompat="@drawable/ic_user_circle_grey_min_24dp"/>
 
             <TextView
@@ -100,6 +103,7 @@
             <ImageView
                 android:id="@+id/imageTracking"
                 style="@style/Woo.Settings.Icon"
+                android:contentDescription="@string/settings_third_party_policy_header"
                 app:srcCompat="@drawable/ic_briefcase_grey_min_24dp"/>
 
             <TextView
