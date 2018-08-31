@@ -84,13 +84,15 @@
             <!-- Label: Billing Details -->
             <TextView
                 android:id="@+id/customerInfo_billingLabel"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/card_section_padding_h"
                 android:paddingTop="@dimen/card_section_padding_h"
                 android:text="@string/orderdetail_billing_details"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider"/>
 
@@ -139,15 +141,17 @@
             <!-- Billing Phone -->
             <TextView
                 android:id="@+id/customerInfo_phone"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/card_item_padding_intra_h"
                 android:paddingTop="@dimen/card_item_padding_intra_h"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/customerInfo_hangoutsBtn"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider2"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@+id/customerInfo_divider3"
+                app:layout_constraintEnd_toStartOf="@+id/customerInfo_hangoutsBtn"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider2"
                 tools:text="123-456-7890"/>
 
             <!-- SMS button -->
@@ -159,9 +163,9 @@
                 android:contentDescription="@string/orderdetail_sms_contentdesc"
                 android:scaleType="center"
                 android:src="@drawable/ic_message_compat"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider2"
                 app:layout_constraintEnd_toStartOf="@+id/customerInfo_phoneBtn"
-                app:layout_constraintStart_toEndOf="@+id/customerInfo_phone"/>
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider2"
+                />
 
             <!-- Dial button -->
             <ImageButton
@@ -190,31 +194,33 @@
             <!-- Email Address -->
             <TextView
                 android:id="@+id/customerInfo_emailAddr"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:paddingBottom="@dimen/card_item_padding_intra_h"
                 android:paddingTop="@dimen/card_item_padding_intra_h"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/customerInfo_emailBtn"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider3"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/customerInfo_emailBtn"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider3"
                 tools:text="email@example.com"/>
 
             <!-- Email Button -->
             <ImageButton
                 android:id="@+id/customerInfo_emailBtn"
+                style="@android:style/Widget.ActionButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:clickable="true"
-                android:focusable="true"
-                style="@android:style/Widget.ActionButton"
                 android:contentDescription="@string/orderdetail_email_contentdesc"
+                android:focusable="true"
                 android:scaleType="center"
                 android:src="@drawable/ic_email_compat"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider3"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/customerInfo_emailAddr"/>
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider3"/>
         </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 

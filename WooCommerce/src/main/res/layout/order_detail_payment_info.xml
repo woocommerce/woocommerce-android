@@ -39,7 +39,7 @@
         tools:text="$45.00" />
 
     <!-- Discounts -->
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/paymentInfo_discountSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,8 +55,8 @@
             android:layout_height="wrap_content"
             android:text="@string/discount"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/paymentInfo_discountItems"
@@ -65,18 +65,20 @@
             android:layout_marginEnd="@dimen/card_item_padding_intra_h"
             android:layout_marginStart="@dimen/card_item_padding_intra_h"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            android:layout_toEndOf="@+id/paymentInfo_lblDiscount"
-            android:layout_toStartOf="@+id/paymentInfo_discountTotal"
-            tools:text="(sale4theday, firstTime, anyothertime, blah)" />
+            app:layout_constraintStart_toEndOf="@+id/paymentInfo_lblDiscount"
+            app:layout_constraintEnd_toStartOf="@+id/paymentInfo_discountTotal"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constrainedWidth="true"
+            tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
 
         <TextView
             android:id="@+id/paymentInfo_discountTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            android:layout_alignParentEnd="true"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="-$4.00" />
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 
     <!-- Shipping -->
     <TextView
@@ -177,11 +179,11 @@
             android:id="@+id/paymentInfo_lblRefund"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/orderdetail_refunded"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Red"
-            android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/paymentInfo_refundTotal"/>
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="0dp"
+            android:text="@string/orderdetail_refunded"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Red"/>
 
         <TextView
             android:id="@+id/paymentInfo_refundTotal"
@@ -197,13 +199,12 @@
             android:id="@+id/paymentInfo_lblNewTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/paymentInfo_lblRefund"
             android:paddingBottom="@dimen/card_item_padding_intra_h"
             android:paddingTop="@dimen/card_item_padding_intra_h"
             android:text="@string/orderdetail_new_total"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            android:layout_below="@+id/paymentInfo_lblRefund"
-            android:layout_toStartOf="@+id/paymentInfo_refundTotal"
-            android:layout_alignParentStart="true"/>
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
 
         <TextView
             android:id="@+id/paymentInfo_newTotal"
@@ -231,14 +232,16 @@
     <!-- Payment Method -->
     <TextView
         android:id="@+id/paymentInfo_paymentMsg"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/paymentInfo_divider2"
+        app:layout_constrainedWidth="true"
         tools:text="Payment of $49.00 received via credit card (PayPal)" />
 </merge>
