@@ -14,6 +14,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
     : LinearLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.order_detail_payment_info, this)
+        orientation = LinearLayout.VERTICAL
     }
 
     fun initView(order: WCOrderModel) {
