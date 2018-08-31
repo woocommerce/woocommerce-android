@@ -23,8 +23,8 @@ class WPSkeletonView {
     private var isShowing = false
 
     /**
-     * Replaces the passed ViewGroup with a skeleton viewActual inflated from the passed layout id
-     * and starts a shimmer animation on the skeleton viewActual
+     * Replaces the passed ViewGroup with a skeleton view inflated from the passed layout id
+     * and starts a shimmer animation on the skeleton view
      *
      * @param viewActual The view containing the data which will be hidden during loading
      * @param viewSkeleton The skeleton view which will replace the actual view during loading
@@ -39,20 +39,20 @@ class WPSkeletonView {
         parentView = viewParent as ViewGroup
         actualView = viewActual
 
-        // create the shimmer viewActual
+        // create the shimmer view
         shimmerView = ShimmerFrameLayout(parentView.context)
         shimmerView.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
 
-        // add our skeleton layout to the shimmer viewActual
+        // add our skeleton layout to the shimmer view
         skeletonView = viewSkeleton
         shimmerView.addView(skeletonView)
 
-        // hide the data viewActual
+        // hide the actual data view
         actualView.visibility = View.GONE
 
         isShowing = true
 
-        // add the shimmer viewActual then start the shimmer animation - if we're delayed, add the shimmer viewActual
+        // add the shimmer view then start the shimmer animation - if we're delayed, add the shimmer view
         // as invisible then start it after a brief delay unless a call to hide() was made in the interim
         if (delayed) {
             shimmerView.visibility = View.INVISIBLE
