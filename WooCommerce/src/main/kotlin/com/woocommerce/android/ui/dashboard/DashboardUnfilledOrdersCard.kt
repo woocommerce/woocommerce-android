@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import android.widget.FrameLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
  * those orders.
  */
 class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+    : FrameLayout(ctx, attrs) {
     private val skeletonView = SkeletonView()
 
     init {
