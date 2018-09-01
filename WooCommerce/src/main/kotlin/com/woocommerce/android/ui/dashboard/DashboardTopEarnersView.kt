@@ -18,7 +18,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
-import com.woocommerce.android.widgets.WPSkeletonView
+import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
 import org.apache.commons.text.StringEscapeUtils
@@ -42,7 +42,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     private lateinit var selectedSite: SelectedSite
 
-    private var skeletonView = WPSkeletonView()
+    private var skeletonView = SkeletonView()
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,

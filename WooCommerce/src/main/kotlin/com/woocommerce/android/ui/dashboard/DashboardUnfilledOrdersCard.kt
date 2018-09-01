@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.widgets.WPSkeletonView
+import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
 
 /**
@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
  */
 class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
-    private val skeletonView = WPSkeletonView()
+    private val skeletonView = SkeletonView()
 
     init {
         View.inflate(context, R.layout.dashboard_unfilled_orders, this)

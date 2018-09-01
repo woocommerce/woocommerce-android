@@ -22,7 +22,7 @@ import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.widgets.WPSkeletonView
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -57,7 +57,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuButton: MenuItem? = null
 
-    private val skeletonView = WPSkeletonView()
+    private val skeletonView = SkeletonView()
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden

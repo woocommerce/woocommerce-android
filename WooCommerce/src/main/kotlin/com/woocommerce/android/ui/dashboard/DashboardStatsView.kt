@@ -22,7 +22,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.widgets.WPSkeletonView
+import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
@@ -51,7 +51,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
 
-    private var skeletonView = WPSkeletonView()
+    private var skeletonView = SkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
     private lateinit var lastUpdatedHandler: Handler

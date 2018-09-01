@@ -12,7 +12,7 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 
-class WPSkeletonView {
+class SkeletonView {
     private lateinit var parentView: ViewGroup
     private lateinit var actualView: ViewGroup
     private lateinit var skeletonView: View
