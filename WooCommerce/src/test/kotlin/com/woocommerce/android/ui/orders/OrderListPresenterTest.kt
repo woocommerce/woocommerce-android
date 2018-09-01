@@ -176,4 +176,14 @@ class OrderListPresenterTest {
         presenter.loadMoreOrders(null)
         verify(presenter, times(0)).fetchAndLoadOrdersFromDb(any(), any())
     }
+
+    @Test
+    fun `Show and hide order list skeleton correctly`() {
+        presenter.takeView(orderListView)
+        presenter.loadOrders("processing", forceRefresh = true)
+        verify(orderListView, times(1)).showSkeleton(true)
+
+        presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
+        verify(orderListView, times(1)).showSkeleton(false)
+    }
 }
