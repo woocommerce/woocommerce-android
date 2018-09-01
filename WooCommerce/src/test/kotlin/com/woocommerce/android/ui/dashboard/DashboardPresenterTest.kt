@@ -298,4 +298,42 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = FETCH_HAS_ORDERS })
         verify(dashboardView, times(1)).showNoOrdersView(false)
     }
+
+    @Test
+    fun `Show and hide stats skeleton correctly`() {
+        presenter.takeView(dashboardView)
+        presenter.loadStats(StatsGranularity.DAYS)
+        verify(dashboardView, times(1)).showChartSkeleton(true)
+
+        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        presenter.onWCStatsChanged(onChanged)
+        verify(dashboardView, times(1)).showChartSkeleton(false)
+    }
+
+    @Test
+    fun `Show and hide unfilled orders skeleton correctly`() {
+        presenter.takeView(dashboardView)
+        presenter.fetchUnfilledOrderCount()
+        verify(dashboardView, times(1)).showUnfilledOrdersSkeleton(true)
+
+        val totalOrders = 25
+        val filter = CoreOrderStatus.PROCESSING.value
+        presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
+            causeOfChange = FETCH_ORDERS_COUNT
+        })
+
+        verify(dashboardView, times(1)).showUnfilledOrdersSkeleton(false)
+    }
+
+    @Test
+    fun `Show and hide top earners skeleton correctly`() {
+        presenter.takeView(dashboardView)
+        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
+        verify(dashboardView, times(1)).showTopEarnersSkeleton(true)
+
+        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
+            causeOfChange = FETCH_TOP_EARNERS_STATS
+        })
+        verify(dashboardView, times(1)).showTopEarnersSkeleton(false)
+    }
 }
