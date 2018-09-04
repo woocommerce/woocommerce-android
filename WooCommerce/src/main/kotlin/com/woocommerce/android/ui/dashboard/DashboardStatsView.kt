@@ -220,10 +220,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             isHighlightEnabled = false
         }
 
+        val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
+
         with (chart) {
             data = BarData(dataSet)
-
-            invalidate() // Draw/redraw the graph
+            animateY(duration)
         }
 
         resetLastUpdated()
