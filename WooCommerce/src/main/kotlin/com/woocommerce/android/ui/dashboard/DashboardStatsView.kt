@@ -165,7 +165,19 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 }
             }
 
-            axisRight.isEnabled = false
+            with (axisRight) {
+                setDrawZeroLine(false)
+                setDrawAxisLine(false)
+                setDrawGridLines(true)
+                setLabelCount(3, true)
+
+                axisMinimum = 0F
+
+                valueFormatter = IAxisValueFormatter { value, _ ->
+                    formatAmountForDisplay(context, value.toDouble(), chartCurrencyCode, allowZero = false)
+                }
+            }
+
             description.isEnabled = false
             legend.isEnabled = false
 
