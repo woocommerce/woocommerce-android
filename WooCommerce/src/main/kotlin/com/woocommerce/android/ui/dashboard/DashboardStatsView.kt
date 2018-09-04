@@ -7,7 +7,9 @@ import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.text.format.DateFormat
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
@@ -20,13 +22,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
@@ -35,7 +36,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     companion object {
-        private const val PROGRESS_DELAY_TIME_MS = 200L
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
 
@@ -51,8 +51,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
 
-    private var progressDelayTimer: Timer? = null
-    private var progressDelayTimerTask: TimerTask? = null
+    private var skeletonView = SkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
     private lateinit var lastUpdatedHandler: Handler
@@ -64,8 +63,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         listener: DashboardStatsListener,
         selectedSite: SelectedSite
     ) {
-        barchart_progress.visibility = View.VISIBLE
-
         this.selectedSite = selectedSite
 
         StatsGranularity.values().forEach { granularity ->
@@ -83,12 +80,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                revenue_value.text = ""
-                orders_value.text = ""
-                // Show the progress view after some delay
-                // This gives us a chance to never show it at all when the stats data is cached and returns quickly,
-                // preventing glitchy behavior
-                showProgressDelayed()
+                clearLabelValues()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -104,6 +96,39 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             updateRecencyMessage()
             lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
         }
+    }
+
+    fun clearLabelValues() {
+        visitors_value.text = ""
+        revenue_value.text = ""
+        orders_value.text = ""
+    }
+
+    fun showSkeleton(show: Boolean) {
+        if (show) {
+            // inflate the skeleton view and adjust the bar widths based on the granularity
+            val inflater = LayoutInflater.from(context)
+            val skeleton = inflater.inflate(R.layout.skeleton_dashboard_stats, chart_container, false) as ViewGroup
+            val barWidth = getSkeletonBarWidth()
+            for (i in 0 until skeleton.childCount) {
+                skeleton.getChildAt(i).layoutParams.width = barWidth
+            }
+
+            skeletonView.show(chart_container, skeleton, delayed = true)
+            dashboard_recency_text.text = null
+        } else {
+            skeletonView.hide()
+        }
+    }
+
+    private fun getSkeletonBarWidth(): Int {
+        val resId = when (activeGranularity) {
+            StatsGranularity.DAYS -> R.dimen.skeleton_bar_chart_bar_width_days
+            StatsGranularity.WEEKS -> R.dimen.skeleton_bar_chart_bar_width_weeks
+            StatsGranularity.MONTHS -> R.dimen.skeleton_bar_chart_bar_width_months
+            StatsGranularity.YEARS -> R.dimen.skeleton_bar_chart_bar_width_years
+        }
+        return context.resources.getDimensionPixelSize(resId)
     }
 
     /**
@@ -151,10 +176,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
-        progressDelayTimer?.cancel()
-        progressDelayTimerTask?.cancel()
-        barchart_progress.visibility = View.GONE
-
         chartCurrencyCode = currencyCode
 
         revenue_value.text = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
@@ -215,21 +236,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         return BarDataSet(barEntries, "")
-    }
-
-    private fun showProgressDelayed() {
-        progressDelayTimerTask = object : TimerTask() {
-            override fun run() {
-                this@DashboardStatsView.post {
-                    barchart_progress.visibility = View.VISIBLE
-                    clearLastUpdated()
-                }
-            }
-        }
-
-        progressDelayTimer = Timer().apply {
-            schedule(progressDelayTimerTask, PROGRESS_DELAY_TIME_MS)
-        }
     }
 
     @StringRes

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chart_skeleton"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/chart_height"
+    android:orientation="horizontal"
+    android:padding="@dimen/skeleton_bar_chart_padding">
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="160dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+    <View
+        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
+        android:background="@color/skeleton_color"/>
+
+</LinearLayout>

@@ -15,8 +15,8 @@ env:
   global:
     - MALLOC_ARENA_MAX=2
     - GRADLE_OPTS="-Xmx768m -Xms256m -Xss1m"
-    - ANDROID_SDKS=android-17
-    - ANDROID_TARGET=android-17
+    - ANDROID_SDKS=android-21
+    - ANDROID_TARGET=android-21
 
 install:
   # Setup gradle.properties

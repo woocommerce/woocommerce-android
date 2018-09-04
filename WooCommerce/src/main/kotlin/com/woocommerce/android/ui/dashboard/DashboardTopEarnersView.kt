@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
-import android.os.Handler
 import android.support.annotation.StringRes
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.DefaultItemAnimator
@@ -19,6 +18,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
+import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
 import org.apache.commons.text.StringEscapeUtils
@@ -41,8 +41,8 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         }
 
     private lateinit var selectedSite: SelectedSite
-    private lateinit var adapter: TopEarnersAdapter
-    private var didHideProgress = false
+
+    private var skeletonView = SkeletonView()
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -51,9 +51,8 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     ) {
         this.selectedSite = selectedSite
 
-        adapter = TopEarnersAdapter(context)
         topEarners_recycler.layoutManager = LinearLayoutManager(context)
-        topEarners_recycler.adapter = adapter
+        topEarners_recycler.adapter = TopEarnersAdapter(context)
         topEarners_recycler.itemAnimator = DefaultItemAnimator()
 
         StatsGranularity.values().forEach { granularity ->
@@ -71,8 +70,9 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                hideEmptyView()
-                clearAdapterAndShowProgressDelayed()
+                topEarners_recycler.adapter = TopEarnersAdapter(context)
+                showEmptyView(false)
+                showErrorView(false)
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -80,41 +80,25 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         })
     }
 
-    /**
-     * show the progress bar and clears the adapter if after a brief delay it hasn't already been done - this way
-     * we don't unnecessarily perform these actions when the request quickly returns cached data
-     */
-    private fun clearAdapterAndShowProgressDelayed() {
-        didHideProgress = false
-        Handler().postDelayed({
-            if (!didHideProgress) {
-                topEarners_progress.visibility = View.VISIBLE
-                adapter.clear()
-            }
-        }, 250)
+    fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(dashboard_top_earners_container, R.layout.skeleton_dashboard_top_earners, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
     }
 
-    private fun hideProgress() {
-        topEarners_progress.visibility = View.GONE
-        didHideProgress = true
-    }
-
-    private fun showEmptyView() {
-        topEarners_emptyView.visibility = View.VISIBLE
-    }
-
-    private fun hideEmptyView() {
-        topEarners_emptyView.visibility = View.GONE
+    private fun showEmptyView(show: Boolean) {
+        topEarners_emptyView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     fun updateView(topEarnerList: List<WCTopEarnerModel>) {
-        hideProgress()
-        adapter.setTopEarnersList(topEarnerList)
-        if (topEarnerList.isEmpty()) showEmptyView() else hideEmptyView()
+        (topEarners_recycler.adapter as TopEarnersAdapter).setTopEarnersList(topEarnerList)
+        showEmptyView(topEarnerList.isEmpty())
     }
 
     fun showErrorView(show: Boolean) {
-        hideEmptyView()
+        showEmptyView(false)
         topEarners_error.visibility = if (show) View.VISIBLE else View.GONE
         topEarners_recycler.visibility = if (show) View.GONE else View.VISIBLE
     }
@@ -152,13 +136,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             topEarnerList.clear()
             topEarnerList.addAll(newList)
             notifyDataSetChanged()
-        }
-
-        fun clear() {
-            if (itemCount > 0) {
-                topEarnerList.clear()
-                notifyDataSetChanged()
-            }
         }
 
         override fun getItemCount() = topEarnerList.size

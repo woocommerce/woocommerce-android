@@ -22,6 +22,7 @@ import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
@@ -55,6 +56,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuButton: MenuItem? = null
+
+    private val skeletonView = SkeletonView()
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
@@ -98,6 +101,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
                 setOnRefreshListener {
+                    orderRefreshLayout.isRefreshing = false
                     isRefreshPending = true
                     presenter.loadOrders(orderStatusFilter, forceRefresh = true)
                 }
@@ -182,15 +186,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         super.onDestroyView()
     }
 
-    override fun setLoadingIndicator(active: Boolean) {
-        with(orderRefreshLayout) {
-            // Make sure this is called after the layout is done with everything else.
-            post { isRefreshing = active }
-        }
-    }
-
     override fun setLoadingMoreIndicator(active: Boolean) {
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
+    }
+
+    override fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(ordersView, R.layout.skeleton_order_list, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
     }
 
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
@@ -203,7 +208,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             ordersList?.let { listView ->
                 if (isFreshData) {
                     ordersList.scrollToPosition(0)
-                    listView.layoutAnimation = listLayoutAnimation
+                    // TODO: do we want this animation still?
+                    // listView.layoutAnimation = listLayoutAnimation
                 }
                 ordersAdapter.setOrders(orders, orderStatusFilter)
             }

@@ -39,7 +39,7 @@ android {
         versionName "0.15"
         versionCode 15
 
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 27
 
         multiDexEnabled true
@@ -121,6 +121,8 @@ dependencies {
         exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
         exclude group: "org.wordpress", module: "utils"
     }
+
+    implementation 'com.facebook.shimmer:shimmer:0.3.0'
 
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"

@@ -1,11 +1,12 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import android.widget.FrameLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
 
 /**
@@ -13,7 +14,9 @@ import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
  * those orders.
  */
 class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+    : FrameLayout(ctx, attrs) {
+    private val skeletonView = SkeletonView()
+
     init {
         View.inflate(context, R.layout.dashboard_unfilled_orders, this)
     }
@@ -28,8 +31,12 @@ class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs:
         }
     }
 
-    fun showProgress(show: Boolean) {
-        alertAction_progress.visibility = if (show) View.VISIBLE else View.GONE
+    fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(unfilled_card_content, R.layout.skeleton_dashboard_unfilled_orders, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
     }
 
     /**
