@@ -17,10 +17,10 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
@@ -225,7 +225,6 @@ class DashboardPresenterTest {
         // Simulate the network connected event
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(dashboardView, times(0)).refreshDashboard()
-        verify(dashboardView, times(0)).setLoadingIndicator(any())
     }
 
     @Test
@@ -235,7 +234,6 @@ class DashboardPresenterTest {
         // Simulate the network disconnected event
         presenter.onEventMainThread(ConnectionChangeEvent(false))
         verify(dashboardView, times(0)).refreshDashboard()
-        verify(dashboardView, times(1)).setLoadingIndicator(false)
     }
 
     @Test
@@ -299,5 +297,43 @@ class DashboardPresenterTest {
         presenter.takeView(dashboardView)
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = FETCH_HAS_ORDERS })
         verify(dashboardView, times(1)).showNoOrdersView(false)
+    }
+
+    @Test
+    fun `Show and hide stats skeleton correctly`() {
+        presenter.takeView(dashboardView)
+        presenter.loadStats(StatsGranularity.DAYS)
+        verify(dashboardView, times(1)).showChartSkeleton(true)
+
+        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        presenter.onWCStatsChanged(onChanged)
+        verify(dashboardView, times(1)).showChartSkeleton(false)
+    }
+
+    @Test
+    fun `Show and hide unfilled orders skeleton correctly`() {
+        presenter.takeView(dashboardView)
+        presenter.fetchUnfilledOrderCount()
+        verify(dashboardView, times(1)).showUnfilledOrdersSkeleton(true)
+
+        val totalOrders = 25
+        val filter = CoreOrderStatus.PROCESSING.value
+        presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
+            causeOfChange = FETCH_ORDERS_COUNT
+        })
+
+        verify(dashboardView, times(1)).showUnfilledOrdersSkeleton(false)
+    }
+
+    @Test
+    fun `Show and hide top earners skeleton correctly`() {
+        presenter.takeView(dashboardView)
+        presenter.loadTopEarnerStats(StatsGranularity.DAYS, forced = true)
+        verify(dashboardView, times(1)).showTopEarnersSkeleton(true)
+
+        presenter.onWCTopEarnersChanged(OnWCTopEarnersChanged(emptyList(), StatsGranularity.DAYS).apply {
+            causeOfChange = FETCH_TOP_EARNERS_STATS
+        })
+        verify(dashboardView, times(1)).showTopEarnersSkeleton(false)
     }
 }

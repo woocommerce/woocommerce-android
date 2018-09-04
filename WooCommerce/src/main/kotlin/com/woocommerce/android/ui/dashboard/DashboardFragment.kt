@@ -64,6 +64,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 }
                 setOnRefreshListener {
                     presenter.resetTopEarnersForceRefresh()
+                    dashboard_refresh_layout.isRefreshing = false
                     refreshDashboard()
                 }
             }
@@ -126,13 +127,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onDestroyView()
     }
 
-    override fun setLoadingIndicator(active: Boolean) {
-        with(dashboard_refresh_layout) {
-            // Make sure this is called after the layout is done with everything else.
-            post { isRefreshing = active }
-        }
-    }
-
     override fun showStats(
         revenueStats: Map<String, Double>,
         salesStats: Map<String, Int>,
@@ -142,7 +136,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showErrorView(false)
             dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
-            setLoadingIndicator(false)
         }
     }
 
@@ -192,6 +185,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         when {
             isActive -> {
                 isRefreshPending = false
+                dashboard_stats.clearLabelValues()
                 presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
                 presenter.fetchUnfilledOrderCount()
@@ -199,6 +193,18 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             }
             else -> isRefreshPending = true
         }
+    }
+
+    override fun showChartSkeleton(show: Boolean) {
+        dashboard_stats.showSkeleton(show)
+    }
+
+    override fun showTopEarnersSkeleton(show: Boolean) {
+        dashboard_top_earners.showSkeleton(show)
+    }
+
+    override fun showUnfilledOrdersSkeleton(show: Boolean) {
+        dashboard_unfilled_orders.showSkeleton(show)
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
@@ -222,10 +228,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
-    }
-
-    override fun showUnfilledOrdersProgress(show: Boolean) {
-        dashboard_unfilled_orders.showProgress(show)
     }
 
     override fun shareStoreUrl() {

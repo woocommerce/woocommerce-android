@@ -60,6 +60,7 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
+        dashboardView?.showChartSkeleton(true)
         val payload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
     }
@@ -76,6 +77,7 @@ class DashboardPresenter @Inject constructor(
             topEarnersForceRefresh[granularity.ordinal] = false
         }
 
+        dashboardView?.showTopEarnersSkeleton(true)
         val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
@@ -98,7 +100,7 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
-        dashboardView?.showUnfilledOrdersProgress(true)
+        dashboardView?.showUnfilledOrdersSkeleton(true)
         val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
@@ -114,6 +116,8 @@ class DashboardPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
+        dashboardView?.showChartSkeleton(false)
+
         if (event.isError) {
             WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
             dashboardView?.showStatsError(event.granularity)
@@ -129,6 +133,7 @@ class DashboardPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCTopEarnersChanged(event: OnWCTopEarnersChanged) {
+        dashboardView?.showTopEarnersSkeleton(false)
         if (event.isError) {
             dashboardView?.showTopEarnersError(event.granularity)
         } else {
@@ -150,7 +155,7 @@ class DashboardPresenter @Inject constructor(
                 }
             }
             FETCH_ORDERS_COUNT -> {
-                dashboardView?.showUnfilledOrdersProgress(false)
+                dashboardView?.showUnfilledOrdersSkeleton(false)
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD,
                             "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")
@@ -176,13 +181,9 @@ class DashboardPresenter @Inject constructor(
             // Refresh data if needed now that a connection is active
             dashboardView?.let { view ->
                 if (view.isRefreshPending) {
-                    view.setLoadingIndicator(true)
                     view.refreshDashboard()
                 }
             }
-        } else {
-            // Hide the loading indicator if not connected
-            dashboardView?.setLoadingIndicator(false)
         }
     }
 

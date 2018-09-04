@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ordersView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <!-- group one -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_group_header_height"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <!-- group two -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_group_header_height"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <!-- group three -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_group_header_height"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+
+    <include layout="@layout/skeleton_order_list_item"/>
+</LinearLayout>

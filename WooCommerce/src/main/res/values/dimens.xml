@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="min_tap_target">48dp</dimen>
+
     <!--
         Text Sizes
     -->
@@ -103,7 +105,6 @@
         Default Chart
     -->
     <dimen name="chart_height">200dp</dimen>
-    <dimen name="chart_progress_bar_padding">80dp</dimen>
 
     <!--
         Login
@@ -118,10 +119,21 @@
     <!--
         Stats and Top earners
     -->
+    <dimen name="top_earner_min_height">224dp</dimen>
     <dimen name="top_earner_product_image_sz">40dp</dimen>
 
     <!--
         Offline Status Bar
     -->
     <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>
+
+    <!--
+        Skeletons
+    -->
+    <dimen name="skeleton_bar_chart_padding">30dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_days">14dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_weeks">18dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
 </resources>
