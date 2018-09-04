@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
+import java.util.ArrayList
 import java.util.Date
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -202,8 +203,19 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             return
         }
 
+        val barColors = ArrayList<Int>()
+        val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
+        val weekendColor = ContextCompat.getColor(context, R.color.graph_data_color_weekend)
+        for (entry in revenueStats) {
+            if (activeGranularity == StatsGranularity.DAYS && DateUtils.isWeekend(entry.key)) {
+                barColors.add(weekendColor)
+            } else {
+                barColors.add(normalColor)
+            }
+        }
+
         val dataSet = generateBarDataSet(revenueStats).apply {
-            color = ContextCompat.getColor(context, R.color.graph_data_color)
+            colors = barColors
             setDrawValues(false)
             isHighlightEnabled = false
         }
