@@ -168,6 +168,7 @@
         <item name="android:paddingTop">@dimen/card_padding_top</item>
         <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
         <item name="android:background">@color/card_bgColor</item>
+        <item name="android:elevation">@dimen/card_elevation</item>
         <item name="android:layout_marginBottom">@dimen/card_gutter</item>
     </style>
     <style name="Woo.Card.Expandable">
