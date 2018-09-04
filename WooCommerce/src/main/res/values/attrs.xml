@@ -28,4 +28,10 @@
         <attr name="drawableTopCompat" format="reference"/>
         <attr name="drawableBottomCompat" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="WCToggleSingleOptionView">
+        <attr name="switchTitle" format="reference|string"/>
+        <attr name="switchSummary" format="reference|string"/>
+        <attr name="switchChecked" format="boolean"/>
+    </declare-styleable>
 </resources>

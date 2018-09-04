@@ -46,35 +46,22 @@
         android:id="@+id/addNote_editDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_above="@+id/addNote_switchContainer"
+        android:layout_above="@+id/addNote_switch"
         android:layout_marginBottom="@dimen/margin_large"
         android:background="@color/list_divider"/>
 
-    <LinearLayout
-        android:id="@+id/addNote_switchContainer"
+    <com.woocommerce.android.widgets.WCToggleSingleOptionView
+        android:id="@+id/addNote_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/addNote_switchDivider"
+        android:padding="@dimen/margin_large"
         android:background="@color/white"
-        android:orientation="vertical"
         android:focusable="true"
-        android:padding="@dimen/margin_large">
-
-        <TextView
-            style="@style/Woo.TextAppearance.Large"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/add_order_note_label"
-            android:labelFor="@+id/addNote_switch"/>
-
-        <Switch
-            android:id="@+id/addNote_switch"
-            style="@style/Woo.TextAppearance.Medium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            android:text="@string/add_order_note_sublabel"/>
-    </LinearLayout>
+        android:clickable="true"
+        android:importantForAccessibility="yes"
+        app:switchTitle="@string/add_order_note_label"
+        app:switchSummary="@string/add_order_note_sublabel"/>
 
     <View
         android:id="@+id/addNote_switchDivider"
@@ -91,6 +78,6 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="gone"/>
 
 </RelativeLayout>
