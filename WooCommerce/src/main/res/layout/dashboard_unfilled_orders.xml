@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Woo.Card"
@@ -38,4 +38,4 @@
             tools:text="@string/dashboard_action_view_orders"/>
     </LinearLayout>
 
-</merge>
+</FrameLayout>

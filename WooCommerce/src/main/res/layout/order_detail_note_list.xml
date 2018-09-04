@@ -33,6 +33,7 @@
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
+            android:contentDescription="@string/orderdetail_addnote_contentdesc"
             android:paddingBottom="@dimen/margin_medium"
             android:paddingTop="@dimen/margin_medium">
 
@@ -41,7 +42,7 @@
                 android:layout_height="28dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/list_item_padding_start"
-                android:contentDescription="@string/orderdetail_addnote_contentdesc"
+                android:importantForAccessibility="no"
                 app:srcCompat="@drawable/ic_gridicons_add_outline_purple"/>
 
             <TextView
@@ -53,6 +54,7 @@
                 android:layout_marginStart="@dimen/card_section_padding_h"
                 android:layout_marginTop="@dimen/margin_extra_small"
                 android:paddingBottom="@dimen/card_item_padding_intra_v"
+                android:importantForAccessibility="no"
                 android:text="@string/orderdetail_add_note"/>
 
         </LinearLayout>
