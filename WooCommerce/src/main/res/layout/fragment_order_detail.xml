@@ -25,7 +25,8 @@
             android:id="@+id/orderDetail_productList"
             style="@style/Woo.Card.List"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/products"/>
 
         <!-- Customer Note -->
         <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
@@ -46,7 +47,8 @@
             android:id="@+id/orderDetail_paymentInfo"
             style="@style/Woo.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:focusable="true"/>
 
         <!-- Order Notes -->
         <com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView
