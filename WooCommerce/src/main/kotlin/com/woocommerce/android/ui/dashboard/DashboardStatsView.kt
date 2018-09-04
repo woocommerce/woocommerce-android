@@ -98,6 +98,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        updateRecencyMessage()
+    }
+
+    override fun onDetachedFromWindow() {
+        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        super.onDetachedFromWindow()
+    }
+
     fun clearLabelValues() {
         visitors_value.text = ""
         revenue_value.text = ""
