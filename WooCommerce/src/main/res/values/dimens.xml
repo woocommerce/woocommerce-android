@@ -22,6 +22,11 @@
     <dimen name="default_padding_tablet">16dp</dimen>
 
     <!--
+        Appbar
+    -->
+    <dimen name="appbar_elevation">4dp</dimen>
+
+    <!--
         Default Card
     -->
     <dimen name="card_padding_start">16dp</dimen>

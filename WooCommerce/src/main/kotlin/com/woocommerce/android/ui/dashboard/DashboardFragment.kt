@@ -68,6 +68,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     refreshDashboard()
                 }
             }
+
             no_orders_image.visibility =
                     if (DisplayUtils.isLandscape(activity)) View.GONE else View.VISIBLE
         }
