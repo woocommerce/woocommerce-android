@@ -9,13 +9,11 @@
     <View
         android:layout_width="@dimen/order_note_icon"
         android:layout_height="@dimen/order_note_icon"
-        android:layout_gravity="center_vertical"
         android:background="@drawable/skeleton_background_oval"/>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/text_large"
-        android:layout_gravity="center_vertical"
+        android:layout_height="@dimen/skeleton_order_note_item_height"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:background="@drawable/skeleton_background"

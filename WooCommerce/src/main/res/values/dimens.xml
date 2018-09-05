@@ -141,4 +141,5 @@
     <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>
     <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
     <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
+    <dimen name="skeleton_order_note_item_height">36dp</dimen>
 </resources>

@@ -15,12 +15,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:descendantFocusability="blocksDescendants"
         android:minHeight="@dimen/list_item_height"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,8 +33,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
-            android:orientation="horizontal"
             android:contentDescription="@string/orderdetail_addnote_contentdesc"
+            android:orientation="horizontal"
             android:paddingBottom="@dimen/margin_medium"
             android:paddingTop="@dimen/margin_medium">
 
@@ -53,8 +54,8 @@
                 android:layout_marginEnd="@dimen/card_item_padding_intra_h"
                 android:layout_marginStart="@dimen/card_section_padding_h"
                 android:layout_marginTop="@dimen/margin_extra_small"
-                android:paddingBottom="@dimen/card_item_padding_intra_v"
                 android:importantForAccessibility="no"
+                android:paddingBottom="@dimen/card_item_padding_intra_v"
                 android:text="@string/orderdetail_add_note"/>
 
         </LinearLayout>
@@ -63,7 +64,6 @@
             android:id="@+id/noteList_addNote_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/noteList_addNoteContainer"
             android:layout_marginBottom="@dimen/margin_large"
             android:layout_marginEnd="@dimen/list_item_padding_end"
             android:layout_marginStart="56dp"
@@ -73,18 +73,9 @@
             android:id="@+id/notesList_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/noteList_addNote_divider"
             android:nestedScrollingEnabled="false"
             tools:itemCount="4"
             tools:listitem="@layout/order_detail_note_list_item"
             tools:targetApi="lollipop"/>
-
-        <ProgressBar
-            android:id="@+id/notesList_progress"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:padding="@dimen/list_item_padding_intra_h"
-            tools:visibility="gone"/>
-    </RelativeLayout>
+    </LinearLayout>
 </merge>
