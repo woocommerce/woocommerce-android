@@ -148,23 +148,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 valueFormatter = StartEndDateAxisFormatter()
             }
 
-            with (axisLeft) {
-                setDrawAxisLine(false)
-
-                setDrawGridLines(true)
-                enableGridDashedLine(10F, 10F, 0F)
-                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
-
-                setDrawZeroLine(true)
-                zeroLineWidth = 1F
-                zeroLineColor = ContextCompat.getColor(context, R.color.graph_grid_color)
-
-                axisMinimum = 0F
-
-                valueFormatter = IAxisValueFormatter { value, _ ->
-                    formatAmountForDisplay(context, value.toDouble(), chartCurrencyCode, allowZero = false)
-                }
-            }
+            axisLeft.isEnabled = false
 
             with (axisRight) {
                 setDrawZeroLine(false)
