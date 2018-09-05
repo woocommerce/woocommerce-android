@@ -15,4 +15,14 @@
 
     <include layout="@layout/skeleton_order_notes_list_item"/>
 
+    <include layout="@layout/skeleton_order_notes_list_item"/>
+
+    <include layout="@layout/skeleton_order_notes_list_item"/>
+
+    <include layout="@layout/skeleton_order_notes_list_item"/>
+
+    <include layout="@layout/skeleton_order_notes_list_item"/>
+
+    <include layout="@layout/skeleton_order_notes_list_item"/>
+
 </LinearLayout>
