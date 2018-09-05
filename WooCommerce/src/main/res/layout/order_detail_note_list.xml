@@ -32,8 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
-            android:orientation="horizontal"
             android:contentDescription="@string/orderdetail_addnote_contentdesc"
+            android:orientation="horizontal"
             android:paddingBottom="@dimen/margin_medium"
             android:paddingTop="@dimen/margin_medium">
 
@@ -53,8 +53,8 @@
                 android:layout_marginEnd="@dimen/card_item_padding_intra_h"
                 android:layout_marginStart="@dimen/card_section_padding_h"
                 android:layout_marginTop="@dimen/margin_extra_small"
-                android:paddingBottom="@dimen/card_item_padding_intra_v"
                 android:importantForAccessibility="no"
+                android:paddingBottom="@dimen/card_item_padding_intra_v"
                 android:text="@string/orderdetail_add_note"/>
 
         </LinearLayout>
@@ -67,7 +67,9 @@
             android:layout_marginBottom="@dimen/margin_large"
             android:layout_marginEnd="@dimen/list_item_padding_end"
             android:layout_marginStart="56dp"
-            android:background="@color/list_divider"/>
+            android:background="@color/list_divider"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/notesList_notes"
@@ -85,6 +87,6 @@
             android:layout_height="match_parent"
             android:background="@color/white"
             android:padding="@dimen/list_item_padding_intra_h"
-            tools:visibility="gone"/>
+            android:visibility="gone"/>
     </RelativeLayout>
 </merge>
