@@ -99,14 +99,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        updateRecencyMessage()
-    }
-
-    override fun onDetachedFromWindow() {
-        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
-        super.onDetachedFromWindow()
+    override fun onVisibilityChanged(changedView: View?, visibility: Int) {
+        super.onVisibilityChanged(changedView, visibility)
+        if (visibility == View.VISIBLE) {
+            updateRecencyMessage()
+        } else {
+            lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        }
     }
 
     fun clearLabelValues() {
