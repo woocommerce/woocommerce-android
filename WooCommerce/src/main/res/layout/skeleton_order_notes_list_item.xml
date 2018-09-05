@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Woo.OrderList.Item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <View
+        android:layout_width="@dimen/order_note_icon"
+        android:layout_height="@dimen/order_note_icon"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/skeleton_background_oval"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/text_large"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+        android:layout_marginStart="@dimen/card_section_padding_h"
+        android:background="@drawable/skeleton_background"
+        android:paddingBottom="@dimen/card_item_padding_intra_v"/>
+
+</LinearLayout>
