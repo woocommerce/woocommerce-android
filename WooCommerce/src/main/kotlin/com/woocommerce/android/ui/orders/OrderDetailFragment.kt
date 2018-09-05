@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
+import com.woocommerce.android.ui.orders.OrderDetailPaymentView.OrderDetailPaymentViewListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -22,7 +23,8 @@ import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener {
+class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
+        OrderDetailPaymentViewListener {
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -52,6 +54,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     private var markCompleteCanceled: Boolean = false
     private var undoMarkCompleteSnackbar: Snackbar? = null
+    private var markPaymentClearedCanceled: Boolean = false
+    private var markPaymentClearedSnackbar: Snackbar? = null
     private var previousOrderStatus: String? = null
     private var notesSnack: Snackbar? = null
     private var pendingNotesError = false
@@ -123,7 +127,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             }
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(order)
+            orderDetail_paymentInfo.initView(order, this)
 
             // Check for customer note, show if available
             if (order.customerNote.isEmpty()) {
@@ -165,6 +169,52 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         orderDetail_orderStatus.updateStatus(status)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, false, this)
+        }
+    }
+
+    override fun showUndoPaymentClearedSnackbar() {
+        markPaymentClearedCanceled = false
+
+        presenter.orderModel?.let {
+            previousOrderStatus = it.status
+            it.status = CoreOrderStatus.COMPLETED.value
+
+            // artificially set order status to Complete
+            updateOrderStatus(CoreOrderStatus.COMPLETED.value)
+
+            // Listener for the UNDO button in the snackbar
+            val actionListener = View.OnClickListener {
+                // User canceled the action to mark the order complete.
+                markPaymentClearedCanceled = true
+
+                presenter.orderModel?.let { order ->
+                    previousOrderStatus?.let { status ->
+                        order.status = status
+                        updateOrderStatus(status)
+                    }
+                    previousOrderStatus = null
+                }
+            }
+
+            // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
+            // timed out, then process the request to mark this order complete.
+            val callback = object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (pendingNotesError) {
+                        notesSnack?.show()
+                    }
+                    if (!markPaymentClearedCanceled) {
+                        presenter.doMarkOrderComplete()
+                    }
+                }
+            }
+            undoMarkCompleteSnackbar = uiMessageResolver
+                    .getUndoSnack(R.string.order_fulfill_payment_cleared, actionListener = actionListener)
+                    .also {
+                        it.addCallback(callback)
+                        it.show()
+                    }
         }
     }
 
@@ -239,11 +289,22 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         uiMessageResolver.getSnack(R.string.add_order_note_error).show()
     }
 
-    override fun markOrderCompleteSuccess() {
+    /**
+     * user tapped "Payment Cleared" on the payment view
+     */
+    override fun onRequestPaymentCleared() {
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+        showUndoPaymentClearedSnackbar()
+    }
+
+    override fun markOrderStatusChangedSuccess() {
         previousOrderStatus = null
     }
 
-    override fun markOrderCompleteFailed() {
+    override fun markOrderStatusChangedFailed() {
         // Set the order status back to the previous status
         previousOrderStatus?.let {
             orderDetail_orderStatus.updateStatus(it)
@@ -261,7 +322,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun showCompleteOrderError() {
+    override fun showOrderStatusChangedError() {
         uiMessageResolver.getSnack(R.string.order_error_update_general).show()
         previousOrderStatus?.let { status ->
             updateOrderStatus(status)

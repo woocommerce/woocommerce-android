@@ -106,7 +106,7 @@ class OrderDetailPresenterTest {
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(orderDetailView, times(1)).markOrderCompleteSuccess()
+        verify(orderDetailView, times(1)).markOrderStatusChangedSuccess()
     }
 
     @Test
@@ -124,7 +124,7 @@ class OrderDetailPresenterTest {
             causeOfChange = UPDATE_ORDER_STATUS
             error = OrderError()
         })
-        verify(orderDetailView, times(1)).showCompleteOrderError()
+        verify(orderDetailView, times(1)).showOrderStatusChangedError()
     }
 
     @Test
@@ -142,7 +142,7 @@ class OrderDetailPresenterTest {
             causeOfChange = UPDATE_ORDER_STATUS
             error = OrderError(message = "Error")
         })
-        verify(orderDetailView).markOrderCompleteFailed()
+        verify(orderDetailView).markOrderStatusChangedFailed()
     }
 
     @Test

@@ -99,6 +99,19 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
+    override fun doMarkPaymentCleared() {
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        // TODO: track this
+        orderModel?.let { order ->
+            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), CoreOrderStatus.PROCESSING.value)
+            dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
+        }
+    }
+
     override fun pushOrderNote(noteText: String, isCustomerNote: Boolean) {
         if (!networkStatus.isConnected()) {
             // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
@@ -135,15 +148,15 @@ class OrderDetailPresenter @Inject constructor(
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
                 orderView?.let {
-                    it.showCompleteOrderError()
-                    it.markOrderCompleteFailed()
+                    it.showOrderStatusChangedError()
+                    it.markOrderStatusChangedFailed()
                 }
             } else {
-                // Successfully marked order as complete
+                // Successfully marked order as complete or marked payment as cleared
                 orderModel?.let {
                     orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
                 }
-                orderView?.markOrderCompleteSuccess()
+                orderView?.markOrderStatusChangedSuccess()
             }
         } else if (event.causeOfChange == POST_ORDER_NOTE) {
             if (event.isError) {

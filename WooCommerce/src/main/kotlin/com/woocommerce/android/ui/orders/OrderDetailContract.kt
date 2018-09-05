@@ -13,6 +13,7 @@ interface OrderDetailContract {
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
         fun doMarkOrderComplete()
+        fun doMarkPaymentCleared()
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
     }
 
@@ -23,11 +24,12 @@ interface OrderDetailContract {
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
         fun updateOrderStatus(status: String)
         fun showUndoOrderCompleteSnackbar()
+        fun showUndoPaymentClearedSnackbar()
         fun showNotesErrorSnack()
         fun showAddOrderNoteSnack()
         fun showAddOrderNoteErrorSnack()
-        fun showCompleteOrderError()
-        fun markOrderCompleteSuccess()
-        fun markOrderCompleteFailed()
+        fun showOrderStatusChangedError()
+        fun markOrderStatusChangedSuccess()
+        fun markOrderStatusChangedFailed()
     }
 }
