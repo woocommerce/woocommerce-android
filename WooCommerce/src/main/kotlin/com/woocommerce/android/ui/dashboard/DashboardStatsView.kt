@@ -154,6 +154,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
+                gridColor = ContextCompat.getColor(context, R.color.gray)
                 setLabelCount(3, true)
 
                 axisMinimum = 0F
