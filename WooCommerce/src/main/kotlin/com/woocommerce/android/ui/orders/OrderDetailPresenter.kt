@@ -63,7 +63,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also { order ->
                     view.showOrderDetail(order)
                 }
-                if (markComplete) orderView?.showUndoOrderCompleteSnackbar()
+                if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes() // load order notes
             }
         }
@@ -84,7 +84,7 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    override fun doMarkOrderComplete() {
+    override fun doChangeOrderStatus(newStatus: String) {
         if (!networkStatus.isConnected()) {
             // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
             // just in case...
@@ -92,22 +92,17 @@ class OrderDetailPresenter @Inject constructor(
             return
         }
 
-        AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
-        orderModel?.let { order ->
-            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), CoreOrderStatus.COMPLETED.value)
-            dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-        }
-    }
-
-    override fun doMarkPaymentCleared() {
-        if (!networkStatus.isConnected()) {
-            uiMessageResolver.showOfflineSnack()
-            return
+        when (newStatus) {
+            CoreOrderStatus.COMPLETED.value -> {
+                AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
+            }
+            CoreOrderStatus.PROCESSING.value -> {
+                // TODO: track this
+            }
         }
 
-        // TODO: track this
         orderModel?.let { order ->
-            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), CoreOrderStatus.PROCESSING.value)
+            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), newStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
         }
     }

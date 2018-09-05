@@ -4,6 +4,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -52,10 +53,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
 
-    private var markCompleteCanceled: Boolean = false
-    private var undoMarkCompleteSnackbar: Snackbar? = null
-    private var markPaymentClearedCanceled: Boolean = false
-    private var markPaymentClearedSnackbar: Snackbar? = null
+    private var changeOrderStatusCanceled: Boolean = false
+    private var changeOrderStatusSnackbar: Snackbar? = null
     private var previousOrderStatus: String? = null
     private var notesSnack: Snackbar? = null
     private var pendingNotesError = false
@@ -101,7 +100,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onStop() {
-        undoMarkCompleteSnackbar?.dismiss()
+        changeOrderStatusSnackbar?.dismiss()
         notesSnack?.dismiss()
         super.onStop()
     }
@@ -165,27 +164,27 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun updateOrderStatus(status: String) {
-        orderDetail_orderStatus.updateStatus(status)
+    override fun updateOrderStatus(newStatus: String) {
+        orderDetail_orderStatus.updateStatus(newStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, false, this)
         }
     }
 
-    override fun showUndoPaymentClearedSnackbar() {
-        markPaymentClearedCanceled = false
+    override fun showChangeOrderStatusSnackbar(newStatus: String) {
+        changeOrderStatusCanceled = false
 
         presenter.orderModel?.let {
             previousOrderStatus = it.status
-            it.status = CoreOrderStatus.COMPLETED.value
+            it.status = newStatus
 
-            // artificially set order status to Complete
-            updateOrderStatus(CoreOrderStatus.COMPLETED.value)
+            // artificially set order status
+            updateOrderStatus(newStatus)
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
-                // User canceled the action to mark the order complete.
-                markPaymentClearedCanceled = true
+                // User canceled the action to change the order status
+                changeOrderStatusCanceled = true
 
                 presenter.orderModel?.let { order ->
                     previousOrderStatus?.let { status ->
@@ -197,66 +196,26 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             }
 
             // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
-            // timed out, then process the request to mark this order complete.
+            // timed out, then process the request to change the order status
             val callback = object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
                     if (pendingNotesError) {
                         notesSnack?.show()
                     }
-                    if (!markPaymentClearedCanceled) {
-                        presenter.doMarkOrderComplete()
+                    if (!changeOrderStatusCanceled) {
+                        presenter.doChangeOrderStatus(newStatus)
                     }
                 }
             }
-            undoMarkCompleteSnackbar = uiMessageResolver
-                    .getUndoSnack(R.string.order_fulfill_payment_cleared, actionListener = actionListener)
-                    .also {
-                        it.addCallback(callback)
-                        it.show()
-                    }
-        }
-    }
 
-    override fun showUndoOrderCompleteSnackbar() {
-        markCompleteCanceled = false
-
-        presenter.orderModel?.let {
-            previousOrderStatus = it.status
-            it.status = CoreOrderStatus.COMPLETED.value
-
-            // artificially set order status to Complete
-            updateOrderStatus(CoreOrderStatus.COMPLETED.value)
-
-            // Listener for the UNDO button in the snackbar
-            val actionListener = View.OnClickListener {
-                // User canceled the action to mark the order complete.
-                markCompleteCanceled = true
-
-                presenter.orderModel?.let { order ->
-                    previousOrderStatus?.let { status ->
-                        order.status = status
-                        updateOrderStatus(status)
-                    }
-                    previousOrderStatus = null
-                }
+            @StringRes val idRes = if (newStatus == CoreOrderStatus.COMPLETED.value) {
+                R.string.order_fulfill_marked_complete
+            } else {
+                R.string.order_fulfill_payment_cleared
             }
-
-            // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
-            // timed out, then process the request to mark this order complete.
-            val callback = object : Snackbar.Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (pendingNotesError) {
-                        notesSnack?.show()
-                    }
-                    if (!markCompleteCanceled) {
-                        presenter.doMarkOrderComplete()
-                    }
-                }
-            }
-            undoMarkCompleteSnackbar = uiMessageResolver
-                    .getUndoSnack(R.string.order_fulfill_marked_complete, actionListener = actionListener)
+            changeOrderStatusSnackbar = uiMessageResolver
+                    .getUndoSnack(idRes, actionListener = actionListener)
                     .also {
                         it.addCallback(callback)
                         it.show()
@@ -293,11 +252,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
      * user tapped "Payment Cleared" on the payment view
      */
     override fun onRequestPaymentCleared() {
-        if (!networkStatus.isConnected()) {
-            uiMessageResolver.showOfflineSnack()
-            return
-        }
-        showUndoPaymentClearedSnackbar()
+        showChangeOrderStatusSnackbar(CoreOrderStatus.PROCESSING.value)
     }
 
     override fun markOrderStatusChangedSuccess() {
@@ -315,7 +270,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showNotesErrorSnack() {
         notesSnack = uiMessageResolver.getSnack(R.string.order_error_fetch_notes_generic)
 
-        if ((undoMarkCompleteSnackbar?.isShownOrQueued) == true) {
+        if ((changeOrderStatusSnackbar?.isShownOrQueued) == true) {
             pendingNotesError = true
         } else {
             notesSnack?.show()
