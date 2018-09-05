@@ -14,6 +14,7 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import kotlinx.android.synthetic.main.activity_app_settings.*
 import javax.inject.Inject
 
 class AppSettingsActivity : AppCompatActivity(),
@@ -30,9 +31,7 @@ class AppSettingsActivity : AppCompatActivity(),
         setContentView(R.layout.activity_app_settings)
         presenter.takeView(this)
 
-        // TODO: replace with synthetics once Kotlin plugin bug is fixed
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null) {
