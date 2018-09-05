@@ -48,6 +48,10 @@ android {
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
     flavorDimensions "buildType"
 
     productFlavors {

@@ -59,6 +59,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         }
     }
 
+    // TODO: remove this
     private fun testSkeleton() {
         showSkeleton(true)
         Handler().postDelayed({ showSkeleton(false) }, 1000)

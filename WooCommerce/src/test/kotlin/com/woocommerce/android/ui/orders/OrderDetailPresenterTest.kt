@@ -219,4 +219,17 @@ class OrderDetailPresenterTest {
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(presenter, times(0)).requestOrderNotesFromApi(any())
     }
+
+    @Test
+    fun `Shows and hides the note list skeleton correctly`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, false)
+
+        dispatcher.dispatch(any<Action<FetchOrderNotesPayload>>())
+        verify(orderDetailView).showOrderNotesSkeleton(true)
+
+        presenter.onOrderChanged(OnOrderChanged(10).apply { causeOfChange = FETCH_ORDER_NOTES })
+        verify(orderDetailView).showOrderNotesSkeleton(false)
+    }
 }
