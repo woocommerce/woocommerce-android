@@ -62,7 +62,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                 addNote_icon.setImageDrawable(ContextCompat.getDrawable(this, drawableId))
             }
         } else {
-            addNote_switchContainer.visibility = View.GONE
+            addNote_switch.visibility = View.GONE
             addNote_switchDivider.visibility = View.GONE
             addNote_editDivider.visibility = View.GONE
         }

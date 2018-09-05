@@ -17,5 +17,6 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_gravity="center"
+        android:contentDescription="@string/app_name"
         app:srcCompat="@drawable/login_toolbar_icon"/>
 </android.support.v7.widget.Toolbar>

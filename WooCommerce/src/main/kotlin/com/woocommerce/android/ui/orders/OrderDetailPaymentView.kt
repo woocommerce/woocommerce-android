@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
@@ -11,9 +11,10 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import kotlin.math.absoluteValue
 
 class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
+    : LinearLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.order_detail_payment_info, this)
+        orientation = LinearLayout.VERTICAL
     }
 
     fun initView(order: WCOrderModel) {

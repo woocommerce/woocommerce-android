@@ -15,17 +15,19 @@
 
     <TextView
         android:id="@+id/orderStatus_created"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/orderStatus_orderNum"
-        android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
-        tools:text="Created today at 9:51 AM"
-        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        tools:text="Created today at 9:51 AM"/>
 
     <com.woocommerce.android.widgets.FlowLayout
         android:id="@+id/orderStatus_orderTags"
         android:layout_below="@+id/orderStatus_created"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/orderstatus_contentDesc"/>
 </merge>
+
