@@ -61,7 +61,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
     private fun testSkeleton() {
         showSkeleton(true)
-        Handler().postDelayed({ showSkeleton(false)}, 1000)
+        Handler().postDelayed({ showSkeleton(false) }, 1000)
     }
 
     fun updateView(notes: List<WCOrderNoteModel>) {
