@@ -64,6 +64,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         enableItemAnimator(adapter.itemCount == 0)
         adapter.setNotes(notes)
         notesList_progress.visibility = View.GONE
+        noteList_addNote_divider.visibility = if (notes.isEmpty()) View.GONE else View.VISIBLE
     }
 
     /*
