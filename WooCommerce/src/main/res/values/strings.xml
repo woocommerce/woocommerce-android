@@ -148,7 +148,8 @@
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_qty">QTY</string>
-    <string name="orderdetail_payment_summary">Payment of %1$s received via %2$s</string>
+    <string name="orderdetail_payment_summary_completed">Payment of %1$s received via %2$s</string>
+    <string name="orderdetail_payment_summary_onhold">Payment waiting for %s</string>
     <string name="orderdetail_refunded">Refunded</string>
     <string name="orderdetail_new_total">New Total</string>
     <string name="orderdetail_payment_refunded">Payment - Refunded</string>
@@ -160,6 +161,7 @@
     <string name="orderdetail_note_public">Public Note</string>
     <string name="orderdetail_order_notes">Order Notes</string>
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
+    <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
     <string name="orderdetail_hide_billing">Hide Billing</string>
     <string name="orderdetail_add_note">Add a note</string>
