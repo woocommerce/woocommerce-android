@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
+import java.util.ArrayList
 import java.util.Date
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -147,16 +148,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 valueFormatter = StartEndDateAxisFormatter()
             }
 
-            with (axisLeft) {
+            axisLeft.isEnabled = false
+
+            with (axisRight) {
+                setDrawZeroLine(false)
                 setDrawAxisLine(false)
-
                 setDrawGridLines(true)
-                enableGridDashedLine(10F, 10F, 0F)
-                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
-
-                setDrawZeroLine(true)
-                zeroLineWidth = 1F
-                zeroLineColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+                gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
+                setLabelCount(3, true)
 
                 axisMinimum = 0F
 
@@ -165,7 +164,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 }
             }
 
-            axisRight.isEnabled = false
             description.isEnabled = false
             legend.isEnabled = false
 
@@ -190,16 +188,28 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             return
         }
 
+        val barColors = ArrayList<Int>()
+        val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
+        val weekendColor = ContextCompat.getColor(context, R.color.graph_data_color_weekend)
+        for (entry in revenueStats) {
+            if (activeGranularity == StatsGranularity.DAYS && DateUtils.isWeekend(entry.key)) {
+                barColors.add(weekendColor)
+            } else {
+                barColors.add(normalColor)
+            }
+        }
+
         val dataSet = generateBarDataSet(revenueStats).apply {
-            color = ContextCompat.getColor(context, R.color.graph_data_color)
+            colors = barColors
             setDrawValues(false)
             isHighlightEnabled = false
         }
 
+        val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
+
         with (chart) {
             data = BarData(dataSet)
-
-            invalidate() // Draw/redraw the graph
+            animateY(duration)
         }
 
         resetLastUpdated()
