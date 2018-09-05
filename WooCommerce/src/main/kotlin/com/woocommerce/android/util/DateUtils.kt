@@ -111,4 +111,14 @@ object DateUtils {
         val month = iso8601Month.split("-").last()
         return shortMonths[month.toInt() - 1]
     }
+
+    /**
+    * Given a date of format YYYY-MM, returns whether it's on a weekend
+    */
+    fun isWeekend(iso8601Date: String): Boolean {
+        val (year, month, day) = iso8601Date.split("-")
+        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt())
+        val dayOfWeek = date.get(Calendar.DAY_OF_WEEK)
+        return (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY)
+    }
 }
