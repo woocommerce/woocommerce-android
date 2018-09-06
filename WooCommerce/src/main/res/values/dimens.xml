@@ -62,7 +62,6 @@
     <dimen name="list_header_text_size">@dimen/text_medium</dimen>
 
     <dimen name="list_group_header_height">48dp</dimen>
-    <dimen name="list_item_height">72dp</dimen>
 
     <dimen name="list_item_padding_intra_h">8dp</dimen>
     <dimen name="list_item_padding_intra_v">4dp</dimen>

@@ -79,16 +79,15 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
+        dashboard_stats.initView(listener = this, selectedSite = selectedSite)
+        dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
+        dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
+            override fun onViewOrdersClicked() {
+                (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
+            }
+        })
 
         if (isActive) {
-            dashboard_stats.initView(listener = this, selectedSite = selectedSite)
-            dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
-                override fun onViewOrdersClicked() {
-                    (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
-                }
-            })
-
-            dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
             refreshDashboard()
         } else {
             isRefreshPending = true
