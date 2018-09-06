@@ -19,6 +19,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -91,7 +92,8 @@ class OrderDetailPresenterTest {
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, true)
 
-        verify(orderDetailView, times(1)).showUndoOrderCompleteSnackbar()
+        verify(orderDetailView, times(1))
+                .showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
     }
 
     @Test
@@ -101,7 +103,7 @@ class OrderDetailPresenterTest {
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
         presenter.takeView(orderDetailView)
-        presenter.doMarkOrderComplete()
+        presenter.doChangeOrderStatus(CoreOrderStatus.COMPLETED.value)
         verify(dispatcher, times(1)).dispatch(any<Action<UpdateOrderStatusPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
@@ -116,7 +118,7 @@ class OrderDetailPresenterTest {
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
         presenter.takeView(orderDetailView)
-        presenter.doMarkOrderComplete()
+        presenter.doChangeOrderStatus(CoreOrderStatus.COMPLETED.value)
         verify(dispatcher, times(1)).dispatch(any<Action<UpdateOrderStatusPayload>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
@@ -134,7 +136,7 @@ class OrderDetailPresenterTest {
         // Presenter should dispatch FETCH_ORDER_NOTES once order detail is fetched
         // from the order store
         presenter.takeView(orderDetailView)
-        presenter.doMarkOrderComplete()
+        presenter.doChangeOrderStatus(CoreOrderStatus.COMPLETED.value)
         verify(dispatcher, times(1)).dispatch(any<Action<UpdateOrderStatusPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI Update
@@ -184,7 +186,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(false).whenever(networkStatus).isConnected()
 
-        presenter.doMarkOrderComplete()
+        presenter.doChangeOrderStatus(CoreOrderStatus.COMPLETED.value)
         verify(uiMessageResolver, times(1)).showOfflineSnack()
         verify(presenter, times(0)).fetchAndLoadNotesFromDb()
     }
