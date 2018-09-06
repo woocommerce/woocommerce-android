@@ -168,6 +168,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         orderDetail_orderStatus.updateStatus(newStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, false, this)
+            orderDetail_paymentInfo.initView(it, this)
         }
     }
 
