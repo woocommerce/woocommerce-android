@@ -4,80 +4,55 @@
                 android:layout_height="match_parent"
                 android:background="@color/wc_purple">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/image_prologue"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/prologue_card"
-        android:orientation="horizontal">
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_prologue_landscape"/>
 
-        <ImageView
-            android:id="@+id/image_prologue"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/margin_large"
-            android:layout_weight="4"
-            android:scaleType="fitXY"
-            android:importantForAccessibility="no"
-            app:srcCompat="@drawable/ic_prologue_landscape"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="28dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="148dp"
+        android:text="@string/login_prologue_banner"
+        android:textColor="@color/wc_purple"
+        android:textSize="@dimen/text_medium_extra_large"
+        android:textStyle="bold"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:text="@string/login_prologue_banner"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_medium_extra_large"/>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/appbar_elevation"
-        android:layout_above="@+id/prologue_card"
-        android:background="@drawable/shadow_top"/>
-
-    <RelativeLayout
-        android:id="@+id/prologue_card"
-        style="@style/Woo.Card"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="0dp"
+        android:orientation="horizontal"
         android:padding="@dimen/margin_extra_large">
-
-        <ImageView
-            android:id="@+id/image_jetpack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="@dimen/margin_large"
-            android:importantForAccessibility="no"
-            app:srcCompat="@drawable/ic_jetpack_icon"/>
-
-        <TextView
-            android:id="@+id/text_jetpack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_toEndOf="@+id/image_jetpack"
-            android:layout_toStartOf="@+id/button_login_jetpack"
-            android:linksClickable="true"
-            android:text="@string/login_jetpack_required"
-            android:textColorLink="@color/wc_purple"/>
 
         <Button
             android:id="@+id/button_login_jetpack"
-            style="@style/Woo.ButtonPurple"
-            android:layout_width="wrap_content"
+            style="@style/Woo.ButtonWhite"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:padding="@dimen/margin_extra_large"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:layout_weight="2"
             android:text="@string/login_with_jetpack"/>
-    </RelativeLayout>
+
+        <TextView
+            android:id="@+id/text_jetpack"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_weight="3"
+            android:drawablePadding="@dimen/margin_large"
+            android:drawableStart="@drawable/ic_jetpack_icon"
+            android:text="@string/login_jetpack_required"
+            android:textColor="@color/white"
+            android:textColorLink="@color/white"/>
+    </LinearLayout>
 
 </RelativeLayout>
