@@ -19,7 +19,7 @@
             android:layout_weight="4"
             android:scaleType="fitXY"
             android:importantForAccessibility="no"
-            app:srcCompat="@drawable/ic_woo_login_screen_with_bleed"/>
+            app:srcCompat="@drawable/ic_prologue_landscape"/>
 
         <TextView
             android:layout_width="wrap_content"
