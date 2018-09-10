@@ -31,9 +31,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/text_prologue"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/login_prologue_padding"
-        android:layout_marginTop="@dimen/login_prologue_padding"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/ic_bubbles"/>
 
