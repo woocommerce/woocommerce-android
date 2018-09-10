@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import kotlin.math.absoluteValue
 
 class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -17,7 +18,11 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         orientation = LinearLayout.VERTICAL
     }
 
-    fun initView(order: WCOrderModel) {
+    interface OrderDetailPaymentViewListener {
+        fun onRequestPaymentCleared()
+    }
+
+    fun initView(order: WCOrderModel, listener: OrderDetailPaymentViewListener) {
         val currencyCode = order.currency
 
         paymentInfo_subTotal.text = CurrencyUtils.currencyString(context, order.getOrderSubtotal(), currencyCode)
@@ -26,9 +31,29 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_taxesTotal.text = CurrencyUtils.currencyString(context, order.totalTax, currencyCode)
         paymentInfo_total.text = CurrencyUtils.currencyString(context, order.total, currencyCode)
 
-        val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
-        paymentInfo_paymentMsg.text = context.getString(
-                R.string.orderdetail_payment_summary, totalPayment, order.paymentMethodTitle)
+        when (order.status) {
+            CoreOrderStatus.COMPLETED.value -> {
+                paymentInfo_paymentMsg.visibility = View.VISIBLE
+                paymentInfo_btnCleared.visibility = View.GONE
+                val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
+                paymentInfo_paymentMsg.text = context.getString(
+                        R.string.orderdetail_payment_summary_completed, totalPayment, order.paymentMethodTitle)
+            }
+            CoreOrderStatus.ON_HOLD.value -> {
+                paymentInfo_paymentMsg.visibility = View.VISIBLE
+                paymentInfo_paymentMsg.text = context.getString(
+                        R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle)
+                paymentInfo_btnCleared.visibility = View.VISIBLE
+                paymentInfo_btnCleared.setOnClickListener {
+                    listener.onRequestPaymentCleared()
+                }
+            }
+            CoreOrderStatus.PROCESSING.value -> {
+                paymentInfo_paymentMsg.visibility = View.GONE
+                paymentInfo_divider2.visibility = View.GONE
+                paymentInfo_btnCleared.visibility = View.GONE
+            }
+        }
 
         // Populate or hide refund section
         if (order.refundTotal.absoluteValue > 0) {

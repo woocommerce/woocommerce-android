@@ -12,7 +12,7 @@ interface OrderDetailContract {
         var isUsingCachedNotes: Boolean
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
-        fun doMarkOrderComplete()
+        fun doChangeOrderStatus(newStatus: String)
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
     }
 
@@ -21,13 +21,13 @@ interface OrderDetailContract {
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showAddOrderNoteScreen()
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
-        fun updateOrderStatus(status: String)
-        fun showUndoOrderCompleteSnackbar()
+        fun updateOrderStatus(newStatus: String)
+        fun showChangeOrderStatusSnackbar(newStatus: String)
         fun showNotesErrorSnack()
         fun showAddOrderNoteSnack()
         fun showAddOrderNoteErrorSnack()
-        fun showCompleteOrderError()
-        fun markOrderCompleteSuccess()
-        fun markOrderCompleteFailed()
+        fun showOrderStatusChangedError()
+        fun markOrderStatusChangedSuccess()
+        fun markOrderStatusChangedFailed()
     }
 }
