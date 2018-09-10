@@ -2,27 +2,48 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/wc_purple">
+                android:background="@color/white">
 
     <ImageView
         android:id="@+id/image_prologue"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_prologue_portrait"/>
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="64dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/ic_woo_logo"/>
+
+    <TextView
+        android:id="@+id/text_prologue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/image_prologue"
         android:layout_marginEnd="28dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="148dp"
+        android:layout_marginTop="28dp"
         android:gravity="center"
         android:text="@string/login_prologue_banner"
         android:textColor="@color/wc_purple"
         android:textSize="@dimen/text_medium_extra_large"
         android:textStyle="bold"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/text_prologue"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="28dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/ic_bubbles"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_slanted_rectangle"/>
 
     <LinearLayout
         android:layout_width="match_parent"

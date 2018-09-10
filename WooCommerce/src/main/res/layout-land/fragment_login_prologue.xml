@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_prologue_landscape"/>
+        app:srcCompat="@drawable/ic_woo_logo"/>
 
     <TextView
         android:layout_width="wrap_content"
