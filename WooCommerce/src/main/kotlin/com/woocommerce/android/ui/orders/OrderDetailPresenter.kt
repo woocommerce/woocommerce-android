@@ -96,9 +96,7 @@ class OrderDetailPresenter @Inject constructor(
             CoreOrderStatus.COMPLETED.value -> {
                 AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
             }
-            CoreOrderStatus.PROCESSING.value -> {
-                // TODO: track this
-            }
+            // TODO: track other status changes once we add them
         }
 
         orderModel?.let { order ->
@@ -147,7 +145,7 @@ class OrderDetailPresenter @Inject constructor(
                     it.markOrderStatusChangedFailed()
                 }
             } else {
-                // Successfully marked order as complete or marked payment as cleared
+                // Successfully marked order status changed
                 orderModel?.let {
                     orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
                 }

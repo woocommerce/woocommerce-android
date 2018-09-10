@@ -18,11 +18,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         orientation = LinearLayout.VERTICAL
     }
 
-    interface OrderDetailPaymentViewListener {
-        fun onRequestPaymentCleared()
-    }
-
-    fun initView(order: WCOrderModel, listener: OrderDetailPaymentViewListener) {
+    fun initView(order: WCOrderModel) {
         val currencyCode = order.currency
 
         paymentInfo_subTotal.text = CurrencyUtils.currencyString(context, order.getOrderSubtotal(), currencyCode)
@@ -32,26 +28,21 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_total.text = CurrencyUtils.currencyString(context, order.total, currencyCode)
 
         when (order.status) {
-            CoreOrderStatus.COMPLETED.value -> {
-                paymentInfo_paymentMsg.visibility = View.VISIBLE
-                paymentInfo_btnCleared.visibility = View.GONE
-                val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
-                paymentInfo_paymentMsg.text = context.getString(
-                        R.string.orderdetail_payment_summary_completed, totalPayment, order.paymentMethodTitle)
-            }
+            CoreOrderStatus.PENDING.value,
             CoreOrderStatus.ON_HOLD.value -> {
                 paymentInfo_paymentMsg.visibility = View.VISIBLE
                 paymentInfo_paymentMsg.text = context.getString(
                         R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle)
-                paymentInfo_btnCleared.visibility = View.VISIBLE
-                paymentInfo_btnCleared.setOnClickListener {
-                    listener.onRequestPaymentCleared()
-                }
             }
             CoreOrderStatus.PROCESSING.value -> {
                 paymentInfo_paymentMsg.visibility = View.GONE
                 paymentInfo_divider2.visibility = View.GONE
-                paymentInfo_btnCleared.visibility = View.GONE
+            }
+            else -> {
+                paymentInfo_paymentMsg.visibility = View.VISIBLE
+                val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
+                paymentInfo_paymentMsg.text = context.getString(
+                        R.string.orderdetail_payment_summary_completed, totalPayment, order.paymentMethodTitle)
             }
         }
 

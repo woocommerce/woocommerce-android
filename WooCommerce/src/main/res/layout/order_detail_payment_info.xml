@@ -246,14 +246,4 @@
         android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
         tools:text="Payment of $49.00 received via credit card (PayPal)"/>
-
-    <!-- Payment cleared button -->
-    <Button
-        android:id="@+id/paymentInfo_btnCleared"
-        style="@style/Woo.ButtonPurple"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_large"
-        android:text="@string/orderdetail_payment_cleared"
-        android:visibility="gone"/>
 </merge>

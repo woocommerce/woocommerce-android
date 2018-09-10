@@ -4,7 +4,6 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -16,16 +15,13 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
-import com.woocommerce.android.ui.orders.OrderDetailPaymentView.OrderDetailPaymentViewListener
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
-        OrderDetailPaymentViewListener {
+class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener {
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -126,7 +122,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             }
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(order, this)
+            orderDetail_paymentInfo.initView(order)
 
             // Check for customer note, show if available
             if (order.customerNote.isEmpty()) {
@@ -168,7 +164,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         orderDetail_orderStatus.updateStatus(newStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, false, this)
-            orderDetail_paymentInfo.initView(it, this)
+            orderDetail_paymentInfo.initView(it)
         }
     }
 
@@ -210,13 +206,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                 }
             }
 
-            @StringRes val idRes = if (newStatus == CoreOrderStatus.COMPLETED.value) {
-                R.string.order_fulfill_marked_complete
-            } else {
-                R.string.order_fulfill_payment_cleared
-            }
+            // TODO: for now this assumes orders marked complete, this needs to change when we handle other statuses
             changeOrderStatusSnackbar = uiMessageResolver
-                    .getUndoSnack(idRes, actionListener = actionListener)
+                    .getUndoSnack(R.string.order_fulfill_marked_complete, actionListener = actionListener)
                     .also {
                         it.addCallback(callback)
                         it.show()
@@ -247,13 +239,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     override fun showAddOrderNoteErrorSnack() {
         uiMessageResolver.getSnack(R.string.add_order_note_error).show()
-    }
-
-    /**
-     * user tapped "Payment Cleared" on the payment view
-     */
-    override fun onRequestPaymentCleared() {
-        showChangeOrderStatusSnackbar(CoreOrderStatus.PROCESSING.value)
     }
 
     override fun markOrderStatusChangedSuccess() {
