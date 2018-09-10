@@ -41,6 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/login_prologue_padding"
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
         app:srcCompat="@drawable/ic_slanted_rectangle_landscape"/>
@@ -50,6 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="0dp"
+        android:background="@color/wc_purple"
         android:orientation="horizontal"
         android:padding="@dimen/login_prologue_padding">
 
