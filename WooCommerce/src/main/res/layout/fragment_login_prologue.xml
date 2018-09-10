@@ -18,9 +18,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/image_prologue"
-        android:layout_marginEnd="28dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginEnd="@dimen/login_prologue_padding"
+        android:layout_marginStart="@dimen/login_prologue_padding"
+        android:layout_marginTop="@dimen/login_prologue_padding"
         android:gravity="center"
         android:text="@string/login_prologue_banner"
         android:textColor="@color/wc_purple"
@@ -32,8 +32,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/text_prologue"
-        android:layout_marginEnd="28dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginEnd="@dimen/login_prologue_padding"
+        android:layout_marginTop="@dimen/login_prologue_padding"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/ic_bubbles"/>
 

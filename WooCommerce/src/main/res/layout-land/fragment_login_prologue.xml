@@ -2,26 +2,48 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/wc_purple">
+                android:background="@color/white">
 
     <ImageView
         android:id="@+id/image_prologue"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/login_prologue_padding"
+        android:layout_marginTop="64dp"
         android:importantForAccessibility="no"
-        android:scaleType="fitXY"
         app:srcCompat="@drawable/ic_woo_logo"/>
 
     <TextView
+        android:id="@+id/text_prologue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="148dp"
+        android:layout_below="@+id/image_prologue"
+        android:layout_marginEnd="@dimen/login_prologue_padding"
+        android:layout_marginStart="@dimen/login_prologue_padding"
+        android:layout_marginTop="@dimen/login_prologue_padding"
+        android:layout_toStartOf="@+id/image_bubbles"
         android:text="@string/login_prologue_banner"
         android:textColor="@color/wc_purple"
         android:textSize="@dimen/text_medium_extra_large"
         android:textStyle="bold"/>
+
+    <ImageView
+        android:id="@+id/image_bubbles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@id/image_prologue"
+        android:layout_marginEnd="@dimen/login_prologue_padding"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/ic_bubbles"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_slanted_rectangle_landscape"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +51,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="0dp"
         android:orientation="horizontal"
-        android:padding="@dimen/margin_extra_large">
+        android:padding="@dimen/login_prologue_padding">
 
         <Button
             android:id="@+id/button_login_jetpack"
