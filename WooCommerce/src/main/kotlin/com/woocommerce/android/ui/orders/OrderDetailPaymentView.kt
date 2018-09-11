@@ -27,22 +27,24 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_taxesTotal.text = CurrencyUtils.currencyString(context, order.totalTax, currencyCode)
         paymentInfo_total.text = CurrencyUtils.currencyString(context, order.total, currencyCode)
 
-        when (order.status) {
-            CoreOrderStatus.PENDING.value,
-            CoreOrderStatus.ON_HOLD.value -> {
-                paymentInfo_paymentMsg.visibility = View.VISIBLE
-                paymentInfo_paymentMsg.text = context.getString(
-                        R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle)
-            }
-            CoreOrderStatus.PROCESSING.value -> {
-                paymentInfo_paymentMsg.visibility = View.GONE
-                paymentInfo_divider2.visibility = View.GONE
-            }
-            else -> {
-                paymentInfo_paymentMsg.visibility = View.VISIBLE
-                val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
-                paymentInfo_paymentMsg.text = context.getString(
-                        R.string.orderdetail_payment_summary_completed, totalPayment, order.paymentMethodTitle)
+        if (order.paymentMethodTitle.isEmpty()) {
+            paymentInfo_paymentMsg.visibility = View.GONE
+            paymentInfo_divider2.visibility = View.GONE
+        } else {
+            paymentInfo_paymentMsg.visibility = View.VISIBLE
+            paymentInfo_divider2.visibility = View.VISIBLE
+            when (order.status) {
+                CoreOrderStatus.PROCESSING.value,
+                CoreOrderStatus.PENDING.value,
+                CoreOrderStatus.ON_HOLD.value -> {
+                    paymentInfo_paymentMsg.text = context.getString(
+                            R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle)
+                }
+                else -> {
+                    val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
+                    paymentInfo_paymentMsg.text = context.getString(
+                            R.string.orderdetail_payment_summary_completed, totalPayment, order.paymentMethodTitle)
+                }
             }
         }
 
