@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_woo_logo"/>
+                app:srcCompat="@drawable/img_woo_logo"/>
 
             <TextView
                 android:id="@+id/text_prologue"
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_bubbles"/>
+                app:srcCompat="@drawable/img_bubbles"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -61,7 +61,7 @@
         android:layout_marginBottom="@dimen/login_prologue_padding"
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_slanted_rectangle_landscape"/>
+        app:srcCompat="@drawable/img_slanted_rectangle_landscape"/>
 
     <LinearLayout
         android:layout_width="match_parent"
