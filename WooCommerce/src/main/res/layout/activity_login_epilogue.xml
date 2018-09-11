@@ -108,7 +108,7 @@
 
         <Button
             android:id="@+id/button_continue"
-            style="@style/Woo.ButtonPurple"
+            style="@style/Woo.Button.Purple"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
