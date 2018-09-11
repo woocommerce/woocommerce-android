@@ -258,9 +258,9 @@ class MainActivity : AppCompatActivity(),
         val navPosition = findNavigationPositionById(item.itemId)
 
         val stat = when (navPosition) {
-            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.OPENED_DASHBOARD
-            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.OPENED_ORDER_LIST
-            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.OPENED_NOTIFICATIONS
+            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_SELECTED
+            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_SELECTED
+            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
 
@@ -278,9 +278,9 @@ class MainActivity : AppCompatActivity(),
         }
 
         val stat = when (activeNavPosition) {
-            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.RESELECTED_DASHBOARD
-            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.RESELECTED_ORDER_LIST
-            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.RESELECTED_NOTIFICATIONS
+            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_RESELECTED
+            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
+            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
     }
