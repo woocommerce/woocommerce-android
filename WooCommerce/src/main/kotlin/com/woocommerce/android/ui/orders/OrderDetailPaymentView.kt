@@ -34,7 +34,6 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_paymentMsg.visibility = View.VISIBLE
             paymentInfo_divider2.visibility = View.VISIBLE
             when (order.status) {
-                CoreOrderStatus.PROCESSING.value,
                 CoreOrderStatus.PENDING.value,
                 CoreOrderStatus.ON_HOLD.value -> {
                     paymentInfo_paymentMsg.text = context.getString(
