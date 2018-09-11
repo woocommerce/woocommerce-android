@@ -74,6 +74,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         OPENED_ORDER_DETAIL,
         FULFILLED_ORDER,
         OPENED_PRIVACY_SETTINGS,
+
+        // -- Top-level navigation
+        MAIN_MENU_UP_TAPPED,
         MAIN_MENU_SETTINGS_TAPPED,
         MAIN_MENU_CONTACT_SUPPORT_TAPPED,
         MAIN_TAB_DASHBOARD_SELECTED,

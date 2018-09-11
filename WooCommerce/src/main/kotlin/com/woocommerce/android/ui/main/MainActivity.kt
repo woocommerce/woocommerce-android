@@ -66,6 +66,8 @@ class MainActivity : AppCompatActivity(),
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
 
+    private var isUpEvent = false // Tracks if the user clicked the up menu or device back button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -139,7 +141,10 @@ class MainActivity : AppCompatActivity(),
      * Currently prevents the user from hitting back and exiting the app.
      */
     override fun onBackPressed() {
-        AnalyticsTracker.track(Stat.DEVICE_BACK_BUTTON_TAPPED)
+        if (!isUpEvent) {
+            isUpEvent = false
+            AnalyticsTracker.track(Stat.DEVICE_BACK_BUTTON_TAPPED)
+        }
         val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
         if (!fragment.childFragmentManager.popBackStackImmediate()) {
             super.onBackPressed()
@@ -150,8 +155,9 @@ class MainActivity : AppCompatActivity(),
         return when (item!!.itemId) {
             // User clicked the "up" button in the action bar
             android.R.id.home -> {
-                onBackPressed()
                 AnalyticsTracker.track(Stat.MAIN_MENU_UP_TAPPED)
+                isUpEvent = true
+                onBackPressed()
                 true
             }
             // User selected the settings menu option
