@@ -78,7 +78,6 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun showAppSettingsFragment() {
         val fragment = MainSettingsFragment.newInstance()
         showFragment(fragment, MainSettingsFragment.TAG, false)
-        AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS)
     }
 
     override fun showPrivacySettingsFragment() {

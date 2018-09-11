@@ -16,6 +16,7 @@ import android.view.MenuItem
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
@@ -149,15 +150,18 @@ class MainActivity : AppCompatActivity(),
             // User clicked the "up" button in the action bar
             android.R.id.home -> {
                 onBackPressed()
+                AnalyticsTracker.track(Stat.MAIN_MENU_UP_TAPPED)
                 true
             }
             // User selected the settings menu option
             R.id.menu_settings -> {
                 showSettingsScreen()
+                AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
                 true
             }
             R.id.menu_support -> {
                 contactSupport()
+                AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -81,9 +81,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         OPENED_ORDER_DETAIL,
         FULFILLED_ORDER,
+        MAIN_MENU_SETTINGS_TAPPED,
+        MAIN_MENU_CONTACT_SUPPORT_TAPPED,
 
-        OPENED_SETTINGS,
-        OPENED_PRIVACY_SETTINGS
+        // -- Device
+        DEVICE_BACK_BUTTON_TAPPED
     }
 
     private var tracksClient = TracksClient.getClient(context)
