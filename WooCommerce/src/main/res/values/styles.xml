@@ -132,14 +132,16 @@
         <item name="android:textSize">@dimen/text_large</item>
     </style>
 
-    <style name="Woo.ButtonPurple" parent="android:Widget.DeviceDefault.Button">
+    <style name="Woo.Button.Purple">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/button_purple_bg</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:textSize">@dimen/text_large</item>
     </style>
+
+    <style name="Woo.Button.White">
+        <item name="android:textColor">@color/grey_dark</item>
+        <item name="android:background">@drawable/button_white_bg</item>
+    </style>
+
     <!--
         Default TagView Style
     -->

@@ -82,7 +82,7 @@
 
         <Button
             android:id="@+id/no_orders_share_button"
-            style="@style/Woo.ButtonPurple"
+            style="@style/Woo.Button.Purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"

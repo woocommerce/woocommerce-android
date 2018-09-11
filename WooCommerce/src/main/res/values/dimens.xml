@@ -109,6 +109,7 @@
         Login
     -->
     <dimen name="login_avatar_size">64dp</dimen>
+    <dimen name="login_prologue_padding">28dp</dimen>
 
     <!--
         Settings
