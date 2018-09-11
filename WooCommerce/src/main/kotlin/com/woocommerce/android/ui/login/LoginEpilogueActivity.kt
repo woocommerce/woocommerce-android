@@ -52,6 +52,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     override fun onBackPressed() {
+        AnalyticsTracker.track(Stat.DEVICE_BACK_BUTTON_TAPPED)
         finish()
     }
 

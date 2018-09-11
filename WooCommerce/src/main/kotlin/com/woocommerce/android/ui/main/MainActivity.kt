@@ -139,6 +139,7 @@ class MainActivity : AppCompatActivity(),
      * Currently prevents the user from hitting back and exiting the app.
      */
     override fun onBackPressed() {
+        AnalyticsTracker.track(Stat.DEVICE_BACK_BUTTON_TAPPED)
         val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
         if (!fragment.childFragmentManager.popBackStackImmediate()) {
             super.onBackPressed()

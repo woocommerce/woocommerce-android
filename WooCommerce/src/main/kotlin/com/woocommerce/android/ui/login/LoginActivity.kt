@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.DEVICE_BACK_BUTTON_TAPPED
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -101,6 +103,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onBackPressed() {
+        AnalyticsTracker.track(DEVICE_BACK_BUTTON_TAPPED)
         if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
         } else {
