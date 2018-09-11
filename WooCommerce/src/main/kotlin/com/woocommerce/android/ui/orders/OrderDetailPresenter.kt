@@ -63,7 +63,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also { order ->
                     view.showOrderDetail(order)
                 }
-                if (markComplete) orderView?.showUndoOrderCompleteSnackbar()
+                if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes() // load order notes
             }
         }
@@ -84,7 +84,7 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    override fun doMarkOrderComplete() {
+    override fun doChangeOrderStatus(newStatus: String) {
         if (!networkStatus.isConnected()) {
             // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
             // just in case...
@@ -92,9 +92,15 @@ class OrderDetailPresenter @Inject constructor(
             return
         }
 
-        AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
+        when (newStatus) {
+            CoreOrderStatus.COMPLETED.value -> {
+                AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
+            }
+            // TODO: track other status changes once we add them
+        }
+
         orderModel?.let { order ->
-            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), CoreOrderStatus.COMPLETED.value)
+            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), newStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
         }
     }
@@ -135,15 +141,15 @@ class OrderDetailPresenter @Inject constructor(
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
                 orderView?.let {
-                    it.showCompleteOrderError()
-                    it.markOrderCompleteFailed()
+                    it.showOrderStatusChangedError()
+                    it.markOrderStatusChangedFailed()
                 }
             } else {
-                // Successfully marked order as complete
+                // Successfully marked order status changed
                 orderModel?.let {
                     orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
                 }
-                orderView?.markOrderCompleteSuccess()
+                orderView?.markOrderStatusChangedSuccess()
             }
         } else if (event.causeOfChange == POST_ORDER_NOTE) {
             if (event.isError) {

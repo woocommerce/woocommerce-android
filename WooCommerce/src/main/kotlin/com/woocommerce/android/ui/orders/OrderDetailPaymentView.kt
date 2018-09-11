@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import kotlin.math.absoluteValue
 
 class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -26,9 +27,25 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_taxesTotal.text = CurrencyUtils.currencyString(context, order.totalTax, currencyCode)
         paymentInfo_total.text = CurrencyUtils.currencyString(context, order.total, currencyCode)
 
-        val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
-        paymentInfo_paymentMsg.text = context.getString(
-                R.string.orderdetail_payment_summary, totalPayment, order.paymentMethodTitle)
+        if (order.paymentMethodTitle.isEmpty()) {
+            paymentInfo_paymentMsg.visibility = View.GONE
+            paymentInfo_divider2.visibility = View.GONE
+        } else {
+            paymentInfo_paymentMsg.visibility = View.VISIBLE
+            paymentInfo_divider2.visibility = View.VISIBLE
+            when (order.status) {
+                CoreOrderStatus.PENDING.value,
+                CoreOrderStatus.ON_HOLD.value -> {
+                    paymentInfo_paymentMsg.text = context.getString(
+                            R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle)
+                }
+                else -> {
+                    val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
+                    paymentInfo_paymentMsg.text = context.getString(
+                            R.string.orderdetail_payment_summary_completed, totalPayment, order.paymentMethodTitle)
+                }
+            }
+        }
 
         // Populate or hide refund section
         if (order.refundTotal.absoluteValue > 0) {
