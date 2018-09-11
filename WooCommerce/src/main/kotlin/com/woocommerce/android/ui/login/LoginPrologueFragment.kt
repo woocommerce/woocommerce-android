@@ -54,7 +54,7 @@ class LoginPrologueFragment : Fragment() {
             prologueFinishedListener?.onPrologueFinished()
         }
 
-        val separator = if (DisplayUtils.isLandscape(activity)) " " else "<br><br>"
+        val separator = if (DisplayUtils.isLandscape(activity)) " " else "<br>"
         val html = getString(R.string.login_jetpack_required) + separator +
                 getString(R.string.login_configure_link, "<a href='$JETPACK_HELP_URL'>", "</a>")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
