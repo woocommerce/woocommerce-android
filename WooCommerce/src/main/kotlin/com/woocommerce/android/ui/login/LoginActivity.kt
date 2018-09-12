@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.DEVICE_BACK_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -48,6 +48,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     private var loginMode: LoginMode? = null
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+
+    private var isUpEvent = false // Tracks if the user clicked the up menu or device back button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -95,6 +97,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
+            AnalyticsTracker.track(Stat.MAIN_MENU_UP_TAPPED)
+            isUpEvent = true
             onBackPressed()
             return true
         }
@@ -103,7 +107,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onBackPressed() {
-        AnalyticsTracker.track(DEVICE_BACK_BUTTON_TAPPED)
+        if (!isUpEvent) {
+            isUpEvent = false
+            AnalyticsTracker.track(Stat.DEVICE_BACK_BUTTON_TAPPED)
+        }
         if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
         } else {
