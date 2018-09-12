@@ -12,25 +12,25 @@
         android:id="@+id/paymentInfo_lblTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/payment"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:text="@string/payment"
         android:textAppearance="@style/Woo.TextAppearance.Medium.Purple"/>
 
     <!-- Subtotal -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:focusable="true">
+        android:focusable="true"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/paymentInfo_lblSubtotal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAlignment="viewStart"
             android:paddingTop="@dimen/card_item_padding_intra_h"
             android:text="@string/subtotal"
+            android:textAlignment="viewStart"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
 
         <TextView
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/card_item_padding_intra_h"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="$45.00" />
+            tools:text="$45.00"/>
     </LinearLayout>
 
     <!-- Discounts -->
@@ -47,11 +47,11 @@
         android:id="@+id/paymentInfo_discountSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
         android:orientation="horizontal"
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:focusable="true">
+        tools:visibility="visible">
 
         <TextView
             android:id="@+id/paymentInfo_lblDiscount"
@@ -64,62 +64,62 @@
             android:id="@+id/paymentInfo_discountItems"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAlignment="viewStart"
             android:layout_marginEnd="@dimen/card_item_padding_intra_h"
             android:layout_marginStart="@dimen/card_item_padding_intra_h"
+            android:layout_weight="1"
+            android:textAlignment="viewStart"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="(sale4theday, firstTime, anyothertime, blah)" />
+            tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
 
         <TextView
             android:id="@+id/paymentInfo_discountTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="-$4.00" />
+            tools:text="-$4.00"/>
     </LinearLayout>
 
     <!-- Shipping -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/card_item_padding_intra_h"
-        android:focusable="true">
+        android:paddingTop="@dimen/card_item_padding_intra_h">
 
         <TextView
             android:id="@+id/paymentInfo_lblShipping"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:text="@string/shipping"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            android:text="@string/shipping"/>
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
 
         <TextView
             android:id="@+id/paymentInfo_shippingTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="$7.00" />
+            tools:text="$7.00"/>
     </LinearLayout>
 
     <!-- Taxes -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
-        android:focusable="true">
+        android:paddingTop="@dimen/card_item_padding_intra_h">
 
         <TextView
             android:id="@+id/paymentInfo_lblTaxes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAlignment="viewStart"
             android:text="@string/taxes"
+            android:textAlignment="viewStart"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
 
         <TextView
@@ -127,7 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="$1.00" />
+            tools:text="$1.00"/>
     </LinearLayout>
 
     <!-- Divider -->
@@ -144,26 +144,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
-        android:focusable="true">
+        android:paddingTop="@dimen/card_item_padding_intra_h">
 
         <TextView
             android:id="@+id/paymentInfo_lblTotal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAlignment="viewStart"
             android:text="@string/total"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold" />
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
 
         <TextView
             android:id="@+id/paymentInfo_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
-            tools:text="$49.00" />
+            tools:text="$49.00"/>
     </LinearLayout>
 
     <!-- Refund and New Total Section -->
@@ -179,16 +179,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:focusable="true">
+            android:focusable="true"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/paymentInfo_lblRefund"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAlignment="viewStart"
                 android:text="@string/orderdetail_refunded"
+                android:textAlignment="viewStart"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Red"/>
 
             <TextView
@@ -196,25 +196,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Red"
-                tools:text="-$15.00" />
+                tools:text="-$15.00"/>
         </LinearLayout>
 
         <!-- New Total (after refund deducted) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="true"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/card_item_padding_intra_h"
-            android:paddingTop="@dimen/card_item_padding_intra_h"
-            android:focusable="true">
+            android:paddingTop="@dimen/card_item_padding_intra_h">
 
             <TextView
                 android:id="@+id/paymentInfo_lblNewTotal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAlignment="viewStart"
                 android:text="@string/orderdetail_new_total"
+                android:textAlignment="viewStart"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
 
             <TextView
@@ -222,7 +222,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                tools:text="$34.00" />
+                tools:text="$34.00"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -240,10 +240,10 @@
         android:id="@+id/paymentInfo_paymentMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="viewStart"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
         android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
         tools:text="Payment of $49.00 received via credit card (PayPal)"/>
 </merge>
