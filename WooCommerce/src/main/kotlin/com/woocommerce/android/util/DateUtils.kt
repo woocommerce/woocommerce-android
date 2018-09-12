@@ -68,7 +68,10 @@ object DateUtils {
 
     /**
      * Given an ISO8601 date of format YYYY-MM-DD, returns the number of days in the given month.
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
      */
+    @Throws(IllegalArgumentException::class)
     fun getNumberOfDaysInMonth(iso8601Date: String): Int {
         try {
             val (year, month) = iso8601Date.split("-")
@@ -76,7 +79,7 @@ object DateUtils {
             val calendar = GregorianCalendar(year.toInt(), month.toInt() - 1, 1)
             return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         } catch (e: IndexOutOfBoundsException) {
-            throw IllegalArgumentException("Date string is not of format YYYY-MM-DD: $iso8601Date")
+            throw IllegalArgumentException("Date string argument is not of format YYYY-MM-DD: $iso8601Date")
         }
     }
 
@@ -84,11 +87,18 @@ object DateUtils {
      * Given an ISO8601 date of format YYYY-MM-DD, returns the String in short month ("MMM d") format.
      *
      * For example, given 2018-07-03 returns "Jul 3", and given 2018-07-28 returns "Jul 28".
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
      */
+    @Throws(IllegalArgumentException::class)
     fun getShortMonthDayString(iso8601Date: String): String {
-        val (year, month, day) = iso8601Date.split("-")
-        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-        return friendlyMonthDayFormat.format(date)
+        return try {
+            val (year, month, day) = iso8601Date.split("-")
+            val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+            friendlyMonthDayFormat.format(date)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format YYYY-MM-DD: $iso8601Date")
+        }
     }
 
     /**
@@ -96,29 +106,50 @@ object DateUtils {
      * with the day being the first day of that week (a Monday, by ISO8601 convention).
      *
      * For example, given 2018-W11, returns "Mar 12".
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
      */
+    @Throws(IllegalArgumentException::class)
     fun getShortMonthDayStringForWeek(iso8601Week: String): String {
-        val date = weekOfYearStartingMondayFormat.parse(iso8601Week)
-        return friendlyMonthDayFormat.format(date)
+        return try {
+            val date = weekOfYearStartingMondayFormat.parse(iso8601Week)
+            friendlyMonthDayFormat.format(date)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format YYYY-'W'WW: $iso8601Week")
+        }
     }
 
     /**
      * Given a date of format YYYY-MM, returns the corresponding short month format.
      *
      * For example, given 2018-07, returns "Jul".
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
      */
+    @Throws(IllegalArgumentException::class)
     fun getShortMonthString(iso8601Month: String): String {
         val month = iso8601Month.split("-").last()
-        return shortMonths[month.toInt() - 1]
+        return try {
+            shortMonths[month.toInt() - 1]
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format YYYY-MM: $iso8601Month")
+        }
     }
 
     /**
-    * Given a date of format YYYY-MM, returns whether it's on a weekend
-    */
+     * Given a date of format YYYY-MM, returns whether it's on a weekend
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
+     */
+    @Throws(IllegalArgumentException::class)
     fun isWeekend(iso8601Date: String): Boolean {
-        val (year, month, day) = iso8601Date.split("-")
-        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt())
-        val dayOfWeek = date.get(Calendar.DAY_OF_WEEK)
-        return (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY)
+        return try {
+            val (year, month, day) = iso8601Date.split("-")
+            val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt())
+            val dayOfWeek = date.get(Calendar.DAY_OF_WEEK)
+            (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format YYYY-MM: $iso8601Date")
+        }
     }
 }
