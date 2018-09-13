@@ -29,7 +29,7 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
             return it
         }
 
-        throw IllegalStateException("SelectedSite was accessed before being initialized")
+        throw IllegalStateException("SelectedSite was accessed before being initialized - siteId $localSiteId")
     }
 
     fun set(siteModel: SiteModel) {
