@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(),
             return
         }
 
-        if (!selectedSite.isSet()) {
+        if (!selectedSite.exists()) {
             updateSelectedSite()
             return
         }
@@ -219,7 +219,7 @@ class MainActivity : AppCompatActivity(),
     override fun updateSelectedSite() {
         loginProgressDialog?.apply { if (isShowing) { cancel() } }
 
-        if (!selectedSite.isSet()) {
+        if (!selectedSite.exists()) {
             showLoginEpilogueScreen()
             return
         }
