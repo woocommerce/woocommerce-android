@@ -102,8 +102,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 scrollUpChild = ordersList
                 setOnRefreshListener {
                     orderRefreshLayout.isRefreshing = false
-                    isRefreshPending = true
-                    presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+                    if (!isRefreshPending) {
+                        isRefreshPending = true
+                        presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+                    }
                 }
             }
         }
