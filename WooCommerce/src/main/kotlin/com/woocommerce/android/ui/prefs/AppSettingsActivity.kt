@@ -55,7 +55,8 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        AnalyticsTracker.track(Stat.DEVICE_BACK_BUTTON_TAPPED)
+        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to AppSettingsActivity::class.java.simpleName))
+
         if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
         } else {

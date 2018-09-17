@@ -17,6 +17,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         APPLICATION_CLOSED,
         APPLICATION_INSTALLED,
         APPLICATION_UPGRADED,
+        BACK_PRESSED,
 
         // -- Login
         SIGNED_IN,
@@ -76,7 +77,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         OPENED_PRIVACY_SETTINGS,
 
         // -- Top-level navigation
-        MAIN_MENU_UP_TAPPED,
         MAIN_MENU_SETTINGS_TAPPED,
         MAIN_MENU_CONTACT_SUPPORT_TAPPED,
         MAIN_TAB_DASHBOARD_SELECTED,
@@ -85,9 +85,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MAIN_TAB_ORDERS_RESELECTED,
         MAIN_TAB_NOTIFICATIONS_SELECTED,
         MAIN_TAB_NOTIFICATIONS_RESELECTED,
-
-        // -- Device
-        DEVICE_BACK_BUTTON_TAPPED
     }
 
     private var tracksClient = TracksClient.getClient(context)

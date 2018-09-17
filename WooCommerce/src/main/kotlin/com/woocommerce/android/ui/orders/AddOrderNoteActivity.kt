@@ -85,7 +85,8 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
     }
 
     override fun onBackPressed() {
-        AnalyticsTracker.track(Stat.DEVICE_BACK_BUTTON_TAPPED)
+        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to AddOrderNoteActivity::class.java.simpleName))
+
         if (getNoteText().isNotEmpty()) {
             confirmDiscard()
         } else {

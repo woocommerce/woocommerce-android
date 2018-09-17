@@ -49,8 +49,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
-    private var isUpEvent = false // Tracks if the user clicked the up menu or device back button
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -97,8 +95,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            AnalyticsTracker.track(Stat.MAIN_MENU_UP_TAPPED)
-            isUpEvent = true
             onBackPressed()
             return true
         }
@@ -107,10 +103,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onBackPressed() {
-        if (!isUpEvent) {
-            isUpEvent = false
-            AnalyticsTracker.track(Stat.DEVICE_BACK_BUTTON_TAPPED)
-        }
+        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to LoginActivity::class.java.simpleName))
+
         if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
         } else {
