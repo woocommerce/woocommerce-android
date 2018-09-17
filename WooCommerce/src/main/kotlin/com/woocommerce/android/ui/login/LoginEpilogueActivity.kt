@@ -46,6 +46,13 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        // Track view shown to user
+        AnalyticsTracker.track(Stat.VIEW_SHOWN, mapOf("name" to this::class.java.simpleName))
+    }
+
     override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()

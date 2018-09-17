@@ -20,6 +20,8 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.widgets.SkeletonView
@@ -110,6 +112,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             }
         }
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Track view shown to user
+        AnalyticsTracker.track(Stat.VIEW_SHOWN, mapOf("name" to this::class.java.simpleName))
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -13,10 +13,12 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 class AnalyticsTracker private constructor(private val context: Context) {
     enum class Stat {
+        // -- General
         APPLICATION_OPENED,
         APPLICATION_CLOSED,
         APPLICATION_INSTALLED,
         APPLICATION_UPGRADED,
+        VIEW_SHOWN,
 
         // -- Login
         SIGNED_IN,

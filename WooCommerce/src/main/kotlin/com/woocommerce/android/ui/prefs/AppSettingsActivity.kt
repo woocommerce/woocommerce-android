@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -37,6 +38,13 @@ class AppSettingsActivity : AppCompatActivity(),
         if (savedInstanceState == null) {
             showAppSettingsFragment()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Track view shown to user
+        AnalyticsTracker.track(Stat.VIEW_SHOWN, mapOf("name" to this::class.java.simpleName))
     }
 
     override fun onDestroy() {

@@ -11,6 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
@@ -92,6 +94,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         } else {
             isRefreshPending = true
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Track view shown to user
+        AnalyticsTracker.track(Stat.VIEW_SHOWN, mapOf("name" to this::class.java.simpleName))
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
