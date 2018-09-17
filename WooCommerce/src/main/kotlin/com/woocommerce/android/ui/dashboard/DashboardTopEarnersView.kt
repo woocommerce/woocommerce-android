@@ -14,6 +14,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
@@ -70,6 +72,10 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
+                // Track range change
+                AnalyticsTracker.track(Stat.DASHBOARD_TOP_PERFORMERS_DATE,
+                        mapOf("range" to tab.tag.toString().toLowerCase()))
+
                 topEarners_recycler.adapter = TopEarnersAdapter(context)
                 showEmptyView(false)
                 showErrorView(false)

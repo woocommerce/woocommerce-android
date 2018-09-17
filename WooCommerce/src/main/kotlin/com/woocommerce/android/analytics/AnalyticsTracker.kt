@@ -77,9 +77,21 @@ class AnalyticsTracker private constructor(private val context: Context) {
         RESELECTED_ORDER_LIST,
         RESELECTED_NOTIFICATIONS,
 
+        // -- Dashboard
+        DASHBOARD_PULLED_TO_REFRESH,
+        DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED,
+        DASHBOARD_UNFULFILLED_ORDERS_BUTTON_TAPPED,
+        DASHBOARD_MAIN_STATS_DATE,
+        DASHBOARD_MAIN_STATS_LOADED,
+        DASHBOARD_TOP_PERFORMERS_DATE,
+        DASHBOARD_TOP_PERFORMERS_LOADED,
+        DASHBOARD_UNFULFILLED_ORDERS_LOADED,
+
+        // -- Orders
         OPENED_ORDER_DETAIL,
         FULFILLED_ORDER,
 
+        // -- Settings
         OPENED_SETTINGS,
         OPENED_PRIVACY_SETTINGS
     }
