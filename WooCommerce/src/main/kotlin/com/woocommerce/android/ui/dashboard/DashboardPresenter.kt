@@ -12,6 +12,8 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
@@ -22,6 +24,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -60,9 +63,14 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
+        // fetch order stats
         dashboardView?.showChartSkeleton(true)
-        val payload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
-        dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(payload))
+        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
+
+        // fetch visitor stats
+        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, 1, forced)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
@@ -116,18 +124,34 @@ class DashboardPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
-        dashboardView?.showChartSkeleton(false)
+        when (event.causeOfChange) {
+            FETCH_ORDER_STATS -> {
+                dashboardView?.showChartSkeleton(false)
 
-        if (event.isError) {
-            WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
-            dashboardView?.showStatsError(event.granularity)
-            return
+                if (event.isError) {
+                    WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
+                    dashboardView?.showStatsError(event.granularity)
+                    return
+                }
+
+                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity)
+                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
+
+                dashboardView?.showStats(revenueStats, orderStats, event.granularity)
+            }
+
+            FETCH_VISITOR_STATS -> {
+                if (event.isError) {
+                    WooLog.e(T.DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
+                    // TODO: show error?
+                    dashboardView?.showVisitorStats(0, event.granularity)
+                    return
+                }
+
+                val visits = event.rowsAffected
+                dashboardView?.showVisitorStats(visits, event.granularity)
+            }
         }
-
-        val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity)
-        val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
-
-        dashboardView?.showStats(revenueStats, orderStats, event.granularity)
     }
 
     @Suppress("unused")

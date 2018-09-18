@@ -229,6 +229,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         chart.visibility = if (show) View.GONE else View.VISIBLE
     }
 
+    fun showVisitorStats(visits: Int) {
+        visitors_value.text = visits.toString()
+    }
+
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
         val barEntries = when (activeGranularity) {
             StatsGranularity.DAYS,
