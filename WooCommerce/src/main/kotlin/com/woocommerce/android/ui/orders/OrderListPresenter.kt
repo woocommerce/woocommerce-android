@@ -86,6 +86,9 @@ class OrderListPresenter @Inject constructor(
                     orderView?.showLoadOrdersError()
                     fetchAndLoadOrdersFromDb(event.statusFilter, false)
                 } else {
+                    AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED,
+                            mapOf("status" to event.statusFilter.orEmpty(), "isLoadingMore" to isLoadingMoreOrders))
+
                     canLoadMore = event.canLoadMore
                     val isForceRefresh = !isLoadingMoreOrders
                     fetchAndLoadOrdersFromDb(event.statusFilter, isForceRefresh)

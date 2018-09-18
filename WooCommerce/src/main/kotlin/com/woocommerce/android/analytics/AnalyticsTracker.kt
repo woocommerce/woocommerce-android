@@ -75,6 +75,18 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_EPILOGUE_STORES_SHOWN,
         LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED,
 
+        // -- Orders List
+        ORDERS_LIST_FILTER,
+        ORDERS_LIST_LOADED,
+        ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
+        ORDERS_LIST_PULLED_TO_REFRESH,
+        ORDERS_LIST_MENU_FILTER_TAPPED,
+
+        // -- Order filter by status dialog
+        FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
+        FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
+
+        // -- Order Detail
         OPENED_ORDER_DETAIL,
         FULFILLED_ORDER,
         OPENED_PRIVACY_SETTINGS,
