@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -59,6 +60,8 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
+        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to AppSettingsActivity::class.java.simpleName))
+
         if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
         } else {
@@ -83,7 +86,6 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun showAppSettingsFragment() {
         val fragment = MainSettingsFragment.newInstance()
         showFragment(fragment, MainSettingsFragment.TAG, false)
-        AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS)
     }
 
     override fun showPrivacySettingsFragment() {

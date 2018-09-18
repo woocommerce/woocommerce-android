@@ -57,6 +57,7 @@ class LoginPrologueFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         button_login_jetpack.setOnClickListener {
             prologueFinishedListener?.onPrologueFinished()
+            AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED)
         }
 
         val separator = if (DisplayUtils.isLandscape(activity)) " " else "<br>"
@@ -69,7 +70,7 @@ class LoginPrologueFragment : Fragment() {
         }
 
         text_jetpack.setOnClickListener {
-            AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_OPENED_JETPACK_LINK)
+            AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED)
             ActivityUtils.openUrlExternal(activity as Context, JETPACK_HELP_URL)
         }
     }
