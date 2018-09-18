@@ -106,7 +106,8 @@ class OrderListPresenter @Inject constructor(
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
-        AnalyticsTracker.trackWithSiteDetails(Stat.OPENED_ORDER_DETAIL, selectedSite.get())
+        AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_OPEN, selectedSite.get(),
+                mutableMapOf("id" to order.id, "status" to order.status))
         orderView?.openOrderDetail(order)
     }
 
