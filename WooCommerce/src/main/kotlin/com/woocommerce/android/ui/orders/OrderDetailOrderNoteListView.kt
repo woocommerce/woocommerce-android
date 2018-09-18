@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
@@ -47,8 +46,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         }
 
         noteList_addNoteContainer.setOnClickListener {
-            // TODO: listener.onRequestAddNote()
-            testSkeleton()
+            listener.onRequestAddNote()
         }
 
         notesList_notes.apply {
@@ -57,12 +55,6 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
             addItemDecoration(divider)
             adapter = viewAdapter
         }
-    }
-
-    // TODO: remove this
-    private fun testSkeleton() {
-        showSkeleton(true)
-        Handler().postDelayed({ showSkeleton(false) }, 1000)
     }
 
     fun updateView(notes: List<WCOrderNoteModel>) {
