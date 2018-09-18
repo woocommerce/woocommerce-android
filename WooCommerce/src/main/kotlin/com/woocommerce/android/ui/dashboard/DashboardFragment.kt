@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
@@ -64,6 +65,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     )
                 }
                 setOnRefreshListener {
+                    // Track the user gesture
+                    AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
+
                     presenter.resetTopEarnersForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
                     refreshDashboard()
@@ -252,6 +256,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (show && no_orders_view.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(no_orders_view, Duration.LONG)
             no_orders_share_button.setOnClickListener {
+                // Track the user click event
+                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+
                 shareStoreUrl()
             }
         } else if (!show && no_orders_view.visibility == View.VISIBLE) {
