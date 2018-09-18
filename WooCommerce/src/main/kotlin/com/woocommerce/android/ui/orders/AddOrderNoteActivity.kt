@@ -74,6 +74,11 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         presenter.takeView(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()

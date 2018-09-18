@@ -40,6 +40,11 @@ class AppSettingsActivity : AppCompatActivity(),
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()

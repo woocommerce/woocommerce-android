@@ -43,6 +43,11 @@ class LoginPrologueFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     override fun onDetach() {
         super.onDetach()
         prologueFinishedListener = null
