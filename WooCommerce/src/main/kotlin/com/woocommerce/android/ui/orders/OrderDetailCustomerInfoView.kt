@@ -5,6 +5,8 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.PhoneUtils
 import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
@@ -60,15 +62,24 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
 
             // Set action button listeners
             customerInfo_emailBtn.setOnClickListener {
-                listener?.createEmail(order.billingEmail)
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED,
+                        mapOf("status" to order.status))
+
+                listener?.createEmail(order, order.billingEmail)
             }
 
             customerInfo_phoneBtn.setOnClickListener {
-                listener?.dialPhone(order.billingPhone)
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED,
+                        mapOf("status" to order.status))
+
+                listener?.dialPhone(order, order.billingPhone)
             }
 
             customerInfo_hangoutsBtn.setOnClickListener {
-                listener?.sendSms(order.billingPhone)
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED,
+                        mapOf("status" to order.status))
+
+                listener?.sendSms(order, order.billingPhone)
             }
         }
     }

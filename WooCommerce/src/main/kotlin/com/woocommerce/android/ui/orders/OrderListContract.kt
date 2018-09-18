@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 
 interface OrderListContract {
@@ -12,6 +13,7 @@ interface OrderListContract {
         fun isLoading(): Boolean
         fun openOrderDetail(order: WCOrderModel)
         fun fetchAndLoadOrdersFromDb(orderStatusFilter: String? = null, isForceRefresh: Boolean)
+        fun getSelectedSite(): SiteModel
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {

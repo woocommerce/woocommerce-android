@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
@@ -133,6 +134,8 @@ class OrderListPresenter @Inject constructor(
             }
         }
     }
+
+    override fun getSelectedSite() = selectedSite.get()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
