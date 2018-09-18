@@ -62,22 +62,19 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
 
             // Set action button listeners
             customerInfo_emailBtn.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED,
-                        mapOf("status" to order.status))
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
 
                 listener?.createEmail(order, order.billingEmail)
             }
 
             customerInfo_phoneBtn.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED,
-                        mapOf("status" to order.status))
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
 
                 listener?.dialPhone(order, order.billingPhone)
             }
 
             customerInfo_hangoutsBtn.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED,
-                        mapOf("status" to order.status))
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
 
                 listener?.sendSms(order, order.billingPhone)
             }
