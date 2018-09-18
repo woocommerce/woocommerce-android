@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.TopLevelFragment
 
 class NotificationsFragment : TopLevelFragment() {
@@ -19,6 +20,11 @@ class NotificationsFragment : TopLevelFragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_notifications, container, false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     override fun getFragmentTitle(): String {

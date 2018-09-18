@@ -61,6 +61,11 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     private fun showPrologueFragment() {
         val fragment = LoginPrologueFragment.newInstance()
         supportFragmentManager.beginTransaction()

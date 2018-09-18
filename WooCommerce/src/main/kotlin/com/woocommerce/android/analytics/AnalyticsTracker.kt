@@ -5,6 +5,7 @@ import android.content.Context
 import java.util.HashMap
 import com.automattic.android.tracks.TracksClient
 import android.preference.PreferenceManager
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import java.util.UUID
@@ -13,11 +14,13 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 class AnalyticsTracker private constructor(private val context: Context) {
     enum class Stat {
+        // -- General
         APPLICATION_OPENED,
         APPLICATION_CLOSED,
         APPLICATION_INSTALLED,
         APPLICATION_UPGRADED,
         BACK_PRESSED,
+        VIEW_SHOWN,
 
         // -- Login
         SIGNED_IN,
@@ -235,6 +238,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
             properties[IS_WPCOM_STORE] = site.isWpComStore
 
             AnalyticsTracker.track(stat, properties)
+        }
+
+        /**
+         * A convenience method for tracking views shown during a session.
+         * @param view The view to be tracked
+         */
+        fun trackViewShown(view: Any) {
+            AnalyticsTracker.track(VIEW_SHOWN, mapOf("name" to view::class.java.simpleName))
         }
 
         fun flush() {

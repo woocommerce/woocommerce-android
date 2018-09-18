@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.analytics.AnalyticsTracker
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -54,6 +55,11 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
         presenter.takeView(this)
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onDestroyView() {

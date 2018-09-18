@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.R.id.orderProducts_list
+import com.woocommerce.android.analytics.AnalyticsTracker
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -53,6 +53,11 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
 
         presenter.takeView(this)
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onDestroyView() {

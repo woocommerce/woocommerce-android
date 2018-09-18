@@ -46,6 +46,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()
