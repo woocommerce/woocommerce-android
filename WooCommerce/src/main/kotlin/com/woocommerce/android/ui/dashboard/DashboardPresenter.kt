@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.dashboard
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -127,12 +129,15 @@ class DashboardPresenter @Inject constructor(
         when (event.causeOfChange) {
             FETCH_ORDER_STATS -> {
                 dashboardView?.showChartSkeleton(false)
-
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
                     dashboardView?.showStatsError(event.granularity)
                     return
                 }
+
+                // Track fresh data load
+                AnalyticsTracker.track(Stat.DASHBOARD_MAIN_STATS_LOADED,
+                        mapOf("range" to event.granularity.name.toLowerCase()))
 
                 val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity)
                 val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
@@ -161,6 +166,10 @@ class DashboardPresenter @Inject constructor(
         if (event.isError) {
             dashboardView?.showTopEarnersError(event.granularity)
         } else {
+            // Track fresh data loaded
+            AnalyticsTracker.track(Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+                    mapOf("range" to event.granularity.name.toLowerCase()))
+
             dashboardView?.showTopEarners(event.topEarners, event.granularity)
         }
     }
@@ -186,6 +195,11 @@ class DashboardPresenter @Inject constructor(
                     dashboardView?.hideUnfilledOrdersCard()
                     return
                 }
+
+                // Track fresh data loaded
+                AnalyticsTracker.track(Stat.DASHBOARD_UNFULFILLED_ORDERS_LOADED,
+                        mapOf("hasUnfilledOrders" to (event.rowsAffected > 0)))
+
                 event.rowsAffected.takeIf { it > 0 }?.let { count ->
                     dashboardView?.showUnfilledOrdersCard(count, event.canLoadMore)
                 } ?: dashboardView?.hideUnfilledOrdersCard()
