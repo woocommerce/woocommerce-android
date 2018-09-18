@@ -132,6 +132,9 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showNotesErrorSnack()
             } else {
                 orderModel?.let { order ->
+                    AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_NOTES_LOADED,
+                            selectedSite.get(), mutableMapOf("id" to order.id))
+
                     isUsingCachedNotes = false
                     val notes = orderStore.getOrderNotesForOrder(order)
                     orderView?.updateOrderNotes(notes)

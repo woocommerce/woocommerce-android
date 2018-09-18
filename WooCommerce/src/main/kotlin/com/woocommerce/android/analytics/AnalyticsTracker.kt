@@ -77,6 +77,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Order Detail
         ORDER_OPEN,
+        ORDER_NOTES_LOADED,
         ORDER_CONTACT_ACTION,
         ORDER_CONTACT_ACTION_FAILED,
         ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED,
