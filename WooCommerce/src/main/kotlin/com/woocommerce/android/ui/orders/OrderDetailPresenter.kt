@@ -96,7 +96,6 @@ class OrderDetailPresenter @Inject constructor(
             CoreOrderStatus.COMPLETED.value -> {
                 AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
             }
-            // TODO: track other status changes once we add them
         }
 
         orderModel?.let { order ->
@@ -143,11 +142,17 @@ class OrderDetailPresenter @Inject constructor(
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
+
+                AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_FAILED, this.javaClass.simpleName,
+                        event.error.type.toString(), event.error.message)
+
                 orderView?.let {
                     it.showOrderStatusChangedError()
                     it.markOrderStatusChangedFailed()
                 }
             } else {
+                AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_STATUS_CHANGE_SUCCESS, selectedSite.get())
+
                 // Successfully marked order status changed
                 orderModel?.let {
                     orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
@@ -187,6 +192,8 @@ class OrderDetailPresenter @Inject constructor(
         val payload = FetchOrderNotesPayload(order, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
     }
+
+    override fun getSelectedSite() = selectedSite.get()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

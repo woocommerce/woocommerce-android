@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -14,6 +15,7 @@ interface OrderDetailContract {
         fun loadOrderNotes()
         fun doChangeOrderStatus(newStatus: String)
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
+        fun getSelectedSite(): SiteModel
     }
 
     interface View : BaseView<Presenter>, OrderActionListener {
@@ -21,7 +23,7 @@ interface OrderDetailContract {
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showAddOrderNoteScreen()
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
-        fun updateOrderStatus(newStatus: String)
+        fun setOrderStatus(newStatus: String)
         fun showChangeOrderStatusSnackbar(newStatus: String)
         fun showNotesErrorSnack()
         fun showAddOrderNoteSnack()
