@@ -220,11 +220,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param errorType The type of error.
          * @param errorDescription The error text or other description.
          */
-        fun track(stat: Stat, errorContext: String, errorType: String, errorDescription: String) {
+        fun track(stat: Stat, errorContext: String, errorType: String, errorDescription: String?) {
             val props = HashMap<String, String>()
             props["error_context"] = errorContext
             props["error_type"] = errorType
-            props["error_description"] = errorDescription
+            errorDescription?.let {
+                props["error_description"] = it
+            }
             track(stat, props)
         }
 
