@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 /**
@@ -58,5 +59,10 @@ class OrderStatusFilterDialog : DialogFragment() {
                     }
                     dialog.cancel()
                 }.create()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 }

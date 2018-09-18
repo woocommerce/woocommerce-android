@@ -55,7 +55,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var skeletonView = SkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
-    private lateinit var lastUpdatedHandler: Handler
+    private var lastUpdatedHandler: Handler? = null
 
     private var lastUpdated: Date? = null
 
@@ -95,7 +95,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         lastUpdatedHandler = Handler()
         lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
         }
     }
 
@@ -104,7 +104,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         if (visibility == View.VISIBLE) {
             updateRecencyMessage()
         } else {
-            lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+            lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
         }
     }
 
@@ -279,10 +279,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private fun updateRecencyMessage() {
         dashboard_recency_text.text = getRecencyMessage()
-        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
 
         if (lastUpdated != null) {
-            lastUpdatedHandler.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
         }
     }
 

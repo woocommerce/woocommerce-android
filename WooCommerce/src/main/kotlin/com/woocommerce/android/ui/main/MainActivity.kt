@@ -16,6 +16,7 @@ import android.view.MenuItem
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.tools.SelectedSite
@@ -89,7 +90,7 @@ class MainActivity : AppCompatActivity(),
             return
         }
 
-        if (!selectedSite.isSet()) {
+        if (!selectedSite.exists()) {
             updateSelectedSite()
             return
         }
@@ -108,6 +109,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
+        AnalyticsTracker.trackViewShown(this)
 
         checkConnection()
     }
@@ -138,6 +140,8 @@ class MainActivity : AppCompatActivity(),
      * Currently prevents the user from hitting back and exiting the app.
      */
     override fun onBackPressed() {
+        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to MainActivity::class.java.simpleName))
+
         val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
         if (!fragment.childFragmentManager.popBackStackImmediate()) {
             super.onBackPressed()
@@ -154,10 +158,12 @@ class MainActivity : AppCompatActivity(),
             // User selected the settings menu option
             R.id.menu_settings -> {
                 showSettingsScreen()
+                AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
                 true
             }
             R.id.menu_support -> {
                 contactSupport()
+                AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -219,7 +225,7 @@ class MainActivity : AppCompatActivity(),
     override fun updateSelectedSite() {
         loginProgressDialog?.apply { if (isShowing) { cancel() } }
 
-        if (!selectedSite.isSet()) {
+        if (!selectedSite.exists()) {
             showLoginEpilogueScreen()
             return
         }
@@ -253,9 +259,9 @@ class MainActivity : AppCompatActivity(),
         val navPosition = findNavigationPositionById(item.itemId)
 
         val stat = when (navPosition) {
-            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.OPENED_DASHBOARD
-            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.OPENED_ORDER_LIST
-            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.OPENED_NOTIFICATIONS
+            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_SELECTED
+            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_SELECTED
+            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
 
@@ -273,9 +279,9 @@ class MainActivity : AppCompatActivity(),
         }
 
         val stat = when (activeNavPosition) {
-            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.RESELECTED_DASHBOARD
-            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.RESELECTED_ORDER_LIST
-            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.RESELECTED_NOTIFICATIONS
+            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_RESELECTED
+            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
+            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
     }

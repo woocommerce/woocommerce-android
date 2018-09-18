@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_privacy.*
@@ -55,6 +56,8 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
 
     override fun onResume() {
         super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+
         activity?.setTitle(R.string.privacy_settings)
     }
 

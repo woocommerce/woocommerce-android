@@ -41,9 +41,14 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         showStoreList()
 
         if (savedInstanceState == null) {
-            AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_VIEWED,
+            AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_STORES_SHOWN,
                     mapOf("number_of_stores" to presenter.getWooCommerceSites().size))
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onDestroy() {
@@ -52,6 +57,8 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     override fun onBackPressed() {
+        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to LoginEpilogueActivity::class.java.simpleName))
+
         finish()
     }
 
@@ -90,6 +97,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
             if (site != null) {
                 selectedSite.set(site)
+
+                AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED,
+                        mapOf("selected_store_id" to site.id))
                 showMainActivityAndFinish()
             }
         }

@@ -11,6 +11,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
@@ -72,6 +74,11 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         presenter.takeView(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()
@@ -83,6 +90,8 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
     }
 
     override fun onBackPressed() {
+        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to AddOrderNoteActivity::class.java.simpleName))
+
         if (getNoteText().isNotEmpty()) {
             confirmDiscard()
         } else {
