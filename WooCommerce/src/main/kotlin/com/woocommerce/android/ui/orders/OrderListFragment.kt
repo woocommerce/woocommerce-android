@@ -218,7 +218,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         noOrdersView.visibility = View.GONE
 
         if (!ordersAdapter.isSameOrderList(orders)) {
-            ordersList?.let { listView ->
+            ordersList?.let { _ ->
                 if (isFreshData) {
                     ordersList.scrollToPosition(0)
                     // TODO: do we want this animation still?
@@ -335,7 +335,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onFilterSelected(orderStatus: String?) {
-        AnalyticsTracker.track(Stat.ORDERS_LIST_FILTER, mapOf("status" to orderStatus))
+        AnalyticsTracker.trackWithSiteDetails(Stat.ORDERS_LIST_FILTER, presenter.getSelectedSite(),
+                mutableMapOf("status" to orderStatus.orEmpty()))
 
         orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
