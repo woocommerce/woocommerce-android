@@ -18,6 +18,8 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
@@ -81,6 +83,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
+                // Track range change
+                AnalyticsTracker.track(Stat.DASHBOARD_MAIN_STATS_DATE,
+                        mapOf("range" to tab.tag.toString().toLowerCase()))
+
                 clearLabelValues()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }

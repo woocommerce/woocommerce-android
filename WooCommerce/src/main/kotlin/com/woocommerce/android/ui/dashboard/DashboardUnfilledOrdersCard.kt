@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_unfilled_orders.view.*
@@ -27,6 +29,9 @@ class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs:
 
     fun initView(listener: Listener) {
         alertAction_action.setOnClickListener {
+            // Track user click event
+            AnalyticsTracker.track(Stat.DASHBOARD_UNFULFILLED_ORDERS_BUTTON_TAPPED)
+
             listener.onViewOrdersClicked()
         }
     }

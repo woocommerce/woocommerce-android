@@ -75,9 +75,19 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_EPILOGUE_STORES_SHOWN,
         LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED,
 
+        // -- Dashboard
+        DASHBOARD_PULLED_TO_REFRESH,
+        DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED,
+        DASHBOARD_UNFULFILLED_ORDERS_BUTTON_TAPPED,
+        DASHBOARD_MAIN_STATS_DATE,
+        DASHBOARD_MAIN_STATS_LOADED,
+        DASHBOARD_TOP_PERFORMERS_DATE,
+        DASHBOARD_TOP_PERFORMERS_LOADED,
+        DASHBOARD_UNFULFILLED_ORDERS_LOADED,
+
+        // -- Orders
         OPENED_ORDER_DETAIL,
         FULFILLED_ORDER,
-        OPENED_PRIVACY_SETTINGS,
 
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
@@ -88,6 +98,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MAIN_TAB_ORDERS_RESELECTED,
         MAIN_TAB_NOTIFICATIONS_SELECTED,
         MAIN_TAB_NOTIFICATIONS_RESELECTED,
+
+        // -- Settings
+        OPENED_SETTINGS,
+        OPENED_PRIVACY_SETTINGS
     }
 
     private var tracksClient = TracksClient.getClient(context)
