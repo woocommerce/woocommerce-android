@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
@@ -63,9 +62,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
 
     override fun onResume() {
         super.onResume()
-
-        // Track view shown to user
-        AnalyticsTracker.track(Stat.VIEW_SHOWN, mapOf("name" to this::class.java.simpleName))
+        AnalyticsTracker.trackViewShown(this)
 
         activity?.setTitle(R.string.settings)
     }
