@@ -24,6 +24,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -236,7 +237,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun showVisitorStats(visits: Int) {
+        visitors_value.visibility = View.INVISIBLE
         visitors_value.text = visits.toString()
+        WooAnimUtils.fadeIn(visitors_value)
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
