@@ -57,7 +57,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
 
             // configure more/less button
             customerInfo_viewMore.setOnCheckedChangeListener { _, isChecked ->
-                customerInfo_morePanel.visibility = if (isChecked) View.VISIBLE else View.GONE
+                if (isChecked) {
+                    AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
+                    customerInfo_morePanel.visibility = View.VISIBLE
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
+                    customerInfo_morePanel.visibility = View.GONE
+                }
             }
 
             // Set action button listeners
