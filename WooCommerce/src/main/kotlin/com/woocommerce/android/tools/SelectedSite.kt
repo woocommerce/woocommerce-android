@@ -29,7 +29,7 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
             return it
         }
 
-        throw IllegalStateException("SelectedSite was accessed before being initialized")
+        throw IllegalStateException("SelectedSite was accessed before being initialized - siteId $localSiteId")
     }
 
     fun set(siteModel: SiteModel) {
@@ -38,6 +38,12 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     }
 
     fun isSet() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1) != -1
+
+    fun exists(): Boolean {
+        val localSiteId = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
+        val siteModel = siteStore.getSiteByLocalId(localSiteId)
+        return siteModel != null
+    }
 
     fun reset() {
         selectedSite = null

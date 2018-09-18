@@ -43,7 +43,7 @@ class LoginAnalyticsTracker : LoginAnalyticsListener {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_AUTOFILL_CREDENTIALS_UPDATED)
     }
 
-    override fun trackLoginFailed(errorContext: String, errorType: String, errorDescription: String) {
+    override fun trackLoginFailed(errorContext: String, errorType: String, errorDescription: String?) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FAILED, errorContext, errorType, errorDescription)
     }
 

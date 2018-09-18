@@ -17,6 +17,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         APPLICATION_CLOSED,
         APPLICATION_INSTALLED,
         APPLICATION_UPGRADED,
+        BACK_PRESSED,
 
         // -- Login
         SIGNED_IN,
@@ -66,16 +67,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SIGNUP_SOCIAL_TO_LOGIN,
         ADDED_SELF_HOSTED_SITE,
         CREATED_ACCOUNT,
-        LOGIN_PROLOGUE_OPENED_JETPACK_LINK,
-        LOGIN_EPILOGUE_VIEWED,
-
-        // -- Top-level navigation
-        OPENED_DASHBOARD,
-        OPENED_ORDER_LIST,
-        OPENED_NOTIFICATIONS,
-        RESELECTED_DASHBOARD,
-        RESELECTED_ORDER_LIST,
-        RESELECTED_NOTIFICATIONS,
+        LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED,
+        LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED,
+        LOGIN_EPILOGUE_STORES_SHOWN,
+        LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED,
 
         // -- Dashboard
         DASHBOARD_PULLED_TO_REFRESH,
@@ -90,6 +85,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Orders
         OPENED_ORDER_DETAIL,
         FULFILLED_ORDER,
+
+        // -- Top-level navigation
+        MAIN_MENU_SETTINGS_TAPPED,
+        MAIN_MENU_CONTACT_SUPPORT_TAPPED,
+        MAIN_TAB_DASHBOARD_SELECTED,
+        MAIN_TAB_DASHBOARD_RESELECTED,
+        MAIN_TAB_ORDERS_SELECTED,
+        MAIN_TAB_ORDERS_RESELECTED,
+        MAIN_TAB_NOTIFICATIONS_SELECTED,
+        MAIN_TAB_NOTIFICATIONS_RESELECTED,
 
         // -- Settings
         OPENED_SETTINGS,
@@ -229,11 +234,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param errorType The type of error.
          * @param errorDescription The error text or other description.
          */
-        fun track(stat: Stat, errorContext: String, errorType: String, errorDescription: String) {
+        fun track(stat: Stat, errorContext: String, errorType: String, errorDescription: String?) {
             val props = HashMap<String, String>()
             props["error_context"] = errorContext
             props["error_type"] = errorType
-            props["error_description"] = errorDescription
+            errorDescription?.let {
+                props["error_description"] = it
+            }
             track(stat, props)
         }
 
