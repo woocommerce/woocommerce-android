@@ -44,13 +44,13 @@ object WooAnimUtils {
         }
     }
 
-    fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION) {
+    fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION, endVisibility: Int = View.GONE) {
         with (ObjectAnimator.ofFloat(target, View.ALPHA, 1.0f, 0.0f)) {
             duration = animDuration.toMillis(target.context)
             interpolator = LinearInterpolator()
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    target.visibility = View.GONE
+                    target.visibility = endVisibility
                 }
             })
             start()

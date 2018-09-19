@@ -61,8 +61,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private lateinit var lastUpdatedRunnable: Runnable
     private var lastUpdatedHandler: Handler? = null
-
     private var lastUpdated: Date? = null
+
+    private val fadeHandler = Handler()
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -245,9 +246,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun fadeInValue(view: TextView, value: String) {
-        view.visibility = View.INVISIBLE
-        view.text = value
-        WooAnimUtils.fadeIn(view, Duration.MEDIUM)
+        // fade out the current value
+        val duration = Duration.MEDIUM
+        WooAnimUtils.fadeOut(view, duration, View.INVISIBLE)
+
+        // fade in the new value after fade out finishes
+        val delay = duration.toMillis(context) + 100
+        fadeHandler.postDelayed({
+            view.text = value
+            WooAnimUtils.fadeIn(view, duration)
+        }, delay)
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
