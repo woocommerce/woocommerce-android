@@ -89,7 +89,7 @@ class OrderListPresenter @Inject constructor(
                 } else {
                     AnalyticsTracker.trackWithSiteDetails(Stat.ORDERS_LIST_LOADED, selectedSite.get(),
                             mutableMapOf("status" to event.statusFilter.orEmpty(),
-                                    "isLoadingMore" to isLoadingMoreOrders))
+                                    "is_loading_more" to isLoadingMoreOrders))
 
                     canLoadMore = event.canLoadMore
                     val isForceRefresh = !isLoadingMoreOrders
