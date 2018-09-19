@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULA
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -116,9 +118,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun clearLabelValues() {
-        visitors_value.text = "-"
-        revenue_value.text = "-"
-        orders_value.text = "-"
+        visitors_value.setText(R.string.emdash)
+        revenue_value.setText(R.string.emdash)
+        orders_value.setText(R.string.emdash)
     }
 
     fun showSkeleton(show: Boolean) {
@@ -192,8 +194,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
 
-        revenue_value.text = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
-        orders_value.text = orderStats.values.sum().toString()
+        val revenue = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
+        val orders = orderStats.values.sum().toString()
+        fadeInValue(revenue_value, revenue)
+        fadeInValue(orders_value, orders)
 
         if (revenueStats.isEmpty()) {
             // TODO Replace with custom empty view
@@ -237,9 +241,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun showVisitorStats(visits: Int) {
-        visitors_value.visibility = View.INVISIBLE
-        visitors_value.text = visits.toString()
-        WooAnimUtils.fadeIn(visitors_value)
+        fadeInValue(visitors_value, visits.toString())
+    }
+
+    private fun fadeInValue(view: TextView, value: String) {
+        view.visibility = View.INVISIBLE
+        view.text = value
+        WooAnimUtils.fadeIn(view, Duration.MEDIUM)
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
