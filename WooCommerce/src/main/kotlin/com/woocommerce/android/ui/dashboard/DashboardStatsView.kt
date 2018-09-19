@@ -116,9 +116,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun clearLabelValues() {
-        visitors_value.text = ""
-        revenue_value.text = ""
-        orders_value.text = ""
+        visitors_value.text = "-"
+        revenue_value.text = "-"
+        orders_value.text = "-"
     }
 
     fun showSkeleton(show: Boolean) {

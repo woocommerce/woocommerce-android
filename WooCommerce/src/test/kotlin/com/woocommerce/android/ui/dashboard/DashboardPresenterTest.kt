@@ -71,7 +71,8 @@ class DashboardPresenterTest {
         presenter.takeView(dashboardView)
         presenter.loadStats(StatsGranularity.DAYS)
 
-        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
+        // note that we expect two dispatches because there's one to get stats and another to get visitors
+        verify(dispatcher, times(2)).dispatch(actionCaptor.capture())
         assertEquals(FETCH_ORDER_STATS, actionCaptor.firstValue.type)
 
         val payload = actionCaptor.firstValue.payload as FetchOrderStatsPayload
@@ -306,9 +307,10 @@ class DashboardPresenterTest {
     fun `Handles FETCH_VISITOR_STATS event correctly`() {
         presenter.takeView(dashboardView)
 
-        presenter.onWCStatsChanged(OnWCStatsChanged(1, StatsGranularity.DAYS).apply {
-            causeOfChange = FETCH_VISITOR_STATS
-        })
+        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        onChanged.causeOfChange = FETCH_VISITOR_STATS
+
+        presenter.onWCStatsChanged(onChanged)
         verify(dashboardView, times(1)).showVisitorStats(1, StatsGranularity.DAYS)
     }
 
@@ -319,6 +321,7 @@ class DashboardPresenterTest {
         verify(dashboardView, times(1)).showChartSkeleton(true)
 
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        onChanged.causeOfChange = FETCH_ORDER_STATS
         presenter.onWCStatsChanged(onChanged)
         verify(dashboardView, times(1)).showChartSkeleton(false)
     }
