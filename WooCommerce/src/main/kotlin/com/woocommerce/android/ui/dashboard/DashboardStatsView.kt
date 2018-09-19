@@ -118,12 +118,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    fun clearLabelValues() {
-        visitors_value.setText(R.string.emdash)
-        revenue_value.setText(R.string.emdash)
-        orders_value.setText(R.string.emdash)
-    }
-
     fun showSkeleton(show: Boolean) {
         if (show) {
             // inflate the skeleton view and adjust the bar widths based on the granularity
@@ -197,8 +191,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         val revenue = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
         val orders = orderStats.values.sum().toString()
-        fadeInValue(revenue_value, revenue)
-        fadeInValue(orders_value, orders)
+        fadeInLabelValue(revenue_value, revenue)
+        fadeInLabelValue(orders_value, orders)
 
         if (revenueStats.isEmpty()) {
             // TODO Replace with custom empty view
@@ -242,10 +236,21 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun showVisitorStats(visits: Int) {
-        fadeInValue(visitors_value, visits.toString())
+        fadeInLabelValue(visitors_value, visits.toString())
     }
 
-    private fun fadeInValue(view: TextView, value: String) {
+    fun clearLabelValues() {
+        val color = ContextCompat.getColor(context, R.color.skeleton_color)
+        visitors_value.setTextColor(color)
+        revenue_value.setTextColor(color)
+        orders_value.setTextColor(color)
+
+        visitors_value.setText(R.string.emdash)
+        revenue_value.setText(R.string.emdash)
+        orders_value.setText(R.string.emdash)
+    }
+
+    private fun fadeInLabelValue(view: TextView, value: String) {
         // fade out the current value
         val duration = Duration.MEDIUM
         WooAnimUtils.fadeOut(view, duration, View.INVISIBLE)
@@ -253,6 +258,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         // fade in the new value after fade out finishes
         val delay = duration.toMillis(context) + 100
         fadeHandler.postDelayed({
+            val color = ContextCompat.getColor(context, R.color.default_text_title)
+            view.setTextColor(color)
             view.text = value
             WooAnimUtils.fadeIn(view, duration)
         }, delay)
