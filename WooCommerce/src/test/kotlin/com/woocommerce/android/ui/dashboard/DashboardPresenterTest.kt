@@ -24,6 +24,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
@@ -84,6 +85,7 @@ class DashboardPresenterTest {
 
         // Simulate OnChanged event from FluxC
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        onChanged.causeOfChange = FETCH_ORDER_STATS
         presenter.onWCStatsChanged(onChanged)
 
         verify(dashboardView).showStats(any(), any(), eq(StatsGranularity.DAYS))
@@ -95,6 +97,7 @@ class DashboardPresenterTest {
 
         // Simulate OnChanged event from FluxC
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS).apply {
+            causeOfChange = FETCH_ORDER_STATS
             error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
         }
         presenter.onWCStatsChanged(onChanged)
@@ -297,6 +300,16 @@ class DashboardPresenterTest {
         presenter.takeView(dashboardView)
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = FETCH_HAS_ORDERS })
         verify(dashboardView, times(1)).showNoOrdersView(false)
+    }
+
+    @Test
+    fun `Handles FETCH_VISITOR_STATS event correctly`() {
+        presenter.takeView(dashboardView)
+
+        presenter.onWCStatsChanged(OnWCStatsChanged(1, StatsGranularity.DAYS).apply {
+            causeOfChange = FETCH_VISITOR_STATS
+        })
+        verify(dashboardView, times(1)).showVisitorStats(1, StatsGranularity.DAYS)
     }
 
     @Test
