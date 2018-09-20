@@ -174,7 +174,7 @@ class DashboardPresenter @Inject constructor(
 
                 // Track fresh data loaded
                 AnalyticsTracker.track(Stat.DASHBOARD_UNFULFILLED_ORDERS_LOADED,
-                        mapOf("hasUnfilledOrders" to (event.rowsAffected > 0)))
+                        mapOf("has_unfulfilled_orders" to (event.rowsAffected > 0)))
 
                 event.rowsAffected.takeIf { it > 0 }?.let { count ->
                     dashboardView?.showUnfilledOrdersCard(count, event.canLoadMore)
