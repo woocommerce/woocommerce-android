@@ -104,13 +104,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
         OPENED_PRIVACY_SETTINGS
     }
 
-    private var tracksClient = TracksClient.getClient(context)
+    private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
 
     private fun clearAllData() {
         clearAnonID()
         username = null
+
+        tracksClient?.clearUserProperties()
+        tracksClient?.clearQueues()
     }
 
     private fun clearAnonID() {
@@ -158,7 +161,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         val propertiesJson = JSONObject(properties)
-        tracksClient.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
 
         if (propertiesJson.length() > 0) {
             WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
@@ -168,14 +171,24 @@ class AnalyticsTracker private constructor(private val context: Context) {
     }
 
     private fun flush() {
-        tracksClient.flush()
+        tracksClient?.flush()
     }
 
-    private fun refreshMetadata(newUsername: String?) {
+    private fun refreshMetadata(newUsername: String?, site: SiteModel? = null) {
+        if (tracksClient == null) {
+            return
+        }
+
+        site?.let {
+            val properties = mapOf(BLOG_ID_KEY to it.id, IS_WPCOM_STORE to it.isWpComStore)
+            val props = JSONObject(properties)
+            tracksClient?.registerUserProperties(props)
+        }
+
         if (!newUsername.isNullOrEmpty()) {
             username = newUsername
             if (getAnonID() != null) {
-                tracksClient.trackAliasUser(username, getAnonID(), TracksClient.NosaraUserType.WPCOM)
+                tracksClient?.trackAliasUser(username, getAnonID(), TracksClient.NosaraUserType.WPCOM)
                 clearAnonID()
             }
         } else {
@@ -270,8 +283,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
             instance?.clearAllData()
         }
 
-        fun refreshMetadata(username: String?) {
-            instance?.refreshMetadata(username)
+        fun refreshMetadata(username: String?, site: SiteModel? = null) {
+            instance?.refreshMetadata(username, site)
         }
     }
 }
