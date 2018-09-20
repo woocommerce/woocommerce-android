@@ -148,8 +148,7 @@ class DashboardPresenter @Inject constructor(
             FETCH_VISITOR_STATS -> {
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
-                    // TODO: show error?
-                    dashboardView?.showVisitorStats(0, event.granularity)
+                    dashboardView?.showVisitorStatsError(event.granularity)
                     return
                 }
 

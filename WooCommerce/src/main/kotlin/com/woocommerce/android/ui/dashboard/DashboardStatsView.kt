@@ -239,6 +239,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         fadeInLabelValue(visitors_value, visits.toString())
     }
 
+    fun showVisitorStatsError() {
+        fadeInLabelValue(visitors_value, "?")
+    }
+
     fun clearLabelValues() {
         val color = ContextCompat.getColor(context, R.color.skeleton_color)
         visitors_value.setTextColor(color)

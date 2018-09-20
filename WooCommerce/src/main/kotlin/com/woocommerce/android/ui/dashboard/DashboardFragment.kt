@@ -177,6 +177,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun showVisitorStatsError(granularity: StatsGranularity) {
+        if (dashboard_stats.activeGranularity == granularity) {
+            dashboard_stats.showVisitorStatsError()
+        }
+    }
+
     override fun showErrorSnack() {
         if (errorSnackbar?.isShownOrQueued() == true) {
             return
