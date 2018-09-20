@@ -95,7 +95,7 @@ class OrderDetailPresenter @Inject constructor(
 
         when (newStatus) {
             CoreOrderStatus.COMPLETED.value -> {
-                AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
+                AnalyticsTracker.track(Stat.FULFILLED_ORDER)
             }
             // TODO: track other status changes once we add them
         }

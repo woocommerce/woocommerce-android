@@ -260,13 +260,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
             track(stat, props)
         }
 
-        fun trackWithSiteDetails(stat: Stat, site: SiteModel, properties: MutableMap<String, Any> = mutableMapOf()) {
-            properties[BLOG_ID_KEY] = site.siteId
-            properties[IS_WPCOM_STORE] = site.isWpComStore
-
-            AnalyticsTracker.track(stat, properties)
-        }
-
         /**
          * A convenience method for tracking views shown during a session.
          * @param view The view to be tracked

@@ -263,7 +263,7 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_SELECTED
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
-        AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
+        AnalyticsTracker.track(stat)
 
         return switchFragment(navPosition)
     }
@@ -283,7 +283,7 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
-        AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
+        AnalyticsTracker.track(stat)
     }
 
     // endregion
