@@ -5,6 +5,7 @@ import android.content.Context
 import java.util.HashMap
 import com.automattic.android.tracks.TracksClient
 import android.preference.PreferenceManager
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -270,6 +271,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
          */
         fun trackViewShown(view: Any) {
             AnalyticsTracker.track(VIEW_SHOWN, mapOf("name" to view::class.java.simpleName))
+        }
+
+        /**
+         * A convenience method for tracking when a user clicks the "up" or "back" buttons.
+         * @param view The active view when event was fired
+         */
+        fun trackBackPressed(view: Any) {
+            AnalyticsTracker.track(BACK_PRESSED, mapOf("context" to view::class.java.simpleName))
         }
 
         fun flush() {
