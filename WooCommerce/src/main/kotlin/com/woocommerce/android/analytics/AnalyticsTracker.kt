@@ -181,7 +181,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         site?.let {
-            val properties = mapOf(BLOG_ID_KEY to it.id, IS_WPCOM_STORE to it.isWpComStore)
+            val properties = mapOf(KEY_BLOG_ID to it.id, KEY_IS_WPCOM_STORE to it.isWpComStore)
             val props = JSONObject(properties)
             tracksClient?.registerUserProperties(props)
         }
@@ -216,8 +216,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
-        private const val BLOG_ID_KEY = "blog_id"
-        private const val IS_WPCOM_STORE = "is_wpcom_store"
+        private const val KEY_BLOG_ID = "blog_id"
+        private const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
+        private const val KEY_ERROR_CONTEXT = "error_context"
+        private const val KEY_ERROR_DESC = "error_description"
+        private const val KEY_ERROR_TYPE = "error_type"
+        private const val KEY_NAME = "name"
+        private const val KEY_CONTEXT = "context"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
@@ -257,10 +262,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
          */
         fun track(stat: Stat, errorContext: String, errorType: String, errorDescription: String?) {
             val props = HashMap<String, String>()
-            props["error_context"] = errorContext
-            props["error_type"] = errorType
+            props[KEY_ERROR_CONTEXT] = errorContext
+            props[KEY_ERROR_TYPE] = errorType
             errorDescription?.let {
-                props["error_description"] = it
+                props[KEY_ERROR_DESC] = it
             }
             track(stat, props)
         }
@@ -270,7 +275,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The view to be tracked
          */
         fun trackViewShown(view: Any) {
-            AnalyticsTracker.track(VIEW_SHOWN, mapOf("name" to view::class.java.simpleName))
+            AnalyticsTracker.track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
         }
 
         /**
@@ -278,7 +283,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The active view when event was fired
          */
         fun trackBackPressed(view: Any) {
-            AnalyticsTracker.track(BACK_PRESSED, mapOf("context" to view::class.java.simpleName))
+            AnalyticsTracker.track(BACK_PRESSED, mapOf(KEY_CONTEXT to view::class.java.simpleName))
         }
 
         fun flush() {
