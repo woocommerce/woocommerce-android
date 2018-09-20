@@ -71,7 +71,7 @@ class DashboardPresenter @Inject constructor(
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
 
         // fetch visitor stats
-        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, 1, forced)
+        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
     }
 
