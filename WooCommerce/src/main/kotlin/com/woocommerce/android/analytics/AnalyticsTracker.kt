@@ -199,6 +199,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
     }
 
+    private fun refreshSiteMetadata(site: SiteModel) {
+        refreshMetadata(username, site)
+    }
+
     private fun storeUsagePref() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         prefs.edit().putBoolean(PREFKEY_SEND_USAGE_STATS, sendUsageStats).apply()
@@ -278,6 +282,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         fun refreshMetadata(username: String?, site: SiteModel? = null) {
             instance?.refreshMetadata(username, site)
+        }
+
+        fun refreshSiteMetadata(site: SiteModel) {
+            instance?.refreshSiteMetadata(site)
         }
     }
 }
