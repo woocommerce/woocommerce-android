@@ -14,6 +14,7 @@ import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
 
 class AnalyticsTracker private constructor(private val context: Context) {
+    // region Track Event Enums
     enum class Stat {
         // -- General
         APPLICATION_OPENED,
@@ -86,6 +87,17 @@ class AnalyticsTracker private constructor(private val context: Context) {
         DASHBOARD_TOP_PERFORMERS_LOADED,
         DASHBOARD_UNFULFILLED_ORDERS_LOADED,
 
+        // -- Orders List
+        ORDERS_LIST_FILTER,
+        ORDERS_LIST_LOADED,
+        ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
+        ORDERS_LIST_PULLED_TO_REFRESH,
+        ORDERS_LIST_MENU_FILTER_TAPPED,
+
+        // -- Order filter by status dialog
+        FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
+        FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
+
         // -- Order Detail
         ORDER_OPEN,
         ORDER_NOTES_LOADED,
@@ -121,6 +133,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         OPENED_SETTINGS,
         OPENED_PRIVACY_SETTINGS
     }
+    // endregion
 
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
@@ -230,6 +243,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // Guaranteed to hold a reference to the application context, which is safe
         @SuppressLint("StaticFieldLeak")
         private var instance: AnalyticsTracker? = null
+
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
@@ -241,6 +255,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
+        const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
         const val KEY_NUMBER_OF_STORES = "number_of_stores"

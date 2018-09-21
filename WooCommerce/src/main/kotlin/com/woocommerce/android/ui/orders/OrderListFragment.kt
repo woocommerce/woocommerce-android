@@ -103,6 +103,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
                 setOnRefreshListener {
+                    AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
+
                     orderRefreshLayout.isRefreshing = false
                     if (!isRefreshPending) {
                         isRefreshPending = true
@@ -161,6 +163,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
         R.id.menu_filter -> {
+            AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
+
             showFilterDialog()
             true
         }
@@ -214,7 +218,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         noOrdersView.visibility = View.GONE
 
         if (!ordersAdapter.isSameOrderList(orders)) {
-            ordersList?.let { listView ->
+            ordersList?.let { _ ->
                 if (isFreshData) {
                     ordersList.scrollToPosition(0)
                     // TODO: do we want this animation still?
@@ -361,6 +365,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onFilterSelected(orderStatus: String?) {
+        AnalyticsTracker.track(
+                Stat.ORDERS_LIST_FILTER,
+                mapOf(AnalyticsTracker.KEY_IS_LOADING_MORE to orderStatus.orEmpty()))
+
         orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
         presenter.loadOrders(orderStatusFilter, true)
