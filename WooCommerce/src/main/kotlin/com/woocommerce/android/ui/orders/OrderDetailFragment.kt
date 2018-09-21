@@ -146,6 +146,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         orderDetail_noteList.initView(notes, this)
     }
 
+    override fun showOrderNotesSkeleton(show: Boolean) {
+        orderDetail_noteList.showSkeleton(show)
+    }
+
     override fun updateOrderNotes(notes: List<WCOrderNoteModel>) {
         // Update the notes in the notes card
         orderDetail_noteList.updateView(notes)

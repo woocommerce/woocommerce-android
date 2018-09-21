@@ -15,11 +15,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:descendantFocusability="blocksDescendants"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,30 +63,18 @@
             android:id="@+id/noteList_addNote_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/noteList_addNoteContainer"
             android:layout_marginBottom="@dimen/margin_large"
             android:layout_marginEnd="@dimen/list_item_padding_end"
             android:layout_marginStart="56dp"
-            android:background="@color/list_divider"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+            android:background="@color/list_divider"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/notesList_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/noteList_addNote_divider"
             android:nestedScrollingEnabled="false"
             tools:itemCount="4"
             tools:listitem="@layout/order_detail_note_list_item"
             tools:targetApi="lollipop"/>
-
-        <ProgressBar
-            android:id="@+id/notesList_progress"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:padding="@dimen/list_item_padding_intra_h"
-            android:visibility="gone"/>
-    </RelativeLayout>
+    </LinearLayout>
 </merge>

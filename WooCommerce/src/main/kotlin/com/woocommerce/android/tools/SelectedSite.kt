@@ -2,6 +2,7 @@ package com.woocommerce.android.tools
 
 import android.content.Context
 import android.preference.PreferenceManager
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.PreferenceUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
@@ -35,6 +36,8 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     fun set(siteModel: SiteModel) {
         selectedSite = siteModel
         PreferenceUtils.setInt(getPreferences(), SELECTED_SITE_LOCAL_ID, siteModel.id)
+
+        AnalyticsTracker.refreshSiteMetadata(siteModel)
     }
 
     fun isSet() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1) != -1
