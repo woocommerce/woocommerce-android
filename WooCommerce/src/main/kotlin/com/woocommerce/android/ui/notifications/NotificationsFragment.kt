@@ -27,9 +27,7 @@ class NotificationsFragment : TopLevelFragment() {
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun getFragmentTitle(): String {
-        return getString(R.string.notifications)
-    }
+    override fun getFragmentTitle() = getString(R.string.notifications)
 
     override fun refreshFragmentState() {
         // todo reset any scrolling

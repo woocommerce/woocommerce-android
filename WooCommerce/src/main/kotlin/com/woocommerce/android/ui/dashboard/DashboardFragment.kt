@@ -179,9 +179,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         errorSnackbar?.show()
     }
 
-    override fun getFragmentTitle(): String {
-        return getString(R.string.my_store)
-    }
+    override fun getFragmentTitle() = getString(R.string.my_store)
 
     override fun refreshFragmentState() {
         presenter.resetTopEarnersForceRefresh()

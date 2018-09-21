@@ -129,6 +129,7 @@
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter_apply">Apply Filter</string>
     <string name="orderlist_filter">Filter</string>
+    <string name="orderlist_filtered">: %1$s</string>
     <!--
         Order Detail Views
     -->
