@@ -365,8 +365,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onFilterSelected(orderStatus: String?) {
-        AnalyticsTracker.track(Stat.ORDERS_LIST_FILTER,
-                mutableMapOf(AnalyticsTracker.KEY_IS_LOADING_MORE to orderStatus.orEmpty()))
+        AnalyticsTracker.track(
+                Stat.ORDERS_LIST_FILTER,
+                mapOf(AnalyticsTracker.KEY_IS_LOADING_MORE to orderStatus.orEmpty()))
 
         orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
