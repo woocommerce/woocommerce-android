@@ -183,8 +183,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         changeOrderStatusCanceled = false
 
         presenter.orderModel?.let { order ->
-            AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE,
-                    mutableMapOf("id" to order.remoteOrderId, "from" to order.status, "to" to newStatus))
+            AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE, mapOf(
+                    AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                    AnalyticsTracker.KEY_FROM to order.status,
+                    AnalyticsTracker.KEY_TO to newStatus))
 
             previousOrderStatus = order.status
             order.status = newStatus
@@ -194,7 +196,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_UNDO, mutableMapOf("id" to order.remoteOrderId))
+                AnalyticsTracker.track(
+                        Stat.ORDER_STATUS_CHANGE_UNDO,
+                        mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
 
                 // User canceled the action to change the order status
                 changeOrderStatusCanceled = true

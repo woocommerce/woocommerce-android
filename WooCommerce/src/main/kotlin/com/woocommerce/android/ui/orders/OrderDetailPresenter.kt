@@ -133,7 +133,9 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showNotesErrorSnack()
             } else {
                 orderModel?.let { order ->
-                    AnalyticsTracker.track(Stat.ORDER_NOTES_LOADED, mutableMapOf("id" to order.remoteOrderId))
+                    AnalyticsTracker.track(
+                            Stat.ORDER_NOTES_LOADED,
+                            mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
 
                     isUsingCachedNotes = false
                     val notes = orderStore.getOrderNotesForOrder(order)
@@ -144,7 +146,9 @@ class OrderDetailPresenter @Inject constructor(
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
 
-                AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_FAILED, this.javaClass.simpleName,
+                AnalyticsTracker.track(
+                        Stat.ORDER_STATUS_CHANGE_FAILED,
+                        this.javaClass.simpleName,
                         event.error.type.toString(), event.error.message)
 
                 orderView?.let {
