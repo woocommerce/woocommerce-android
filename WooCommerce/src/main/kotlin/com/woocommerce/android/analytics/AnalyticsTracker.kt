@@ -5,6 +5,7 @@ import android.content.Context
 import java.util.HashMap
 import com.automattic.android.tracks.TracksClient
 import android.preference.PreferenceManager
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -104,13 +105,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
         OPENED_PRIVACY_SETTINGS
     }
 
-    private var tracksClient = TracksClient.getClient(context)
+    private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
 
     private fun clearAllData() {
         clearAnonID()
         username = null
+
+        tracksClient?.clearUserProperties()
+        tracksClient?.clearQueues()
     }
 
     private fun clearAnonID() {
@@ -158,7 +162,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         val propertiesJson = JSONObject(properties)
-        tracksClient.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
 
         if (propertiesJson.length() > 0) {
             WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
@@ -168,14 +172,24 @@ class AnalyticsTracker private constructor(private val context: Context) {
     }
 
     private fun flush() {
-        tracksClient.flush()
+        tracksClient?.flush()
     }
 
-    private fun refreshMetadata(newUsername: String?) {
+    private fun refreshMetadata(newUsername: String?, site: SiteModel? = null) {
+        if (tracksClient == null) {
+            return
+        }
+
+        site?.let {
+            val properties = mapOf(KEY_BLOG_ID to it.id, KEY_IS_WPCOM_STORE to it.isWpComStore)
+            val props = JSONObject(properties)
+            tracksClient?.registerUserProperties(props)
+        }
+
         if (!newUsername.isNullOrEmpty()) {
             username = newUsername
             if (getAnonID() != null) {
-                tracksClient.trackAliasUser(username, getAnonID(), TracksClient.NosaraUserType.WPCOM)
+                tracksClient?.trackAliasUser(username, getAnonID(), TracksClient.NosaraUserType.WPCOM)
                 clearAnonID()
             }
         } else {
@@ -184,6 +198,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
                 generateNewAnonID()
             }
         }
+    }
+
+    private fun refreshSiteMetadata(site: SiteModel) {
+        refreshMetadata(username, site)
     }
 
     private fun storeUsagePref() {
@@ -198,8 +216,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
-        private const val BLOG_ID_KEY = "blog_id"
-        private const val IS_WPCOM_STORE = "is_wpcom_store"
+        private const val KEY_BLOG_ID = "blog_id"
+        private const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
+        private const val KEY_ERROR_CONTEXT = "error_context"
+        private const val KEY_ERROR_DESC = "error_description"
+        private const val KEY_ERROR_TYPE = "error_type"
+        private const val KEY_NAME = "name"
+        private const val KEY_CONTEXT = "context"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
@@ -239,19 +262,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
          */
         fun track(stat: Stat, errorContext: String, errorType: String, errorDescription: String?) {
             val props = HashMap<String, String>()
-            props["error_context"] = errorContext
-            props["error_type"] = errorType
+            props[KEY_ERROR_CONTEXT] = errorContext
+            props[KEY_ERROR_TYPE] = errorType
             errorDescription?.let {
-                props["error_description"] = it
+                props[KEY_ERROR_DESC] = it
             }
             track(stat, props)
-        }
-
-        fun trackWithSiteDetails(stat: Stat, site: SiteModel, properties: MutableMap<String, Any> = mutableMapOf()) {
-            properties[BLOG_ID_KEY] = site.siteId
-            properties[IS_WPCOM_STORE] = site.isWpComStore
-
-            AnalyticsTracker.track(stat, properties)
         }
 
         /**
@@ -259,7 +275,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The view to be tracked
          */
         fun trackViewShown(view: Any) {
-            AnalyticsTracker.track(VIEW_SHOWN, mapOf("name" to view::class.java.simpleName))
+            AnalyticsTracker.track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
+        }
+
+        /**
+         * A convenience method for tracking when a user clicks the "up" or "back" buttons.
+         * @param view The active view when event was fired
+         */
+        fun trackBackPressed(view: Any) {
+            AnalyticsTracker.track(BACK_PRESSED, mapOf(KEY_CONTEXT to view::class.java.simpleName))
         }
 
         fun flush() {
@@ -270,8 +294,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
             instance?.clearAllData()
         }
 
-        fun refreshMetadata(username: String?) {
-            instance?.refreshMetadata(username)
+        fun refreshMetadata(username: String?, site: SiteModel? = null) {
+            instance?.refreshMetadata(username, site)
+        }
+
+        fun refreshSiteMetadata(site: SiteModel) {
+            instance?.refreshSiteMetadata(site)
         }
     }
 }

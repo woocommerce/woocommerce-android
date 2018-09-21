@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -60,7 +59,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to AppSettingsActivity::class.java.simpleName))
+        AnalyticsTracker.trackBackPressed(this)
 
         if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
