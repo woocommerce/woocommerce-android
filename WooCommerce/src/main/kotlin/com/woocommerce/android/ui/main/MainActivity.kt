@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity(),
      * Currently prevents the user from hitting back and exiting the app.
      */
     override fun onBackPressed() {
-        AnalyticsTracker.track(Stat.BACK_PRESSED, mapOf("context" to MainActivity::class.java.simpleName))
+        AnalyticsTracker.trackBackPressed(this)
 
         val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
         if (!fragment.childFragmentManager.popBackStackImmediate()) {
@@ -263,7 +263,7 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_SELECTED
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
-        AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
+        AnalyticsTracker.track(stat)
 
         return switchFragment(navPosition)
     }
@@ -283,7 +283,7 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
-        AnalyticsTracker.trackWithSiteDetails(stat, selectedSite.get())
+        AnalyticsTracker.track(stat)
     }
 
     // endregion

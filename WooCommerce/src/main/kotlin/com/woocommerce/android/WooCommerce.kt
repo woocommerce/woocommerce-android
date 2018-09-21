@@ -15,6 +15,7 @@ import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
 import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashlyticsUtils
@@ -43,6 +44,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var selectedSite: SelectedSite
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -97,7 +99,12 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     private fun initAnalytics() {
         AnalyticsTracker.init(applicationContext)
-        AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
+
+        if (selectedSite.exists()) {
+            AnalyticsTracker.refreshMetadata(accountStore.account?.userName, selectedSite.get())
+        } else {
+            AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
+        }
     }
 
     private fun trackStartupAnalytics() {

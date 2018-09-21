@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.order_detail_note_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 
@@ -26,6 +27,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         fun onRequestAddNote()
     }
 
+    private val skeletonView = SkeletonView()
     private lateinit var listener: OrderDetailNoteListener
 
     // negative IDs denote transient notes
@@ -33,10 +35,6 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
 
     fun initView(notes: List<WCOrderNoteModel>, orderDetailListener: OrderDetailNoteListener) {
         listener = orderDetailListener
-
-        if (notes.isNotEmpty()) {
-            notesList_progress.visibility = View.GONE
-        }
 
         val viewManager = LinearLayoutManager(context)
         val viewAdapter = OrderNotesAdapter(notes.toMutableList())
@@ -63,8 +61,14 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         val adapter = notesList_notes.adapter as OrderNotesAdapter
         enableItemAnimator(adapter.itemCount == 0)
         adapter.setNotes(notes)
-        notesList_progress.visibility = View.GONE
-        noteList_addNote_divider.visibility = if (notes.isEmpty()) View.GONE else View.VISIBLE
+    }
+
+    fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(notesList_notes, R.layout.skeleton_order_notes_list, delayed = false)
+        } else {
+            skeletonView.hide()
+        }
     }
 
     /*

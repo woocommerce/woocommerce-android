@@ -70,6 +70,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun loadOrderNotes() {
+        orderView?.showOrderNotesSkeleton(true)
         orderModel?.let { order ->
             // Preload order notes from database if available
             fetchAndLoadNotesFromDb()
@@ -94,7 +95,7 @@ class OrderDetailPresenter @Inject constructor(
 
         when (newStatus) {
             CoreOrderStatus.COMPLETED.value -> {
-                AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
+                AnalyticsTracker.track(Stat.FULFILLED_ORDER)
             }
             // TODO: track other status changes once we add them
         }
@@ -127,6 +128,7 @@ class OrderDetailPresenter @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
+            orderView?.showOrderNotesSkeleton(false)
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
                 orderView?.showNotesErrorSnack()
