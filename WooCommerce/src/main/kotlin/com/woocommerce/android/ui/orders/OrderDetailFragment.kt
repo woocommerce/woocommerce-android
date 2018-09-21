@@ -182,20 +182,19 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showChangeOrderStatusSnackbar(newStatus: String) {
         changeOrderStatusCanceled = false
 
-        presenter.orderModel?.let {
-            AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_STATUS_CHANGE, presenter.getSelectedSite(),
-                    mutableMapOf("id" to it.id, "from" to it.status, "to" to newStatus))
+        presenter.orderModel?.let { order ->
+            AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE,
+                    mutableMapOf("id" to order.remoteOrderId, "from" to order.status, "to" to newStatus))
 
-            previousOrderStatus = it.status
-            it.status = newStatus
+            previousOrderStatus = order.status
+            order.status = newStatus
 
             // artificially set order status
             setOrderStatus(newStatus)
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
-                AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_STATUS_CHANGE_UNDO, presenter.getSelectedSite(),
-                        mutableMapOf("id" to it.id))
+                AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_UNDO, mutableMapOf("id" to order.remoteOrderId))
 
                 // User canceled the action to change the order status
                 changeOrderStatusCanceled = true

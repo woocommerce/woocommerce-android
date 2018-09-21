@@ -133,8 +133,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showNotesErrorSnack()
             } else {
                 orderModel?.let { order ->
-                    AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_NOTES_LOADED,
-                            selectedSite.get(), mutableMapOf("id" to order.id))
+                    AnalyticsTracker.track(Stat.ORDER_NOTES_LOADED, mutableMapOf("id" to order.remoteOrderId))
 
                     isUsingCachedNotes = false
                     val notes = orderStore.getOrderNotesForOrder(order)
@@ -153,7 +152,7 @@ class OrderDetailPresenter @Inject constructor(
                     it.markOrderStatusChangedFailed()
                 }
             } else {
-                AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_STATUS_CHANGE_SUCCESS, selectedSite.get())
+                AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_SUCCESS)
 
                 // Successfully marked order status changed
                 orderModel?.let {
@@ -194,8 +193,6 @@ class OrderDetailPresenter @Inject constructor(
         val payload = FetchOrderNotesPayload(order, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
     }
-
-    override fun getSelectedSite() = selectedSite.get()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

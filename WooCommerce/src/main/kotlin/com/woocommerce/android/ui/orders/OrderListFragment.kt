@@ -291,8 +291,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     // region OrderCustomerActionListener
     override fun dialPhone(order: WCOrderModel, phone: String) {
-        AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_CONTACT_ACTION, presenter.getSelectedSite(),
-                mutableMapOf("id" to order.id, "status" to order.status,
+        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION,
+                mutableMapOf("id" to order.remoteOrderId, "status" to order.status,
                         "type" to OrderCustomerActionListener.Action.CALL.name.toLowerCase()))
 
         val intent = Intent(Intent.ACTION_DIAL)
@@ -308,8 +308,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun createEmail(order: WCOrderModel, emailAddr: String) {
-        AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_CONTACT_ACTION, presenter.getSelectedSite(),
-                mutableMapOf("id" to order.id, "status" to order.status,
+        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION,
+                mutableMapOf("id" to order.remoteOrderId, "status" to order.status,
                         "type" to OrderCustomerActionListener.Action.EMAIL.name.toLowerCase()))
 
         val intent = Intent(Intent.ACTION_SENDTO)
@@ -325,8 +325,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun sendSms(order: WCOrderModel, phone: String) {
-        AnalyticsTracker.trackWithSiteDetails(Stat.ORDER_CONTACT_ACTION, presenter.getSelectedSite(),
-                mutableMapOf("id" to order.id, "status" to order.status,
+        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION,
+                mutableMapOf("id" to order.remoteOrderId, "status" to order.status,
                         "type" to OrderCustomerActionListener.Action.SMS.name.toLowerCase()))
 
         val intent = Intent(Intent.ACTION_SENDTO)
