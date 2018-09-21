@@ -14,7 +14,7 @@ import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
 
 class AnalyticsTracker private constructor(private val context: Context) {
-    //region Track Event Enums
+    // region Track Event Enums
     enum class Stat {
         // -- General
         APPLICATION_OPENED,
@@ -116,7 +116,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         OPENED_SETTINGS,
         OPENED_PRIVACY_SETTINGS
     }
-    //endregion
+    // endregion
+
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
