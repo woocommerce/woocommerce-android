@@ -73,8 +73,9 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 // Track range change
-                AnalyticsTracker.track(Stat.DASHBOARD_TOP_PERFORMERS_DATE,
-                        mapOf("range" to tab.tag.toString().toLowerCase()))
+                AnalyticsTracker.track(
+                        Stat.DASHBOARD_TOP_PERFORMERS_DATE,
+                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
 
                 topEarners_recycler.adapter = TopEarnersAdapter(context)
                 showEmptyView(false)

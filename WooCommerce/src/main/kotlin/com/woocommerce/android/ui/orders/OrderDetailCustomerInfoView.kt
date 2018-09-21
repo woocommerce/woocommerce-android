@@ -5,6 +5,8 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.PhoneUtils
 import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
@@ -55,20 +57,32 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
 
             // configure more/less button
             customerInfo_viewMore.setOnCheckedChangeListener { _, isChecked ->
-                customerInfo_morePanel.visibility = if (isChecked) View.VISIBLE else View.GONE
+                if (isChecked) {
+                    AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
+                    customerInfo_morePanel.visibility = View.VISIBLE
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
+                    customerInfo_morePanel.visibility = View.GONE
+                }
             }
 
             // Set action button listeners
             customerInfo_emailBtn.setOnClickListener {
-                listener?.createEmail(order.billingEmail)
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
+
+                listener?.createEmail(order, order.billingEmail)
             }
 
             customerInfo_phoneBtn.setOnClickListener {
-                listener?.dialPhone(order.billingPhone)
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
+
+                listener?.dialPhone(order, order.billingPhone)
             }
 
             customerInfo_hangoutsBtn.setOnClickListener {
-                listener?.sendSms(order.billingPhone)
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
+
+                listener?.sendSms(order, order.billingPhone)
             }
         }
     }

@@ -99,7 +99,24 @@ class AnalyticsTracker private constructor(private val context: Context) {
         FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
 
         // -- Order Detail
-        OPENED_ORDER_DETAIL,
+        ORDER_OPEN,
+        ORDER_NOTES_LOADED,
+        ORDER_CONTACT_ACTION,
+        ORDER_CONTACT_ACTION_FAILED,
+        ORDER_STATUS_CHANGE,
+        ORDER_STATUS_CHANGE_FAILED,
+        ORDER_STATUS_CHANGE_SUCCESS,
+        ORDER_STATUS_CHANGE_UNDO,
+        ORDER_DETAIL_ADD_NOTE_BUTTON_TAPPED,
+        ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED,
+        ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED,
+        ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED,
+        ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED,
+        ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED,
+        ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED,
+        ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
+
+        // -- Order Fulfillment
         FULFILLED_ORDER,
 
         // -- Top-level navigation
@@ -231,14 +248,21 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
         const val KEY_BLOG_ID = "blog_id"
-        const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
+        const val KEY_CONTEXT = "context"
         const val KEY_ERROR_CONTEXT = "error_context"
         const val KEY_ERROR_DESC = "error_description"
         const val KEY_ERROR_TYPE = "error_type"
+        const val KEY_FROM = "from"
+        const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
+        const val KEY_ID = "id"
+        const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
-        const val KEY_CONTEXT = "context"
+        const val KEY_NUMBER_OF_STORES = "number_of_stores"
+        const val KEY_RANGE = "range"
+        const val KEY_SELECTED_STORE_ID = "selected_store_id"
         const val KEY_STATUS = "status"
-        const val KEY_IS_LOADING_MORE = "is_loading_more"
+        const val KEY_TO = "to"
+        const val KEY_TYPE = "type"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
