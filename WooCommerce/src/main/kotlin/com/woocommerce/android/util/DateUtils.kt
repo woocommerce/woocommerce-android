@@ -128,7 +128,7 @@ object DateUtils {
      */
     @Throws(IllegalArgumentException::class)
     fun getShortMonthString(iso8601Month: String): String {
-        val month = iso8601Month.split("-").last()
+        val month = iso8601Month.split("-")[1]
         return try {
             shortMonths[month.toInt() - 1]
         } catch (e: Exception) {
