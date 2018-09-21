@@ -14,6 +14,7 @@ import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
 
 class AnalyticsTracker private constructor(private val context: Context) {
+    //region Track Event Enums
     enum class Stat {
         // -- General
         APPLICATION_OPENED,
@@ -115,7 +116,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         OPENED_SETTINGS,
         OPENED_PRIVACY_SETTINGS
     }
-
+    //endregion
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
@@ -224,16 +225,19 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // Guaranteed to hold a reference to the application context, which is safe
         @SuppressLint("StaticFieldLeak")
         private var instance: AnalyticsTracker? = null
+
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
-        private const val KEY_BLOG_ID = "blog_id"
-        private const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
-        private const val KEY_ERROR_CONTEXT = "error_context"
-        private const val KEY_ERROR_DESC = "error_description"
-        private const val KEY_ERROR_TYPE = "error_type"
-        private const val KEY_NAME = "name"
-        private const val KEY_CONTEXT = "context"
+        const val KEY_BLOG_ID = "blog_id"
+        const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
+        const val KEY_ERROR_CONTEXT = "error_context"
+        const val KEY_ERROR_DESC = "error_description"
+        const val KEY_ERROR_TYPE = "error_type"
+        const val KEY_NAME = "name"
+        const val KEY_CONTEXT = "context"
+        const val KEY_STATUS = "status"
+        const val KEY_IS_LOADING_MORE = "is_loading_more"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
