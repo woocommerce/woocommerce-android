@@ -315,6 +315,18 @@ class DashboardPresenterTest {
     }
 
     @Test
+    fun `Handles FETCH_VISITOR_STATS error event correctly`() {
+        presenter.takeView(dashboardView)
+
+        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        onChanged.causeOfChange = FETCH_VISITOR_STATS
+        onChanged.error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
+
+        presenter.onWCStatsChanged(onChanged)
+        verify(dashboardView, times(1)).showVisitorStatsError(StatsGranularity.DAYS)
+    }
+
+    @Test
     fun `Show and hide stats skeleton correctly`() {
         presenter.takeView(dashboardView)
         presenter.loadStats(StatsGranularity.DAYS)
