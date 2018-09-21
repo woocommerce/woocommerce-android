@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -106,6 +109,8 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun pushOrderNote(noteText: String, isCustomerNote: Boolean) {
+        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to orderModel!!.remoteOrderId))
+
         if (!networkStatus.isConnected()) {
             // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
             // just in case...
@@ -166,9 +171,18 @@ class OrderDetailPresenter @Inject constructor(
             }
         } else if (event.causeOfChange == POST_ORDER_NOTE) {
             if (event.isError) {
+                AnalyticsTracker.track(
+                        ORDER_NOTE_ADD_FAILED,
+                        this::class.java.simpleName,
+                        event.error.type.toString(),
+                        event.error.message)
+
                 WooLog.e(T.ORDERS, "$TAG - Error posting order note : ${event.error.message}")
                 orderView?.showAddOrderNoteErrorSnack()
+            } else {
+                AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
             }
+
             // note that we refresh even on error to make sure the transient note is removed
             // from the note list
             fetchAndLoadNotesFromDb()

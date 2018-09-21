@@ -116,6 +116,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED,
         ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
 
+        // -- Order Notes
+        ADD_ORDER_NOTE_ADD_BUTTON_TAPPED,
+        ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED,
+        ORDER_NOTE_ADD,
+        ORDER_NOTE_ADD_FAILED,
+        ORDER_NOTE_ADD_SUCCESS,
+
         // -- Order Fulfillment
         FULFILLED_ORDER,
 
@@ -259,8 +266,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
         const val KEY_NUMBER_OF_STORES = "number_of_stores"
+        const val KEY_PARENT_ID = "parent_id"
         const val KEY_RANGE = "range"
         const val KEY_SELECTED_STORE_ID = "selected_store_id"
+        const val KEY_STATE = "state"
         const val KEY_STATUS = "status"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
