@@ -21,6 +21,7 @@ import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.widgets.SkeletonView
@@ -102,6 +103,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = ordersList
                 setOnRefreshListener {
+                    AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
+
                     orderRefreshLayout.isRefreshing = false
                     if (!isRefreshPending) {
                         isRefreshPending = true
@@ -160,6 +163,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
         R.id.menu_filter -> {
+            AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
+
             showFilterDialog()
             true
         }
@@ -213,7 +218,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         noOrdersView.visibility = View.GONE
 
         if (!ordersAdapter.isSameOrderList(orders)) {
-            ordersList?.let { listView ->
+            ordersList?.let { _ ->
                 if (isFreshData) {
                     ordersList.scrollToPosition(0)
                     // TODO: do we want this animation still?
@@ -289,32 +294,62 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     // region OrderCustomerActionListener
-    override fun dialPhone(phone: String) {
+    override fun dialPhone(order: WCOrderModel, phone: String) {
+        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION, mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_TYPE to OrderCustomerActionListener.Action.CALL.name.toLowerCase()))
+
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phone")
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
+            AnalyticsTracker.track(
+                    Stat.ORDER_CONTACT_ACTION_FAILED,
+                    this.javaClass.simpleName,
+                    e.javaClass.simpleName, "No phone app was found")
+
             ToastUtils.showToast(context, R.string.error_no_phone_app)
         }
     }
 
-    override fun createEmail(emailAddr: String) {
+    override fun createEmail(order: WCOrderModel, emailAddr: String) {
+        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION, mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_TYPE to OrderCustomerActionListener.Action.EMAIL.name.toLowerCase()))
+
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
+            AnalyticsTracker.track(
+                    Stat.ORDER_CONTACT_ACTION_FAILED,
+                    this.javaClass.simpleName,
+                    e.javaClass.simpleName, "No e-mail app was found")
+
             ToastUtils.showToast(context, R.string.error_no_email_app)
         }
     }
 
-    override fun sendSms(phone: String) {
+    override fun sendSms(order: WCOrderModel, phone: String) {
+        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION, mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_TYPE to OrderCustomerActionListener.Action.SMS.name.toLowerCase()))
+
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("smsto:$phone")
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
+            AnalyticsTracker.track(
+                    Stat.ORDER_CONTACT_ACTION_FAILED,
+                    this.javaClass.simpleName,
+                    e.javaClass.simpleName, "No SMS app was found")
+
             ToastUtils.showToast(context, R.string.error_no_sms_app)
         }
     }
@@ -330,6 +365,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onFilterSelected(orderStatus: String?) {
+        AnalyticsTracker.track(
+                Stat.ORDERS_LIST_FILTER,
+                mapOf(AnalyticsTracker.KEY_IS_LOADING_MORE to orderStatus.orEmpty()))
+
         orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
         presenter.loadOrders(orderStatusFilter, true)

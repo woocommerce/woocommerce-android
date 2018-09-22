@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -93,13 +96,6 @@ class OrderDetailPresenter @Inject constructor(
             return
         }
 
-        when (newStatus) {
-            CoreOrderStatus.COMPLETED.value -> {
-                AnalyticsTracker.trackWithSiteDetails(Stat.FULFILLED_ORDER, selectedSite.get())
-            }
-            // TODO: track other status changes once we add them
-        }
-
         orderModel?.let { order ->
             val payload = UpdateOrderStatusPayload(order, selectedSite.get(), newStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
@@ -107,6 +103,8 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun pushOrderNote(noteText: String, isCustomerNote: Boolean) {
+        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to orderModel!!.remoteOrderId))
+
         if (!networkStatus.isConnected()) {
             // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
             // just in case...
@@ -134,6 +132,10 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showNotesErrorSnack()
             } else {
                 orderModel?.let { order ->
+                    AnalyticsTracker.track(
+                            Stat.ORDER_NOTES_LOADED,
+                            mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
+
                     isUsingCachedNotes = false
                     val notes = orderStore.getOrderNotesForOrder(order)
                     orderView?.updateOrderNotes(notes)
@@ -142,11 +144,19 @@ class OrderDetailPresenter @Inject constructor(
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
+
+                AnalyticsTracker.track(
+                        Stat.ORDER_STATUS_CHANGE_FAILED,
+                        this.javaClass.simpleName,
+                        event.error.type.toString(), event.error.message)
+
                 orderView?.let {
                     it.showOrderStatusChangedError()
                     it.markOrderStatusChangedFailed()
                 }
             } else {
+                AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_SUCCESS)
+
                 // Successfully marked order status changed
                 orderModel?.let {
                     orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
@@ -155,9 +165,18 @@ class OrderDetailPresenter @Inject constructor(
             }
         } else if (event.causeOfChange == POST_ORDER_NOTE) {
             if (event.isError) {
+                AnalyticsTracker.track(
+                        ORDER_NOTE_ADD_FAILED,
+                        this::class.java.simpleName,
+                        event.error.type.toString(),
+                        event.error.message)
+
                 WooLog.e(T.ORDERS, "$TAG - Error posting order note : ${event.error.message}")
                 orderView?.showAddOrderNoteErrorSnack()
+            } else {
+                AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
             }
+
             // note that we refresh even on error to make sure the transient note is removed
             // from the note list
             fetchAndLoadNotesFromDb()

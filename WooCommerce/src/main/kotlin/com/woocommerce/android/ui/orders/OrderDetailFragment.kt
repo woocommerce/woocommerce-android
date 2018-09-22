@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
@@ -20,6 +22,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener {
@@ -170,7 +173,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun updateOrderStatus(newStatus: String) {
+    override fun setOrderStatus(newStatus: String) {
         orderDetail_orderStatus.updateStatus(newStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, false, this)
@@ -181,22 +184,37 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showChangeOrderStatusSnackbar(newStatus: String) {
         changeOrderStatusCanceled = false
 
-        presenter.orderModel?.let {
-            previousOrderStatus = it.status
-            it.status = newStatus
+        presenter.orderModel?.let { order ->
+            AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE, mapOf(
+                    AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                    AnalyticsTracker.KEY_FROM to order.status,
+                    AnalyticsTracker.KEY_TO to newStatus))
+
+            previousOrderStatus = order.status
+            order.status = newStatus
 
             // artificially set order status
-            updateOrderStatus(newStatus)
+            setOrderStatus(newStatus)
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
+                AnalyticsTracker.track(
+                        Stat.ORDER_STATUS_CHANGE_UNDO,
+                        mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
+
+                when (newStatus) {
+                    CoreOrderStatus.COMPLETED.value ->
+                        AnalyticsTracker.track(SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED)
+                    else -> {}
+                }
+
                 // User canceled the action to change the order status
                 changeOrderStatusCanceled = true
 
                 presenter.orderModel?.let { order ->
                     previousOrderStatus?.let { status ->
                         order.status = status
-                        updateOrderStatus(status)
+                        setOrderStatus(status)
                     }
                     previousOrderStatus = null
                 }
@@ -276,7 +294,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showOrderStatusChangedError() {
         uiMessageResolver.getSnack(R.string.order_error_update_general).show()
         previousOrderStatus?.let { status ->
-            updateOrderStatus(status)
+            setOrderStatus(status)
         }
         previousOrderStatus = null
     }

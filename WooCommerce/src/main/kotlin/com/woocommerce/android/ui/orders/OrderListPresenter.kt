@@ -86,6 +86,10 @@ class OrderListPresenter @Inject constructor(
                     orderView?.showLoadOrdersError()
                     fetchAndLoadOrdersFromDb(event.statusFilter, false)
                 } else {
+                    AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(
+                            AnalyticsTracker.KEY_STATUS to event.statusFilter.orEmpty(),
+                            AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMoreOrders))
+
                     canLoadMore = event.canLoadMore
                     val isForceRefresh = !isLoadingMoreOrders
                     fetchAndLoadOrdersFromDb(event.statusFilter, isForceRefresh)
@@ -105,7 +109,9 @@ class OrderListPresenter @Inject constructor(
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
-        AnalyticsTracker.trackWithSiteDetails(Stat.OPENED_ORDER_DETAIL, selectedSite.get())
+        AnalyticsTracker.track(Stat.ORDER_OPEN, mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                AnalyticsTracker.KEY_STATUS to order.status))
         orderView?.openOrderDetail(order)
     }
 

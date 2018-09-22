@@ -22,7 +22,7 @@ interface OrderDetailContract {
         fun showOrderNotesSkeleton(show: Boolean)
         fun showAddOrderNoteScreen()
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
-        fun updateOrderStatus(newStatus: String)
+        fun setOrderStatus(newStatus: String)
         fun showChangeOrderStatusSnackbar(newStatus: String)
         fun showNotesErrorSnack()
         fun showAddOrderNoteSnack()

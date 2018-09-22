@@ -88,8 +88,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 // Track range change
-                AnalyticsTracker.track(Stat.DASHBOARD_MAIN_STATS_DATE,
-                        mapOf("range" to tab.tag.toString().toLowerCase()))
+                AnalyticsTracker.track(
+                        Stat.DASHBOARD_MAIN_STATS_DATE,
+                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
 
                 clearLabelValues()
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)

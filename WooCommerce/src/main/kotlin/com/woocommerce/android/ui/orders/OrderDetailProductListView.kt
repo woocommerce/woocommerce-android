@@ -12,6 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -48,12 +50,14 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 productList_btnDetails.visibility = View.GONE
                 productList_btnDetails.setOnClickListener(null)
                 productList_btnFulfill.setOnClickListener {
+                    AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
                     listener.openOrderFulfillment(order)
                 }
             } else {
                 productList_btnFulfill.visibility = View.GONE
                 productList_btnDetails.visibility = View.VISIBLE
                 productList_btnDetails.setOnClickListener {
+                    AnalyticsTracker.track(Stat.ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED)
                     listener.openOrderProductList(order)
                 }
                 productList_btnFulfill.setOnClickListener(null)
