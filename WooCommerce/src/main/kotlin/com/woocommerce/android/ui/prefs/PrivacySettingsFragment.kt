@@ -8,7 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_privacy.*
 import javax.inject.Inject
@@ -41,12 +46,23 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
 
         switchSendStats.isChecked = presenter.getSendUsageStats()
         switchSendStats.setOnClickListener {
+            AnalyticsTracker.track(PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED, mapOf(
+                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchSendStats.isChecked)))
             presenter.setSendUsageStats(switchSendStats.isChecked)
         }
 
-        buttonLearnMore.setOnClickListener { showCookiePolicy() }
-        buttonPrivacyPolicy.setOnClickListener { showPrivacyPolicy() }
-        buttonTracking.setOnClickListener { showCookiePolicy() }
+        buttonLearnMore.setOnClickListener {
+            AnalyticsTracker.track(PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED)
+            showCookiePolicy()
+        }
+        buttonPrivacyPolicy.setOnClickListener {
+            AnalyticsTracker.track(PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
+            showPrivacyPolicy()
+        }
+        buttonTracking.setOnClickListener {
+            AnalyticsTracker.track(PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
+            showCookiePolicy()
+        }
     }
 
     override fun onDestroyView() {

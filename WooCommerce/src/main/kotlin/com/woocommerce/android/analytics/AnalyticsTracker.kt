@@ -138,8 +138,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MAIN_TAB_NOTIFICATIONS_RESELECTED,
 
         // -- Settings
-        OPENED_SETTINGS,
-        OPENED_PRIVACY_SETTINGS
+        SETTING_CHANGE,
+        SETTING_CHANGE_FAILED,
+        SETTING_CHANGE_SUCCESS,
+        SETTINGS_LOGOUT_BUTTON_TAPPED,
+        SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+        SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED,
+        PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
+        PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
+        PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
+        PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
     }
     // endregion
 
@@ -269,6 +277,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_NUMBER_OF_STORES = "number_of_stores"
         const val KEY_PARENT_ID = "parent_id"
         const val KEY_RANGE = "range"
+        const val KEY_RESULT = "result"
         const val KEY_SELECTED_STORE_ID = "selected_store_id"
         const val KEY_STATE = "state"
         const val KEY_STATUS = "status"

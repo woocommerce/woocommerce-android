@@ -9,7 +9,9 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
+import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -90,14 +92,21 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun showPrivacySettingsFragment() {
         val fragment = PrivacySettingsFragment.newInstance()
         showFragment(fragment, PrivacySettingsFragment.TAG, true)
-        AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_PRIVACY_SETTINGS)
     }
 
     override fun confirmLogout() {
         AlertDialog.Builder(ContextThemeWrapper(this, R.style.Woo_Dialog))
                 .setMessage(R.string.settings_confirm_signout)
-                .setPositiveButton(R.string.signout) { dialog, whichButton -> presenter.logout() }
-                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.signout) { _, _ ->
+                    AnalyticsTracker.track(SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
+                            AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)))
+
+                    presenter.logout()
+                }
+                .setNegativeButton(R.string.cancel) { _, _ ->
+                    AnalyticsTracker.track(SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
+                            AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(false)))
+                }
                 .setCancelable(true)
                 .create()
                 .show()

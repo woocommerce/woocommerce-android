@@ -11,4 +11,15 @@ object AnalyticsUtils {
             false -> "off"
         }
     }
+
+    /**
+     * Returns the proper label for the confirmation dialog result property on a
+     * track event.
+     */
+    fun getConfirmationResultLabel(isPositive: Boolean): String {
+        return when (isPositive) {
+            true -> "positive"
+            false -> "negative"
+        }
+    }
 }
