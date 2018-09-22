@@ -90,7 +90,6 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun showPrivacySettingsFragment() {
         val fragment = PrivacySettingsFragment.newInstance()
         showFragment(fragment, PrivacySettingsFragment.TAG, true)
-        AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_PRIVACY_SETTINGS)
     }
 
     override fun confirmLogout() {
