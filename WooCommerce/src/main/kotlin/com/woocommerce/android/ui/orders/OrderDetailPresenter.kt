@@ -93,12 +93,6 @@ class OrderDetailPresenter @Inject constructor(
             return
         }
 
-        when (newStatus) {
-            CoreOrderStatus.COMPLETED.value -> {
-                AnalyticsTracker.track(Stat.FULFILLED_ORDER)
-            }
-        }
-
         orderModel?.let { order ->
             val payload = UpdateOrderStatusPayload(order, selectedSite.get(), newStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))

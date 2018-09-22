@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -88,6 +89,8 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun onClick(v: View?) {
         // User has clicked the button to mark this order complete.
         context?.let {
+            AnalyticsTracker.track(ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED)
+
             presenter.orderModel?.let {
                 presenter.markOrderComplete()
             }
