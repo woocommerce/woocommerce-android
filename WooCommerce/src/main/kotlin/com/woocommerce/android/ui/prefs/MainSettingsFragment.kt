@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
@@ -52,10 +54,14 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         textPrimaryStoreUsername.text = presenter.getUserDisplayName()
 
         buttonLogout.setOnClickListener {
+            AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
+
             listener.onRequestLogout()
         }
 
         textPrivacySettings.setOnClickListener {
+            AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
+
             listener.onRequestShowPrivacySettings()
         }
     }
