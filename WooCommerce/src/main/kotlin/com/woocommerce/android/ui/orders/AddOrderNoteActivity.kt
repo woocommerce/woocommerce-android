@@ -12,8 +12,11 @@ import android.view.MenuItem
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_order_note.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -58,7 +61,11 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         }
 
         if (presenter.hasBillingEmail(orderId)) {
-            addNote_switch.setOnCheckedChangeListener { buttonView, isChecked ->
+            addNote_switch.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(
+                        ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED,
+                        mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked)))
+
                 val drawableId = if (isChecked) R.drawable.ic_note_public else R.drawable.ic_note_private
                 addNote_icon.setImageDrawable(ContextCompat.getDrawable(this, drawableId))
             }
@@ -105,6 +112,8 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                 true
             }
             R.id.menu_add -> {
+                AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
+
                 if (!networkStatus.isConnected()) {
                     uiMessageResolver.showOfflineSnack()
                 } else {
