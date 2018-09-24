@@ -24,6 +24,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
@@ -70,7 +71,8 @@ class DashboardPresenterTest {
         presenter.takeView(dashboardView)
         presenter.loadStats(StatsGranularity.DAYS)
 
-        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
+        // note that we expect two dispatches because there's one to get stats and another to get visitors
+        verify(dispatcher, times(2)).dispatch(actionCaptor.capture())
         assertEquals(FETCH_ORDER_STATS, actionCaptor.firstValue.type)
 
         val payload = actionCaptor.firstValue.payload as FetchOrderStatsPayload
@@ -84,6 +86,7 @@ class DashboardPresenterTest {
 
         // Simulate OnChanged event from FluxC
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        onChanged.causeOfChange = FETCH_ORDER_STATS
         presenter.onWCStatsChanged(onChanged)
 
         verify(dashboardView).showStats(any(), any(), eq(StatsGranularity.DAYS))
@@ -95,6 +98,7 @@ class DashboardPresenterTest {
 
         // Simulate OnChanged event from FluxC
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS).apply {
+            causeOfChange = FETCH_ORDER_STATS
             error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
         }
         presenter.onWCStatsChanged(onChanged)
@@ -300,12 +304,36 @@ class DashboardPresenterTest {
     }
 
     @Test
+    fun `Handles FETCH_VISITOR_STATS event correctly`() {
+        presenter.takeView(dashboardView)
+
+        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        onChanged.causeOfChange = FETCH_VISITOR_STATS
+
+        presenter.onWCStatsChanged(onChanged)
+        verify(dashboardView, times(1)).showVisitorStats(1, StatsGranularity.DAYS)
+    }
+
+    @Test
+    fun `Handles FETCH_VISITOR_STATS error event correctly`() {
+        presenter.takeView(dashboardView)
+
+        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        onChanged.causeOfChange = FETCH_VISITOR_STATS
+        onChanged.error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
+
+        presenter.onWCStatsChanged(onChanged)
+        verify(dashboardView, times(1)).showVisitorStatsError(StatsGranularity.DAYS)
+    }
+
+    @Test
     fun `Show and hide stats skeleton correctly`() {
         presenter.takeView(dashboardView)
         presenter.loadStats(StatsGranularity.DAYS)
         verify(dashboardView, times(1)).showChartSkeleton(true)
 
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
+        onChanged.causeOfChange = FETCH_ORDER_STATS
         presenter.onWCStatsChanged(onChanged)
         verify(dashboardView, times(1)).showChartSkeleton(false)
     }

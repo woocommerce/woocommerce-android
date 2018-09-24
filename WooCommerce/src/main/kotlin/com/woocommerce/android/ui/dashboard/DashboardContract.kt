@@ -24,6 +24,8 @@ interface DashboardContract {
         fun showStatsError(granularity: StatsGranularity)
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
         fun showTopEarnersError(granularity: StatsGranularity)
+        fun showVisitorStats(visits: Int, granularity: StatsGranularity)
+        fun showVisitorStatsError(granularity: StatsGranularity)
         fun showErrorSnack()
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
