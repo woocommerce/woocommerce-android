@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/settingsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/Woo.Settings.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_primary_store"/>
+
+        <TextView
+            android:id="@+id/textPrimaryStoreDomain"
+            style="@style/Woo.Settings.LabelWithDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="textPrimaryStoreDomain"/>
+
+        <TextView
+            android:id="@+id/textPrimaryStoreUsername"
+            style="@style/Woo.Settings.Label.Detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="textPrimaryStoreUsername"/>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <TextView
+            android:id="@+id/textPrivacySettings"
+            style="@style/Woo.Settings.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/privacy_settings"/>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonLogout"
+        style="@style/Woo.Button.Purple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/settingsView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/settings_padding"
+        android:text="@string/settings_signout"/>
+
+    <ImageView
+        android:id="@+id/imageHeart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonLogout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:importantForAccessibility="no"
+        android:tint="@color/grey"
+        app:srcCompat="@drawable/ic_gridicons_heart_outline"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageHeart"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_small"
+        android:text="@string/settings_footer"
+        android:textColor="@color/grey"/>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>

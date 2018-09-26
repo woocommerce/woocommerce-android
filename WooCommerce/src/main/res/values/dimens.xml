@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="min_tap_target">48dp</dimen>
+
+    <!--
+        Text Sizes
+    -->
+    <dimen name="text_extra_small">10sp</dimen>
+    <dimen name="text_small">12sp</dimen>
+    <dimen name="text_caption">13sp</dimen>
+    <dimen name="text_medium">14sp</dimen>
+    <dimen name="text_large">16sp</dimen>
+    <dimen name="text_medium_extra_large">18sp</dimen>
+    <dimen name="text_extra_large">20sp</dimen>
+    <dimen name="text_double_extra_large">24sp</dimen>
+    <dimen name="text_triple_extra_large">26sp</dimen>
+
+    <!--
+        Default Padding
+    -->
+    <dimen name="default_padding">8dp</dimen>
+    <dimen name="default_padding_tablet">16dp</dimen>
+
+    <!--
+        Appbar
+    -->
+    <dimen name="appbar_elevation">4dp</dimen>
+
+    <!--
+        Default Card
+    -->
+    <dimen name="card_padding_start">16dp</dimen>
+    <dimen name="card_padding_start_tablet">24dp</dimen>
+
+    <dimen name="card_padding_end">16dp</dimen>
+    <dimen name="card_padding_end_tablet">24dp</dimen>
+
+    <dimen name="card_padding_top">16dp</dimen>
+    <dimen name="card_padding_top_tablet">24dp</dimen>
+
+    <dimen name="card_padding_bottom">16dp</dimen>
+    <dimen name="card_padding_bottom_tablet">24dp</dimen>
+
+    <dimen name="card_gutter">16dp</dimen>
+    <dimen name="card_gutter_tablet">16dp</dimen>
+
+    <dimen name="card_item_padding_intra_h">8dp</dimen>
+    <dimen name="card_item_padding_intra_v">4dp</dimen>
+    <dimen name="card_section_padding_h">12dp</dimen>
+    <dimen name="card_elevation">1dp</dimen>
+
+    <dimen name="card_label_padding_intra_h">4dp</dimen>
+
+    <dimen name="card_title_text_size">@dimen/text_medium</dimen>
+    <dimen name="card_normal_text_size">@dimen/text_medium</dimen>
+    <dimen name="card_label_text_size">@dimen/text_large</dimen>
+
+    <!--
+        Default List
+    -->
+    <dimen name="list_item_text_size">@dimen/text_large</dimen>
+    <dimen name="list_header_text_size">@dimen/text_medium</dimen>
+
+    <dimen name="list_group_header_height">48dp</dimen>
+
+    <dimen name="list_item_padding_intra_h">8dp</dimen>
+    <dimen name="list_item_padding_intra_v">4dp</dimen>
+
+    <dimen name="list_item_padding_start">16dp</dimen>
+    <dimen name="list_item_padding_start_tablet">24dp</dimen>
+
+    <dimen name="list_item_padding_end">16dp</dimen>
+    <dimen name="list_item_padding_end_tablet">24dp</dimen>
+
+    <dimen name="list_item_padding_top">4dp</dimen>
+    <dimen name="list_item_padding_top_tablet">4dp</dimen>
+
+    <dimen name="list_item_padding_bottom">4dp</dimen>
+    <dimen name="list_item_padding_bottom_tablet">4dp</dimen>
+
+    <dimen name="list_divider_padding_top">8dp</dimen>
+    <dimen name="list_divider_padding_top_tablet">12dp</dimen>
+
+    <dimen name="list_divider_padding_bottom">8dp</dimen>
+    <dimen name="list_divider_padding_bottom_tablet">12dp</dimen>
+
+    <!--
+        Default TagView
+    -->
+    <dimen name="tag_text_size">@dimen/text_small</dimen>
+
+    <dimen name="tag_margin_end">4dp</dimen>
+    <dimen name="tag_margin_top">4dp</dimen>
+    <dimen name="tag_margin_bottom">4dp</dimen>
+    <dimen name="tag_padding_start">8dp</dimen>
+    <dimen name="tag_padding_end">8dp</dimen>
+    <dimen name="tag_padding_top">2dp</dimen>
+    <dimen name="tag_padding_bottom">2dp</dimen>
+
+    <dimen name="tag_layout_margin_end">8dp</dimen>
+    <dimen name="tag_layout_margin_bottom">8dp</dimen>
+
+    <!--
+        Default Chart
+    -->
+    <dimen name="chart_height">200dp</dimen>
+
+    <!--
+        Login
+    -->
+    <dimen name="login_avatar_size">64dp</dimen>
+    <dimen name="login_prologue_padding">28dp</dimen>
+
+    <!--
+        Settings
+    -->
+    <dimen name="settings_padding">16dp</dimen>
+
+    <!--
+        Stats and Top earners
+    -->
+    <dimen name="top_earner_min_height">224dp</dimen>
+    <dimen name="top_earner_product_image_sz">40dp</dimen>
+
+    <!--
+        Offline Status Bar
+    -->
+    <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>
+
+    <!--
+        Orders and order notes
+    -->
+    <dimen name="order_note_icon">26dp</dimen>
+
+    <!--
+        Skeletons
+    -->
+    <dimen name="skeleton_bar_chart_padding">30dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_days">14dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_weeks">18dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
+    <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
+    <dimen name="skeleton_order_note_item_height">96dp</dimen>
+</resources>

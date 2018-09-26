@@ -1,0 +1,225 @@
+<resources>
+    <string name="app_name">WooCommerce</string>
+
+    <!-- Android O notification channels, these show in the Android app settings -->
+    <string name="notification_channel_general_title">General</string>
+    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
+
+    <!-- Required by the login library - overwrites the placeholder value with a real channel -->
+    <string name="login_notification_channel_id">@string/notification_channel_general_id</string>
+
+    <!--
+        General Strings
+    -->
+    <string name="all">All</string>
+    <string name="logging_in">Logging in</string>
+    <string name="signout">Log out</string>
+    <string name="my_store">My store</string>
+    <string name="orders">Orders</string>
+    <string name="email_address">Email Address</string>
+    <string name="currency_total">%1$s%2$s</string>
+    <string name="currency_total_negative">-%1$s%2$s</string>
+    <string name="total">Total</string>
+    <string name="shipping">Shipping</string>
+    <string name="payment">Payment</string>
+    <string name="taxes">Taxes</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="discount">Discount</string>
+    <string name="details">Details</string>
+    <string name="hide_details">Hide Details</string>
+    <string name="retry">Retry</string>
+    <string name="undo">Undo</string>
+    <string name="continue_button">Continue</string>
+    <string name="untitled">Untitled</string>
+    <string name="cancel">Cancel</string>
+    <string name="learn_more">Learn More</string>
+    <string name="offline_message">Offline \u2014 using cached data</string>
+    <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
+    <string name="product">Product</string>
+    <string name="today">Today</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
+    <string name="this_year">This Year</string>
+    <string name="discard">Discard</string>
+    <string name="products">Products</string>
+    <string name="notifications">Notifications</string>
+    <string name="notifications_coming_soon">Notifications aren\'t ready yet, but coming in a future release. Stay tuned!</string>
+    <string name="emdash" translatable="false">\u2014</string>
+
+    <!--
+        Date/Time Labels
+    -->
+    <string name="date_timeframe_today">Today</string>
+    <string name="date_timeframe_yesterday">Yesterday</string>
+    <string name="date_timeframe_older_two_days">Older than 2 days</string>
+    <string name="date_timeframe_older_week">Older than a week</string>
+    <string name="date_timeframe_older_month">Older than a month</string>
+    <string name="date_at_time">%1$s at %2$s</string>
+    <!--
+        Error Strings
+    -->
+    <string name="error_cant_open_url">Unable to open the link</string>
+    <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
+    <string name="error_no_phone_app">No phone app was found</string>
+    <string name="error_no_email_app">No e-mail app was found</string>
+    <string name="error_no_sms_app">No SMS app was found</string>
+
+    <!--
+        Login View
+    -->
+    <string name="cant_open_url">Unable to open the link</string>
+    <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
+    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
+    <string name="enter_site_address">Enter the address of your WooCommerce store you\'d like to connect.</string>
+    <string name="at_username">\@%s</string>
+    <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
+    <string name="login_with_jetpack">Log in with Jetpack</string>
+    <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
+    <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
+    <string name="login_pick_store">Pick store</string>
+    <string name="login_connected_store">Connected store</string>
+    <string name="login_avatar_content_description">Your profile photo</string>
+    <string name="login_nostores_content_description">No WooCommerce stores</string>
+    <string name="login_with_a_different_account">Login with a different account</string>
+    <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
+    <!--
+        Dashboard View
+    -->
+    <string name="dashboard_stats_granularity_days">Days</string>
+    <string name="dashboard_stats_granularity_weeks">Weeks</string>
+    <string name="dashboard_stats_granularity_months">Months</string>
+    <string name="dashboard_stats_granularity_years">Years</string>
+
+    <string name="dashboard_stats_visitors">Visitors</string>
+    <string name="dashboard_stats_orders">Orders</string>
+    <string name="dashboard_stats_revenue">Revenue</string>
+    <string name="dashboard_state_no_data">No data available</string>
+    <string name="dashboard_stats_error">Error fetching data</string>
+    <string name="dashboard_stats_error_content_description">Error image</string>
+
+    <string name="dashboard_stats_updated_now">Updated moments ago</string>
+    <string name="dashboard_stats_updated_minutes">Updated %d minutes ago</string>
+    <string name="dashboard_stats_updated_one_hour">Updated 1 hour ago</string>
+    <string name="dashboard_stats_updated_hours">Updated %d hours ago</string>
+    <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
+    <string name="dashboard_stats_updated_date_time">Updated on %s</string>
+
+    <string name="dashboard_top_earners_title">Top performers</string>
+    <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
+    <string name="dashboard_top_earners_total_spend">Total spend</string>
+    <string name="dashboard_top_earners_total_orders">Total product order: %s</string>
+    <string name="dashboard_top_earners_content_description">Product image</string>
+    <string name="dashboard_top_earners_empty">No activity this period</string>
+
+    <string name="dashboard_action_view_order">View Order</string>
+    <string name="dashboard_action_view_orders">View Orders</string>
+    <string name="dashboard_fulfill_order_title">You have 1 order to fulfill</string>
+    <string name="dashboard_fulfill_orders_title">You have %1$d%2$s orders to fulfill</string>
+    <string name="dashboard_fulfill_orders_msg">Your customers are waiting. The faster you ship it out, the happier you\'ll make them.</string>
+
+    <string name="dashboard_no_orders">Waiting for customers</string>
+    <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
+    <string name="dashboard_no_orders_share_store">Share your store</string>
+    <string name="dashboard_no_orders_share_store_title">Share your store\'s URL</string>
+    <!--
+        Order List View
+    -->
+    <string name="orderlist_no_orders">No Orders</string>
+    <string name="orderlist_item_order_num">#%s</string>
+    <string name="orderlist_item_order_name">%1$s %2$s</string>
+    <string name="orderlist_error_fetch_generic">Error fetching orders</string>
+    <string name="orderlist_filter_by">Filter orders by</string>
+    <string name="orderlist_filter_apply">Apply Filter</string>
+    <string name="orderlist_filter">Filter</string>
+    <string name="orderlist_filtered" translatable="false">: %1$s</string>
+    <!--
+        Order Detail Views
+    -->
+    <string name="customer_information">Customer Information</string>
+    <string name="customer_full_name">%1$s %2$s</string>
+    <string name="orderdetail">Order Detail</string>
+    <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
+    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
+    <string name="orderdetail_orderstatus_created">Created %1$s</string>
+    <string name="orderdetail_shipping_details">Shipping Details</string>
+    <string name="orderdetail_billing_details">Billing Details</string>
+    <string name="orderdetail_email_contentdesc">email customer</string>
+    <string name="orderdetail_call_contentdesc">call customer</string>
+    <string name="orderdetail_sms_contentdesc">send customer sms message</string>
+    <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_tax">Tax:</string>
+    <string name="orderdetail_product_lineitem_sku">SKU:</string>
+    <string name="orderdetail_product_image_contentdesc">Product Image</string>
+    <string name="orderdetail_product">Product</string>
+    <string name="orderdetail_product_qty">QTY</string>
+    <string name="orderdetail_payment_summary_completed">Payment of %1$s received via %2$s</string>
+    <string name="orderdetail_payment_summary_onhold">Payment waiting for %s</string>
+    <string name="orderdetail_refunded">Refunded</string>
+    <string name="orderdetail_new_total">New Total</string>
+    <string name="orderdetail_payment_refunded">Payment - Refunded</string>
+    <string name="orderdetail_discount_items">(%1$s)</string>
+    <string name="orderdetail_customer_provided_note">Customer Provided Note</string>
+    <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
+    <string name="orderdetail_note_hint">Compose an order note</string>
+    <string name="orderdetail_note_private">Private Note</string>
+    <string name="orderdetail_note_public">Public Note</string>
+    <string name="orderdetail_order_notes">Order Notes</string>
+    <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
+    <string name="orderdetail_payment_cleared">Payment Cleared</string>
+    <string name="orderdetail_show_billing">Show Billing</string>
+    <string name="orderdetail_hide_billing">Hide Billing</string>
+    <string name="orderdetail_add_note">Add a note</string>
+    <string name="orderdetail_addnote_contentdesc">Add an order note</string>
+    <string name="order_fulfill_order">Fulfill Order</string>
+    <string name="order_fulfill_mark_complete">Mark Order Complete</string>
+    <string name="order_fulfill_marked_complete">Order Marked Complete</string>
+    <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
+    <string name="order_error_update_general">Error changing order</string>
+    <!--
+        Add Order Note
+    -->
+    <string name="add_order_note_label">Email note to customer</string>
+    <string name="add_order_note_sublabel">If disabled will add the note as private</string>
+    <string name="add_order_note_menu_item">Add</string>
+    <string name="add_order_note_added">Order note added</string>
+    <string name="add_order_note_error">Unable to add note</string>
+    <string name="add_order_note_confirm_discard">Discard this note?</string>
+    <!--
+        Order Status Labels
+    -->
+    <string name="orderstatus_processing">Processing</string>
+    <string name="orderstatus_pending">Pending Payment</string>
+    <string name="orderstatus_failed">Failed</string>
+    <string name="orderstatus_completed">Completed</string>
+    <string name="orderstatus_hold">On-Hold</string>
+    <string name="orderstatus_cancelled">Cancelled</string>
+    <string name="orderstatus_refunded">Refunded</string>
+    <string name="orderstatus_contentDesc">Order status</string>
+    <!--
+        Settings
+    -->
+    <string name="settings">Settings</string>
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="settings_signout">Logout account</string>
+    <string name="settings_confirm_signout">Log out of WooCommerce?</string>
+    <string name="settings_send_stats">Collect information</string>
+    <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
+    <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
+    <string name="settings_privacy_policy">Read privacy policy</string>
+    <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
+    <string name="settings_footer">Made with love by Automattic</string>
+    <string name="settings_primary_store">Primary store</string>
+    <string name="settings_privacy_policy_header">Privacy Policy</string>
+    <string name="settings_cookie_policy_header">Cookie Policy</string>
+    <string name="settings_third_party_policy_header">Third Party Policy</string>
+    <!--
+        WCToggleSingleOptionView
+    -->
+    <string name="toggle_option_checked">option checked</string>
+    <string name="toggle_option_not_checked">option not checked</string>
+    <!--
+        Help and support
+    -->
+    <string name="contact_support">Contact support</string>
+    <string name="support_email_subject">WooCommerce Android %s support</string>
+</resources>

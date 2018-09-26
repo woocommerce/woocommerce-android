@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FlowLayout">
+        <attr name="horizontalSpacing" format="dimension" />
+        <attr name="verticalSpacing" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="FlowLayout_LayoutParams">
+        <attr name="layout_horizontalSpacing" format="dimension" />
+        <attr name="layout_verticalSpacing" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="TagView">
+        <attr name="tagText" format="reference|string"/>
+        <attr name="tagTextColor" format="reference|color"/>
+        <attr name="tagTextSize" format="dimension"/>
+        <attr name="tagColor" format="reference|color"/>
+        <attr name="tagBorderColor" format="reference|color"/>
+    </declare-styleable>
+
+    <declare-styleable name="AppTheme">
+        <attr name="tagViewStyle" format="reference"/>
+        <attr name="flowLayoutStyle" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="WCTextViewCompat">
+        <attr name="drawableStartCompat" format="reference"/>
+        <attr name="drawableEndCompat" format="reference"/>
+        <attr name="drawableTopCompat" format="reference"/>
+        <attr name="drawableBottomCompat" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="WCToggleSingleOptionView">
+        <attr name="switchTitle" format="reference|string"/>
+        <attr name="switchSummary" format="reference|string"/>
+        <attr name="switchChecked" format="boolean"/>
+    </declare-styleable>
+</resources>

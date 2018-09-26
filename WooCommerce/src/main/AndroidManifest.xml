@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.woocommerce.android"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Normal permissions, access automatically granted to app -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Dangerous permissions, access must be requested at runtime -->
+
+    <application
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_scheme"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:name=".WooCommerce"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.login.LoginActivity"
+                  android:theme="@style/LoginTheme"
+                  android:windowSoftInputMode="adjustResize">
+        </activity>
+
+        <activity
+            android:name=".ui.login.LoginEpilogueActivity"
+            android:theme="@style/AppTheme.Base"/>
+
+        <activity android:name=".ui.login.MagicLinkInterceptActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="magic-login"
+                    android:scheme="woocommerce" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.prefs.AppSettingsActivity"/>
+
+        <activity
+            android:name=".ui.orders.AddOrderNoteActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
+
+
+        <!-- Services -->
+        <service
+            android:name="org.wordpress.android.login.LoginWpcomService"
+            android:exported="false"
+            android:label="Login to WPCOM Service" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts"/>
+    </application>
+
+</manifest>

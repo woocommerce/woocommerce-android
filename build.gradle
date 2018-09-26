@@ -1,0 +1,88 @@
+buildscript {
+    ext.kotlinVersion = '1.2.61'
+
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath 'com.automattic.android:fetchstyle:1.1'
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
+    }
+}
+
+apply plugin: 'com.automattic.android.fetchstyle'
+
+allprojects {
+    apply plugin: 'checkstyle'
+    apply plugin: 'kotlin-android-extensions'
+
+    repositories {
+        google()
+        jcenter()
+    }
+
+    task checkstyle(type: Checkstyle) {
+        source 'src'
+
+        classpath = files()
+    }
+
+    checkstyle {
+        toolVersion = '8.3'
+        configFile file("${project.rootDir}/config/checkstyle.xml")
+    }
+}
+
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            forcedModules = [
+                    "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion",
+                    "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
+                    "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+            ]
+        }
+    }
+
+    configurations {
+        ktlint
+    }
+
+    dependencies {
+        ktlint 'com.github.shyiko:ktlint:0.22.0'
+    }
+
+    task ktlint(type: JavaExec) {
+        main = "com.github.shyiko.ktlint.Main"
+        classpath = configurations.ktlint
+        args "src/**/*.kt"
+    }
+
+    task ktlintFormat(type: JavaExec) {
+        main = "com.github.shyiko.ktlint.Main"
+        classpath = configurations.ktlint
+        args "-F", "src/**/*.kt"
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    fluxCVersion = '7c4fa0333cef380aa80b92adbb5e4803b90dd7e5'
+    daggerVersion = '2.11'
+    supportLibraryVersion = '27.1.1'
+    glideVersion = '4.6.1'
+    testRunnerVersion = '1.0.1'
+    espressoVersion = '3.0.1'
+    mockitoKotlinVersion = '1.5.0'
+    mockitoVersion = '2.11.0'
+    constraintLayoutVersion = '1.1.0'
+    multidexVersion = '1.0.3'
+    libaddressinputVersion = '0.0.2'
+    eventBusVersion = '3.1.1'
+}

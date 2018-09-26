@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--
+            Default colors
+        -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/default_window_bg</item>
+        <item name="colorButtonNormal">@color/light_gray</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!--
+            Default text
+        -->
+        <item name="android:textAppearance">@style/Woo.TextAppearance</item>
+        <!--
+            Widgets
+        -->
+        <item name="tagViewStyle">@style/Woo.Tag</item>
+        <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
+        <item name="android:listViewStyle">@style/Woo.List</item>
+        <item name="android:buttonStyle">@style/Woo.Button</item>
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.Base">
+        <!-- Overrides for various api levels -->
+    </style>
+    <!--
+        Toolbar Theme
+    -->
+    <style name="ToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!-- Tints input fields like checkboxes and text fields -->
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Color of the title text in the toolbar -->
+        <item name="android:textColorPrimary">@color/menu_title_text</item>
+        <!-- Applies to views in their normal state. -->
+        <item name="colorControlNormal">#FFFFFFFF</item>
+        <!-- Applies to views in their activated state (i.e checked or switches) -->
+        <item name="colorControlActivated">#FFCCCCCC</item>
+        <!-- Applied to framework control highlights (i.e ripples or list selectors) -->
+        <item name="colorControlHighlight">#3d96588a</item>
+        <!-- Ripple effect when clicking items -->
+        <item name="selectableItemBackground">?android:selectableItemBackground</item>
+        <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+    </style>
+
+    <style name="Woo"/>
+    <!--
+        Text Styles
+    -->
+    <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:fontFamily">@font/roboto</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Title">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Title.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Title.Small">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Medium">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Medium.Purple">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Large">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Small">
+        <item name="android:textColor">@color/default_text</item>
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Label">
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textColor">@color/default_text_label_color</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Label.XL">
+        <item name="android:textSize">@dimen/text_double_extra_large</item>
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Label.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Button">
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/default_button_fg_color</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <!--
+        Button Styles
+    -->
+    <style name="Woo.Button" parent="android:Widget.DeviceDefault.Button.Borderless">
+        <item name="android:textColor">@color/button_purple_bg_color</item>
+        <item name="android:background">@null</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="Woo.Button.Purple">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/button_purple_bg</item>
+    </style>
+
+    <style name="Woo.Button.White">
+        <item name="android:textColor">@color/grey_dark</item>
+        <item name="android:background">@drawable/button_white_bg</item>
+    </style>
+
+    <!--
+        Default TagView Style
+    -->
+    <style name="Woo.Tag" parent="android:Widget.DeviceDefault.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/tag_margin_top</item>
+        <item name="android:layout_marginRight">@dimen/tag_margin_end</item>
+        <item name="android:layout_marginBottom">@dimen/tag_margin_bottom</item>
+        <item name="android:paddingStart">@dimen/tag_padding_start</item>
+        <item name="android:paddingEnd">@dimen/tag_padding_end</item>
+        <item name="android:paddingTop">@dimen/tag_padding_top</item>
+        <item name="android:paddingBottom">@dimen/tag_padding_bottom</item>
+        <!-- Custom View Attributes -->
+        <item name="tagTextColor">@color/tagView_text</item>
+        <item name="tagTextSize">@dimen/tag_text_size</item>
+        <item name="tagColor">@color/tagView_bg</item>
+        <item name="tagBorderColor">@color/tagView_border_bg</item>
+    </style>
+    <!--
+        Default Card Style
+    -->
+    <style name="Woo.Card">
+        <item name="android:paddingStart">@dimen/card_padding_start</item>
+        <item name="android:paddingEnd">@dimen/card_padding_end</item>
+        <item name="android:paddingTop">@dimen/card_padding_top</item>
+        <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
+        <item name="android:background">@color/card_bgColor</item>
+        <item name="android:elevation">@dimen/card_elevation</item>
+        <item name="android:layout_marginBottom">@dimen/card_gutter</item>
+    </style>
+    <style name="Woo.Card.Expandable">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+    <style name="Woo.Card.List">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+    </style>
+    <style name="Woo.TextView">
+        <item name="android:paddingStart">@dimen/card_item_padding_intra_h</item>
+        <item name="android:paddingEnd">@dimen/card_item_padding_intra_h</item>
+        <item name="android:paddingTop">@dimen/card_item_padding_intra_v</item>
+        <item name="android:paddingBottom">@dimen/card_item_padding_intra_v</item>
+        <item name="android:textAppearance">@style/Woo.TextAppearance</item>
+    </style>
+    <style name="Woo.TextView.Title">
+        <item name="android:paddingStart">@dimen/card_padding_start</item>
+        <item name="android:paddingEnd">@dimen/card_padding_end</item>
+        <item name="android:paddingTop">@dimen/card_padding_top</item>
+        <item name="android:paddingBottom">@dimen/card_item_padding_intra_h</item>
+        <item name="android:textAppearance">@style/Woo.TextAppearance.Title</item>
+    </style>
+    <style name="Woo.TextView.Title.Purple">
+        <item name="android:textAppearance">@style/Woo.TextAppearance.Medium.Purple</item>
+    </style>
+    <style name="Woo.CardExtenderButton">
+        <item name="android:background">@drawable/card_expander_bg</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:drawableEnd">@drawable/card_expander_selector</item>
+        <item name="android:paddingEnd">@dimen/card_padding_end</item>
+    </style>
+
+    <!--
+        Default List Style
+    -->
+    <style name="Woo.List" parent="android:Widget.DeviceDefault.ListView">
+        <item name="android:listDivider">@drawable/list_divider</item>
+    </style>
+    <!--
+        Base List Child Styles
+    -->
+    <style name="Woo.ListItem">
+        <item name="android:paddingStart">@dimen/list_item_padding_start</item>
+        <item name="android:paddingEnd">@dimen/list_item_padding_end</item>
+        <item name="android:paddingTop">@dimen/list_item_padding_top</item>
+        <item name="android:paddingBottom">@dimen/list_item_padding_bottom</item>
+        <item name="android:background">@color/list_item_bg</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">@style/Woo.TextAppearance.ListItem</item>
+    </style>
+
+    <style name="Woo.TextAppearance.ListItem">
+        <item name="android:textColor">@color/list_item_text</item>
+        <item name="android:textSize">@dimen/list_item_text_size</item>
+    </style>
+
+    <style name="Woo.TextAppearance.ListItem.Title">
+        <item name="android:textColor">@color/list_item_text_title</item>
+    </style>
+    <!--
+        Default List Item Header Styles
+    -->
+    <style name="Woo.ListHeader" parent="android:Widget.DeviceDefault.TextView">
+        <item name="android:paddingStart">@dimen/list_item_padding_start</item>
+        <item name="android:paddingEnd">@dimen/list_item_padding_end</item>
+        <item name="android:background">@drawable/list_header_bg</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/list_group_header_height</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAppearance">@style/Woo.TextAppearance.ListHeader</item>
+    </style>
+
+    <style name="Woo.TextAppearance.ListHeader">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/List_header_text</item>
+        <item name="android:textSize">@dimen/list_header_text_size</item>
+    </style>
+    <!--
+        Default FlowLayout Style
+    -->
+    <style name="Woo.FlowLayout">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="horizontalSpacing">4dp</item>
+        <item name="verticalSpacing">4dp</item>
+    </style>
+    <!--
+        TabLayout Style
+    -->
+    <style name="Woo.TabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabMode">scrollable</item>
+        <item name="tabTextAppearance">@style/Woo.TabLayout.Text</item>
+        <item name="tabTextColor">@color/wc_grey_mid</item>
+        <item name="tabContentStart">48dp</item>
+        <item name="tabPaddingStart">40dp</item>
+        <item name="tabPaddingEnd">40dp</item>
+    </style>
+
+    <style name="Woo.TabLayout.Text" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+    <!--
+        Order: List Style
+    -->
+    <style name="Woo.OrderList.Item" parent="Woo.ListItem"/>
+    <style name="Woo.OrderList.Header" parent="Woo.ListHeader"/>
+    <style name="Woo.OrderList.TextAppearance.Header" parent="Woo.TextAppearance.ListHeader"/>
+    <style name="Woo.OrderList.TextAppearance.ListItem" parent="Woo.TextAppearance.ListItem"/>
+    <style name="Woo.OrderList.TextAppearance.ListItem.Title" parent="Woo.TextAppearance.ListItem.Title"/>
+    <style name="Woo.OrderList.TextAppearance.ListItem.Title.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <!--
+        OrderDetail Styles
+    -->
+    <style name="Woo.OrderDetail.CardTitle" parent="Woo.TextView.Title.Purple"/>
+    <style name="Woo.OrderDetail.TextAppearance.Heading" parent="Woo.TextAppearance.Medium"/>
+    <style name="Woo.OrderDetail.TextAppearance.Content" parent="Woo.TextAppearance.Small"/>
+    <style name="Woo.OrderDetail.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
+    <style name="Woo.OrderDetail.TextAppearance" parent="Woo.TextAppearance"/>
+    <style name="Woo.OrderDetail.TextAppearance.Red">
+        <item name="android:textColor">@color/wc_red</item>
+    </style>
+    <style name="Woo.OrderDetail.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
+    <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
+    <style name="Woo.OrderDetail.TextAppearance.Label.Bold" parent="Woo.TextAppearance.Label.Bold"/>
+    <!--
+        Settings Styles
+    -->
+    <style name="Woo.Settings"/>
+
+    <style name="Woo.Settings.Caption" parent="Woo.TextAppearance">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingTop">@dimen/settings_padding</item>
+        <item name="android:paddingStart">@dimen/settings_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_padding</item>
+    </style>
+
+    <style name="Woo.Settings.Label" parent="Woo.TextAppearance">
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:paddingStart">@dimen/settings_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_padding</item>
+        <item name="android:paddingBottom">@dimen/settings_padding</item>
+        <item name="android:paddingTop">@dimen/settings_padding</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Woo.Settings.Label.Small" parent="Woo.Settings.Label">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:paddingBottom">@dimen/margin_small</item>
+        <item name="android:paddingTop">@dimen/margin_small</item>
+    </style>
+
+    <style name="Woo.Settings.LabelWithButton" parent="Woo.Settings.Label">
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="Woo.Settings.Button" parent="Woo.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/margin_medium</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Woo.Settings.LabelWithDetail" parent="Woo.Settings.LabelWithButton"/>
+
+    <style name="Woo.Settings.Label.Detail" parent="Woo.TextAppearance">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:paddingStart">@dimen/settings_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_padding</item>
+        <item name="android:paddingBottom">@dimen/settings_padding</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Woo.Settings.Icon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/settings_padding</item>
+    </style>
+
+
+    <style name="Woo.Settings.Divider">
+        <item name="android:background">@color/grey_lighten_20</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+    </style>
+
+    <!--
+        Offline Status Bar
+    -->
+    <style name="Woo.StatusBar"/>
+    <style name="Woo.StatusBar.Background">
+        <item name="android:background">@color/wc_grey_medium</item>
+        <item name="android:padding">@dimen/offline_status_bar_padding</item>
+    </style>
+    <style name="Woo.StatusBar.Label">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_caption</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+    <!--
+        Other
+    -->
+    <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+    </style>
+</resources>

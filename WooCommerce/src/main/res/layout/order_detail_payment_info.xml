@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/paymentInfo_lblTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:text="@string/payment"
+        android:textAppearance="@style/Woo.TextAppearance.Medium.Purple"/>
+
+    <!-- Subtotal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/paymentInfo_lblSubtotal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="@dimen/card_item_padding_intra_h"
+            android:text="@string/subtotal"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+
+        <TextView
+            android:id="@+id/paymentInfo_subTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/card_item_padding_intra_h"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="$45.00"/>
+    </LinearLayout>
+
+    <!-- Discounts -->
+    <LinearLayout
+        android:id="@+id/paymentInfo_discountSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/paymentInfo_lblDiscount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/discount"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+
+        <TextView
+            android:id="@+id/paymentInfo_discountItems"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+            android:layout_marginStart="@dimen/card_item_padding_intra_h"
+            android:layout_weight="1"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
+
+        <TextView
+            android:id="@+id/paymentInfo_discountTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="-$4.00"/>
+    </LinearLayout>
+
+    <!-- Shipping -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/card_item_padding_intra_h">
+
+        <TextView
+            android:id="@+id/paymentInfo_lblShipping"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/shipping"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+
+        <TextView
+            android:id="@+id/paymentInfo_shippingTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="$7.00"/>
+    </LinearLayout>
+
+    <!-- Taxes -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:paddingTop="@dimen/card_item_padding_intra_h">
+
+        <TextView
+            android:id="@+id/paymentInfo_lblTaxes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/taxes"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+
+        <TextView
+            android:id="@+id/paymentInfo_taxesTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            tools:text="$1.00"/>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <FrameLayout
+        android:id="@+id/paymentInfo_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/card_item_padding_intra_h"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:background="@color/list_divider"
+        app:srcCompat="@drawable/list_divider"/>
+
+    <!-- Total -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:paddingTop="@dimen/card_item_padding_intra_h">
+
+        <TextView
+            android:id="@+id/paymentInfo_lblTotal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/total"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
+
+        <TextView
+            android:id="@+id/paymentInfo_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
+            tools:text="$49.00"/>
+    </LinearLayout>
+
+    <!-- Refund and New Total Section -->
+    <LinearLayout
+        android:id="@+id/paymentInfo_refundSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <!-- Refunds -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/paymentInfo_lblRefund"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/orderdetail_refunded"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Red"/>
+
+            <TextView
+                android:id="@+id/paymentInfo_refundTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Red"
+                tools:text="-$15.00"/>
+        </LinearLayout>
+
+        <!-- New Total (after refund deducted) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/card_item_padding_intra_h"
+            android:paddingTop="@dimen/card_item_padding_intra_h">
+
+            <TextView
+                android:id="@+id/paymentInfo_lblNewTotal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/orderdetail_new_total"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
+
+            <TextView
+                android:id="@+id/paymentInfo_newTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                tools:text="$34.00"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <FrameLayout
+        android:id="@+id/paymentInfo_divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:background="@color/list_divider"
+        app:srcCompat="@drawable/list_divider"/>
+
+    <!-- Payment Method -->
+    <TextView
+        android:id="@+id/paymentInfo_paymentMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:paddingBottom="@dimen/card_item_padding_intra_h"
+        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        tools:text="Payment of $49.00 received via credit card (PayPal)"/>
+</merge>

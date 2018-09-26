@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Default Padding
+    -->
+    <dimen name="default_padding">@dimen/default_padding_tablet</dimen>
+
+    <!--
+        Default Card
+    -->
+    <dimen name="card_padding_start">@dimen/card_padding_start_tablet</dimen>
+    <dimen name="card_padding_end">@dimen/card_padding_end_tablet</dimen>
+    <dimen name="card_padding_top">@dimen/card_padding_top_tablet</dimen>
+    <dimen name="card_padding_bottom">@dimen/card_padding_bottom_tablet</dimen>
+    <dimen name="card_gutter">@dimen/card_gutter_tablet</dimen>
+
+    <!--
+        Default List
+    -->
+    <dimen name="list_item_padding_start">@dimen/list_item_padding_start_tablet</dimen>
+    <dimen name="list_item_padding_end">@dimen/list_item_padding_end_tablet</dimen>
+    <dimen name="list_item_padding_top">@dimen/list_item_padding_top_tablet</dimen>
+    <dimen name="list_item_padding_bottom">@dimen/list_item_padding_bottom_tablet</dimen>
+    <dimen name="list_divider_padding_top">@dimen/list_divider_padding_top_tablet</dimen>
+    <dimen name="list_divider_padding_bottom">@dimen/list_divider_padding_bottom_tablet</dimen>
+</resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/switchSetting_title"
+        style="@style/Woo.TextAppearance.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:importantForAccessibility="no"
+        tools:text="Email note to customer"/>
+
+    <Switch
+        android:id="@+id/switchSetting_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:importantForAccessibility="no"
+        android:clickable="false"
+        tools:text="If disabled will add the note as private"/>
+</merge>

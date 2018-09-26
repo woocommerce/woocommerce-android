@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/unfilled_card_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!-- Title -->
+        <TextView
+            android:id="@+id/alertAction_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.TextAppearance.Title.Bold"
+            tools:text="You have 10 orders to fulfill"/>
+
+        <!-- Message -->
+        <TextView
+            android:id="@+id/alertAction_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/card_item_padding_intra_h"
+            android:text="@string/dashboard_fulfill_orders_msg"/>
+
+        <!-- Action Button -->
+        <Button
+            android:id="@+id/alertAction_action"
+            style="@style/Woo.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/card_item_padding_intra_h"
+            tools:text="@string/dashboard_action_view_orders"/>
+    </LinearLayout>
+
+</merge>

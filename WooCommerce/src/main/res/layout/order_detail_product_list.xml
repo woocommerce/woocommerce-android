@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/productList_lblProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/orderdetail_product"
+        style="@style/Woo.TextView.Title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/productList_lblQty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/orderdetail_product_qty"
+        style="@style/Woo.TextView.Title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- List: Products -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/productList_products"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productList_lblProduct"
+        tools:itemCount="3"
+        tools:listitem="@layout/order_detail_product_list_item"
+        tools:targetApi="lollipop"/>
+
+    <!-- Button: Details -->
+    <Button
+        android:id="@+id/productList_btnDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="37dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/details"
+        style="@style/Woo.Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productList_products"/>
+
+    <!-- Button: Fulfill Order-->
+    <Button
+        android:id="@+id/productList_btnFulfill"
+        style="@style/Woo.Button.Purple"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/order_fulfill_order"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/productList_btnDetails"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productList_products"/>
+</merge>

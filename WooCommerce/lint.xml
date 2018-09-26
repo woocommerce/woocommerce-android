@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- WARNING -->
+
+    <!-- ERROR -->
+    <issue id="InconsistentArrays" severity="error" />
+    <issue id="HardcodedText" severity="error" />
+    <issue id="IconDuplicates" severity="error" />
+    <issue id="IconDipSize" severity="error" />
+    <issue id="StringFormatCount" severity="error" />
+
+    <!-- IGNORE -->
+</lint>
