@@ -167,7 +167,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUnexpectedError(event: OnUnexpectedError) {
-        with (event) {
+        with(event) {
             CrashlyticsUtils.logException(exception, message = "FluxC: ${exception.message}: $description")
         }
     }
