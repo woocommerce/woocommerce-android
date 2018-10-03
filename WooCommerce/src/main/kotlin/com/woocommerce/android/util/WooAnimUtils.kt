@@ -32,7 +32,7 @@ object WooAnimUtils {
     private val DEFAULT_DURATION = Duration.SHORT
 
     fun fadeIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
-        with (ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
+        with(ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
             duration = animDuration.toMillis(target.context)
             interpolator = LinearInterpolator()
             addListener(object : AnimatorListenerAdapter() {
@@ -45,7 +45,7 @@ object WooAnimUtils {
     }
 
     fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION, endVisibility: Int = View.GONE) {
-        with (ObjectAnimator.ofFloat(target, View.ALPHA, 1.0f, 0.0f)) {
+        with(ObjectAnimator.ofFloat(target, View.ALPHA, 1.0f, 0.0f)) {
             duration = animDuration.toMillis(target.context)
             interpolator = LinearInterpolator()
             addListener(object : AnimatorListenerAdapter() {
@@ -61,7 +61,7 @@ object WooAnimUtils {
         val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 0f, 1f)
         val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f, 1f)
 
-        with (ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
+        with(ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
             duration = animDuration.toMillis(target.context)
             interpolator = AccelerateDecelerateInterpolator()
             addListener(object : AnimatorListenerAdapter() {
@@ -77,7 +77,7 @@ object WooAnimUtils {
         val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 0f)
         val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0f)
 
-        with (ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
+        with(ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
             duration = animDuration.toMillis(target.context)
             interpolator = AccelerateDecelerateInterpolator()
             addListener(object : AnimatorListenerAdapter() {

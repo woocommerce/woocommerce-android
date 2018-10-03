@@ -44,7 +44,7 @@ private fun addLinkListener(strBuilder: SpannableStringBuilder, span: ClickableS
         }
     }
 
-    with (strBuilder) {
+    with(strBuilder) {
         setSpan(newSpan, getSpanStart(span), getSpanEnd(span), getSpanFlags(span))
         removeSpan(span)
     }
