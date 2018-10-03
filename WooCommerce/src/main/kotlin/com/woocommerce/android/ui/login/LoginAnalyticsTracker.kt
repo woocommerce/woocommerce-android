@@ -19,8 +19,8 @@ class LoginAnalyticsTracker : LoginAnalyticsListener {
         }
     }
 
-    override fun trackCreatedAccount() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.CREATED_ACCOUNT)
+    override fun trackCreatedAccount(username: String?, email: String?) {
+        // TODO: Account creation
     }
 
     override fun trackEmailFormViewed() {

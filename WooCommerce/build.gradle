@@ -88,7 +88,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
-    implementation 'com.google.android.gms:play-services-auth:12.0.1'
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
 
     // Support library
     implementation "com.android.support:support-v4:$supportLibraryVersion"

@@ -292,17 +292,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 //        launchHelpshift(null, email, true, Tag.ORIGIN_LOGIN_SOCIAL)
     }
 
-    override fun addGoogleLoginFragment(parent: Fragment) {
-        val fragmentManager = parent.childFragmentManager
+    override fun addGoogleLoginFragment() {
+        val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        var loginGoogleFragment = fragmentManager.findFragmentByTag(LoginGoogleFragment.TAG) as LoginGoogleFragment?
-
-        if (loginGoogleFragment != null) {
-            fragmentTransaction.remove(loginGoogleFragment)
+        val loginGoogleFragment = LoginGoogleFragment().apply {
+            retainInstance = true
         }
-
-        loginGoogleFragment = LoginGoogleFragment()
-        loginGoogleFragment.retainInstance = true
         fragmentTransaction.add(loginGoogleFragment, LoginGoogleFragment.TAG)
         fragmentTransaction.commit()
     }
@@ -384,6 +379,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onGoogleSignupFinished(name: String?, email: String?, photoUrl: String?, username: String?) {
+        // TODO: Signup
+    }
+
+    override fun onGoogleSignupError(msg: String?) {
         // TODO: Signup
     }
 
