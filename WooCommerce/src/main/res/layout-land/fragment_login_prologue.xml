@@ -90,7 +90,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_weight="3"
             android:drawablePadding="@dimen/margin_large"
-            android:drawableStart="@drawable/ic_jetpack_icon"
+            android:drawableStart="@drawable/ic_jetpack"
             android:text="@string/login_jetpack_required"
             android:textColor="@color/white"
             android:textColorLink="@color/white"/>
