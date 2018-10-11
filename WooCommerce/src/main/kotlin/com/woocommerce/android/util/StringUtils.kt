@@ -42,7 +42,7 @@ object StringUtils {
      */
     fun getSiteDomainAndPath(site: SiteModel): String {
         site.url?.let {
-            val uri = Uri.parse("http://www.nickbradbury.com/wp/wp2#")
+            val uri = Uri.parse(it)
             return uri.host.orEmpty() + uri.path.orEmpty()
         } ?: return ""
     }
