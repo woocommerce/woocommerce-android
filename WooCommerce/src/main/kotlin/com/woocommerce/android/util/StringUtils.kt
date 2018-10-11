@@ -39,11 +39,10 @@ object StringUtils {
      *      https://baseurl.com -> baseurl.com
      *      https://baseurl.com/mysite -> baseurl.com/mysite
      */
-    fun getHostAndPath(urlString: String): String {
-        val uri = Uri.parse(urlString)
-        uri.host?.let {
-            return it + uri.path
-        }
-        return ""
+    fun getHostAndPath(urlString: String?): String {
+        urlString?.let {
+            val uri = Uri.parse(it)
+            return uri.host.orEmpty() + uri.path.orEmpty()
+        } ?: return ""
     }
 }
