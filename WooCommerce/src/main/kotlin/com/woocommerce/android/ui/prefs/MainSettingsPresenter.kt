@@ -20,5 +20,5 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun getUserDisplayName(): String = accountStore.account.displayName
-    override fun getStoreDomainName(): String = StringUtils.getHostAndPath(selectedSite.get().url)
+    override fun getStoreDomainName(): String = StringUtils.getSiteDomainAndPath(selectedSite.get())
 }

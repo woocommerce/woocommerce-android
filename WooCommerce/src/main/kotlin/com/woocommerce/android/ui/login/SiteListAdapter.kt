@@ -54,7 +54,7 @@ class SiteListAdapter(private val context: Context, private val listener: OnSite
         holder.radio.visibility = if (siteList.size > 1) View.VISIBLE else View.GONE
         holder.radio.isChecked = site.siteId == selectedSiteId
         holder.txtSiteName.text = if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
-        holder.txtSiteDomain.text = StringUtils.getHostAndPath(site.url)
+        holder.txtSiteDomain.text = StringUtils.getSiteDomainAndPath(site)
         if (itemCount > 1) {
             holder.itemView.setOnClickListener {
                 if (selectedSiteId != site.siteId) {

@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.net.Uri
 import android.support.annotation.StringRes
+import org.wordpress.android.fluxc.model.SiteModel
 
 object StringUtils {
     /**
@@ -39,9 +40,9 @@ object StringUtils {
      *      https://baseurl.com -> baseurl.com
      *      https://baseurl.com/mysite -> baseurl.com/mysite
      */
-    fun getHostAndPath(urlString: String?): String {
-        urlString?.let {
-            val uri = Uri.parse(it)
+    fun getSiteDomainAndPath(site: SiteModel): String {
+        site.url?.let {
+            val uri = Uri.parse("http://www.nickbradbury.com/wp/wp2#")
             return uri.host.orEmpty() + uri.path.orEmpty()
         } ?: return ""
     }
