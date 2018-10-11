@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import android.net.Uri
 import android.support.annotation.StringRes
 
 object StringUtils {
@@ -29,5 +30,20 @@ object StringUtils {
             1 -> context.getString(one ?: default, quantity)
             else -> context.getString(default, quantity)
         }
+    }
+
+    /**
+     * Similar to UrlUtils.getHost() except that it includes the path (subfolder)
+     *
+     * Ex:
+     *      https://baseurl.com -> baseurl.com
+     *      https://baseurl.com/mysite -> baseurl.com/mysite
+     */
+    fun getHostAndPath(urlString: String): String {
+        val uri = Uri.parse(urlString)
+        uri.host?.let {
+            return it + uri.path
+        }
+        return ""
     }
 }
