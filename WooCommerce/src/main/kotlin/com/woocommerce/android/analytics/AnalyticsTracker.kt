@@ -227,7 +227,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
 
         site?.let {
-            val properties = mapOf(KEY_BLOG_ID to it.id, KEY_IS_WPCOM_STORE to it.isWpComStore)
+            val properties = mapOf(KEY_BLOG_ID to it.siteId, KEY_IS_WPCOM_STORE to it.isWpComStore)
             val props = JSONObject(properties)
             tracksClient?.registerUserProperties(props)
         }
