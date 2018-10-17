@@ -22,8 +22,10 @@ import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
@@ -52,6 +54,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     @Inject lateinit var presenter: OrderListContract.Presenter
     @Inject lateinit var ordersAdapter: OrderListAdapter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private lateinit var listLayoutAnimation: LayoutAnimationController
@@ -246,7 +249,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             WooAnimUtils.fadeOut(ordersView, Duration.LONG)
             no_orders_share_button.setOnClickListener {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-                shareStoreUrl()
+                ActivityUtils.shareStoreUrl(activity!!, selectedSite.get().url)
             }
             isRefreshPending = false
         } else if (!show && no_orders_view.visibility == View.VISIBLE) {
