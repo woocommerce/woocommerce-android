@@ -70,8 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/dashboard_no_orders_contentdesc"
-            app:srcCompat="@drawable/ic_woo_waiting_customers"
-            tools:visibility="visible"/>
+            app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
         <TextView
             style="@style/Woo.TextAppearance.Bold"

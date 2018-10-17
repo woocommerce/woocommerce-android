@@ -24,6 +24,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
@@ -214,8 +216,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
         orderStatusFilter = filterByStatus
 
-        ordersView.visibility = View.VISIBLE
-        noOrdersView.visibility = View.GONE
+        showNoOrdersView(false)
 
         if (!ordersAdapter.isSameOrderList(orders)) {
             ordersList?.let { _ ->
@@ -237,12 +238,21 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     /**
-     * No orders exist for the selected store. Show the "no orders" view.
+     * shows the "waiting for customers" view that appears for stores that have never had any orders
      */
-    override fun showNoOrders() {
-        ordersView.visibility = View.GONE
-        noOrdersView.visibility = View.VISIBLE
-        isRefreshPending = false
+    override fun showNoOrdersView(show: Boolean) {
+        if (show && no_orders_view.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(no_orders_view, Duration.LONG)
+            WooAnimUtils.fadeOut(ordersView, Duration.LONG)
+            no_orders_share_button.setOnClickListener {
+                AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                shareStoreUrl()
+            }
+            isRefreshPending = false
+        } else if (!show && no_orders_view.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(no_orders_view, Duration.LONG)
+            WooAnimUtils.fadeIn(ordersView, Duration.LONG)
+        }
     }
 
     /**

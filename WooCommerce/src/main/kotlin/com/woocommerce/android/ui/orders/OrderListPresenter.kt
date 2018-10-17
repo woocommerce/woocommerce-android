@@ -134,7 +134,7 @@ class OrderListPresenter @Inject constructor(
                     // indicator until a successful online refresh.
                     view.showSkeleton(true)
                 } else {
-                    view.showNoOrders()
+                    view.showNoOrdersView(true)
                 }
             }
         }
