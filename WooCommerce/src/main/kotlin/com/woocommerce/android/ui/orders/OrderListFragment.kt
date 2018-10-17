@@ -111,6 +111,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
 
                     orderRefreshLayout.isRefreshing = false
+                    showNoOrdersView(false)
+
                     if (!isRefreshPending) {
                         isRefreshPending = true
                         presenter.loadOrders(orderStatusFilter, forceRefresh = true)
