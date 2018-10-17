@@ -2,26 +2,41 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.preference.PreferenceManager
 import android.telephony.TelephonyManager
+import android.text.TextUtils
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.SiteStore
-import java.util.Locale
-import java.util.Timer
-import kotlin.concurrent.schedule
+import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.logInformation
+import com.woocommerce.android.util.stateLogInformation
 import com.zendesk.logger.Logger
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.util.NetworkUtils
+import org.wordpress.android.util.PackageUtils
+import org.wordpress.android.util.StringUtils
+import org.wordpress.android.util.UrlUtils
+import zendesk.core.AnonymousIdentity
+import zendesk.core.Identity
 import zendesk.core.PushRegistrationProvider
 import zendesk.core.Zendesk
+import zendesk.support.CustomField
 import zendesk.support.Support
 import zendesk.support.UiConfig
 import zendesk.support.guide.HelpCenterActivity
 import zendesk.support.request.RequestActivity
+import zendesk.support.requestlist.RequestListActivity
+import java.util.Locale
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -189,12 +204,14 @@ class ZendeskHelper(
                     deviceToken,
                     object : ZendeskCallback<String>() {
                         override fun onSuccess(result: String?) {
-                            AppLog.v(T.SUPPORT, "Zendesk push notifications successfully enabled!")
+                            WooLog.v(T.SUPPORT, "Zendesk push notifications successfully enabled!")
                         }
 
                         override fun onError(errorResponse: ErrorResponse?) {
-                            AppLog.v(T.SUPPORT, "Enabling Zendesk push notifications failed with" +
-                                    " error: ${errorResponse?.reason}")
+                            WooLog.v(
+                                    T.SUPPORT, "Enabling Zendesk push notifications failed with" +
+                                    " error: ${errorResponse?.reason}"
+                            )
                         }
                     })
         }
@@ -214,12 +231,14 @@ class ZendeskHelper(
         zendeskPushRegistrationProvider?.unregisterDevice(
                 object : ZendeskCallback<Void>() {
                     override fun onSuccess(response: Void?) {
-                        AppLog.v(T.SUPPORT, "Zendesk push notifications successfully disabled!")
+                        WooLog.v(T.SUPPORT, "Zendesk push notifications successfully disabled!")
                     }
 
                     override fun onError(errorResponse: ErrorResponse?) {
-                        AppLog.v(T.SUPPORT, "Disabling Zendesk push notifications failed with" +
-                                " error: ${errorResponse?.reason}")
+                        WooLog.v(
+                                T.SUPPORT, "Disabling Zendesk push notifications failed with" +
+                                " error: ${errorResponse?.reason}"
+                        )
                     }
                 })
     }
@@ -332,6 +351,14 @@ private fun buildZendeskConfig(
             .config()
 }
 
+private fun getHomeURLOrHostName(site: SiteModel): String {
+    var homeURL = UrlUtils.removeScheme(site.url)
+    homeURL = StringUtils.removeTrailingSlash(homeURL)
+    return if (TextUtils.isEmpty(homeURL)) {
+        UrlUtils.getHost(site.xmlRpcUrl)
+    } else homeURL
+}
+
 /**
  * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
  * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
@@ -341,8 +368,9 @@ private fun buildZendeskCustomFields(
     allSites: List<SiteModel>?,
     selectedSite: SiteModel?
 ): List<CustomField> {
+    selectedSite.url
     val currentSiteInformation = if (selectedSite != null) {
-        "${SiteUtils.getHomeURLOrHostName(selectedSite)} (${selectedSite.stateLogInformation})"
+        "${getHomeURLOrHostName(selectedSite)} (${selectedSite.stateLogInformation})"
     } else {
         "not_selected"
     }
@@ -350,8 +378,8 @@ private fun buildZendeskCustomFields(
             CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
             CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
             CustomField(TicketFieldIds.currentSite, currentSiteInformation),
-            CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
-            CustomField(TicketFieldIds.logs, AppLog.toPlainText(context)),
+            // TODO: CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
+            // TODO: CustomField(TicketFieldIds.logs, WooLog.toPlainText(context)),
             CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
             CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
             CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)

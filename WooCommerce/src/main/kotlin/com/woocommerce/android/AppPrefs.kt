@@ -42,8 +42,12 @@ object AppPrefs {
         setInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
     }
 
-    fun setSupportEmail(email: String) {
-        setString(DeletablePrefKey.SUPPORT_EMAIL, email)
+    fun setSupportEmail(email: String?) {
+        if (!email.isNullOrEmpty()) {
+            setString(DeletablePrefKey.SUPPORT_EMAIL, email!!)
+        } else {
+            remove(DeletablePrefKey.SUPPORT_EMAIL)
+        }
     }
 
     fun getSupportEmail(): String {

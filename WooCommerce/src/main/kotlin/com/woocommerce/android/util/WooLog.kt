@@ -20,7 +20,8 @@ object WooLog {
         DASHBOARD,
         ORDERS,
         UTILS,
-        DEVICE
+        DEVICE,
+        SUPPORT
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
