@@ -16,7 +16,10 @@ object AppPrefs {
     /**
      * Application related preferences. When the user logs out, these preferences are erased.
      */
-    private enum class DeletablePrefKey : PrefKey
+    private enum class DeletablePrefKey : PrefKey {
+        SUPPORT_EMAIL,
+        SUPPORT_NAME,
+    }
 
     /**
      * These preferences won't be deleted when the user disconnects.
@@ -37,6 +40,30 @@ object AppPrefs {
 
     fun setLastAppVersionCode(versionCode: Int) {
         setInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
+    }
+
+    fun setSupportEmail(email: String) {
+        setString(DeletablePrefKey.SUPPORT_EMAIL, email)
+    }
+
+    fun getSupportEmail(): String {
+        return getString(DeletablePrefKey.SUPPORT_EMAIL)
+    }
+
+    fun removeSupportEmail() {
+        remove(DeletablePrefKey.SUPPORT_EMAIL)
+    }
+
+    fun setSupportName(name: String) {
+        setString(DeletablePrefKey.SUPPORT_NAME, name)
+    }
+
+    fun getSupportName(): String {
+        return getString(DeletablePrefKey.SUPPORT_NAME)
+    }
+
+    fun removeSupportName() {
+        remove(DeletablePrefKey.SUPPORT_NAME)
     }
 
     /**
@@ -62,4 +89,8 @@ object AppPrefs {
             PreferenceUtils.setString(getPreferences(), key.toString(), value)
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
+
+    private fun remove(key: PrefKey) {
+        getPreferences().edit().remove(key.toString()).apply()
+    }
 }

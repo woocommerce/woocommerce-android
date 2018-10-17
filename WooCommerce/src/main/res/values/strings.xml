@@ -44,6 +44,7 @@
     <string name="products">Products</string>
     <string name="notifications">Notifications</string>
     <string name="notifications_coming_soon">Notifications aren\'t ready yet, but coming in a future release. Stay tuned!</string>
+    <string name="version_with_name_param">Version %s</string>
     <string name="emdash" translatable="false">\u2014</string>
 
     <!--
@@ -229,9 +230,7 @@
     <string name="help">Help</string>
     <string name="forgot_password">Lost your password?</string>
     <string name="contact_us">Contact us</string>
-    <string name="browse_our_faq_button">Browse our FAQ</string>
     <string name="my_tickets">My Tickets</string>
-    <string name="application_log_button">Application log</string>
     <string name="support_contact_email">Contact email</string>
     <string name="support_contact_email_not_set">Not set</string>
     <string name="support_push_notification_title">WooCommerce</string>
