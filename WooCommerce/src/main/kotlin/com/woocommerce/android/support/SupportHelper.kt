@@ -8,10 +8,8 @@ import android.view.View.GONE
 import android.widget.EditText
 import android.widget.TextView
 import com.woocommerce.android.R
-import org.wordpress.android.R
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.util.validateEmail
 
 class SupportHelper {
     /**
@@ -55,6 +53,11 @@ class SupportHelper {
             }
         }
         dialog.show()
+    }
+
+    // TODO
+    private fun validateEmail(email: String): Boolean {
+        return true
     }
 
     /**

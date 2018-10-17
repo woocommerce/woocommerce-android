@@ -381,6 +381,18 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center</item>
     </style>
+
+    <!--
+        Help & Support
+    -->
+    <style name="HelpActivitySingleText">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/grey_dark</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
     <!--
         Other
     -->

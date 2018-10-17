@@ -3,18 +3,25 @@ package com.woocommerce.android.support
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import org.wordpress.android.fluxc.model.SiteModel
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.login.BuildConfig
-import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.AppLog.T
-import org.wordpress.android.util.DeviceUtils
-import org.wordpress.android.util.NetworkUtils
-import org.wordpress.android.util.PackageUtils
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
+import com.zendesk.logger.Logger
+import com.zendesk.service.ErrorResponse
+import com.zendesk.service.ZendeskCallback
+import org.wordpress.android.fluxc.model.SiteModel
+import zendesk.core.PushRegistrationProvider
+import zendesk.core.Zendesk
+import zendesk.support.Support
+import zendesk.support.UiConfig
+import zendesk.support.guide.HelpCenterActivity
+import zendesk.support.request.RequestActivity
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
