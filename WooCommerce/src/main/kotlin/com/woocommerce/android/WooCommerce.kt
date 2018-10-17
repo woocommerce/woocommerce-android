@@ -45,6 +45,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject internal var zendeskHelper: ZendeskHelper
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
