@@ -244,16 +244,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
      * shows the "waiting for customers" view that appears for stores that have never had any orders
      */
     override fun showNoOrdersView(show: Boolean) {
-        if (show && no_orders_view.visibility != View.VISIBLE) {
-            WooAnimUtils.fadeIn(no_orders_view, Duration.LONG)
+        if (show && noOrdersView.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(noOrdersView, Duration.LONG)
             WooAnimUtils.fadeOut(ordersView, Duration.LONG)
             no_orders_share_button.setOnClickListener {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(activity!!, selectedSite.get().url)
             }
             isRefreshPending = false
-        } else if (!show && no_orders_view.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(no_orders_view, Duration.LONG)
+        } else if (!show && noOrdersView.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(noOrdersView, Duration.LONG)
             WooAnimUtils.fadeIn(ordersView, Duration.LONG)
         }
     }

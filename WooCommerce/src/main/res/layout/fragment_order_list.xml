@@ -28,14 +28,13 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/no_orders_view"
+            android:id="@+id/noOrdersView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/default_window_background"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/no_orders_image"
