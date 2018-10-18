@@ -355,7 +355,7 @@ class MainActivity : AppCompatActivity(),
      */
     private fun hideParentFragment(fragment: Fragment?) {
         fragment?.let {
-            with (supportFragmentManager) {
+            with(supportFragmentManager) {
                 if (isStateSaved) {
                     // fragmentManager state already saved, no changes to state allowed
                     return
