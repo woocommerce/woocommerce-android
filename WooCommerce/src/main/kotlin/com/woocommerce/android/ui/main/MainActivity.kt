@@ -355,7 +355,13 @@ class MainActivity : AppCompatActivity(),
      */
     private fun hideParentFragment(fragment: Fragment?) {
         fragment?.let {
-            supportFragmentManager.beginTransaction().hide(it).commit()
+            with (supportFragmentManager) {
+                if (isStateSaved) {
+                    // fragmentManager state already saved, no changes to state allowed
+                    return
+                }
+                beginTransaction().hide(it).commit()
+            }
         }
     }
 
