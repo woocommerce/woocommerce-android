@@ -310,11 +310,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
 
-        fun track(stat: Stat) {
-            track(stat, emptyMap<String, String>())
-        }
-
-        fun track(stat: Stat, properties: Map<String, *>) {
+        fun track(stat: Stat, properties: Map<String, *> = emptyMap<String, String>()) {
             if (sendUsageStats) {
                 instance?.track(stat, properties)
             }
