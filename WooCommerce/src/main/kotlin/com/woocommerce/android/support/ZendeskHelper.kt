@@ -483,7 +483,7 @@ private object ZendeskConstants {
     // We rely on this platform tag to filter tickets in Zendesk, so should be kept separate from the `articleLabel`
     const val platformTag = "Android"
     const val sourcePlatform = "mobile_-_android"
-    const val ticketSubject = "WordPress for Android Support"
+    const val ticketSubject = "WooCommerce for Android Support"
     const val wpComTag = "wpcom"
     const val unknownValue = "unknown"
 }
