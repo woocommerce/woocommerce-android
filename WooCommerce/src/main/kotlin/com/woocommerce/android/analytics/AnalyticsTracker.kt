@@ -155,6 +155,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
     private var username: String? = null
     private var anonymousID: String? = null
 
+    private var site: SiteModel? = null
+
     private fun clearAllData() {
         clearAnonID()
         username = null
@@ -226,11 +228,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             return
         }
 
-        site?.let {
-            val properties = mapOf(KEY_BLOG_ID to it.siteId, KEY_IS_WPCOM_STORE to it.isWpComStore)
-            val props = JSONObject(properties)
-            tracksClient?.registerUserProperties(props)
-        }
+        this.site = site
 
         if (!newUsername.isNullOrEmpty()) {
             username = newUsername
