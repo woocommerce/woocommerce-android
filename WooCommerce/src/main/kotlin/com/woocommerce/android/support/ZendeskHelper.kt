@@ -2,7 +2,6 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.preference.PreferenceManager
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.AppPrefs
@@ -199,7 +198,7 @@ class ZendeskHelper(
             return
         }
         // The device token will not be available if the user is not logged in, so this check serves two purposes
-        wpcomPushNotificationDeviceToken?.let { deviceToken ->
+        accountStore.accessToken?.let { deviceToken ->
             zendeskPushRegistrationProvider?.registerWithDeviceIdentifier(
                     deviceToken,
                     object : ZendeskCallback<String>() {
@@ -469,12 +468,6 @@ private fun getNetworkInformation(context: Context): String {
             "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.toUpperCase()}"
     ).joinToString(separator = "\n")
 }
-
-private val wpcomPushNotificationDeviceToken: String?
-    get() {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(WordPress.getContext())
-        return preferences.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_TOKEN, null)
-    }
 
 private object ZendeskConstants {
     const val articleLabel = "Android"
