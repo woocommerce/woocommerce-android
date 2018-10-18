@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -38,12 +39,9 @@ class HelpActivity : AppCompatActivity() {
 
         setContentView(R.layout.help_activity)
 
-        val actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar.setHomeButtonEnabled(true)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.elevation = 0f // remove shadow
-        }
+        setSupportActionBar(toolbar as Toolbar)
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         contactUsButton.setOnClickListener { createNewZendeskTicket() }
         myTicketsButton.setOnClickListener { showZendeskTickets() }
