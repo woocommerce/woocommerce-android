@@ -362,7 +362,13 @@ class MainActivity : AppCompatActivity(),
      */
     private fun hideParentFragment(fragment: Fragment?) {
         fragment?.let {
-            supportFragmentManager.beginTransaction().hide(it).commit()
+            with(supportFragmentManager) {
+                if (isStateSaved) {
+                    // fragmentManager state already saved, no changes to state allowed
+                    return
+                }
+                beginTransaction().hide(it).commit()
+            }
         }
     }
 
@@ -372,9 +378,17 @@ class MainActivity : AppCompatActivity(),
      */
     private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
         fragment?.let {
-            if (it.childFragmentManager.backStackEntryCount > 0) {
-                it.childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                return true
+            with(it.childFragmentManager) {
+                // If the fragment manager's state has already been saved,
+                // exit to avoid the IllegalStateException
+                if (isStateSaved) {
+                    return true
+                }
+
+                if (backStackEntryCount > 0) {
+                    popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    return true
+                }
             }
         }
         return false
