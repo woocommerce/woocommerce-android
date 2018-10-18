@@ -365,7 +365,7 @@ class MainActivity : AppCompatActivity(),
      */
     private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
         fragment?.let {
-            with (it.childFragmentManager) {
+            with(it.childFragmentManager) {
                 // If the fragment manager's state has already been saved,
                 // exit to avoid the IllegalStateException
                 if (isStateSaved) {
