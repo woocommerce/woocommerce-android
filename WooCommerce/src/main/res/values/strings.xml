@@ -235,4 +235,5 @@
     <string name="support_contact_email_not_set">Not set</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_push_notification_message">New message from \'Help &amp; Support\'</string>
+    <string name="help_screen_title">Help &amp; Support</string>
 </resources>

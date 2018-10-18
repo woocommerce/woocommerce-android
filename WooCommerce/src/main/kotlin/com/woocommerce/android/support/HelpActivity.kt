@@ -113,6 +113,7 @@ class HelpActivity : AppCompatActivity() {
 
     enum class Origin(private val stringValue: String) {
         UNKNOWN("origin:unknown"),
+        MAIN_ACTIVITY("origin:main-activity"),
         ZENDESK_NOTIFICATION("origin:zendesk-notification");
 
         override fun toString(): String {

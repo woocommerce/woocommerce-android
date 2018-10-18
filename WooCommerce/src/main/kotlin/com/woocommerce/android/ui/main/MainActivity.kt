@@ -19,6 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.disableShiftMode
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin.MAIN_ACTIVITY
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
@@ -214,11 +216,16 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun contactSupport() {
-        val subject = String.format(getString(R.string.support_email_subject), BuildConfig.VERSION_NAME)
-        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
-        if (emailIntent.resolveActivity(packageManager) != null) {
-            startActivity(emailIntent)
+        // TODO: only use Zendesk in internal debug builds - this will change once Zendesk integration is completed
+        if (BuildConfig.DEBUG) {
+            startActivity(HelpActivity.createIntent(this, MAIN_ACTIVITY, null))
+        } else {
+            val subject = String.format(getString(R.string.support_email_subject), BuildConfig.VERSION_NAME)
+            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+            if (emailIntent.resolveActivity(packageManager) != null) {
+                startActivity(emailIntent)
+            }
         }
     }
 
