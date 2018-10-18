@@ -71,5 +71,9 @@ class SiteListAdapter(private val context: Context, private val listener: OnSite
         val radio: RadioButton = view.radio
         val txtSiteName: TextView = view.text_site_name
         val txtSiteDomain: TextView = view.text_site_domain
+
+        init {
+            radio.isClickable = false
+        }
     }
 }
