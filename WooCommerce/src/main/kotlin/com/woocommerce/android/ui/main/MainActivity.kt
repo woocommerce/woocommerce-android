@@ -365,9 +365,17 @@ class MainActivity : AppCompatActivity(),
      */
     private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
         fragment?.let {
-            if (it.childFragmentManager.backStackEntryCount > 0) {
-                it.childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                return true
+            with(it.childFragmentManager) {
+                // If the fragment manager's state has already been saved,
+                // exit to avoid the IllegalStateException
+                if (isStateSaved) {
+                    return true
+                }
+
+                if (backStackEntryCount > 0) {
+                    popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    return true
+                }
             }
         }
         return false
