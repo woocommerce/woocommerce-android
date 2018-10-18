@@ -209,7 +209,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
             TracksClient.NosaraUserType.ANON
         }
 
-        val propertiesJson = JSONObject(properties)
+        val finalProperties = properties.toMutableMap()
+
+        if (!stat.siteless) {
+            site?.let {
+                finalProperties[KEY_BLOG_ID] = it.siteId
+                finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
+            }
+        }
+
+        val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
 
         if (propertiesJson.length() > 0) {
