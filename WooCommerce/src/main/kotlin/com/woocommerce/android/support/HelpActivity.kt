@@ -36,7 +36,6 @@ class HelpActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-
         setContentView(R.layout.help_activity)
 
         val actionBar = supportActionBar

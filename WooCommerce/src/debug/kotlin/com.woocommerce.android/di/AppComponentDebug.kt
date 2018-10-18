@@ -26,7 +26,8 @@ import javax.inject.Singleton
         ActivityBindingModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class,
-        NetworkStatusModule::class))
+        NetworkStatusModule::class,
+        SupportModule::class))
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

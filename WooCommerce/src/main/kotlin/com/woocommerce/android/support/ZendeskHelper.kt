@@ -268,7 +268,7 @@ class ZendeskHelper(
             onIdentitySet()
             return
         }
-        if (!AppPrefs.getSupportEmail().isNullOrEmpty()) {
+        if (!AppPrefs.getSupportEmail().isEmpty()) {
             /**
              * Zendesk SDK reset the identity, but we already know the email of the user, we can simply refresh
              * the identity. Check out the documentation for [isIdentitySet] for more details.
@@ -368,7 +368,6 @@ private fun buildZendeskCustomFields(
     allSites: List<SiteModel>?,
     selectedSite: SiteModel?
 ): List<CustomField> {
-    selectedSite.url
     val currentSiteInformation = if (selectedSite != null) {
         "${getHomeURLOrHostName(selectedSite)} (${selectedSite.stateLogInformation})"
     } else {
