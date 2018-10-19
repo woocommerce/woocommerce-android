@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
@@ -21,6 +22,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener {
@@ -199,6 +201,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                 AnalyticsTracker.track(
                         Stat.ORDER_STATUS_CHANGE_UNDO,
                         mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
+
+                when (newStatus) {
+                    CoreOrderStatus.COMPLETED.value ->
+                        AnalyticsTracker.track(SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED)
+                    else -> {}
+                }
 
                 // User canceled the action to change the order status
                 changeOrderStatusCanceled = true

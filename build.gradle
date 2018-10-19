@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.2.61'
+    ext.kotlinVersion = '1.2.71'
 
     repositories {
         google()
@@ -52,7 +52,7 @@ subprojects {
     }
 
     dependencies {
-        ktlint 'com.github.shyiko:ktlint:0.22.0'
+        ktlint 'com.github.shyiko:ktlint:0.28.0'
     }
 
     task ktlint(type: JavaExec) {
@@ -73,7 +73,7 @@ task clean(type: Delete) {
 }
 
 ext {
-    fluxCVersion = 'fe77af61a624b693e6c77f7038f001a2f92f0393'
+    fluxCVersion = '32c8be58d372466d3638bad32a21da3af6b66ff3'
     daggerVersion = '2.11'
     supportLibraryVersion = '27.1.1'
     glideVersion = '4.6.1'

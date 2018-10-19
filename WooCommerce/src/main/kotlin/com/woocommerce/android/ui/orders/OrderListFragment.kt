@@ -231,6 +231,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         if (isFreshData) {
             isRefreshPending = false
         }
+
+        // Update the toolbar title
+        activity?.title = getFragmentTitle()
     }
 
     /**
@@ -279,6 +282,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
+                .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
+                    getString(R.string.orderlist_filtered, CoreOrderStatus.fromValue(filter)?.label)
+                } ?: "")
     }
 
     override fun refreshFragmentState() {
@@ -372,6 +378,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
         presenter.loadOrders(orderStatusFilter, true)
+
+        // Reset the toolbar title
+        activity?.title = getFragmentTitle()
     }
     // endregion
 }

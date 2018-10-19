@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
@@ -24,6 +25,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -58,8 +61,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private lateinit var lastUpdatedRunnable: Runnable
     private var lastUpdatedHandler: Handler? = null
-
     private var lastUpdated: Date? = null
+
+    private val fadeHandler = Handler()
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -115,12 +119,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    fun clearLabelValues() {
-        visitors_value.text = ""
-        revenue_value.text = ""
-        orders_value.text = ""
-    }
-
     fun showSkeleton(show: Boolean) {
         if (show) {
             // inflate the skeleton view and adjust the bar widths based on the granularity
@@ -152,8 +150,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * One-time chart initialization with settings common to all granularities.
      */
     private fun initChart() {
-        with (chart) {
-            with (xAxis) {
+        with(chart) {
+            with(xAxis) {
                 position = XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
@@ -166,7 +164,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
             axisLeft.isEnabled = false
 
-            with (axisRight) {
+            with(axisRight) {
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
@@ -192,8 +190,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
 
-        revenue_value.text = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
-        orders_value.text = orderStats.values.sum().toString()
+        val revenue = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
+        val orders = orderStats.values.sum().toString()
+        fadeInLabelValue(revenue_value, revenue)
+        fadeInLabelValue(orders_value, orders)
 
         if (revenueStats.isEmpty()) {
             // TODO Replace with custom empty view
@@ -223,7 +223,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
 
-        with (chart) {
+        with(chart) {
             data = BarData(dataSet)
             animateY(duration)
         }
@@ -234,6 +234,40 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun showErrorView(show: Boolean) {
         dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
         chart.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    fun showVisitorStats(visits: Int) {
+        fadeInLabelValue(visitors_value, visits.toString())
+    }
+
+    fun showVisitorStatsError() {
+        fadeInLabelValue(visitors_value, "?")
+    }
+
+    fun clearLabelValues() {
+        val color = ContextCompat.getColor(context, R.color.skeleton_color)
+        visitors_value.setTextColor(color)
+        revenue_value.setTextColor(color)
+        orders_value.setTextColor(color)
+
+        visitors_value.setText(R.string.emdash)
+        revenue_value.setText(R.string.emdash)
+        orders_value.setText(R.string.emdash)
+    }
+
+    private fun fadeInLabelValue(view: TextView, value: String) {
+        // fade out the current value
+        val duration = Duration.SHORT
+        WooAnimUtils.fadeOut(view, duration, View.INVISIBLE)
+
+        // fade in the new value after fade out finishes
+        val delay = duration.toMillis(context) + 100
+        fadeHandler.postDelayed({
+            val color = ContextCompat.getColor(context, R.color.default_text_title)
+            view.setTextColor(color)
+            view.text = value
+            WooAnimUtils.fadeIn(view, duration)
+        }, delay)
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {

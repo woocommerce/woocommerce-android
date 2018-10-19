@@ -10,9 +10,9 @@ import android.widget.RadioButton
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.SiteListAdapter.SiteViewHolder
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.util.UrlUtils
 
 class SiteListAdapter(private val context: Context, private val listener: OnSiteClickListener) :
         RecyclerView.Adapter<SiteViewHolder>() {
@@ -54,7 +54,7 @@ class SiteListAdapter(private val context: Context, private val listener: OnSite
         holder.radio.visibility = if (siteList.size > 1) View.VISIBLE else View.GONE
         holder.radio.isChecked = site.siteId == selectedSiteId
         holder.txtSiteName.text = if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
-        holder.txtSiteDomain.text = UrlUtils.getHost(site.url)
+        holder.txtSiteDomain.text = StringUtils.getSiteDomainAndPath(site)
         if (itemCount > 1) {
             holder.itemView.setOnClickListener {
                 if (selectedSiteId != site.siteId) {
@@ -71,5 +71,9 @@ class SiteListAdapter(private val context: Context, private val listener: OnSite
         val radio: RadioButton = view.radio
         val txtSiteName: TextView = view.text_site_name
         val txtSiteDomain: TextView = view.text_site_domain
+
+        init {
+            radio.isClickable = false
+        }
     }
 }

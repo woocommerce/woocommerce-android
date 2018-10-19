@@ -15,67 +15,67 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
-    enum class Stat {
+    enum class Stat(val siteless: Boolean = false) {
         // -- General
-        APPLICATION_OPENED,
-        APPLICATION_CLOSED,
-        APPLICATION_INSTALLED,
-        APPLICATION_UPGRADED,
-        BACK_PRESSED,
-        VIEW_SHOWN,
+        APPLICATION_OPENED(siteless = true),
+        APPLICATION_CLOSED(siteless = true),
+        APPLICATION_INSTALLED(siteless = true),
+        APPLICATION_UPGRADED(siteless = true),
+        BACK_PRESSED(siteless = true),
+        VIEW_SHOWN(siteless = true),
 
         // -- Login
-        SIGNED_IN,
-        ACCOUNT_LOGOUT,
-        LOGIN_ACCESSED,
-        LOGIN_MAGIC_LINK_EXITED,
-        LOGIN_MAGIC_LINK_FAILED,
-        LOGIN_MAGIC_LINK_OPENED,
-        LOGIN_MAGIC_LINK_REQUESTED,
-        LOGIN_MAGIC_LINK_SUCCEEDED,
-        LOGIN_FAILED,
-        LOGIN_INSERTED_INVALID_URL,
-        LOGIN_AUTOFILL_CREDENTIALS_FILLED,
-        LOGIN_AUTOFILL_CREDENTIALS_UPDATED,
-        LOGIN_EMAIL_FORM_VIEWED,
-        LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED,
-        LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED,
-        LOGIN_MAGIC_LINK_REQUEST_FORM_VIEWED,
-        LOGIN_PASSWORD_FORM_VIEWED,
-        LOGIN_URL_FORM_VIEWED,
-        LOGIN_URL_HELP_SCREEN_VIEWED,
-        LOGIN_USERNAME_PASSWORD_FORM_VIEWED,
-        LOGIN_TWO_FACTOR_FORM_VIEWED,
-        LOGIN_FORGOT_PASSWORD_CLICKED,
-        LOGIN_SOCIAL_BUTTON_CLICK,
-        LOGIN_SOCIAL_BUTTON_FAILURE,
-        LOGIN_SOCIAL_CONNECT_SUCCESS,
-        LOGIN_SOCIAL_CONNECT_FAILURE,
-        LOGIN_SOCIAL_SUCCESS,
-        LOGIN_SOCIAL_FAILURE,
-        LOGIN_SOCIAL_2FA_NEEDED,
-        LOGIN_SOCIAL_ACCOUNTS_NEED_CONNECTING,
-        LOGIN_SOCIAL_ERROR_UNKNOWN_USER,
-        LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE,
-        SIGNUP_EMAIL_BUTTON_TAPPED,
-        SIGNUP_GOOGLE_BUTTON_TAPPED,
-        SIGNUP_TERMS_OF_SERVICE_TAPPED,
-        SIGNUP_CANCELED,
-        SIGNUP_EMAIL_TO_LOGIN,
-        SIGNUP_MAGIC_LINK_FAILED,
-        SIGNUP_MAGIC_LINK_OPENED,
-        SIGNUP_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED,
-        SIGNUP_MAGIC_LINK_SENT,
-        SIGNUP_MAGIC_LINK_SUCCEEDED,
-        SIGNUP_SOCIAL_ACCOUNTS_NEED_CONNECTING,
-        SIGNUP_SOCIAL_BUTTON_FAILURE,
-        SIGNUP_SOCIAL_TO_LOGIN,
-        ADDED_SELF_HOSTED_SITE,
-        CREATED_ACCOUNT,
-        LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED,
-        LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED,
-        LOGIN_EPILOGUE_STORES_SHOWN,
-        LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED,
+        SIGNED_IN(siteless = true),
+        ACCOUNT_LOGOUT(siteless = true),
+        LOGIN_ACCESSED(siteless = true),
+        LOGIN_MAGIC_LINK_EXITED(siteless = true),
+        LOGIN_MAGIC_LINK_FAILED(siteless = true),
+        LOGIN_MAGIC_LINK_OPENED(siteless = true),
+        LOGIN_MAGIC_LINK_REQUESTED(siteless = true),
+        LOGIN_MAGIC_LINK_SUCCEEDED(siteless = true),
+        LOGIN_FAILED(siteless = true),
+        LOGIN_INSERTED_INVALID_URL(siteless = true),
+        LOGIN_AUTOFILL_CREDENTIALS_FILLED(siteless = true),
+        LOGIN_AUTOFILL_CREDENTIALS_UPDATED(siteless = true),
+        LOGIN_EMAIL_FORM_VIEWED(siteless = true),
+        LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED(siteless = true),
+        LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED(siteless = true),
+        LOGIN_MAGIC_LINK_REQUEST_FORM_VIEWED(siteless = true),
+        LOGIN_PASSWORD_FORM_VIEWED(siteless = true),
+        LOGIN_URL_FORM_VIEWED(siteless = true),
+        LOGIN_URL_HELP_SCREEN_VIEWED(siteless = true),
+        LOGIN_USERNAME_PASSWORD_FORM_VIEWED(siteless = true),
+        LOGIN_TWO_FACTOR_FORM_VIEWED(siteless = true),
+        LOGIN_FORGOT_PASSWORD_CLICKED(siteless = true),
+        LOGIN_SOCIAL_BUTTON_CLICK(siteless = true),
+        LOGIN_SOCIAL_BUTTON_FAILURE(siteless = true),
+        LOGIN_SOCIAL_CONNECT_SUCCESS(siteless = true),
+        LOGIN_SOCIAL_CONNECT_FAILURE(siteless = true),
+        LOGIN_SOCIAL_SUCCESS(siteless = true),
+        LOGIN_SOCIAL_FAILURE(siteless = true),
+        LOGIN_SOCIAL_2FA_NEEDED(siteless = true),
+        LOGIN_SOCIAL_ACCOUNTS_NEED_CONNECTING(siteless = true),
+        LOGIN_SOCIAL_ERROR_UNKNOWN_USER(siteless = true),
+        LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE(siteless = true),
+        SIGNUP_EMAIL_BUTTON_TAPPED(siteless = true),
+        SIGNUP_GOOGLE_BUTTON_TAPPED(siteless = true),
+        SIGNUP_TERMS_OF_SERVICE_TAPPED(siteless = true),
+        SIGNUP_CANCELED(siteless = true),
+        SIGNUP_EMAIL_TO_LOGIN(siteless = true),
+        SIGNUP_MAGIC_LINK_FAILED(siteless = true),
+        SIGNUP_MAGIC_LINK_OPENED(siteless = true),
+        SIGNUP_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED(siteless = true),
+        SIGNUP_MAGIC_LINK_SENT(siteless = true),
+        SIGNUP_MAGIC_LINK_SUCCEEDED(siteless = true),
+        SIGNUP_SOCIAL_ACCOUNTS_NEED_CONNECTING(siteless = true),
+        SIGNUP_SOCIAL_BUTTON_FAILURE(siteless = true),
+        SIGNUP_SOCIAL_TO_LOGIN(siteless = true),
+        ADDED_SELF_HOSTED_SITE(siteless = true),
+        CREATED_ACCOUNT(siteless = true),
+        LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED(siteless = true),
+        LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
+        LOGIN_EPILOGUE_STORES_SHOWN(siteless = true),
+        LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED(siteless = true),
 
         // -- Dashboard
         DASHBOARD_PULLED_TO_REFRESH,
@@ -116,8 +116,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED,
         ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
 
+        // -- Order Notes
+        ADD_ORDER_NOTE_ADD_BUTTON_TAPPED,
+        ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED,
+        ORDER_NOTE_ADD,
+        ORDER_NOTE_ADD_FAILED,
+        ORDER_NOTE_ADD_SUCCESS,
+
         // -- Order Fulfillment
-        FULFILLED_ORDER,
+        SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED,
+        ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED,
 
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
@@ -130,14 +138,24 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MAIN_TAB_NOTIFICATIONS_RESELECTED,
 
         // -- Settings
-        OPENED_SETTINGS,
-        OPENED_PRIVACY_SETTINGS
+        SETTING_CHANGE,
+        SETTING_CHANGE_FAILED,
+        SETTING_CHANGE_SUCCESS,
+        SETTINGS_LOGOUT_BUTTON_TAPPED,
+        SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+        SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED,
+        PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
+        PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
+        PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
+        PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
     }
     // endregion
 
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
+
+    private var site: SiteModel? = null
 
     private fun clearAllData() {
         clearAnonID()
@@ -191,7 +209,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
             TracksClient.NosaraUserType.ANON
         }
 
-        val propertiesJson = JSONObject(properties)
+        val finalProperties = properties.toMutableMap()
+
+        if (!stat.siteless) {
+            site?.let {
+                finalProperties[KEY_BLOG_ID] = it.siteId
+                finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
+            }
+        }
+
+        val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
 
         if (propertiesJson.length() > 0) {
@@ -210,11 +237,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             return
         }
 
-        site?.let {
-            val properties = mapOf(KEY_BLOG_ID to it.id, KEY_IS_WPCOM_STORE to it.isWpComStore)
-            val props = JSONObject(properties)
-            tracksClient?.registerUserProperties(props)
-        }
+        this.site = site
 
         if (!newUsername.isNullOrEmpty()) {
             username = newUsername
@@ -259,8 +282,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
         const val KEY_NUMBER_OF_STORES = "number_of_stores"
+        const val KEY_PARENT_ID = "parent_id"
         const val KEY_RANGE = "range"
+        const val KEY_RESULT = "result"
         const val KEY_SELECTED_STORE_ID = "selected_store_id"
+        const val KEY_STATE = "state"
         const val KEY_STATUS = "status"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
@@ -284,11 +310,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
 
-        fun track(stat: Stat) {
-            track(stat, emptyMap<String, String>())
-        }
-
-        fun track(stat: Stat, properties: Map<String, *>) {
+        fun track(stat: Stat, properties: Map<String, *> = emptyMap<String, String>()) {
             if (sendUsageStats) {
                 instance?.track(stat, properties)
             }

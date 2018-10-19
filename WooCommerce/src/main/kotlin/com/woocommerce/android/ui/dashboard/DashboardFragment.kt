@@ -171,6 +171,18 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
+        if (dashboard_stats.activeGranularity == granularity) {
+            dashboard_stats.showVisitorStats(visits)
+        }
+    }
+
+    override fun showVisitorStatsError(granularity: StatsGranularity) {
+        if (dashboard_stats.activeGranularity == granularity) {
+            dashboard_stats.showVisitorStatsError()
+        }
+    }
+
     override fun showErrorSnack() {
         if (errorSnackbar?.isShownOrQueued() == true) {
             return
@@ -179,9 +191,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         errorSnackbar?.show()
     }
 
-    override fun getFragmentTitle(): String {
-        return getString(R.string.my_store)
-    }
+    override fun getFragmentTitle() = getString(R.string.my_store)
 
     override fun refreshFragmentState() {
         presenter.resetTopEarnersForceRefresh()

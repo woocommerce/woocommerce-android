@@ -38,7 +38,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
 
-    api 'com.google.android.gms:play-services-auth:12.0.1'
+    api 'com.google.android.gms:play-services-auth:15.0.1'
 
     // Share FluxC version from host project if defined, otherwise fallback to default
     if (project.hasProperty("fluxCVersion")) {
@@ -47,7 +47,7 @@ dependencies {
             exclude group: "org.wordpress", module: "utils"
         }
     } else {
-        implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:d4e583f21840111065f12e743cbf31de4307266b") {
+        implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:7c4fa0333cef380aa80b92adbb5e4803b90dd7e5") {
             exclude group: "com.android.support"
             exclude group: "org.wordpress", module: "utils"
         }
