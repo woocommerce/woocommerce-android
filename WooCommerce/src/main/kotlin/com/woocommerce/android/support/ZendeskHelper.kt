@@ -413,7 +413,7 @@ private fun createZendeskIdentity(email: String?, name: String?): Identity {
  * This is a small helper function which just joins the `logInformation` of all the sites passed in with a separator.
  */
 private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String {
-    allSites?.let {
+    allSites?.let { it ->
         return it.joinToString(separator = ZendeskConstants.blogSeparator) { it.logInformation }
     }
     return ZendeskConstants.noneValue
@@ -425,7 +425,7 @@ private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String
  */
 private fun buildZendeskTags(allSites: List<SiteModel>?, origin: Origin, extraTags: List<String>?): List<String> {
     val tags = ArrayList<String>()
-    allSites?.let {
+    allSites?.let { it ->
         // Add wpcom tag if at least one site is WordPress.com site
         if (it.any { it.isWPCom }) {
             tags.add(ZendeskConstants.wpComTag)
@@ -438,7 +438,7 @@ private fun buildZendeskTags(allSites: List<SiteModel>?, origin: Origin, extraTa
         }
 
         // Find distinct plans and add them
-        val plans = it.mapNotNull { it.planShortName }.distinct()
+        val plans = it.asSequence().mapNotNull { it.planShortName }.distinct().toList()
         tags.addAll(plans)
     }
     tags.add(origin.toString())
