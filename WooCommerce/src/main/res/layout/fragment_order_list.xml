@@ -45,6 +45,7 @@
                 app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
             <TextView
+                android:id="@+id/no_orders_text"
                 style="@style/Woo.TextAppearance.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

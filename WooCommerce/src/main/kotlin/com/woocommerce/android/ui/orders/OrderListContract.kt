@@ -21,7 +21,6 @@ interface OrderListContract {
         fun setLoadingMoreIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>, filterByStatus: String? = null, isFreshData: Boolean)
         fun showNoOrdersView(show: Boolean)
-        fun isNoOrdersViewShowing(): Boolean
         fun refreshFragmentState()
         fun showLoadOrdersError()
         fun onFilterSelected(orderStatus: String?)

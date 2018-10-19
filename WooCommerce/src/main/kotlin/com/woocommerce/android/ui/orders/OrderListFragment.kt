@@ -86,8 +86,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
-        // don't allow filtering if there aren't any orders
-        menu?.findItem(R.id.menu_filter)?.setVisible(!isNoOrdersViewShowing())
+        // hide the filter menu item when we're showing all orders and there aren't any
+        val hideFilterMenu = noOrdersView.visibility == View.VISIBLE && isShowingAllOrders()
+        menu?.findItem(R.id.menu_filter)?.isVisible = !hideFilterMenu
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -117,7 +118,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
 
                     orderRefreshLayout.isRefreshing = false
-                    showNoOrdersView(false)
 
                     if (!isRefreshPending) {
                         isRefreshPending = true
@@ -227,8 +227,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
         orderStatusFilter = filterByStatus
 
-        showNoOrdersView(false)
-
         if (!ordersAdapter.isSameOrderList(orders)) {
             ordersList?.let { _ ->
                 if (isFreshData) {
@@ -248,11 +246,28 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         activity?.title = getFragmentTitle()
     }
 
+    private fun isShowingAllOrders(): Boolean {
+        return orderStatusFilter.isNullOrEmpty()
+    }
+
     /**
-     * shows the "waiting for customers" view that appears for stores that have never had any orders
+     * shows the view that appears for stores that have have no orders matching the current filter
      */
     override fun showNoOrdersView(show: Boolean) {
         if (show && noOrdersView.visibility != View.VISIBLE) {
+            // if there isn't a filter (ie: we're showing All orders and there aren't any), then we want
+            // to show the full "customers waiting" view, otherwise we show a simple textView stating
+            // there aren't any orders
+            if (isShowingAllOrders()) {
+                no_orders_image.visibility = View.VISIBLE
+                no_orders_share_button.visibility = View.VISIBLE
+                no_orders_text.setText(R.string.dashboard_no_orders)
+            } else {
+                no_orders_image.visibility = View.GONE
+                no_orders_share_button.visibility = View.GONE
+                no_orders_text.setText(R.string.dashboard_no_orders_with_filter)
+            }
+
             WooAnimUtils.fadeIn(noOrdersView, Duration.LONG)
             WooAnimUtils.fadeOut(ordersView, Duration.LONG)
             no_orders_share_button.setOnClickListener {
@@ -267,8 +282,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         activity?.invalidateOptionsMenu()
     }
-
-    override fun isNoOrdersViewShowing() : Boolean = noOrdersView.visibility == View.VISIBLE
 
     /**
      * Only open the order detail if the list is not actively being refreshed.
