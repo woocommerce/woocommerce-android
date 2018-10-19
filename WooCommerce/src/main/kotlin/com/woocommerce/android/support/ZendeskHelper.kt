@@ -19,6 +19,7 @@ import com.zendesk.service.ZendeskCallback
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.PackageUtils
 import org.wordpress.android.util.StringUtils
@@ -376,7 +377,7 @@ private fun buildZendeskCustomFields(
             CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
             CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
             CustomField(TicketFieldIds.currentSite, currentSiteInformation),
-            // TODO: CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
+            CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
             // TODO: CustomField(TicketFieldIds.logs, WooLog.toPlainText(context)),
             CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
             CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
