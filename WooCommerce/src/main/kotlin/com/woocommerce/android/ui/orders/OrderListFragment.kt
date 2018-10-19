@@ -85,6 +85,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        // don't allow filtering if there aren't any orders
+        menu?.findItem(R.id.menu_filter)?.setVisible(!isNoOrdersViewShowing())
+        super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -258,7 +264,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             WooAnimUtils.fadeOut(noOrdersView, Duration.LONG)
             WooAnimUtils.fadeIn(ordersView, Duration.LONG)
         }
+
+        activity?.invalidateOptionsMenu()
     }
+
+    override fun isNoOrdersViewShowing() : Boolean = noOrdersView.visibility == View.VISIBLE
 
     /**
      * Only open the order detail if the list is not actively being refreshed.
