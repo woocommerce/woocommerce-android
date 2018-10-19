@@ -29,7 +29,7 @@ class FCMMessageService : FirebaseMessagingService() {
 
     private fun convertMapToBundle(data: Map<String, String>): Bundle {
         return Bundle().apply {
-            data.forEach { key, value -> putString(key, value) }
+            data.forEach { (key, value) -> putString(key, value) }
         }
     }
 }
