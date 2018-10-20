@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
@@ -17,6 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
@@ -249,16 +249,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
-    override fun shareStoreUrl() {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, selectedSite.get().url)
-            type = "text/plain"
-        }
-        startActivity(Intent.createChooser(sendIntent,
-                resources.getText(R.string.dashboard_no_orders_share_store_title)))
-    }
-
     /**
      * shows the "waiting for customers" view that appears for stores that have never had any orders
      */
@@ -266,10 +256,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (show && no_orders_view.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(no_orders_view, Duration.LONG)
             no_orders_share_button.setOnClickListener {
-                // Track the user click event
                 AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-
-                shareStoreUrl()
+                ActivityUtils.shareStoreUrl(activity!!, selectedSite.get().url)
             }
         } else if (!show && no_orders_view.visibility == View.VISIBLE) {
             WooAnimUtils.fadeOut(no_orders_view, Duration.LONG)

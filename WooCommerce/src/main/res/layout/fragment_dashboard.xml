@@ -70,8 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/dashboard_no_orders_contentdesc"
-            app:srcCompat="@drawable/ic_woo_waiting_customers"
-            tools:visibility="visible"/>
+            app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
         <TextView
             style="@style/Woo.TextAppearance.Bold"
@@ -86,6 +85,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/dashboard_no_orders_share_store"/>
+            android:text="@string/no_orders_share_store"/>
     </LinearLayout>
 </FrameLayout>
