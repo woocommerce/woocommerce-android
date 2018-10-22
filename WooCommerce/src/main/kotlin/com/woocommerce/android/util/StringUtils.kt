@@ -4,8 +4,12 @@ import android.content.Context
 import android.net.Uri
 import android.support.annotation.StringRes
 import org.wordpress.android.fluxc.model.SiteModel
+import java.util.regex.Pattern
 
 object StringUtils {
+    private val EMAIL_REGEX = "^\\s*?(.+)@(.+?)\\s*$"
+    private val EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX)
+
     /**
      * Borrowed and modified from WordPress-Android :)
      *
@@ -45,5 +49,16 @@ object StringUtils {
             val uri = Uri.parse(it)
             return uri.host.orEmpty() + uri.path.orEmpty()
         } ?: return ""
+    }
+
+    /**
+     * Returns true if the passed string is a valid email - note that this is partially adapted
+     * from the Apache Commons EmailValidator but it isn't as comprehensive. If a more robust
+     * validation is deemed necessary we should consider adding that library
+     */
+    fun isValidEmail(email: String?): Boolean {
+        return email?.let {
+            return EMAIL_PATTERN.matcher(it).matches()
+        } ?: false
     }
 }

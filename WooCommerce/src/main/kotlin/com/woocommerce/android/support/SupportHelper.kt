@@ -8,6 +8,7 @@ import android.view.View.GONE
 import android.widget.EditText
 import android.widget.TextView
 import com.woocommerce.android.R
+import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -44,7 +45,7 @@ class SupportHelper {
             button.setOnClickListener { _ ->
                 val newEmail = emailEditText.text.toString()
                 val newName = nameEditText.text.toString()
-                if (validateEmail(newEmail)) {
+                if (StringUtils.isValidEmail(newEmail)) {
                     emailAndNameSelected(newEmail, newName)
                     dialog.dismiss()
                 } else {
@@ -53,11 +54,6 @@ class SupportHelper {
             }
         }
         dialog.show()
-    }
-
-    // TODO
-    private fun validateEmail(email: String): Boolean {
-        return true
     }
 
     /**
