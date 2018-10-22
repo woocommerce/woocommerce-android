@@ -3,13 +3,10 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.net.Uri
 import android.support.annotation.StringRes
+import android.util.Patterns
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.regex.Pattern
 
 object StringUtils {
-    private val EMAIL_REGEX = "^\\s*?(.+)@(.+?)\\s*$"
-    private val EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX)
-
     /**
      * Borrowed and modified from WordPress-Android :)
      *
@@ -52,13 +49,11 @@ object StringUtils {
     }
 
     /**
-     * Returns true if the passed string is a valid email - note that this is partially adapted
-     * from the Apache Commons EmailValidator but it isn't as comprehensive. If a more robust
-     * validation is deemed necessary we should consider adding that library
+     * Returns true if the passed string is a valid email address
      */
     fun isValidEmail(email: String?): Boolean {
         return email?.let {
-            return EMAIL_PATTERN.matcher(it).matches()
+            return Patterns.EMAIL_ADDRESS.matcher(it).matches()
         } ?: false
     }
 }
