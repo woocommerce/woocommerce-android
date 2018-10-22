@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.help_activity.*
 import org.wordpress.android.fluxc.store.AccountStore
@@ -29,6 +30,7 @@ class HelpActivity : AppCompatActivity() {
     private val originFromExtras by lazy {
         (intent.extras?.get(HelpActivity.ORIGIN_KEY) as Origin?) ?: Origin.UNKNOWN
     }
+
     private val extraTagsFromExtras by lazy {
         intent.extras?.getStringArrayList(HelpActivity.EXTRA_TAGS_KEY)
     }
@@ -60,6 +62,10 @@ class HelpActivity : AppCompatActivity() {
                 AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_SET)
             }
             AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_FORM_VIEWED)
+        }
+
+        faqButton.setOnClickListener {
+            showZendeskFaq()
         }
 
         /**
@@ -96,8 +102,11 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showZendeskFaq() {
+        ActivityUtils.openUrlExternal(this, FAQ_URL)
+        /* TODO: for now we simply link to the online FAQ, but we should show the Zendesk FAQ once it's ready
         zendeskHelper
                 .showZendeskHelpCenter(this, originFromExtras, selectedSite.get(), extraTagsFromExtras)
+        */
     }
 
     private fun refreshContactEmailText() {
@@ -122,6 +131,7 @@ class HelpActivity : AppCompatActivity() {
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
+        private const val FAQ_URL = "https://docs.woocommerce.com/document/frequently-asked-questions/"
 
         @JvmStatic
         fun createIntent(

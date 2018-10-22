@@ -38,6 +38,11 @@
                     android:text="@string/my_tickets"/>
 
                 <TextView
+                    android:id="@+id/faqButton"
+                    style="@style/HelpActivitySingleText"
+                    android:text="@string/support_faq"/>
+
+                <TextView
                     android:id="@+id/applicationVersion"
                     style="@style/HelpActivitySingleText"
                     android:textColor="@color/grey_darken_10"
