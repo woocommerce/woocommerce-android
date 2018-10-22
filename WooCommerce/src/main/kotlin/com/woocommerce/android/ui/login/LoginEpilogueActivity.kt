@@ -100,7 +100,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                 selectedSite.set(site)
 
                 AnalyticsTracker.track(
-                        Stat.LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED,
+                        Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
                         mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
                 showMainActivityAndFinish()
             }
