@@ -1,7 +1,9 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import android.net.Uri
 import android.support.annotation.StringRes
+import org.wordpress.android.fluxc.model.SiteModel
 
 object StringUtils {
     /**
@@ -29,5 +31,19 @@ object StringUtils {
             1 -> context.getString(one ?: default, quantity)
             else -> context.getString(default, quantity)
         }
+    }
+
+    /**
+     * Similar to UrlUtils.getHost() except that it includes the path (subfolder)
+     *
+     * Ex:
+     *      https://baseurl.com -> baseurl.com
+     *      https://baseurl.com/mysite -> baseurl.com/mysite
+     */
+    fun getSiteDomainAndPath(site: SiteModel): String {
+        site.url?.let {
+            val uri = Uri.parse(it)
+            return uri.host.orEmpty() + uri.path.orEmpty()
+        } ?: return ""
     }
 }

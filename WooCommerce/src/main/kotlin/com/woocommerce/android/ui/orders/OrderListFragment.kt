@@ -22,8 +22,12 @@ import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
@@ -50,6 +54,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     @Inject lateinit var presenter: OrderListContract.Presenter
     @Inject lateinit var ordersAdapter: OrderListAdapter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private lateinit var listLayoutAnimation: LayoutAnimationController
@@ -80,6 +85,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        // hide the filter menu item when we're showing all orders and there aren't any
+        val hideFilterMenu = noOrdersView.visibility == View.VISIBLE && isShowingAllOrders()
+        menu?.findItem(R.id.menu_filter)?.isVisible = !hideFilterMenu
+        super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -106,6 +118,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
 
                     orderRefreshLayout.isRefreshing = false
+
                     if (!isRefreshPending) {
                         isRefreshPending = true
                         presenter.loadOrders(orderStatusFilter, forceRefresh = true)
@@ -214,9 +227,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
         orderStatusFilter = filterByStatus
 
-        ordersView.visibility = View.VISIBLE
-        noOrdersView.visibility = View.GONE
-
         if (!ordersAdapter.isSameOrderList(orders)) {
             ordersList?.let { _ ->
                 if (isFreshData) {
@@ -236,13 +246,41 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         activity?.title = getFragmentTitle()
     }
 
+    private fun isShowingAllOrders(): Boolean {
+        return orderStatusFilter.isNullOrEmpty()
+    }
+
     /**
-     * No orders exist for the selected store. Show the "no orders" view.
+     * shows the view that appears for stores that have have no orders matching the current filter
      */
-    override fun showNoOrders() {
-        ordersView.visibility = View.GONE
-        noOrdersView.visibility = View.VISIBLE
-        isRefreshPending = false
+    override fun showNoOrdersView(show: Boolean) {
+        if (show && noOrdersView.visibility != View.VISIBLE) {
+            // if there isn't a filter (ie: we're showing All orders and there aren't any), then we want
+            // to show the full "customers waiting" view, otherwise we show a simple textView stating
+            // there aren't any orders
+            if (isShowingAllOrders()) {
+                no_orders_image.visibility = View.VISIBLE
+                no_orders_share_button.visibility = View.VISIBLE
+                no_orders_text.setText(R.string.dashboard_no_orders)
+            } else {
+                no_orders_image.visibility = View.GONE
+                no_orders_share_button.visibility = View.GONE
+                no_orders_text.setText(R.string.dashboard_no_orders_with_filter)
+            }
+
+            WooAnimUtils.fadeIn(noOrdersView, Duration.LONG)
+            WooAnimUtils.fadeOut(ordersView, Duration.LONG)
+            no_orders_share_button.setOnClickListener {
+                AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(activity!!, selectedSite.get().url)
+            }
+            isRefreshPending = false
+        } else if (!show && noOrdersView.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(noOrdersView, Duration.LONG)
+            WooAnimUtils.fadeIn(ordersView, Duration.LONG)
+        }
+
+        activity?.invalidateOptionsMenu()
     }
 
     /**

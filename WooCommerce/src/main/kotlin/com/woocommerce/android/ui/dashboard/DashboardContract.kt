@@ -30,7 +30,6 @@ interface DashboardContract {
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
         fun showNoOrdersView(show: Boolean)
-        fun shareStoreUrl()
 
         fun showChartSkeleton(show: Boolean)
         fun showUnfilledOrdersSkeleton(show: Boolean)

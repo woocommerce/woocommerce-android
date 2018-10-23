@@ -150,8 +150,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * One-time chart initialization with settings common to all granularities.
      */
     private fun initChart() {
-        with (chart) {
-            with (xAxis) {
+        with(chart) {
+            with(xAxis) {
                 position = XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
@@ -164,7 +164,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
             axisLeft.isEnabled = false
 
-            with (axisRight) {
+            with(axisRight) {
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
@@ -223,7 +223,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
 
-        with (chart) {
+        with(chart) {
             data = BarData(dataSet)
             animateY(duration)
         }

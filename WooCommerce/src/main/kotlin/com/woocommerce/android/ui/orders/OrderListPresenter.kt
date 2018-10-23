@@ -50,6 +50,7 @@ class OrderListPresenter @Inject constructor(
     override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
         if (networkStatus.isConnected() && forceRefresh) {
             isLoadingOrders = true
+            orderView?.showNoOrdersView(false)
             orderView?.showSkeleton(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
@@ -127,6 +128,7 @@ class OrderListPresenter @Inject constructor(
         } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
             if (orders.count() > 0) {
+                view.showNoOrdersView(false)
                 view.showOrders(orders, orderStatusFilter, isForceRefresh)
             } else {
                 if (!networkStatus.isConnected()) {
@@ -134,7 +136,7 @@ class OrderListPresenter @Inject constructor(
                     // indicator until a successful online refresh.
                     view.showSkeleton(true)
                 } else {
-                    view.showNoOrders()
+                    view.showNoOrdersView(true)
                 }
             }
         }
