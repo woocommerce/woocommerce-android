@@ -75,7 +75,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED(siteless = true),
         LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
         LOGIN_EPILOGUE_STORES_SHOWN(siteless = true),
-        LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED(siteless = true),
+        LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED(siteless = true),
 
         // -- Dashboard
         DASHBOARD_PULLED_TO_REFRESH,
