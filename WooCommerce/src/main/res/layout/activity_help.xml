@@ -90,6 +90,28 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/identityContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/Woo.Settings.LabelWithDetail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_contact_email"/>
+
+                    <TextView
+                        android:id="@+id/identityEmail"
+                        style="@style/Woo.Settings.Label.Detail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_contact_email_not_set"
+                        android:textColor="@color/grey_darken_10"/>
+
+                </LinearLayout>
+
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </ScrollView>

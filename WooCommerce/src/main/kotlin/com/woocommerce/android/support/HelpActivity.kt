@@ -45,6 +45,7 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         contactContainer.setOnClickListener { createNewZendeskTicket() }
+        identityContainer.setOnClickListener { showIdentityDialog() }
         myTicketsContainer.setOnClickListener { showZendeskTickets() }
         faqContainer.setOnClickListener { showZendeskFaq() }
 
@@ -61,6 +62,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        refreshContactEmailText()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -73,7 +75,6 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun createNewZendeskTicket() {
-        // if the user hasn't set their contact info yet prompt for it now
         if (!AppPrefs.hasSupportEmail()) {
             showIdentityDialog()
             return
@@ -92,6 +93,15 @@ class HelpActivity : AppCompatActivity() {
             createNewZendeskTicket()
         }
         AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_FORM_VIEWED)
+    }
+
+    private fun refreshContactEmailText() {
+        val supportEmail = AppPrefs.getSupportEmail()
+        identityEmail.text = if (!supportEmail.isEmpty()) {
+            supportEmail
+        } else {
+            getString(R.string.support_contact_email_not_set)
+        }
     }
 
     private fun showZendeskTickets() {
