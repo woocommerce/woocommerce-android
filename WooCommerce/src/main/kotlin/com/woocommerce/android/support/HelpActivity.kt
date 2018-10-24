@@ -16,7 +16,6 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.help_activity.*
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.util.PackageUtils
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -47,7 +46,6 @@ class HelpActivity : AppCompatActivity() {
 
         contactUsButton.setOnClickListener { createNewZendeskTicket() }
         myTicketsButton.setOnClickListener { showZendeskTickets() }
-        applicationVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
         contactEmailContainer.setOnClickListener {
             var emailSuggestion: String? = AppPrefs.getSupportEmail()
