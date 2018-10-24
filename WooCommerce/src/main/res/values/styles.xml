@@ -383,19 +383,6 @@
     </style>
 
     <!--
-        Help & Support
-    -->
-    <style name="HelpActivitySingleText">
-        <item name="android:paddingTop">@dimen/margin_extra_large</item>
-        <item name="android:paddingBottom">@dimen/margin_extra_large</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/grey_dark</item>
-        <item name="android:textSize">@dimen/text_large</item>
-    </style>
-
-    <!--
         Other
     -->
     <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">

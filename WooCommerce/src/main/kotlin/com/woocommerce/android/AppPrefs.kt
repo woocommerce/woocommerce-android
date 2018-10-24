@@ -50,9 +50,9 @@ object AppPrefs {
         }
     }
 
-    fun getSupportEmail(): String {
-        return getString(DeletablePrefKey.SUPPORT_EMAIL)
-    }
+    fun getSupportEmail() = getString(DeletablePrefKey.SUPPORT_EMAIL)
+
+    fun hasSupportEmail() = !getSupportEmail().isEmpty()
 
     fun removeSupportEmail() {
         remove(DeletablePrefKey.SUPPORT_EMAIL)
@@ -62,9 +62,7 @@ object AppPrefs {
         setString(DeletablePrefKey.SUPPORT_NAME, name)
     }
 
-    fun getSupportName(): String {
-        return getString(DeletablePrefKey.SUPPORT_NAME)
-    }
+    fun getSupportName() = getString(DeletablePrefKey.SUPPORT_NAME)
 
     fun removeSupportName() {
         remove(DeletablePrefKey.SUPPORT_NAME)

@@ -13,7 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.help_activity.*
+import kotlinx.android.synthetic.main.activity_help.*
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import java.util.ArrayList
@@ -38,33 +38,15 @@ class HelpActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.help_activity)
+        setContentView(R.layout.activity_help)
 
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        contactUsButton.setOnClickListener { createNewZendeskTicket() }
-        myTicketsButton.setOnClickListener { showZendeskTickets() }
-
-        contactEmailContainer.setOnClickListener {
-            var emailSuggestion: String? = AppPrefs.getSupportEmail()
-            if (emailSuggestion.isNullOrEmpty()) {
-                emailSuggestion = supportHelper
-                        .getSupportEmailAndNameSuggestion(accountStore.account, selectedSite.get()).first
-            }
-
-            supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
-                zendeskHelper.setSupportEmail(email)
-                refreshContactEmailText()
-                AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_SET)
-            }
-            AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_FORM_VIEWED)
-        }
-
-        faqButton.setOnClickListener {
-            showZendeskFaq()
-        }
+        contactContainer.setOnClickListener { createNewZendeskTicket() }
+        myTicketsContainer.setOnClickListener { showZendeskTickets() }
+        faqContainer.setOnClickListener { showZendeskFaq() }
 
         /**
         * If the user taps on a Zendesk notification, we want to show them the `My Tickets` page. However, this
@@ -80,7 +62,6 @@ class HelpActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        refreshContactEmailText()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -92,7 +73,25 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun createNewZendeskTicket() {
+        // if the user hasn't set their contact info yet prompt for it now
+        if (!AppPrefs.hasSupportEmail()) {
+            showIdentityDialog()
+            return
+        }
+
         zendeskHelper.createNewTicket(this, originFromExtras, selectedSite.get(), extraTagsFromExtras)
+    }
+
+    private fun showIdentityDialog() {
+        val emailSuggestion = supportHelper
+                .getSupportEmailAndNameSuggestion(accountStore.account, selectedSite.get()).first
+
+        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
+            zendeskHelper.setSupportEmail(email)
+            AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_SET)
+            createNewZendeskTicket()
+        }
+        AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
     private fun showZendeskTickets() {
@@ -105,15 +104,6 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper
                 .showZendeskHelpCenter(this, originFromExtras, selectedSite.get(), extraTagsFromExtras)
         */
-    }
-
-    private fun refreshContactEmailText() {
-        val supportEmail = AppPrefs.getSupportEmail()
-        contactEmailAddress.text = if (!supportEmail.isEmpty()) {
-            supportEmail
-        } else {
-            getString(R.string.support_contact_email_not_set)
-        }
     }
 
     enum class Origin(private val stringValue: String) {
