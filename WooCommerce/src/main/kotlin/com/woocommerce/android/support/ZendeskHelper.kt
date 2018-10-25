@@ -11,8 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.logInformation
-import com.woocommerce.android.util.stateLogInformation
+import com.woocommerce.android.extensions.logInformation
+import com.woocommerce.android.extensions.stateLogInformation
 import com.zendesk.logger.Logger
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
