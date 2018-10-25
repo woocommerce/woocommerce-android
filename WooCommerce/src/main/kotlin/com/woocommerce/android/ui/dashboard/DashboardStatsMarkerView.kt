@@ -9,16 +9,12 @@ import com.github.mikephil.charting.utils.MPPointF
 import com.woocommerce.android.R
 
 class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerView(context, layoutResource) {
-    private val tvContent: TextView
-    var captionListener: RequestMarkerCaptionListener? = null
-
     interface RequestMarkerCaptionListener {
         fun onRequestMarkerCaption(entry: Entry): String?
     }
 
-    init {
-        tvContent = findViewById(R.id.tvContent)
-    }
+    private val tvContent: TextView = findViewById(R.id.tvContent)
+    var captionListener: RequestMarkerCaptionListener? = null
 
     override fun refreshContent(entry: Entry, highlight: Highlight) {
         tvContent.text = captionListener?.onRequestMarkerCaption(entry)
