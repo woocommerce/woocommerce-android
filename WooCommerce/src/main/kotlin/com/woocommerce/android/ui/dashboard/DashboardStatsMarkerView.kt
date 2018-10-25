@@ -10,6 +10,11 @@ import com.woocommerce.android.R
 
 class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerView(context, layoutResource) {
     private val tvContent: TextView
+    private var captionListener: RequestMarkerCaptionListener? = null
+
+    interface RequestMarkerCaptionListener {
+        fun onRequestMarkerCaption(entry: Entry): String?
+    }
 
     init {
         tvContent = findViewById(R.id.tvContent)
@@ -18,8 +23,10 @@ class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerVi
     // callbacks everytime the MarkerView is redrawn, can be used to update the
     // content (user-interface)
     override fun refreshContent(entry: Entry, highlight: Highlight) {
-        // tvContent.text = e.data?.toString()
-        tvContent.text = entry.toString()
+        val hint = captionListener?.onRequestMarkerCaption(entry)
+        tvContent.text =  hint
+        // TODO: hide marker when y <= 0
+        super.refreshContent(entry, highlight)
     }
 
     override fun getOffset(): MPPointF {

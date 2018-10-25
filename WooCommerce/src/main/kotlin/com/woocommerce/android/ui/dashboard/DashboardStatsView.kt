@@ -189,7 +189,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             isScaleYEnabled = false
             isDragEnabled = false
 
-            marker = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
+            val markerView = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
+            markerView.chartView = this
+            marker = markerView
         }
     }
 
@@ -225,6 +227,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             colors = barColors
             setDrawValues(false)
             isHighlightEnabled = true
+            highLightColor = resources.getColor(R.color.wc_green_light)
         }
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
