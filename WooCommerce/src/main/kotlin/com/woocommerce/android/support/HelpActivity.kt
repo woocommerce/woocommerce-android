@@ -16,6 +16,7 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_help.*
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.util.PackageUtils
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -48,6 +49,8 @@ class HelpActivity : AppCompatActivity() {
         identityContainer.setOnClickListener { showIdentityDialog() }
         myTicketsContainer.setOnClickListener { showZendeskTickets() }
         faqContainer.setOnClickListener { showZendeskFaq() }
+
+        textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
         /**
         * If the user taps on a Zendesk notification, we want to show them the `My Tickets` page. However, this
