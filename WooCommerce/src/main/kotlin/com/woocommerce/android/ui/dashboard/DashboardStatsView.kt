@@ -181,9 +181,15 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             description.isEnabled = false
             legend.isEnabled = false
 
-            // This disables pinch to zoom and swiping through the zoomed graph
-            // We can reenable it, but we'll probably want to disable pull-to-refresh inside the graph view
-            setTouchEnabled(false)
+            // touch has to be enabled in order to show a marker when a bar is tapped, but we don't want
+            // pinch/zoom, drag, or scaling to be enabled
+            setTouchEnabled(true)
+            setPinchZoom(false)
+            isScaleXEnabled  = false
+            isScaleYEnabled = false
+            isDragEnabled = false
+
+            marker = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
         }
     }
 
@@ -218,7 +224,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val dataSet = generateBarDataSet(revenueStats).apply {
             colors = barColors
             setDrawValues(false)
-            isHighlightEnabled = false
+            isHighlightEnabled = true
         }
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)

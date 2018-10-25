@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:background="">
+                android:layout_height="wrap_content"
+                android:background="@color/grey_dark">
 
     <TextView
         android:id="@+id/tvContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
         android:ellipsize="end"
+        android:padding="20dp"
         android:singleLine="true"
-        android:text=""
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white"
+        tools:text="2017: 5.2K"/>
 
 </RelativeLayout>
