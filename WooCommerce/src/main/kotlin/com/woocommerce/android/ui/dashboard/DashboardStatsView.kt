@@ -261,6 +261,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
 
         with(chart) {
+            highlightValue(null)
             data = BarData(dataSet)
             animateY(duration)
         }
