@@ -137,9 +137,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             StatsGranularity.YEARS -> dateindex.toString()
         }
 
-        // TODO: get the revenue for this entry
+        // get the revenue for this entry
+        val revenue = barEntry.y.toDouble()
+        val revenueStr = formatAmountForDisplay(context, revenue, chartCurrencyCode)
 
-        return dateStr
+        return dateStr + "\n" + revenueStr
     }
 
 
@@ -252,7 +254,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             colors = barColors
             setDrawValues(false)
             isHighlightEnabled = true
-            highLightColor = resources.getColor(R.color.wc_green_light)
+            highLightColor = ContextCompat.getColor(context, R.color.wc_green)
         }
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
