@@ -32,6 +32,7 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.util.ArrayList
@@ -126,24 +127,24 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      */
     override fun onRequestMarkerCaption(entry: Entry): String? {
         val barEntry = entry as BarEntry
-        if (barEntry.y <= 0.0f) return null
 
         // get the date range for this entry
         val dateindex = barEntry.x.toInt()
-        val dateStr = when (activeGranularity) {
-            StatsGranularity.DAYS -> chartRevenueStats.keys.elementAt(dateindex - 1)
-            StatsGranularity.WEEKS -> chartRevenueStats.keys.elementAt(dateindex - 1)
-            StatsGranularity.MONTHS -> chartRevenueStats.keys.elementAt(dateindex - 1)
-            StatsGranularity.YEARS -> dateindex.toString()
+        val date = if (activeGranularity == YEARS) dateindex.toString() else
+            chartRevenueStats.keys.elementAt(dateindex - 1)
+        val formattedDate = when (activeGranularity) {
+            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
+            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
+            StatsGranularity.MONTHS -> DateUtils.getShortMonthString(date)
+            StatsGranularity.YEARS -> date
         }
 
         // get the revenue for this entry
         val revenue = barEntry.y.toDouble()
-        val revenueStr = formatAmountForDisplay(context, revenue, chartCurrencyCode)
+        val formattedRevenue = formatAmountForDisplay(context, revenue, chartCurrencyCode)
 
-        return dateStr + "\n" + revenueStr
+        return formattedDate + "\n" + formattedRevenue
     }
-
 
     fun showSkeleton(show: Boolean) {
         if (show) {
@@ -211,7 +212,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             // pinch/zoom, drag, or scaling to be enabled
             setTouchEnabled(true)
             setPinchZoom(false)
-            isScaleXEnabled  = false
+            isScaleXEnabled = false
             isScaleYEnabled = false
             isDragEnabled = false
         }

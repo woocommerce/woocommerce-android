@@ -20,12 +20,8 @@ class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerVi
         tvContent = findViewById(R.id.tvContent)
     }
 
-    // callbacks everytime the MarkerView is redrawn, can be used to update the
-    // content (user-interface)
     override fun refreshContent(entry: Entry, highlight: Highlight) {
-        val hint = captionListener?.onRequestMarkerCaption(entry)
-        tvContent.text =  hint
-        // TODO: hide marker when y <= 0
+        tvContent.text = captionListener?.onRequestMarkerCaption(entry)
         super.refreshContent(entry, highlight)
     }
 
