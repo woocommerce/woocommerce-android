@@ -10,7 +10,7 @@ import com.woocommerce.android.R
 
 class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerView(context, layoutResource) {
     private val tvContent: TextView
-    private var captionListener: RequestMarkerCaptionListener? = null
+    var captionListener: RequestMarkerCaptionListener? = null
 
     interface RequestMarkerCaptionListener {
         fun onRequestMarkerCaption(entry: Entry): String?

@@ -17,11 +17,13 @@ import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardStatsMarkerView.RequestMarkerCaptionListener
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
@@ -36,7 +38,7 @@ import java.util.ArrayList
 import java.util.Date
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs) {
+    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener {
     init {
         View.inflate(context, R.layout.dashboard_stats, this)
     }
@@ -119,6 +121,28 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
+    /**
+     * the chart MarkerView relies on this to know what to display when the user taps a chart bar
+     */
+    override fun onRequestMarkerCaption(entry: Entry): String? {
+        val barEntry = entry as BarEntry
+        if (barEntry.y <= 0.0f) return null
+
+        // get the date range for this entry
+        val dateindex = barEntry.x.toInt()
+        val dateStr = when (activeGranularity) {
+            StatsGranularity.DAYS -> chartRevenueStats.keys.elementAt(dateindex - 1)
+            StatsGranularity.WEEKS -> chartRevenueStats.keys.elementAt(dateindex - 1)
+            StatsGranularity.MONTHS -> chartRevenueStats.keys.elementAt(dateindex - 1)
+            StatsGranularity.YEARS -> dateindex.toString()
+        }
+
+        // TODO: get the revenue for this entry
+
+        return dateStr
+    }
+
+
     fun showSkeleton(show: Boolean) {
         if (show) {
             // inflate the skeleton view and adjust the bar widths based on the granularity
@@ -188,11 +212,12 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             isScaleXEnabled  = false
             isScaleYEnabled = false
             isDragEnabled = false
-
-            val markerView = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
-            markerView.chartView = this
-            marker = markerView
         }
+
+        val markerView = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
+        markerView.chartView = chart
+        markerView.captionListener = this
+        chart.marker = markerView
     }
 
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
