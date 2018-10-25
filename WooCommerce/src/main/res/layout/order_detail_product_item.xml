@@ -23,15 +23,17 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="12dp"
+        android:ellipsize="end"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:paddingEnd="8dp"
         android:paddingStart="0dp"
+        android:singleLine="true"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_qty"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
-        app:layout_constrainedWidth="true"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
         tools:text="Candle"/>
 
     <TextView
@@ -80,11 +82,11 @@
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
+        app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblTax"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_productTotal"
-        app:layout_constrainedWidth="true"
         tools:text="$0.75"
         tools:visibility="visible"/>
 
@@ -109,11 +111,11 @@
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
+        app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblSku"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
-        app:layout_constrainedWidth="true"
         tools:text="T3124"
         tools:visibility="visible"/>
 </merge>
