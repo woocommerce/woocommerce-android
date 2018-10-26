@@ -21,12 +21,23 @@ class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerVi
     private val tvContent: TextView = findViewById(R.id.tvContent)
     var captionListener: RequestMarkerCaptionListener? = null
 
+    init {
+        // set the "bubble" image's minHeight based on the size of the text with padding
+        val paddingMed = resources.getDimensionPixelSize(R.dimen.margin_medium)
+        val paddingSm = resources.getDimensionPixelSize(R.dimen.margin_small)
+        val textSz = resources.getDimensionPixelSize(R.dimen.text_small)
+        markerImage.minimumHeight =
+                (paddingMed * 4) +  // padding around text
+                (textSz * 2) +      // size of two lines of text
+                paddingSm           // extra padding for bubble
+    }
+
     override fun refreshContent(entry: Entry, highlight: Highlight) {
         if (entry.y <= 0) {
-            marker_container.visibility = View.GONE
+            markerContainer.visibility = View.GONE
         } else {
             tvContent.text = captionListener?.onRequestMarkerCaption(entry)
-            marker_container.visibility = View.VISIBLE
+            markerContainer.visibility = View.VISIBLE
         }
         super.refreshContent(entry, highlight)
     }
