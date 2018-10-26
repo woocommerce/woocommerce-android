@@ -10,10 +10,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/grey_dark"
-        android:ellipsize="end"
-        android:padding="10dp"
-        android:lines="2"
         android:gravity="center"
+        android:lines="2"
+        android:padding="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white"
         tools:text="2017\n5.2K"/>

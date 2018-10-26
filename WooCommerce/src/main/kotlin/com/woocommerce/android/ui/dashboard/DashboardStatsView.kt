@@ -122,30 +122,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    /**
-     * the chart MarkerView relies on this to know what to display when the user taps a chart bar
-     */
-    override fun onRequestMarkerCaption(entry: Entry): String? {
-        val barEntry = entry as BarEntry
-
-        // get the date range for this entry
-        val dateindex = barEntry.x.toInt()
-        val date = if (activeGranularity == YEARS) dateindex.toString() else
-            chartRevenueStats.keys.elementAt(dateindex - 1)
-        val formattedDate = when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
-            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthString(date)
-            StatsGranularity.YEARS -> date
-        }
-
-        // get the revenue for this entry
-        val revenue = barEntry.y.toDouble()
-        val formattedRevenue = formatAmountForDisplay(context, revenue, chartCurrencyCode)
-
-        return formattedDate + "\n" + formattedRevenue
-    }
-
     fun showSkeleton(show: Boolean) {
         if (show) {
             // inflate the skeleton view and adjust the bar widths based on the granularity
@@ -223,6 +199,37 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         chart.marker = markerView
     }
 
+    /**
+     * the chart MarkerView relies on this to know what to display when the user taps a chart bar
+     */
+    override fun onRequestMarkerCaption(entry: Entry): String? {
+        val barEntry = entry as BarEntry
+
+        // get the date range for this entry
+        val dateindex = barEntry.x.toInt()
+        val date = if (activeGranularity == YEARS) dateindex.toString() else
+            chartRevenueStats.keys.elementAt(dateindex - 1)
+        val formattedDate = when (activeGranularity) {
+            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
+            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
+            StatsGranularity.MONTHS -> DateUtils.getShortMonthString(date)
+            StatsGranularity.YEARS -> date
+        }
+
+        // get the revenue for this entry
+        val revenue = barEntry.y.toDouble()
+        val formattedRevenue = formatAmountForDisplay(context, revenue, chartCurrencyCode)
+
+        return formattedDate + "\n" + formattedRevenue
+    }
+
+    /**
+     * removes the highlighted value, which in turn removes the marker view
+     */
+    private fun hideMarker() {
+        chart.highlightValue(null)
+    }
+
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
 
@@ -261,11 +268,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
 
         with(chart) {
-            highlightValue(null)
             data = BarData(dataSet)
             animateY(duration)
         }
 
+        hideMarker()
         resetLastUpdated()
     }
 
