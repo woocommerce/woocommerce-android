@@ -205,7 +205,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     override fun onRequestMarkerCaption(entry: Entry): String? {
         val barEntry = entry as BarEntry
 
-        // get the date range for this entry
+        // get the date for this entry
         val dateindex = barEntry.x.toInt()
         val date = if (activeGranularity == YEARS) dateindex.toString() else
             chartRevenueStats.keys.elementAt(dateindex - 1)
@@ -220,6 +220,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val revenue = barEntry.y.toDouble()
         val formattedRevenue = formatAmountForDisplay(context, revenue, chartCurrencyCode)
 
+        // show the date and revenue on separate lines
         return formattedDate + "\n" + formattedRevenue
     }
 
