@@ -31,6 +31,7 @@ class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerVi
     }
 
     override fun refreshContent(entry: Entry, highlight: Highlight) {
+        // don't show the marker view when there's zero revenue
         if (entry.y <= 0) {
             markerContainer.visibility = View.GONE
         } else {
