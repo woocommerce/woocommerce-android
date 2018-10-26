@@ -16,9 +16,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import android.view.animation.LayoutAnimationController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -57,7 +54,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var ordersDividerDecoration: DividerItemDecoration
-    private lateinit var listLayoutAnimation: LayoutAnimationController
 
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
     private var listState: Parcelable? = null // Save the state of the recycler view
@@ -140,26 +136,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // Set the divider decoration for the list
         ordersDividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
 
-        // Set the animation for this list. Gets disabled at various points so we use a variable for it.
-        listLayoutAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down)
-
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
-            layoutAnimationListener = object : Animation.AnimationListener {
-                override fun onAnimationRepeat(animation: Animation?) {}
-
-                override fun onAnimationEnd(animation: Animation?) {
-                    // Remove the layout animation to prevent the animation from playing
-                    // when just restoring the state of the recycler view.
-                    layoutAnimation = null
-                }
-
-                override fun onAnimationStart(animation: Animation?) {}
-            }
         }
 
         presenter.takeView(this)
@@ -231,8 +213,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             ordersList?.let { _ ->
                 if (isFreshData) {
                     ordersList.scrollToPosition(0)
-                    // TODO: do we want this animation still?
-                    // listView.layoutAnimation = listLayoutAnimation
                 }
                 ordersAdapter.setOrders(orders, orderStatusFilter)
             }
