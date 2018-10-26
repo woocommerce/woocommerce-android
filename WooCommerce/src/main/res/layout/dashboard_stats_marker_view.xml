@@ -12,7 +12,7 @@
         android:id="@+id/tvContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/grey_dark"
+        android:background="@drawable/marker_bubble"
         android:gravity="center"
         android:lines="2"
         android:padding="@dimen/margin_medium"
