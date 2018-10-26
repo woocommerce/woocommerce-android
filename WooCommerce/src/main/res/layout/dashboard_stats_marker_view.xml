@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="@color/transparent"
                 android:padding="1dp">
 
     <TextView
@@ -17,5 +18,13 @@
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_small"
         tools:text="2017\n5.2K"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvContent"
+        android:layout_centerHorizontal="true"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/marker_arrow_down"/>
 
 </RelativeLayout>
