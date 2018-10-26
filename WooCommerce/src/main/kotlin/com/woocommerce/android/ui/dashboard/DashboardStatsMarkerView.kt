@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
 import android.view.View
-import android.widget.TextView
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
@@ -18,7 +17,6 @@ class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerVi
         fun onRequestMarkerCaption(entry: Entry): String?
     }
 
-    private val tvContent: TextView = findViewById(R.id.tvContent)
     var captionListener: RequestMarkerCaptionListener? = null
 
     init {
