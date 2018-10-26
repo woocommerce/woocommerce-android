@@ -8,6 +8,9 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import com.woocommerce.android.R
 
+/**
+ * Custom MarkerView which appears on the stats chart when the user taps a bar
+ */
 class DashboardStatsMarkerView(context: Context, layoutResource: Int) : MarkerView(context, layoutResource) {
     interface RequestMarkerCaptionListener {
         fun onRequestMarkerCaption(entry: Entry): String?
