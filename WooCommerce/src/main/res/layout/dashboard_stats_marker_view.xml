@@ -3,7 +3,8 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp">
+                android:background="@color/white"
+                android:padding="1dp">
 
     <TextView
         android:id="@+id/tvContent"
@@ -12,9 +13,9 @@
         android:background="@color/grey_dark"
         android:gravity="center"
         android:lines="2"
-        android:padding="10dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:padding="@dimen/margin_medium"
         android:textColor="@android:color/white"
+        android:textSize="@dimen/text_small"
         tools:text="2017\n5.2K"/>
 
 </RelativeLayout>
