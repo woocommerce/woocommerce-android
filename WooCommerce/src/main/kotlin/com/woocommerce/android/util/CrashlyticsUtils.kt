@@ -11,10 +11,10 @@ object CrashlyticsUtils {
     private const val TAG_KEY = "tag"
     private const val MESSAGE_KEY = "message"
 
-    private fun isCrashlyticsAllowed() = AppPrefs.isCrashReportingEnabled()
+    private fun isCrashlyticsEnabled() = AppPrefs.isCrashReportingEnabled()
 
     fun initCrashlytics(context: Context) {
-        if (!isCrashlyticsAllowed()) { return }
+        if (!isCrashlyticsEnabled()) { return }
 
         Fabric.with(context, Crashlytics())
 
@@ -30,7 +30,7 @@ object CrashlyticsUtils {
     }
 
     fun logException(tr: Throwable, tag: T? = null, message: String? = null) {
-        if (!Fabric.isInitialized() || !isCrashlyticsAllowed()) { return }
+        if (!Fabric.isInitialized() || !isCrashlyticsEnabled()) { return }
 
         tag?.let { Crashlytics.setString(TAG_KEY, it.name) }
 
@@ -40,7 +40,7 @@ object CrashlyticsUtils {
     }
 
     fun log(message: String) {
-        if (!Fabric.isInitialized() || !isCrashlyticsAllowed()) { return }
+        if (!Fabric.isInitialized() || !isCrashlyticsEnabled()) { return }
 
         Crashlytics.log(message)
     }

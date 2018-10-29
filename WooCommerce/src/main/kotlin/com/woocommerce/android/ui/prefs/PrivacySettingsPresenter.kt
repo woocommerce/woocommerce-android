@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_FAILED
@@ -52,6 +53,12 @@ class PrivacySettingsPresenter @Inject constructor(
             }
             dispatcher.dispatch(AccountActionBuilder.newPushSettingsAction(payload))
         }
+    }
+
+    override fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
+
+    override fun setCrashReportingEnabled(enabled: Boolean) {
+        AppPrefs.setCrashReportingEnabled(enabled)
     }
 
     @Suppress("unused")

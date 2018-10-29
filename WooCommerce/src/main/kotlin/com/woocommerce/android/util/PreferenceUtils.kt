@@ -38,6 +38,6 @@ object PreferenceUtils {
     }
 
     fun setBoolean(preferences: SharedPreferences, key: String, value: Boolean) {
-        setString(preferences, key, value.toString())
+        preferences.edit().putBoolean(key, value).apply()
     }
 }
