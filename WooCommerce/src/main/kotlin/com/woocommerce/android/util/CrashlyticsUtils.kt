@@ -2,8 +2,7 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import com.crashlytics.android.Crashlytics
-import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.util.WooLog.T
 import io.fabric.sdk.android.Fabric
 import org.wordpress.android.fluxc.model.AccountModel
@@ -13,12 +12,10 @@ object CrashlyticsUtils {
     private const val TAG_KEY = "tag"
     private const val MESSAGE_KEY = "message"
 
-    private fun isCrashlyticsAllowed(): Boolean {
-        return AnalyticsTracker.sendUsageStats && !BuildConfig.DEBUG
-    }
+    private fun isCrashlyticsEnabled() = AppPrefs.isCrashReportingEnabled()
 
     fun initCrashlytics(context: Context, account: AccountModel?) {
-        if (!isCrashlyticsAllowed()) { return }
+        if (!isCrashlyticsEnabled()) { return }
 
         Fabric.with(context, Crashlytics())
         initAccount(account)
@@ -35,7 +32,7 @@ object CrashlyticsUtils {
     }
 
     fun initAccount(account: AccountModel?) {
-        if (!isCrashlyticsAllowed()) { return }
+        if (!isCrashlyticsEnabled()) { return }
 
         Crashlytics.setUserName(account?.userName)
         Crashlytics.setUserEmail(account?.email)
@@ -47,7 +44,7 @@ object CrashlyticsUtils {
     }
 
     fun logException(tr: Throwable, tag: T? = null, message: String? = null) {
-        if (!Fabric.isInitialized() || !isCrashlyticsAllowed()) { return }
+        if (!Fabric.isInitialized() || !isCrashlyticsEnabled()) { return }
 
         tag?.let { Crashlytics.setString(TAG_KEY, it.name) }
 
@@ -57,7 +54,7 @@ object CrashlyticsUtils {
     }
 
     fun log(message: String) {
-        if (!Fabric.isInitialized() || !isCrashlyticsAllowed()) { return }
+        if (!Fabric.isInitialized() || !isCrashlyticsEnabled()) { return }
 
         Crashlytics.log(message)
     }
