@@ -163,11 +163,10 @@
 
             <TextView
                 android:id="@+id/textCrashReporting"
-                style="@style/Woo.Settings.LabelWithButton"
+                style="@style/Woo.Settings.Label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/dividerCrashReporting"
-                android:layout_marginBottom="@dimen/margin_extra_large"
                 android:layout_toEndOf="@+id/imageCrashReporting"
                 android:text="@string/settings_crash_reporting_detail"/>
 
