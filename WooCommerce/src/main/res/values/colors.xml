@@ -86,6 +86,7 @@
     <color name="graph_data_color">@color/wc_purple</color>
     <color name="graph_data_color_weekend">@color/wc_grey_medium</color>
     <color name="graph_grid_color">@color/wc_border_color</color>
+    <color name="graph_highlight_color">@color/wc_green</color>
     <!--
         Order: status tag background colors
     -->
