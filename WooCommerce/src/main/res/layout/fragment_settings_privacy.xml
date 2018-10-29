@@ -159,6 +159,7 @@
                 android:id="@+id/dividerCrashReporting"
                 style="@style/Woo.Settings.Divider"
                 android:layout_below="@+id/switchCrashReporting"
+                android:layout_marginStart="@dimen/settings_padding"
                 android:layout_toEndOf="@+id/imageCrashReporting"/>
 
             <TextView
