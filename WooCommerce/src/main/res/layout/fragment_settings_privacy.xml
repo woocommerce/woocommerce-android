@@ -126,7 +126,44 @@
         </RelativeLayout>
 
         <View
-            style="@style/Woo.Settings.Divider"/>
+            style="@style/Woo.Settings.Divider.Large"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageCrashReporting"
+                style="@style/Woo.Settings.Icon"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
+
+            <Switch
+                android:id="@+id/switchCrashReporting"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/imageCrashReporting"
+                android:text="@string/settings_crash_reports"/>
+
+
+            <View
+                android:id="@+id/dividerCrashReporting"
+                style="@style/Woo.Settings.Divider"
+                android:layout_below="@+id/switchCrashReporting"
+                android:layout_toEndOf="@+id/imageCrashReporting"/>
+
+            <TextView
+                android:id="@+id/textCrashReporting"
+                style="@style/Woo.Settings.LabelWithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dividerCrashReporting"
+                android:layout_toEndOf="@+id/imageCrashReporting"
+                android:text="@string/settings_tracking"/>
+
+        </RelativeLayout>
 
     </LinearLayout>
 </ScrollView>
