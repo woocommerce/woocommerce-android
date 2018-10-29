@@ -5,8 +5,8 @@ import com.crashlytics.android.Crashlytics
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.WooLog.T
-
 import io.fabric.sdk.android.Fabric
+import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.util.AppLog as WordPressAppLog
 
 object CrashlyticsUtils {
@@ -17,10 +17,11 @@ object CrashlyticsUtils {
         return AnalyticsTracker.sendUsageStats && !BuildConfig.DEBUG
     }
 
-    fun initCrashlytics(context: Context) {
+    fun initCrashlytics(context: Context, account: AccountModel?) {
         if (!isCrashlyticsAllowed()) { return }
 
         Fabric.with(context, Crashlytics())
+        initAccount(account)
 
         // Send logs for app events through to Crashlytics
         WooLog.addListener { tag, logLevel, message ->
@@ -31,6 +32,18 @@ object CrashlyticsUtils {
         WordPressAppLog.addListener { tag, logLevel, message ->
             CrashlyticsUtils.log("$logLevel/${WordPressAppLog.TAG}-$tag: $message")
         }
+    }
+
+    fun initAccount(account: AccountModel?) {
+        if (!isCrashlyticsAllowed()) { return }
+
+        Crashlytics.setUserName(account?.userName)
+        Crashlytics.setUserEmail(account?.email)
+        Crashlytics.setUserIdentifier(account?.userId.toString())
+    }
+
+    fun resetAccount() {
+        initAccount(null)
     }
 
     fun logException(tr: Throwable, tag: T? = null, message: String? = null) {
