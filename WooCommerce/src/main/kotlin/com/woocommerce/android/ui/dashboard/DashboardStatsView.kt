@@ -263,7 +263,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             colors = barColors
             setDrawValues(false)
             isHighlightEnabled = true
-            highLightColor = ContextCompat.getColor(context, R.color.wc_green)
+            highLightColor = ContextCompat.getColor(context, R.color.graph_highlight_color)
         }
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
