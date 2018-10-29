@@ -126,7 +126,15 @@
         </RelativeLayout>
 
         <View
-            style="@style/Woo.Settings.Divider.Large"/>
+            style="@style/Woo.Settings.Divider"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_extra_large"
+            android:background="@color/default_window_background"/>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -137,7 +145,7 @@
                 android:id="@+id/imageCrashReporting"
                 style="@style/Woo.Settings.Icon"
                 android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
+                app:srcCompat="@drawable/ic_gridicons_bug"/>
 
             <Switch
                 android:id="@+id/switchCrashReporting"
@@ -145,8 +153,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/imageCrashReporting"
-                android:text="@string/settings_crash_reports"/>
-
+                android:text="@string/settings_crash_reporting"/>
 
             <View
                 android:id="@+id/dividerCrashReporting"
@@ -160,10 +167,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/dividerCrashReporting"
+                android:layout_marginBottom="@dimen/margin_extra_large"
                 android:layout_toEndOf="@+id/imageCrashReporting"
-                android:text="@string/settings_tracking"/>
+                android:text="@string/settings_crash_reporting_detail"/>
 
         </RelativeLayout>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
 
     </LinearLayout>
 </ScrollView>
