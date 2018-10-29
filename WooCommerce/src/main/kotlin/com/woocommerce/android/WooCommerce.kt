@@ -68,7 +68,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         AppPrefs.init(this)
 
         initAnalytics()
-        CrashlyticsUtils.initCrashlytics(this)
+        CrashlyticsUtils.initCrashlytics(this, accountStore.account)
 
         createNotificationChannelsOnSdk26()
 
@@ -152,6 +152,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             // Reset analytics
             AnalyticsTracker.flush()
             AnalyticsTracker.clearAllData()
+            CrashlyticsUtils.resetAccount()
 
             // Wipe user-specific preferences
             AppPrefs.reset()
@@ -161,6 +162,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
             }
+            CrashlyticsUtils.initAccount(accountStore.account)
         }
     }
 
