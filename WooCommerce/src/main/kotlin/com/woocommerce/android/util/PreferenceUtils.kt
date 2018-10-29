@@ -32,4 +32,12 @@ object PreferenceUtils {
         }
         editor.apply()
     }
+
+    fun getBoolean(preferences: SharedPreferences, key: String, default: Boolean = false): Boolean {
+        return preferences.getBoolean(key, default)
+    }
+
+    fun setBoolean(preferences: SharedPreferences, key: String, value: Boolean) {
+        setString(preferences, key, value.toString())
+    }
 }

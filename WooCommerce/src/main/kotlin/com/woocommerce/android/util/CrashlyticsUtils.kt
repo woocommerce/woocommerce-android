@@ -2,10 +2,8 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import com.crashlytics.android.Crashlytics
-import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.util.WooLog.T
-
 import io.fabric.sdk.android.Fabric
 import org.wordpress.android.util.AppLog as WordPressAppLog
 
@@ -13,9 +11,7 @@ object CrashlyticsUtils {
     private const val TAG_KEY = "tag"
     private const val MESSAGE_KEY = "message"
 
-    private fun isCrashlyticsAllowed(): Boolean {
-        return AnalyticsTracker.sendUsageStats && !BuildConfig.DEBUG
-    }
+    private fun isCrashlyticsAllowed() = AppPrefs.isCrashReportingEnabled()
 
     fun initCrashlytics(context: Context) {
         if (!isCrashlyticsAllowed()) { return }
