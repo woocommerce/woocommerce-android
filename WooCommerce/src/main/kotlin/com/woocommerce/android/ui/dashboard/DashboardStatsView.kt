@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Handler
 import android.support.annotation.StringRes
 import android.support.design.widget.TabLayout
@@ -263,7 +264,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             colors = barColors
             setDrawValues(false)
             isHighlightEnabled = true
-            highLightColor = ContextCompat.getColor(context, R.color.wc_green)
+            highLightColor = Color.GREEN
         }
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
