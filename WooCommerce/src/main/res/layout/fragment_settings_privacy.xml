@@ -128,5 +128,53 @@
         <View
             style="@style/Woo.Settings.Divider"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_extra_large"
+            android:background="@color/default_window_background"/>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageCrashReporting"
+                style="@style/Woo.Settings.Icon"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/ic_gridicons_bug"/>
+
+            <Switch
+                android:id="@+id/switchCrashReporting"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/imageCrashReporting"
+                android:text="@string/settings_crash_reporting"/>
+
+            <View
+                android:id="@+id/dividerCrashReporting"
+                style="@style/Woo.Settings.Divider"
+                android:layout_below="@+id/switchCrashReporting"
+                android:layout_marginStart="@dimen/settings_padding"
+                android:layout_toEndOf="@+id/imageCrashReporting"/>
+
+            <TextView
+                android:id="@+id/textCrashReporting"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dividerCrashReporting"
+                android:layout_toEndOf="@+id/imageCrashReporting"
+                android:text="@string/settings_crash_reporting_detail"/>
+
+        </RelativeLayout>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
     </LinearLayout>
 </ScrollView>
