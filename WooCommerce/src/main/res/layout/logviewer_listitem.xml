@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              style="@style/Woo.ListItem"
-              android:orientation="horizontal">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:padding="@dimen/margin_medium">
 
     <TextView
         android:id="@+id/text_line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
+        android:textSize="@dimen/text_small"
         tools:text="01"/>
 
     <TextView
@@ -17,5 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_small"
         android:gravity="top"
+        android:textSize="@dimen/text_small"
         tools:text="application log text"/>
 </LinearLayout>
