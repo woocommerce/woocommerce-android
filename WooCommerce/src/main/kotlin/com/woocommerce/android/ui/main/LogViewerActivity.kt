@@ -45,7 +45,7 @@ class LogViewerActivity : AppCompatActivity() {
     private fun shareAppLog() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_TEXT, WooLog.toList(false))
+        intent.putExtra(Intent.EXTRA_TEXT, WooLog.toString())
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " " + title)
         try {
             startActivity(Intent.createChooser(intent, getString(R.string.share)))
@@ -57,7 +57,7 @@ class LogViewerActivity : AppCompatActivity() {
     private fun copyAppLogToClipboard() {
         try {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.primaryClip = ClipData.newPlainText("AppLog", WooLog.toList(false).toString())
+            clipboard.primaryClip = ClipData.newPlainText("AppLog", WooLog.toString())
             ToastUtils.showToast(this, R.string.logviewer_copied_to_clipboard)
         } catch (e: Exception) {
             WooLog.e(T.UTILS, e)
@@ -100,7 +100,7 @@ class LogViewerActivity : AppCompatActivity() {
     }
 
     private inner class LogAdapter constructor(context: Context) : BaseAdapter() {
-        private val entries: ArrayList<String> = WooLog.toList(true)
+        private val entries: ArrayList<String> = WooLog.toHtmlList()
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 
         override fun getCount(): Int {

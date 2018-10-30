@@ -156,7 +156,9 @@ object WooLog {
         return errors.toString()
     }
 
-    fun toList(asHtml: Boolean) = logEntries.toList(asHtml)
+    fun toHtmlList() = logEntries.toHtmlList()
+
+    override fun toString() = logEntries.toString()
 
     /**
      * Individual log entry
@@ -197,23 +199,27 @@ object WooLog {
             }
         }
 
-        fun toList(asHtml: Boolean): ArrayList<String> {
+        fun toHtmlList(): ArrayList<String> {
             val list = ArrayList<String>()
             for (entry in this) {
-                if (asHtml) {
-                    val color = when (entry.level) {
-                        LogLevel.v -> "grey"
-                        LogLevel.i -> "black"
-                        LogLevel.w -> "purple"
-                        LogLevel.e -> "red"
-                        LogLevel.d -> "teal"
-                    }
-                    list.add("<font color='$color'>$entry</font>")
-                } else {
-                    list.add(entry.toString())
+                val color = when (entry.level) {
+                    LogLevel.v -> "grey"
+                    LogLevel.i -> "black"
+                    LogLevel.w -> "purple"
+                    LogLevel.e -> "red"
+                    LogLevel.d -> "teal"
                 }
+                list.add("<font color='$color'>$entry</font>")
             }
             return list
+        }
+
+        override fun toString(): String {
+            val sb = StringBuilder()
+            for (entry in this) {
+                sb.append("${entry}\n")
+            }
+            return sb.toString()
         }
     }
 }
