@@ -1,10 +1,6 @@
 package com.woocommerce.android.util
 
-import android.app.AlertDialog
-import android.content.Context
 import android.util.Log
-import android.widget.ArrayAdapter
-import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog.LogLevel
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.DateTimeUtils
@@ -35,7 +31,16 @@ object WooLog {
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
     @Suppress("EnumEntryName")
-    enum class LogLevel { v, d, i, w, e }
+    enum class LogLevel { v, d, i, w, e;
+        internal fun toHtmlColor(): String {
+            return when (this) {
+                v -> "grey"
+                i -> "black"
+                w -> "purple"
+                e -> "red"
+                d -> "teal"
+            }
+        }}
 
     const val TAG = "WooCommerce"
     private const val MAX_ENTRIES = 99
@@ -162,19 +167,7 @@ object WooLog {
         return errors.toString()
     }
 
-    fun toList() = logEntries.toList()
-
-    fun view(context: Context) {
-        val adapter = ArrayAdapter<String>(context, android.R.layout.select_dialog_item)
-        for (entry in logEntries) {
-            adapter.add(entry.toString())
-        }
-
-        AlertDialog.Builder(context)
-                .setNegativeButton(R.string.cancel, null)
-                .setAdapter(adapter, null)
-                .show()
-    }
+    fun toList(asHtml: Boolean) = logEntries.toList(asHtml)
 
     /**
      * Individual log entry
@@ -215,10 +208,14 @@ object WooLog {
             }
         }
 
-        fun toList(): ArrayList<String> {
+        fun toList(asHtml: Boolean): ArrayList<String> {
             val list = ArrayList<String>()
             for (entry in this) {
-                list.add(entry.toString())
+                if (asHtml) {
+                    list.add("<font color='${entry.level.toHtmlColor()}'>${entry.toString()}</font>")
+                } else {
+                    list.add(entry.toString())
+                }
             }
             return list
         }

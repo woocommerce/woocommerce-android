@@ -53,6 +53,7 @@
             android:name=".ui.prefs.AppSettingsActivity"/>
 
         <activity
+            android:label="@string/logviewer_activity_title"
             android:name=".ui.main.LogViewerActivity"/>
 
         <activity
