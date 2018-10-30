@@ -24,7 +24,9 @@ object AppPrefs {
      */
     private enum class UndeletablePrefKey : PrefKey {
         // The last stored versionCode of the app
-        LAST_APP_VERSION_CODE
+        LAST_APP_VERSION_CODE,
+        // Whether or not automatic crash reporting is enabled
+        ENABLE_CRASH_REPORTING
     }
 
     fun init(context: Context) {
@@ -37,6 +39,16 @@ object AppPrefs {
 
     fun setLastAppVersionCode(versionCode: Int) {
         setInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
+    }
+
+    fun isCrashReportingEnabled(): Boolean {
+        // default to False for debug builds
+        val default = !BuildConfig.DEBUG
+        return getBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, default)
+    }
+
+    fun setCrashReportingEnabled(enabled: Boolean) {
+        setBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, enabled)
     }
 
     /**
@@ -60,6 +72,12 @@ object AppPrefs {
 
     private fun setString(key: PrefKey, value: String) =
             PreferenceUtils.setString(getPreferences(), key.toString(), value)
+
+    private fun getBoolean(key: PrefKey, default: Boolean) =
+            PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
+
+    private fun setBoolean(key: PrefKey, value: Boolean = false) =
+            PreferenceUtils.setBoolean(getPreferences(), key.toString(), value)
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 }
