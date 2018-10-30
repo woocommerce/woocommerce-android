@@ -11,8 +11,6 @@ import java.util.ArrayList
 import java.util.Locale
 import java.util.NoSuchElementException
 
-
-
 typealias LogListener = (T, LogLevel, String) -> Unit
 
 /**
@@ -31,16 +29,7 @@ object WooLog {
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
     @Suppress("EnumEntryName")
-    enum class LogLevel { v, d, i, w, e;
-        internal fun toHtmlColor(): String {
-            return when (this) {
-                v -> "grey"
-                i -> "black"
-                w -> "purple"
-                e -> "red"
-                d -> "teal"
-            }
-        }}
+    enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
     private const val MAX_ENTRIES = 99
@@ -212,7 +201,14 @@ object WooLog {
             val list = ArrayList<String>()
             for (entry in this) {
                 if (asHtml) {
-                    list.add("<font color='${entry.level.toHtmlColor()}'>${entry.toString()}</font>")
+                    val color = when (entry.level) {
+                        LogLevel.v -> "grey"
+                        LogLevel.i -> "black"
+                        LogLevel.w -> "purple"
+                        LogLevel.e -> "red"
+                        LogLevel.d -> "teal"
+                    }
+                    list.add("<font color='$color'>$entry</font>")
                 } else {
                     list.add(entry.toString())
                 }
