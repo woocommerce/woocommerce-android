@@ -71,12 +71,12 @@ class LogViewerActivity : AppCompatActivity() {
         // Copy to clipboard button
         var item = menu.add(Menu.NONE, ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy)
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-        item.setIcon(R.drawable.abc_ic_menu_copy_mtrl_am_alpha)
+        item.setIcon(R.drawable.ic_copy_white_24dp)
 
         // Share button
         item = menu.add(Menu.NONE, ID_SHARE, Menu.NONE, R.string.share)
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-        item.setIcon(R.drawable.abc_ic_menu_share_mtrl_alpha)
+        item.setIcon(R.drawable.ic_share_white_24dp)
 
         return true
     }
