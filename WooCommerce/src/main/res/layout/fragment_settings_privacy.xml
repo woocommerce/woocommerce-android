@@ -36,18 +36,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/imageInfo"
-                style="@style/Woo.Settings.Icon"
-                android:contentDescription="@string/settings_cookie_policy_header"
-                app:srcCompat="@drawable/ic_info_outline_grey_min_24dp"/>
-
             <TextView
                 android:id="@+id/textInfo"
                 style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imageInfo"
                 android:text="@string/settings_send_stats_detail"/>
 
             <Button
@@ -68,18 +61,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/imagePrivacyPolicy"
-                style="@style/Woo.Settings.Icon"
-                android:contentDescription="@string/settings_privacy_policy_header"
-                app:srcCompat="@drawable/ic_user_circle_grey_min_24dp"/>
-
             <TextView
                 android:id="@+id/textPrivacyPolicy"
                 style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imagePrivacyPolicy"
                 android:text="@string/settings_privacy_detail"/>
 
             <Button
@@ -100,18 +86,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/imageTracking"
-                style="@style/Woo.Settings.Icon"
-                android:contentDescription="@string/settings_third_party_policy_header"
-                app:srcCompat="@drawable/ic_briefcase_grey_min_24dp"/>
-
             <TextView
                 android:id="@+id/textTracking"
                 style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imageTracking"
                 android:text="@string/settings_tracking"/>
 
             <Button
