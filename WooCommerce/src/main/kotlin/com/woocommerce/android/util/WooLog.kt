@@ -3,9 +3,13 @@ package com.woocommerce.android.util
 import android.util.Log
 import com.woocommerce.android.util.WooLog.LogLevel
 import com.woocommerce.android.util.WooLog.T
+import org.wordpress.android.util.DateTimeUtils
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.text.SimpleDateFormat
 import java.util.ArrayList
+import java.util.Locale
+import java.util.NoSuchElementException
 
 typealias LogListener = (T, LogLevel, String) -> Unit
 
@@ -28,7 +32,69 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
+    private const val MAX_ENTRIES = 99
+    private val logEntries = LogEntryList()
     private val listeners = ArrayList<LogListener>(0)
+
+    private class LogEntry internal constructor(
+        internal val logTag: T,
+        internal val logLevel: LogLevel,
+        logText: String?
+    ) {
+        internal val logText: String
+        internal val logDate: java.util.Date = DateTimeUtils.nowUTC()
+
+        init {
+            if (logText == null) {
+                this.logText = "null"
+            } else {
+                this.logText = logText
+            }
+        }
+
+        private fun formatLogDate(): String {
+            return SimpleDateFormat("MMM-dd kk:mm", Locale.US).format(logDate)
+        }
+
+        override fun toString(): String {
+            val sb = StringBuilder()
+            sb.append("[")
+                    .append(formatLogDate()).append(" ")
+                    .append(logTag.name).append(" ")
+                    .append(logLevel.name)
+                    .append("] ")
+                    .append(logText)
+            return sb.toString()
+        }
+    }
+
+    private class LogEntryList : ArrayList<LogEntry>() {
+        @Synchronized fun addEntry(entry: LogEntry): Boolean {
+            if (size >= MAX_ENTRIES) {
+                removeFirstEntry()
+            }
+            return add(entry)
+        }
+
+        private fun removeFirstEntry() {
+            val it = iterator()
+            if (it.hasNext()) {
+                try {
+                    remove(it.next())
+                } catch (e: NoSuchElementException) {
+                    // ignore
+                }
+            }
+        }
+
+        override fun toString(): String {
+            val sb = StringBuilder()
+            for (entry in logEntries) {
+                sb.append((entry.toString()))
+            }
+            return sb.toString()
+        }
+    }
 
     fun addListener(listener: LogListener) {
         listeners.add(listener)
@@ -138,6 +204,10 @@ object WooLog {
         for (listener in listeners) {
             listener(tag, level, text)
         }
+
+        // add to log entry list
+        val entry = LogEntry(tag, level, text)
+        logEntries.addEntry(entry)
     }
 
     private fun getStringStackTrace(throwable: Throwable): String {
@@ -145,4 +215,6 @@ object WooLog {
         throwable.printStackTrace(PrintWriter(errors))
         return errors.toString()
     }
+
+    override fun toString() = logEntries.toString()
 }
