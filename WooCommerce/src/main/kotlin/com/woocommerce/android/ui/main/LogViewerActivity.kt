@@ -19,7 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_logviewer.*
 import org.wordpress.android.util.ToastUtils
 import java.lang.String.format
 import java.util.ArrayList
@@ -37,6 +37,13 @@ class LogViewerActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // TODO: remove before merge
+        WooLog.v(T.UTILS, "Log level v (verbose)")
+        WooLog.d(T.UTILS, "Log level d (debug)")
+        WooLog.i(T.UTILS, "Log level i (info)")
+        WooLog.w(T.UTILS, "Log level w (warning)")
+        WooLog.e(T.UTILS, "Log level e (error)")
 
         val listView = findViewById<View>(android.R.id.list) as ListView
         listView.adapter = LogAdapter(this)
@@ -103,17 +110,11 @@ class LogViewerActivity : AppCompatActivity() {
         private val entries: ArrayList<String> = WooLog.toHtmlList()
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 
-        override fun getCount(): Int {
-            return entries.size
-        }
+        override fun getCount() = entries.size
 
-        override fun getItem(position: Int): Any {
-            return entries[position]
-        }
+        override fun getItem(position: Int) = entries[position]
 
-        override fun getItemId(position: Int): Long {
-            return position.toLong()
-        }
+        override fun getItemId(position: Int) = position.toLong()
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view: View

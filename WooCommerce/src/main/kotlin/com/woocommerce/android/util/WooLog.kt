@@ -202,12 +202,13 @@ object WooLog {
         fun toHtmlList(): ArrayList<String> {
             val list = ArrayList<String>()
             for (entry in this) {
+                // same colors as WPAndroid
                 val color = when (entry.level) {
                     LogLevel.v -> "grey"
+                    LogLevel.d -> "teal"
                     LogLevel.i -> "black"
                     LogLevel.w -> "purple"
                     LogLevel.e -> "red"
-                    LogLevel.d -> "teal"
                 }
                 list.add("<font color='$color'>$entry</font>")
             }
