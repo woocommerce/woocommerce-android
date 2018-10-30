@@ -127,7 +127,7 @@ class LogViewerActivity : AppCompatActivity() {
                 holder = view.tag as LogViewHolder
             }
 
-            holder.txtLineNumber.text = format(Locale.US, "%02d", position)
+            holder.txtLineNumber.text = format(Locale.US, "%02d", position + 1)
             holder.txtLogEntry.setHtmlText(entries[position])
 
             return view
