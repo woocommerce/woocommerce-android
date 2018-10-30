@@ -36,66 +36,6 @@ object WooLog {
     private val logEntries = LogEntryList()
     private val listeners = ArrayList<LogListener>(0)
 
-    private class LogEntry internal constructor(
-        internal val logTag: T,
-        internal val logLevel: LogLevel,
-        logText: String?
-    ) {
-        internal val logText: String
-        internal val logDate: java.util.Date = DateTimeUtils.nowUTC()
-
-        init {
-            if (logText == null) {
-                this.logText = "null"
-            } else {
-                this.logText = logText
-            }
-        }
-
-        private fun formatLogDate(): String {
-            return SimpleDateFormat("MMM-dd kk:mm", Locale.US).format(logDate)
-        }
-
-        override fun toString(): String {
-            val sb = StringBuilder()
-            sb.append("[")
-                    .append(formatLogDate()).append(" ")
-                    .append(logTag.name).append(" ")
-                    .append(logLevel.name)
-                    .append("] ")
-                    .append(logText)
-            return sb.toString()
-        }
-    }
-
-    private class LogEntryList : ArrayList<LogEntry>() {
-        @Synchronized fun addEntry(entry: LogEntry): Boolean {
-            if (size >= MAX_ENTRIES) {
-                removeFirstEntry()
-            }
-            return add(entry)
-        }
-
-        private fun removeFirstEntry() {
-            val it = iterator()
-            if (it.hasNext()) {
-                try {
-                    remove(it.next())
-                } catch (e: NoSuchElementException) {
-                    // ignore
-                }
-            }
-        }
-
-        override fun toString(): String {
-            val sb = StringBuilder()
-            for (entry in logEntries) {
-                sb.append((entry.toString()))
-            }
-            return sb.toString()
-        }
-    }
-
     fun addListener(listener: LogListener) {
         listeners.add(listener)
     }
@@ -200,14 +140,14 @@ object WooLog {
     }
 
     private fun addEntry(tag: T, level: LogLevel, text: String) {
+        // add to list of entries
+        val entry = LogEntry(tag, level, text)
+        logEntries.addEntry(entry)
+
         // Call our listeners if any
         for (listener in listeners) {
             listener(tag, level, text)
         }
-
-        // add to log entry list
-        val entry = LogEntry(tag, level, text)
-        logEntries.addEntry(entry)
     }
 
     private fun getStringStackTrace(throwable: Throwable): String {
@@ -217,4 +157,52 @@ object WooLog {
     }
 
     override fun toString() = logEntries.toString()
+
+    /**
+     * Individual log entry
+     */
+    private class LogEntry internal constructor(
+        internal val tag: T,
+        internal val level: LogLevel,
+        internal val text: String?
+    ) {
+        internal val logDate: java.util.Date = DateTimeUtils.nowUTC()
+
+        override fun toString(): String {
+            val logText = if (text.isNullOrEmpty()) "null" else text
+            val logDateStr = SimpleDateFormat("MMM-dd kk:mm", Locale.US).format(logDate)
+            return "[$logDateStr ${tag.name} ${level.name}] $logText"
+        }
+    }
+
+    /**
+     * List of log entries
+     */
+    private class LogEntryList : ArrayList<LogEntry>() {
+        @Synchronized fun addEntry(entry: LogEntry): Boolean {
+            if (size >= MAX_ENTRIES) {
+                removeFirstEntry()
+            }
+            return add(entry)
+        }
+
+        private fun removeFirstEntry() {
+            val it = iterator()
+            if (it.hasNext()) {
+                try {
+                    remove(it.next())
+                } catch (e: NoSuchElementException) {
+                    // ignore
+                }
+            }
+        }
+
+        override fun toString(): String {
+            val sb = StringBuilder()
+            for (entry in logEntries) {
+                sb.append((entry.toString()))
+            }
+            return sb.toString()
+        }
+    }
 }
