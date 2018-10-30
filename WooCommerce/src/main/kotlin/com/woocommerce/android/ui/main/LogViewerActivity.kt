@@ -5,20 +5,24 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.ListView
 import android.widget.TextView
 import com.woocommerce.android.R
+import com.woocommerce.android.R.layout
 import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.activity_logviewer.*
 import org.wordpress.android.util.ToastUtils
 import java.lang.String.format
@@ -45,8 +49,15 @@ class LogViewerActivity : AppCompatActivity() {
         WooLog.w(T.UTILS, "Log level w (warning)")
         WooLog.e(T.UTILS, "Log level e (error)")
 
-        val listView = findViewById<View>(android.R.id.list) as ListView
-        listView.adapter = LogAdapter(this)
+        val divider = AlignedDividerDecoration(this,
+                DividerItemDecoration.VERTICAL, 0, clipToMargin = false)
+        ContextCompat.getDrawable(this, R.drawable.list_divider)?.let { drawable ->
+            divider.setDrawable(drawable)
+        }
+
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.addItemDecoration(divider)
+        recycler.adapter = LogAdapter(this)
     }
 
     private fun shareAppLog() {
@@ -76,14 +87,14 @@ class LogViewerActivity : AppCompatActivity() {
         super.onCreateOptionsMenu(menu)
 
         // Copy to clipboard button
-        var item = menu.add(Menu.NONE, ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy)
-        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-        item.setIcon(R.drawable.ic_copy_white_24dp)
+        val mnuCopy = menu.add(Menu.NONE, ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy)
+        mnuCopy.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        mnuCopy.setIcon(R.drawable.ic_copy_white_24dp)
 
         // Share button
-        item = menu.add(Menu.NONE, ID_SHARE, Menu.NONE, R.string.share)
-        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-        item.setIcon(R.drawable.ic_share_white_24dp)
+        val mnuShare = menu.add(Menu.NONE, ID_SHARE, Menu.NONE, R.string.share)
+        mnuShare.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        mnuShare.setIcon(R.drawable.ic_share_white_24dp)
 
         return true
     }
@@ -106,37 +117,26 @@ class LogViewerActivity : AppCompatActivity() {
         }
     }
 
-    private inner class LogAdapter constructor(context: Context) : BaseAdapter() {
+    private inner class LogAdapter constructor(context: Context) : RecyclerView.Adapter<LogViewHolder>() {
         private val entries: ArrayList<String> = WooLog.toHtmlList()
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 
-        override fun getCount() = entries.size
-
-        override fun getItem(position: Int) = entries[position]
+        override fun getItemCount() = entries.size
 
         override fun getItemId(position: Int) = position.toLong()
 
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view: View
-            val holder: LogViewHolder
-            if (convertView == null) {
-                view = inflater.inflate(R.layout.logviewer_listitem, parent, false)
-                holder = LogViewHolder(view)
-                view.tag = holder
-            } else {
-                view = convertView
-                holder = view.tag as LogViewHolder
-            }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
+            return LogViewHolder(inflater.inflate(layout.logviewer_listitem, parent, false))
+        }
 
+        override fun onBindViewHolder(holder: LogViewHolder, position: Int) {
             holder.txtLineNumber.text = format(Locale.US, "%02d", position + 1)
             holder.txtLogEntry.setHtmlText(entries[position])
-
-            return view
         }
+    }
 
-        private inner class LogViewHolder internal constructor(view: View) {
-            val txtLineNumber: TextView = view.findViewById(R.id.text_line) as TextView
-            val txtLogEntry: TextView = view.findViewById(R.id.text_log) as TextView
-        }
+    private inner class LogViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
+        val txtLineNumber: TextView = view.findViewById(R.id.text_line) as TextView
+        val txtLogEntry: TextView = view.findViewById(R.id.text_log) as TextView
     }
 }
