@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -162,7 +163,8 @@ class MainActivity : AppCompatActivity(),
                 true
             }
             R.id.menu_support -> {
-                contactSupport()
+                WooLog.view(this)
+                // contactSupport()
                 AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
                 true
             }

@@ -1,6 +1,10 @@
 package com.woocommerce.android.util
 
+import android.app.AlertDialog
+import android.content.Context
 import android.util.Log
+import android.widget.ArrayAdapter
+import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog.LogLevel
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.DateTimeUtils
@@ -10,6 +14,8 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Locale
 import java.util.NoSuchElementException
+
+
 
 typealias LogListener = (T, LogLevel, String) -> Unit
 
@@ -156,7 +162,19 @@ object WooLog {
         return errors.toString()
     }
 
-    override fun toString() = logEntries.toString()
+    fun toList() = logEntries.toList()
+
+    fun view(context: Context) {
+        val adapter = ArrayAdapter<String>(context, android.R.layout.select_dialog_item)
+        for (entry in logEntries) {
+            adapter.add(entry.toString())
+        }
+
+        AlertDialog.Builder(context)
+                .setNegativeButton(R.string.cancel, null)
+                .setAdapter(adapter, null)
+                .show()
+    }
 
     /**
      * Individual log entry
@@ -176,7 +194,7 @@ object WooLog {
     }
 
     /**
-     * List of log entries
+     * Fix-sized list of log entries
      */
     private class LogEntryList : ArrayList<LogEntry>() {
         @Synchronized fun addEntry(entry: LogEntry): Boolean {
@@ -197,12 +215,12 @@ object WooLog {
             }
         }
 
-        override fun toString(): String {
-            val sb = StringBuilder()
-            for (entry in logEntries) {
-                sb.append((entry.toString()))
+        fun toList(): ArrayList<String> {
+            val list = ArrayList<String>()
+            for (entry in this) {
+                list.add(entry.toString())
             }
-            return sb.toString()
+            return list
         }
     }
 }

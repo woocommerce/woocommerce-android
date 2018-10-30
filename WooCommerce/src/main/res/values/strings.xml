@@ -213,6 +213,7 @@
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>
+    <string name="logviewer_activity_title">Application Log</string>
     <!--
         WCToggleSingleOptionView
     -->
