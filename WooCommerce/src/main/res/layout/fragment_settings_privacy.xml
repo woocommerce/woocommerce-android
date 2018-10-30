@@ -15,132 +15,134 @@
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
 
-        <Switch
-            android:id="@+id/switchSendStats"
-            style="@style/Woo.Settings.Label"
+        <LinearLayout
+            android:id="@+id/firstGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/imageSendStats"
-            android:text="@string/settings_send_stats"/>
+            android:orientation="vertical">
 
-        <View
-            android:id="@+id/dividerSendStats"
-            style="@style/Woo.Settings.Divider"
-            android:layout_below="@+id/switchSendStats"/>
+            <Switch
+                android:id="@+id/switchSendStats"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_send_stats"/>
 
-        <TextView
-            android:id="@+id/textInfo"
-            style="@style/Woo.Settings.LabelWithButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/dividerSendStats"
-            android:text="@string/settings_send_stats_detail"/>
+            <View
+                style="@style/Woo.Settings.Divider"
+                android:layout_marginStart="@dimen/settings_padding"/>
 
-        <Button
-            android:id="@+id/buttonLearnMore"
-            style="@style/Woo.Settings.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/textInfo"
-            android:text="@string/learn_more"/>
+            <TextView
+                style="@style/Woo.Settings.LabelWithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_send_stats_detail"/>
 
-        <View
-            android:id="@+id/dividerInfo"
-            style="@style/Woo.Settings.Divider"
-            android:layout_below="@+id/buttonLearnMore"/>
+            <Button
+                android:id="@+id/buttonLearnMore"
+                style="@style/Woo.Settings.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/learn_more"/>
 
-        <TextView
-            android:id="@+id/textPrivacyPolicy"
-            style="@style/Woo.Settings.LabelWithButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/dividerInfo"
-            android:text="@string/settings_privacy_detail"/>
+            <View
+                style="@style/Woo.Settings.Divider"
+                android:layout_marginStart="@dimen/settings_padding"/>
 
-        <Button
-            android:id="@+id/buttonPrivacyPolicy"
-            style="@style/Woo.Settings.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/textPrivacyPolicy"
-            android:text="@string/settings_privacy_policy"/>
+            <TextView
+                style="@style/Woo.Settings.LabelWithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_privacy_detail"/>
 
-        <View
-            android:id="@+id/dividerPrivacyPolicy"
-            style="@style/Woo.Settings.Divider"
-            android:layout_below="@+id/buttonPrivacyPolicy"/>
+            <Button
+                android:id="@+id/buttonPrivacyPolicy"
+                style="@style/Woo.Settings.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/settings_privacy_policy"/>
 
-        <TextView
-            android:id="@+id/textTracking"
-            style="@style/Woo.Settings.LabelWithButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/dividerPrivacyPolicy"
-            android:text="@string/settings_tracking"/>
+            <View
+                style="@style/Woo.Settings.Divider"
+                android:layout_marginStart="@dimen/settings_padding"/>
 
-        <Button
-            android:id="@+id/buttonTracking"
-            style="@style/Woo.Settings.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/textTracking"
-            android:text="@string/learn_more"/>
+            <TextView
+                style="@style/Woo.Settings.LabelWithButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_tracking"/>
 
-        <View
-            android:id="@+id/dividerTracking"
-            style="@style/Woo.Settings.Divider"
-            android:layout_below="@+id/buttonTracking"/>
+            <Button
+                android:id="@+id/buttonTracking"
+                style="@style/Woo.Settings.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/learn_more"/>
 
-        <View
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/groupSpacer"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/margin_extra_large"
-            android:layout_below="@+id/dividerTracking"
-            android:background="@color/default_window_background"/>
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/firstGroup"
+            android:orientation="vertical">
 
-        <View
-            android:id="@+id/dividerGroupSpacer"
-            style="@style/Woo.Settings.Divider"
-            android:layout_below="@+id/groupSpacer"/>
+            <View
+                style="@style/Woo.Settings.Divider"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/margin_extra_large"
+                android:background="@color/default_window_background"/>
+
+            <View
+                style="@style/Woo.Settings.Divider"/>
+
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/imageCrashReporting"
             style="@style/Woo.Settings.Icon"
-            android:layout_below="@+id/dividerGroupSpacer"
+            android:layout_below="@+id/groupSpacer"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_gridicons_bug"/>
 
-        <Switch
-            android:id="@+id/switchCrashReporting"
-            style="@style/Woo.Settings.Label"
+        <LinearLayout
+            android:id="@+id/secondGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/imageCrashReporting"
             android:layout_toEndOf="@+id/imageCrashReporting"
-            android:text="@string/settings_crash_reporting"/>
+            android:orientation="vertical">
+
+            <Switch
+                android:id="@+id/switchCrashReporting"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_crash_reporting"/>
+
+            <View
+                android:id="@+id/dividerCrashReporting"
+                style="@style/Woo.Settings.Divider"
+                android:layout_marginStart="@dimen/settings_padding"/>
+
+            <TextView
+                android:id="@+id/textCrashReporting"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_crash_reporting_detail"/>
+        </LinearLayout>
 
         <View
-            android:id="@+id/dividerCrashReporting"
             style="@style/Woo.Settings.Divider"
-            android:layout_below="@+id/switchCrashReporting"
-            android:layout_marginStart="@dimen/settings_padding"
-            android:layout_toEndOf="@+id/imageCrashReporting"/>
-
-        <TextView
-            android:id="@+id/textCrashReporting"
-            style="@style/Woo.Settings.Label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/dividerCrashReporting"
-            android:layout_toEndOf="@+id/imageCrashReporting"
-            android:text="@string/settings_crash_reporting_detail"/>
-
-        <View
-            style="@style/Woo.Settings.Divider"
-            android:layout_below="@+id/textCrashReporting"/>
+            android:layout_below="@+id/secondGroup"/>
 
     </RelativeLayout>
 </ScrollView>
