@@ -29,7 +29,7 @@ import java.lang.String.format
 import java.util.ArrayList
 import java.util.Locale
 
-class LogViewerActivity : AppCompatActivity() {
+class WooLogViewerActivity : AppCompatActivity() {
     companion object {
         private const val ID_SHARE = 1
         private const val ID_COPY_TO_CLIPBOARD = 2
@@ -86,12 +86,10 @@ class LogViewerActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
 
-        // Copy to clipboard button
         val mnuCopy = menu.add(Menu.NONE, ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy)
         mnuCopy.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         mnuCopy.setIcon(R.drawable.ic_copy_white_24dp)
 
-        // Share button
         val mnuShare = menu.add(Menu.NONE, ID_SHARE, Menu.NONE, R.string.share)
         mnuShare.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         mnuShare.setIcon(R.drawable.ic_share_white_24dp)

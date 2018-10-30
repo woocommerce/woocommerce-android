@@ -162,8 +162,8 @@ class MainActivity : AppCompatActivity(),
                 true
             }
             R.id.menu_support -> {
-                startActivity(Intent(this, LogViewerActivity::class.java))
-                // TODO: contactSupport()
+                startActivity(Intent(this, WooLogViewerActivity::class.java))
+                // TODO: remove the above line before merge and restore the call to contactSupport()
                 AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
                 true
             }

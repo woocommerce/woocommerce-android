@@ -199,6 +199,10 @@ object WooLog {
             }
         }
 
+        /**
+         * Returns the log entries as an array of html-formatted strings - this enables us to display
+         * a formatted log in [com.woocommerce.android.ui.main.WooLogViewerActivity]
+         */
         fun toHtmlList(): ArrayList<String> {
             val list = ArrayList<String>()
             for (entry in this) {
@@ -215,6 +219,9 @@ object WooLog {
             return list
         }
 
+        /**
+         * Returns the log entries as a single string with each entry on a new line
+         */
         override fun toString(): String {
             val sb = StringBuilder()
             for (entry in this) {
