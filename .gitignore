@@ -72,3 +72,4 @@ google-services.json
 
 # Fastlane
 fastlane/README.md
+fastlane/report.xml
