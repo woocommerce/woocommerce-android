@@ -5,7 +5,7 @@ platform :android do
 ########################################################################
 # Environment
 ########################################################################
-Dotenv.load('~/.wpios-env.default')
+Dotenv.load('~/.wcandroid-env.default')
 ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 
 ########################################################################
