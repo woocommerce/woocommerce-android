@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED
@@ -62,6 +63,14 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
         buttonTracking.setOnClickListener {
             AnalyticsTracker.track(PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
             showCookiePolicy()
+        }
+
+        switchCrashReporting.isChecked = presenter.getCrashReportingEnabled()
+        switchCrashReporting.setOnClickListener {
+            AnalyticsTracker.track(
+                    PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED, mapOf(
+                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchCrashReporting.isChecked)))
+            presenter.setCrashReportingEnabled(switchCrashReporting.isChecked)
         }
     }
 
