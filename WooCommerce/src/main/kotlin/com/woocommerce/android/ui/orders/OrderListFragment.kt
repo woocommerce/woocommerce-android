@@ -230,6 +230,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         return orderStatusFilter.isNullOrEmpty()
     }
 
+    private fun isShowingOrderDetail(): Boolean {
+        val fragment = childFragmentManager.findFragmentByTag(OrderDetailFragment.TAG)
+        return fragment?.isVisible ?: false
+    }
+
     /**
      * shows the view that appears for stores that have have no orders matching the current filter
      */
