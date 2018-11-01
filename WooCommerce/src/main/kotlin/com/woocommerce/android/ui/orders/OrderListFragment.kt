@@ -82,8 +82,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
-        // hide the filter menu item when we're showing all orders and there aren't any
-        val hideFilterMenu = noOrdersView.visibility == View.VISIBLE && isShowingAllOrders()
+        // Hide filter menu item when we're showing all orders and there aren't any or we're showing order detail.
+        val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) || isShowingOrderDetail()
         menu?.findItem(R.id.menu_filter)?.isVisible = !hideFilterMenu
         super.onPrepareOptionsMenu(menu)
     }
