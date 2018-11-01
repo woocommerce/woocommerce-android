@@ -238,6 +238,8 @@
     <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
     <string name="support_my_tickets">My tickets</string>
     <string name="support_my_tickets_detail">View previously submitted support tickets</string>
+    <string name="support_application_log">Application log</string>
+    <string name="support_application_log_detail">Advanced tool to review the app status</string>
     <string name="help">Help</string>
     <string name="forgot_password">Lost your password?</string>
     <string name="support_contact_email">Contact email</string>

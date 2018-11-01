@@ -49,6 +49,7 @@ class HelpActivity : AppCompatActivity() {
         identityContainer.setOnClickListener { showIdentityDialog() }
         myTicketsContainer.setOnClickListener { showZendeskTickets() }
         faqContainer.setOnClickListener { showZendeskFaq() }
+        appLogContainer.setOnClickListener{ showApplicationLog() }
 
         textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
@@ -117,6 +118,10 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper
                 .showZendeskHelpCenter(this, originFromExtras, selectedSite.get(), extraTagsFromExtras)
         */
+    }
+
+    private fun showApplicationLog() {
+        startActivity(Intent(this, WooLogViewerActivity::class.java))
     }
 
     enum class Origin(private val stringValue: String) {

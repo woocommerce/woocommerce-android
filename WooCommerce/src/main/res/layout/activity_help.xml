@@ -115,6 +115,26 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/appLogContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/Woo.Settings.LabelWithDetail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_application_log"/>
+
+                    <TextView
+                        style="@style/Woo.Settings.Label.Detail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_application_log_detail"/>
+
+                </LinearLayout>
+
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </ScrollView>
