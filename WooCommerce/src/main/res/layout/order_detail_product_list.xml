@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/productList_products"/>
 
     <!-- Button: Fulfill Order-->
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/productList_btnFulfill"
         style="@style/Woo.Button.Purple"
         android:layout_width="0dp"
