@@ -123,9 +123,8 @@
     <!--
         Button Styles
     -->
-    <style name="Woo.Button" parent="android:Widget.DeviceDefault.Button.Borderless">
-        <item name="android:textColor">@color/button_purple_bg_color</item>
-        <item name="android:background">@null</item>
+    <style name="Woo.Button" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/wc_purple</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
