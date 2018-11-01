@@ -45,6 +45,7 @@
         app:srcCompat="@drawable/img_slanted_rectangle"/>
 
     <LinearLayout
+        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
