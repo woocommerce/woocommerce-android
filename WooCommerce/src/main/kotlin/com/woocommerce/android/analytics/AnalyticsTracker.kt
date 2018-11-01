@@ -2,16 +2,16 @@ package com.woocommerce.android.analytics
 
 import android.annotation.SuppressLint
 import android.content.Context
-import java.util.HashMap
-import com.automattic.android.tracks.TracksClient
 import android.preference.PreferenceManager
+import com.automattic.android.tracks.TracksClient
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import java.util.UUID
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
+import java.util.HashMap
+import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
@@ -148,6 +148,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
         PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
         PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
+        PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
 
         // -- Help & Support
         SUPPORT_HELP_CENTER_VIEWED,
