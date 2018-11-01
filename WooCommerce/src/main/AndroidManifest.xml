@@ -54,7 +54,7 @@
 
         <activity
             android:label="@string/logviewer_activity_title"
-            android:name=".ui.main.WooLogViewerActivity"/>
+            android:name=".support.WooLogViewerActivity"/>
 
         <activity
             android:name=".ui.orders.AddOrderNoteActivity"
