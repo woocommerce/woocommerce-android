@@ -109,10 +109,12 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showZendeskTickets() {
+        AnalyticsTracker.track(Stat.SUPPORT_TICKETS_VIEWED)
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSite.get(), extraTagsFromExtras)
     }
 
     private fun showZendeskFaq() {
+        AnalyticsTracker.track(Stat.SUPPORT_FAQ_VIEWED)
         ActivityUtils.openUrlExternal(this, FAQ_URL)
         /* TODO: for now we simply link to the online FAQ, but we should show the Zendesk FAQ once it's ready
         zendeskHelper
@@ -121,6 +123,7 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showApplicationLog() {
+        AnalyticsTracker.track(Stat.SUPPORT_APPLICATION_LOG_VIEWED)
         startActivity(Intent(this, WooLogViewerActivity::class.java))
     }
 

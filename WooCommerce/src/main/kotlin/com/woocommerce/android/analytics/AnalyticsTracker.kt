@@ -154,6 +154,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SUPPORT_HELP_CENTER_VIEWED,
         SUPPORT_IDENTITY_SET,
         SUPPORT_IDENTITY_FORM_VIEWED,
+        SUPPORT_APPLICATION_LOG_VIEWED,
+        SUPPORT_TICKETS_VIEWED,
+        SUPPORT_FAQ_VIEWED,
     }
     // endregion
 
