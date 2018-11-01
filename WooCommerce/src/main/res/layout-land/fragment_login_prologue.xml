@@ -72,9 +72,9 @@
         android:orientation="horizontal"
         android:padding="@dimen/login_prologue_padding">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_login_jetpack"
-            style="@style/Woo.Button.White"
+            android:theme="@style/Woo.Button.White"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
