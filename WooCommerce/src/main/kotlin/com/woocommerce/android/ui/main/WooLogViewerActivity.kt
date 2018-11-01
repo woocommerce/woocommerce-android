@@ -42,13 +42,6 @@ class WooLogViewerActivity : AppCompatActivity() {
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // TODO: remove before merge
-        WooLog.v(T.UTILS, "Log level v (verbose)")
-        WooLog.d(T.UTILS, "Log level d (debug)")
-        WooLog.i(T.UTILS, "Log level i (info)")
-        WooLog.w(T.UTILS, "Log level w (warning)")
-        WooLog.e(T.UTILS, "Log level e (error)")
-
         val divider = AlignedDividerDecoration(this,
                 DividerItemDecoration.VERTICAL, 0, clipToMargin = false)
         ContextCompat.getDrawable(this, R.drawable.list_divider)?.let { drawable ->
