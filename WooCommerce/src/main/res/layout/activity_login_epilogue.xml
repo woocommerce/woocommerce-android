@@ -100,13 +100,14 @@
 
     <FrameLayout
         android:id="@+id/frame_bottom"
+        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:padding="@dimen/margin_extra_large">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_continue"
             style="@style/Woo.Button.Purple"
             android:layout_width="match_parent"
