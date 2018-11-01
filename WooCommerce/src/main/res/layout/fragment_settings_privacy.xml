@@ -4,22 +4,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/settingsView"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical">
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/imageSendStats"
+            style="@style/Woo.Settings.Icon"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
 
         <LinearLayout
+            android:id="@+id/firstGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                style="@style/Woo.Settings.Icon"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_stats_grey_min_24dp"/>
+            android:layout_toEndOf="@+id/imageSendStats"
+            android:orientation="vertical">
 
             <Switch
                 android:id="@+id/switchSendStats"
@@ -27,27 +28,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_send_stats"/>
-        </LinearLayout>
 
-        <View
-            style="@style/Woo.Settings.Divider"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/imageInfo"
-                style="@style/Woo.Settings.Icon"
-                android:contentDescription="@string/settings_cookie_policy_header"
-                app:srcCompat="@drawable/ic_info_outline_grey_min_24dp"/>
+            <View
+                style="@style/Woo.Settings.Divider"
+                android:layout_marginStart="@dimen/settings_padding"/>
 
             <TextView
-                android:id="@+id/textInfo"
                 style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imageInfo"
                 android:text="@string/settings_send_stats_detail"/>
 
             <Button
@@ -55,31 +44,17 @@
                 style="@style/Woo.Settings.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/textInfo"
+                android:layout_gravity="end"
                 android:text="@string/learn_more"/>
 
-        </RelativeLayout>
-
-        <View
-            style="@style/Woo.Settings.Divider"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/imagePrivacyPolicy"
-                style="@style/Woo.Settings.Icon"
-                android:contentDescription="@string/settings_privacy_policy_header"
-                app:srcCompat="@drawable/ic_user_circle_grey_min_24dp"/>
+            <View
+                style="@style/Woo.Settings.Divider"
+                android:layout_marginStart="@dimen/settings_padding"/>
 
             <TextView
-                android:id="@+id/textPrivacyPolicy"
                 style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imagePrivacyPolicy"
                 android:text="@string/settings_privacy_detail"/>
 
             <Button
@@ -87,31 +62,17 @@
                 style="@style/Woo.Settings.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/textPrivacyPolicy"
+                android:layout_gravity="end"
                 android:text="@string/settings_privacy_policy"/>
 
-        </RelativeLayout>
-
-        <View
-            style="@style/Woo.Settings.Divider"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/imageTracking"
-                style="@style/Woo.Settings.Icon"
-                android:contentDescription="@string/settings_third_party_policy_header"
-                app:srcCompat="@drawable/ic_briefcase_grey_min_24dp"/>
+            <View
+                style="@style/Woo.Settings.Divider"
+                android:layout_marginStart="@dimen/settings_padding"/>
 
             <TextView
-                android:id="@+id/textTracking"
                 style="@style/Woo.Settings.LabelWithButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imageTracking"
                 android:text="@string/settings_tracking"/>
 
             <Button
@@ -119,62 +80,69 @@
                 style="@style/Woo.Settings.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/textTracking"
+                android:layout_gravity="end"
                 android:text="@string/learn_more"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <View
-            style="@style/Woo.Settings.Divider"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/margin_extra_large"
-            android:background="@color/default_window_background"/>
-
-        <View
-            style="@style/Woo.Settings.Divider"/>
-
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/groupSpacer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/firstGroup"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imageCrashReporting"
-                style="@style/Woo.Settings.Icon"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_gridicons_bug"/>
+            <View
+                style="@style/Woo.Settings.Divider"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/margin_extra_large"
+                android:background="@color/default_window_background"/>
+
+            <View
+                style="@style/Woo.Settings.Divider"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageCrashReporting"
+            style="@style/Woo.Settings.Icon"
+            android:layout_below="@+id/groupSpacer"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/ic_gridicons_bug"/>
+
+        <LinearLayout
+            android:id="@+id/secondGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageCrashReporting"
+            android:layout_toEndOf="@+id/imageCrashReporting"
+            android:orientation="vertical">
 
             <Switch
                 android:id="@+id/switchCrashReporting"
                 style="@style/Woo.Settings.Label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imageCrashReporting"
                 android:text="@string/settings_crash_reporting"/>
 
             <View
                 android:id="@+id/dividerCrashReporting"
                 style="@style/Woo.Settings.Divider"
-                android:layout_below="@+id/switchCrashReporting"
-                android:layout_marginStart="@dimen/settings_padding"
-                android:layout_toEndOf="@+id/imageCrashReporting"/>
+                android:layout_marginStart="@dimen/settings_padding"/>
 
             <TextView
                 android:id="@+id/textCrashReporting"
                 style="@style/Woo.Settings.Label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/dividerCrashReporting"
-                android:layout_toEndOf="@+id/imageCrashReporting"
                 android:text="@string/settings_crash_reporting_detail"/>
-
-        </RelativeLayout>
+        </LinearLayout>
 
         <View
-            style="@style/Woo.Settings.Divider"/>
+            style="@style/Woo.Settings.Divider"
+            android:layout_below="@+id/secondGroup"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 </ScrollView>
