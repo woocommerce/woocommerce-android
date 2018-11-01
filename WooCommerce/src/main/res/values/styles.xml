@@ -132,9 +132,9 @@
         <item name="android:textSize">@dimen/text_large</item>
     </style>
 
-    <style name="Woo.Button.Purple">
+    <style name="Woo.Button.Purple" parent="Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/button_purple_bg</item>
+        <item name="colorButtonNormal">@color/button_purple_bg_color</item>
     </style>
 
     <style name="Woo.Button.White" parent="Widget.AppCompat.Button.Colored">
