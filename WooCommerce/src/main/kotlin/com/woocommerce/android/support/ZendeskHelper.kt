@@ -8,11 +8,11 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.logInformation
+import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.extensions.logInformation
-import com.woocommerce.android.extensions.stateLogInformation
 import com.zendesk.logger.Logger
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
@@ -378,7 +378,7 @@ private fun buildZendeskCustomFields(
             CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
             CustomField(TicketFieldIds.currentSite, currentSiteInformation),
             CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
-            // TODO: CustomField(TicketFieldIds.logs, WooLog.toPlainText(context)),
+            CustomField(TicketFieldIds.logs, WooLog.toString()),
             CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
             CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
             CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)
