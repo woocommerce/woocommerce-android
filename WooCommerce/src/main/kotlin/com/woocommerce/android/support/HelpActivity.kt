@@ -49,7 +49,7 @@ class HelpActivity : AppCompatActivity() {
         identityContainer.setOnClickListener { showIdentityDialog() }
         myTicketsContainer.setOnClickListener { showZendeskTickets() }
         faqContainer.setOnClickListener { showZendeskFaq() }
-        appLogContainer.setOnClickListener{ showApplicationLog() }
+        appLogContainer.setOnClickListener { showApplicationLog() }
 
         textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
