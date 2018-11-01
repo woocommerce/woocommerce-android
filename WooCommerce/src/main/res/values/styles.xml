@@ -137,9 +137,9 @@
         <item name="android:background">@drawable/button_purple_bg</item>
     </style>
 
-    <style name="Woo.Button.White">
-        <item name="android:textColor">@color/grey_dark</item>
-        <item name="android:background">@drawable/button_white_bg</item>
+    <style name="Woo.Button.White" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="colorButtonNormal">@color/white</item>
     </style>
 
     <!--
