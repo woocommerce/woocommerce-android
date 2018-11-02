@@ -26,7 +26,7 @@ object WooLog {
         ORDERS,
         UTILS,
         DEVICE,
-        WPUTILS,
+        WP,
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
@@ -54,7 +54,7 @@ object WooLog {
             WordPressAppLog.LogLevel.e -> LogLevel.e
         }
 
-        addEntry(T.WPUTILS, wooLogLevel, wpTag.name + " " + wpMessage)
+        addEntry(T.WP, wooLogLevel, wpTag.name + " " + wpMessage)
     }
 
     fun addListener(listener: LogListener) {
