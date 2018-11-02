@@ -31,7 +31,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
     }
 
     @Inject lateinit var presenter: NotifsListContract.Presenter
-    @Inject lateinit var adapter: NotifsListAdapter
+    @Inject lateinit var notifsAdapter: NotifsListAdapter
     @Inject lateinit var  uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
 
@@ -104,7 +104,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
             addItemDecoration(dividerDecoration)
-            adapter = this.adapter
+            adapter = notifsAdapter
         }
 
         presenter.takeView(this)
@@ -143,12 +143,12 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
     }
 
     override fun showNotifications(notifs: List<WCNotificationModel>, isFreshData: Boolean) {
-        if (!adapter.isSameList(notifs)) {
+        if (!notifsAdapter.isSameList(notifs)) {
             notifsList?.let { _ ->
                 if (isFreshData) {
                     notifsList.scrollToPosition(0)
                 }
-                adapter.setNotifications(notifs)
+                notifsAdapter.setNotifications(notifs)
             }
         }
         if (isFreshData) {

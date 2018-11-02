@@ -46,9 +46,25 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
             }
         }
 
-        // TODO - ADD SECTIONS
+        if (listToday.size > 0) {
+            addSection(NotifsListSection(TimeGroup.GROUP_TODAY.name, listToday))
+        }
 
+        if (listYesterday.size > 0) {
+            addSection(NotifsListSection(TimeGroup.GROUP_YESTERDAY.name, listYesterday))
+        }
 
+        if (listTwoDays.size > 0) {
+            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays))
+        }
+
+        if (listWeek.size > 0) {
+            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_WEEK.name, listWeek))
+        }
+
+        if (listMonth.size > 0) {
+            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
+        }
 
         notifyDataSetChanged()
 

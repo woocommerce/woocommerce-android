@@ -13,7 +13,7 @@
         android:clickable="true"
         android:focusable="true">
 
-        <!-- Orders List View -->
+        <!-- Notifications List View -->
         <LinearLayout
             android:id="@+id/notifsView"
             android:layout_width="match_parent"

@@ -64,9 +64,7 @@ class NotifsListPresenter @Inject constructor(
         TODO("not implemented")
     }
 
-    override fun canLoadMore(): Boolean {
-        TODO("not implemented")
-    }
+    override fun canLoadMore() = canLoadMore
 
     override fun isLoading() = isLoading || isLoadingMore
 
