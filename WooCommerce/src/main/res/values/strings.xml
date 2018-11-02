@@ -47,6 +47,7 @@
     <string name="no_orders_share_store">Share your store</string>
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
+    <string name="share">Share</string>
 
     <!--
         Date/Time Labels
@@ -225,4 +226,8 @@
     -->
     <string name="contact_support">Contact support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
+    <string name="logviewer_activity_title">Application log</string>
+    <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
+    <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
+    <string name="logviewer_share_error">Unable to share log</string>
 </resources>
