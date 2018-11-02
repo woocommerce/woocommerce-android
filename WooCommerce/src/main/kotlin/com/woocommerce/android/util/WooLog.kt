@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Locale
 import java.util.NoSuchElementException
+import org.wordpress.android.util.AppLog as WordPressAppLog
 
 typealias LogListener = (T, LogLevel, String) -> Unit
 
@@ -24,7 +25,8 @@ object WooLog {
         DASHBOARD,
         ORDERS,
         UTILS,
-        DEVICE
+        DEVICE,
+        WP,
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
@@ -35,6 +37,25 @@ object WooLog {
     private const val MAX_ENTRIES = 99
     private val logEntries = LogEntryList()
     private val listeners = ArrayList<LogListener>(0)
+
+    init {
+        // add listener for WP app log so we can capture login & FluxC logs
+        WordPressAppLog.addListener { tag, logLevel, message ->
+            addWPLogEntry(tag, logLevel, message)
+        }
+    }
+
+    private fun addWPLogEntry(wpTag: WordPressAppLog.T, wpLogLevel: WordPressAppLog.LogLevel, wpMessage: String) {
+        val wooLogLevel = when (wpLogLevel) {
+            WordPressAppLog.LogLevel.v -> LogLevel.v
+            WordPressAppLog.LogLevel.d -> LogLevel.d
+            WordPressAppLog.LogLevel.i -> LogLevel.i
+            WordPressAppLog.LogLevel.w -> LogLevel.w
+            WordPressAppLog.LogLevel.e -> LogLevel.e
+        }
+
+        addEntry(T.WP, wooLogLevel, wpTag.name + " " + wpMessage)
+    }
 
     fun addListener(listener: LogListener) {
         listeners.add(listener)
