@@ -73,7 +73,6 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         notifsList.addAll(notifs)
     }
 
-
     fun isSameList(notifs: List<WCNotificationModel>): Boolean {
         if (notifs.size != notifsList.size) {
             return false
@@ -109,7 +108,6 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
             presenter.loadMoreNotifs()
         }
     }
-
 
     private inner class NotifsListSection(val title: String, val list: List<WCNotificationModel>) : StatelessSection(
             SectionParameters.Builder(R.layout.notifs_list_item).headerResourceId(R.layout.order_list_header).build()

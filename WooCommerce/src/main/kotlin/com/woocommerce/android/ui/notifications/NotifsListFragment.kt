@@ -32,7 +32,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
 
     @Inject lateinit var presenter: NotifsListContract.Presenter
     @Inject lateinit var notifsAdapter: NotifsListAdapter
-    @Inject lateinit var  uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var dividerDecoration: DividerItemDecoration
@@ -167,6 +167,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
     }
 
     override fun showSkeleton(show: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 }
