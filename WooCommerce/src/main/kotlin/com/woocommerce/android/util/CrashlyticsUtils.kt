@@ -6,10 +6,13 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.util.WooLog.T
 import io.fabric.sdk.android.Fabric
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.SiteModel
 
 object CrashlyticsUtils {
     private const val TAG_KEY = "tag"
     private const val MESSAGE_KEY = "message"
+    private const val SITE_ID_KEY = "site_id"
+    private const val SITE_URL_KEY = "site_url"
 
     private fun isCrashlyticsEnabled() = AppPrefs.isCrashReportingEnabled()
 
@@ -35,6 +38,15 @@ object CrashlyticsUtils {
 
     fun resetAccount() {
         initAccount(null)
+    }
+
+    fun initSite(site: SiteModel?) {
+        if (!isCrashlyticsEnabled()) { return }
+
+        site?.let {
+            Crashlytics.setLong(SITE_ID_KEY, it.siteId)
+            Crashlytics.setString(SITE_URL_KEY, it.url)
+        }
     }
 
     fun logException(tr: Throwable, tag: T? = null, message: String? = null) {
