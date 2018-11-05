@@ -52,7 +52,7 @@
                 android:layout_marginTop="@dimen/margin_large"
                 android:text="@string/dashboard_no_orders"/>
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/no_orders_share_button"
                 style="@style/Woo.Button.Purple"
                 android:layout_width="wrap_content"

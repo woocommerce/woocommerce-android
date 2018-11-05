@@ -25,6 +25,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
         productInfo_productTotal.visibility = viewMode
         productInfo_totalTax.visibility = viewMode
         productInfo_lblTax.visibility = viewMode
+        productInfo_name.setSingleLine(!expanded)
 
         if (item.sku.isNullOrEmpty() || !expanded) {
             productInfo_lblSku.visibility = View.GONE

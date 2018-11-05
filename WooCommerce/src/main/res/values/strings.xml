@@ -47,6 +47,7 @@
     <string name="no_orders_share_store">Share your store</string>
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
+    <string name="share">Share</string>
 
     <!--
         Date/Time Labels
@@ -200,7 +201,7 @@
         Settings
     -->
     <string name="settings">Settings</string>
-    <string name="privacy_settings">Privacy Settings</string>
+    <string name="privacy_settings">Privacy settings</string>
     <string name="settings_signout">Logout account</string>
     <string name="settings_confirm_signout">Log out of WooCommerce?</string>
     <string name="settings_send_stats">Collect information</string>
@@ -213,6 +214,8 @@
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>
+    <string name="settings_crash_reporting">Crash reports</string>
+    <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports.</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -223,4 +226,8 @@
     -->
     <string name="contact_support">Contact support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
+    <string name="logviewer_activity_title">Application log</string>
+    <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
+    <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
+    <string name="logviewer_share_error">Unable to share log</string>
 </resources>

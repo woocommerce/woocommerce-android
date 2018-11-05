@@ -48,7 +48,7 @@
 
     </LinearLayout>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/buttonLogout"
         style="@style/Woo.Button.Purple"
         android:layout_width="wrap_content"

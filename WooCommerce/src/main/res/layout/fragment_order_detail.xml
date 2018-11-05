@@ -23,6 +23,7 @@
         <!-- Product List -->
         <com.woocommerce.android.ui.orders.OrderDetailProductListView
             android:id="@+id/orderDetail_productList"
+            android:clipToPadding="false"
             style="@style/Woo.Card.List"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

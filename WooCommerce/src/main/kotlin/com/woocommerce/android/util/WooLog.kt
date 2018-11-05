@@ -3,9 +3,14 @@ package com.woocommerce.android.util
 import android.util.Log
 import com.woocommerce.android.util.WooLog.LogLevel
 import com.woocommerce.android.util.WooLog.T
+import org.wordpress.android.util.DateTimeUtils
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.text.SimpleDateFormat
 import java.util.ArrayList
+import java.util.Locale
+import java.util.NoSuchElementException
+import org.wordpress.android.util.AppLog as WordPressAppLog
 
 typealias LogListener = (T, LogLevel, String) -> Unit
 
@@ -20,7 +25,8 @@ object WooLog {
         DASHBOARD,
         ORDERS,
         UTILS,
-        DEVICE
+        DEVICE,
+        WP,
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
@@ -28,7 +34,28 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
+    private const val MAX_ENTRIES = 99
+    private val logEntries = LogEntryList()
     private val listeners = ArrayList<LogListener>(0)
+
+    init {
+        // add listener for WP app log so we can capture login & FluxC logs
+        WordPressAppLog.addListener { tag, logLevel, message ->
+            addWPLogEntry(tag, logLevel, message)
+        }
+    }
+
+    private fun addWPLogEntry(wpTag: WordPressAppLog.T, wpLogLevel: WordPressAppLog.LogLevel, wpMessage: String) {
+        val wooLogLevel = when (wpLogLevel) {
+            WordPressAppLog.LogLevel.v -> LogLevel.v
+            WordPressAppLog.LogLevel.d -> LogLevel.d
+            WordPressAppLog.LogLevel.i -> LogLevel.i
+            WordPressAppLog.LogLevel.w -> LogLevel.w
+            WordPressAppLog.LogLevel.e -> LogLevel.e
+        }
+
+        addEntry(T.WP, wooLogLevel, wpTag.name + " " + wpMessage)
+    }
 
     fun addListener(listener: LogListener) {
         listeners.add(listener)
@@ -134,6 +161,10 @@ object WooLog {
     }
 
     private fun addEntry(tag: T, level: LogLevel, text: String) {
+        // add to list of entries
+        val entry = LogEntry(tag, level, text)
+        logEntries.addEntry(entry)
+
         // Call our listeners if any
         for (listener in listeners) {
             listener(tag, level, text)
@@ -144,5 +175,80 @@ object WooLog {
         val errors = StringWriter()
         throwable.printStackTrace(PrintWriter(errors))
         return errors.toString()
+    }
+
+    fun toHtmlList() = logEntries.toHtmlList()
+
+    override fun toString() = logEntries.toString()
+
+    /**
+     * Individual log entry
+     */
+    private class LogEntry internal constructor(
+        internal val tag: T,
+        internal val level: LogLevel,
+        internal val text: String?
+    ) {
+        internal val logDate: java.util.Date = DateTimeUtils.nowUTC()
+
+        override fun toString(): String {
+            val logText = if (text.isNullOrEmpty()) "null" else text
+            val logDateStr = SimpleDateFormat("MMM-dd kk:mm", Locale.US).format(logDate)
+            return "[$logDateStr ${tag.name} ${level.name}] $logText"
+        }
+    }
+
+    /**
+     * Fix-sized list of log entries
+     */
+    private class LogEntryList : ArrayList<LogEntry>() {
+        @Synchronized fun addEntry(entry: LogEntry): Boolean {
+            if (size >= MAX_ENTRIES) {
+                removeFirstEntry()
+            }
+            return add(entry)
+        }
+
+        private fun removeFirstEntry() {
+            val it = iterator()
+            if (it.hasNext()) {
+                try {
+                    remove(it.next())
+                } catch (e: NoSuchElementException) {
+                    // ignore
+                }
+            }
+        }
+
+        /**
+         * Returns the log entries as an array of html-formatted strings - this enables us to display
+         * a formatted log in [com.woocommerce.android.ui.main.WooLogViewerActivity]
+         */
+        fun toHtmlList(): ArrayList<String> {
+            val list = ArrayList<String>()
+            for (entry in this) {
+                // same colors as WPAndroid
+                val color = when (entry.level) {
+                    LogLevel.v -> "grey"
+                    LogLevel.d -> "teal"
+                    LogLevel.i -> "black"
+                    LogLevel.w -> "purple"
+                    LogLevel.e -> "red"
+                }
+                list.add("<font color='$color'>$entry</font>")
+            }
+            return list
+        }
+
+        /**
+         * Returns the log entries as a single string with each entry on a new line
+         */
+        override fun toString(): String {
+            val sb = StringBuilder()
+            for (entry in this) {
+                sb.append("${entry}\n")
+            }
+            return sb.toString()
+        }
     }
 }

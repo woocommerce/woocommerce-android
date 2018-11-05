@@ -4,7 +4,9 @@ import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog.T
 import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.util.Currency
+import java.util.Locale
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
@@ -38,6 +40,20 @@ object CurrencyUtils {
      * @param currencyCode The ISO 4217 currency code (ex: USD)
      */
     fun currencyString(context: Context, rawValue: Double, currencyCode: String): String {
+        // if the passed currency code is the same as the currency code of the current locale, format
+        // the currency using the locale's currency formatter
+        val locale = Locale.getDefault()
+        try {
+            if (Currency.getInstance(locale)?.currencyCode.equals(currencyCode)) {
+                val formatter = NumberFormat.getCurrencyInstance(locale)
+                return formatter.format(rawValue)
+            }
+        } catch (e: IllegalArgumentException) {
+            WooLog.e(T.UTILS, "Error finding valid currency instance for currency code [$currencyCode]", e)
+        }
+
+        // store must be using a currency that's different than that of the current locale so fall
+        // back to our default currency format
         val symbol = getCurrencySymbol(currencyCode)
         return if (rawValue < 0) {
             context.getString(
@@ -59,13 +75,8 @@ object CurrencyUtils {
      * @param currencyCode The ISO 4217 currency code (ex: USD)
      */
     fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
-        val symbol = getCurrencySymbol(currencyCode)
-        val roundedValue = rawValue.roundToInt()
-        return if (rawValue < 0) {
-            context.getString(R.string.currency_total_negative, symbol, roundedValue.absoluteValue.toString())
-        } else {
-            context.getString(R.string.currency_total, symbol, roundedValue.toString())
-        }
+        val roundedValue = rawValue.roundToInt().toDouble()
+        return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
     }
 
     /**
