@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.SiteListAdapter.OnSiteClickListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.CrashlyticsUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
 import org.wordpress.android.login.LoginMode
@@ -111,6 +112,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         val site = presenter.getSiteBySiteId(siteId)
         if (site != null) {
             selectedSite.set(site)
+            CrashlyticsUtils.initSite(site)
         }
     }
 

@@ -16,11 +16,12 @@ object CrashlyticsUtils {
 
     private fun isCrashlyticsEnabled() = AppPrefs.isCrashReportingEnabled()
 
-    fun initCrashlytics(context: Context, account: AccountModel?) {
+    fun initCrashlytics(context: Context, account: AccountModel?, site: SiteModel?) {
         if (!isCrashlyticsEnabled()) { return }
 
         Fabric.with(context, Crashlytics())
         initAccount(account)
+        initSite(site)
 
         // Send logs for app events through to Crashlytics
         WooLog.addListener { tag, logLevel, message ->

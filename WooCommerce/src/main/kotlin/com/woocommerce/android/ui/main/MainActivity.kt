@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CrashlyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -96,7 +95,6 @@ class MainActivity : AppCompatActivity(),
             return
         }
 
-        CrashlyticsUtils.initSite(selectedSite.get())
         setupBottomNavigation()
         initFragment(savedInstanceState)
     }

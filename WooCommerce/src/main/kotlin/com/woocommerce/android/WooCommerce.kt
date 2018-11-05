@@ -68,7 +68,13 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         AppPrefs.init(this)
 
         initAnalytics()
-        CrashlyticsUtils.initCrashlytics(this, accountStore.account)
+
+        val site = if (selectedSite.exists()) {
+            selectedSite.get()
+        } else {
+            null
+        }
+        CrashlyticsUtils.initCrashlytics(this, accountStore.account, site)
 
         createNotificationChannelsOnSdk26()
 
@@ -163,6 +169,9 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
             }
             CrashlyticsUtils.initAccount(accountStore.account)
+            if (selectedSite.exists()) {
+                CrashlyticsUtils.initSite(selectedSite.get())
+            }
         }
     }
 
