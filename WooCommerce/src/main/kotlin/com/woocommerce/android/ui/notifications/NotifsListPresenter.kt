@@ -43,11 +43,10 @@ class NotifsListPresenter @Inject constructor(
             // TODO add real data here
             val notifs = listOf(
                     WCNotificationModel.Order(1, "You have a new order!", "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00"),
-                    WCNotificationModel.Order(1, "You have a new order!", "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00"),
-                    WCNotificationModel.Order(1, "You have a new order!", "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00"),
-                    WCNotificationModel.Order(1, "You have a new order!", "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00"),
-                    WCNotificationModel.Order(1, "You have a new order!", "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00"),
-                    WCNotificationModel.Order(1, "You have a new order!", "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00")
+                    WCNotificationModel.Review(7, "Joe Smith left a review", "Review for Eyes Wide Shut","2018-10-22T21:08:11+00:00",2, 1F, ""),
+                    WCNotificationModel.Review(7, "Yuval Noah Harari left a review", "Review for Sapiens: A Brief History of Humankind","2018-7-22T21:08:11+00:00",5, 5F, ""),
+                    WCNotificationModel.Review(7, "Yuval Noah Harari left a review", "Review for Homo Deus: A Brief History of tomorrow","2018-9-22T21:08:11+00:00",4, 4F, ""),
+                    WCNotificationModel.Review(7, "Gillian Flynn left a review", "Review for Sharp Objects","2018-11-1T21:08:11+00:00",2, 3.5F, "")
             )
             view?.let {
                 it.showNotifications(notifs, true)
