@@ -169,9 +169,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
             }
             CrashlyticsUtils.initAccount(accountStore.account)
-            if (selectedSite.exists()) {
-                CrashlyticsUtils.initSite(selectedSite.get())
-            }
         }
     }
 

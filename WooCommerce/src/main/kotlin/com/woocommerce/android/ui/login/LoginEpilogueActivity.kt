@@ -99,7 +99,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
             if (site != null) {
                 selectedSite.set(site)
-
+                CrashlyticsUtils.initSite(site)
                 AnalyticsTracker.track(
                         Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
                         mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
@@ -112,7 +112,6 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         val site = presenter.getSiteBySiteId(siteId)
         if (site != null) {
             selectedSite.set(site)
-            CrashlyticsUtils.initSite(site)
         }
     }
 
