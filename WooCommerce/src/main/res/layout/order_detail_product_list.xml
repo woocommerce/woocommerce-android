@@ -41,7 +41,7 @@
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/productList_btnDetails"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/details"
         style="@style/Woo.Button"
@@ -53,7 +53,7 @@
         android:id="@+id/productList_btnFulfill"
         style="@style/Woo.Button.Purple"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
