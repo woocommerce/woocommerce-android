@@ -36,17 +36,16 @@ object CrashlyticsUtils {
         Crashlytics.setUserIdentifier(account?.userId.toString())
     }
 
-    fun resetAccount() {
-        initAccount(null)
-    }
-
     fun initSite(site: SiteModel?) {
         if (!isCrashlyticsEnabled()) { return }
 
-        site?.let {
-            Crashlytics.setLong(SITE_ID_KEY, it.siteId)
-            Crashlytics.setString(SITE_URL_KEY, it.url)
-        }
+        Crashlytics.setLong(SITE_ID_KEY, site?.siteId ?: 0)
+        Crashlytics.setString(SITE_URL_KEY, site?.url)
+    }
+
+    fun resetAccountAndSite() {
+        initAccount(null)
+        initSite(null)
     }
 
     fun logException(tr: Throwable, tag: T? = null, message: String? = null) {

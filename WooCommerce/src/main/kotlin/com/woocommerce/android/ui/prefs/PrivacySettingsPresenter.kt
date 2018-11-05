@@ -63,7 +63,7 @@ class PrivacySettingsPresenter @Inject constructor(
         if (enabled) {
             CrashlyticsUtils.initAccount(accountStore.account)
         } else {
-            CrashlyticsUtils.resetAccount()
+            CrashlyticsUtils.resetAccountAndSite()
         }
     }
 

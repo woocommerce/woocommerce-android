@@ -152,7 +152,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             // Reset analytics
             AnalyticsTracker.flush()
             AnalyticsTracker.clearAllData()
-            CrashlyticsUtils.resetAccount()
+            CrashlyticsUtils.resetAccountAndSite()
 
             // Wipe user-specific preferences
             AppPrefs.reset()
