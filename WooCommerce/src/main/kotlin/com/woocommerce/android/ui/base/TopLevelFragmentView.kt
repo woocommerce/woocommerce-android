@@ -39,7 +39,7 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener {
     fun getFragmentTitle(): String
 
     /**
-     * Refresh this top-level fragment data and resetAccountAndSite its state.
+     * Refresh this top-level fragment data and reset its state.
      */
     fun refreshFragmentState()
 

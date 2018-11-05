@@ -305,7 +305,7 @@ class MainActivity : AppCompatActivity(),
 
     /**
      * If the user clicked on the already displayed top-level option, pop any child
-     * fragments and resetAccountAndSite to the parent fragment.
+     * fragments and resets to the parent fragment.
      *
      * If the user selected an option not currently active, pop any child fragments,
      * hide the current top-level fragment and add/show the destination top-level fragment.
