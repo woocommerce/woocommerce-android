@@ -116,7 +116,7 @@ class ZendeskHelper(
             zendeskNeedsToBeEnabledError
         }
         val builder = HelpCenterActivity.builder()
-                .withArticlesForCategoryIds(ZendeskConstants.mobileCategoryId)
+                .withArticlesForCategoryIds(ZendeskConstants.mobileHelpCategoryId)
                 .withContactUsButtonVisible(isIdentitySet)
                 .withLabelNames(ZendeskConstants.articleLabel)
                 .withShowConversationsMenuButton(isIdentitySet)
@@ -144,8 +144,8 @@ class ZendeskHelper(
             zendeskNeedsToBeEnabledError
         }
         requireIdentity(context, selectedSite) {
-            RequestActivity.builder()
-                    .show(context, buildZendeskConfig(context, siteStore.sites, origin, selectedSite, extraTags))
+            val config = buildZendeskConfig(context, siteStore.sites, origin, selectedSite, extraTags)
+            RequestActivity.builder().show(context, config)
         }
     }
 
@@ -344,8 +344,9 @@ private fun buildZendeskConfig(
     selectedSite: SiteModel? = null,
     extraTags: List<String>? = null
 ): UiConfig {
+    val customFields = buildZendeskCustomFields(context, allSites, selectedSite)
     return RequestActivity.builder()
-            .withTicketForm(TicketFieldIds.form, buildZendeskCustomFields(context, allSites, selectedSite))
+            .withTicketForm(TicketFieldIds.form, customFields)
             .withRequestSubject(ZendeskConstants.ticketSubject)
             .withTags(buildZendeskTags(allSites, origin ?: Origin.UNKNOWN, extraTags))
             .config()
@@ -374,6 +375,8 @@ private fun buildZendeskCustomFields(
         "not_selected"
     }
     return listOf(
+            CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
+            CustomField(TicketFieldIds.subcategoryId, ZendeskConstants.subcategoryValue),
             CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
             CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
             CustomField(TicketFieldIds.currentSite, currentSiteInformation),
@@ -381,8 +384,7 @@ private fun buildZendeskCustomFields(
             CustomField(TicketFieldIds.logs, WooLog.toString()),
             CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
             CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
-            CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
-            CustomField(TicketFieldIds.subcategoryId, ZendeskConstants.subcategoryValue)
+            CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)
     )
 }
 
@@ -475,7 +477,8 @@ private object ZendeskConstants {
     const val articleLabel = "Android"
     const val blogSeparator = "\n----------\n"
     const val jetpackTag = "jetpack"
-    const val mobileCategoryId = 360000041586
+    const val mobileHelpCategoryId = 360000041586
+    const val categoryValue = "Support"
     const val subcategoryValue = "WooCommerce Mobile Apps"
     const val networkWifi = "WiFi"
     const val networkWWAN = "Mobile"
@@ -501,6 +504,7 @@ private object TicketFieldIds {
     const val currentSite = 360000103103L
     const val appLanguage = 360008583691L
     const val sourcePlatform = 360009311651L
+    const val categoryId = 25176003L
     const val subcategoryId = 25176023L
 }
 
