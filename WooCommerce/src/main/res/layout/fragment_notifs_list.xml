@@ -14,17 +14,10 @@
         android:focusable="true">
 
         <!-- Notifications List View -->
-        <LinearLayout
-            android:id="@+id/notifsView"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/notifsList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/notifsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+            android:layout_height="wrap_content"/>
 
         <ProgressBar
             android:id="@+id/notifsLoadMoreProgress"
