@@ -67,7 +67,7 @@ class AppSettingsActivity : AppCompatActivity(),
             finish()
         } else {
             super.onBackPressed()
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_material)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
         }
     }
 
