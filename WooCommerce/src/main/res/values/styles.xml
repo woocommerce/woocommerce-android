@@ -49,6 +49,10 @@
         <!-- Ripple effect when clicking items -->
         <item name="selectableItemBackground">?android:selectableItemBackground</item>
         <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+        <!-- Light touch feedback for actions -->
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <!-- Light background for menus -->
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
     <style name="Woo"/>
