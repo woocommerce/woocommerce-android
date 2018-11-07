@@ -67,6 +67,7 @@ class AppSettingsActivity : AppCompatActivity(),
             finish()
         } else {
             super.onBackPressed()
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_material)
         }
     }
 
@@ -103,7 +104,8 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun showAboutScreen() {
-
+        val fragment = AboutFragment.newInstance()
+        showFragment(fragment, AboutFragment.TAG, true)
     }
 
     override fun confirmLogout() {
