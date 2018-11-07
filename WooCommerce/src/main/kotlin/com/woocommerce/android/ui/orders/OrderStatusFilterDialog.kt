@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.ui.orders.OrderStatusFilterDialog.OrderListFilterListener
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 /**
@@ -49,23 +50,22 @@ class OrderStatusFilterDialog : DialogFragment() {
         return AlertDialog.Builder(context)
                 .setTitle(resources.getString(R.string.orderlist_filter_by))
                 .setCancelable(true)
-                .setSingleChoiceItems(filterOptions, selectedIndex) { _, which ->
+                .setSingleChoiceItems(filterOptions, selectedIndex) { dialog, which ->
                     val selectedLabel = filterOptions[which]
 
                     AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
                             mapOf("status" to selectedLabel))
 
                     selectedFilter = CoreOrderStatus.fromLabel(selectedLabel)
-                }
-                .setPositiveButton(R.string.orderlist_filter_apply) { dialog, _ ->
-                    AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED)
-
                     val newSelectedIndex = selectedFilter?.ordinal?.inc() ?: 0
+
                     if (newSelectedIndex != selectedIndex) {
                         listener?.onFilterSelected(selectedFilter?.value)
                     }
+
                     dialog.cancel()
-                }.create()
+                }
+                .create()
     }
 
     override fun onResume() {
