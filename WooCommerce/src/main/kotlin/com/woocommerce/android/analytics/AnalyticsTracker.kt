@@ -95,7 +95,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDERS_LIST_MENU_FILTER_TAPPED,
 
         // -- Order filter by status dialog
-        FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
         FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
 
         // -- Order Detail
