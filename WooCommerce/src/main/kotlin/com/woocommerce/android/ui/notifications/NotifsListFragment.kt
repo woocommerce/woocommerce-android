@@ -16,6 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderListFragment
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
 import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
@@ -42,6 +43,8 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
 
     override var isRefreshPending = true
     private var listState: Parcelable? = null // Save the state of the recycler view
+
+    private val skeletonView = SkeletonView()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,11 +147,15 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
 
     override fun showNotifications(notifs: List<WCNotificationModel>, isFreshData: Boolean) {
         if (!notifsAdapter.isSameList(notifs)) {
-            notifsList?.let { _ ->
-                if (isFreshData) {
-                    notifsList.scrollToPosition(0)
-                }
-                notifsAdapter.setNotifications(notifs)
+            notifsList?.let { list ->
+                // todo remove temporary post delay and skeleton hide code
+                list.postDelayed({
+                    if (isFreshData) {
+                        notifsList.scrollToPosition(0)
+                    }
+                    skeletonView.hide()
+                    notifsAdapter.setNotifications(notifs)
+                }, 2000)
             }
         }
         if (isFreshData) {
@@ -167,6 +174,9 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
     }
 
     override fun showSkeleton(show: Boolean) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        when (show) {
+            true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
+            false -> skeletonView.hide()
+        }
     }
 }
