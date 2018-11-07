@@ -40,6 +40,9 @@ class NotifsListPresenter @Inject constructor(
 
     override fun loadNotifs(forceRefresh: Boolean) {
         if (networkStatus.isConnected() && forceRefresh) {
+            isLoading = true
+            view?.showSkeleton(true)
+
             // TODO add real data here
             val notifs = listOf(
                     WCNotificationModel.Order(1, "You have a new order!",
