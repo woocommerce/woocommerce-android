@@ -23,8 +23,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/transparent"
             android:theme="@style/ToolbarTheme.Transparent"
-            app:layout_scrollFlags="scroll|enterAlways">
-        </android.support.v7.widget.Toolbar>
+            app:layout_scrollFlags="scroll|enterAlways"/>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -45,12 +44,13 @@
             android:paddingBottom="?attr/actionBarSize">
 
             <ImageView
-                android:id="@+id/nux_fragment_icon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
+                android:background="@color/white"
                 android:importantForAccessibility="no"
-                app:srcCompat="@mipmap/ic_launcher"/>
+                android:padding="@dimen/margin_extra_large"
+                app:srcCompat="@drawable/img_woo_logo"/>
 
             <TextView
                 style="@style/Woo.About.Title"
@@ -59,7 +59,7 @@
             <TextView
                 android:id="@+id/about_version"
                 style="@style/Woo.About.Label"
-                tools:text="Version"/>
+                android:text="@string/about_version"/>
 
             <TextView
                 android:id="@+id/about_publisher"
@@ -75,7 +75,7 @@
             <Button
                 android:id="@+id/about_privacy"
                 style="@style/Woo.About.Button"
-                android:layout_marginTop="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_extra_large"
                 android:text="@string/settings_privacy_policy_header"/>
 
             <Button
@@ -88,7 +88,7 @@
                 android:id="@+id/about_url"
                 style="@style/Woo.About.Label"
                 android:layout_marginBottom="@dimen/margin_medium"
-                android:layout_marginTop="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_extra_large"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/about_url_text"/>

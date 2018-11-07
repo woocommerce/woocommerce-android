@@ -7,16 +7,19 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED
 import com.woocommerce.android.util.ActivityUtils
 import kotlinx.android.synthetic.main.fragment_about.*
+import java.util.Calendar
 
 class AboutFragment : Fragment() {
     companion object {
         const val TAG = "about"
+        private const val URL_AUTOMATTIC = "https://www.automattic.com/"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
+        private const val URL_TOS = "https://wordpress.com/tos/"
 
         fun newInstance(): AboutFragment {
             return AboutFragment()
@@ -30,22 +33,32 @@ class AboutFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        val version = String.format(getString(R.string.about_version), BuildConfig.VERSION_NAME)
+        about_version.setText(version)
+
+        val copyright = String.format(getString(R.string.about_copyright), Calendar.getInstance().get(Calendar.YEAR))
+        about_copyright.setText(copyright)
+
+        about_url.setOnClickListener {
+            ActivityUtils.openUrlExternal(activity as Context, URL_AUTOMATTIC)
+        }
+
         about_privacy.setOnClickListener {
-            AnalyticsTracker.track(PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
-            showPrivacyPolicy()
+            ActivityUtils.openUrlExternal(activity as Context, URL_PRIVACY_POLICY)
+        }
+
+        about_tos.setOnClickListener {
+            ActivityUtils.openUrlExternal(activity as Context, URL_TOS)
         }
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        activity?.setTitle(null)
-        with (activity as AppCompatActivity) {
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-        }
-    }
 
-    fun showPrivacyPolicy() {
-        ActivityUtils.openUrlExternal(activity as Context, URL_PRIVACY_POLICY)
+        activity?.let {
+            it.title = null
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+        }
     }
 }
