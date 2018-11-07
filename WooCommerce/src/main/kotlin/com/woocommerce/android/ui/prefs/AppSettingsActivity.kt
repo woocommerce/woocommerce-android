@@ -78,6 +78,14 @@ class AppSettingsActivity : AppCompatActivity(),
         showPrivacySettingsFragment()
     }
 
+    override fun onRequestShowAboutScreen() {
+        showAboutScreen()
+    }
+
+    override fun onRequestShowLicensesScreen() {
+        // TODO
+    }
+
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
     override fun close() {
@@ -92,6 +100,10 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun showPrivacySettingsFragment() {
         val fragment = PrivacySettingsFragment.newInstance()
         showFragment(fragment, PrivacySettingsFragment.TAG, true)
+    }
+
+    override fun showAboutScreen() {
+
     }
 
     override fun confirmLogout() {

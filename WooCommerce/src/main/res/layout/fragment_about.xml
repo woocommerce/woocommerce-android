@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/wc_purple"
+    android:fillViewport="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/transparent"
+            android:theme="@style/ToolbarTheme.Transparent"
+            app:layout_scrollFlags="scroll|enterAlways">
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="?attr/actionBarSize">
+
+            <ImageView
+                android:id="@+id/nux_fragment_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:importantForAccessibility="no"
+                app:srcCompat="@mipmap/ic_launcher"/>
+
+            <TextView
+                style="@style/Woo.About.Title"
+                android:text="@string/about_appname"/>
+
+            <TextView
+                android:id="@+id/about_version"
+                style="@style/Woo.About.Label"
+                tools:text="Version"/>
+
+            <TextView
+                android:id="@+id/about_publisher"
+                style="@style/Woo.About.Label"
+                android:layout_marginTop="@dimen/margin_extra_large"
+                android:text="@string/about_publisher"/>
+
+            <TextView
+                android:id="@+id/about_copyright"
+                style="@style/Woo.About.Label"
+                tools:text="Copyright"/>
+
+            <Button
+                android:id="@+id/about_privacy"
+                style="@style/Woo.About.Button"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:text="@string/settings_privacy_policy_header"/>
+
+            <Button
+                android:id="@+id/about_tos"
+                style="@style/Woo.About.Button"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:text="@string/about_tos"/>
+
+            <TextView
+                android:id="@+id/about_url"
+                style="@style/Woo.About.Label"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/about_url_text"/>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

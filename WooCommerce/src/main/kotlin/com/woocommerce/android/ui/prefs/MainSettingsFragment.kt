@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LICENSES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import dagger.android.support.AndroidSupportInjection
@@ -28,6 +30,8 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onRequestShowPrivacySettings()
+        fun onRequestShowAboutScreen()
+        fun onRequestShowLicensesScreen()
     }
 
     private lateinit var listener: AppSettingsListener
@@ -55,22 +59,22 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
 
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
-
             listener.onRequestLogout()
         }
 
         textPrivacySettings.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
-
             listener.onRequestShowPrivacySettings()
         }
 
         textAbout.setOnClickListener {
-            // TODO
+            AnalyticsTracker.track(SETTINGS_ABOUT_BUTTON_TAPPED)
+            listener.onRequestShowAboutScreen()
         }
 
         textLicenses.setOnClickListener {
-            // TODO
+            AnalyticsTracker.track(SETTINGS_LICENSES_BUTTON_TAPPED)
+            listener.onRequestShowLicensesScreen()
         }
     }
 
