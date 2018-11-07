@@ -55,12 +55,6 @@
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
-    <style name="ToolbarTheme.Transparent" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:windowActionBarOverlay">true</item>
-        <!-- Support library compatibility -->
-        <item name="windowActionBarOverlay">true</item>
-    </style>
-
     <style name="Woo"/>
     <!--
         Text Styles

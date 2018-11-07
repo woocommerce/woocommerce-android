@@ -59,6 +59,7 @@ class AboutFragment : Fragment() {
         activity?.let {
             it.title = null
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+            it.supportActionBar?.elevation = 0f
         }
     }
 }
