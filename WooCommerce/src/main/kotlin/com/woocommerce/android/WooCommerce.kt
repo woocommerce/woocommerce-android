@@ -70,7 +70,13 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         AppPrefs.init(this)
 
         initAnalytics()
-        CrashlyticsUtils.initCrashlytics(this, accountStore.account)
+
+        val site = if (selectedSite.exists()) {
+            selectedSite.get()
+        } else {
+            null
+        }
+        CrashlyticsUtils.initCrashlytics(this, accountStore.account, site)
 
         createNotificationChannelsOnSdk26()
 
@@ -159,8 +165,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             // Reset analytics
             AnalyticsTracker.flush()
             AnalyticsTracker.clearAllData()
+            CrashlyticsUtils.resetAccountAndSite()
             zendeskHelper.reset()
-            CrashlyticsUtils.resetAccount()
 
             // Wipe user-specific preferences
             AppPrefs.reset()
