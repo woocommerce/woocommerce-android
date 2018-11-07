@@ -64,6 +64,14 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
 
             listener.onRequestShowPrivacySettings()
         }
+
+        textAbout.setOnClickListener {
+            // TODO
+        }
+
+        textLicenses.setOnClickListener {
+            // TODO
+        }
     }
 
     override fun onResume() {
