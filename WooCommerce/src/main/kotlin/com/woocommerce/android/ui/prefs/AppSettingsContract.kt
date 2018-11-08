@@ -14,6 +14,7 @@ interface AppSettingsContract {
         fun confirmLogout()
         fun showAppSettingsFragment()
         fun showPrivacySettingsFragment()
+        fun showLicensesFragment()
         fun showAboutFragment()
     }
 }
