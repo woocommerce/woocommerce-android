@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.main
+package com.woocommerce.android.support
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -79,11 +79,13 @@ class WooLogViewerActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
 
-        val mnuCopy = menu.add(Menu.NONE, ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy)
+        val mnuCopy = menu.add(Menu.NONE,
+                ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy)
         mnuCopy.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         mnuCopy.setIcon(R.drawable.ic_copy_white_24dp)
 
-        val mnuShare = menu.add(Menu.NONE, ID_SHARE, Menu.NONE, R.string.share)
+        val mnuShare = menu.add(Menu.NONE,
+                ID_SHARE, Menu.NONE, R.string.share)
         mnuShare.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         mnuShare.setIcon(R.drawable.ic_share_white_24dp)
 
