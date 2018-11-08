@@ -8,12 +8,12 @@ import android.webkit.WebView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 
-class LicensesFragment : DialogFragment() {
+class LicensesDialogFragment : DialogFragment() {
     companion object {
         const val TAG = "licenses"
 
-        fun newInstance(): LicensesFragment {
-            return LicensesFragment()
+        fun newInstance(): LicensesDialogFragment {
+            return LicensesDialogFragment()
         }
     }
 

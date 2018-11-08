@@ -15,6 +15,6 @@ interface AppSettingsContract {
         fun showAppSettingsFragment()
         fun showPrivacySettingsFragment()
         fun showAboutScreen()
-        fun showLicensesFragment()
+        fun showLicensesDialog()
     }
 }
