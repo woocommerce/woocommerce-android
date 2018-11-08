@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +37,13 @@ class AboutFragment : Fragment() {
 
         toolbar.elevation = 0f
 
-        about_image.visibility = if (DisplayUtils.isLandscape(activity)) {
+        val isLandsacpe = DisplayUtils.isLandscape(activity)
+        about_container.gravity = if (isLandsacpe) {
+            Gravity.CENTER_HORIZONTAL
+        } else {
+            Gravity.CENTER
+        }
+        about_image.visibility = if (isLandsacpe) {
             View.GONE
         } else {
             View.VISIBLE
