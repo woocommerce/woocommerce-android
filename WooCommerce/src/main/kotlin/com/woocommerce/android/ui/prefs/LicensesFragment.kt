@@ -1,15 +1,13 @@
 package com.woocommerce.android.ui.prefs
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.woocommerce.android.R
+import android.support.v4.app.DialogFragment
+import android.webkit.WebView
 import com.woocommerce.android.analytics.AnalyticsTracker
-import kotlinx.android.synthetic.main.fragment_licenses.*
 
-class LicensesFragment : Fragment() {
+class LicensesFragment : DialogFragment() {
     companion object {
         const val TAG = "licenses"
 
@@ -18,14 +16,13 @@ class LicensesFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_licenses, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val webView = WebView(context)
         webView.loadUrl("file:///android_asset/licenses.html")
+        return AlertDialog.Builder(context)
+                .setCancelable(true)
+                .setView(webView)
+                .create()
     }
 
     override fun onResume() {

@@ -19,8 +19,6 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_app_settings.*
 import javax.inject.Inject
 
-
-
 class AppSettingsActivity : AppCompatActivity(),
         AppSettingsListener,
         AppSettingsContract.View,
@@ -111,8 +109,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun showLicensesFragment() {
-        val fragment = LicensesFragment.newInstance()
-        showFragment(fragment, LicensesFragment.TAG, true)
+        LicensesFragment.newInstance().show(supportFragmentManager, LicensesFragment.TAG)
     }
 
     override fun confirmLogout() {
