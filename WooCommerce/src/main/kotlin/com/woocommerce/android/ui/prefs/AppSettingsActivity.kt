@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ContextThemeWrapper
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
-import android.webkit.WebView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT
@@ -87,13 +86,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onRequestShowLicensesScreen() {
-        val wv = WebView(this)
-        wv.loadUrl("file:///android_asset/licenses.html")
-
-        AlertDialog.Builder(this)
-                .setView(wv)
-                .setNegativeButton(R.string.close, null)
-                .show()
+        showLicensesFragment()
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
@@ -115,6 +108,11 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun showAboutScreen() {
         val fragment = AboutFragment.newInstance()
         showFragment(fragment, AboutFragment.TAG, true)
+    }
+
+    override fun showLicensesFragment() {
+        val fragment = LicensesFragment.newInstance()
+        showFragment(fragment, LicensesFragment.TAG, true)
     }
 
     override fun confirmLogout() {
