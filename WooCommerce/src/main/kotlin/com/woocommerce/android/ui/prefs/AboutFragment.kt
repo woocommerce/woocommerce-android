@@ -34,6 +34,8 @@ class AboutFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        toolbar.elevation = 0f
+
         about_image.visibility = if (DisplayUtils.isLandscape(activity)) {
             View.GONE
         } else {

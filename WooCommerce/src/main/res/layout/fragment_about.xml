@@ -5,22 +5,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/wc_purple"
-    android:orientation="vertical">
+    android:background="@color/wc_purple">
 
-    <android.support.v7.widget.Toolbar
+    <include
         android:id="@+id/toolbar"
-        style="@style/ToolbarTheme"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:elevation="0dp"/>
+        layout="@layout/view_toolbar"/>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
-        android:layout_centerVertical="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_centerVertical="true">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -36,7 +30,6 @@
                 android:id="@+id/about_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_medium"
                 android:background="@color/white"
                 android:importantForAccessibility="no"
                 android:padding="@dimen/margin_extra_large"
@@ -44,6 +37,7 @@
 
             <TextView
                 style="@style/Woo.About.Title"
+                android:layout_marginTop="@dimen/margin_extra_medium_large"
                 android:text="@string/about_appname"/>
 
             <TextView
@@ -54,7 +48,7 @@
             <TextView
                 android:id="@+id/about_publisher"
                 style="@style/Woo.About.Label"
-                android:layout_marginTop="@dimen/margin_extra_large"
+                android:layout_marginTop="@dimen/margin_extra_medium_large"
                 android:text="@string/about_publisher"/>
 
             <TextView
@@ -65,7 +59,7 @@
             <Button
                 android:id="@+id/about_privacy"
                 style="@style/Woo.About.Button"
-                android:layout_marginTop="@dimen/margin_extra_large"
+                android:layout_marginTop="@dimen/margin_extra_medium_large"
                 android:text="@string/settings_privacy_policy_header"/>
 
             <Button
@@ -77,8 +71,7 @@
             <TextView
                 android:id="@+id/about_url"
                 style="@style/Woo.About.Label"
-                android:layout_marginBottom="@dimen/margin_medium"
-                android:layout_marginTop="@dimen/margin_extra_large"
+                android:layout_marginTop="@dimen/margin_extra_medium_large"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/about_url_text"/>
