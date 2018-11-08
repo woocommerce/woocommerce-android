@@ -44,6 +44,7 @@
     <string name="products">Products</string>
     <string name="notifications">Notifications</string>
     <string name="notifications_coming_soon">Notifications aren\'t ready yet, but coming in a future release. Stay tuned!</string>
+    <string name="version_with_name_param">Version %s</string>
     <string name="no_orders_share_store">Share your store</string>
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
@@ -226,8 +227,29 @@
     -->
     <string name="contact_support">Contact support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
+    <string name="invalid_email_message">Your email address isn\'t valid</string>
+    <string name="support_identity_input_dialog_enter_email_and_name">To continue please enter your email address and name</string>
+    <string name="support_identity_input_dialog_enter_email">Please enter your email address</string>
+    <string name="support_identity_input_dialog_email_label">Email</string>
+    <string name="support_subtitle">How can we help?</string>
+    <string name="support_faq">Browse our FAQ</string>
+    <string name="support_faq_detail">Get answers to questions you have</string>
+    <string name="support_contact">Contact support</string>
+    <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
+    <string name="support_my_tickets">My tickets</string>
+    <string name="support_my_tickets_detail">View previously submitted support tickets</string>
+    <string name="support_application_log">Application log</string>
+    <string name="support_application_log_detail">Advanced tool to review the app status</string>
+    <string name="help">Help</string>
+    <string name="forgot_password">Lost your password?</string>
+    <string name="support_contact_email">Contact email</string>
+    <string name="support_contact_email_not_set">Not set</string>
+    <string name="support_push_notification_title">WooCommerce</string>
+    <string name="support_push_notification_message">New message from \'Help &amp; Support\'</string>
+    <string name="help_screen_title">Help &amp; Support</string>
     <string name="logviewer_activity_title">Application log</string>
     <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
     <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="logviewer_share_error">Unable to share log</string>
+
 </resources>

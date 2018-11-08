@@ -15,6 +15,7 @@ import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
 import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
@@ -45,6 +46,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var zendeskHelper: ZendeskHelper
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -83,6 +85,11 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         registerComponentCallbacks(lifecycleMonitor)
 
         trackStartupAnalytics()
+
+        zendeskHelper.setupZendesk(
+                this, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
+                BuildConfig.ZENDESK_OAUTH_CLIENT_ID
+        )
     }
 
     override fun onAppComesFromBackground() {
@@ -159,6 +166,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             AnalyticsTracker.flush()
             AnalyticsTracker.clearAllData()
             CrashlyticsUtils.resetAccountAndSite()
+            zendeskHelper.reset()
 
             // Wipe user-specific preferences
             AppPrefs.reset()

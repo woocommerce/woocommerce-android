@@ -26,6 +26,7 @@ object WooLog {
         ORDERS,
         UTILS,
         DEVICE,
+        SUPPORT,
         WP,
     }
 
@@ -222,7 +223,7 @@ object WooLog {
 
         /**
          * Returns the log entries as an array of html-formatted strings - this enables us to display
-         * a formatted log in [com.woocommerce.android.ui.main.WooLogViewerActivity]
+         * a formatted log in [com.woocommerce.android.support.WooLogViewerActivity]
          */
         fun toHtmlList(): ArrayList<String> {
             val list = ArrayList<String>()

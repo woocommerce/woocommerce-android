@@ -149,6 +149,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
         PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
         PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
+
+        // -- Help & Support
+        SUPPORT_HELP_CENTER_VIEWED,
+        SUPPORT_IDENTITY_SET,
+        SUPPORT_IDENTITY_FORM_VIEWED,
+        SUPPORT_APPLICATION_LOG_VIEWED,
+        SUPPORT_TICKETS_VIEWED,
+        SUPPORT_FAQ_VIEWED,
     }
     // endregion
 
