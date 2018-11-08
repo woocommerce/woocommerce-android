@@ -80,7 +80,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onRequestShowAboutScreen() {
-        showAboutScreen()
+        showAboutFragment()
     }
 
     override fun onRequestShowLicensesScreen() {
@@ -103,7 +103,7 @@ class AppSettingsActivity : AppCompatActivity(),
         showFragment(fragment, PrivacySettingsFragment.TAG, true)
     }
 
-    override fun showAboutScreen() {
+    override fun showAboutFragment() {
         val fragment = AboutFragment.newInstance()
         showFragment(fragment, AboutFragment.TAG, true)
     }
