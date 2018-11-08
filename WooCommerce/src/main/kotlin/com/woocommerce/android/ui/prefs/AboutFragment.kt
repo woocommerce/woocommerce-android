@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
 import kotlinx.android.synthetic.main.fragment_about.*
+import org.wordpress.android.util.DisplayUtils
 import java.util.Calendar
 
 class AboutFragment : Fragment() {
@@ -32,6 +33,12 @@ class AboutFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        about_image.visibility = if (DisplayUtils.isLandscape(activity)) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
 
         val version = String.format(getString(R.string.about_version), BuildConfig.VERSION_NAME)
         about_version.setText(version)
