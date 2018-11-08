@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.webkit.WebView
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 
 class LicensesFragment : DialogFragment() {
@@ -19,8 +20,9 @@ class LicensesFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val webView = WebView(context)
         webView.loadUrl("file:///android_asset/licenses.html")
+
         return AlertDialog.Builder(context)
-                .setCancelable(true)
+                .setNegativeButton(R.string.close, null)
                 .setView(webView)
                 .create()
     }
