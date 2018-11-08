@@ -79,11 +79,11 @@ class AppSettingsActivity : AppCompatActivity(),
         showPrivacySettingsFragment()
     }
 
-    override fun onRequestShowAboutScreen() {
+    override fun onRequestShowAbout() {
         showAboutFragment()
     }
 
-    override fun onRequestShowLicensesScreen() {
+    override fun onRequestShowLicenses() {
         // TODO
     }
 

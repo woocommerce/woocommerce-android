@@ -30,8 +30,8 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onRequestShowPrivacySettings()
-        fun onRequestShowAboutScreen()
-        fun onRequestShowLicensesScreen()
+        fun onRequestShowAbout()
+        fun onRequestShowLicenses()
     }
 
     private lateinit var listener: AppSettingsListener
@@ -69,12 +69,12 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
 
         textAbout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_BUTTON_TAPPED)
-            listener.onRequestShowAboutScreen()
+            listener.onRequestShowAbout()
         }
 
         textLicenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LICENSES_BUTTON_TAPPED)
-            listener.onRequestShowLicensesScreen()
+            listener.onRequestShowLicenses()
         }
     }
 
