@@ -84,7 +84,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onRequestShowLicensesScreen() {
-        showLicensesDialog()
+        showLicensesFragment()
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
@@ -108,8 +108,9 @@ class AppSettingsActivity : AppCompatActivity(),
         showFragment(fragment, AboutFragment.TAG, true)
     }
 
-    override fun showLicensesDialog() {
-        LicensesDialogFragment.newInstance().show(supportFragmentManager, LicensesDialogFragment.TAG)
+    override fun showLicensesFragment() {
+        val fragment = LicensesFragment.newInstance()
+        showFragment(fragment, LicensesFragment.TAG, true)
     }
 
     override fun confirmLogout() {
