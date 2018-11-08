@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ContextThemeWrapper
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.webkit.WebView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT
@@ -18,6 +19,8 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_app_settings.*
 import javax.inject.Inject
+
+
 
 class AppSettingsActivity : AppCompatActivity(),
         AppSettingsListener,
@@ -84,7 +87,13 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onRequestShowLicensesScreen() {
-        // TODO
+        val wv = WebView(this)
+        wv.loadUrl("file:///android_asset/licenses.html")
+
+        AlertDialog.Builder(this)
+                .setView(wv)
+                .setNegativeButton(R.string.close, null)
+                .show()
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector

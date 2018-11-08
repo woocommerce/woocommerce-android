@@ -64,8 +64,7 @@
             style="@style/Woo.Settings.Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_licenses"
-            android:visibility="gone"/>
+            android:text="@string/settings_licenses"/>
 
         <View
             style="@style/Woo.Settings.Divider"/>
