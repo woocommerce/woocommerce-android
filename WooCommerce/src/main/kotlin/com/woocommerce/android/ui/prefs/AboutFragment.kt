@@ -21,7 +21,7 @@ class AboutFragment : Fragment() {
         const val TAG = "about"
         private const val URL_AUTOMATTIC = "https://www.automattic.com/"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
-        private const val URL_TOS = "https://wordpress.com/tos/"
+        private const val URL_TOS = "https://woocommerce.com/terms-conditions/"
 
         fun newInstance(): AboutFragment {
             return AboutFragment()
