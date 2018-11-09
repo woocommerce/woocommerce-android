@@ -58,14 +58,14 @@
 
     <ImageView
         android:id="@+id/review_gravatar"
-        android:layout_width="55dp"
-        android:layout_height="53dp"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider"
-        tools:srcCompat="@tools:sample/avatars"/>
+        tools:srcCompat="@drawable/ic_user_circle_grey_24dp"/>
 
     <TextView
         android:id="@+id/review_user_name"
@@ -73,7 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:textAppearance="@style/Woo.TextAppearance.Title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/review_gravatar"
@@ -119,14 +119,16 @@
         app:layout_constraintTop_toBottomOf="@+id/review_rating_bar"
         tools:text="Great product! Definitely what I was looking for. Great quality, and looks exactly like the product image on the website. Would highly recommend to anyone who is looking for something like this!"/>
 
-    <Button
+    <ToggleButton
         android:id="@+id/review_approve"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/wc_approve"
+        android:textOff="@string/wc_approve"
+        android:textOn="@string/wc_approved"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@null"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <Button
