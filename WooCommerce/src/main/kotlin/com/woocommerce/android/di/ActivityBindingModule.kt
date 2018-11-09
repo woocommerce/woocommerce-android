@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
+import com.woocommerce.android.ui.notifications.ReviewDetailModule
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
@@ -34,7 +35,8 @@ abstract class ActivityBindingModule {
             OrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
-            NotifsListModule::class))
+            NotifsListModule::class,
+            ReviewDetailModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
