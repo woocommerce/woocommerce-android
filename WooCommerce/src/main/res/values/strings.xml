@@ -257,5 +257,6 @@
     <string name="wc_approve">Approve</string>
     <string name="wc_approved">Approved</string>
     <string name="wc_spam">Spam</string>
+    <string name="wc_trash">Trash</string>
 
 </resources>

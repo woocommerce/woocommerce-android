@@ -124,6 +124,10 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="Woo.TextAppearance.Button.Toggle">
+        <item name="android:textColor">@color/toggle_button_text_color</item>
+    </style>
     <!--
         Button Styles
     -->
