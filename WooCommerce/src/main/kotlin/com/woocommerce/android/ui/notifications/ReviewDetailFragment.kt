@@ -49,6 +49,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
         // TODO - this is just temp data to display the view properly for review of the UI
         review_product_name.text = "Left Handed Candlestick"
+        review_gravatar.setImageResource(R.drawable.ic_gridicons_user_circle_100dp)
         review_user_name.text = "Ursula K. LeGuin"
         review_time.text = "23 hrs ago"
         review_rating_bar.rating = 4f
