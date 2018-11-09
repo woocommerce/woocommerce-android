@@ -68,7 +68,8 @@ object CurrencyUtils {
 
     /**
      * Rounds the [rawValue] to the nearest int, and returns the value as a currency
-     * string with the appropriate currency symbol.
+     * string with the appropriate currency symbol. If the value is a thousand or
+     * more, we return it suffixed with "k" (2500 -> 2.5k)
      *
      * @param context The active context
      * @param rawValue The value to format as currency
@@ -76,7 +77,11 @@ object CurrencyUtils {
      */
     fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
         val roundedValue = rawValue.roundToInt().toDouble()
-        return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
+        if (roundedValue.absoluteValue >= 1000) {
+            return currencyString(context, roundedValue / 1000, currencyCode).removeSuffix(".00") + "k"
+        } else {
+            return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
+        }
     }
 
     /**
