@@ -43,7 +43,6 @@
     <string name="discard">Discard</string>
     <string name="products">Products</string>
     <string name="notifications">Notifications</string>
-    <string name="notifications_coming_soon">Notifications aren\'t ready yet, but coming in a future release. Stay tuned!</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="no_orders_share_store">Share your store</string>
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
