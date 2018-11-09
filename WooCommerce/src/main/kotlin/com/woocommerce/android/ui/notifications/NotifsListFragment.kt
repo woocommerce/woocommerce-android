@@ -15,6 +15,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.notifications.WCNotificationModel.Order
+import com.woocommerce.android.ui.notifications.WCNotificationModel.Review
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -22,7 +24,7 @@ import kotlinx.android.synthetic.main.fragment_notifs_list.*
 import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
 import javax.inject.Inject
 
-class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
+class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsListAdapter.ReviewListListener {
     companion object {
         val TAG: String = NotifsListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -102,6 +104,8 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
         // Set the divider decoration for the list
         dividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
 
+        notifsAdapter.setListener(this)
+
         notifsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
@@ -177,6 +181,26 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View {
         when (show) {
             true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
             false -> skeletonView.hide()
+        }
+    }
+
+    override fun onNotificationClicked(notification: WCNotificationModel) {
+        when (notification) {
+            is Order -> {
+                uiMessageResolver.showSnack("Order logic not yet implemented")
+            }
+            is Review -> openReviewDetail()
+        }
+    }
+
+    override fun openReviewDetail() {
+        if (!notifsRefreshLayout.isRefreshing) {
+            val tag = ReviewDetailFragment.TAG
+            getFragmentFromBackStack(tag)?.let {
+                val args = it.arguments ?: Bundle()
+                it.arguments = args
+                popToState(tag)
+            } ?: loadChildFragment(ReviewDetailFragment.newInstance(), tag)
         }
     }
 }
