@@ -46,6 +46,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
         review_spam.setOnClickListener { spamReview() }
         review_trash.setOnClickListener { trashReview() }
+        review_open_product.setOnClickListener { openProduct() }
 
         // TODO - this is just temp data to display the view properly for review of the UI
         review_product_name.text = "Left Handed Candlestick"
@@ -81,5 +82,9 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     private fun disapproveReview() {
         uiMessageResolver.showSnack("Disapprove logic not implemented")
+    }
+
+    private fun openProduct() {
+        uiMessageResolver.showSnack("Product detail is not yet implemented")
     }
 }
