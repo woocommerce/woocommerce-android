@@ -70,6 +70,16 @@
     <color name="tagView_bg">@color/wc_border_color</color>
     <color name="tagView_text">@color/default_text_title</color>
     <color name="tagView_border_bg">@color/wc_grey_darker</color>
+
+    <!-- Default Edit Text -->
+    <color name="edit_text_color_control_activated">@color/grey_dark_highlight</color>
+    <color name="edit_text_color_control_highlight">@color/grey_dark_highlight</color>
+    <color name="edit_text_color_control_normal">@color/wc_grey_39</color>
+    <color name="edit_text_label_text_color">@color/wc_grey_dark</color>
+    <color name="edit_text_text_color">@color/wc_grey_dark</color>
+    <color name="edit_text_text_color_highlight">@color/wc_purple_highlight</color>
+    <color name="edit_text_text_hint_color">@color/wc_grey_dark</color>
+
     <!--
         Bottom Navigation Bar
     -->
