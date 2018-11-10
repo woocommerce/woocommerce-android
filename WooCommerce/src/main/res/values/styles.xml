@@ -361,6 +361,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/settings_padding</item>
+        <item name="android:tint">@color/wc_grey_dark</item>
     </style>
 
 
