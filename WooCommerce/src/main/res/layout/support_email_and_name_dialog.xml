@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,14 +12,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_dialog"
-        android:textColor="@color/grey_darken_10"
+        android:textColor="@color/edit_text_label_text_color"
         android:textSize="@dimen/text_large"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/support_identity_input_dialog_email_label"
-        android:textColor="@color/blue_medium"
+        android:textColor="@color/edit_text_label_text_color"
         android:textSize="@dimen/text_small"/>
 
     <EditText
@@ -27,8 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_large"
         android:inputType="textEmailAddress"
-        android:textColor="@color/grey_dark"
-        android:textSize="@dimen/text_medium"/>
+        app:theme="@style/EditText"/>
 
     <EditText
         android:id="@+id/support_identity_input_dialog_name_edit_text"
@@ -36,6 +36,5 @@
         android:layout_height="wrap_content"
         android:inputType="text"
         android:maxLength="50"
-        android:textColor="@color/grey_dark"
-        android:textSize="@dimen/text_medium"/>
+        app:theme="@style/EditText"/>
 </LinearLayout>
