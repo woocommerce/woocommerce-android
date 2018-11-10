@@ -27,8 +27,15 @@ object CurrencyUtils {
     /**
      * Formats the value with two decimal places
      */
-    val currencyFormatter: DecimalFormat by lazy {
+    private val currencyFormatter: DecimalFormat by lazy {
         DecimalFormat("0.00")
+    }
+
+    /**
+     * Formats the value with one decimal place
+     */
+    private val currencyFormatterRounded: DecimalFormat by lazy {
+        DecimalFormat("0.0")
     }
 
     /**
@@ -78,7 +85,7 @@ object CurrencyUtils {
     fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
         val roundedValue = rawValue.roundToInt().toDouble()
         if (roundedValue.absoluteValue >= 1000) {
-            return getCurrencySymbol(currencyCode) + DecimalFormat("0.0").format(roundedValue / 1000) + "k"
+            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / 1000) + "k"
         } else {
             return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
         }
