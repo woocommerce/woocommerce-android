@@ -393,4 +393,15 @@
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
     </style>
+
+    <style name="EditText" parent="@style/AppTheme">
+        <item name="android:textColor">@color/edit_text_text_color</item>
+        <item name="android:textColorHighlight">@color/edit_text_text_color_highlight</item>
+        <item name="android:textColorHint">@color/edit_text_text_hint_color</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="colorControlActivated">@color/edit_text_color_control_activated</item>
+        <item name="colorControlHighlight">@color/edit_text_color_control_highlight</item>
+        <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
+    </style>
+
 </resources>
