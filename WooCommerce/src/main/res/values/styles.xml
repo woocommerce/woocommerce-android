@@ -322,6 +322,7 @@
     </style>
 
     <style name="Woo.Settings.Label" parent="Woo.TextAppearance">
+        <item name="android:textColor">@color/wc_grey_dark</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:paddingStart">@dimen/settings_padding</item>
         <item name="android:paddingEnd">@dimen/settings_padding</item>
