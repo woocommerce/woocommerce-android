@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -13,7 +14,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_dialog"
         android:textColor="@color/edit_text_label_text_color"
-        android:textSize="@dimen/text_large"/>
+        android:textSize="@dimen/text_large"
+        tools:text="@string/support_identity_input_dialog_enter_email_and_name"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,7 +30,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_large"
         android:inputType="textEmailAddress"
-        app:theme="@style/EditText"/>
+        app:theme="@style/EditText"
+        tools:text="pamelanguyen@gmail.com"/>
 
     <EditText
         android:id="@+id/support_identity_input_dialog_name_edit_text"
@@ -36,5 +39,6 @@
         android:layout_height="wrap_content"
         android:inputType="text"
         android:maxLength="50"
-        app:theme="@style/EditText"/>
+        app:theme="@style/EditText"
+        tools:text="Pamela Nguyen"/>
 </LinearLayout>
