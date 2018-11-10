@@ -351,6 +351,7 @@
     <style name="Woo.Settings.LabelWithDetail" parent="Woo.Settings.LabelWithButton"/>
 
     <style name="Woo.Settings.Label.Detail" parent="Woo.TextAppearance">
+        <item name="android:textColor">@color/wc_grey_darker</item>
         <item name="android:textSize">@dimen/text_medium</item>
         <item name="android:paddingStart">@dimen/settings_padding</item>
         <item name="android:paddingEnd">@dimen/settings_padding</item>
