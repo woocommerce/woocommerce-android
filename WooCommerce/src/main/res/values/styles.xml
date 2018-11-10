@@ -25,6 +25,7 @@
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
         <item name="android:buttonStyle">@style/Woo.Button</item>
+        <item name="android:alertDialogTheme">@style/Woo.Dialog</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">
