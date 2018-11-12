@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,76 +7,66 @@
     android:layout_height="match_parent"
     android:background="@color/wc_purple">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/view_toolbar"/>
+    <LinearLayout
+        android:id="@+id/about_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingBottom="?attr/actionBarSize">
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true">
-
-        <LinearLayout
-            android:id="@+id/about_container"
+        <ImageView
+            android:id="@+id/about_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingBottom="?attr/actionBarSize">
+            android:background="@color/white"
+            android:importantForAccessibility="no"
+            android:padding="@dimen/margin_extra_large"
+            app:srcCompat="@drawable/img_woo_logo"/>
 
-            <ImageView
-                android:id="@+id/about_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:importantForAccessibility="no"
-                android:padding="@dimen/margin_extra_large"
-                app:srcCompat="@drawable/img_woo_logo"/>
+        <TextView
+            style="@style/Woo.About.Title"
+            android:layout_marginTop="@dimen/margin_extra_medium_large"
+            android:text="@string/about_appname"/>
 
-            <TextView
-                style="@style/Woo.About.Title"
-                android:layout_marginTop="@dimen/margin_extra_medium_large"
-                android:text="@string/about_appname"/>
+        <TextView
+            android:id="@+id/about_version"
+            style="@style/Woo.About.Label"
+            android:text="@string/about_version"/>
 
-            <TextView
-                android:id="@+id/about_version"
-                style="@style/Woo.About.Label"
-                android:text="@string/about_version"/>
+        <TextView
+            android:id="@+id/about_publisher"
+            style="@style/Woo.About.Label"
+            android:layout_marginTop="@dimen/margin_extra_medium_large"
+            android:text="@string/about_publisher"/>
 
-            <TextView
-                android:id="@+id/about_publisher"
-                style="@style/Woo.About.Label"
-                android:layout_marginTop="@dimen/margin_extra_medium_large"
-                android:text="@string/about_publisher"/>
+        <TextView
+            android:id="@+id/about_copyright"
+            style="@style/Woo.About.Label"
+            tools:text="Copyright"/>
 
-            <TextView
-                android:id="@+id/about_copyright"
-                style="@style/Woo.About.Label"
-                tools:text="Copyright"/>
+        <Button
+            android:id="@+id/about_privacy"
+            style="@style/Woo.About.Button"
+            android:layout_marginTop="@dimen/margin_extra_medium_large"
+            android:text="@string/settings_privacy_policy_header"/>
 
-            <Button
-                android:id="@+id/about_privacy"
-                style="@style/Woo.About.Button"
-                android:layout_marginTop="@dimen/margin_extra_medium_large"
-                android:text="@string/settings_privacy_policy_header"/>
+        <Button
+            android:id="@+id/about_tos"
+            style="@style/Woo.About.Button"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:text="@string/about_tos"/>
 
-            <Button
-                android:id="@+id/about_tos"
-                style="@style/Woo.About.Button"
-                android:layout_marginTop="@dimen/margin_medium"
-                android:text="@string/about_tos"/>
+        <TextView
+            android:id="@+id/about_url"
+            style="@style/Woo.About.Label"
+            android:layout_marginTop="@dimen/margin_extra_medium_large"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/about_url_text"/>
 
-            <TextView
-                android:id="@+id/about_url"
-                style="@style/Woo.About.Label"
-                android:layout_marginTop="@dimen/margin_extra_medium_large"
-                android:clickable="true"
-                android:focusable="true"
-                android:text="@string/about_url_text"/>
-
-        </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
-</RelativeLayout>
+    </LinearLayout>
+</ScrollView>

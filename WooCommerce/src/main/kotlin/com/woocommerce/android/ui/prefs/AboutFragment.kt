@@ -21,7 +21,7 @@ class AboutFragment : Fragment() {
         const val TAG = "about"
         private const val URL_AUTOMATTIC = "https://www.automattic.com/"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
-        private const val URL_TOS = "https://wordpress.com/tos/"
+        private const val URL_TOS = "https://woocommerce.com/terms-conditions/"
 
         fun newInstance(): AboutFragment {
             return AboutFragment()
@@ -34,8 +34,6 @@ class AboutFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        toolbar.elevation = 0f
 
         val isLandsacpe = DisplayUtils.isLandscape(activity)
         about_container.gravity = if (isLandsacpe) {

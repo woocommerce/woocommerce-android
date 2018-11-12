@@ -68,6 +68,7 @@ class AppSettingsActivity : AppCompatActivity(),
         } else {
             super.onBackPressed()
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+            supportActionBar?.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
         }
     }
 
@@ -114,7 +115,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun confirmLogout() {
-        AlertDialog.Builder(ContextThemeWrapper(this, R.style.Woo_Dialog))
+        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AppTheme))
                 .setMessage(R.string.settings_confirm_signout)
                 .setPositiveButton(R.string.signout) { _, _ ->
                     AnalyticsTracker.track(SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(

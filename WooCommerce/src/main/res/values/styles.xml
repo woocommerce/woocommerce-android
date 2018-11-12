@@ -25,6 +25,7 @@
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
         <item name="android:buttonStyle">@style/Woo.Button</item>
+        <item name="android:alertDialogTheme">@style/Woo.Dialog</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">
@@ -414,7 +415,7 @@
     <!--
         Other
     -->
-    <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
+    <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
