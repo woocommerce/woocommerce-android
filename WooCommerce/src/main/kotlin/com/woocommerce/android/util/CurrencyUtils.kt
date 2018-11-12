@@ -8,7 +8,6 @@ import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
 import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
 
 /**
  * Since the WooCommerce platform supports some unconventional ways of displaying currency,
@@ -19,6 +18,9 @@ import kotlin.math.roundToInt
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object CurrencyUtils {
+    private const val ONE_THOUSAND = 1000
+    private const val ONE_MILLION = 1000000
+
     /**
      * Map of currency code to currency symbol. Ex: USD = $
      */
@@ -77,15 +79,18 @@ object CurrencyUtils {
      * Rounds the [rawValue] to the nearest int, and returns the value as a currency
      * string with the appropriate currency symbol. If the value is a thousand or more,
      * we return it rounded to the nearest tenth and suffixed with "k" (2500 -> 2.5k)
+     * Similarly, we add "m" for values a million or higher
      *
      * @param context The active context
      * @param rawValue The value to format as currency
      * @param currencyCode The ISO 4217 currency code (ex: USD)
      */
     fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
-        val roundedValue = rawValue.roundToInt().toDouble()
-        if (roundedValue.absoluteValue >= 1000) {
-            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / 1000) + "k"
+        val roundedValue = rawValue * ONE_THOUSAND // rawValue.roundToInt().toDouble()
+        if (roundedValue.absoluteValue >= ONE_MILLION) {
+            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
+        } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
+            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
         } else {
             return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
         }
