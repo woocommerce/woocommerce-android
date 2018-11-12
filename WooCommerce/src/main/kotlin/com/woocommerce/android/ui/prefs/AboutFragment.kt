@@ -35,8 +35,6 @@ class AboutFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        toolbar.elevation = 0f
-
         val isLandsacpe = DisplayUtils.isLandscape(activity)
         about_container.gravity = if (isLandsacpe) {
             Gravity.CENTER_HORIZONTAL
