@@ -8,6 +8,7 @@ import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 /**
  * Since the WooCommerce platform supports some unconventional ways of displaying currency,
@@ -86,7 +87,7 @@ object CurrencyUtils {
      * @param currencyCode The ISO 4217 currency code (ex: USD)
      */
     fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
-        val roundedValue = rawValue * ONE_THOUSAND // rawValue.roundToInt().toDouble()
+        val roundedValue = rawValue.roundToInt().toDouble()
         if (roundedValue.absoluteValue >= ONE_MILLION) {
             return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
         } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
