@@ -110,7 +110,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun confirmLogout() {
-        AlertDialog.Builder(ContextThemeWrapper(this, R.style.Woo_Dialog))
+        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AppTheme))
                 .setMessage(R.string.settings_confirm_signout)
                 .setPositiveButton(R.string.signout) { _, _ ->
                     AnalyticsTracker.track(SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
