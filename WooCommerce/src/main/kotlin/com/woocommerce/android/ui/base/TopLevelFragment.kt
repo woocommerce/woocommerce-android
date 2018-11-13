@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.base
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
@@ -79,6 +80,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         childFragmentManager.beginTransaction()
                 .replace(R.id.container, fragment, tag)
                 .addToBackStack(tag)
+                .setTransition(TRANSIT_FRAGMENT_FADE)
                 .commit()
     }
 
