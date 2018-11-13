@@ -35,23 +35,23 @@ class AboutFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val isLandsacpe = DisplayUtils.isLandscape(activity)
-        about_container.gravity = if (isLandsacpe) {
+        val isLandscape = DisplayUtils.isLandscape(activity)
+        about_container.gravity = if (isLandscape) {
             Gravity.CENTER_HORIZONTAL
         } else {
             Gravity.CENTER
         }
-        about_image.visibility = if (isLandsacpe) {
+        about_image.visibility = if (isLandscape) {
             View.GONE
         } else {
             View.VISIBLE
         }
 
         val version = String.format(getString(R.string.about_version), BuildConfig.VERSION_NAME)
-        about_version.setText(version)
+        about_version.text = version
 
         val copyright = String.format(getString(R.string.about_copyright), Calendar.getInstance().get(Calendar.YEAR))
-        about_copyright.setText(copyright)
+        about_copyright.text = copyright
 
         about_url.setOnClickListener {
             ActivityUtils.openUrlExternal(activity as Context, URL_AUTOMATTIC)
