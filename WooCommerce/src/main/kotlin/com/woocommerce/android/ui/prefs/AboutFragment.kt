@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,11 +35,6 @@ class AboutFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         val isLandscape = DisplayUtils.isLandscape(activity)
-        about_container.gravity = if (isLandscape) {
-            Gravity.CENTER_HORIZONTAL
-        } else {
-            Gravity.CENTER
-        }
         about_image.visibility = if (isLandscape) {
             View.GONE
         } else {
@@ -73,7 +67,7 @@ class AboutFragment : Fragment() {
         activity?.let {
             it.title = null
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-            // it.supportActionBar?.elevation = 0f
+            it.supportActionBar?.elevation = 0f
         }
     }
 }
