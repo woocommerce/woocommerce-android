@@ -197,8 +197,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         if (!notifsRefreshLayout.isRefreshing) {
             val tag = ReviewDetailFragment.TAG
             getFragmentFromBackStack(tag)?.let {
-                val args = it.arguments ?: Bundle()
-                it.arguments = args
+                // TODO add arguments for the review to display
                 popToState(tag)
             } ?: loadChildFragment(ReviewDetailFragment.newInstance(), tag)
         }
