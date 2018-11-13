@@ -61,7 +61,6 @@ class NotifsListPresenter @Inject constructor(
             }
         } else {
             // Load cached notifications from the db
-            TODO("fetch cached notifications not implemented")
         }
     }
 

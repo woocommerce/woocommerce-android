@@ -20,7 +20,16 @@ import java.util.Date
 import javax.inject.Inject
 
 class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) : SectionedRecyclerViewAdapter() {
+    interface ReviewListListener {
+        fun onNotificationClicked(notification: WCNotificationModel)
+    }
+
     private val notifsList: ArrayList<WCNotificationModel> = ArrayList()
+    private var listener: ReviewListListener? = null
+
+    fun setListener(listener: ReviewListListener) {
+        this.listener = listener
+    }
 
     fun setNotifications(notifs: List<WCNotificationModel>) {
         // clear all the current data from the adapter
@@ -134,6 +143,9 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
 
             itemHolder.title.text = notif.title
             itemHolder.desc.text = notif.desc
+            itemHolder.itemView.setOnClickListener {
+                listener?.onNotificationClicked(notif)
+            }
         }
 
         override fun getHeaderViewHolder(view: View) = HeaderViewHolder(view)

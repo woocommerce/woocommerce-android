@@ -253,6 +253,14 @@
     <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
     <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="logviewer_share_error">Unable to share log</string>
+    <!--
+        Review Notification Detail
+    -->
+    <string name="wc_view_the_product_external">View the product</string>
+    <string name="wc_approve">Approve</string>
+    <string name="wc_approved">Approved</string>
+    <string name="wc_spam">Spam</string>
+    <string name="wc_trash">Trash</string>
 
     <!--
         Login Library Imported Strings

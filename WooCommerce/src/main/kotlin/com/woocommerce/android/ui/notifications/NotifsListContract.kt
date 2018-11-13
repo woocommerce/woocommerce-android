@@ -23,5 +23,6 @@ interface NotifsListContract {
         fun showNotifications(notifs: List<WCNotificationModel>, isFreshData: Boolean)
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
+        fun openReviewDetail()
     }
 }

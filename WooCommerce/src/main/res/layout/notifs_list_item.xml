@@ -50,6 +50,7 @@
         android:layout_marginBottom="8dp"
         android:isIndicator="true"
         android:numStars="5"
+        android:progressTint="@color/alert_yellow"
         android:rating="0"
         android:stepSize="1"
         android:visibility="gone"
