@@ -18,7 +18,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.active
-import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin.MAIN_ACTIVITY
 import com.woocommerce.android.tools.SelectedSite
@@ -256,7 +255,6 @@ class MainActivity : AppCompatActivity(),
 
     // region Bottom Navigation
     private fun setupBottomNavigation() {
-        bottom_nav.disableShiftMode()
         bottom_nav.active(activeNavPosition.position)
         bottom_nav.setOnNavigationItemSelectedListener(this)
         bottom_nav.setOnNavigationItemReselectedListener(this)
