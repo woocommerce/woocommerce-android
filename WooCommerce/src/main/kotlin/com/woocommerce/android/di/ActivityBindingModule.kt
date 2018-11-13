@@ -1,5 +1,7 @@
 package com.woocommerce.android.di
 
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEpilogueActivity
@@ -57,4 +59,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(AddOrderNoteModule::class))
     abstract fun provideAddOrderNoteActivity(): AddOrderNoteActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = arrayOf(HelpModule::class))
+    abstract fun provideHelpActivity(): HelpActivity
 }

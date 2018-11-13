@@ -14,9 +14,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.SiteListAdapter.OnSiteClickListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.CrashlyticsUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, OnSiteClickListener {
@@ -98,7 +100,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
             if (site != null) {
                 selectedSite.set(site)
-
+                CrashlyticsUtils.initSite(site)
                 AnalyticsTracker.track(
                         Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
                         mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
@@ -118,7 +120,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         frame_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
-        val noStoresImage = AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
+        val noStoresImage =
+                if (DisplayUtils.isLandscape(this)) null
+                else AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
         no_stores_view.setCompoundDrawablesWithIntrinsicBounds(null, noStoresImage, null, null)
 
         button_continue.text = getString(R.string.login_with_a_different_account)

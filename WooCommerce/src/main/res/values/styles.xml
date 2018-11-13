@@ -25,6 +25,7 @@
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
         <item name="android:buttonStyle">@style/Woo.Button</item>
+        <item name="android:alertDialogTheme">@style/Woo.Dialog</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">
@@ -49,6 +50,10 @@
         <!-- Ripple effect when clicking items -->
         <item name="selectableItemBackground">?android:selectableItemBackground</item>
         <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+        <!-- Light touch feedback for actions -->
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <!-- Light background for menus -->
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
     <style name="Woo"/>
@@ -123,23 +128,22 @@
     <!--
         Button Styles
     -->
-    <style name="Woo.Button" parent="android:Widget.DeviceDefault.Button.Borderless">
-        <item name="android:textColor">@color/button_purple_bg_color</item>
-        <item name="android:background">@null</item>
+    <style name="Woo.Button" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/wc_purple</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
         <item name="android:textSize">@dimen/text_large</item>
     </style>
 
-    <style name="Woo.Button.Purple">
+    <style name="Woo.Button.Purple" parent="Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/button_purple_bg</item>
+        <item name="colorButtonNormal">@color/button_purple_bg_color</item>
     </style>
 
-    <style name="Woo.Button.White">
-        <item name="android:textColor">@color/grey_dark</item>
-        <item name="android:background">@drawable/button_white_bg</item>
+    <style name="Woo.Button.White" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="colorButtonNormal">@color/white</item>
     </style>
 
     <!--
@@ -381,10 +385,11 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center</item>
     </style>
+
     <!--
         Other
     -->
-    <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
+    <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>

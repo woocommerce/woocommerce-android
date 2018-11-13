@@ -53,13 +53,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/margin_extra_large">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/text_list_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/margin_extra_large"
+                    android:paddingStart="@dimen/margin_extra_large"
+                    android:paddingTop="@dimen/margin_extra_large"
                     android:text="@string/login_pick_store"
                     android:textColor="@color/wc_purple"
                     android:textSize="@dimen/text_large"
@@ -68,7 +70,12 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:paddingBottom="@dimen/margin_extra_large"
+                    android:paddingEnd="@dimen/margin_extra_large"
+                    android:paddingStart="@dimen/margin_extra_large"/>
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </FrameLayout>
@@ -100,13 +107,14 @@
 
     <FrameLayout
         android:id="@+id/frame_bottom"
+        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:padding="@dimen/margin_extra_large">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_continue"
             style="@style/Woo.Button.Purple"
             android:layout_width="match_parent"

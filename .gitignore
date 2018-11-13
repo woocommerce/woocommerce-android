@@ -69,3 +69,7 @@ google-services.json
 
 # Silver Searcher ignore file
 .agignore
+
+# Fastlane
+fastlane/README.md
+fastlane/report.xml

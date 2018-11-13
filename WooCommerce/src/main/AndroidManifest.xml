@@ -53,9 +53,17 @@
             android:name=".ui.prefs.AppSettingsActivity"/>
 
         <activity
+            android:label="@string/logviewer_activity_title"
+            android:name=".support.WooLogViewerActivity"/>
+
+        <activity
             android:name=".ui.orders.AddOrderNoteActivity"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
 
+        <activity
+            android:name=".support.HelpActivity"
+            android:label="@string/help_screen_title"
+            android:theme="@style/AppTheme" />
 
         <!-- Services -->
         <service

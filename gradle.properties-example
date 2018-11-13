@@ -23,3 +23,6 @@ org.gradle.jvmargs=-Xmx1536m
 
 wc.oauth.app_id = woocommerce
 wc.oauth.app_secret = woocommerce
+wc.zendesk_app_id = woocommerce
+wc.zendesk.domain = http://www.google.com/
+wc.zendesk.oauth_client_id = woocommerce
