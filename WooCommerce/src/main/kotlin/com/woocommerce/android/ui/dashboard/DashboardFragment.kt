@@ -193,6 +193,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
+    override fun scrollToTop() {
+        scroll_view.smoothScrollTo(0, 0)
+    }
+
     override fun refreshFragmentState() {
         presenter.resetTopEarnersForceRefresh()
         refreshDashboard()

@@ -310,10 +310,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 } ?: "")
     }
 
+    override fun scrollToTop() {
+        ordersList.smoothScrollToPosition(0)
+    }
+
     override fun refreshFragmentState() {
         isRefreshPending = true
         if (isActive) {
-            ordersList.smoothScrollToPosition(0)
+            scrollToTop()
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }
