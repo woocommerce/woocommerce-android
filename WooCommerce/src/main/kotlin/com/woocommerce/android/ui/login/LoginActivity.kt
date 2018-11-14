@@ -273,7 +273,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun viewHelpAndSupport(origin: Origin) {
-        val extraSupportTags = listOf(ZendeskExtraTags.connectingJetpack)
+        val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
         startActivity(HelpActivity.createIntent(this, origin, extraSupportTags))
     }
 
