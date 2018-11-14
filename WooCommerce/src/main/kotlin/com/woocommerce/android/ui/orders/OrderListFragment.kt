@@ -317,7 +317,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun refreshFragmentState() {
         isRefreshPending = true
         if (isActive) {
-            scrollToTop()
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }
