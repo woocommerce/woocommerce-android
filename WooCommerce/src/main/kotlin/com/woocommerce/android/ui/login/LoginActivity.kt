@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -49,6 +50,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var supportHelper: SupportHelper
 
     private var loginMode: LoginMode? = null
 
@@ -279,7 +281,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
             startActivity(HelpActivity.createIntent(this, origin, extraSupportTags))
         } else {
-            // TODO launch email client
+            supportHelper.emailSupport(this)
         }
     }
 
