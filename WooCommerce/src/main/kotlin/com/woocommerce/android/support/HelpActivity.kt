@@ -89,8 +89,12 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showIdentityDialog() {
-        val emailSuggestion = supportHelper
-                .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
+        val emailSuggestion = if (AppPrefs.hasSupportEmail()) {
+            AppPrefs.getSupportEmail()
+        } else {
+            supportHelper
+                    .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
+        }
 
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
             zendeskHelper.setSupportEmail(email)
