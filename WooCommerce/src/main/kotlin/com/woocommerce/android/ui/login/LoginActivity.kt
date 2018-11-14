@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.HelpActivity
@@ -273,8 +274,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun viewHelpAndSupport(origin: Origin) {
-        val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
-        startActivity(HelpActivity.createIntent(this, origin, extraSupportTags))
+        // TODO Zendesk is currently enabled only in debug builds
+        if (BuildConfig.DEBUG) {
+            val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
+            startActivity(HelpActivity.createIntent(this, origin, extraSupportTags))
+        } else {
+            // TODO launch email client
+        }
     }
 
     override fun helpSiteAddress(url: String?) {
