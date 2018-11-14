@@ -88,7 +88,7 @@ class SupportHelper {
      */
     fun emailSupport(activity: Activity) {
         val subject = String.format(activity.getString(R.string.support_email_subject), BuildConfig.VERSION_NAME)
-        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:${SUPPORT_EMAIL}"))
+        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
         if (emailIntent.resolveActivity(activity.packageManager) != null) {
             activity.startActivity(emailIntent)
@@ -133,4 +133,3 @@ private fun supportIdentityInputDialogLayout(
 
     return Triple(layout, emailEditText, nameEditText)
 }
-
