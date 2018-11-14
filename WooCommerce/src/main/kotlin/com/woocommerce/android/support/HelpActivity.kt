@@ -130,7 +130,16 @@ class HelpActivity : AppCompatActivity() {
     enum class Origin(private val stringValue: String) {
         UNKNOWN("origin:unknown"),
         MAIN_ACTIVITY("origin:main-activity"),
-        ZENDESK_NOTIFICATION("origin:zendesk-notification");
+        ZENDESK_NOTIFICATION("origin:zendesk-notification"),
+        LOGIN_EMAIL("origin:login-email"),
+        LOGIN_MAGIC_LINK("origin:login-magic-link"),
+        LOGIN_EMAIL_PASSWORD("origin:login-wpcom-password"),
+        LOGIN_2FA("origin:login-2fa"),
+        LOGIN_SITE_ADDRESS("origin:login-site-address"),
+        LOGIN_SOCIAL("origin:login-social"),
+        LOGIN_USERNAME_PASSWORD("origin:login-username-password"),
+        SIGNUP_EMAIL("origin:signup-email"),
+        SIGNUP_MAGIC_LINK("origin:signup-magic-link");
 
         override fun toString(): String {
             return stringValue
