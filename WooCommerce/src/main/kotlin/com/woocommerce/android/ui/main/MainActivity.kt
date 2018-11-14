@@ -275,7 +275,7 @@ class MainActivity : AppCompatActivity(),
 
     /**
      * when a bottom nav item is reselected we clear the active fragment's backstack,
-     * or if there is no backstack we scroll the fragment to the top
+     * or if there is no backstack we scroll the fragment to the top and refresh it
      */
     override fun onNavigationItemReselected(item: MenuItem) {
         val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
