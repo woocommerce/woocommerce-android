@@ -151,12 +151,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
 
         // -- Help & Support
-        SUPPORT_HELP_CENTER_VIEWED,
-        SUPPORT_IDENTITY_SET,
-        SUPPORT_IDENTITY_FORM_VIEWED,
-        SUPPORT_APPLICATION_LOG_VIEWED,
-        SUPPORT_TICKETS_VIEWED,
-        SUPPORT_FAQ_VIEWED,
+        SUPPORT_HELP_CENTER_VIEWED(siteless = true),
+        SUPPORT_IDENTITY_SET(siteless = true),
+        SUPPORT_IDENTITY_FORM_VIEWED(siteless = true),
+        SUPPORT_APPLICATION_LOG_VIEWED(siteless = true),
+        SUPPORT_TICKETS_VIEWED(siteless = true),
+        SUPPORT_FAQ_VIEWED(siteless = true),
     }
     // endregion
 
