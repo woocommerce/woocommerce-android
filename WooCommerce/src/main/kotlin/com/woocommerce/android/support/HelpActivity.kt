@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ActivityUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_help.*
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.PackageUtils
@@ -84,12 +85,16 @@ class HelpActivity : AppCompatActivity() {
             return
         }
 
-        zendeskHelper.createNewTicket(this, originFromExtras, selectedSite.get(), extraTagsFromExtras)
+        zendeskHelper.createNewTicket(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
     private fun showIdentityDialog() {
-        val emailSuggestion = supportHelper
-                .getSupportEmailAndNameSuggestion(accountStore.account, selectedSite.get()).first
+        val emailSuggestion = if (AppPrefs.hasSupportEmail()) {
+            AppPrefs.getSupportEmail()
+        } else {
+            supportHelper
+                    .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
+        }
 
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
             zendeskHelper.setSupportEmail(email)
@@ -108,9 +113,20 @@ class HelpActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Help activity may have been called during the login flow before the selected site has been set
+     */
+    private fun selectedSiteOrNull(): SiteModel? {
+        return if (selectedSite.isSet()) {
+            selectedSite.get()
+        } else {
+            null
+        }
+    }
+
     private fun showZendeskTickets() {
         AnalyticsTracker.track(Stat.SUPPORT_TICKETS_VIEWED)
-        zendeskHelper.showAllTickets(this, originFromExtras, selectedSite.get(), extraTagsFromExtras)
+        zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
     private fun showZendeskFaq() {
@@ -118,7 +134,7 @@ class HelpActivity : AppCompatActivity() {
         ActivityUtils.openUrlExternal(this, FAQ_URL)
         /* TODO: for now we simply link to the online FAQ, but we should show the Zendesk FAQ once it's ready
         zendeskHelper
-                .showZendeskHelpCenter(this, originFromExtras, selectedSite.get(), extraTagsFromExtras)
+                .showZendeskHelpCenter(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
         */
     }
 
@@ -130,7 +146,16 @@ class HelpActivity : AppCompatActivity() {
     enum class Origin(private val stringValue: String) {
         UNKNOWN("origin:unknown"),
         MAIN_ACTIVITY("origin:main-activity"),
-        ZENDESK_NOTIFICATION("origin:zendesk-notification");
+        ZENDESK_NOTIFICATION("origin:zendesk-notification"),
+        LOGIN_EMAIL("origin:login-email"),
+        LOGIN_MAGIC_LINK("origin:login-magic-link"),
+        LOGIN_EMAIL_PASSWORD("origin:login-wpcom-password"),
+        LOGIN_2FA("origin:login-2fa"),
+        LOGIN_SITE_ADDRESS("origin:login-site-address"),
+        LOGIN_SOCIAL("origin:login-social"),
+        LOGIN_USERNAME_PASSWORD("origin:login-username-password"),
+        SIGNUP_EMAIL("origin:signup-email"),
+        SIGNUP_MAGIC_LINK("origin:signup-magic-link");
 
         override fun toString(): String {
             return stringValue
