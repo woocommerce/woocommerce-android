@@ -68,7 +68,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
-                    presenter.resetTopEarnersForceRefresh()
+                    presenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
                     refreshDashboard(forced = true)
                 }
@@ -93,7 +93,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         })
 
         if (isActive) {
-            refreshDashboard(forced = true)
+            refreshDashboard(forced = this.isRefreshPending)
         } else {
             isRefreshPending = true
         }
@@ -194,7 +194,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun getFragmentTitle() = getString(R.string.my_store)
 
     override fun refreshFragmentState() {
-        presenter.resetTopEarnersForceRefresh()
+        presenter.resetForceRefresh()
         refreshDashboard(forced = false)
     }
 
@@ -228,12 +228,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onRequestLoadStats(period: StatsGranularity) {
         dashboard_stats.showErrorView(false)
-        presenter.loadStats(period, forced = true)
+        presenter.loadStats(period)
     }
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
         dashboard_top_earners.showErrorView(false)
-        presenter.loadTopEarnerStats(period, forced = true)
+        presenter.loadTopEarnerStats(period)
     }
 
     override fun hideUnfilledOrdersCard() {
