@@ -390,6 +390,32 @@
     </style>
 
     <!--
+        About screen
+    -->
+    <style name="Woo.About"/>
+    <style name="Woo.About.Title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_triple_extra_large</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    <style name="Woo.About.Label">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="Woo.About.Button" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="android:background">@drawable/button_white_bg</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <!--
         Other
     -->
     <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog.Alert">

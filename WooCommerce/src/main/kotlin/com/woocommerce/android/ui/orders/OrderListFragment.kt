@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -31,6 +32,7 @@ import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
@@ -120,6 +122,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                         presenter.loadOrders(orderStatusFilter, forceRefresh = true)
                     }
                 }
+
+                no_orders_image.visibility =
+                        if (DisplayUtils.isLandscape(activity)) View.GONE else View.VISIBLE
             }
         }
         return view
@@ -185,6 +190,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             filterMenuButton?.isVisible = true
         } else {
             filterMenuButton?.isVisible = false
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        newConfig?.let {
+            no_orders_image.visibility =
+                    if (it.orientation == Configuration.ORIENTATION_LANDSCAPE) View.GONE else View.VISIBLE
         }
     }
 
