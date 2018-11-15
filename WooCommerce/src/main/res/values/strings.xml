@@ -216,6 +216,8 @@
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic</string>
     <string name="settings_primary_store">Primary store</string>
+    <string name="settings_about">About the app</string>
+    <string name="settings_licenses">Open source licenses</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>
@@ -254,6 +256,12 @@
     <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
     <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="logviewer_share_error">Unable to share log</string>
+    <string name="about_appname">WooCommerce for Android</string>
+    <string name="about_publisher">Publisher: Automattic, Inc</string>
+    <string name="about_tos">Terms of service</string>
+    <string name="about_url_text" translatable="false">automattic.com</string>
+    <string name="about_version">Version %s</string>
+    <string name="about_copyright" translatable="false">© %1$d Automattic, Inc</string>
 
     <!--
         Login Library Imported Strings
@@ -380,5 +388,4 @@
     <string name="http_authorization_required">Authorization required</string>
     <string name="httpuser">HTTP username</string>
     <string name="httppassword">HTTP password</string>
-
 </resources>

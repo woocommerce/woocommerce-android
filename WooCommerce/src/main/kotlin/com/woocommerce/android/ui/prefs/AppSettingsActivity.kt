@@ -67,6 +67,7 @@ class AppSettingsActivity : AppCompatActivity(),
             finish()
         } else {
             super.onBackPressed()
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
         }
     }
 
@@ -76,6 +77,14 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onRequestShowPrivacySettings() {
         showPrivacySettingsFragment()
+    }
+
+    override fun onRequestShowAbout() {
+        showAboutFragment()
+    }
+
+    override fun onRequestShowLicenses() {
+        // TODO
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
@@ -92,6 +101,11 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun showPrivacySettingsFragment() {
         val fragment = PrivacySettingsFragment.newInstance()
         showFragment(fragment, PrivacySettingsFragment.TAG, true)
+    }
+
+    override fun showAboutFragment() {
+        val fragment = AboutFragment.newInstance()
+        showFragment(fragment, AboutFragment.TAG, true)
     }
 
     override fun confirmLogout() {
