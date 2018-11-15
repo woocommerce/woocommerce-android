@@ -66,7 +66,9 @@ class DashboardPresenter @Inject constructor(
         }
 
         // fetch order stats
-        dashboardView?.showChartSkeleton(true)
+        if (forced) {
+            dashboardView?.showChartSkeleton(true)
+        }
         val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
 
@@ -87,7 +89,9 @@ class DashboardPresenter @Inject constructor(
             topEarnersForceRefresh[granularity.ordinal] = false
         }
 
-        dashboardView?.showTopEarnersSkeleton(true)
+        if (forced) {
+            dashboardView?.showTopEarnersSkeleton(true)
+        }
         val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
@@ -104,13 +108,15 @@ class DashboardPresenter @Inject constructor(
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
-    override fun fetchUnfilledOrderCount() {
+    override fun fetchUnfilledOrderCount(forced: Boolean) {
         if (!networkStatus.isConnected()) {
             dashboardView?.isRefreshPending = true
             return
         }
 
-        dashboardView?.showUnfilledOrdersSkeleton(true)
+        if (forced) {
+            dashboardView?.showUnfilledOrdersSkeleton(true)
+        }
         val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
@@ -208,7 +214,7 @@ class DashboardPresenter @Inject constructor(
             }
             else -> {
                 if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
-                    dashboardView?.refreshDashboard()
+                    dashboardView?.refreshDashboard(forced = false)
                 }
             }
         }
@@ -221,7 +227,7 @@ class DashboardPresenter @Inject constructor(
             // Refresh data if needed now that a connection is active
             dashboardView?.let { view ->
                 if (view.isRefreshPending) {
-                    view.refreshDashboard()
+                    view.refreshDashboard(forced = false)
                 }
             }
         }

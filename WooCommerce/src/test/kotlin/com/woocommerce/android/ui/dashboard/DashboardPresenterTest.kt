@@ -108,7 +108,7 @@ class DashboardPresenterTest {
     @Test
     fun `Requests orders to fulfill count correctly`() {
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
         assertEquals(WCOrderAction.FETCH_ORDERS_COUNT, actionCaptor.firstValue.type)
@@ -122,7 +122,7 @@ class DashboardPresenterTest {
         val totalOrders = 25
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
@@ -138,7 +138,7 @@ class DashboardPresenterTest {
         val totalOrders = 0
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
@@ -153,7 +153,7 @@ class DashboardPresenterTest {
         val totalOrders = 25
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
@@ -172,7 +172,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(1)).refreshDashboard()
+        verify(dashboardView, times(1)).refreshDashboard(forced = true)
     }
 
     @Test
@@ -183,7 +183,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(1)).refreshDashboard()
+        verify(dashboardView, times(1)).refreshDashboard(forced = true)
     }
 
     @Test
@@ -194,7 +194,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDER_NOTES })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).refreshDashboard(forced = true)
     }
 
     @Test
@@ -208,7 +208,7 @@ class DashboardPresenterTest {
         })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).refreshDashboard(forced = true)
     }
 
     @Test
@@ -218,7 +218,7 @@ class DashboardPresenterTest {
 
         // Simulate the network connected event
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(dashboardView, times(1)).refreshDashboard()
+        verify(dashboardView, times(1)).refreshDashboard(forced = true)
     }
 
     @Test
@@ -228,7 +228,7 @@ class DashboardPresenterTest {
 
         // Simulate the network connected event
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).refreshDashboard(forced = true)
     }
 
     @Test
@@ -237,7 +237,7 @@ class DashboardPresenterTest {
 
         // Simulate the network disconnected event
         presenter.onEventMainThread(ConnectionChangeEvent(false))
-        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).refreshDashboard(forced = true)
     }
 
     @Test
@@ -341,7 +341,7 @@ class DashboardPresenterTest {
     @Test
     fun `Show and hide unfilled orders skeleton correctly`() {
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
         verify(dashboardView, times(1)).showUnfilledOrdersSkeleton(true)
 
         val totalOrders = 25

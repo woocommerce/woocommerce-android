@@ -11,7 +11,7 @@ interface DashboardContract {
         fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
         fun resetTopEarnersForceRefresh()
         fun getStatsCurrency(): String?
-        fun fetchUnfilledOrderCount()
+        fun fetchUnfilledOrderCount(forced: Boolean = false)
         fun fetchHasOrders()
     }
 
@@ -19,7 +19,7 @@ interface DashboardContract {
         var isActive: Boolean
         var isRefreshPending: Boolean
 
-        fun refreshDashboard()
+        fun refreshDashboard(forced: Boolean = false)
         fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Int>, granularity: StatsGranularity)
         fun showStatsError(granularity: StatsGranularity)
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
