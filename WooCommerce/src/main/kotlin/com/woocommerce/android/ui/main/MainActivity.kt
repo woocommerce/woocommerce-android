@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.main
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
@@ -18,9 +17,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.active
-import com.woocommerce.android.extensions.disableShiftMode
 import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin.MAIN_ACTIVITY
+import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
@@ -51,7 +50,6 @@ class MainActivity : AppCompatActivity(),
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
         private const val STATE_KEY_POSITION = "key-position"
-        private const val SUPPORT_EMAIL = "mobile-support@woocommerce.com"
 
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -62,6 +60,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var supportHelper: SupportHelper
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
 
@@ -218,14 +217,9 @@ class MainActivity : AppCompatActivity(),
     override fun contactSupport() {
         // TODO: only use Zendesk in internal debug builds - this will change once Zendesk integration is completed
         if (BuildConfig.DEBUG) {
-            startActivity(HelpActivity.createIntent(this, MAIN_ACTIVITY, null))
+            startActivity(HelpActivity.createIntent(this, Origin.MAIN_ACTIVITY, null))
         } else {
-            val subject = String.format(getString(R.string.support_email_subject), BuildConfig.VERSION_NAME)
-            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
-            if (emailIntent.resolveActivity(packageManager) != null) {
-                startActivity(emailIntent)
-            }
+            supportHelper.emailSupport(this)
         }
     }
 
@@ -256,7 +250,6 @@ class MainActivity : AppCompatActivity(),
 
     // region Bottom Navigation
     private fun setupBottomNavigation() {
-        bottom_nav.disableShiftMode()
         bottom_nav.active(activeNavPosition.position)
         bottom_nav.setOnNavigationItemSelectedListener(this)
         bottom_nav.setOnNavigationItemReselectedListener(this)

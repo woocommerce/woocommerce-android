@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,23 +34,18 @@ class AboutFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val isLandsacpe = DisplayUtils.isLandscape(activity)
-        about_container.gravity = if (isLandsacpe) {
-            Gravity.CENTER_HORIZONTAL
-        } else {
-            Gravity.CENTER
-        }
-        about_image.visibility = if (isLandsacpe) {
+        val isLandscape = DisplayUtils.isLandscape(activity)
+        about_image.visibility = if (isLandscape) {
             View.GONE
         } else {
             View.VISIBLE
         }
 
         val version = String.format(getString(R.string.about_version), BuildConfig.VERSION_NAME)
-        about_version.setText(version)
+        about_version.text = version
 
         val copyright = String.format(getString(R.string.about_copyright), Calendar.getInstance().get(Calendar.YEAR))
-        about_copyright.setText(copyright)
+        about_copyright.text = copyright
 
         about_url.setOnClickListener {
             ActivityUtils.openUrlExternal(activity as Context, URL_AUTOMATTIC)
@@ -73,7 +67,6 @@ class AboutFragment : Fragment() {
         activity?.let {
             it.title = null
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-            it.supportActionBar?.elevation = 0f
         }
     }
 }

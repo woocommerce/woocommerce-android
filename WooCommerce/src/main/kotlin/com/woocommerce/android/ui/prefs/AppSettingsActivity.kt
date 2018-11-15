@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ContextThemeWrapper
@@ -9,7 +10,8 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
@@ -25,6 +27,8 @@ class AppSettingsActivity : AppCompatActivity(),
         HasSupportFragmentInjector {
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: AppSettingsContract.Presenter
+
+    private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -68,7 +72,6 @@ class AppSettingsActivity : AppCompatActivity(),
         } else {
             super.onBackPressed()
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
-            supportActionBar?.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
         }
     }
 
@@ -118,18 +121,22 @@ class AppSettingsActivity : AppCompatActivity(),
         AlertDialog.Builder(ContextThemeWrapper(this, R.style.AppTheme))
                 .setMessage(R.string.settings_confirm_signout)
                 .setPositiveButton(R.string.signout) { _, _ ->
-                    AnalyticsTracker.track(SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
+                    AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
                             AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)))
 
                     presenter.logout()
                 }
                 .setNegativeButton(R.string.cancel) { _, _ ->
-                    AnalyticsTracker.track(SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
+                    AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
                             AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(false)))
                 }
                 .setCancelable(true)
                 .create()
                 .show()
+    }
+
+    override fun clearNotificationPreferences() {
+        sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
     }
 
     private fun showFragment(fragment: Fragment, tag: String, animate: Boolean) {

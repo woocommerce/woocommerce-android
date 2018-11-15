@@ -234,6 +234,7 @@
     -->
     <string name="contact_support">Contact support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
+    <string name="support_email_toast">Opening email app to contact support</string>
     <string name="invalid_email_message">Your email address isn\'t valid</string>
     <string name="support_identity_input_dialog_enter_email_and_name">To continue please enter your email address and name</string>
     <string name="support_identity_input_dialog_enter_email">Please enter your email address</string>
