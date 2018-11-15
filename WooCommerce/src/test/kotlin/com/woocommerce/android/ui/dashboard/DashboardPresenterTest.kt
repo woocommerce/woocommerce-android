@@ -42,7 +42,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DashboardPresenterTest {
@@ -77,7 +76,6 @@ class DashboardPresenterTest {
 
         val payload = actionCaptor.firstValue.payload as FetchOrderStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
-        assertFalse(payload.forced)
     }
 
     @Test
@@ -172,7 +170,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(1)).refreshDashboard(forced = true)
+        verify(dashboardView, times(1)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -183,7 +181,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(1)).refreshDashboard(forced = true)
+        verify(dashboardView, times(1)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -208,7 +206,7 @@ class DashboardPresenterTest {
         })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(0)).refreshDashboard(forced = true)
+        verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -218,7 +216,7 @@ class DashboardPresenterTest {
 
         // Simulate the network connected event
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(dashboardView, times(1)).refreshDashboard(forced = true)
+        verify(dashboardView, times(1)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -228,7 +226,7 @@ class DashboardPresenterTest {
 
         // Simulate the network connected event
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(dashboardView, times(0)).refreshDashboard(forced = true)
+        verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -237,7 +235,7 @@ class DashboardPresenterTest {
 
         // Simulate the network disconnected event
         presenter.onEventMainThread(ConnectionChangeEvent(false))
-        verify(dashboardView, times(0)).refreshDashboard(forced = true)
+        verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -263,7 +261,6 @@ class DashboardPresenterTest {
 
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
-        assertFalse(payload.forced)
     }
 
     @Test
@@ -329,7 +326,7 @@ class DashboardPresenterTest {
     @Test
     fun `Show and hide stats skeleton correctly`() {
         presenter.takeView(dashboardView)
-        presenter.loadStats(StatsGranularity.DAYS)
+        presenter.loadStats(StatsGranularity.DAYS, forced = true)
         verify(dashboardView, times(1)).showChartSkeleton(true)
 
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
