@@ -71,6 +71,7 @@ class AppSettingsActivity : AppCompatActivity(),
             finish()
         } else {
             super.onBackPressed()
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
         }
     }
 
@@ -80,6 +81,14 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onRequestShowPrivacySettings() {
         showPrivacySettingsFragment()
+    }
+
+    override fun onRequestShowAbout() {
+        showAboutFragment()
+    }
+
+    override fun onRequestShowLicenses() {
+        // TODO
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
@@ -98,8 +107,13 @@ class AppSettingsActivity : AppCompatActivity(),
         showFragment(fragment, PrivacySettingsFragment.TAG, true)
     }
 
+    override fun showAboutFragment() {
+        val fragment = AboutFragment.newInstance()
+        showFragment(fragment, AboutFragment.TAG, true)
+    }
+
     override fun confirmLogout() {
-        AlertDialog.Builder(ContextThemeWrapper(this, R.style.Woo_Dialog))
+        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AppTheme))
                 .setMessage(R.string.settings_confirm_signout)
                 .setPositiveButton(R.string.signout) { _, _ ->
                     AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(

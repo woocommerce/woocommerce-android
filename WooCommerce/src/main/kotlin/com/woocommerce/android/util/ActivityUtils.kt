@@ -61,6 +61,16 @@ object ActivityUtils {
         }
     }
 
+    fun shareStoreUrl(context: Context, url: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, url)
+            type = "text/plain"
+        }
+        val title = context.resources.getText(R.string.no_orders_share_store_title)
+        context.startActivity(Intent.createChooser(sendIntent, title))
+    }
+
     fun setStatusBarColor(activity: Activity, @ColorRes colorRes: Int) {
         if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
             val window = activity.window

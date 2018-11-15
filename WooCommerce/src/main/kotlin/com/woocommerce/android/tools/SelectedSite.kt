@@ -30,7 +30,8 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
             return it
         }
 
-        throw IllegalStateException("SelectedSite was accessed before being initialized - siteId $localSiteId")
+        throw IllegalStateException("SelectedSite.get() was accessed before being initialized - siteId $localSiteId." +
+                "\nConsider calling selectedSite.exists() to ensure site exists prior to calling selectedSite.get().")
     }
 
     fun set(siteModel: SiteModel) {

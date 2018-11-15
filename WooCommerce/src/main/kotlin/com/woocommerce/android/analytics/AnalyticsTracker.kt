@@ -2,16 +2,16 @@ package com.woocommerce.android.analytics
 
 import android.annotation.SuppressLint
 import android.content.Context
-import java.util.HashMap
-import com.automattic.android.tracks.TracksClient
 import android.preference.PreferenceManager
+import com.automattic.android.tracks.TracksClient
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import java.util.UUID
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
+import java.util.HashMap
+import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
@@ -75,7 +75,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED(siteless = true),
         LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
         LOGIN_EPILOGUE_STORES_SHOWN(siteless = true),
-        LOGIN_EPILOGUE_STORE_PICKED_CONTINUE_TAPPED(siteless = true),
+        LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED(siteless = true),
 
         // -- Dashboard
         DASHBOARD_PULLED_TO_REFRESH,
@@ -144,10 +144,21 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTINGS_LOGOUT_BUTTON_TAPPED,
         SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
         SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED,
+        SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED,
+        SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED,
         PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
         PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
         PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
         PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
+        PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
+
+        // -- Help & Support
+        SUPPORT_HELP_CENTER_VIEWED,
+        SUPPORT_IDENTITY_SET,
+        SUPPORT_IDENTITY_FORM_VIEWED,
+        SUPPORT_APPLICATION_LOG_VIEWED,
+        SUPPORT_TICKETS_VIEWED,
+        SUPPORT_FAQ_VIEWED,
     }
     // endregion
 

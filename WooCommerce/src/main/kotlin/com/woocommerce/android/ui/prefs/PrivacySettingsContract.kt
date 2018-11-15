@@ -7,6 +7,8 @@ interface PrivacySettingsContract {
     interface Presenter : BasePresenter<View> {
         fun getSendUsageStats(): Boolean
         fun setSendUsageStats(sendUsageStats: Boolean)
+        fun getCrashReportingEnabled(): Boolean
+        fun setCrashReportingEnabled(enabled: Boolean)
     }
 
     interface View : BaseView<Presenter> {

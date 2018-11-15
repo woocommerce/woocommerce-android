@@ -17,11 +17,13 @@ import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardStatsMarkerView.RequestMarkerCaptionListener
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
@@ -30,13 +32,14 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.util.ArrayList
 import java.util.Date
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs) {
+    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener {
     init {
         View.inflate(context, R.layout.dashboard_stats, this)
     }
@@ -181,10 +184,51 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             description.isEnabled = false
             legend.isEnabled = false
 
-            // This disables pinch to zoom and swiping through the zoomed graph
-            // We can reenable it, but we'll probably want to disable pull-to-refresh inside the graph view
-            setTouchEnabled(false)
+            // touch has to be enabled in order to show a marker when a bar is tapped, but we don't want
+            // pinch/zoom, drag, or scaling to be enabled
+            setTouchEnabled(true)
+            setPinchZoom(false)
+            isScaleXEnabled = false
+            isScaleYEnabled = false
+            isDragEnabled = false
         }
+
+        val markerView = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
+        markerView.chartView = chart
+        markerView.captionListener = this
+        chart.marker = markerView
+    }
+
+    /**
+     * the chart MarkerView relies on this to know what to display when the user taps a chart bar
+     */
+    override fun onRequestMarkerCaption(entry: Entry): String? {
+        val barEntry = entry as BarEntry
+
+        // get the date for this entry
+        val dateindex = barEntry.x.toInt()
+        val date = if (activeGranularity == YEARS) dateindex.toString() else
+            chartRevenueStats.keys.elementAt(dateindex - 1)
+        val formattedDate = when (activeGranularity) {
+            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
+            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
+            StatsGranularity.MONTHS -> DateUtils.getShortMonthString(date)
+            StatsGranularity.YEARS -> date
+        }
+
+        // get the revenue for this entry
+        val revenue = barEntry.y.toDouble()
+        val formattedRevenue = formatAmountForDisplay(context, revenue, chartCurrencyCode)
+
+        // show the date and revenue on separate lines
+        return formattedDate + "\n" + formattedRevenue
+    }
+
+    /**
+     * removes the highlighted value, which in turn removes the marker view
+     */
+    private fun hideMarker() {
+        chart.highlightValue(null)
     }
 
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
@@ -218,7 +262,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val dataSet = generateBarDataSet(revenueStats).apply {
             colors = barColors
             setDrawValues(false)
-            isHighlightEnabled = false
+            isHighlightEnabled = true
+            highLightColor = ContextCompat.getColor(context, R.color.graph_highlight_color)
         }
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
@@ -228,6 +273,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             animateY(duration)
         }
 
+        hideMarker()
         resetLastUpdated()
     }
 

@@ -16,7 +16,10 @@ object AppPrefs {
     /**
      * Application related preferences. When the user logs out, these preferences are erased.
      */
-    private enum class DeletablePrefKey : PrefKey
+    private enum class DeletablePrefKey : PrefKey {
+        SUPPORT_EMAIL,
+        SUPPORT_NAME,
+    }
 
     /**
      * These preferences won't be deleted when the user disconnects.
@@ -24,7 +27,9 @@ object AppPrefs {
      */
     private enum class UndeletablePrefKey : PrefKey {
         // The last stored versionCode of the app
-        LAST_APP_VERSION_CODE
+        LAST_APP_VERSION_CODE,
+        // Whether or not automatic crash reporting is enabled
+        ENABLE_CRASH_REPORTING
     }
 
     fun init(context: Context) {
@@ -37,6 +42,42 @@ object AppPrefs {
 
     fun setLastAppVersionCode(versionCode: Int) {
         setInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
+    }
+
+    fun setSupportEmail(email: String?) {
+        if (!email.isNullOrEmpty()) {
+            setString(DeletablePrefKey.SUPPORT_EMAIL, email!!)
+        } else {
+            remove(DeletablePrefKey.SUPPORT_EMAIL)
+        }
+    }
+
+    fun getSupportEmail() = getString(DeletablePrefKey.SUPPORT_EMAIL)
+
+    fun hasSupportEmail() = !getSupportEmail().isEmpty()
+
+    fun removeSupportEmail() {
+        remove(DeletablePrefKey.SUPPORT_EMAIL)
+    }
+
+    fun setSupportName(name: String) {
+        setString(DeletablePrefKey.SUPPORT_NAME, name)
+    }
+
+    fun getSupportName() = getString(DeletablePrefKey.SUPPORT_NAME)
+
+    fun removeSupportName() {
+        remove(DeletablePrefKey.SUPPORT_NAME)
+    }
+
+    fun isCrashReportingEnabled(): Boolean {
+        // default to False for debug builds
+        val default = !BuildConfig.DEBUG
+        return getBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, default)
+    }
+
+    fun setCrashReportingEnabled(enabled: Boolean) {
+        setBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, enabled)
     }
 
     /**
@@ -61,5 +102,15 @@ object AppPrefs {
     private fun setString(key: PrefKey, value: String) =
             PreferenceUtils.setString(getPreferences(), key.toString(), value)
 
+    private fun getBoolean(key: PrefKey, default: Boolean) =
+            PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
+
+    private fun setBoolean(key: PrefKey, value: Boolean = false) =
+            PreferenceUtils.setBoolean(getPreferences(), key.toString(), value)
+
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
+
+    private fun remove(key: PrefKey) {
+        getPreferences().edit().remove(key.toString()).apply()
+    }
 }

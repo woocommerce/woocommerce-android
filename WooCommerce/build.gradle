@@ -18,6 +18,7 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
 }
 
 allOpen {
@@ -36,8 +37,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "0.17"
-        versionCode 18
+        versionName "0.19"
+        versionCode 20
 
         minSdkVersion 21
         targetSdkVersion 27
@@ -101,7 +102,7 @@ dependencies {
     implementation "com.android.support:cardview-v7:$supportLibraryVersion"
 
 
-    implementation('org.wordpress:utils:1.20.3') {
+    implementation('org.wordpress:utils:1.22') {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
@@ -159,6 +160,10 @@ dependencies {
     // Resolve conflicts between main and test APK
     androidTestImplementation "com.android.support:support-annotations:$supportLibraryVersion"
     androidTestImplementation "com.google.code.findbugs:jsr305:3.0.1"
+
+    implementation (group: 'com.zendesk', name: 'support', version: '2.0.0') {
+        exclude group: 'com.google.dagger'
+    }
 }
 
 task generateCrashlyticsConfig(group: "generate", description: "Generate Crashlytics config") {

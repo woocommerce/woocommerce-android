@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.net.Uri
 import android.support.annotation.StringRes
+import android.util.Patterns
 import org.wordpress.android.fluxc.model.SiteModel
 
 object StringUtils {
@@ -45,5 +46,14 @@ object StringUtils {
             val uri = Uri.parse(it)
             return uri.host.orEmpty() + uri.path.orEmpty()
         } ?: return ""
+    }
+
+    /**
+     * Returns true if the passed string is a valid email address
+     */
+    fun isValidEmail(email: String?): Boolean {
+        return email?.let {
+            return Patterns.EMAIL_ADDRESS.matcher(it).matches()
+        } ?: false
     }
 }

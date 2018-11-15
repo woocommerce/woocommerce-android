@@ -4,7 +4,9 @@ import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog.T
 import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.util.Currency
+import java.util.Locale
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
@@ -17,6 +19,9 @@ import kotlin.math.roundToInt
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object CurrencyUtils {
+    private const val ONE_THOUSAND = 1000
+    private const val ONE_MILLION = 1000000
+
     /**
      * Map of currency code to currency symbol. Ex: USD = $
      */
@@ -25,8 +30,15 @@ object CurrencyUtils {
     /**
      * Formats the value with two decimal places
      */
-    val currencyFormatter: DecimalFormat by lazy {
+    private val currencyFormatter: DecimalFormat by lazy {
         DecimalFormat("0.00")
+    }
+
+    /**
+     * Formats the value with one decimal place
+     */
+    private val currencyFormatterRounded: DecimalFormat by lazy {
+        DecimalFormat("0.0")
     }
 
     /**
@@ -38,6 +50,20 @@ object CurrencyUtils {
      * @param currencyCode The ISO 4217 currency code (ex: USD)
      */
     fun currencyString(context: Context, rawValue: Double, currencyCode: String): String {
+        // if the passed currency code is the same as the currency code of the current locale, format
+        // the currency using the locale's currency formatter
+        val locale = Locale.getDefault()
+        try {
+            if (Currency.getInstance(locale)?.currencyCode.equals(currencyCode)) {
+                val formatter = NumberFormat.getCurrencyInstance(locale)
+                return formatter.format(rawValue)
+            }
+        } catch (e: IllegalArgumentException) {
+            WooLog.e(T.UTILS, "Error finding valid currency instance for currency code [$currencyCode]", e)
+        }
+
+        // store must be using a currency that's different than that of the current locale so fall
+        // back to our default currency format
         val symbol = getCurrencySymbol(currencyCode)
         return if (rawValue < 0) {
             context.getString(
@@ -52,19 +78,22 @@ object CurrencyUtils {
 
     /**
      * Rounds the [rawValue] to the nearest int, and returns the value as a currency
-     * string with the appropriate currency symbol.
+     * string with the appropriate currency symbol. If the value is a thousand or more,
+     * we return it rounded to the nearest tenth and suffixed with "k" (2500 -> 2.5k)
+     * Similarly, we add "m" for values a million or higher
      *
      * @param context The active context
      * @param rawValue The value to format as currency
      * @param currencyCode The ISO 4217 currency code (ex: USD)
      */
     fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
-        val symbol = getCurrencySymbol(currencyCode)
-        val roundedValue = rawValue.roundToInt()
-        return if (rawValue < 0) {
-            context.getString(R.string.currency_total_negative, symbol, roundedValue.absoluteValue.toString())
+        val roundedValue = rawValue.roundToInt().toDouble()
+        if (roundedValue.absoluteValue >= ONE_MILLION) {
+            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
+        } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
+            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
         } else {
-            context.getString(R.string.currency_total, symbol, roundedValue.toString())
+            return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
         }
     }
 
