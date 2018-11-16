@@ -19,14 +19,16 @@ object CrashlyticsUtils {
     fun initCrashlytics(context: Context, account: AccountModel?, site: SiteModel?) {
         if (!isCrashlyticsEnabled()) { return }
 
-        Fabric.with(context, Crashlytics())
+        if (!Fabric.isInitialized()) {
+            Fabric.with(context, Crashlytics())
+            // Send logs for app events through to Crashlytics
+            WooLog.addListener { tag, logLevel, message ->
+                log("$logLevel/${WooLog.TAG}-$tag: $message")
+            }
+        }
+
         initAccount(account)
         initSite(site)
-
-        // Send logs for app events through to Crashlytics
-        WooLog.addListener { tag, logLevel, message ->
-            CrashlyticsUtils.log("$logLevel/${WooLog.TAG}-$tag: $message")
-        }
     }
 
     fun initAccount(account: AccountModel?) {
