@@ -15,6 +15,7 @@ interface AppSettingsContract {
         fun clearNotificationPreferences()
         fun showAppSettingsFragment()
         fun showPrivacySettingsFragment()
+        fun showLicensesFragment()
         fun showAboutFragment()
     }
 }
