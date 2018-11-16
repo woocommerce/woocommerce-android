@@ -88,7 +88,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onRequestShowLicenses() {
-        // TODO
+        showLicensesFragment()
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
@@ -110,6 +110,11 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun showAboutFragment() {
         val fragment = AboutFragment.newInstance()
         showFragment(fragment, AboutFragment.TAG, true)
+    }
+
+    override fun showLicensesFragment() {
+        val fragment = LicensesFragment.newInstance()
+        showFragment(fragment, LicensesFragment.TAG, true)
     }
 
     override fun confirmLogout() {
