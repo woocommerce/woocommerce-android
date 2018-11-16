@@ -68,9 +68,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
-                    presenter.resetTopEarnersForceRefresh()
+                    presenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
-                    refreshDashboard()
+                    refreshDashboard(forced = true)
                 }
             }
 
@@ -93,7 +93,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         })
 
         if (isActive) {
-            refreshDashboard()
+            refreshDashboard(forced = this.isRefreshPending)
         } else {
             isRefreshPending = true
         }
@@ -110,7 +110,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && isRefreshPending) {
-            refreshDashboard()
+            refreshDashboard(forced = false)
         }
     }
 
@@ -194,20 +194,20 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun getFragmentTitle() = getString(R.string.my_store)
 
     override fun refreshFragmentState() {
-        presenter.resetTopEarnersForceRefresh()
-        refreshDashboard()
+        presenter.resetForceRefresh()
+        refreshDashboard(forced = false)
     }
 
-    override fun refreshDashboard() {
+    override fun refreshDashboard(forced: Boolean) {
         // If this fragment is currently active, force a refresh of data. If not, set
         // a flag to force a refresh when it becomes active
         when {
             isActive -> {
                 isRefreshPending = false
                 dashboard_stats.clearLabelValues()
-                presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
-                presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
-                presenter.fetchUnfilledOrderCount()
+                presenter.loadStats(dashboard_stats.activeGranularity, forced)
+                presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
+                presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
             }
             else -> isRefreshPending = true
