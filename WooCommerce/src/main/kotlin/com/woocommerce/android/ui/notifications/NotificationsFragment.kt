@@ -30,6 +30,10 @@ class NotificationsFragment : TopLevelFragment() {
     override fun getFragmentTitle() = getString(R.string.notifications)
 
     override fun refreshFragmentState() {
-        // todo reset any scrolling
+        // todo
+    }
+
+    override fun scrollToTop() {
+        // todo
     }
 }

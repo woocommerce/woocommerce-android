@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import dagger.BindsInstance
 import dagger.Component
@@ -24,9 +25,11 @@ import javax.inject.Singleton
         SelectedSiteModule::class,
         InterceptorModule::class,
         ActivityBindingModule::class,
+        FCMServiceModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class,
-        NetworkStatusModule::class))
+        NetworkStatusModule::class,
+        SupportModule::class))
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

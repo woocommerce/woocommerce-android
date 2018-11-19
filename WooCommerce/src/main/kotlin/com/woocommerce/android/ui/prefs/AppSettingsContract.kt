@@ -12,7 +12,10 @@ interface AppSettingsContract {
     interface View : BaseView<Presenter> {
         fun close()
         fun confirmLogout()
+        fun clearNotificationPreferences()
         fun showAppSettingsFragment()
         fun showPrivacySettingsFragment()
+        fun showLicensesFragment()
+        fun showAboutFragment()
     }
 }

@@ -54,14 +54,37 @@
 
         <activity
             android:label="@string/logviewer_activity_title"
-            android:name=".ui.main.WooLogViewerActivity"/>
+            android:name=".support.WooLogViewerActivity"/>
 
         <activity
             android:name=".ui.orders.AddOrderNoteActivity"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
 
+        <activity
+            android:name=".support.HelpActivity"
+            android:label="@string/help_screen_title"
+            android:theme="@style/AppTheme" />
 
         <!-- Services -->
+        <service
+            android:name=".push.FCMRegistrationIntentService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+
+        <service
+            android:name=".push.FCMMessageService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".push.InstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
         <service
             android:name="org.wordpress.android.login.LoginWpcomService"
             android:exported="false"

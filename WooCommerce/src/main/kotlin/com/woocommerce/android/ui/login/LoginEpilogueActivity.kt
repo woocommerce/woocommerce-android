@@ -10,13 +10,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.SiteListAdapter.OnSiteClickListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.CrashlyticsUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, OnSiteClickListener {
@@ -94,31 +97,31 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         siteAdapter.siteList = wcSites
 
-        button_continue.setOnClickListener {
+        button_continue.setOnClickListener { _ ->
             val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
-            if (site != null) {
-                selectedSite.set(site)
-
+            site?.let { it ->
+                selectedSite.set(it)
+                CrashlyticsUtils.initSite(it)
                 AnalyticsTracker.track(
                         Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
-                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
-                showMainActivityAndFinish()
+                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to it.id))
+                finishEpilogue()
             }
         }
     }
 
     override fun onSiteClick(siteId: Long) {
         val site = presenter.getSiteBySiteId(siteId)
-        if (site != null) {
-            selectedSite.set(site)
-        }
+        site?.let { selectedSite.set(it) }
     }
 
     private fun showNoStoresView() {
         frame_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
-        val noStoresImage = AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
+        val noStoresImage =
+                if (DisplayUtils.isLandscape(this)) null
+                else AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
         no_stores_view.setCompoundDrawablesWithIntrinsicBounds(null, noStoresImage, null, null)
 
         button_continue.text = getString(R.string.login_with_a_different_account)
@@ -141,7 +144,10 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         finish()
     }
 
-    private fun showMainActivityAndFinish() {
+    private fun finishEpilogue() {
+        // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
+        FCMRegistrationIntentService.enqueueWork(this)
+
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
