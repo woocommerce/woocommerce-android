@@ -3,17 +3,20 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.base.BaseFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
+import kotlinx.android.synthetic.main.order_detail_product_list.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
-class OrderProductListFragment : Fragment(), OrderProductListContract.View {
+class OrderProductListFragment : BaseFragment(), OrderProductListContract.View {
     companion object {
         const val TAG = "OrderProductListFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -53,6 +56,12 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
 
         presenter.takeView(this)
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
+
+        productList_products.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
+            }
+        })
     }
 
     override fun onResume() {
