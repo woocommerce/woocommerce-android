@@ -72,7 +72,7 @@ class OrderStatusFilterDialog : DialogFragment() {
                     val newSelectedIndex = getCurrentOrderStatusIndex()
                     if (newSelectedIndex != selectedIndex) {
                         // If 'All' is selected filter, pass null to signal a filterless refresh
-                        listener?.onFilterSelected(if (newSelectedIndex > 0) selectedFilter else null)
+                        listener?.onFilterSelected(selectedFilter.takeUnless { it == ALL_FILTER_ID })
                     }
                     dialog.cancel()
                 }.create()
