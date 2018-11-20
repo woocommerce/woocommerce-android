@@ -66,11 +66,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var lastUpdatedHandler: Handler? = null
     private var lastUpdated: Date? = null
 
-    private var isLoading = false
+    private var isRequestingStats = false
         set(value) {
-            // if we're loading chart data we clear the existing data so it doesn't continue
+            // if we're requesting chart data we clear the existing data so it doesn't continue
             // to appear, and we remove the chart's empty string so it doesn't briefly show
-            // up before the chart data is added again
+            // up before the chart data is added once the request completes
             if (value) {
                 clearLabelValues()
                 chart.setNoDataText(null)
@@ -110,7 +110,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                         Stat.DASHBOARD_MAIN_STATS_DATE,
                         mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
 
-                isLoading = true
+                isRequestingStats = true
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -258,7 +258,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         if (revenueStats.isEmpty()) {
             clearLastUpdated()
-            isLoading = false
+            isRequestingStats = false
             return
         }
 
@@ -289,10 +289,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         hideMarker()
         resetLastUpdated()
-        isLoading = false
+        isRequestingStats = false
     }
 
     fun showErrorView(show: Boolean) {
+        isRequestingStats = false
         dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
         chart.visibility = if (show) View.GONE else View.VISIBLE
     }
