@@ -36,11 +36,11 @@ class OrderStatusFilterDialog : DialogFragment() {
         fun onFilterSelected(orderStatus: String?)
     }
 
-    private val filterOptions: Array<String> by lazy {
+    private val filterLabels: Array<String> by lazy {
         arrayOf(resources.getString(R.string.all)).plus(CoreOrderStatus.values().map { statusToLabelMap[it] }.toTypedArray())
     }
 
-    private val stringIds: Array<String> by lazy {
+    private val filterIds: Array<String> by lazy {
         arrayOf("all").plus(CoreOrderStatus.values().map { it.value }.toTypedArray())
     }
 
@@ -59,10 +59,8 @@ class OrderStatusFilterDialog : DialogFragment() {
     var listener: OrderListFilterListener? = null
     var selectedFilter: String? = null
 
-    private fun getOrderStatusAtIndex(index: Int) = stringIds[index]
-
     private fun getCurrentOrderStatusIndex(): Int {
-        return stringIds.indexOfFirst { it == selectedFilter }
+        return filterIds.indexOfFirst { it == selectedFilter }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -71,13 +69,11 @@ class OrderStatusFilterDialog : DialogFragment() {
         return AlertDialog.Builder(context)
                 .setTitle(resources.getString(R.string.orderlist_filter_by))
                 .setCancelable(true)
-                .setSingleChoiceItems(filterOptions, selectedIndex) { _, which ->
-                    val selectedLabel = filterOptions[which]
+                .setSingleChoiceItems(filterLabels, selectedIndex) { _, which ->
+                    selectedFilter = filterIds[which]
 
                     AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
-                            mapOf("status" to selectedLabel))
-
-                    selectedFilter = getOrderStatusAtIndex(which)
+                            mapOf("status" to selectedFilter))
                 }
                 .setPositiveButton(R.string.orderlist_filter_apply) { dialog, _ ->
                     AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED)
