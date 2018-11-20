@@ -39,21 +39,19 @@ class OrderStatusFilterDialog : DialogFragment() {
         fun onFilterSelected(orderStatus: String?)
     }
 
-    private val filterLabels: Array<String> by lazy {
-        arrayOf(resources.getString(R.string.all)).plus(CoreOrderStatus.values().map {
-            OrderStatusUtils.getLabelForOrderStatus(it, ::getString)
-        }.toTypedArray())
-    }
-
-    private val filterIds: Array<String> by lazy {
-        arrayOf("all").plus(CoreOrderStatus.values().map { it.value }.toTypedArray())
+    private val filterMap: Map<String, String> by lazy {
+        mapOf(ALL_FILTER_ID to getString(R.string.all)).plus(
+                CoreOrderStatus.values().associate {
+                    it.value to OrderStatusUtils.getLabelForOrderStatus(it, ::getString)
+                }
+        )
     }
 
     var listener: OrderListFilterListener? = null
     var selectedFilter: String? = null
 
     private fun getCurrentOrderStatusIndex(): Int {
-        return filterIds.indexOfFirst { it == selectedFilter }
+        return filterMap.keys.indexOfFirst { it == selectedFilter }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -62,8 +60,8 @@ class OrderStatusFilterDialog : DialogFragment() {
         return AlertDialog.Builder(context)
                 .setTitle(resources.getString(R.string.orderlist_filter_by))
                 .setCancelable(true)
-                .setSingleChoiceItems(filterLabels, selectedIndex) { _, which ->
-                    selectedFilter = filterIds[which]
+                .setSingleChoiceItems(filterMap.values.toTypedArray(), selectedIndex) { _, which ->
+                    selectedFilter = filterMap.keys.toTypedArray()[which]
 
                     AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
                             mapOf("status" to selectedFilter))
