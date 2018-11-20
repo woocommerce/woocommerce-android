@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_parent.*
  * The main fragments hosted by the bottom bar should extend this class to enforce
  * consistent navigation across top-level fragments and their children.
  */
-abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
+abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
     companion object {
         // Bundle label to store the state of this top-level fragment.
         // If the value associated with this label is true, then this
@@ -131,16 +131,5 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
             mainActivity?.title = getFragmentTitle()
         }
-    }
-
-    /**
-     * We use these to tell the main activity to show/hide the bottom navbar when the user scrolls the fragment
-     */
-    fun onScrollUp() {
-        (activity as FragmentScrollListener).onFragmentScrollUp()
-    }
-
-    fun onScrollDown() {
-        (activity as FragmentScrollListener).onFragmentScrollDown()
     }
 }

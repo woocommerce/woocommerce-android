@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var supportHelper: SupportHelper
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
+    private var isBottomNavShowing = false
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
@@ -412,10 +413,24 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onFragmentScrollUp() {
-        WooAnimUtils.animateBottomBar(bottom_nav, true)
+        showBottomNav()
     }
 
     override fun onFragmentScrollDown() {
-        WooAnimUtils.animateBottomBar(bottom_nav, false)
+        hideBottomNav()
+    }
+
+    override fun hideBottomNav() {
+        if (isBottomNavShowing) {
+            isBottomNavShowing = false
+            WooAnimUtils.animateBottomBar(bottom_nav, false)
+        }
+    }
+
+    override fun showBottomNav() {
+        if (!isBottomNavShowing) {
+            isBottomNavShowing = true
+            WooAnimUtils.animateBottomBar(bottom_nav, true)
+        }
     }
 }
