@@ -66,6 +66,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var lastUpdatedHandler: Handler? = null
     private var lastUpdated: Date? = null
 
+    private var isLoading = false
+        set(value) {
+            if (value) {
+                clearLabelValues()
+            }
+        }
+
     private val fadeHandler = Handler()
 
     fun initView(
@@ -95,7 +102,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                         Stat.DASHBOARD_MAIN_STATS_DATE,
                         mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
 
-                clearLabelValues()
+                isLoading = true
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -275,6 +282,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         hideMarker()
         resetLastUpdated()
+        isLoading = false
     }
 
     fun showErrorView(show: Boolean) {
@@ -416,8 +424,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
     }
 
+    /**
+     * Axis formatter for our chart - note we return an empty string when data is being loaded to
+     * prevent stale revenue stats data from being accessed (especially important if the stale
+     * data is for an inactive granularity since that could lead to a crash due to invalid
+     * date formatting)
+     */
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
+            if (isLoading) return ""
+
             return when (value) {
                 axis.mEntries.first() -> getStartValue()
                 axis.mEntries.max() -> getEndValue()
@@ -426,6 +442,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         fun getStartValue(): String {
+            if (isLoading) return ""
+
             val dateString = chartRevenueStats.keys.first()
             return when (activeGranularity) {
                 StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
@@ -436,6 +454,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         fun getEndValue(): String {
+            if (isLoading) return ""
+
             val dateString = chartRevenueStats.keys.last()
             return when (activeGranularity) {
                 StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
