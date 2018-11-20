@@ -22,13 +22,15 @@ class OrderStatusFilterDialog : DialogFragment() {
     companion object {
         const val TAG: String = "OrderStatusFilterDialog"
 
+        private const val ALL_FILTER_ID: String = "all"
+
         fun newInstance(
             currentFilter: CoreOrderStatus?,
             listener: OrderListFilterListener
         ): OrderStatusFilterDialog {
             val fragment = OrderStatusFilterDialog()
             fragment.listener = listener
-            fragment.selectedFilter = currentFilter?.value ?: "all"
+            fragment.selectedFilter = currentFilter?.value ?: ALL_FILTER_ID
             return fragment
         }
     }
