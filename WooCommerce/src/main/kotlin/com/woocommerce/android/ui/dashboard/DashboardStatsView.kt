@@ -70,7 +70,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         set(value) {
             if (value) {
                 clearLabelValues()
+                chart.setNoDataText(null)
                 chart.clear()
+            } else {
+                // TODO: add a custom empty view
+                chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             }
         }
 
@@ -199,6 +203,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             isScaleXEnabled = false
             isScaleYEnabled = false
             isDragEnabled = false
+
+            setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
         }
 
         val markerView = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
@@ -248,10 +254,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         fadeInLabelValue(orders_value, orders)
 
         if (revenueStats.isEmpty()) {
-            // TODO Replace with custom empty view
-            chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
-            chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             clearLastUpdated()
+            isLoading = false
             return
         }
 
@@ -424,12 +428,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
     }
 
-    /**
-     * Axis formatter for our chart - note we return an empty string when data is being loaded to
-     * prevent stale revenue stats data from being accessed (especially important if the stale
-     * data is for an inactive granularity since that could lead to a crash due to invalid
-     * date formatting)
-     */
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
             return when (value) {
@@ -440,8 +438,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         fun getStartValue(): String {
-            if (isLoading) return ""
-
             val dateString = chartRevenueStats.keys.first()
             return when (activeGranularity) {
                 StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
@@ -452,8 +448,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         fun getEndValue(): String {
-            if (isLoading) return ""
-
             val dateString = chartRevenueStats.keys.last()
             return when (activeGranularity) {
                 StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
