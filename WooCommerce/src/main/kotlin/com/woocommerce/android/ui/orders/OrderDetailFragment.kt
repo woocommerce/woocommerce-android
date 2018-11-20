@@ -90,7 +90,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             }
         }
 
-        orderRefreshLayout.setOnScrollChangeListener {
+        scrollView.setOnScrollChangeListener {
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
             if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
         }
