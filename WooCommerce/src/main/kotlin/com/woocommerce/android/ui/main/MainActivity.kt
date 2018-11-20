@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var supportHelper: SupportHelper
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
-    private var isBottomNavShowing = false
+    private var isBottomNavShowing = true
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
