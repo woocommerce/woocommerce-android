@@ -432,8 +432,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      */
     private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            if (isLoading) return ""
-
             return when (value) {
                 axis.mEntries.first() -> getStartValue()
                 axis.mEntries.max() -> getEndValue()
