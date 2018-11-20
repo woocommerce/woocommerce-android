@@ -23,6 +23,11 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         const val CHILD_FRAGMENT_ACTIVE = "child-fragment-active"
     }
 
+    interface FragmentScrollListener {
+        fun onFragmentScrollUp()
+        fun onFragmentScrollDown()
+    }
+
     /**
      * The extending class may use this variable to defer a part of its
      * normal initialization until manually requested.
@@ -126,5 +131,16 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
             mainActivity?.title = getFragmentTitle()
         }
+    }
+
+    /**
+     * We use these to tell the main activity to show/hide the bottom navbar when the user scrolls the fragment
+     */
+    fun onScrollUp() {
+        (activity as FragmentScrollListener).onFragmentScrollUp()
+    }
+
+    fun onScrollDown() {
+        (activity as FragmentScrollListener).onFragmentScrollDown()
     }
 }

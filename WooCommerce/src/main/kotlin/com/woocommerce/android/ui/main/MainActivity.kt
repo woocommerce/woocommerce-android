@@ -22,12 +22,14 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.TopLevelFragment.FragmentScrollListener
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEpilogueActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.WooAnimUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -41,6 +43,7 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
+        FragmentScrollListener,
         BottomNavigationView.OnNavigationItemSelectedListener,
         BottomNavigationView.OnNavigationItemReselectedListener {
     companion object {
@@ -406,5 +409,13 @@ class MainActivity : AppCompatActivity(),
 
     private fun checkConnection() {
         updateOfflineStatusBar(NetworkUtils.isNetworkAvailable(this))
+    }
+
+    override fun onFragmentScrollUp() {
+        WooAnimUtils.animateBottomBar(bottom_nav, true)
+    }
+
+    override fun onFragmentScrollDown() {
+        WooAnimUtils.animateBottomBar(bottom_nav, false)
     }
 }
