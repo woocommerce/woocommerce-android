@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.util.OrderStatusUtils
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 /**
@@ -37,23 +38,13 @@ class OrderStatusFilterDialog : DialogFragment() {
     }
 
     private val filterLabels: Array<String> by lazy {
-        arrayOf(resources.getString(R.string.all)).plus(CoreOrderStatus.values().map { statusToLabelMap[it] }.toTypedArray())
+        arrayOf(resources.getString(R.string.all)).plus(CoreOrderStatus.values().map {
+            OrderStatusUtils.getLabelForOrderStatus(it, ::getString)
+        }.toTypedArray())
     }
 
     private val filterIds: Array<String> by lazy {
         arrayOf("all").plus(CoreOrderStatus.values().map { it.value }.toTypedArray())
-    }
-
-    private val statusToLabelMap: Map<CoreOrderStatus, String> by lazy {
-        mapOf(
-                CoreOrderStatus.PENDING to getString(R.string.orderstatus_pending),
-                CoreOrderStatus.PROCESSING to getString(R.string.orderstatus_processing),
-                CoreOrderStatus.ON_HOLD to getString(R.string.orderstatus_hold),
-                CoreOrderStatus.COMPLETED to getString(R.string.orderstatus_completed),
-                CoreOrderStatus.CANCELLED to getString(R.string.orderstatus_cancelled),
-                CoreOrderStatus.REFUNDED to getString(R.string.orderstatus_refunded),
-                CoreOrderStatus.FAILED to getString(R.string.orderstatus_failed)
-        )
     }
 
     var listener: OrderListFilterListener? = null
