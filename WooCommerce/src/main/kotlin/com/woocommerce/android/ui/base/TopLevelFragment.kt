@@ -23,11 +23,6 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
         const val CHILD_FRAGMENT_ACTIVE = "child-fragment-active"
     }
 
-    interface FragmentScrollListener {
-        fun onFragmentScrollUp()
-        fun onFragmentScrollDown()
-    }
-
     /**
      * The extending class may use this variable to defer a part of its
      * normal initialization until manually requested.

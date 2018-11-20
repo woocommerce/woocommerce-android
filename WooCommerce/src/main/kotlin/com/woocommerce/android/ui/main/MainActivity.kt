@@ -21,8 +21,8 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.BaseFragment.BaseFragmentScrollListener
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.base.TopLevelFragment.FragmentScrollListener
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEpilogueActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
@@ -44,7 +44,7 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
-        FragmentScrollListener,
+        BaseFragmentScrollListener,
         BottomNavigationView.OnNavigationItemSelectedListener,
         BottomNavigationView.OnNavigationItemReselectedListener {
     companion object {
