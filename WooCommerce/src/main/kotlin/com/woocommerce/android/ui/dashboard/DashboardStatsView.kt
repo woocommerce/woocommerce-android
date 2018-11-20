@@ -68,6 +68,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private var isLoading = false
         set(value) {
+            // if we're loading chart data we clear the existing data so it doesn't continue
+            // to appear, and we remove the chart's empty string so it doesn't briefly show
+            // up before the chart data is added again
             if (value) {
                 clearLabelValues()
                 chart.setNoDataText(null)
