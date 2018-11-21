@@ -66,6 +66,21 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private var lastUpdatedHandler: Handler? = null
     private var lastUpdated: Date? = null
 
+    private var isRequestingStats = false
+        set(value) {
+            // if we're requesting chart data we clear the existing data so it doesn't continue
+            // to appear, and we remove the chart's empty string so it doesn't briefly show
+            // up before the chart data is added once the request completes
+            if (value) {
+                clearLabelValues()
+                chart.setNoDataText(null)
+                chart.clear()
+            } else {
+                // TODO: add a custom empty view
+                chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
+            }
+        }
+
     private val fadeHandler = Handler()
 
     fun initView(
@@ -95,7 +110,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                         Stat.DASHBOARD_MAIN_STATS_DATE,
                         mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
 
-                clearLabelValues()
+                isRequestingStats = true
                 listener.onRequestLoadStats(tab.tag as StatsGranularity)
             }
 
@@ -191,6 +206,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             isScaleXEnabled = false
             isScaleYEnabled = false
             isDragEnabled = false
+
+            setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
         }
 
         val markerView = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
@@ -240,11 +257,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         fadeInLabelValue(orders_value, orders)
 
         if (revenueStats.isEmpty()) {
-            // TODO Replace with custom empty view
-            chart.setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
-            chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
-            chart.clear()
             clearLastUpdated()
+            isRequestingStats = false
             return
         }
 
@@ -275,9 +289,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         hideMarker()
         resetLastUpdated()
+        isRequestingStats = false
     }
 
     fun showErrorView(show: Boolean) {
+        isRequestingStats = false
         dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
         chart.visibility = if (show) View.GONE else View.VISIBLE
     }
