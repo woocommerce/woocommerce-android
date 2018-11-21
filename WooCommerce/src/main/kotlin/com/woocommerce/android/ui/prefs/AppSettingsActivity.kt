@@ -164,8 +164,8 @@ class AppSettingsActivity : AppCompatActivity(),
             popExit - the exit animation of (about)
              */
             fragmentTransaction.setCustomAnimations(R.anim.slide_in_up,
-                    R.anim.do_nothing,
-                    R.anim.do_nothing,
+                    0,
+                    0,
                     R.anim.slide_out_down)
         }
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
