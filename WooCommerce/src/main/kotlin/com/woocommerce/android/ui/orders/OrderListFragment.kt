@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.OrderStatusUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
@@ -325,7 +326,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
                 .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
-                    getString(R.string.orderlist_filtered, CoreOrderStatus.fromValue(filter)?.label)
+                    val orderStatusLabel = CoreOrderStatus.fromValue(filter)?.let { orderStatus ->
+                        OrderStatusUtils.getLabelForOrderStatus(orderStatus, ::getString)
+                    }
+                    getString(R.string.orderlist_filtered, orderStatusLabel)
                 } ?: "")
     }
 
