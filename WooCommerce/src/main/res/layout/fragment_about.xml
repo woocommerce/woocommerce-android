@@ -25,7 +25,8 @@
 
         <TextView
             style="@style/Woo.About.Title"
-            android:layout_marginTop="@dimen/margin_extra_medium_large"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_extra_large"
             android:text="@string/about_appname"/>
 
         <TextView
@@ -36,7 +37,7 @@
         <TextView
             android:id="@+id/about_publisher"
             style="@style/Woo.About.Label"
-            android:layout_marginTop="@dimen/margin_extra_medium_large"
+            android:layout_marginTop="@dimen/margin_extra_large"
             android:text="@string/about_publisher"/>
 
         <TextView
@@ -47,13 +48,12 @@
         <TextView
             android:id="@+id/about_privacy"
             style="@style/Woo.About.Button"
-            android:layout_marginTop="@dimen/margin_extra_medium_large"
+            android:layout_marginTop="@dimen/margin_medium"
             android:text="@string/settings_privacy_policy_header"/>
 
         <TextView
             android:id="@+id/about_tos"
             style="@style/Woo.About.Button"
-            android:layout_marginTop="@dimen/margin_medium"
             android:text="@string/about_tos"/>
 
         <TextView
