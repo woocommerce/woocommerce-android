@@ -157,12 +157,6 @@ class AppSettingsActivity : AppCompatActivity(),
                     R.anim.activity_slide_in_from_left,
                     R.anim.activity_slide_out_to_right)
         } else if (anim == SLIDE_UP) {
-            /*
-            enter - the enter animation of (about)
-            exit - the exit animation of (settings)
-            popEnter - the re-enter animation of (settings)
-            popExit - the exit animation of (about)
-             */
             fragmentTransaction.setCustomAnimations(R.anim.slide_in_up,
                     0,
                     0,
