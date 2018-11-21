@@ -81,6 +81,7 @@ class AppSettingsActivity : AppCompatActivity(),
         } else {
             super.onBackPressed()
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+            supportActionBar?.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
         }
     }
 
