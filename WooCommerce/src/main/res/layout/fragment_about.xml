@@ -19,10 +19,9 @@
             android:id="@+id/about_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:importantForAccessibility="no"
             android:padding="@dimen/margin_extra_large"
-            app:srcCompat="@drawable/img_woo_logo"/>
+            app:srcCompat="@drawable/woo_bubble_white"/>
 
         <TextView
             style="@style/Woo.About.Title"
