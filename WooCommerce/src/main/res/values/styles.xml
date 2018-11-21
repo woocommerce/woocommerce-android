@@ -414,12 +414,10 @@
         <item name="android:textSize">@dimen/text_medium</item>
         <item name="android:background">@drawable/button_white_bg</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">@dimen/min_tap_target</item>
         <item name="android:gravity">center</item>
-        <item name="android:paddingTop">@dimen/margin_extra_large</item>
-        <item name="android:paddingBottom">@dimen/margin_extra_large</item>
-        <item name="android:layout_marginTop">@dimen/margin_medium</item>
-        <item name="android:layout_marginBottom">@dimen/margin_medium</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
     </style>
 
     <!--

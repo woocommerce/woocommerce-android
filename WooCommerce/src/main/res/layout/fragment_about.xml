@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_marginTop="?attr/actionBarSize"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingBottom="?attr/actionBarSize">
@@ -19,6 +20,7 @@
             android:id="@+id/about_image"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
+            android:layout_marginTop="@dimen/margin_medium"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/woo_bubble_white"/>
 
@@ -47,18 +49,21 @@
         <TextView
             android:id="@+id/about_privacy"
             style="@style/Woo.About.Button"
+            android:layout_marginBottom="@dimen/margin_medium"
             android:layout_marginTop="@dimen/margin_medium"
             android:text="@string/settings_privacy_policy_header"/>
 
         <TextView
             android:id="@+id/about_tos"
             style="@style/Woo.About.Button"
+            android:layout_marginBottom="@dimen/margin_medium"
             android:text="@string/about_tos"/>
 
         <TextView
             android:id="@+id/about_url"
             style="@style/Woo.About.Label"
-            android:layout_marginTop="@dimen/margin_extra_medium_large"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
             android:clickable="true"
             android:focusable="true"
             android:text="@string/about_url_text"/>
