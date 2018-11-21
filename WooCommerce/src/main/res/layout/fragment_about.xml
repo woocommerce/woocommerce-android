@@ -44,13 +44,13 @@
             style="@style/Woo.About.Label"
             tools:text="Copyright"/>
 
-        <Button
+        <TextView
             android:id="@+id/about_privacy"
             style="@style/Woo.About.Button"
             android:layout_marginTop="@dimen/margin_extra_medium_large"
             android:text="@string/settings_privacy_policy_header"/>
 
-        <Button
+        <TextView
             android:id="@+id/about_tos"
             style="@style/Woo.About.Button"
             android:layout_marginTop="@dimen/margin_medium"
