@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ContextThemeWrapper
 import android.support.v7.widget.Toolbar
@@ -158,7 +157,16 @@ class AppSettingsActivity : AppCompatActivity(),
                     R.anim.activity_slide_in_from_left,
                     R.anim.activity_slide_out_to_right)
         } else if (anim == SLIDE_UP) {
-            fragmentTransaction.setTransition(TRANSIT_FRAGMENT_OPEN)
+            /*
+            enter - the enter animation of (about)
+            exit - the exit animation of (settings)
+            popEnter - the re-enter animation of (settings)
+            popExit - the exit animation of (about)
+             */
+            fragmentTransaction.setCustomAnimations(R.anim.slide_in_up,
+                    R.anim.do_nothing,
+                    R.anim.do_nothing,
+                    R.anim.slide_out_down)
         }
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
                 .addToBackStack(null)
