@@ -128,6 +128,9 @@
     <string name="dashboard_no_orders">Waiting for customers</string>
     <string name="dashboard_no_orders_with_filter">No orders</string>
     <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
+
+    <string name="dashboard_plugin_notice_title">We\'re updating the WooCommerce version required to 3.5</string>
+    <string name="dashboard_plugin_notice_message">From the next version of the app, WooCommerce 3.5 (or later) will be required. Please update to continue using WooCommerce for Android.</string>
     <!--
         Order List View
     -->

@@ -92,6 +92,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             }
         })
 
+        dashboard_plugin_version_notice.initView(
+                title = getString(R.string.dashboard_plugin_notice_title),
+                message = getString(R.string.dashboard_plugin_notice_message))
+
         if (isActive) {
             refreshDashboard(forced = this.isRefreshPending)
         } else {
