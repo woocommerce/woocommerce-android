@@ -217,6 +217,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
+                presenter.checkApiVersion()
             }
             else -> isRefreshPending = true
         }
@@ -255,6 +256,16 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
+    }
+
+    override fun showPluginVersionNoticeCard() {
+        if (dashboard_plugin_version_notice.visibility != View.VISIBLE) {
+            WooAnimUtils.scaleIn(dashboard_plugin_version_notice, Duration.MEDIUM)
+        }
+    }
+
+    override fun hidePluginVersionNoticeCard() {
+        dashboard_plugin_version_notice.visibility = View.GONE
     }
 
     /**
