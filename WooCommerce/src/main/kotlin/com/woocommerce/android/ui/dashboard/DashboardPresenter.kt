@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -149,6 +150,7 @@ class DashboardPresenter @Inject constructor(
         if (!event.isError) {
             if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
                 dashboardView?.hidePluginVersionNoticeCard()
+                AppPrefs.setIsUsingV3Api()
             } else {
                 dashboardView?.showPluginVersionNoticeCard()
             }

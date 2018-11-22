@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -217,7 +218,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
-                presenter.checkApiVersion()
+                if (!AppPrefs.isUsingV3Api()) {
+                    presenter.checkApiVersion()
+                }
             }
             else -> isRefreshPending = true
         }
