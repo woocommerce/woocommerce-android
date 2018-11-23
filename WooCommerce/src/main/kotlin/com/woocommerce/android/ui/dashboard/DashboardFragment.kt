@@ -33,6 +33,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
+
+        private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     }
 
     @Inject lateinit var presenter: DashboardContract.Presenter
@@ -95,7 +97,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         dashboard_plugin_version_notice.initView(
                 title = getString(R.string.dashboard_plugin_notice_title),
-                message = getString(R.string.dashboard_plugin_notice_message))
+                message = getString(R.string.dashboard_plugin_notice_message),
+                buttonLabel = getString(R.string.dashboard_plugin_notice_button_label),
+                buttonAction = { ActivityUtils.openUrlExternal(activity as Context, URL_UPGRADE_WOOCOMMERCE) })
 
         if (isActive) {
             refreshDashboard(forced = this.isRefreshPending)
