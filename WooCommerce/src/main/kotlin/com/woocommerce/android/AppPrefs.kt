@@ -19,6 +19,7 @@ object AppPrefs {
     private enum class DeletablePrefKey : PrefKey {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
+        IS_USING_V3_API
     }
 
     /**
@@ -69,6 +70,10 @@ object AppPrefs {
     fun removeSupportName() {
         remove(DeletablePrefKey.SUPPORT_NAME)
     }
+
+    fun isUsingV3Api() = getBoolean(DeletablePrefKey.IS_USING_V3_API, false)
+
+    fun setIsUsingV3Api() = setBoolean(DeletablePrefKey.IS_USING_V3_API, true)
 
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds

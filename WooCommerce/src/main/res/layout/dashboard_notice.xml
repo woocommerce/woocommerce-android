@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!-- Title -->
+        <TextView
+            android:id="@+id/alertAction_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.TextAppearance.Title.Bold"
+            tools:text="We're updating the WooCommerce version required to 3.5"/>
+
+        <!-- Message -->
+        <TextView
+            android:id="@+id/alertAction_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/card_item_padding_intra_h"
+            tools:text="As of the next version of the app, WooCommerce 3.5 will be required for use. If you haven't already, please make sure to update."/>
+
+        <!-- Action Button -->
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/alertAction_action"
+            style="@style/Woo.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/card_item_padding_intra_h"
+            tools:text="Dismiss"/>
+    </LinearLayout>
+
+</merge>
