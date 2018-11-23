@@ -7,6 +7,6 @@ interface ReviewDetailContract {
     interface Presenter : BasePresenter<View>
 
     interface View : BaseView<Presenter> {
-        fun showLoadingSkeleton()
+        fun showSkeleton(show: Boolean)
     }
 }
