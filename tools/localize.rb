@@ -4,7 +4,7 @@ require 'nokogiri'
 
 MAIN_STRINGS_PATH = "./WooCommerce/src/main/res/values/strings.xml"
 LIBRARIES_STRINGS_PATH = [
-  {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id", "login_notification_channel_id"]}
+  {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id", "login_notification_channel_id", "enter_site_address", "enter_email_wordpress_com"]}
 ]
 
 def skip_string(library, string_name)
