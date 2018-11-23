@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="app_name">WooCommerce</string>
 
@@ -16,7 +17,7 @@
     <string name="signout">Log out</string>
     <string name="my_store">My store</string>
     <string name="orders">Orders</string>
-    <string name="email_address">Email Address</string>
+    <string name="email_address">Email address</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="total">Total</string>
@@ -337,7 +338,7 @@
     <string name="signup_terms_of_service_text">By signing up, you agree to our %1$sTerms of Service%2$s.</string>
     <string name="signup_with_email_button">Sign Up with Email</string>
     <string name="signup_with_google_button">Sign Up with Google</string>
-    <string name="signup_with_google_progress">Signing up with Google&#8230;</string>
+    <string name="signup_with_google_progress">Signing up with Google…</string>
 
     <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
