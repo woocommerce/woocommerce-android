@@ -17,11 +17,13 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.notifications.WCNotificationModel.Order
 import com.woocommerce.android.ui.notifications.WCNotificationModel.Review
+import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
 import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
 class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsListAdapter.ReviewListListener {
@@ -186,9 +188,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun onNotificationClicked(notification: WCNotificationModel) {
         when (notification) {
-            is Order -> {
-                uiMessageResolver.showSnack("Order logic not yet implemented")
-            }
+            is Order -> openOrderDetail("0") // TODO: how to get order from note model?
             is Review -> openReviewDetail()
         }
     }
@@ -200,6 +200,21 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
                 // TODO add arguments for the review to display
                 popToState(tag)
             } ?: loadChildFragment(ReviewDetailFragment.newInstance(), tag)
+        }
+    }
+
+    override fun openOrderDetail(orderId: OrderIdentifier) {
+        if (!notifsRefreshLayout.isRefreshing) {
+            val order = presenter.getOrder(orderId)
+            if (order == null) {
+                // TODO: show error
+                return
+            }
+            val tag = OrderDetailFragment.TAG
+            getFragmentFromBackStack(tag)?.let {
+                // TODO add arguments for the order to display
+                popToState(tag)
+            } ?: loadChildFragment(OrderDetailFragment.newInstance(order), tag)
         }
     }
 }

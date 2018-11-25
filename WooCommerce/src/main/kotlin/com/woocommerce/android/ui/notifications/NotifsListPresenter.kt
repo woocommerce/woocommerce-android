@@ -8,11 +8,14 @@ import com.woocommerce.android.ui.notifications.NotifsListContract.View
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
 class NotifsListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
+    private val orderStore: WCOrderStore,
     private val networkStatus: NetworkStatus
 ) : NotifsListContract.Presenter {
     companion object {
@@ -89,6 +92,8 @@ class NotifsListPresenter @Inject constructor(
     override fun setAllNotifsRead() {
         TODO("not implemented")
     }
+
+    override fun getOrder(orderId: OrderIdentifier) = orderStore.getOrderByIdentifier(orderId)
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
