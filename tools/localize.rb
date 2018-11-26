@@ -26,7 +26,7 @@ def add_or_update_string(main_strings, string_name, string_content)
   new_element = Nokogiri::XML::Node.new "string", main_strings
   new_element['name'] = string_name
   new_element.content = string_content
-  main_strings.xpath('//string').last().add_next_sibling("\n\t" + new_element.to_xml)
+  main_strings.xpath('//string').last().add_next_sibling("\n#{" " * 4}#{new_element.to_xml()}")
   return :added
 end
 
@@ -64,9 +64,9 @@ def merge_lib(main, library)
         return
       end
   end
-
+  
   File.open(MAIN_STRINGS_PATH, "w:UTF-8") do | f |
-    f.write(main_strings.to_xml)
+    f.write(main_strings.to_xml(:indent => 4))
   end
 
   puts "Done (#{added_count} added, #{updated_count} updated, #{untouched_count} untouched, #{skipped_count} skipped)."
