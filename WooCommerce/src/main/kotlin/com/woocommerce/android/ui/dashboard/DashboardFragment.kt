@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -32,6 +33,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
+
+        private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     }
 
     @Inject lateinit var presenter: DashboardContract.Presenter
@@ -91,6 +94,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
             }
         })
+
+        dashboard_plugin_version_notice.initView(
+                title = getString(R.string.dashboard_plugin_notice_title),
+                message = getString(R.string.dashboard_plugin_notice_message),
+                buttonLabel = getString(R.string.dashboard_plugin_notice_button_label),
+                buttonAction = { ActivityUtils.openUrlExternal(activity as Context, URL_UPGRADE_WOOCOMMERCE) })
 
         if (isActive) {
             refreshDashboard(forced = this.isRefreshPending)
@@ -213,6 +222,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
+                if (!AppPrefs.isUsingV3Api()) {
+                    presenter.checkApiVersion()
+                }
             }
             else -> isRefreshPending = true
         }
@@ -251,6 +263,16 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
+    }
+
+    override fun showPluginVersionNoticeCard() {
+        if (dashboard_plugin_version_notice.visibility != View.VISIBLE) {
+            WooAnimUtils.scaleIn(dashboard_plugin_version_notice, Duration.MEDIUM)
+        }
+    }
+
+    override fun hidePluginVersionNoticeCard() {
+        dashboard_plugin_version_notice.visibility = View.GONE
     }
 
     /**

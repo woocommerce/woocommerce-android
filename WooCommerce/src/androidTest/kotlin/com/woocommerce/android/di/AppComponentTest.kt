@@ -27,7 +27,8 @@ import javax.inject.Singleton
         FCMServiceModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class,
-        NetworkStatusModule::class))
+        NetworkStatusModule::class,
+        SupportModule::class))
 interface AppComponentTest : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

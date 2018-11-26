@@ -24,6 +24,15 @@
                 android:descendantFocusability="blocksDescendants"
                 android:orientation="vertical">
 
+                <!-- Update API version warning -->
+                <com.woocommerce.android.ui.dashboard.DashboardNoticeCard
+                    android:id="@+id/dashboard_plugin_version_notice"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"/>
+
                 <!-- Order stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardStatsView
                     android:id="@+id/dashboard_stats"
