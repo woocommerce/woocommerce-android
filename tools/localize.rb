@@ -4,10 +4,22 @@ require 'nokogiri'
 
 MAIN_STRINGS_PATH = "./WooCommerce/src/main/res/values/strings.xml"
 LIBRARIES_STRINGS_PATH = [
-  {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id", "login_notification_channel_id", "enter_site_address", "enter_email_wordpress_com"]}
+  {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id"]}
 ]
 
-def skip_string(library, string_name)
+# Checks if string_line has the content_override flag set
+def skip_string_by_tag(string_line)
+  skip = string_line.attr("content_override") == "true" unless string_line.attr("content_override").nil?
+  if (skip) 
+    puts " - Skipping #{string_line.attr("name")} string"
+    return true
+  end
+
+  return false
+end
+
+# Checks if string_name is in the excluesion list
+def skip_string_by_exclusion_list(library, string_name)
   if (!library.key?(:exclusions)) 
     return false
   end
@@ -17,23 +29,33 @@ def skip_string(library, string_name)
     puts " - Skipping #{string_name} string"
     return true
   end
-
-  return false
 end
 
-def add_or_update_string(main_strings, string_name, string_content)
-  main_strings.xpath('//string').each { | this_string | (if (this_string.content == string_content) then return :found else this_string.content = string_content ; return :updated end) if this_string.attr("name") == string_name } 
+# Merge string_line into main_string
+def merge_string(main_strings, library, string_line)
+  string_name = string_line.attr("name")
+  string_content = string_line.content
+
+  # Skip strings in the exclusions list
+  return :skipped if skip_string_by_exclusion_list(library, string_name)
+
+  # Search for the string in the main file
+  main_strings.xpath('//string').each do | this_string | 
+    if (this_string.attr("name") == string_name) then
+      # Skip if the string has the content_override tag
+      return :skipped if skip_string_by_tag(this_string)
+      
+      # Update if needed
+      (if (this_string.content == string_content) then return :found else this_string.content = string_content ; return :updated end)   
+    end
+  end
+
+  # String not found and not in the exclusion list: add to the main file
   new_element = Nokogiri::XML::Node.new "string", main_strings
   new_element['name'] = string_name
   new_element.content = string_content
   main_strings.xpath('//string').last().add_next_sibling("\n#{" " * 4}#{new_element.to_xml()}")
   return :added
-end
-
-def merge_string(main_strings, library, string_line)
-  string_name = string_line.attr("name")
-  return :skipped if skip_string(library, string_name)
-  add_or_update_string(main_strings, string_name, string_line.content)
 end
 
 def merge_lib(main, library)
