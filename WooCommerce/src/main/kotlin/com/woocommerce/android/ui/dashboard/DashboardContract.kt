@@ -13,6 +13,7 @@ interface DashboardContract {
         fun getStatsCurrency(): String?
         fun fetchUnfilledOrderCount(forced: Boolean = false)
         fun fetchHasOrders()
+        fun checkApiVersion()
     }
 
     interface View : BaseView<Presenter> {
@@ -29,6 +30,8 @@ interface DashboardContract {
         fun showErrorSnack()
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
+        fun showPluginVersionNoticeCard()
+        fun hidePluginVersionNoticeCard()
         fun showNoOrdersView(show: Boolean)
 
         fun showChartSkeleton(show: Boolean)
