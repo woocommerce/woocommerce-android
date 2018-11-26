@@ -188,7 +188,9 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun onNotificationClicked(notification: WCNotificationModel) {
         when (notification) {
-            is Order -> openOrderDetail(notification.orderId)
+            // TODO: this should pass notification.orderId once that's been wired up - for now this is
+            // simply passing a valid orderId from the test site
+            is Order -> openOrderDetail("1-1660-35")
             is Review -> openReviewDetail()
         }
     }
@@ -207,13 +209,13 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         if (!notifsRefreshLayout.isRefreshing) {
             val order = presenter.getOrder(orderId)
             if (order == null) {
-                // TODO: show error
+                uiMessageResolver.showSnack(R.string.order_error_fetch_generic)
                 return
             }
             val tag = OrderDetailFragment.TAG
             getFragmentFromBackStack(tag)?.let {
-                // TODO add arguments for the order to display
                 popToState(tag)
+                (it as OrderDetailFragment).showOrderDetail(order)
             } ?: loadChildFragment(OrderDetailFragment.newInstance(order), tag)
         }
     }
