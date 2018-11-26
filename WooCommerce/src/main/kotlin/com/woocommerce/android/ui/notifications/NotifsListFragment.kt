@@ -188,9 +188,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun onNotificationClicked(notification: WCNotificationModel) {
         when (notification) {
-            // TODO: this should pass notification.orderId once that's been wired up - for now this is
-            // simply passing a valid orderId from the test site
-            is Order -> openOrderDetail("1-1660-35")
+            is Order -> openOrderDetail(notification.orderId)
             is Review -> openReviewDetail()
         }
     }
