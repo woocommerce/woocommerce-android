@@ -188,7 +188,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun onNotificationClicked(notification: WCNotificationModel) {
         when (notification) {
-            is Order -> openOrderDetail("0") // TODO: how to get order from note model?
+            is Order -> openOrderDetail(notification.orderId)
             is Review -> openReviewDetail()
         }
     }

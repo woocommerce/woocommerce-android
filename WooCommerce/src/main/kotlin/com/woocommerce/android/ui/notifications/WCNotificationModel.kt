@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.notifications
 
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
+
 sealed class WCNotificationModel(val id: Int, val title: String, val desc: String, val dateCreated: String) {
     class Order(
         id: Int,
         title: String,
         desc: String,
-        dateCreated: String
+        dateCreated: String,
+        val orderId: OrderIdentifier
     ) : WCNotificationModel(id, title, desc, dateCreated)
 
     class Review(

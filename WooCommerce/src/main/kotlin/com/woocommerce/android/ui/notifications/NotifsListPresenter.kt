@@ -49,7 +49,7 @@ class NotifsListPresenter @Inject constructor(
             // TODO add real data here
             val notifs = listOf(
                     WCNotificationModel.Order(1, "You have a new order!",
-                            "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00"),
+                            "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00", "1"),
                     WCNotificationModel.Review(7, "Joe Smith left a review", "Review for Eyes Wide Shut",
                             "2018-10-22T21:08:11+00:00", 2, 1F, ""),
                     WCNotificationModel.Review(7, "Yuval Noah Harari left a review",
