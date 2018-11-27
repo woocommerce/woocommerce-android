@@ -117,11 +117,15 @@ object NotificationHandler {
     }
 
     /**
-     * Returns true if the note type is known to have a gravatar
+     * Returns true if the note type is known to have a Gravatar.
      */
     private fun shouldCircularizeNoteIcon(noteType: String): Boolean {
-        // TODO: Should declare any note types that should have circularized icons here
-        return false
+        if (noteType.isEmpty()) return false
+
+        return when (noteType) {
+            PUSH_TYPE_COMMENT -> true
+            else -> false
+        }
     }
 
     private fun getNotificationBuilder(context: Context, title: String, message: String?): NotificationCompat.Builder {
