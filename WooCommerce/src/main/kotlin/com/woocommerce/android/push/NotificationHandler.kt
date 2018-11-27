@@ -18,10 +18,11 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
-import java.util.Random
 
 // TODO Largely lifted from WPAndroid's GCMMessageService with several important things omitted - should be rewritten
 object NotificationHandler {
+    private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
+
     private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
     private const val PUSH_NOTIFICATION_ID = 10000
 
@@ -58,15 +59,16 @@ object NotificationHandler {
                 ?: context.getString(R.string.app_name)
         val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
 
+        val localPushId = PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
+        ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
+
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, title, message)
         val largeIconBitmap = getLargeIconBitmap(context, data.getString("icon"),
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
-        // TODO Instead of Random(), keep track of active notifications in a map and use its size to augment the base ID
-        val notificationId = PUSH_NOTIFICATION_ID + Random().nextInt()
-        showSingleNotificationForBuilder(context, builder, wpcomNoteID, notificationId, true)
+        showSingleNotificationForBuilder(context, builder, wpcomNoteID, localPushId, true)
 
         // TODO Show group notification
     }
