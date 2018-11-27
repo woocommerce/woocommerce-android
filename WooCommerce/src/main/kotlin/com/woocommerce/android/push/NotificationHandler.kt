@@ -19,7 +19,6 @@ import org.wordpress.android.util.StringUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 
-// TODO Largely lifted from WPAndroid's GCMMessageService with several important things omitted - should be rewritten
 object NotificationHandler {
     private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
 
@@ -31,6 +30,8 @@ object NotificationHandler {
     private const val PUSH_ARG_TITLE = "title"
     private const val PUSH_ARG_MSG = "msg"
     private const val PUSH_ARG_NOTE_ID = "note_id"
+
+    private const val PUSH_TYPE_COMMENT = "c"
 
     fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
         if (data.isEmpty) {
@@ -53,6 +54,8 @@ object NotificationHandler {
             return
         }
 
+        // TODO: Store note object in database
+
         val noteType = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
 
         val title = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_TITLE))
@@ -62,6 +65,7 @@ object NotificationHandler {
         val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId)
         ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
 
+        // TODO Bump analytics based on notification settings
 
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, title, message)
@@ -69,7 +73,7 @@ object NotificationHandler {
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
-        showSingleNotificationForBuilder(context, builder, wpComNoteId, localPushId, true)
+        showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId, true)
 
         // TODO Show group notification
     }
@@ -137,6 +141,24 @@ object NotificationHandler {
     private fun showSingleNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
+        noteType: String,
+        wpComNoteId: String,
+        pushId: Int,
+        notifyUser: Boolean
+    ) {
+        if (noteType == PUSH_TYPE_COMMENT) {
+            // TODO: Add quick actions for comments
+        }
+
+        showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId, notifyUser)
+    }
+
+    /**
+     * Creates a notification for a WordPress.com note, attaching an intent for the note's tap action.
+     */
+    private fun showWPComNotificationForBuilder(
+        builder: NotificationCompat.Builder,
+        context: Context,
         wpComNoteId: String,
         pushId: Int,
         notifyUser: Boolean
