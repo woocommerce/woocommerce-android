@@ -38,9 +38,9 @@ object NotificationHandler {
             return
         }
 
-        val wpcomNoteID = data.getString(PUSH_ARG_NOTE_ID, "")
+        val wpComNoteId = data.getString(PUSH_ARG_NOTE_ID, "")
         // TODO Temporarily disabled so it's easier to test spoofed notifications, restore
-//        if (wpcomNoteID.isNullOrEmpty()) {
+//        if (wpComNoteId.isNullOrEmpty()) {
 //            // At this point 'note_id' is always available in the notification bundle.
 //            WooLog.e(T.NOTIFS, "Push notification received without a valid note_id in the payload!")
 //            return
@@ -59,21 +59,9 @@ object NotificationHandler {
                 ?: context.getString(R.string.app_name)
         val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
 
-        // Update notification content for the same noteId if it is already showing
-        var localPushId = 0
-        for (id in ACTIVE_NOTIFICATIONS_MAP.keys) {
-            val noteBundle = ACTIVE_NOTIFICATIONS_MAP[id]
-            if (noteBundle?.getString(PUSH_ARG_NOTE_ID, "") == wpcomNoteID) {
-                localPushId = id
-                ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
-                break
-            }
-        }
+        val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId)
+        ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
 
-        if (localPushId == 0) {
-            localPushId = PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
-            ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
-        }
 
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, title, message)
@@ -81,9 +69,26 @@ object NotificationHandler {
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
-        showSingleNotificationForBuilder(context, builder, wpcomNoteID, localPushId, true)
+        showSingleNotificationForBuilder(context, builder, wpComNoteId, localPushId, true)
 
         // TODO Show group notification
+    }
+
+    /**
+     * For a given remote note ID, return a unique local ID to track that notification with, or return
+     * the existing local ID if a notification matching the remote note ID is already being displayed.
+     */
+    private fun getLocalPushIdForWpComNoteId(wpComNoteId: String): Int {
+        // Update notification content for the same noteId if it is already showing
+        for (id in ACTIVE_NOTIFICATIONS_MAP.keys) {
+            val noteBundle = ACTIVE_NOTIFICATIONS_MAP[id]
+            if (noteBundle?.getString(PUSH_ARG_NOTE_ID, "") == wpComNoteId) {
+                return id
+            }
+        }
+
+        // Notification isn't already showing
+        return PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
     }
 
     private fun getLargeIconBitmap(context: Context, iconUrl: String?, shouldCircularizeIcon: Boolean): Bitmap? {
@@ -132,11 +137,11 @@ object NotificationHandler {
     private fun showSingleNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
-        wpcomNoteID: String,
+        wpComNoteId: String,
         pushId: Int,
         notifyUser: Boolean
     ) {
-        // TODO Create an Intent containing the wpcomNoteID that launches the MainActivity to handle the tap action
+        // TODO Create an Intent containing the wpComNoteId that launches the MainActivity to handle the tap action
         // (and open the notifications tab)
         val resultIntent = Intent() // placeholder
         showNotificationForBuilder(builder, context, resultIntent, pushId, notifyUser)
