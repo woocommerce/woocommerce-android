@@ -11,10 +11,13 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.SearchView
+import android.support.v7.widget.SearchView.OnQueryTextListener
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -37,12 +40,14 @@ import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener {
+class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener,
+        OnQueryTextListener, OnActionExpandListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
+        const val STATE_KEY_SEARCH_QUERY = "search-query"
 
         fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -63,6 +68,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuButton: MenuItem? = null
 
+    private var searchView: SearchView? = null
+    private var searchMenuItem: MenuItem? = null
+    private var searchQuery: String? = null
+
     private val skeletonView = SkeletonView()
 
     override var isActive: Boolean = false
@@ -75,12 +84,27 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             listState = bundle.getParcelable(STATE_KEY_LIST)
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
+            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
         filterMenuButton = menu?.findItem(R.id.menu_filter)
+        searchMenuItem = menu?.findItem(R.id.menu_search)
+        searchMenuItem?.setOnActionExpandListener(this)
+
+        searchView = searchMenuItem?.actionView as SearchView
+        searchView?.setOnQueryTextListener(this)
+
+        // open search bar if we were searching for something before
+        if (!searchQuery.isNullOrBlank()) {
+            val tempQuery = searchQuery!!       // temporarily hold onto query
+            searchMenuItem?.expandActionView()  // this will reset searchQuery
+            onQueryTextSubmit(tempQuery)
+            searchView?.setQuery(searchQuery, true)
+        }
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -178,6 +202,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
+        outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
+
         super.onSaveInstanceState(outState)
     }
 
@@ -424,6 +450,33 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         // Reset the toolbar title
         activity?.title = getFragmentTitle()
+    }
+    // endregion
+
+    // region search
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+        // load last search query
+        if (!searchQuery.isNullOrBlank()) {
+            onQueryTextChange(searchQuery!!)
+        }
+
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+        activity?.invalidateOptionsMenu()
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        searchQuery = query
+        searchView?.clearFocus()
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        searchQuery = newText
+        return true
     }
     // endregion
 }

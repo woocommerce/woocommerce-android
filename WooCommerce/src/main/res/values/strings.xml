@@ -50,6 +50,7 @@
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
+    <string name="search">Search</string>
 
     <!--
         Date/Time Labels
