@@ -59,8 +59,21 @@ object NotificationHandler {
                 ?: context.getString(R.string.app_name)
         val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
 
-        val localPushId = PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
-        ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
+        // Update notification content for the same noteId if it is already showing
+        var localPushId = 0
+        for (id in ACTIVE_NOTIFICATIONS_MAP.keys) {
+            val noteBundle = ACTIVE_NOTIFICATIONS_MAP[id]
+            if (noteBundle?.getString(PUSH_ARG_NOTE_ID, "") == wpcomNoteID) {
+                localPushId = id
+                ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
+                break
+            }
+        }
+
+        if (localPushId == 0) {
+            localPushId = PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
+            ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
+        }
 
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, title, message)
