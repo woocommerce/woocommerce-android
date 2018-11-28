@@ -35,6 +35,16 @@ object NotificationHandler {
 
     private const val PUSH_TYPE_COMMENT = "c"
 
+    @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
+
+    @Synchronized fun clearNotifications() {
+        ACTIVE_NOTIFICATIONS_MAP.clear()
+    }
+
+    @Synchronized fun removeNotification(localPushId: Int) {
+        ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
+    }
+
     fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
         if (data.isEmpty) {
             WooLog.e(T.NOTIFS, "Push notification received without a valid Bundle!")
@@ -257,7 +267,9 @@ object NotificationHandler {
             // We're re-using the same builder for single and group.
         }
 
-        // TODO Call a processing service when notification is dismissed
+        // Call processing service when notification is dismissed
+        val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForNotificationDismiss(context, pushId)
+        builder.setDeleteIntent(pendingDeleteIntent)
 
         builder.setCategory(NotificationCompat.CATEGORY_SOCIAL)
 
