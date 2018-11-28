@@ -11,8 +11,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.SearchView
-import android.support.v7.widget.SearchView.OnQueryTextListener
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -20,6 +18,8 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
+import android.widget.SearchView.OnQueryTextListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -476,11 +476,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     // region search
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-        // load last search query
-        if (!searchQuery.isNullOrBlank()) {
-            onQueryTextChange(searchQuery!!)
-        }
         ordersAdapter.clearAdapterData()
+        orderStatusFilter = null
         return true
     }
 
@@ -503,6 +500,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun submitSearch(query: String) {
         searchQuery = query
+
         if (!searchQuery.isNullOrBlank()) {
             activity?.invalidateOptionsMenu()
             presenter.searchOrders(searchQuery!!)
