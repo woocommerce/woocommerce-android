@@ -12,7 +12,7 @@ interface OrderListContract {
         fun isLoading(): Boolean
         fun openOrderDetail(order: WCOrderModel)
         fun fetchAndLoadOrdersFromDb(orderStatusFilter: String? = null, isForceRefresh: Boolean)
-        fun searchOrders(searchQuery: String?)
+        fun searchOrders(searchQuery: String)
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
@@ -25,7 +25,10 @@ interface OrderListContract {
         fun refreshFragmentState()
         fun showLoadOrdersError()
         fun onFilterSelected(orderStatus: String?)
-        fun submitSearch(query: String?)
+
+        fun isSearching(): Boolean
+        fun submitSearch(query: String)
+        fun showSearchResults(query: String, orders: List<WCOrderModel>)
 
         fun showSkeleton(show: Boolean)
     }

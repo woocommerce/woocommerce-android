@@ -112,8 +112,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
-        // Hide filter menu item when we're showing all orders and there aren't any or we're showing order detail.
-        val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) || isShowingOrderDetail()
+        // Hide filter menu item when we're showing all orders and there aren't any,
+        // or we're showing order detail, or when the user is doing an order search
+        val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE)
+                || isShowingOrderDetail()
+                || isSearching()
         menu?.findItem(R.id.menu_filter)?.isVisible = !hideFilterMenu
         super.onPrepareOptionsMenu(menu)
     }
@@ -477,6 +480,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         if (!searchQuery.isNullOrBlank()) {
             onQueryTextChange(searchQuery!!)
         }
+        ordersAdapter.clearAdapterData()
         return true
     }
 
@@ -486,19 +490,36 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        submitSearch(query)
-        searchView?.clearFocus()
+        if (query != searchQuery) {
+            submitSearch(query)
+            searchView?.clearFocus()
+        }
         return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        searchQuery = newText
         return true
     }
 
-    override fun submitSearch(query: String?) {
+    override fun submitSearch(query: String) {
         searchQuery = query
-        presenter.searchOrders(searchQuery)
+        if (!searchQuery.isNullOrBlank()) {
+            activity?.invalidateOptionsMenu()
+            presenter.searchOrders(searchQuery!!)
+        }
+    }
+
+    override fun isSearching(): Boolean {
+        searchView?.let {
+            if (it.isIconified) return true
+        }
+        return !searchQuery.isNullOrBlank()
+    }
+
+    override fun showSearchResults(query: String, orders: List<WCOrderModel>) {
+        if (query == searchQuery) {
+            ordersAdapter.setOrders(orders)
+        }
     }
     // endregion
 }

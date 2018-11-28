@@ -27,7 +27,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
     private var orderStatusFilter: String? = null
 
-    fun setOrders(orders: List<WCOrderModel>, filterByStatus: String?) {
+    fun setOrders(orders: List<WCOrderModel>, filterByStatus: String? = null) {
         orderStatusFilter = filterByStatus
 
         // clear all the current data from the adapter
