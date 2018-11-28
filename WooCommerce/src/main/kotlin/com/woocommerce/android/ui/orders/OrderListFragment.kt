@@ -68,6 +68,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuItem: MenuItem? = null
 
+    private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var searchQuery: String? = null
 
@@ -113,8 +114,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
         R.id.menu_search -> {
             // TODO: analytics
-            item.setOnActionExpandListener(this)
-            searchView = item.actionView as SearchView?
+            searchMenuItem = item
+            searchMenuItem?.setOnActionExpandListener(this)
+            searchView = searchMenuItem?.actionView as SearchView?
             searchView?.setOnQueryTextListener(this)
             true
         }
@@ -458,16 +460,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-        searchQuery = null
-        activity?.invalidateOptionsMenu()
+        clearSearchResults()
         return true
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        if (query != searchQuery) {
-            submitSearch(query)
-            // searchView?.clearFocus()
-        }
+        submitSearch(query)
         return true
     }
 
@@ -495,6 +493,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         if (query == searchQuery) {
             ordersAdapter.setOrders(orders)
         }
+    }
+
+    override fun clearSearchResults() {
+        searchQuery = null
+        searchMenuItem?.setOnActionExpandListener(null)
+        searchView?.setOnQueryTextListener(null)
+        searchView?.isIconified = true
+        activity?.invalidateOptionsMenu()
+        presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
     }
     // endregion
 }
