@@ -492,11 +492,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        if (!newText.isBlank()) {
-            submitSearch(newText)
-        } else {
-            searchQuery = null
-        }
+        searchQuery = newText
         return true
     }
 
