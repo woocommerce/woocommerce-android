@@ -90,24 +90,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
-
         filterMenuItem = menu?.findItem(R.id.menu_filter)
-
-        searchMenuItem = menu?.findItem(R.id.menu_search)
-        searchMenuItem?.let {
-            it.setOnActionExpandListener(this)
-            searchView = it.actionView as SearchView?
-        }
-        searchView?.setOnQueryTextListener(this)
-
-        // open search bar if we were searching for something before
-        if (!searchQuery.isNullOrBlank()) {
-            val tempQuery = searchQuery!!       // temporarily hold onto query
-            searchMenuItem?.expandActionView()  // this will reset searchQuery
-            onQueryTextSubmit(tempQuery)
-            searchView?.setQuery(searchQuery, true)
-        }
-
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -202,8 +185,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         R.id.menu_search -> {
             searchMenuItem = item
             searchMenuItem?.setOnActionExpandListener(this)
-            searchMenuItem?.expandActionView()
-
             searchView = item.actionView as SearchView?
             searchView?.setOnQueryTextListener(this)
 
@@ -482,6 +463,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+        searchQuery = null
         activity?.invalidateOptionsMenu()
         return true
     }
