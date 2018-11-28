@@ -24,6 +24,8 @@ object NotificationHandler {
 
     private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
     private const val PUSH_NOTIFICATION_ID = 10000
+    const val GROUP_NOTIFICATION_ID = 30000
+    private const val MAX_INBOX_ITEMS = 5
 
     private const val PUSH_ARG_USER = "user"
     private const val PUSH_ARG_TYPE = "type"
@@ -75,7 +77,9 @@ object NotificationHandler {
 
         showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId, true)
 
-        // TODO Show group notification
+        // Also add a group summary notification, which is required for non-wearable devices
+        // Do not need to play the sound again. We've already played it in the individual builder.
+        showGroupNotificationForBuilder(context, builder, wpComNoteId, message)
     }
 
     /**
@@ -131,7 +135,7 @@ object NotificationHandler {
     private fun getNotificationBuilder(context: Context, title: String, message: String?): NotificationCompat.Builder {
         return NotificationCompat.Builder(context,
                 context.getString(R.string.notification_channel_general_id))
-                .setSmallIcon(R.drawable.login_notification_icon)
+                .setSmallIcon(R.drawable.ic_woo_w_notification)
                 .setColor(ContextCompat.getColor(context, R.color.wc_purple))
                 .setContentTitle(title)
                 .setContentText(message)
@@ -155,6 +159,67 @@ object NotificationHandler {
         }
 
         showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId, notifyUser)
+    }
+
+    private fun showGroupNotificationForBuilder(
+        context: Context,
+        builder: NotificationCompat.Builder,
+        wpComNoteId: String,
+        message: String?
+    ) {
+        // Using a copy of the map to avoid concurrency problems
+        val notesMap = ACTIVE_NOTIFICATIONS_MAP.toMap()
+        if (notesMap.size > 1) {
+            val inboxStyle = NotificationCompat.InboxStyle()
+
+            var noteCounter = 1
+            for (pushBundle in notesMap.values) {
+                // InboxStyle notification is limited to 5 lines
+                if (noteCounter > MAX_INBOX_ITEMS) break
+
+                // Skip notes with no content from the 5-line inbox
+                if (pushBundle.getString(PUSH_ARG_MSG) == null) continue
+
+                if (pushBundle.getString(PUSH_ARG_TYPE, "") == PUSH_TYPE_COMMENT) {
+                    val pnTitle = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_TITLE))
+                    val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG))
+                    inboxStyle.addLine("$pnTitle: $pnMessage")
+                } else {
+                    val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG))
+                    inboxStyle.addLine(pnMessage)
+                }
+
+                noteCounter++
+            }
+
+            if (notesMap.size > MAX_INBOX_ITEMS) {
+                inboxStyle.setSummaryText(
+                        String.format(context.getString(R.string.more_notifications), notesMap.size - MAX_INBOX_ITEMS)
+                )
+            }
+
+            val subject = String.format(context.getString(R.string.new_notifications), notesMap.size)
+            val groupBuilder = NotificationCompat.Builder(
+                    context,
+                    context.getString(R.string.notification_channel_general_id))
+                    .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                    .setSmallIcon(R.drawable.ic_woo_w_notification)
+                    .setColor(ContextCompat.getColor(context, R.color.wc_purple))
+                    .setGroup(NOTIFICATION_GROUP_KEY)
+                    .setGroupSummary(true)
+                    .setAutoCancel(true)
+                    .setTicker(message)
+                    .setContentTitle(context.getString(R.string.app_name))
+                    .setContentText(subject)
+                    .setStyle(inboxStyle)
+
+            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID, false)
+        } else {
+            // Set the individual notification we've already built as the group summary
+            builder.setGroupSummary(true)
+                    .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID, false)
+        }
     }
 
     /**
