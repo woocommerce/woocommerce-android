@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
 import javax.inject.Inject
 
 class OrderListPresenter @Inject constructor(
@@ -47,16 +48,25 @@ class OrderListPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadOrders(filterByStatus: String?, filterByKeyword: String?, forceRefresh: Boolean) {
-        // TODO: must force refresh if there's a search
+    override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
         if (networkStatus.isConnected() && forceRefresh) {
             isLoadingOrders = true
             orderView?.showNoOrdersView(false)
             orderView?.showSkeleton(true)
-            val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus, filterByKeyword)
+            val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
             fetchAndLoadOrdersFromDb(filterByStatus, isForceRefresh = false)
+        }
+    }
+
+    override fun searchOrders(searchQuery: String?) {
+        if (networkStatus.isConnected() && !searchQuery.isNullOrBlank()) {
+            isLoadingOrders = true
+            orderView?.showNoOrdersView(false)
+            orderView?.showSkeleton(true)
+            val payload = SearchOrdersPayload(selectedSite.get(), searchQuery!!)
+            dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
         }
     }
 

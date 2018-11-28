@@ -6,12 +6,13 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 
 interface OrderListContract {
     interface Presenter : BasePresenter<View> {
-        fun loadOrders(filterByStatus: String? = null, filterByKeyword: String? = null, forceRefresh: Boolean)
+        fun loadOrders(filterByStatus: String? = null, forceRefresh: Boolean)
         fun loadMoreOrders(orderStatusFilter: String? = null)
         fun canLoadMore(): Boolean
         fun isLoading(): Boolean
         fun openOrderDetail(order: WCOrderModel)
         fun fetchAndLoadOrdersFromDb(orderStatusFilter: String? = null, isForceRefresh: Boolean)
+        fun searchOrders(searchQuery: String?)
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {

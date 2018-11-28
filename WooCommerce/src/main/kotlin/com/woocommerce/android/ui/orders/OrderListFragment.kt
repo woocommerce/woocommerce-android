@@ -147,7 +147,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
                     if (!isRefreshPending) {
                         isRefreshPending = true
-                        presenter.loadOrders(orderStatusFilter, searchQuery, forceRefresh = true)
+                        presenter.loadOrders(orderStatusFilter, forceRefresh = true)
                     }
                 }
 
@@ -180,7 +180,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         presenter.takeView(this)
 
         if (isActive && !deferInit) {
-            presenter.loadOrders(orderStatusFilter, searchQuery, forceRefresh = this.isRefreshPending)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
         }
 
         listState?.let {
@@ -231,7 +231,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive) {
-            presenter.loadOrders(orderStatusFilter, searchQuery, forceRefresh = this.isRefreshPending)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
             filterMenuItem?.isVisible = true
         } else {
             filterMenuItem?.isVisible = false
@@ -378,7 +378,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun refreshFragmentState() {
         isRefreshPending = true
         if (isActive) {
-            presenter.loadOrders(orderStatusFilter, searchQuery, forceRefresh = true)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }
 
@@ -464,7 +464,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
-        presenter.loadOrders(orderStatusFilter, searchQuery, true)
+        presenter.loadOrders(orderStatusFilter, true)
 
         // Reset the toolbar title
         activity?.title = getFragmentTitle()
@@ -498,7 +498,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun submitSearch(query: String?) {
         searchQuery = query
-        presenter.loadOrders(orderStatusFilter, searchQuery, forceRefresh = true)
+        presenter.searchOrders(searchQuery)
     }
     // endregion
 }
