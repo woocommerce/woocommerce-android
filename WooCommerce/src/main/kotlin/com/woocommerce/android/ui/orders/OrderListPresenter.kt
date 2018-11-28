@@ -47,12 +47,13 @@ class OrderListPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
+    override fun loadOrders(filterByStatus: String?, filterByKeyword: String?, forceRefresh: Boolean) {
+        // TODO: must force refresh if there's a search
         if (networkStatus.isConnected() && forceRefresh) {
             isLoadingOrders = true
             orderView?.showNoOrdersView(false)
             orderView?.showSkeleton(true)
-            val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
+            val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus, filterByKeyword)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         } else {
             fetchAndLoadOrdersFromDb(filterByStatus, isForceRefresh = false)
