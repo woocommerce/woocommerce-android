@@ -11,6 +11,8 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.SearchView
+import android.support.v7.widget.SearchView.OnQueryTextListener
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -18,8 +20,6 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
-import android.widget.SearchView.OnQueryTextListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -69,7 +69,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var filterMenuItem: MenuItem? = null
 
     private var searchView: SearchView? = null
-    private var searchMenuItem: MenuItem? = null
     private var searchQuery: String? = null
 
     private val skeletonView = SkeletonView()
@@ -90,7 +89,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
+
         filterMenuItem = menu?.findItem(R.id.menu_filter)
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -102,6 +103,22 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 || isSearching()
         menu?.findItem(R.id.menu_filter)?.isVisible = !hideFilterMenu
         super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
+        R.id.menu_filter -> {
+            AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
+            showFilterDialog()
+            true
+        }
+        R.id.menu_search -> {
+            // TODO: analytics
+            item.setOnActionExpandListener(this)
+            searchView = item.actionView as SearchView?
+            searchView?.setOnQueryTextListener(this)
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onAttach(context: Context?) {
@@ -175,29 +192,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
-        R.id.menu_filter -> {
-            AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
-
-            showFilterDialog()
-            true
-        }
-        R.id.menu_search -> {
-            searchMenuItem = item
-            searchMenuItem?.setOnActionExpandListener(this)
-            searchView = item.actionView as SearchView?
-            searchView?.setOnQueryTextListener(this)
-
-            // load last saved query
-            if (!searchQuery.isNullOrBlank()) {
-                onQueryTextSubmit(searchQuery!!)
-                searchView?.setQuery(searchQuery, true)
-            }
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = ordersList.layoutManager.onSaveInstanceState()
 
@@ -233,6 +227,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onDestroyView() {
         presenter.dropView()
         filterMenuItem = null
+        searchView = null
         super.onDestroyView()
     }
 
@@ -471,7 +466,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onQueryTextSubmit(query: String): Boolean {
         if (query != searchQuery) {
             submitSearch(query)
-            searchView?.clearFocus()
+            // searchView?.clearFocus()
         }
         return true
     }
@@ -491,7 +486,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun isSearching(): Boolean {
         searchView?.let {
-            if (it.isIconified) return true
+            if (!it.isIconified) return true
         }
         return !searchQuery.isNullOrBlank()
     }
