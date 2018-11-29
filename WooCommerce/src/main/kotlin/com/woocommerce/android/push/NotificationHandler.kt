@@ -34,6 +34,7 @@ object NotificationHandler {
     private const val PUSH_ARG_NOTE_ID = "note_id"
 
     private const val PUSH_TYPE_COMMENT = "c"
+    private const val PUSH_TYPE_NEW_ORDER = "store_order"
 
     @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
 
@@ -70,8 +71,15 @@ object NotificationHandler {
 
         val noteType = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
 
-        val title = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_TITLE))
-                ?: context.getString(R.string.app_name)
+        val title = if (noteType == PUSH_TYPE_NEW_ORDER) {
+            // New order notifications have title 'WordPress.com' - just show the app name instead
+            // TODO Consider revising this, perhaps use the contents of the note as the title/body of the notification
+            context.getString(R.string.app_name)
+        } else {
+            StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_TITLE))
+                    ?: context.getString(R.string.app_name)
+        }
+
         val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
 
         val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId)
