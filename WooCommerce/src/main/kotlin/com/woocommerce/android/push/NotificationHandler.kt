@@ -18,12 +18,14 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
-import java.util.Random
 
-// TODO Largely lifted from WPAndroid's GCMMessageService with several important things omitted - should be rewritten
 object NotificationHandler {
+    private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
+
     private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
     private const val PUSH_NOTIFICATION_ID = 10000
+    const val GROUP_NOTIFICATION_ID = 30000
+    private const val MAX_INBOX_ITEMS = 5
 
     private const val PUSH_ARG_USER = "user"
     private const val PUSH_ARG_TYPE = "type"
@@ -31,15 +33,28 @@ object NotificationHandler {
     private const val PUSH_ARG_MSG = "msg"
     private const val PUSH_ARG_NOTE_ID = "note_id"
 
+    private const val PUSH_TYPE_COMMENT = "c"
+    private const val PUSH_TYPE_NEW_ORDER = "store_order"
+
+    @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
+
+    @Synchronized fun clearNotifications() {
+        ACTIVE_NOTIFICATIONS_MAP.clear()
+    }
+
+    @Synchronized fun removeNotification(localPushId: Int) {
+        ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
+    }
+
     fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
         if (data.isEmpty) {
             WooLog.e(T.NOTIFS, "Push notification received without a valid Bundle!")
             return
         }
 
-        val wpcomNoteID = data.getString(PUSH_ARG_NOTE_ID, "")
+        val wpComNoteId = data.getString(PUSH_ARG_NOTE_ID, "")
         // TODO Temporarily disabled so it's easier to test spoofed notifications, restore
-//        if (wpcomNoteID.isNullOrEmpty()) {
+//        if (wpComNoteId.isNullOrEmpty()) {
 //            // At this point 'note_id' is always available in the notification bundle.
 //            WooLog.e(T.NOTIFS, "Push notification received without a valid note_id in the payload!")
 //            return
@@ -52,11 +67,25 @@ object NotificationHandler {
             return
         }
 
+        // TODO: Store note object in database
+
         val noteType = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
 
-        val title = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_TITLE))
-                ?: context.getString(R.string.app_name)
+        val title = if (noteType == PUSH_TYPE_NEW_ORDER) {
+            // New order notifications have title 'WordPress.com' - just show the app name instead
+            // TODO Consider revising this, perhaps use the contents of the note as the title/body of the notification
+            context.getString(R.string.app_name)
+        } else {
+            StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_TITLE))
+                    ?: context.getString(R.string.app_name)
+        }
+
         val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
+
+        val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId)
+        ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
+
+        // TODO Bump analytics based on notification settings
 
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, title, message)
@@ -64,11 +93,28 @@ object NotificationHandler {
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
-        // TODO Instead of Random(), keep track of active notifications in a map and use its size to augment the base ID
-        val notificationId = PUSH_NOTIFICATION_ID + Random().nextInt()
-        showSingleNotificationForBuilder(context, builder, wpcomNoteID, notificationId, true)
+        showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId, true)
 
-        // TODO Show group notification
+        // Also add a group summary notification, which is required for non-wearable devices
+        // Do not need to play the sound again. We've already played it in the individual builder.
+        showGroupNotificationForBuilder(context, builder, wpComNoteId, message)
+    }
+
+    /**
+     * For a given remote note ID, return a unique local ID to track that notification with, or return
+     * the existing local ID if a notification matching the remote note ID is already being displayed.
+     */
+    private fun getLocalPushIdForWpComNoteId(wpComNoteId: String): Int {
+        // Update notification content for the same noteId if it is already showing
+        for (id in ACTIVE_NOTIFICATIONS_MAP.keys) {
+            val noteBundle = ACTIVE_NOTIFICATIONS_MAP[id]
+            if (noteBundle?.getString(PUSH_ARG_NOTE_ID, "") == wpComNoteId) {
+                return id
+            }
+        }
+
+        // Notification isn't already showing
+        return PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
     }
 
     private fun getLargeIconBitmap(context: Context, iconUrl: String?, shouldCircularizeIcon: Boolean): Bitmap? {
@@ -93,17 +139,21 @@ object NotificationHandler {
     }
 
     /**
-     * Returns true if the note type is known to have a gravatar
+     * Returns true if the note type is known to have a Gravatar.
      */
     private fun shouldCircularizeNoteIcon(noteType: String): Boolean {
-        // TODO: Should declare any note types that should have circularized icons here
-        return false
+        if (noteType.isEmpty()) return false
+
+        return when (noteType) {
+            PUSH_TYPE_COMMENT -> true
+            else -> false
+        }
     }
 
     private fun getNotificationBuilder(context: Context, title: String, message: String?): NotificationCompat.Builder {
         return NotificationCompat.Builder(context,
                 context.getString(R.string.notification_channel_general_id))
-                .setSmallIcon(R.drawable.login_notification_icon)
+                .setSmallIcon(R.drawable.ic_woo_w_notification)
                 .setColor(ContextCompat.getColor(context, R.color.wc_purple))
                 .setContentTitle(title)
                 .setContentText(message)
@@ -117,11 +167,90 @@ object NotificationHandler {
     private fun showSingleNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
-        wpcomNoteID: String,
+        noteType: String,
+        wpComNoteId: String,
         pushId: Int,
         notifyUser: Boolean
     ) {
-        // TODO Create an Intent containing the wpcomNoteID that launches the MainActivity to handle the tap action
+        if (noteType == PUSH_TYPE_COMMENT) {
+            // TODO: Add quick actions for comments
+        }
+
+        showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId, notifyUser)
+    }
+
+    private fun showGroupNotificationForBuilder(
+        context: Context,
+        builder: NotificationCompat.Builder,
+        wpComNoteId: String,
+        message: String?
+    ) {
+        // Using a copy of the map to avoid concurrency problems
+        val notesMap = ACTIVE_NOTIFICATIONS_MAP.toMap()
+        if (notesMap.size > 1) {
+            val inboxStyle = NotificationCompat.InboxStyle()
+
+            var noteCounter = 1
+            for (pushBundle in notesMap.values) {
+                // InboxStyle notification is limited to 5 lines
+                if (noteCounter > MAX_INBOX_ITEMS) break
+
+                // Skip notes with no content from the 5-line inbox
+                if (pushBundle.getString(PUSH_ARG_MSG) == null) continue
+
+                if (pushBundle.getString(PUSH_ARG_TYPE, "") == PUSH_TYPE_COMMENT) {
+                    val pnTitle = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_TITLE))
+                    val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG))
+                    inboxStyle.addLine("$pnTitle: $pnMessage")
+                } else {
+                    val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG))
+                    inboxStyle.addLine(pnMessage)
+                }
+
+                noteCounter++
+            }
+
+            if (notesMap.size > MAX_INBOX_ITEMS) {
+                inboxStyle.setSummaryText(
+                        String.format(context.getString(R.string.more_notifications), notesMap.size - MAX_INBOX_ITEMS)
+                )
+            }
+
+            val subject = String.format(context.getString(R.string.new_notifications), notesMap.size)
+            val groupBuilder = NotificationCompat.Builder(
+                    context,
+                    context.getString(R.string.notification_channel_general_id))
+                    .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                    .setSmallIcon(R.drawable.ic_woo_w_notification)
+                    .setColor(ContextCompat.getColor(context, R.color.wc_purple))
+                    .setGroup(NOTIFICATION_GROUP_KEY)
+                    .setGroupSummary(true)
+                    .setAutoCancel(true)
+                    .setTicker(message)
+                    .setContentTitle(context.getString(R.string.app_name))
+                    .setContentText(subject)
+                    .setStyle(inboxStyle)
+
+            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID, false)
+        } else {
+            // Set the individual notification we've already built as the group summary
+            builder.setGroupSummary(true)
+                    .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID, false)
+        }
+    }
+
+    /**
+     * Creates a notification for a WordPress.com note, attaching an intent for the note's tap action.
+     */
+    private fun showWPComNotificationForBuilder(
+        builder: NotificationCompat.Builder,
+        context: Context,
+        wpComNoteId: String,
+        pushId: Int,
+        notifyUser: Boolean
+    ) {
+        // TODO Create an Intent containing the wpComNoteId that launches the MainActivity to handle the tap action
         // (and open the notifications tab)
         val resultIntent = Intent() // placeholder
         showNotificationForBuilder(builder, context, resultIntent, pushId, notifyUser)
@@ -146,7 +275,9 @@ object NotificationHandler {
             // We're re-using the same builder for single and group.
         }
 
-        // TODO Call a processing service when notification is dismissed
+        // Call processing service when notification is dismissed
+        val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForNotificationDismiss(context, pushId)
+        builder.setDeleteIntent(pendingDeleteIntent)
 
         builder.setCategory(NotificationCompat.CATEGORY_SOCIAL)
 

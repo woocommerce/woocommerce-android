@@ -208,6 +208,11 @@
     <string name="orderstatus_refunded">Refunded</string>
     <string name="orderstatus_contentDesc">Order status</string>
     <!--
+        Notifications
+    -->
+    <string name="new_notifications">%d new notifications</string>
+    <string name="more_notifications">and %d more.</string>
+    <!--
         Settings
     -->
     <string name="settings">Settings</string>
