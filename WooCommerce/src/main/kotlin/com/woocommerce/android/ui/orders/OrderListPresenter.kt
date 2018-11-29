@@ -12,13 +12,13 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
-import org.wordpress.android.fluxc.action.WCOrderAction.SEARCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrdersSearched
 import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
 import javax.inject.Inject
 
@@ -117,21 +117,26 @@ class OrderListPresenter @Inject constructor(
                     isLoadingOrders = false
                 }
             }
-            SEARCH_ORDERS -> {
-                if (event.isError) {
-                    WooLog.e(T.ORDERS, "$TAG - Error searching orders : ${event.error.message}")
-                    orderView?.showLoadOrdersError()
-                } else {
-                    // TODO: analytics (track event but not user's search query)
-                    orderView?.showSearchResults(event.searchQuery!!, event.searchResults)
-                }
-
-                isLoadingOrders = false
-            }
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
             else -> {}
         }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrdersSearched(event: OnOrdersSearched) {
+        orderView?.showSkeleton(false)
+
+        if (event.isError) {
+            WooLog.e(T.ORDERS, "$TAG - Error searching orders : ${event.error.message}")
+            orderView?.showLoadOrdersError()
+        } else {
+            // TODO: analytics (track event but not user's search query)
+            orderView?.showSearchResults(event.searchQuery, event.searchResults)
+        }
+
+        isLoadingOrders = false
     }
 
     override fun openOrderDetail(order: WCOrderModel) {

@@ -71,6 +71,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var searchQuery: String? = null
+    private var isSearching: Boolean = false
 
     private val skeletonView = SkeletonView()
 
@@ -101,7 +102,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // or we're showing order detail, or when the user is doing an order search
         val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE)
                 || isShowingOrderDetail()
-                || isSearching()
+                || isSearching
         menu?.findItem(R.id.menu_filter)?.isVisible = !hideFilterMenu
         super.onPrepareOptionsMenu(menu)
     }
@@ -118,6 +119,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             searchMenuItem?.setOnActionExpandListener(this)
             searchView = searchMenuItem?.actionView as SearchView?
             searchView?.setOnQueryTextListener(this)
+            filterMenuItem?.setVisible(false)
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -456,6 +458,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         ordersAdapter.clearAdapterData()
         orderStatusFilter = null
+        isSearching = true
         return true
     }
 
@@ -477,16 +480,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         searchQuery = query
 
         if (!searchQuery.isNullOrBlank()) {
-            activity?.invalidateOptionsMenu()
             presenter.searchOrders(searchQuery!!)
         }
-    }
-
-    override fun isSearching(): Boolean {
-        searchView?.let {
-            if (!it.isIconified) return true
-        }
-        return !searchQuery.isNullOrBlank()
     }
 
     override fun showSearchResults(query: String, orders: List<WCOrderModel>) {
@@ -495,12 +490,18 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
     }
 
+    /**
+     * Return to the non-search order view
+     */
     override fun clearSearchResults() {
         searchQuery = null
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         searchView?.isIconified = true
+
+        isSearching = false
         activity?.invalidateOptionsMenu()
+
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
     }
     // endregion

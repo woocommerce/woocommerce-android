@@ -26,7 +26,6 @@ interface OrderListContract {
         fun showLoadOrdersError()
         fun onFilterSelected(orderStatus: String?)
 
-        fun isSearching(): Boolean
         fun submitSearch(query: String)
         fun showSearchResults(query: String, orders: List<WCOrderModel>)
         fun clearSearchResults()
