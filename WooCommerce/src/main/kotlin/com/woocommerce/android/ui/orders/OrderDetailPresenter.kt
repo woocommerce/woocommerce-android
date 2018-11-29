@@ -23,7 +23,6 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -42,6 +41,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override var orderModel: WCOrderModel? = null
+    override var orderIdentifier: OrderIdentifier? = null
     override var isUsingCachedNotes = false
 
     private var orderView: OrderDetailContract.View? = null
@@ -61,13 +61,16 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean) {
+        this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
             orderView?.let { view ->
-                 orderStore.getOrderByIdentifier(orderIdentifier)?.let {
+                fetchOrder(remoteOrderId)
+                // TODO: restore the code below
+                 /*orderStore.getOrderByIdentifier(orderIdentifier)?.let {
                     view.showOrderDetail(it)
                      if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                      loadOrderNotes()
-                } ?: fetchOrder(remoteOrderId)
+                } ?: fetchOrder(remoteOrderId)*/
             }
         }
     }
@@ -89,7 +92,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun fetchOrder(remoteOrderId: Long) {
-        orderView?.showLoadingProgress(true)
+        orderView?.showLoadOrderProgress(true)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
     }
@@ -132,7 +135,16 @@ class OrderDetailPresenter @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_SINGLE_ORDER) {
-            orderView?.showLoadingProgress(false)
+            orderIdentifier?.let {
+                orderModel = orderStore.getOrderByIdentifier(it)
+                if (orderModel != null) {
+                    orderView?.showLoadOrderProgress(false)
+                    orderView?.showOrderDetail(orderModel)
+                    fetchAndLoadNotesFromDb()
+                } else {
+                    orderView?.showLoadOrderError()
+                }
+            } ?: orderView?.showLoadOrderError()
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderView?.showOrderNotesSkeleton(false)
             if (event.isError) {

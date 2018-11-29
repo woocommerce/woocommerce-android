@@ -240,8 +240,15 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun showLoadingProgress(show: Boolean) {
-        // TODO
+    override fun showLoadOrderProgress(show: Boolean) {
+        loadingProgress.visibility = if (show) View.VISIBLE else View.GONE
+        orderDetail_container.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    override fun showLoadOrderError() {
+        loadingProgress.visibility = View.GONE
+        uiMessageResolver.showSnack(R.string.order_error_fetch_generic)
+        childFragmentManager.popBackStack()
     }
 
     override fun onRequestAddNote() {
