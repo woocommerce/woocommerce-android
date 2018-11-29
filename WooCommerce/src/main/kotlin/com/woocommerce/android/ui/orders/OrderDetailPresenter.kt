@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -64,13 +65,11 @@ class OrderDetailPresenter @Inject constructor(
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
             orderView?.let { view ->
-                fetchOrder(remoteOrderId)
-                // TODO: restore the code below
-                 /*orderStore.getOrderByIdentifier(orderIdentifier)?.let {
+                orderStore.getOrderByIdentifier(orderIdentifier)?.let {
                     view.showOrderDetail(it)
-                     if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                     loadOrderNotes()
-                } ?: fetchOrder(remoteOrderId)*/
+                    if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
+                    loadOrderNotes()
+                } ?: fetchOrder(remoteOrderId)
             }
         }
     }

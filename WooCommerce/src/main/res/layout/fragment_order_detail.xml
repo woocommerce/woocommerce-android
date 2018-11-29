@@ -13,9 +13,10 @@
 
         <ProgressBar
             android:id="@+id/loadingProgress"
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_large"/>
 
         <LinearLayout
             android:id="@+id/orderDetail_container"
