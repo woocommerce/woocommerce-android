@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.notifications.NotifsListContract.View
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
@@ -50,7 +49,7 @@ class NotifsListPresenter @Inject constructor(
             val notifs = listOf(
                     WCNotificationModel.Order(1, "You have a new order!",
                             "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00",
-                            "1-1660-35"),
+                            "1-1660-35", 1467),
                     WCNotificationModel.Review(7, "Joe Smith left a review", "Review for Eyes Wide Shut",
                             "2018-10-22T21:08:11+00:00", 2, 1F, ""),
                     WCNotificationModel.Review(7, "Yuval Noah Harari left a review",
@@ -93,8 +92,6 @@ class NotifsListPresenter @Inject constructor(
     override fun setAllNotifsRead() {
         TODO("not implemented")
     }
-
-    override fun getOrder(orderId: OrderIdentifier) = orderStore.getOrderByIdentifier(orderId)
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

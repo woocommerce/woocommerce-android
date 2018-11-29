@@ -60,14 +60,14 @@ class OrderDetailPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean) {
         if (orderIdentifier.isNotEmpty()) {
             orderView?.let { view ->
-                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also { order ->
-                    view.showOrderDetail(order)
-                }
-                if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                loadOrderNotes() // load order notes
+                 orderStore.getOrderByIdentifier(orderIdentifier)?.let {
+                    view.showOrderDetail(it)
+                     if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
+                     loadOrderNotes()
+                } ?: fetchOrder(remoteOrderId)
             }
         }
     }
@@ -86,6 +86,12 @@ class OrderDetailPresenter @Inject constructor(
                 isUsingCachedNotes = true
             }
         }
+    }
+
+    override fun fetchOrder(remoteOrderId: Long) {
+        orderView?.showLoadingProgress(true)
+        val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
     }
 
     override fun doChangeOrderStatus(newStatus: String) {
@@ -125,7 +131,9 @@ class OrderDetailPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
-        if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
+        if (event.causeOfChange == WCOrderAction.FETCH_SINGLE_ORDER) {
+            orderView?.showLoadingProgress(false)
+        } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderView?.showOrderNotesSkeleton(false)
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")

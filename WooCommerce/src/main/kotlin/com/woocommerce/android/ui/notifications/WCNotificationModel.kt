@@ -8,7 +8,8 @@ sealed class WCNotificationModel(val id: Int, val title: String, val desc: Strin
         title: String,
         desc: String,
         dateCreated: String,
-        val orderId: OrderIdentifier
+        val orderIdentifier: OrderIdentifier,
+        val remoteOrderId: Long
     ) : WCNotificationModel(id, title, desc, dateCreated)
 
     class Review(

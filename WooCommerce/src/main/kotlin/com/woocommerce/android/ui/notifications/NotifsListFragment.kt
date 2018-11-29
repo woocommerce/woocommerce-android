@@ -188,7 +188,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun onNotificationClicked(notification: WCNotificationModel) {
         when (notification) {
-            is Order -> openOrderDetail(notification.orderId)
+            is Order -> openOrderDetail(notification.orderIdentifier, notification.remoteOrderId)
             is Review -> openReviewDetail()
         }
     }
@@ -203,18 +203,10 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         }
     }
 
-    override fun openOrderDetail(orderId: OrderIdentifier) {
+    override fun openOrderDetail(orderId: OrderIdentifier, remoteOrderId: Long) {
         if (!notifsRefreshLayout.isRefreshing) {
-            val order = presenter.getOrder(orderId)
-            if (order == null) {
-                uiMessageResolver.showSnack(R.string.order_error_fetch_generic)
-                return
-            }
             val tag = OrderDetailFragment.TAG
-            getFragmentFromBackStack(tag)?.let {
-                popToState(tag)
-                (it as OrderDetailFragment).showOrderDetail(order)
-            } ?: loadChildFragment(OrderDetailFragment.newInstance(order), tag)
+            loadChildFragment(OrderDetailFragment.newInstance(orderId, remoteOrderId), tag)
         }
     }
 }
