@@ -130,7 +130,7 @@
     <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
 
     <string name="dashboard_plugin_notice_title">Update to WooCommerce 3.5 to keep using this app</string>
-    <string name="dashboard_plugin_notice_message">This app requires that you install WooCommerce 3.5 on your server, and won\'t work properly without it. Update as soon as possible to continue using this app.</string>
+    <string name="dashboard_plugin_notice_message">This app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
     <string name="dashboard_plugin_notice_button_label">Update instructions</string>
     <!--
         Order List View
