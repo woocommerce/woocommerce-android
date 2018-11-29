@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_parent.*
  * The main fragments hosted by the bottom bar should extend this class to enforce
  * consistent navigation across top-level fragments and their children.
  */
-abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
+abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     companion object {
         // Bundle label to store the state of this top-level fragment.
         // If the value associated with this label is true, then this

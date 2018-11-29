@@ -11,13 +11,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.extensions.onScrollDown
+import com.woocommerce.android.extensions.onScrollUp
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
-class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, View.OnClickListener {
+class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
     companion object {
         const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"

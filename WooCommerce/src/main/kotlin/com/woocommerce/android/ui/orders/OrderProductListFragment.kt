@@ -9,14 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.extensions.onScrollDown
+import com.woocommerce.android.extensions.onScrollUp
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
 import kotlinx.android.synthetic.main.order_detail_product_list.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
-class OrderProductListFragment : BaseFragment(), OrderProductListContract.View {
+class OrderProductListFragment : Fragment(), OrderProductListContract.View {
     companion object {
         const val TAG = "OrderProductListFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
