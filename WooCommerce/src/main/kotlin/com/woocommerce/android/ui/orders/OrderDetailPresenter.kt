@@ -142,7 +142,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel?.let { order ->
                     orderView?.showLoadOrderProgress(false)
                     orderView?.showOrderDetail(order)
-                    requestOrderNotesFromApi(order)
+                    loadOrderNotes()
                 } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
