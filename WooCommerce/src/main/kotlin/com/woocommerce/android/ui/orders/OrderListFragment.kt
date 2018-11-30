@@ -385,6 +385,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         uiMessageResolver.getSnack(R.string.orderlist_error_fetch_generic).show()
     }
 
+    override fun showNoConnectionError() {
+        uiMessageResolver.getSnack(R.string.error_generic_network).show()
+    }
+
     // region OrderCustomerActionListener
     override fun dialPhone(order: WCOrderModel, phone: String) {
         AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION, mapOf(

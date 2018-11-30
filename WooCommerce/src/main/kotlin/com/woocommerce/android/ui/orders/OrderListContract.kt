@@ -25,6 +25,7 @@ interface OrderListContract {
         fun showNoOrdersView(show: Boolean)
         fun refreshFragmentState()
         fun showLoadOrdersError()
+        fun showNoConnectionError()
         fun onFilterSelected(orderStatus: String?)
 
         fun submitSearch(query: String)

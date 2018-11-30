@@ -35,6 +35,7 @@ class OrderListPresenter @Inject constructor(
     private var orderView: OrderListContract.View? = null
     private var isLoadingOrders = false
     private var isLoadingMoreOrders = false
+    private var isSearchingOrders = false
     private var canLoadMore = false
 
     override fun takeView(view: OrderListContract.View) {
@@ -65,18 +66,17 @@ class OrderListPresenter @Inject constructor(
         if (searchQuery.isBlank()) {
             orderView?.showSearchResults(searchQuery, emptyList())
         } else if (networkStatus.isConnected()) {
-            isLoadingOrders = true
-            orderView?.showNoOrdersView(false)
+            isSearchingOrders = true
             orderView?.showSkeleton(true)
             val payload = SearchOrdersPayload(selectedSite.get(), searchQuery)
             dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
         } else {
-            // TODO
+            orderView?.showNoConnectionError()
         }
     }
 
     override fun isLoading(): Boolean {
-        return isLoadingOrders || isLoadingMoreOrders
+        return isLoadingOrders || isLoadingMoreOrders || isSearchingOrders
     }
 
     override fun canLoadMore(): Boolean {
@@ -133,16 +133,15 @@ class OrderListPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrdersSearched(event: OnOrdersSearched) {
         orderView?.showSkeleton(false)
+        isSearchingOrders = false
 
         if (event.isError) {
             WooLog.e(T.ORDERS, "$TAG - Error searching orders : ${event.error.message}")
             orderView?.showLoadOrdersError()
         } else {
-            // TODO: analytics (track event but not user's search query)
+            // TODO: analytics
             orderView?.showSearchResults(event.searchQuery, event.searchResults)
         }
-
-        isLoadingOrders = false
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
