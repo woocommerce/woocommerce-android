@@ -5,11 +5,13 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
+import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import javax.inject.Inject
 
 class LoginEpiloguePresenter @Inject constructor(
@@ -19,6 +21,9 @@ class LoginEpiloguePresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) : LoginEpilogueContract.Presenter {
     private var loginEpilogueView: LoginEpilogueContract.View? = null
+
+    private var supportedWCSites = mutableListOf<SiteModel>()
+    private var unsupportedWCSites = mutableListOf<SiteModel>()
 
     override fun takeView(view: LoginEpilogueContract.View) {
         dispatcher.register(this)
@@ -49,11 +54,38 @@ class LoginEpiloguePresenter @Inject constructor(
         return accountStore.hasAccessToken()
     }
 
+    override fun checkWCVersionsForAllSites() {
+        val wcSites = wooCommerceStore.getWooCommerceSites()
+        if (wcSites.isEmpty()) {
+            // TODO Show no stores view
+            return
+        }
+
+        for (site in wcSites) {
+            dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(site))
+        }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (!event.isError && !userIsLoggedIn()) {
             loginEpilogueView?.cancel()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onApiVersionFetched(event: OnApiVersionFetched) {
+        if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
+            supportedWCSites.add(event.site)
+        } else {
+            unsupportedWCSites.add(event.site)
+        }
+
+        val totalSitesChecked = supportedWCSites.size + unsupportedWCSites.size
+        if (totalSitesChecked == wooCommerceStore.getWooCommerceSites().size) {
+            // TODO Show store list
         }
     }
 }

@@ -13,6 +13,7 @@ interface LoginEpilogueContract {
         fun getUserDisplayName(): String?
         fun logout()
         fun userIsLoggedIn(): Boolean
+        fun checkWCVersionsForAllSites()
     }
 
     interface View : BaseView<Presenter> {

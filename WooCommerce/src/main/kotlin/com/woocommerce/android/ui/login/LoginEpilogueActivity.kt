@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -31,6 +32,8 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     private lateinit var siteAdapter: SiteListAdapter
     private lateinit var unsupportedSiteAdapter: SiteListUnsupportedAdapter
 
+    private var loginProgressDialog: ProgressDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -48,7 +51,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         unsupported_recycler.adapter = unsupportedSiteAdapter
 
         showUserInfo()
-        showStoreList()
+
+        loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_sites))
+        presenter.checkWCVersionsForAllSites()
 
         if (savedInstanceState == null) {
             AnalyticsTracker.track(
