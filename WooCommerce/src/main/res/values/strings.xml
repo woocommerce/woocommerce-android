@@ -132,7 +132,7 @@
     <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
 
     <string name="dashboard_plugin_notice_title">Update to WooCommerce 3.5 to keep using this app</string>
-    <string name="dashboard_plugin_notice_message">The upcoming version of this app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
+    <string name="dashboard_plugin_notice_message">This app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
     <string name="dashboard_plugin_notice_button_label">Update instructions</string>
     <!--
         Order List View
@@ -150,7 +150,6 @@
     -->
     <string name="customer_information">Customer Information</string>
     <string name="customer_full_name">%1$s %2$s</string>
-    <string name="orderdetail">Order Detail</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_created">Created %1$s</string>
@@ -175,7 +174,8 @@
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
     <string name="orderdetail_note_private">Private Note</string>
-    <string name="orderdetail_note_public">Public Note</string>
+    <string name="orderdetail_note_public">Note to customer</string>
+    <string name="orderdetail_note_system">System status</string>
     <string name="orderdetail_order_notes">Order Notes</string>
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
@@ -208,6 +208,11 @@
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
     <string name="orderstatus_contentDesc">Order status</string>
+    <!--
+        Notifications
+    -->
+    <string name="new_notifications">%d new notifications</string>
+    <string name="more_notifications">and %d more.</string>
     <!--
         Settings
     -->

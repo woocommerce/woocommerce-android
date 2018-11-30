@@ -18,5 +18,7 @@ interface MainContract {
         fun showSettingsScreen()
         fun contactSupport()
         fun updateOfflineStatusBar(isConnected: Boolean)
+        fun hideBottomNav()
+        fun showBottomNav()
     }
 }

@@ -159,6 +159,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SUPPORT_APPLICATION_LOG_VIEWED(siteless = true),
         SUPPORT_TICKETS_VIEWED(siteless = true),
         SUPPORT_FAQ_VIEWED(siteless = true),
+
+        // -- Push notifications
+        PUSH_NOTIFICATION_RECEIVED
     }
     // endregion
 
