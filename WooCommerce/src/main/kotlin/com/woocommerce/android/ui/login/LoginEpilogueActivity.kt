@@ -123,6 +123,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                     finishEpilogue()
                 }
             }
+        } else {
+            button_continue.isEnabled = false
+            supported_frame_list_container.visibility = View.GONE
         }
 
         if (unsupportedWCSites.isNotEmpty()) {
