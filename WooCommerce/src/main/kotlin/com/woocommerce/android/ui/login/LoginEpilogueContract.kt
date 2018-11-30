@@ -18,7 +18,7 @@ interface LoginEpilogueContract {
 
     interface View : BaseView<Presenter> {
         fun showUserInfo()
-        fun showStoreList()
+        fun showStoreList(supportedWCSites: List<SiteModel>, unsupportedWCSites: List<SiteModel>)
         fun cancel()
     }
 }

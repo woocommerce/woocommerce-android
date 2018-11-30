@@ -21,6 +21,7 @@ import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CrashlyticsUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
@@ -89,36 +90,44 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                 .into(image_avatar)
     }
 
-    override fun showStoreList() {
-        val wcSites = presenter.getWooCommerceSites()
-        if (wcSites.isEmpty()) {
+    override fun showStoreList(supportedWCSites: List<SiteModel>, unsupportedWCSites: List<SiteModel>) {
+        loginProgressDialog?.takeIf { it.isShowing }?.dismiss()
+
+        if (supportedWCSites.isEmpty() && unsupportedWCSites.isEmpty()) {
             showNoStoresView()
             return
         }
 
-        supported_text_list_label.text = if (wcSites.size == 1)
-            getString(R.string.login_connected_store)
-        else
-            getString(R.string.login_pick_store)
+        if (supportedWCSites.isNotEmpty()) {
+            supported_text_list_label.text = if (supportedWCSites.size == 1)
+                getString(R.string.login_connected_store)
+            else
+                getString(R.string.login_pick_store)
 
-        if (selectedSite.isSet()) {
-            siteAdapter.selectedSiteId = selectedSite.get().siteId
-        } else {
-            siteAdapter.selectedSiteId = wcSites[0].siteId
+            if (selectedSite.isSet()) {
+                siteAdapter.selectedSiteId = selectedSite.get().siteId
+            } else {
+                siteAdapter.selectedSiteId = supportedWCSites[0].siteId
+            }
+
+            siteAdapter.siteList = supportedWCSites
+
+            button_continue.setOnClickListener { _ ->
+                val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
+                site?.let { it ->
+                    selectedSite.set(it)
+                    CrashlyticsUtils.initSite(it)
+                    AnalyticsTracker.track(
+                            Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to it.id))
+                    finishEpilogue()
+                }
+            }
         }
 
-        siteAdapter.siteList = wcSites
-
-        button_continue.setOnClickListener { _ ->
-            val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
-            site?.let { it ->
-                selectedSite.set(it)
-                CrashlyticsUtils.initSite(it)
-                AnalyticsTracker.track(
-                        Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
-                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to it.id))
-                finishEpilogue()
-            }
+        if (unsupportedWCSites.isNotEmpty()) {
+            unsupported_frame_list_container.visibility = View.VISIBLE
+            unsupportedSiteAdapter.siteList = unsupportedWCSites
         }
     }
 

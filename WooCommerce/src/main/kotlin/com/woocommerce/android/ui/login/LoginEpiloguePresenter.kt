@@ -57,7 +57,7 @@ class LoginEpiloguePresenter @Inject constructor(
     override fun checkWCVersionsForAllSites() {
         val wcSites = wooCommerceStore.getWooCommerceSites()
         if (wcSites.isEmpty()) {
-            // TODO Show no stores view
+            loginEpilogueView?.showStoreList(emptyList(), emptyList())
             return
         }
 
@@ -85,7 +85,7 @@ class LoginEpiloguePresenter @Inject constructor(
 
         val totalSitesChecked = supportedWCSites.size + unsupportedWCSites.size
         if (totalSitesChecked == wooCommerceStore.getWooCommerceSites().size) {
-            // TODO Show store list
+            loginEpilogueView?.showStoreList(supportedWCSites, unsupportedWCSites)
         }
     }
 }
