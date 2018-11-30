@@ -36,9 +36,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
         presenter.takeView(this)
 
-        recycler.layoutManager = LinearLayoutManager(this)
+        supported_recycler.layoutManager = LinearLayoutManager(this)
         siteAdapter = SiteListAdapter(this, this)
-        recycler.adapter = siteAdapter
+        supported_recycler.adapter = siteAdapter
 
         showUserInfo()
         showStoreList()
@@ -84,7 +84,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             return
         }
 
-        text_list_label.text = if (wcSites.size == 1)
+        supported_text_list_label.text = if (wcSites.size == 1)
             getString(R.string.login_connected_store)
         else
             getString(R.string.login_pick_store)
@@ -116,7 +116,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     private fun showNoStoresView() {
-        frame_list_container.visibility = View.GONE
+        supported_frame_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
         val noStoresImage =
