@@ -149,7 +149,6 @@
     -->
     <string name="customer_information">Customer Information</string>
     <string name="customer_full_name">%1$s %2$s</string>
-    <string name="orderdetail">Order Detail</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_created">Created %1$s</string>
