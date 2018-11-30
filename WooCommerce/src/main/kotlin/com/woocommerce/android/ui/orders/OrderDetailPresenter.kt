@@ -134,15 +134,13 @@ class OrderDetailPresenter @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_SINGLE_ORDER) {
-            orderIdentifier?.let {
-                orderModel = orderStore.getOrderByIdentifier(it)
-                if (orderModel != null) {
+            orderIdentifier?.let { orderId ->
+                orderModel = orderStore.getOrderByIdentifier(orderId)
+                orderModel?.let { order ->
                     orderView?.showLoadOrderProgress(false)
-                    orderView?.showOrderDetail(orderModel)
-                    fetchAndLoadNotesFromDb()
-                } else {
-                    orderView?.showLoadOrderError()
-                }
+                    orderView?.showOrderDetail(order)
+                    requestOrderNotesFromApi(order)
+                } ?: orderView?.showLoadOrderError()
             } ?: orderView?.showLoadOrderError()
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderView?.showOrderNotesSkeleton(false)
