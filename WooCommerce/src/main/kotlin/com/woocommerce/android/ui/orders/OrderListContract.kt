@@ -28,6 +28,7 @@ interface OrderListContract {
         fun onFilterSelected(orderStatus: String?)
 
         fun submitSearch(query: String)
+        fun submitSearchDelayed(query: String)
         fun showSearchResults(query: String, orders: List<WCOrderModel>)
         fun clearSearchResults()
 

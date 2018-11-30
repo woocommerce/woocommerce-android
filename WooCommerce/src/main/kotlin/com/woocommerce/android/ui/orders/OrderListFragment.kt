@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.Parcelable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
@@ -75,6 +76,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     private var searchView: SearchView? = null
     private var searchQuery: String? = null
+    private val searchHandler = Handler()
 
     private val skeletonView = SkeletonView()
 
@@ -475,6 +477,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
+        if (newText.length > 2) {
+            submitSearchDelayed(newText)
+        }
         return true
     }
 
@@ -490,17 +495,27 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         return true
     }
 
+    override fun submitSearchDelayed(query: String) {
+        searchHandler.postDelayed({
+            searchView?.let {
+                if (query == it.query.toString()) submitSearch(query)
+            }
+        }, 500)
+    }
+
     override fun submitSearch(query: String) {
         searchQuery = query
         activity?.title = getFragmentTitle()
         searchQuery?.let {
             presenter.searchOrders(it)
         }
+        showSkeleton(true)
     }
 
     override fun showSearchResults(query: String, orders: List<WCOrderModel>) {
         if (query == searchQuery) {
             ordersAdapter.setOrders(orders)
+            showSkeleton(false)
         }
     }
 
