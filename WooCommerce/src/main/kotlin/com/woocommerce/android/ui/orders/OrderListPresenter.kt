@@ -62,7 +62,9 @@ class OrderListPresenter @Inject constructor(
     }
 
     override fun searchOrders(searchQuery: String) {
-        if (networkStatus.isConnected()) {
+        if (searchQuery.isBlank()) {
+            orderView?.showSearchResults(searchQuery, emptyList())
+        } else if (networkStatus.isConnected()) {
             isLoadingOrders = true
             orderView?.showNoOrdersView(false)
             orderView?.showSkeleton(true)

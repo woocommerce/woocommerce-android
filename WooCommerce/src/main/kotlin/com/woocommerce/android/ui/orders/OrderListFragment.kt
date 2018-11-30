@@ -13,12 +13,12 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
-import android.support.v7.widget.SearchView.OnCloseListener
 import android.support.v7.widget.SearchView.OnQueryTextListener
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -44,7 +44,7 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener,
-        OnQueryTextListener, OnCloseListener {
+        OnQueryTextListener, OnActionExpandListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -97,9 +97,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         filterMenuItem = menu?.findItem(R.id.menu_filter)
 
-        searchView = menu?.findItem(R.id.menu_search)?.actionView as SearchView?
-        searchView?.setSubmitButtonEnabled(false)
-        searchView?.setIconifiedByDefault(true)
+        val searchMenuItem = menu?.findItem(R.id.menu_search)
+        searchMenuItem?.setOnActionExpandListener(this)
+
+        searchView = searchMenuItem?.actionView as SearchView?
+        searchView?.setSubmitButtonEnabled(true)
+        searchView?.setOnQueryTextListener(this)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -107,9 +110,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onPrepareOptionsMenu(menu: Menu?) {
         // Hide filter menu item when we're showing all orders and there aren't any,
         // or we're showing order detail, or when the user is doing an order search
-        val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE)
-                || isShowingOrderDetail()
-                || isSearching
+        val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) ||
+                isShowingOrderDetail() ||
+                isSearching
         filterMenuItem?.isVisible = !hideFilterMenu
         super.onPrepareOptionsMenu(menu)
     }
@@ -122,11 +125,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
         R.id.menu_search -> {
             // TODO: analytics
-            searchView?.setOnQueryTextListener(this)
-            searchView?.setOnCloseListener(this)
-            filterMenuItem?.setVisible(false)
-            ordersAdapter.clearAdapterData()
-            isSearching = true
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -357,13 +355,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun getFragmentTitle(): String {
-        return getString(R.string.orders)
-                .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
-                    val orderStatusLabel = CoreOrderStatus.fromValue(filter)?.let { orderStatus ->
-                        OrderStatusUtils.getLabelForOrderStatus(orderStatus, ::getString)
-                    }
-                    getString(R.string.orderlist_filtered, orderStatusLabel)
-                } ?: "")
+        if (isSearching) {
+            return getString(R.string.orderlist_searched, searchQuery)
+        } else {
+            return getString(R.string.orders)
+                    .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
+                        val orderStatusLabel = CoreOrderStatus.fromValue(filter)?.let { orderStatus ->
+                            OrderStatusUtils.getLabelForOrderStatus(orderStatus, ::getString)
+                        }
+                        getString(R.string.orderlist_filtered, orderStatusLabel)
+                    } ?: "")
+        }
     }
 
     override fun scrollToTop() {
@@ -469,23 +471,30 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
         submitSearch(query)
-        return false
+        return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
         return true
     }
 
-    override fun onClose(): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+        filterMenuItem?.setVisible(false)
+        ordersAdapter.clearAdapterData()
+        isSearching = true
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         clearSearchResults()
-        return false
+        return true
     }
 
     override fun submitSearch(query: String) {
         searchQuery = query
-
-        if (!searchQuery.isNullOrBlank()) {
-            presenter.searchOrders(searchQuery!!)
+        activity?.title = getFragmentTitle()
+        searchQuery?.let {
+            presenter.searchOrders(it)
         }
     }
 
@@ -500,12 +509,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
      */
     override fun clearSearchResults() {
         searchQuery = null
-        searchView?.setOnQueryTextListener(null)
-        searchView?.setOnCloseListener(null)
-        searchView?.isIconified = true
-
         isSearching = false
+
         activity?.invalidateOptionsMenu()
+        activity?.title = getFragmentTitle()
 
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
     }

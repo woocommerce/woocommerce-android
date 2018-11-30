@@ -8,6 +8,7 @@
         android:icon="@drawable/ic_search_white_24dp"
         android:title="@string/search"
         app:actionViewClass="android.support.v7.widget.SearchView"
+        app:iconifiedByDefault="false"
         app:showAsAction="always|collapseActionView"/>
 
     <item
