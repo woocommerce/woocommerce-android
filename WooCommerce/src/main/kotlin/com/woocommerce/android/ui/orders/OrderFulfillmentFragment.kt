@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
+import com.woocommerce.android.extensions.onScrollDown
+import com.woocommerce.android.extensions.onScrollUp
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -56,6 +59,11 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
         presenter.takeView(this)
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
+
+        scrollView.setOnScrollChangeListener {
+            v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
+            if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
+        }
     }
 
     override fun onResume() {

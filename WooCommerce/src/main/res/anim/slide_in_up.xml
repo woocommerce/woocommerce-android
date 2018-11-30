@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+     android:duration="@integer/anim_slide_transition"
+     android:shareInterpolator="false">
+
+    <translate
+        android:fromYDelta="100%"
+        android:interpolator="@android:anim/decelerate_interpolator"
+        android:toYDelta="0"/>
+
+    <alpha
+        android:fromAlpha="0"
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:toAlpha="1"/>
+</set>
+

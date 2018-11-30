@@ -12,6 +12,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.NONE
+import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_IN
+import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_UP
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
@@ -29,6 +32,12 @@ class AppSettingsActivity : AppCompatActivity(),
     @Inject lateinit var presenter: AppSettingsContract.Presenter
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
+
+    enum class FragmentAnim {
+        SLIDE_IN,
+        SLIDE_UP,
+        NONE
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -72,6 +81,7 @@ class AppSettingsActivity : AppCompatActivity(),
         } else {
             super.onBackPressed()
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+            supportActionBar?.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
         }
     }
 
@@ -99,22 +109,22 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun showAppSettingsFragment() {
         val fragment = MainSettingsFragment.newInstance()
-        showFragment(fragment, MainSettingsFragment.TAG, false)
+        showFragment(fragment, MainSettingsFragment.TAG, NONE)
     }
 
     override fun showPrivacySettingsFragment() {
         val fragment = PrivacySettingsFragment.newInstance()
-        showFragment(fragment, PrivacySettingsFragment.TAG, true)
+        showFragment(fragment, PrivacySettingsFragment.TAG)
     }
 
     override fun showAboutFragment() {
         val fragment = AboutFragment.newInstance()
-        showFragment(fragment, AboutFragment.TAG, true)
+        showFragment(fragment, AboutFragment.TAG, SLIDE_UP)
     }
 
     override fun showLicensesFragment() {
         val fragment = LicensesFragment.newInstance()
-        showFragment(fragment, LicensesFragment.TAG, true)
+        showFragment(fragment, LicensesFragment.TAG, SLIDE_UP)
     }
 
     override fun confirmLogout() {
@@ -139,14 +149,19 @@ class AppSettingsActivity : AppCompatActivity(),
         sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
     }
 
-    private fun showFragment(fragment: Fragment, tag: String, animate: Boolean) {
+    private fun showFragment(fragment: Fragment, tag: String, anim: FragmentAnim = SLIDE_IN) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        if (animate) {
+        if (anim == SLIDE_IN) {
             fragmentTransaction.setCustomAnimations(
                     R.anim.activity_slide_in_from_right,
                     R.anim.activity_slide_out_to_left,
                     R.anim.activity_slide_in_from_left,
                     R.anim.activity_slide_out_to_right)
+        } else if (anim == SLIDE_UP) {
+            fragmentTransaction.setCustomAnimations(R.anim.slide_in_up,
+                    0,
+                    0,
+                    R.anim.slide_out_down)
         }
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
                 .addToBackStack(null)

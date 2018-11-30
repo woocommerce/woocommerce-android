@@ -16,6 +16,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.FragmentScrollListener
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -28,6 +29,8 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -41,6 +44,7 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
+        FragmentScrollListener,
         BottomNavigationView.OnNavigationItemSelectedListener,
         BottomNavigationView.OnNavigationItemReselectedListener {
     companion object {
@@ -63,6 +67,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var supportHelper: SupportHelper
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
+    private var isBottomNavShowing = true
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
@@ -406,5 +411,27 @@ class MainActivity : AppCompatActivity(),
 
     private fun checkConnection() {
         updateOfflineStatusBar(NetworkUtils.isNetworkAvailable(this))
+    }
+
+    override fun onFragmentScrollUp() {
+        showBottomNav()
+    }
+
+    override fun onFragmentScrollDown() {
+        hideBottomNav()
+    }
+
+    override fun hideBottomNav() {
+        if (isBottomNavShowing) {
+            isBottomNavShowing = false
+            WooAnimUtils.animateBottomBar(bottom_nav, false, Duration.MEDIUM)
+        }
+    }
+
+    override fun showBottomNav() {
+        if (!isBottomNavShowing) {
+            isBottomNavShowing = true
+            WooAnimUtils.animateBottomBar(bottom_nav, true, Duration.SHORT)
+        }
     }
 }
