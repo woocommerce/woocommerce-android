@@ -141,6 +141,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
     private fun showNoStoresView() {
         supported_frame_list_container.visibility = View.GONE
+        unsupported_frame_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
         val noStoresImage =
