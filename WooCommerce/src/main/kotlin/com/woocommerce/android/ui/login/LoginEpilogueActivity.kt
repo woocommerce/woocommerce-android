@@ -12,7 +12,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.SiteListAdapter.OnSiteClickListener
+import com.woocommerce.android.ui.login.adapter.SiteListAdapter
+import com.woocommerce.android.ui.login.adapter.SiteListAdapter.OnSiteClickListener
+import com.woocommerce.android.ui.login.adapter.SiteListUnsupportedAdapter
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CrashlyticsUtils
@@ -27,6 +29,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var siteAdapter: SiteListAdapter
+    private lateinit var unsupportedSiteAdapter: SiteListUnsupportedAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -39,6 +42,10 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         supported_recycler.layoutManager = LinearLayoutManager(this)
         siteAdapter = SiteListAdapter(this, this)
         supported_recycler.adapter = siteAdapter
+
+        unsupported_recycler.layoutManager = LinearLayoutManager(this)
+        unsupportedSiteAdapter = SiteListUnsupportedAdapter(this)
+        unsupported_recycler.adapter = unsupportedSiteAdapter
 
         showUserInfo()
         showStoreList()
