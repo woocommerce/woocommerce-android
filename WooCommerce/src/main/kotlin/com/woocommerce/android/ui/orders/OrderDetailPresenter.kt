@@ -64,13 +64,12 @@ class OrderDetailPresenter @Inject constructor(
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean) {
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
-            orderView?.let { view ->
-                orderStore.getOrderByIdentifier(orderIdentifier)?.let {
-                    view.showOrderDetail(it)
-                    if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                    loadOrderNotes()
-                } ?: fetchOrder(remoteOrderId)
-            }
+            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderModel?.let {
+                orderView?.showOrderDetail(it)
+                if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
+                loadOrderNotes()
+            } ?: fetchOrder(remoteOrderId)
         }
     }
 
