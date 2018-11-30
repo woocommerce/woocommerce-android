@@ -107,9 +107,11 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
     }
 
     fun clearAdapterData() {
-        removeAllSections()
-        orderList.clear()
-        notifyDataSetChanged()
+        if (orderList.isNotEmpty()) {
+            removeAllSections()
+            orderList.clear()
+            notifyDataSetChanged()
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

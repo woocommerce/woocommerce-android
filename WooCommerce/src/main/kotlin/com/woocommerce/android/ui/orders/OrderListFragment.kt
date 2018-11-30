@@ -103,7 +103,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         searchMenuItem?.setOnActionExpandListener(this)
 
         searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.setSubmitButtonEnabled(true)
+        searchView?.setSubmitButtonEnabled(false)
         searchView?.setOnQueryTextListener(this)
 
         super.onCreateOptionsMenu(menu, inflater)
@@ -483,6 +483,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onQueryTextChange(newText: String): Boolean {
         if (newText.length > 2) {
             submitSearchDelayed(newText)
+        } else {
+            ordersAdapter.clearAdapterData()
         }
         return true
     }
