@@ -78,22 +78,20 @@ class OrderListPresenter @Inject constructor(
     }
 
     override fun canLoadMore(): Boolean {
+        // TODO: infinite scroll isn't supported in search results yet
+        orderView?.let {
+            if (it.isSearching) return false
+        }
         return canLoadMore
     }
 
     override fun loadMoreOrders(orderStatusFilter: String?) {
         if (!networkStatus.isConnected()) return
 
-        orderView?.let {
-            if (it.isSearching) {
-                // TODO: infinite scroll isn't supported in search results yet
-            } else {
-                it.setLoadingMoreIndicator(true)
-                isLoadingMoreOrders = true
-                val payload = FetchOrdersPayload(selectedSite.get(), orderStatusFilter, loadMore = true)
-                dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
-            }
-        }
+        orderView?.setLoadingMoreIndicator(true)
+        isLoadingMoreOrders = true
+        val payload = FetchOrdersPayload(selectedSite.get(), orderStatusFilter, loadMore = true)
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
     }
 
     @Suppress("unused")

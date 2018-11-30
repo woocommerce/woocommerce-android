@@ -94,7 +94,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
+
         filterMenuItem = menu?.findItem(R.id.menu_filter)
+
+        searchView = menu?.findItem(R.id.menu_search)?.actionView as SearchView?
+        searchView?.setSubmitButtonEnabled(false)
+        searchView?.setIconifiedByDefault(true)
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -116,10 +122,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
         R.id.menu_search -> {
             // TODO: analytics
-            searchView = item.actionView as SearchView?
             searchView?.setOnQueryTextListener(this)
             searchView?.setOnCloseListener(this)
             filterMenuItem?.setVisible(false)
+            ordersAdapter.clearAdapterData()
+            isSearching = true
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -462,11 +469,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
         submitSearch(query)
-        return true
+        return false
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        return false
+        return true
     }
 
     override fun onClose(): Boolean {
