@@ -134,17 +134,15 @@ class OrderDetailPresenter @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_SINGLE_ORDER) {
-            if (event.isError) {
+            if (event.isError || orderIdentifier.isNullOrBlank()) {
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : ${event.error.message}")
                 orderView?.showLoadOrderError()
             } else {
-                orderIdentifier?.let { orderId ->
-                    orderModel = orderStore.getOrderByIdentifier(orderId)
-                    orderModel?.let { order ->
-                        orderView?.showLoadOrderProgress(false)
-                        orderView?.showOrderDetail(order)
-                        requestOrderNotesFromApi(order)
-                    } ?: orderView?.showLoadOrderError()
+                orderModel = orderStore.getOrderByIdentifier(orderIdentifier!!)
+                orderModel?.let { order ->
+                    orderView?.showLoadOrderProgress(false)
+                    orderView?.showOrderDetail(order)
+                    requestOrderNotesFromApi(order)
                 } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
