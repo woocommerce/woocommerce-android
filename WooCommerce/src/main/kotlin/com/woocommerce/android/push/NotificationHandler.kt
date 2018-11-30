@@ -5,10 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.text.StringEscapeUtils
@@ -85,7 +89,10 @@ object NotificationHandler {
         val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId)
         ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
 
-        // TODO Bump analytics based on notification settings
+        if (NotificationsUtils.isNotificationsEnabled(context)) {
+            bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_RECEIVED, data)
+            AnalyticsTracker.flush()
+        }
 
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, title, message)
@@ -286,5 +293,30 @@ object NotificationHandler {
         builder.setContentIntent(pendingIntent)
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(pushId, builder.build())
+    }
+
+    /**
+     * Attach default properties and track given analytics for the given notifications-related [stat].
+     *
+     * Will skip tracking if user has disabled notifications from being shown at the app system settings level.
+     */
+    private fun bumpPushNotificationsAnalytics(context: Context, stat: Stat, noteBundle: Bundle) {
+        if (!NotificationsUtils.isNotificationsEnabled(context)) return
+
+        val wpComNoteId = noteBundle.getString(PUSH_ARG_NOTE_ID, "")
+        if (wpComNoteId.isNotEmpty()) {
+            val properties = mutableMapOf<String, Any>()
+            properties["notification_note_id"] = wpComNoteId
+
+            noteBundle.getString(PUSH_ARG_TYPE)?.takeUnless { it.isEmpty() }?.let { noteType ->
+                // 'comment' types are sent in PN as type = "c"
+                properties["notification_type"] = if (noteType == PUSH_TYPE_COMMENT) "comment" else noteType
+            }
+
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val latestGCMToken = preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
+            properties["push_notification_token"] = latestGCMToken ?: ""
+            AnalyticsTracker.track(stat, properties)
+        }
     }
 }
