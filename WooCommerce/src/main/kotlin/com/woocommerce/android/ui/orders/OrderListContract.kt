@@ -18,6 +18,7 @@ interface OrderListContract {
     interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
         var isActive: Boolean
         var isRefreshPending: Boolean
+        var isSearching: Boolean
 
         fun setLoadingMoreIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>, filterByStatus: String? = null, isFreshData: Boolean)

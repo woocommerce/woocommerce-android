@@ -13,12 +13,12 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
+import android.support.v7.widget.SearchView.OnCloseListener
 import android.support.v7.widget.SearchView.OnQueryTextListener
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -44,7 +44,7 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener,
-        OnQueryTextListener, OnActionExpandListener {
+        OnQueryTextListener, OnCloseListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -67,14 +67,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private lateinit var ordersDividerDecoration: DividerItemDecoration
 
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
+    override var isSearching: Boolean = false
+
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuItem: MenuItem? = null
 
-    private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var searchQuery: String? = null
-    private var isSearching: Boolean = false
 
     private val skeletonView = SkeletonView()
 
@@ -94,9 +94,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
-
         filterMenuItem = menu?.findItem(R.id.menu_filter)
-
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -106,7 +104,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE)
                 || isShowingOrderDetail()
                 || isSearching
-        menu?.findItem(R.id.menu_filter)?.isVisible = !hideFilterMenu
+        filterMenuItem?.isVisible = !hideFilterMenu
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -118,10 +116,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
         R.id.menu_search -> {
             // TODO: analytics
-            searchMenuItem = item
-            searchMenuItem?.setOnActionExpandListener(this)
-            searchView = searchMenuItem?.actionView as SearchView?
+            searchView = item.actionView as SearchView?
             searchView?.setOnQueryTextListener(this)
+            searchView?.setOnCloseListener(this)
             filterMenuItem?.setVisible(false)
             true
         }
@@ -463,25 +460,18 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // endregion
 
     // region search
-    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-        ordersAdapter.clearAdapterData()
-        orderStatusFilter = null
-        isSearching = true
-        return true
-    }
-
-    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-        clearSearchResults()
-        return true
-    }
-
     override fun onQueryTextSubmit(query: String): Boolean {
         submitSearch(query)
         return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        return true
+        return false
+    }
+
+    override fun onClose(): Boolean {
+        clearSearchResults()
+        return false
     }
 
     override fun submitSearch(query: String) {
@@ -503,8 +493,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
      */
     override fun clearSearchResults() {
         searchQuery = null
-        searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
+        searchView?.setOnCloseListener(null)
         searchView?.isIconified = true
 
         isSearching = false
