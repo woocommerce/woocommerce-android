@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.notifications
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
 import javax.inject.Inject
@@ -23,6 +25,8 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     @Inject lateinit var presenter: ReviewDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private var skeletonView = SkeletonView()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -57,6 +61,12 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         review_description.text = "Great product! Definitely what I was looking for. Great quality, and " +
                 "looks exactly like the product image on the website. Would highly recommend to anyone " +
                 "who is looking for something like this!"
+
+        // TODO - this is temporary code to demo the skeleton
+        showSkeleton(true)
+        Handler().postDelayed({
+            showSkeleton(false)
+        }, 2500)
     }
 
     override fun onDestroyView() {
@@ -64,8 +74,12 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         super.onDestroyView()
     }
 
-    override fun showLoadingSkeleton() {
-        // TODO add loading skeleton
+    override fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(container, R.layout.skeleton_notif_detail, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
     }
 
     private fun trashReview() {
