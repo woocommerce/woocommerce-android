@@ -54,6 +54,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         showUserInfo()
 
         loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_sites))
+        supported_frame_list_container.visibility = View.GONE
         presenter.checkWCVersionsForAllSites()
 
         if (savedInstanceState == null) {
@@ -99,6 +100,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         }
 
         if (supportedWCSites.isNotEmpty()) {
+            supported_frame_list_container.visibility = View.VISIBLE
             supported_text_list_label.text = if (supportedWCSites.size == 1)
                 getString(R.string.login_connected_store)
             else
