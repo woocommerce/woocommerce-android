@@ -514,6 +514,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun submitSearch(query: String) {
         searchQuery = query
         presenter.searchOrders(query)
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
         showSkeleton(true)
     }
 
@@ -521,6 +522,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         if (query == searchQuery) {
             ordersAdapter.setOrders(orders)
             showSkeleton(false)
+            // TODO: empty message when no results
         }
     }
 
@@ -538,9 +540,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         searchMenuItem?.setOnActionExpandListener(if (enable) this else null)
         searchView?.setOnQueryTextListener(if (enable) this else null)
         searchMenuItem?.isVisible = enable
-        if (!enable) {
-            searchMenuItem?.collapseActionView()
-        }
     }
     // endregion
 }
