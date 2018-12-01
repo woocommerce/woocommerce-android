@@ -54,7 +54,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
 
-        private const val SEARCH_TYPING_DELAY_MS = 750L
+        private const val SEARCH_TYPING_DELAY_MS = 500L
 
         fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -540,9 +540,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-        if (childFragmentManager.backStackEntryCount == 0) {
-            clearSearchResults()
-        }
+        clearSearchResults()
         return true
     }
 
@@ -553,6 +551,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun submitSearchDelayed(query: String) {
         searchHandler.postDelayed({
             searchView?.let {
+                // submit the search if the searchView's query still matches the passed query
                 if (query == it.query.toString()) submitSearch(query)
             }
         }, SEARCH_TYPING_DELAY_MS)
@@ -583,6 +582,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun clearSearchResults() {
         searchQuery = ""
         isSearching = false
+        disableSearchListeners()
         refreshOptionsMenu()
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
     }
