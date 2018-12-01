@@ -302,14 +302,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     /**
-     * shows the view that appears for stores that have have no orders matching the current filter
+     * shows the view that appears for stores that have have no orders matching the current filter or search
      */
     override fun showNoOrdersView(show: Boolean) {
         if (show && noOrdersView.visibility != View.VISIBLE) {
-            // if there isn't a filter (ie: we're showing All orders and there aren't any), then we want
+            // if the user is searching we show a simple "No matching orders" TextView, otherwise if
+            // there isn't a filter (ie: we're showing All orders and there aren't any), then we want
             // to show the full "customers waiting" view, otherwise we show a simple textView stating
             // there aren't any orders
-            if (isShowingAllOrders()) {
+            if (isSearching) {
+                no_orders_image.visibility = View.GONE
+                no_orders_share_button.visibility = View.GONE
+                no_orders_text.setText(R.string.dashboard_no_orders_with_search)
+            } else if (isShowingAllOrders()) {
                 no_orders_image.visibility = View.VISIBLE
                 no_orders_share_button.visibility = View.VISIBLE
                 no_orders_text.setText(R.string.dashboard_no_orders)
@@ -330,8 +335,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             WooAnimUtils.fadeOut(noOrdersView, Duration.LONG)
             WooAnimUtils.fadeIn(ordersView, Duration.LONG)
         }
-
-        activity?.invalidateOptionsMenu()
     }
 
     /**
@@ -539,7 +542,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         if (query == searchQuery) {
             ordersAdapter.setOrders(orders)
             showSkeleton(false)
-            // TODO: empty message when no results
         }
     }
 

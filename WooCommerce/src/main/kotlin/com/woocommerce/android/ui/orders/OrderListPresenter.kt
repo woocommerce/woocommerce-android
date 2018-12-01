@@ -140,7 +140,11 @@ class OrderListPresenter @Inject constructor(
             orderView?.showLoadOrdersError()
         } else {
             // TODO: analytics
-            orderView?.showSearchResults(event.searchQuery, event.searchResults)
+            if (event.searchResults.isNotEmpty()) {
+                orderView?.showSearchResults(event.searchQuery, event.searchResults)
+            } else {
+                orderView?.showNoOrdersView(true)
+            }
         }
     }
 
