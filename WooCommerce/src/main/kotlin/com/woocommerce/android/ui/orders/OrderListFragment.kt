@@ -141,8 +141,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
         R.id.menu_search -> {
             // TODO: analytics
-            searchMenuItem?.setOnActionExpandListener(this)
-            searchView?.setOnQueryTextListener(this)
+            enableSearchListeners()
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -253,17 +252,21 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onBackStackChanged() {
         super.onBackStackChanged()
 
-        refreshOptionsMenu()
-
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive) {
-            if (!isSearching) {
+            if (isSearching) {
+                searchMenuItem?.expandActionView()
+            } else {
                 presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
             }
-            searchView?.setOnQueryTextListener(this)
+            refreshOptionsMenu()
+            enableSearchListeners()
         } else {
-            searchView?.setOnQueryTextListener(null)
+            // disable the search listeners until we return to this fragment - otherwise the query text
+            // will fire with an empty string and the collapse event will fire as we leave this fragment
+            disableSearchListeners()
+            refreshOptionsMenu()
         }
     }
 
@@ -521,7 +524,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-        filterMenuItem?.setVisible(false)
+        refreshOptionsMenu()
         ordersAdapter.clearAdapterData()
         isSearching = true
         return true
@@ -573,6 +576,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         isSearching = false
         refreshOptionsMenu()
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
+    }
+
+    private fun disableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(null)
+        searchView?.setOnQueryTextListener(null)
+    }
+
+    private fun enableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(this)
+        searchView?.setOnQueryTextListener(this)
     }
     // endregion
 }
