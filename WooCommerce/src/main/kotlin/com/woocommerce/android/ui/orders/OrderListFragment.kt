@@ -54,6 +54,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
 
+        private const val SEARCH_TYPING_DELAY_MS = 750L
+
         fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
             fragment.orderStatusFilter = orderStatusFilter
@@ -97,6 +99,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
     }
 
+    // region options menu
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
 
@@ -109,15 +112,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
-        // Hide filter menu item when we're showing all orders and there aren't any,
-        // or we're showing order detail, or when the user is doing an order search
-        val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) ||
-                childFragmentManager.backStackEntryCount > 0
-                isSearching
-        val hideSearchMenu = childFragmentManager.backStackEntryCount > 0
-
-        filterMenuItem?.isVisible = !hideFilterMenu
-        searchMenuItem?.isVisible = !hideSearchMenu
+        filterMenuItem?.isVisible = shouldShowFilterMenuItem()
+        searchMenuItem?.isVisible = shouldShowSearchMenuItem()
 
         super.onPrepareOptionsMenu(menu)
     }
@@ -136,6 +132,23 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
         else -> super.onOptionsItemSelected(item)
     }
+
+    private fun shouldShowFilterMenuItem(): Boolean {
+        return when {
+            (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) -> false
+            isSearching -> false
+            (childFragmentManager.backStackEntryCount > 0) -> false
+            else -> true
+        }
+    }
+
+    private fun shouldShowSearchMenuItem(): Boolean {
+        return when {
+            (childFragmentManager.backStackEntryCount > 0) -> false
+            else -> true
+        }
+    }
+    // endregion
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -507,7 +520,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             searchView?.let {
                 if (query == it.query.toString()) submitSearch(query)
             }
-        }, 500)
+        }, SEARCH_TYPING_DELAY_MS)
     }
 
     /**
