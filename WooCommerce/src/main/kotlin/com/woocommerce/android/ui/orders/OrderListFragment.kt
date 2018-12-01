@@ -79,7 +79,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private var searchQuery: String? = null
+    private var searchQuery: String = ""
     private val searchHandler = Handler()
 
     private val skeletonView = SkeletonView()
@@ -95,7 +95,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
-            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY)
+            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
     }
 
@@ -190,7 +190,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
                     if (!isRefreshPending) {
                         isRefreshPending = true
-                        presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+                        if (isSearching) {
+                            presenter.searchOrders(searchQuery)
+                        } else {
+                            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+                        }
                     }
                 }
 
@@ -577,7 +581,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
      * Return to the non-search order view
      */
     override fun clearSearchResults() {
-        searchQuery = null
+        searchQuery = ""
         isSearching = false
         refreshOptionsMenu()
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
