@@ -255,12 +255,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive) {
+            refreshOptionsMenu()
             if (isSearching) {
                 searchMenuItem?.expandActionView()
+                searchView?.setQuery(searchQuery, false)
             } else {
                 presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
             }
-            refreshOptionsMenu()
             enableSearchListeners()
         } else {
             // disable the search listeners until we return to this fragment - otherwise the query text
@@ -330,18 +331,22 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             // there isn't a filter (ie: we're showing All orders and there aren't any), then we want
             // to show the full "customers waiting" view, otherwise we show a simple textView stating
             // there aren't any orders
-            if (isSearching) {
-                no_orders_image.visibility = View.GONE
-                no_orders_share_button.visibility = View.GONE
-                no_orders_text.setText(R.string.dashboard_no_orders_with_search)
-            } else if (isShowingAllOrders()) {
-                no_orders_image.visibility = View.VISIBLE
-                no_orders_share_button.visibility = View.VISIBLE
-                no_orders_text.setText(R.string.dashboard_no_orders)
-            } else {
-                no_orders_image.visibility = View.GONE
-                no_orders_share_button.visibility = View.GONE
-                no_orders_text.setText(R.string.dashboard_no_orders_with_filter)
+            when {
+                isSearching -> {
+                    no_orders_image.visibility = View.GONE
+                    no_orders_share_button.visibility = View.GONE
+                    no_orders_text.setText(R.string.dashboard_no_orders_with_search)
+                }
+                isShowingAllOrders() -> {
+                    no_orders_image.visibility = View.VISIBLE
+                    no_orders_share_button.visibility = View.VISIBLE
+                    no_orders_text.setText(R.string.dashboard_no_orders)
+                }
+                else -> {
+                    no_orders_image.visibility = View.GONE
+                    no_orders_share_button.visibility = View.GONE
+                    no_orders_text.setText(R.string.dashboard_no_orders_with_filter)
+                }
             }
 
             WooAnimUtils.fadeIn(noOrdersView, Duration.LONG)
