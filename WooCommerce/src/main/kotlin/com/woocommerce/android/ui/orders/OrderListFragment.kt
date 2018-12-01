@@ -129,7 +129,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         val showSearch = shouldShowFilterMenuItem()
         searchMenuItem?.let {
             if (it.isActionViewExpanded && !showFilter) it.collapseActionView()
-            if (it.isVisible != showSearch) it.isVisible = showFilter
+            if (it.isVisible != showSearch) it.isVisible = showSearch
         }
     }
 
@@ -258,7 +258,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive) {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
+            if (!isSearching) {
+                presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
+            }
+            searchView?.setOnQueryTextListener(this)
+        } else {
+            searchView?.setOnQueryTextListener(null)
         }
     }
 
@@ -511,6 +516,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         } else {
             ordersAdapter.clearAdapterData()
         }
+        showNoOrdersView(false)
         return true
     }
 
