@@ -145,7 +145,6 @@
     <string name="orderlist_filter_apply">Apply Filter</string>
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
-    <string name="orderlist_searched">Orders matching \"%1$s\"</string>
     <!--
         Order Detail Views
     -->

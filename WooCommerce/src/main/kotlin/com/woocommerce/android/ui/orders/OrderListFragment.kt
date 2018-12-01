@@ -52,6 +52,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
+        const val STATE_KEY_IS_SEARCHING = "is_searching"
 
         fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -74,6 +75,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuItem: MenuItem? = null
 
+    private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var searchQuery: String? = null
     private val searchHandler = Handler()
@@ -90,6 +92,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             listState = bundle.getParcelable(STATE_KEY_LIST)
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
+            isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY)
         }
     }
@@ -99,12 +102,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         filterMenuItem = menu?.findItem(R.id.menu_filter)
 
-        val searchMenuItem = menu?.findItem(R.id.menu_search)
-        searchMenuItem?.setOnActionExpandListener(this)
-
+        searchMenuItem = menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.setSubmitButtonEnabled(false)
-        searchView?.setOnQueryTextListener(this)
+        enableSearch(true)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -113,9 +114,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // Hide filter menu item when we're showing all orders and there aren't any,
         // or we're showing order detail, or when the user is doing an order search
         val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) ||
-                isShowingOrderDetail() ||
+                childFragmentManager.backStackEntryCount > 0
                 isSearching
+        val hideSearchMenu = childFragmentManager.backStackEntryCount > 0
+
         filterMenuItem?.isVisible = !hideFilterMenu
+        searchMenuItem?.isVisible = !hideSearchMenu
+
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -214,6 +219,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
+        outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
 
         super.onSaveInstanceState(outState)
@@ -222,13 +228,18 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onBackStackChanged() {
         super.onBackStackChanged()
 
+        activity?.invalidateOptionsMenu()
+
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
-            filterMenuItem?.isVisible = true
+            enableSearch(true)
+            if (isSearching) {
+                searchMenuItem?.expandActionView()
+            }
         } else {
-            filterMenuItem?.isVisible = false
+            enableSearch(false)
         }
     }
 
@@ -281,11 +292,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     private fun isShowingAllOrders(): Boolean {
         return orderStatusFilter.isNullOrEmpty()
-    }
-
-    private fun isShowingOrderDetail(): Boolean {
-        val fragment = childFragmentManager.findFragmentByTag(OrderDetailFragment.TAG)
-        return fragment?.isVisible ?: false
     }
 
     /**
@@ -357,17 +363,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun getFragmentTitle(): String {
-        if (isSearching) {
-            return getString(R.string.orderlist_searched, searchQuery)
-        } else {
-            return getString(R.string.orders)
-                    .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
-                        val orderStatusLabel = CoreOrderStatus.fromValue(filter)?.let { orderStatus ->
-                            OrderStatusUtils.getLabelForOrderStatus(orderStatus, ::getString)
-                        }
-                        getString(R.string.orderlist_filtered, orderStatusLabel)
-                    } ?: "")
-        }
+        return getString(R.string.orders)
+                .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
+                    val orderStatusLabel = CoreOrderStatus.fromValue(filter)?.let { orderStatus ->
+                        OrderStatusUtils.getLabelForOrderStatus(orderStatus, ::getString)
+                    }
+                    getString(R.string.orderlist_filtered, orderStatusLabel)
+                } ?: "")
     }
 
     override fun scrollToTop() {
@@ -511,10 +513,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun submitSearch(query: String) {
         searchQuery = query
-        activity?.title = getFragmentTitle()
-        searchQuery?.let {
-            presenter.searchOrders(it)
-        }
+        presenter.searchOrders(query)
         showSkeleton(true)
     }
 
@@ -531,11 +530,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun clearSearchResults() {
         searchQuery = null
         isSearching = false
-
         activity?.invalidateOptionsMenu()
-        activity?.title = getFragmentTitle()
-
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
+    }
+
+    override fun enableSearch(enable: Boolean) {
+        searchMenuItem?.setOnActionExpandListener(if (enable) this else null)
+        searchView?.setOnQueryTextListener(if (enable) this else null)
+        searchMenuItem?.isVisible = enable
+        if (!enable) {
+            searchMenuItem?.collapseActionView()
+        }
     }
     // endregion
 }

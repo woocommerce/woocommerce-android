@@ -32,6 +32,7 @@ interface OrderListContract {
         fun submitSearchDelayed(query: String)
         fun showSearchResults(query: String, orders: List<WCOrderModel>)
         fun clearSearchResults()
+        fun enableSearch(enable: Boolean)
 
         fun showSkeleton(show: Boolean)
     }
