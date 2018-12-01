@@ -498,6 +498,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         return true
     }
 
+    /**
+     * Submit the search after a brief delay unless the query has changed - this is used to
+     * perform a search while the user is typing
+     */
     override fun submitSearchDelayed(query: String) {
         searchHandler.postDelayed({
             searchView?.let {
@@ -506,12 +510,18 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }, 500)
     }
 
+    /**
+     * Submit the search with no delay
+     */
     override fun submitSearch(query: String) {
         searchQuery = query
         presenter.searchOrders(query)
         showSkeleton(true)
     }
 
+    /**
+     * Presenter received search results, show them in the adapter
+     */
     override fun showSearchResults(query: String, orders: List<WCOrderModel>) {
         if (query == searchQuery) {
             ordersAdapter.setOrders(orders)
