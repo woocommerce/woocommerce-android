@@ -128,6 +128,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         val showSearch = shouldShowFilterMenuItem()
         searchMenuItem?.let {
+            if (it.isActionViewExpanded && !showFilter) it.collapseActionView()
             if (it.isVisible != showSearch) it.isVisible = showFilter
         }
     }
@@ -521,7 +522,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-        clearSearchResults()
+        if (childFragmentManager.backStackEntryCount == 0) {
+            clearSearchResults()
+        }
         return true
     }
 
