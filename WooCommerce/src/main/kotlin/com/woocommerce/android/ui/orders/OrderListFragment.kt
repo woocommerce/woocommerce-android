@@ -104,9 +104,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         searchMenuItem = menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.setSubmitButtonEnabled(false)
-        searchMenuItem?.setOnActionExpandListener(this)
-        searchView?.setOnQueryTextListener(this)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -133,6 +130,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
         R.id.menu_search -> {
             // TODO: analytics
+            searchMenuItem?.setOnActionExpandListener(this)
+            searchView?.setOnQueryTextListener(this)
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -474,6 +473,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
         submitSearch(query)
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
         return true
     }
 
@@ -509,7 +509,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun submitSearch(query: String) {
         searchQuery = query
         presenter.searchOrders(query)
-        org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
         showSkeleton(true)
     }
 
