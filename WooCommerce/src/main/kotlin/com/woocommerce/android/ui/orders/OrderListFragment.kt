@@ -105,7 +105,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         searchMenuItem = menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.setSubmitButtonEnabled(false)
-        enableSearch(true)
+        searchMenuItem?.setOnActionExpandListener(this)
+        searchView?.setOnQueryTextListener(this)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -234,12 +235,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // being visible - go ahead and load the orders.
         if (isActive) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
-            enableSearch(true)
-            if (isSearching) {
-                searchMenuItem?.expandActionView()
-            }
-        } else {
-            enableSearch(false)
         }
     }
 
@@ -534,12 +529,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         isSearching = false
         activity?.invalidateOptionsMenu()
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
-    }
-
-    override fun enableSearch(enable: Boolean) {
-        searchMenuItem?.setOnActionExpandListener(if (enable) this else null)
-        searchView?.setOnQueryTextListener(if (enable) this else null)
-        searchMenuItem?.isVisible = enable
     }
     // endregion
 }
