@@ -112,10 +112,24 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
-        filterMenuItem?.isVisible = shouldShowFilterMenuItem()
-        searchMenuItem?.isVisible = shouldShowSearchMenuItem()
-
+        refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
+    }
+
+    /**
+     * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
+     * search menu item to collapse
+     */
+    private fun refreshOptionsMenu() {
+        val showFilter = shouldShowFilterMenuItem()
+        filterMenuItem?.let {
+            if (it.isVisible != showFilter) it.isVisible = showFilter
+        }
+
+        val showSearch = shouldShowFilterMenuItem()
+        searchMenuItem?.let {
+            if (it.isVisible != showSearch) it.isVisible = showFilter
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
@@ -133,20 +147,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun shouldShowFilterMenuItem(): Boolean {
-        return when {
-            (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) -> false
-            isSearching -> false
-            (childFragmentManager.backStackEntryCount > 0) -> false
-            else -> true
-        }
+    private fun shouldShowFilterMenuItem() = when {
+        (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) -> false
+        isSearching -> false
+        (childFragmentManager.backStackEntryCount > 0) -> false
+        else -> true
     }
 
-    private fun shouldShowSearchMenuItem(): Boolean {
-        return when {
-            (childFragmentManager.backStackEntryCount > 0) -> false
-            else -> true
-        }
+    private fun shouldShowSearchMenuItem() = when {
+        (childFragmentManager.backStackEntryCount > 0) -> false
+        isShowingAllOrders() -> true
+        else -> false
     }
     // endregion
 
@@ -241,7 +252,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onBackStackChanged() {
         super.onBackStackChanged()
 
-        activity?.invalidateOptionsMenu()
+        refreshOptionsMenu()
 
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
@@ -302,7 +313,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     /**
-     * shows the view that appears for stores that have have no orders matching the current filter or search
+     * shows the view that appears for stores that have have no orders matching the current filter
      */
     override fun showNoOrdersView(show: Boolean) {
         if (show && noOrdersView.visibility != View.VISIBLE) {
@@ -481,8 +492,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         ordersAdapter.clearAdapterData()
         presenter.loadOrders(orderStatusFilter, true)
 
-        // Reset the toolbar title
         activity?.title = getFragmentTitle()
+        searchMenuItem?.isVisible = shouldShowSearchMenuItem()
     }
     // endregion
 
@@ -551,7 +562,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun clearSearchResults() {
         searchQuery = null
         isSearching = false
-        activity?.invalidateOptionsMenu()
+        refreshOptionsMenu()
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
     }
     // endregion
