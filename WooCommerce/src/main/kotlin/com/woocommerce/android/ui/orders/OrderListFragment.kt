@@ -533,9 +533,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-        refreshOptionsMenu()
         ordersAdapter.clearAdapterData()
         isSearching = true
+        refreshOptionsMenu()
         return true
     }
 
