@@ -140,7 +140,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             true
         }
         R.id.menu_search -> {
-            // TODO: analytics
+            AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
             enableSearchListeners()
             true
         }
