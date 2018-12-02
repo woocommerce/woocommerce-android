@@ -302,6 +302,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SELECTED_STORE_ID = "selected_store_id"
         const val KEY_STATE = "state"
         const val KEY_STATUS = "status"
+        const val KEY_SEARCH = "search"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
 

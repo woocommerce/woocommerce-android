@@ -561,6 +561,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
      * Submit the search with no delay
      */
     override fun submitSearch(query: String) {
+        AnalyticsTracker.track(
+                Stat.ORDERS_LIST_FILTER,
+                mapOf(AnalyticsTracker.KEY_SEARCH to query))
+
         searchQuery = query
         presenter.searchOrders(query)
         showSkeleton(true)
