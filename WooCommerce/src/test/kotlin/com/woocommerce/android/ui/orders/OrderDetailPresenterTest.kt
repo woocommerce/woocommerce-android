@@ -37,6 +37,7 @@ class OrderDetailPresenterTest {
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
+    private val remoteOderId = order.remoteOrderId
     private val orderNotes = OrderTestUtils.generateOrderNotes(10, 2, 1)
     private lateinit var presenter: OrderDetailPresenter
 
@@ -52,7 +53,7 @@ class OrderDetailPresenterTest {
     fun `Displays the order detail view correctly`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-        presenter.loadOrderDetail(orderIdentifier, false)
+        presenter.loadOrderDetail(orderIdentifier, remoteOderId, false)
         verify(orderDetailView).showOrderDetail(any())
     }
 
@@ -62,7 +63,7 @@ class OrderDetailPresenterTest {
         // from the order store
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-        presenter.loadOrderDetail(orderIdentifier, false)
+        presenter.loadOrderDetail(orderIdentifier, remoteOderId, false)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
@@ -75,7 +76,7 @@ class OrderDetailPresenterTest {
     fun `Display error message on fetch order notes error`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-        presenter.loadOrderDetail(orderIdentifier, false)
+        presenter.loadOrderDetail(orderIdentifier, remoteOderId, false)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
@@ -90,7 +91,7 @@ class OrderDetailPresenterTest {
     fun `Mark order complete - Displays undo snackbar correctly`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-        presenter.loadOrderDetail(orderIdentifier, true)
+        presenter.loadOrderDetail(orderIdentifier, remoteOderId, true)
 
         verify(orderDetailView, times(1))
                 .showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
@@ -226,7 +227,7 @@ class OrderDetailPresenterTest {
     fun `Shows and hides the note list skeleton correctly`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-        presenter.loadOrderDetail(orderIdentifier, false)
+        presenter.loadOrderDetail(orderIdentifier, remoteOderId, false)
 
         dispatcher.dispatch(any<Action<FetchOrderNotesPayload>>())
         verify(orderDetailView).showOrderNotesSkeleton(true)

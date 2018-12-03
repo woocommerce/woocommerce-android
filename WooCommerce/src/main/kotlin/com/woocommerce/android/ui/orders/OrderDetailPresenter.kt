@@ -42,6 +42,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override var orderModel: WCOrderModel? = null
+    override var orderIdentifier: OrderIdentifier? = null
     override var isUsingCachedNotes = false
 
     private var orderView: OrderDetailContract.View? = null
@@ -60,15 +61,15 @@ class OrderDetailPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean) {
+        this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
-            orderView?.let { view ->
-                orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also { order ->
-                    view.showOrderDetail(order)
-                }
+            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderModel?.let {
+                orderView?.showOrderDetail(it)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                loadOrderNotes() // load order notes
-            }
+                loadOrderNotes()
+            } ?: fetchOrder(remoteOrderId)
         }
     }
 
@@ -86,6 +87,12 @@ class OrderDetailPresenter @Inject constructor(
                 isUsingCachedNotes = true
             }
         }
+    }
+
+    override fun fetchOrder(remoteOrderId: Long) {
+        orderView?.showLoadOrderProgress(true)
+        val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
     }
 
     override fun doChangeOrderStatus(newStatus: String) {
@@ -125,7 +132,19 @@ class OrderDetailPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
-        if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
+        if (event.causeOfChange == WCOrderAction.FETCH_SINGLE_ORDER) {
+            if (event.isError || orderIdentifier.isNullOrBlank()) {
+                WooLog.e(T.ORDERS, "$TAG - Error fetching order : ${event.error.message}")
+                orderView?.showLoadOrderError()
+            } else {
+                orderModel = orderStore.getOrderByIdentifier(orderIdentifier!!)
+                orderModel?.let { order ->
+                    orderView?.showLoadOrderProgress(false)
+                    orderView?.showOrderDetail(order)
+                    loadOrderNotes()
+                } ?: orderView?.showLoadOrderError()
+            }
+        } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderView?.showOrderNotesSkeleton(false)
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")

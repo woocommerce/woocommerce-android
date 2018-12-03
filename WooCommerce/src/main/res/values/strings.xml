@@ -181,6 +181,7 @@
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
     <string name="order_error_update_general">Error changing order</string>
+    <string name="order_error_fetch_generic">Error fetching order</string>
     <!--
         Add Order Note
     -->

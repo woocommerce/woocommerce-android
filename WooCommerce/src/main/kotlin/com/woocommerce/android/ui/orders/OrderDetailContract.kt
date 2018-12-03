@@ -9,8 +9,10 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 interface OrderDetailContract {
     interface Presenter : BasePresenter<View> {
         var orderModel: WCOrderModel?
+        var orderIdentifier: OrderIdentifier?
         var isUsingCachedNotes: Boolean
-        fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
+        fun fetchOrder(remoteOrderId: Long)
+        fun loadOrderDetail(orderIdentifier: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean)
         fun loadOrderNotes()
         fun doChangeOrderStatus(newStatus: String)
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
@@ -30,5 +32,7 @@ interface OrderDetailContract {
         fun showOrderStatusChangedError()
         fun markOrderStatusChangedSuccess()
         fun markOrderStatusChangedFailed()
+        fun showLoadOrderProgress(show: Boolean)
+        fun showLoadOrderError()
     }
 }

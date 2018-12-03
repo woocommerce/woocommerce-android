@@ -22,6 +22,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
@@ -29,16 +30,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
-        const val FIELD_ORDER_NUMBER = "order-number"
+        const val FIELD_REMOTE_ORDER_ID = "remote_order_id"
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
         const val REQUEST_CODE_ADD_NOTE = 100
 
-        fun newInstance(order: WCOrderModel, markComplete: Boolean = false): Fragment {
+        fun newInstance(orderId: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean = false): Fragment {
             val args = Bundle()
-            args.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
-
-            // Use for populating the title only, not for record retrieval
-            args.putString(FIELD_ORDER_NUMBER, order.number)
+            args.putString(FIELD_ORDER_IDENTIFIER, orderId)
+            args.putLong(FIELD_REMOTE_ORDER_ID, remoteOrderId)
 
             // True if order fulfillment requested, else false
             args.putBoolean(FIELD_MARK_COMPLETE, markComplete)
@@ -65,27 +64,21 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_order_detail, container, false)
-
-        // Set activity title
-        arguments?.getString(FIELD_ORDER_NUMBER, "").also {
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it)
-        }
-
-        return view
+        return inflater.inflate(R.layout.fragment_order_detail, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        val markComplete = arguments?.getBoolean(FIELD_MARK_COMPLETE, false) ?: false
-        arguments?.remove(FIELD_MARK_COMPLETE)
 
-        context?.let {
-            arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
-                presenter.loadOrderDetail(it, markComplete)
-            }
+        arguments?.let {
+            val markComplete = it.getBoolean(FIELD_MARK_COMPLETE, false)
+            it.remove(FIELD_MARK_COMPLETE)
+
+            val orderIdentifier = it.getString(FIELD_ORDER_IDENTIFIER) as OrderIdentifier
+            val remoteOrderId = it.getLong(FIELD_REMOTE_ORDER_ID)
+            presenter.loadOrderDetail(orderIdentifier, remoteOrderId, markComplete)
         }
     }
 
@@ -117,6 +110,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     override fun showOrderDetail(order: WCOrderModel?) {
         order?.let {
+            // set the title to the order number
+            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it.number)
+
             // Populate the Order Status Card
             orderDetail_orderStatus.initView(order)
 
@@ -242,6 +238,18 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                         it.show()
                     }
         }
+    }
+
+    // TODO: replace progress bar with a skeleton
+    override fun showLoadOrderProgress(show: Boolean) {
+        loadingProgress.visibility = if (show) View.VISIBLE else View.GONE
+        orderDetail_container.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    override fun showLoadOrderError() {
+        loadingProgress.visibility = View.GONE
+        uiMessageResolver.showSnack(R.string.order_error_fetch_generic)
+        activity?.onBackPressed()
     }
 
     override fun onRequestAddNote() {
