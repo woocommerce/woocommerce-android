@@ -16,43 +16,43 @@ class OrderStatusTag(rawText: String) : ITag(rawText.trim()) {
 
         when (rawText.toLowerCase()) {
             CoreOrderStatus.PROCESSING.value -> {
-                config.tagText = CoreOrderStatus.PROCESSING.label
+                config.tagText = context.getString(R.string.orderstatus_processing)
                 config.fgColor = ContextCompat.getColor(context, R.color.orderStatus_processing_text)
                 config.bgColor = ContextCompat.getColor(context, R.color.orderStatus_processing_bg)
                 config.borderColor = ContextCompat.getColor(context, R.color.orderStatus_processing_border)
             }
             CoreOrderStatus.PENDING.value -> {
-                config.tagText = CoreOrderStatus.PENDING.label
+                config.tagText = context.getString(R.string.orderstatus_pending)
                 config.fgColor = ContextCompat.getColor(context, R.color.orderStatus_pending_text)
                 config.bgColor = ContextCompat.getColor(context, R.color.orderStatus_pending_bg)
                 config.borderColor = ContextCompat.getColor(context, R.color.orderStatus_pending_border)
             }
             CoreOrderStatus.FAILED.value -> {
-                config.tagText = CoreOrderStatus.FAILED.label
+                config.tagText = context.getString(R.string.orderstatus_failed)
                 config.fgColor = ContextCompat.getColor(context, R.color.orderStatus_failed_text)
                 config.bgColor = ContextCompat.getColor(context, R.color.orderStatus_failed_bg)
                 config.borderColor = ContextCompat.getColor(context, R.color.orderStatus_failed_border)
             }
             CoreOrderStatus.COMPLETED.value -> {
-                config.tagText = CoreOrderStatus.COMPLETED.label
+                config.tagText = context.getString(R.string.orderstatus_completed)
                 config.fgColor = ContextCompat.getColor(context, R.color.orderStatus_completed_text)
                 config.bgColor = ContextCompat.getColor(context, R.color.orderStatus_completed_bg)
                 config.borderColor = ContextCompat.getColor(context, R.color.orderStatus_completed_border)
             }
             CoreOrderStatus.ON_HOLD.value -> {
-                config.tagText = CoreOrderStatus.ON_HOLD.label
+                config.tagText = context.getString(R.string.orderstatus_hold)
                 config.fgColor = ContextCompat.getColor(context, R.color.orderStatus_hold_text)
                 config.bgColor = ContextCompat.getColor(context, R.color.orderStatus_hold_bg)
                 config.borderColor = ContextCompat.getColor(context, R.color.orderStatus_hold_border)
             }
             CoreOrderStatus.CANCELLED.value -> {
-                config.tagText = CoreOrderStatus.CANCELLED.label
+                config.tagText = context.getString(R.string.orderstatus_cancelled)
                 config.fgColor = ContextCompat.getColor(context, R.color.orderStatus_cancelled_text)
                 config.bgColor = ContextCompat.getColor(context, R.color.orderStatus_cancelled_bg)
                 config.borderColor = ContextCompat.getColor(context, R.color.orderStatus_cancelled_border)
             }
             CoreOrderStatus.REFUNDED.value -> {
-                config.tagText = CoreOrderStatus.REFUNDED.label
+                config.tagText = context.getString(R.string.orderstatus_refunded)
                 config.fgColor = ContextCompat.getColor(context, R.color.orderStatus_refunded_text)
                 config.bgColor = ContextCompat.getColor(context, R.color.orderStatus_refunded_bg)
                 config.borderColor = ContextCompat.getColor(context, R.color.orderStatus_refunded_border)

@@ -73,3 +73,7 @@ google-services.json
 # Fastlane
 fastlane/README.md
 fastlane/report.xml
+fastlane/.env
+
+# Ruby Dependencies
+/vendor

@@ -17,4 +17,9 @@
     <issue id="InvalidPackage">
         <ignore regexp="java-common-1.13.jar" />
     </issue>
+
+    <issue id="IconDuplicates" severity="error">
+        <ignore path="**/WordPressLoginFlow/**" />
+        <ignore path="**/login_notification_icon.png" />
+    </issue>
 </lint>

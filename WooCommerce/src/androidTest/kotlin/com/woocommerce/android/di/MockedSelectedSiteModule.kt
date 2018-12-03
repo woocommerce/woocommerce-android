@@ -2,10 +2,13 @@ package com.woocommerce.android.di
 
 import android.content.Context
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.tools.SelectedSite
 import dagger.Module
 import dagger.Provides
+import org.mockito.ArgumentMatchers.anyInt
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Singleton
 
 @Module
@@ -20,7 +23,13 @@ object MockedSelectedSiteModule {
     @Provides
     @Singleton
     fun provideSelectedSite(context: Context): SelectedSite {
-        val selectedSite = SelectedSite(context, mock())
+        val mockSiteStore = mock<SiteStore>()
+        // Create and return a fake SiteModel from any ID that is given to SiteStore.getSiteByLocalId()
+        whenever(mockSiteStore.getSiteByLocalId((anyInt()))).thenAnswer { invocation ->
+            SiteModel().apply { id = invocation.arguments[0] as Int }
+        }
+
+        val selectedSite = SelectedSite(context, mockSiteStore)
         siteModel?.let {
             selectedSite.set(it)
         }

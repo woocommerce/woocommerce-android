@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-14 09:54:08+0000
+Translation-Revision-Date: 2018-11-28 08:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
-    <string name="logviewer_share_error">로그를 공유 할 수 없음</string>
+    <string name="about_version">%s 버전</string>
+    <string name="about_tos">서비스 약관</string>
+    <string name="about_publisher">발행인: Automattic, Inc</string>
+    <string name="about_appname">Android용 WooCommerce</string>
+    <string name="support_identity_input_dialog_name_label">이름</string>
+    <string name="support_email_toast">지원팀에 연락하기 위해 이메일 앱 열기</string>
+    <string name="settings_licenses">오픈 소스 라이선스</string>
+    <string name="settings_about">앱 정보</string>
+    <string name="logviewer_share_error">로그를 공유할 수 없음</string>
     <string name="logviewer_error_copy_to_clipboard">클립보드에 복사하는 중 오류 발생</string>
     <string name="logviewer_copied_to_clipboard">로그가 클립보드에 복사됨</string>
     <string name="logviewer_activity_title">애플리케이션 로그</string>
@@ -140,23 +148,24 @@ Language: ko_KR
     <string name="send_link">링크 전송</string>
     <string name="invalid_verification_code">잘못된 확인 코드</string>
     <string name="verification_code">확인 코드</string>
+    <string name="email_address">이메일 주소</string>
     <string name="support_email_subject">우커머스 Android %s 지원</string>
     <string name="contact_support">지원팀에 문의</string>
     <string name="toggle_option_not_checked">옵션이 선택되지 않음</string>
     <string name="toggle_option_checked">옵션이 선택됨</string>
     <string name="settings_third_party_policy_header">타사 정책</string>
     <string name="settings_cookie_policy_header">쿠키 정책</string>
-    <string name="settings_privacy_policy_header">개인 정보 보호 정책</string>
+    <string name="settings_privacy_policy_header">개인정보 보호정책</string>
     <string name="settings_primary_store">기본 스토어</string>
     <string name="settings_footer">많은 사랑을 받는 Automattic 제품</string>
     <string name="settings_tracking">워드프레스는 타사 제품을 포함한 다른 추적 도구를 사용합니다. 이 도구에 대해 읽고 제어하는 방법에 대해 알아보세요.</string>
-    <string name="settings_privacy_policy">개인 정보 보호 정책 읽기</string>
-    <string name="settings_privacy_detail">이 정보는 개인 정보 보호 정책에 명시된 것처럼 제품을 개선하고, 보다 관련된 마케팅을 제공하며, 우커머스 환경을 개인 설정하는 데 도움을 줍니다.</string>
+    <string name="settings_privacy_policy">개인정보 보호정책 읽기</string>
+    <string name="settings_privacy_detail">이 정보는 개인정보 보호정책에 명시된 바와 같이 제품을 개선하고, 더 관련성 높은 마케팅을 제공하며, 우커머스 환경을 개인 설정하는 데 도움을 줍니다.</string>
     <string name="settings_send_stats_detail">워드프레스 계정에 로그인되어 있는 동안 이용하는 서비스에 대한 정보를 워드프레스의 분석 도구와 공유합니다.</string>
     <string name="settings_send_stats">정보 수집</string>
     <string name="settings_confirm_signout">우커머스에서 로그아웃하시겠습니까?</string>
     <string name="settings_signout">로그아웃 계정</string>
-    <string name="privacy_settings">개인 정보 설정</string>
+    <string name="privacy_settings">프라이버시 설정</string>
     <string name="settings">설정</string>
     <string name="orderstatus_contentDesc">주문 상태</string>
     <string name="orderstatus_refunded">환불됨</string>
@@ -209,7 +218,6 @@ Language: ko_KR
     <string name="orderdetail_orderstatus_created">%1$s 작성</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">주문 #%s</string>
-    <string name="orderdetail">주문 상세 정보</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">고객 정보</string>
     <string name="orderlist_filter">필터</string>
@@ -294,7 +302,7 @@ Language: ko_KR
     <string name="continue_button">계속</string>
     <string name="undo">실행 취소</string>
     <string name="retry">다시 시도</string>
-    <string name="hide_details">세부정보 숨기기</string>
+    <string name="hide_details">상세 정보 숨기기</string>
     <string name="details">세부사항</string>
     <string name="discount">할인</string>
     <string name="subtotal">소계</string>
@@ -304,14 +312,11 @@ Language: ko_KR
     <string name="total">총계</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="email_address">이메일 주소</string>
     <string name="orders">주문</string>
     <string name="my_store">내 스토어</string>
     <string name="signout">로그아웃</string>
     <string name="logging_in">로그인 중</string>
     <string name="all">모두</string>
-    <string name="login_notification_channel_id">\@string/notification_channel_general_id</string>
-    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_general_title">일반</string>
     <string name="app_name">우커머스</string>
 </resources>

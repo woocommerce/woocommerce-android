@@ -41,12 +41,14 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DashboardPresenterTest {
     private val dashboardView: DashboardContract.View = mock()
     private val dispatcher: Dispatcher = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
     private val wcStatsStore: WCStatsStore = mock()
     private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
@@ -58,7 +60,8 @@ class DashboardPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(DashboardPresenter(dispatcher, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
+        presenter = spy(DashboardPresenter(
+                dispatcher, wooCommerceStore, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
