@@ -1,0 +1,18 @@
+{
+  "branch": "master",
+  "pinned_hash": "1889397d33cb5027b5a2fc57e547b0947b65beb9",
+  "files_to_copy": [
+    {
+      "file": "android/WCAndroid/gradle.properties",
+      "destination": "gradle.properties"
+    },
+    {
+      "file": "android/WCAndroid/google-services.json",
+      "destination": "WooCommerce/google-services.json"
+    },
+    {
+      "file": "android/automattic.jks",
+      "destination": "WooCommerce/automattic.jks"
+    }
+  ]
+}
