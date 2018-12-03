@@ -9,6 +9,19 @@ Dotenv.load('~/.wcandroid-env.default')
 ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 
 ########################################################################
+# Release Lanes
+########################################################################  
+desc "Merge libraries strings files into the main app one"
+lane :localize_libs do | options |
+  main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
+  libraries_strings_path = [
+    {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id"]}
+  ]
+
+  an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: libraries_strings_path)
+end
+
+########################################################################
 # Helper Lanes
 ########################################################################  
 desc "Get a list of pull request from `start_tag` to the current state"

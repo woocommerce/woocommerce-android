@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-14 10:54:03+0000
+Translation-Revision-Date: 2018-11-27 10:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="about_version">Versi %s</string>
+    <string name="about_tos">Ketentuan layanan</string>
+    <string name="about_publisher">Penerbit: Automattic, Inc</string>
+    <string name="about_appname">WooCommerce untuk Android</string>
+    <string name="support_identity_input_dialog_name_label">Nama</string>
+    <string name="support_email_toast">Membuka aplikasi email untuk menghubungi dukungan</string>
+    <string name="settings_licenses">Lisensi sumber terbuka</string>
+    <string name="settings_about">Tentang aplikasi</string>
     <string name="logviewer_share_error">Tidak dapat berbagi log</string>
     <string name="logviewer_error_copy_to_clipboard">Error saat menyalin ke clipboard</string>
     <string name="logviewer_copied_to_clipboard">Log disalin ke clipboard</string>
@@ -140,6 +148,7 @@ Language: id
     <string name="send_link">Kirim tautan</string>
     <string name="invalid_verification_code">Kode verifikasi tidak valid</string>
     <string name="verification_code">Kode verifikasi</string>
+    <string name="email_address">Alamat email</string>
     <string name="support_email_subject">Dukungan WooCommerce Android %s</string>
     <string name="contact_support">Hubungi dukungan</string>
     <string name="toggle_option_not_checked">pilihan tidak dicentang</string>
@@ -209,7 +218,6 @@ Language: id
     <string name="orderdetail_orderstatus_created">Dibuat %1$s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Pesanan #%s</string>
-    <string name="orderdetail">Detail Pesanan</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Informasi Pelanggan</string>
     <string name="orderlist_filter">Penyaring</string>
@@ -304,14 +312,11 @@ Language: id
     <string name="total">Total</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="email_address">Alamat Email</string>
     <string name="orders">Pesanan</string>
     <string name="my_store">Toko saya</string>
     <string name="signout">Keluar</string>
     <string name="logging_in">Proses masuk</string>
     <string name="all">Semua</string>
-    <string name="login_notification_channel_id">\@string/notification_channel_general_id</string>
-    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_general_title">Umum</string>
     <string name="app_name">WooCommerce</string>
 </resources>

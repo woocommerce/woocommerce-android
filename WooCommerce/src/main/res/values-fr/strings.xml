@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-14 12:54:04+0000
+Translation-Revision-Date: 2018-11-27 11:54:01+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="about_version">Version %s</string>
+    <string name="about_tos">Conditions d\'utilisation</string>
+    <string name="about_publisher">Éditeur : Automattic, Inc</string>
+    <string name="about_appname">WooCommerce pour Android</string>
+    <string name="support_identity_input_dialog_name_label">Nom</string>
+    <string name="support_email_toast">Ouverture d\'une messagerie électronique pour contacter l\'assistance</string>
+    <string name="settings_licenses">Licences open sources</string>
+    <string name="settings_about">À propos de l\'application</string>
     <string name="logviewer_share_error">Impossible de partager le journal</string>
     <string name="logviewer_error_copy_to_clipboard">Erreur lors de la copie dans le presse-papier</string>
     <string name="logviewer_copied_to_clipboard">Journal copié dans le presse-papier</string>
@@ -23,7 +31,7 @@ Language: fr
     <string name="support_contact">Contacter l’assistance</string>
     <string name="support_faq_detail">Obtenez les réponses à vos questions</string>
     <string name="support_faq">Parcourir notre FAQ</string>
-    <string name="support_subtitle">Comment pouvons-nous vous aider ?</string>
+    <string name="support_subtitle">En quoi pouvons-nous vous aider ?</string>
     <string name="support_identity_input_dialog_email_label">E-mail</string>
     <string name="support_identity_input_dialog_enter_email">Veuillez entrer votre adresse e-mail.</string>
     <string name="support_identity_input_dialog_enter_email_and_name">Pour continuer, veuillez saisir votre adresse e-mail et votre nom</string>
@@ -140,6 +148,7 @@ Language: fr
     <string name="send_link">Envoyer le lien</string>
     <string name="invalid_verification_code">Code de vérification invalide</string>
     <string name="verification_code">Code de vérification</string>
+    <string name="email_address">Adresse de messagerie</string>
     <string name="support_email_subject">Assistance WooCommerce Android %s</string>
     <string name="contact_support">Contacter le support</string>
     <string name="toggle_option_not_checked">option non sélectionnée</string>
@@ -190,7 +199,7 @@ Language: fr
     <string name="orderdetail_customer_image_contentdesc">Image de profil du client</string>
     <string name="orderdetail_customer_provided_note">Note fournie par le client</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">Paiement - Remboursement</string>
+    <string name="orderdetail_payment_refunded">Paiement - Remboursé</string>
     <string name="orderdetail_new_total">Nouveau total</string>
     <string name="orderdetail_refunded">Remboursé</string>
     <string name="orderdetail_payment_summary_onhold">Paiement en attente pour %s</string>
@@ -209,7 +218,6 @@ Language: fr
     <string name="orderdetail_orderstatus_created">Créé le %1$s</string>
     <string name="orderdetail_orderstatus_heading">N° %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Commande n° %s</string>
-    <string name="orderdetail">Détails de la commande</string>
     <string name="customer_full_name">%2$s %1$s</string>
     <string name="customer_information">Informations sur le client</string>
     <string name="orderlist_filter">Filtrer</string>
@@ -233,12 +241,12 @@ Language: fr
     <string name="dashboard_top_earners_total_spend">Dépense totale</string>
     <string name="dashboard_top_earners_description">Obtenez des informations sur les performances des produits de votre boutique</string>
     <string name="dashboard_top_earners_title">Produits les plus performants</string>
-    <string name="dashboard_stats_updated_date_time">Mis à jour le %s</string>
-    <string name="dashboard_stats_updated_one_day">Mis à jour il y a un an</string>
-    <string name="dashboard_stats_updated_hours">Mis à jour il y a %d heures</string>
-    <string name="dashboard_stats_updated_one_hour">Mis à jour il y a une heure</string>
-    <string name="dashboard_stats_updated_minutes">Mis à jour il y a %d minutes</string>
-    <string name="dashboard_stats_updated_now">Mis à jour il y a quelques instants</string>
+    <string name="dashboard_stats_updated_date_time">Mises à jour le %s</string>
+    <string name="dashboard_stats_updated_one_day">Mises à jour il y a un an</string>
+    <string name="dashboard_stats_updated_hours">Mises à jour il y a %d heures</string>
+    <string name="dashboard_stats_updated_one_hour">Mises à jour il y a une heure</string>
+    <string name="dashboard_stats_updated_minutes">Mises à jour il y a %d minutes</string>
+    <string name="dashboard_stats_updated_now">Mises à jour il y a quelques instants</string>
     <string name="dashboard_stats_error_content_description">Image d’erreur</string>
     <string name="dashboard_stats_error">Erreur lors de l’extraction des données</string>
     <string name="dashboard_state_no_data">Aucune donnée disponible</string>
@@ -269,7 +277,7 @@ Language: fr
     <string name="error_no_phone_app">Application téléphonique introuvable</string>
     <string name="error_please_choose_browser">Une erreur s\'est produite à l\'ouverture du navigateur Web par défaut. Veuillez choisir une autre application :</string>
     <string name="error_cant_open_url">Impossible d’ouvrir le lien</string>
-    <string name="date_at_time">%1$s sur %2$s</string>
+    <string name="date_at_time">%1$s à %2$s</string>
     <string name="date_timeframe_older_month">Il y a plus d’un mois</string>
     <string name="date_timeframe_older_week">Il y a plus d’une semaine</string>
     <string name="date_timeframe_older_two_days">Il y a plus de 2 jours</string>
@@ -282,11 +290,11 @@ Language: fr
     <string name="products">Produits</string>
     <string name="discard">Rejeter</string>
     <string name="this_year">Cette année</string>
-    <string name="this_month">Ce Mois-ci</string>
-    <string name="this_week">Cette Semaine</string>
+    <string name="this_month">Ce mois-ci</string>
+    <string name="this_week">Cette semaine</string>
     <string name="today">Aujourd\'hui</string>
     <string name="product">Produit</string>
-    <string name="offline_error">Votre réseau n’est pas disponible. Vérifiez votre connexion de données ou Wi-Fi.</string>
+    <string name="offline_error">Votre réseau n’est pas disponible. Vérifiez votre connexion Wi-Fi ou vos données.</string>
     <string name="offline_message">u2014 hors ligne avec les données enregistrées en mémoire cache</string>
     <string name="learn_more">En savoir plus</string>
     <string name="cancel">Annuler</string>
@@ -304,14 +312,11 @@ Language: fr
     <string name="total">Total</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="email_address">Adresse e-mail</string>
     <string name="orders">Commandes</string>
     <string name="my_store">Ma boutique</string>
     <string name="signout">Se déconnecter</string>
     <string name="logging_in">Connexion</string>
     <string name="all">Toutes</string>
-    <string name="login_notification_channel_id">\@string/notification_channel_general_id</string>
-    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_general_title">Général</string>
     <string name="app_name">WooCommerce</string>
 </resources>

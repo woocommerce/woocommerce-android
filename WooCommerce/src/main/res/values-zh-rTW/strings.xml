@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-14 09:54:07+0000
+Translation-Revision-Date: 2018-11-28 07:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="about_version">版本 %s</string>
+    <string name="about_tos">服務條款</string>
+    <string name="about_publisher">發表者：Automattic, Inc</string>
+    <string name="about_appname">Android 版 WooCommerce</string>
+    <string name="support_identity_input_dialog_name_label">名稱</string>
+    <string name="support_email_toast">開啟電子郵件應用程式，以聯絡支援團隊</string>
+    <string name="settings_licenses">開啟來源授權</string>
+    <string name="settings_about">關於此應用程式</string>
     <string name="logviewer_share_error">無法共用記錄檔</string>
     <string name="logviewer_error_copy_to_clipboard">複製到剪貼簿時發生錯誤</string>
     <string name="logviewer_copied_to_clipboard">記錄檔已複製到剪貼簿</string>
@@ -140,6 +148,7 @@ Language: zh_TW
     <string name="send_link">傳送連結</string>
     <string name="invalid_verification_code">驗證碼無效</string>
     <string name="verification_code">驗證碼</string>
+    <string name="email_address">電子郵件地址</string>
     <string name="support_email_subject">WooCommerce Android %s 支援</string>
     <string name="contact_support">聯絡支援團隊</string>
     <string name="toggle_option_not_checked">選項未勾選</string>
@@ -209,7 +218,6 @@ Language: zh_TW
     <string name="orderdetail_orderstatus_created">已建立 %1$s</string>
     <string name="orderdetail_orderstatus_heading">編號%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">訂單編號%s</string>
-    <string name="orderdetail">訂單詳細資料</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客資料</string>
     <string name="orderlist_filter">篩選</string>
@@ -304,14 +312,11 @@ Language: zh_TW
     <string name="total">總計</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="email_address">電子郵件地址</string>
     <string name="orders">訂單</string>
     <string name="my_store">我的商店</string>
     <string name="signout">登出</string>
     <string name="logging_in">正在登入</string>
     <string name="all">全部</string>
-    <string name="login_notification_channel_id">\@string/notification_channel_general_id</string>
-    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
 </resources>

@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-16 11:54:03+0000
+Translation-Revision-Date: 2018-11-30 13:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="about_version">バージョン%s</string>
+    <string name="about_tos">利用規約</string>
+    <string name="about_publisher">投稿者:Automattic, Inc</string>
+    <string name="about_appname">Android 向け WooCommerce</string>
+    <string name="support_identity_input_dialog_name_label">名前</string>
+    <string name="support_email_toast">メールアプリを開いてサポートに連絡</string>
+    <string name="settings_licenses">オープンソースライセンス</string>
+    <string name="settings_about">このアプリについて</string>
     <string name="logviewer_share_error">ログを共有できません</string>
     <string name="logviewer_error_copy_to_clipboard">クリップボードにコピーする際にエラーが発生しました</string>
-    <string name="logviewer_copied_to_clipboard">ログがクリップボードにコピーされました</string>
+    <string name="logviewer_copied_to_clipboard">ログをクリップボードにコピーしました</string>
     <string name="logviewer_activity_title">アプリケーションログ</string>
     <string name="help_screen_title">ヘルプ &amp; サポート</string>
     <string name="support_push_notification_message">「ヘルプ &amp; サポート」からの新しいメッセージ</string>
@@ -17,7 +25,7 @@ Language: ja_JP
     <string name="support_contact_email">連絡先メールアドレス</string>
     <string name="support_application_log_detail">アプリのステータスを確認するための高度なツール</string>
     <string name="support_application_log">アプリケーションログ</string>
-    <string name="support_my_tickets_detail">これまでに送信されたサポートチケットを表示します</string>
+    <string name="support_my_tickets_detail">送信済みのサポートチケットを表示</string>
     <string name="support_my_tickets">自分のチケット</string>
     <string name="support_contact_detail">サポートスタッフにお問い合わせください。難しい質問にもお答えします</string>
     <string name="support_contact">サポートへ問い合わせる</string>
@@ -53,7 +61,7 @@ Language: ja_JP
     <string name="notification_login_title_success">ログインしました。</string>
     <string name="error_generic_network">ネットワークエラーが発生しました。接続を確認して、もう一度お試しください。</string>
     <string name="enter_wpcom_or_jetpack_site">WordPress.com または Jetpack と連携したインストール型 WordPress サイトを入力してください</string>
-    <string name="xmlrpc_endpoint_forbidden_error">接続できませんでした。あなたのサイトの\nXMLRPC エンドポイントにアクセスしようとして、403エラーを受け取りました。これは、あなたのサイトと通信するためにアプリに必要なものです。ホストに連絡して\nこの問題を解決してください。</string>
+    <string name="xmlrpc_endpoint_forbidden_error">接続できませんでした。サイトの\nXMLRPC エンドポイントにアクセスしようとして、403エラーを受け取りました。アプリがサイトと通信するためにはアクセスが必要です。ホストに連絡して\nこの問題を解決してください。</string>
     <string name="xmlrpc_post_blocked_error">接続できませんでした。ご使用のホストは POST リクエストをブロックしていますが、サイトと通信するためにアプリはこのリクエストを必要とします。ホストに連絡して、この問題を解決してください。</string>
     <string name="xmlrpc_missing_method_error">接続できませんでした。必要な XML-RPC メソッドがサーバーにありません。</string>
     <string name="invalid_site_url_message">入力したサイト URL が正しいか確認してください</string>
@@ -140,6 +148,7 @@ Language: ja_JP
     <string name="send_link">リンクを送信</string>
     <string name="invalid_verification_code">無効な認証コード</string>
     <string name="verification_code">認証コード</string>
+    <string name="email_address">メールアドレス</string>
     <string name="support_email_subject">WooCommerce Android %s サポート</string>
     <string name="contact_support">サポートに問い合わせる</string>
     <string name="toggle_option_not_checked">オプションがオンになっていません</string>
@@ -209,7 +218,6 @@ Language: ja_JP
     <string name="orderdetail_orderstatus_created">%1$s が作成されました</string>
     <string name="orderdetail_orderstatus_heading">番号%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">注文番号%s</string>
-    <string name="orderdetail">注文詳細</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客情報</string>
     <string name="orderlist_filter">フィルター</string>
@@ -233,16 +241,16 @@ Language: ja_JP
     <string name="dashboard_top_earners_total_spend">支払い合計額</string>
     <string name="dashboard_top_earners_description">ストアでの商品売り上げ状況に関する統計概要を得られます</string>
     <string name="dashboard_top_earners_title">成績優秀者</string>
-    <string name="dashboard_stats_updated_date_time">%sに更新しました</string>
-    <string name="dashboard_stats_updated_one_day">1日前に更新しました</string>
-    <string name="dashboard_stats_updated_hours">%d時間前に更新しました</string>
-    <string name="dashboard_stats_updated_one_hour">1時間前に更新しました</string>
-    <string name="dashboard_stats_updated_minutes">%d分前に更新しました</string>
-    <string name="dashboard_stats_updated_now">直前に更新しました</string>
+    <string name="dashboard_stats_updated_date_time">%sに更新</string>
+    <string name="dashboard_stats_updated_one_day">1日前に更新</string>
+    <string name="dashboard_stats_updated_hours">%d時間前に更新</string>
+    <string name="dashboard_stats_updated_one_hour">1時間前に更新</string>
+    <string name="dashboard_stats_updated_minutes">%d分前に更新</string>
+    <string name="dashboard_stats_updated_now">さっき更新</string>
     <string name="dashboard_stats_error_content_description">エラー画像</string>
     <string name="dashboard_stats_error">データを取得する際にエラーが発生しました</string>
     <string name="dashboard_state_no_data">使用可能なデータがありません</string>
-    <string name="dashboard_stats_revenue">収入</string>
+    <string name="dashboard_stats_revenue">収益</string>
     <string name="dashboard_stats_orders">注文</string>
     <string name="dashboard_stats_visitors">訪問者</string>
     <string name="dashboard_stats_granularity_years">年</string>
@@ -304,14 +312,11 @@ Language: ja_JP
     <string name="total">合計</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="email_address">メールアドレス</string>
     <string name="orders">注文</string>
     <string name="my_store">自分のストア</string>
     <string name="signout">ログアウト</string>
     <string name="logging_in">ログインしています</string>
     <string name="all">すべて</string>
-    <string name="login_notification_channel_id">\@string/notification_channel_general_id</string>
-    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
 </resources>

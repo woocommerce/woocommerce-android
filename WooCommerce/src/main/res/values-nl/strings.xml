@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-14 09:54:06+0000
+Translation-Revision-Date: 2018-11-27 11:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="about_version">Versie %s</string>
+    <string name="about_tos">Servicevoorwaarden</string>
+    <string name="about_publisher">Publisher: Automattic, Inc</string>
+    <string name="about_appname">WooCommerce voor Android</string>
+    <string name="support_identity_input_dialog_name_label">Naam</string>
+    <string name="support_email_toast">E-mailapp openen om contact op te nemen met de ondersteuning</string>
+    <string name="settings_licenses">Bronlicenties openen</string>
+    <string name="settings_about">Over de app</string>
     <string name="logviewer_share_error">Log delen mislukt</string>
     <string name="logviewer_error_copy_to_clipboard">Fout bij kopiëren naar klembord</string>
     <string name="logviewer_copied_to_clipboard">Log gekopieerd naar klembord</string>
@@ -140,6 +148,7 @@ Language: nl
     <string name="send_link">Stuur link</string>
     <string name="invalid_verification_code">Ongeldige verificatiecode</string>
     <string name="verification_code">Verificatiecode</string>
+    <string name="email_address">E-mailadres</string>
     <string name="support_email_subject">Ondersteuning WooCommerce Android %s</string>
     <string name="contact_support">Neem contact op met ondersteuning</string>
     <string name="toggle_option_not_checked">optie niet aangevinkt</string>
@@ -209,7 +218,6 @@ Language: nl
     <string name="orderdetail_orderstatus_created">%1$s aangemaakt</string>
     <string name="orderdetail_orderstatus_heading">Nr. %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Bestelnr. %s</string>
-    <string name="orderdetail">Bestellingsgegevens</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Klantgegevens</string>
     <string name="orderlist_filter">Filter</string>
@@ -304,14 +312,11 @@ Language: nl
     <string name="total">Totaal</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="email_address">E-mailadres</string>
     <string name="orders">Bestellingen</string>
     <string name="my_store">Mijn winkel</string>
     <string name="signout">Uitloggen</string>
     <string name="logging_in">Inloggen</string>
     <string name="all">Alles</string>
-    <string name="login_notification_channel_id">\@string/notification_channel_general_id</string>
-    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_general_title">Algemeen</string>
     <string name="app_name">WooCommerce</string>
 </resources>
