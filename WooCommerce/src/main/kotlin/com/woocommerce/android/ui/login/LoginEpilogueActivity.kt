@@ -133,6 +133,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
             siteAdapter.siteList = supportedWCSites
 
+            button_continue.text = getString(R.string.continue_button)
             button_continue.setOnClickListener { _ ->
                 val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
                 site?.let { it ->
@@ -145,7 +146,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                 }
             }
         } else {
-            button_continue.isEnabled = false
+            button_continue.text = getString(R.string.refresh_button)
+            button_continue.setOnClickListener {
+                loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_sites))
+                presenter.checkWCVersionsForAllSites()
+            }
             supported_frame_list_container.visibility = View.GONE
         }
 

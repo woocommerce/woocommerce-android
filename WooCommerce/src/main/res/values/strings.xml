@@ -31,6 +31,7 @@
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
     <string name="continue_button">Continue</string>
+    <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
     <string name="learn_more">Learn More</string>
