@@ -51,3 +51,15 @@
 
 -keep class com.google.common.** { *; }
 -dontwarn com.google.common.**
+
+###### Zendesk - begin
+-keep class com.zendesk.** { *; }
+-keep class zendesk.** { *; }
+-keep class javax.inject.Provider
+-keep class com.squareup.picasso.** { *; }
+-keep class com.jakewharton.disklrucache.** { *; }
+-keep class com.google.gson.** { *; }
+-keep class okio.** { *; }
+-keep class retrofit2.** { *; }
+-keep class uk.co.senab.photoview.** { *; }
+###### Zendesk - end
