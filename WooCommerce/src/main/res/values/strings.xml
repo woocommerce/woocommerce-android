@@ -51,6 +51,7 @@
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
+    <string name="button_update_instructions">Update instructions</string>
 
     <!--
         Date/Time Labels
@@ -135,7 +136,6 @@
 
     <string name="dashboard_plugin_notice_title">Update to WooCommerce 3.5 to keep using this app</string>
     <string name="dashboard_plugin_notice_message">This app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
-    <string name="dashboard_plugin_notice_button_label">Update instructions</string>
     <!--
         Order List View
     -->

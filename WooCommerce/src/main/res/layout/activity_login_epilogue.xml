@@ -150,21 +150,31 @@
         android:layout_above="@+id/frame_bottom"
         android:background="@drawable/shadow_top"/>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/frame_bottom"
         android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
+        android:orientation="vertical"
         android:padding="@dimen/margin_extra_large">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/button_update_instructions"
+            style="@style/Woo.Button.Grey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:text="@string/button_update_instructions"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_continue"
             style="@style/Woo.Button.Purple"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:text="@string/continue_button"/>
-    </FrameLayout>
+    </LinearLayout>
 </RelativeLayout>
