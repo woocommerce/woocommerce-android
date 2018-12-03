@@ -55,6 +55,8 @@ class LoginEpiloguePresenter @Inject constructor(
     }
 
     override fun checkWCVersionsForAllSites() {
+        supportedWCSites.clear()
+        unsupportedWCSites.clear()
         val wcSites = wooCommerceStore.getWooCommerceSites()
         if (wcSites.isEmpty()) {
             loginEpilogueView?.showStoreList(emptyList(), emptyList())
