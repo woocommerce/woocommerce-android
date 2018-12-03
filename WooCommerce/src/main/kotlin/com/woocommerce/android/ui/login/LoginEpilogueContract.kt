@@ -14,6 +14,7 @@ interface LoginEpilogueContract {
         fun logout()
         fun userIsLoggedIn(): Boolean
         fun checkWCVersionsForAllSites()
+        fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel>
     }
 
     interface View : BaseView<Presenter> {

@@ -27,6 +27,11 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, OnSiteClickListener {
+    companion object {
+        private const val STATE_KEY_SUPPORTED_SITE_ID_LIST = "key-supported-site-id-list"
+        private const val STATE_KEY_UNSUPPORTED_SITE_ID_LIST = "key-unsupported-site-id-list"
+    }
+
     @Inject lateinit var presenter: LoginEpilogueContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
 
@@ -53,11 +58,15 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         showUserInfo()
 
-        loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_sites))
-        supported_frame_list_container.visibility = View.GONE
-        presenter.checkWCVersionsForAllSites()
+        savedInstanceState?.let { bundle ->
+            val supportedSites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SUPPORTED_SITE_ID_LIST))
+            val unsupportedSites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_UNSUPPORTED_SITE_ID_LIST))
+            showStoreList(supportedSites, unsupportedSites)
+        } ?: run {
+            loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_sites))
+            supported_frame_list_container.visibility = View.GONE
+            presenter.checkWCVersionsForAllSites()
 
-        if (savedInstanceState == null) {
             AnalyticsTracker.track(
                     Stat.LOGIN_EPILOGUE_STORES_SHOWN,
                     mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size))
@@ -72,6 +81,16 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()
+    }
+
+    public override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        val supportedSiteIdList = siteAdapter.siteList.map { it.id }
+        val unsupportedSiteIdList = unsupportedSiteAdapter.siteList.map { it.id }
+
+        outState.putIntArray(STATE_KEY_SUPPORTED_SITE_ID_LIST, supportedSiteIdList.toIntArray())
+        outState.putIntArray(STATE_KEY_UNSUPPORTED_SITE_ID_LIST, unsupportedSiteIdList.toIntArray())
     }
 
     override fun onBackPressed() {

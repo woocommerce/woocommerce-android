@@ -66,6 +66,10 @@ class LoginEpiloguePresenter @Inject constructor(
         }
     }
 
+    override fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel> {
+        return siteIdList.map { siteStore.getSiteByLocalId(it) }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
