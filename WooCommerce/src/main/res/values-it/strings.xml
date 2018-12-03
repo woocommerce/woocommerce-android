@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-15 11:54:03+0000
+Translation-Revision-Date: 2018-11-28 10:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="about_version">Versione %s</string>
+    <string name="about_tos">Termini di servizio</string>
+    <string name="about_publisher">Editore: Automattic, Inc</string>
+    <string name="about_appname">WooCommerce per Android</string>
+    <string name="support_identity_input_dialog_name_label">Nome</string>
+    <string name="support_email_toast">Aprire l\'app e-mail per contattare il supporto</string>
+    <string name="settings_licenses">Licenze open source</string>
+    <string name="settings_about">Info sull\'app</string>
     <string name="logviewer_share_error">Impossibile condividere il log</string>
     <string name="logviewer_error_copy_to_clipboard">Errore durante la copia negli appunti</string>
     <string name="logviewer_copied_to_clipboard">Log copiato negli appunti</string>
@@ -140,6 +148,7 @@ Language: it
     <string name="send_link">Invia link</string>
     <string name="invalid_verification_code">Codice di verifica non valido</string>
     <string name="verification_code">Codice di verifica</string>
+    <string name="email_address">Indirizzo e-mail</string>
     <string name="support_email_subject">Supporto %s WooCommerce per Android</string>
     <string name="contact_support">Contatta il supporto</string>
     <string name="toggle_option_not_checked">opzione non controllata</string>
@@ -209,7 +218,6 @@ Language: it
     <string name="orderdetail_orderstatus_created">%1$s creato</string>
     <string name="orderdetail_orderstatus_heading">N. %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Ordine n. %s</string>
-    <string name="orderdetail">Dettaglio dell\'ordine</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Informazioni cliente</string>
     <string name="orderlist_filter">Filtro</string>
@@ -233,13 +241,13 @@ Language: it
     <string name="dashboard_top_earners_total_spend">Spesa totale</string>
     <string name="dashboard_top_earners_description">Ottieni informazioni su come i prodotti vengono tracciati nel negozio</string>
     <string name="dashboard_top_earners_title">I migliori esecutori</string>
-    <string name="dashboard_stats_updated_date_time">Aggiornato al giorno %s</string>
-    <string name="dashboard_stats_updated_one_day">Aggiornato un giorno fa</string>
-    <string name="dashboard_stats_updated_hours">Aggiornato %d ore fa</string>
-    <string name="dashboard_stats_updated_one_hour">Aggiornato un\'ora fa</string>
-    <string name="dashboard_stats_updated_minutes">Aggiornato %d minuti fa</string>
-    <string name="dashboard_stats_updated_now">Aggiornato alcuni momenti fa</string>
-    <string name="dashboard_stats_error_content_description">Errore immagine</string>
+    <string name="dashboard_stats_updated_date_time">Aggiornate al giorno %s</string>
+    <string name="dashboard_stats_updated_one_day">Aggiornate un giorno fa</string>
+    <string name="dashboard_stats_updated_hours">Aggiornate %d ore fa</string>
+    <string name="dashboard_stats_updated_one_hour">Aggiornate un\'ora fa</string>
+    <string name="dashboard_stats_updated_minutes">Aggiornate %d minuti fa</string>
+    <string name="dashboard_stats_updated_now">Aggiornate alcuni momenti fa</string>
+    <string name="dashboard_stats_error_content_description">Immagine dell\'errore</string>
     <string name="dashboard_stats_error">Errore durante recupero dati</string>
     <string name="dashboard_state_no_data">Nessun dato disponibile</string>
     <string name="dashboard_stats_revenue">Fatturato</string>
@@ -304,14 +312,11 @@ Language: it
     <string name="total">Totale</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="email_address">Indirizzo e-mail</string>
     <string name="orders">Ordini</string>
     <string name="my_store">Il mio negozio</string>
     <string name="signout">Uscire</string>
     <string name="logging_in">Sto entrando</string>
     <string name="all">Tutto</string>
-    <string name="login_notification_channel_id">\@string/notification_channel_general_id</string>
-    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_general_title">Generale</string>
     <string name="app_name">WooCommerce</string>
 </resources>
