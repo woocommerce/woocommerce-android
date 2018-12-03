@@ -30,6 +30,8 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     companion object {
         private const val STATE_KEY_SUPPORTED_SITE_ID_LIST = "key-supported-site-id-list"
         private const val STATE_KEY_UNSUPPORTED_SITE_ID_LIST = "key-unsupported-site-id-list"
+
+        private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     }
 
     @Inject lateinit var presenter: LoginEpilogueContract.Presenter
@@ -120,6 +122,8 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         if (supportedWCSites.isNotEmpty()) {
             supported_frame_list_container.visibility = View.VISIBLE
+            button_update_instructions.visibility = View.GONE
+
             supported_text_list_label.text = if (supportedWCSites.size == 1)
                 getString(R.string.login_connected_store)
             else
@@ -146,6 +150,12 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                 }
             }
         } else {
+            // Show 'Update instructions' button, and replace 'Continue' button with 'Refresh'
+            button_update_instructions.visibility = View.VISIBLE
+            button_update_instructions.setOnClickListener {
+                ActivityUtils.openUrlExternal(this, URL_UPGRADE_WOOCOMMERCE)
+            }
+
             button_continue.text = getString(R.string.refresh_button)
             button_continue.setOnClickListener {
                 loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_sites))
