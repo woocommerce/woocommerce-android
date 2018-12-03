@@ -89,7 +89,7 @@
     <string name="login_pick_store">Pick store</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_sites">Verifying sites…</string>
-    <string name="login_site_list_upgrade_required">Upgrade to WooCommerce 3.5 required</string>
+    <string name="login_site_list_update_required">Update to WooCommerce 3.5 required</string>
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>

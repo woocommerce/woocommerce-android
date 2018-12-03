@@ -107,7 +107,7 @@
                     android:paddingEnd="@dimen/margin_extra_large"
                     android:paddingStart="@dimen/margin_extra_large"
                     android:paddingTop="@dimen/margin_extra_large"
-                    android:text="@string/login_site_list_upgrade_required"
+                    android:text="@string/login_site_list_update_required"
                     android:textColor="@color/wc_purple"
                     android:textSize="@dimen/text_large"
                     android:textStyle="bold"/>
