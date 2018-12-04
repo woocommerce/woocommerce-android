@@ -152,7 +152,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun showNotifications(notifsList: List<NotificationModel>, isFreshData: Boolean) {
         if (!notifsAdapter.isSameList(notifsList)) {
-            // todo - display notifications
+            notifsAdapter.setNotifications(notifsList)
         }
         if (isFreshData) {
             isRefreshPending = false

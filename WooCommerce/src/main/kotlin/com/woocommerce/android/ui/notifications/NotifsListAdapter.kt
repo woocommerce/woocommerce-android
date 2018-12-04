@@ -8,6 +8,11 @@ import android.widget.RatingBar
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
+import com.woocommerce.android.ui.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.ui.notifications.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.ui.notifications.WooNotificationType.UNKNOWN
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.StatelessSection
@@ -112,11 +117,6 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         notifyDataSetChanged()
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
-        // TODO
-    }
-
     private inner class NotifsListSection(val title: String, val list: List<NotificationModel>) : StatelessSection(
             SectionParameters.Builder(R.layout.notifs_list_item).headerResourceId(R.layout.order_list_header).build()
     ) {
@@ -128,18 +128,22 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
             val notif = list[position]
             val itemHolder = holder as ItemViewHolder
 
-            // TODO - handle types of notifications after adding utility for working with NotificationModel
-//            when (notif) {
-//                is Order -> {
-//                    itemHolder.rating.visibility = View.GONE
-//                    itemHolder.icon.setImageResource(R.drawable.ic_cart)
-//                }
-//                is Review -> {
-//                    itemHolder.icon.setImageResource(R.drawable.ic_comment)
-//                    itemHolder.rating.visibility = View.VISIBLE
-//                    itemHolder.rating.rating = notif.rating
-//                }
-//            }
+            when (notif.getWooType()) {
+                NEW_ORDER -> {
+                    itemHolder.rating.visibility = View.GONE
+                    itemHolder.icon.setImageResource(R.drawable.ic_cart)
+                }
+                PRODUCT_REVIEW -> {
+                    itemHolder.icon.setImageResource(R.drawable.ic_comment)
+                    itemHolder.rating.visibility = View.VISIBLE
+
+                    // TODO add rating
+//                itemHolder.rating.rating = notif.rating
+                }
+                UNKNOWN -> WooLog.e(
+                        NOTIFICATIONS,
+                        "Unsupported woo notification type: ${notif.type} | ${notif.subtype}")
+            }
 
             itemHolder.title.text = notif.title
 
