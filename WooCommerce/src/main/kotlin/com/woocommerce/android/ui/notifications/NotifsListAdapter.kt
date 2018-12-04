@@ -127,28 +127,27 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val notif = list[position]
             val itemHolder = holder as ItemViewHolder
+            itemHolder.rating.visibility = View.GONE
 
             when (notif.getWooType()) {
                 NEW_ORDER -> {
-                    itemHolder.rating.visibility = View.GONE
                     itemHolder.icon.setImageResource(R.drawable.ic_cart)
                 }
                 PRODUCT_REVIEW -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_comment)
-                    itemHolder.rating.visibility = View.VISIBLE
 
-                    // TODO add rating
-//                itemHolder.rating.rating = notif.rating
+                    notif.getRating()?.let {
+                        itemHolder.rating.rating = it
+                        itemHolder.rating.visibility = View.VISIBLE
+                    }
                 }
                 UNKNOWN -> WooLog.e(
                         NOTIFICATIONS,
                         "Unsupported woo notification type: ${notif.type} | ${notif.subtype}")
             }
 
-            itemHolder.title.text = notif.title
-
-            // TODO add notification description
-//            itemHolder.desc.text = notif.desc
+            itemHolder.title.text = notif.getTitleSnippet()
+            itemHolder.desc.text = notif.getMessageSnippet()
 
             itemHolder.itemView.setOnClickListener {
                 listener?.onNotificationClicked(notif)
