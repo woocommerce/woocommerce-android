@@ -18,6 +18,8 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrdersSearched
+import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
 import javax.inject.Inject
 
 class OrderListPresenter @Inject constructor(
@@ -33,6 +35,7 @@ class OrderListPresenter @Inject constructor(
     private var orderView: OrderListContract.View? = null
     private var isLoadingOrders = false
     private var isLoadingMoreOrders = false
+    private var isSearchingOrders = false
     private var canLoadMore = false
 
     override fun takeView(view: OrderListContract.View) {
@@ -59,11 +62,28 @@ class OrderListPresenter @Inject constructor(
         }
     }
 
+    override fun searchOrders(searchQuery: String) {
+        if (searchQuery.isBlank()) {
+            orderView?.showSearchResults(searchQuery, emptyList())
+        } else if (networkStatus.isConnected()) {
+            isSearchingOrders = true
+            orderView?.showSkeleton(true)
+            val payload = SearchOrdersPayload(selectedSite.get(), searchQuery)
+            dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
+        } else {
+            orderView?.showNoConnectionError()
+        }
+    }
+
     override fun isLoading(): Boolean {
-        return isLoadingOrders || isLoadingMoreOrders
+        return isLoadingOrders || isLoadingMoreOrders || isSearchingOrders
     }
 
     override fun canLoadMore(): Boolean {
+        // TODO: infinite scroll isn't supported in search results yet
+        orderView?.let {
+            if (it.isSearching) return false
+        }
         return canLoadMore
     }
 
@@ -106,6 +126,24 @@ class OrderListPresenter @Inject constructor(
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
             else -> {}
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrdersSearched(event: OnOrdersSearched) {
+        orderView?.showSkeleton(false)
+        isSearchingOrders = false
+
+        if (event.isError) {
+            WooLog.e(T.ORDERS, "$TAG - Error searching orders : ${event.error.message}")
+            orderView?.showLoadOrdersError()
+        } else {
+            if (event.searchResults.isNotEmpty()) {
+                orderView?.showSearchResults(event.searchQuery, event.searchResults)
+            } else {
+                orderView?.showNoOrdersView(true)
+            }
         }
     }
 

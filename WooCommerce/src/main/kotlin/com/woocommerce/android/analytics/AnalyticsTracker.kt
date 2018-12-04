@@ -93,6 +93,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
         ORDERS_LIST_PULLED_TO_REFRESH,
         ORDERS_LIST_MENU_FILTER_TAPPED,
+        ORDERS_LIST_MENU_SEARCH_TAPPED,
 
         // -- Order filter by status dialog
         FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
@@ -302,6 +303,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SELECTED_STORE_ID = "selected_store_id"
         const val KEY_STATE = "state"
         const val KEY_STATUS = "status"
+        const val KEY_SEARCH = "search"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
 

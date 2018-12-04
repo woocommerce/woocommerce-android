@@ -6,16 +6,20 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.Parcelable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
+import android.support.v7.widget.SearchView.OnQueryTextListener
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -40,12 +44,17 @@ import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener {
+class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener,
+        OnQueryTextListener, OnActionExpandListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
+        const val STATE_KEY_SEARCH_QUERY = "search-query"
+        const val STATE_KEY_IS_SEARCHING = "is_searching"
+
+        private const val SEARCH_TYPING_DELAY_MS = 500L
 
         fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -62,9 +71,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private lateinit var ordersDividerDecoration: DividerItemDecoration
 
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
+    override var isSearching: Boolean = false
+
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
-    private var filterMenuButton: MenuItem? = null
+    private var filterMenuItem: MenuItem? = null
+
+    private var searchMenuItem: MenuItem? = null
+    private var searchView: SearchView? = null
+    private var searchQuery: String = ""
+    private val searchHandler = Handler()
 
     private val skeletonView = SkeletonView()
 
@@ -78,21 +94,76 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             listState = bundle.getParcelable(STATE_KEY_LIST)
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
+            isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
+            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
     }
 
+    // region options menu
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
-        filterMenuButton = menu?.findItem(R.id.menu_filter)
+
+        filterMenuItem = menu?.findItem(R.id.menu_filter)
+
+        searchMenuItem = menu?.findItem(R.id.menu_search)
+        searchView = searchMenuItem?.actionView as SearchView?
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
-        // Hide filter menu item when we're showing all orders and there aren't any or we're showing order detail.
-        val hideFilterMenu = (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) || isShowingOrderDetail()
-        menu?.findItem(R.id.menu_filter)?.isVisible = !hideFilterMenu
+        refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
     }
+
+    /**
+     * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
+     * search menu item to collapse
+     */
+    private fun refreshOptionsMenu() {
+        val showFilter = shouldShowFilterMenuItem()
+        filterMenuItem?.let {
+            if (it.isVisible != showFilter) it.isVisible = showFilter
+        }
+
+        val showSearch = shouldShowFilterMenuItem()
+        searchMenuItem?.let {
+            if (it.isActionViewExpanded && !showFilter) it.collapseActionView()
+            if (it.isVisible != showSearch) it.isVisible = showSearch
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_filter -> {
+                AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
+                showFilterDialog()
+                true
+            }
+            R.id.menu_search -> {
+                AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
+                enableSearchListeners()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun shouldShowFilterMenuItem(): Boolean {
+        return when {
+            (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) -> false
+            (childFragmentManager.backStackEntryCount > 0) -> false
+            else -> true
+        }
+    }
+
+    private fun shouldShowSearchMenuItem(): Boolean {
+        return when {
+            (childFragmentManager.backStackEntryCount > 0) -> false
+            else -> true
+        }
+    }
+    // endregion
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -123,7 +194,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
                     if (!isRefreshPending) {
                         isRefreshPending = true
-                        presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+                        if (isSearching) {
+                            presenter.searchOrders(searchQuery)
+                        } else {
+                            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+                        }
                     }
                 }
 
@@ -170,22 +245,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
-        R.id.menu_filter -> {
-            AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
-
-            showFilterDialog()
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = ordersList.layoutManager.onSaveInstanceState()
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
+        outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
+        outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
+
         super.onSaveInstanceState(outState)
     }
 
@@ -195,10 +263,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive) {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
-            filterMenuButton?.isVisible = true
+            refreshOptionsMenu()
+            if (isSearching) {
+                searchMenuItem?.expandActionView()
+                searchView?.setQuery(searchQuery, false)
+            } else {
+                presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
+            }
+            enableSearchListeners()
         } else {
-            filterMenuButton?.isVisible = false
+            // disable the search listeners until we return to this fragment - otherwise the query text
+            // will fire with an empty string and the collapse event will fire as we leave this fragment
+            disableSearchListeners()
+            refreshOptionsMenu()
         }
     }
 
@@ -212,7 +289,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun onDestroyView() {
         presenter.dropView()
-        filterMenuButton = null
+        filterMenuItem = null
+        searchView = null
         super.onDestroyView()
     }
 
@@ -252,27 +330,31 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         return orderStatusFilter.isNullOrEmpty()
     }
 
-    private fun isShowingOrderDetail(): Boolean {
-        val fragment = childFragmentManager.findFragmentByTag(OrderDetailFragment.TAG)
-        return fragment?.isVisible ?: false
-    }
-
     /**
      * shows the view that appears for stores that have have no orders matching the current filter
      */
     override fun showNoOrdersView(show: Boolean) {
         if (show && noOrdersView.visibility != View.VISIBLE) {
-            // if there isn't a filter (ie: we're showing All orders and there aren't any), then we want
+            // if the user is searching we show a simple "No matching orders" TextView, otherwise if
+            // there isn't a filter (ie: we're showing All orders and there aren't any), then we want
             // to show the full "customers waiting" view, otherwise we show a simple textView stating
             // there aren't any orders
-            if (isShowingAllOrders()) {
-                no_orders_image.visibility = View.VISIBLE
-                no_orders_share_button.visibility = View.VISIBLE
-                no_orders_text.setText(R.string.dashboard_no_orders)
-            } else {
-                no_orders_image.visibility = View.GONE
-                no_orders_share_button.visibility = View.GONE
-                no_orders_text.setText(R.string.dashboard_no_orders_with_filter)
+            when {
+                isSearching -> {
+                    no_orders_image.visibility = View.GONE
+                    no_orders_share_button.visibility = View.GONE
+                    no_orders_text.setText(R.string.dashboard_no_orders_with_search)
+                }
+                isShowingAllOrders() -> {
+                    no_orders_image.visibility = View.VISIBLE
+                    no_orders_share_button.visibility = View.VISIBLE
+                    no_orders_text.setText(R.string.dashboard_no_orders)
+                }
+                else -> {
+                    no_orders_image.visibility = View.GONE
+                    no_orders_share_button.visibility = View.GONE
+                    no_orders_text.setText(R.string.dashboard_no_orders_with_filter)
+                }
             }
 
             WooAnimUtils.fadeIn(noOrdersView, Duration.LONG)
@@ -286,8 +368,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             WooAnimUtils.fadeOut(noOrdersView, Duration.LONG)
             WooAnimUtils.fadeIn(ordersView, Duration.LONG)
         }
-
-        activity?.invalidateOptionsMenu()
     }
 
     /**
@@ -342,12 +422,20 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun refreshFragmentState() {
         isRefreshPending = true
         if (isActive) {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+            if (isSearching) {
+                presenter.searchOrders(searchQuery)
+            } else {
+                presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+            }
         }
     }
 
     override fun showLoadOrdersError() {
         uiMessageResolver.getSnack(R.string.orderlist_error_fetch_generic).show()
+    }
+
+    override fun showNoConnectionError() {
+        uiMessageResolver.getSnack(R.string.error_generic_network).show()
     }
 
     // region OrderCustomerActionListener
@@ -424,14 +512,103 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onFilterSelected(orderStatus: String?) {
         AnalyticsTracker.track(
                 Stat.ORDERS_LIST_FILTER,
-                mapOf(AnalyticsTracker.KEY_IS_LOADING_MORE to orderStatus.orEmpty()))
+                mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
 
+        clearSearchResults()
         orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
         presenter.loadOrders(orderStatusFilter, true)
 
-        // Reset the toolbar title
         activity?.title = getFragmentTitle()
+        searchMenuItem?.isVisible = shouldShowSearchMenuItem()
+    }
+    // endregion
+
+    // region search
+    override fun onQueryTextSubmit(query: String): Boolean {
+        submitSearch(query)
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        if (newText.length > 2) {
+            submitSearchDelayed(newText)
+        } else {
+            ordersAdapter.clearAdapterData()
+        }
+        showNoOrdersView(false)
+        return true
+    }
+
+    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+        ordersAdapter.clearAdapterData()
+        isSearching = true
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+        clearSearchResults()
+        return true
+    }
+
+    /**
+     * Submit the search after a brief delay unless the query has changed - this is used to
+     * perform a search while the user is typing
+     */
+    override fun submitSearchDelayed(query: String) {
+        searchHandler.postDelayed({
+            searchView?.let {
+                // submit the search if the searchView's query still matches the passed query
+                if (query == it.query.toString()) submitSearch(query)
+            }
+        }, SEARCH_TYPING_DELAY_MS)
+    }
+
+    /**
+     * Submit the search with no delay
+     */
+    override fun submitSearch(query: String) {
+        AnalyticsTracker.track(
+                Stat.ORDERS_LIST_FILTER,
+                mapOf(AnalyticsTracker.KEY_SEARCH to query))
+
+        searchQuery = query
+        presenter.searchOrders(query)
+    }
+
+    /**
+     * Presenter received search results, show them in the adapter
+     */
+    override fun showSearchResults(query: String, orders: List<WCOrderModel>) {
+        if (query == searchQuery) {
+            ordersAdapter.setOrders(orders)
+            showSkeleton(false)
+        }
+    }
+
+    /**
+     * Return to the non-search order view
+     */
+    override fun clearSearchResults() {
+        if (isSearching) {
+            searchQuery = ""
+            isSearching = false
+            disableSearchListeners()
+            activity?.title = getFragmentTitle()
+            searchMenuItem?.collapseActionView()
+            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+        }
+    }
+
+    private fun disableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(null)
+        searchView?.setOnQueryTextListener(null)
+    }
+
+    private fun enableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(this)
+        searchView?.setOnQueryTextListener(this)
     }
     // endregion
 }

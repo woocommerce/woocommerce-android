@@ -51,6 +51,7 @@
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
+    <string name="search">Search</string>
     <string name="button_update_instructions">Update instructions</string>
 
     <!--
@@ -132,6 +133,7 @@
 
     <string name="dashboard_no_orders">Waiting for customers</string>
     <string name="dashboard_no_orders_with_filter">No orders</string>
+    <string name="dashboard_no_orders_with_search">No matching orders</string>
     <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
 
     <string name="dashboard_plugin_notice_title">Update to WooCommerce 3.5 to keep using this app</string>
