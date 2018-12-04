@@ -422,7 +422,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun refreshFragmentState() {
         isRefreshPending = true
         if (isActive) {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+            if (isSearching) {
+                presenter.searchOrders(searchQuery)
+            } else {
+                presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+            }
         }
     }
 
