@@ -1,13 +1,20 @@
 package com.woocommerce.android.support
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AlertDialog
+import android.support.v7.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
+import com.woocommerce.android.R.style
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
@@ -35,7 +42,7 @@ class SupportHelper {
         val (layout, emailEditText, nameEditText) =
                 supportIdentityInputDialogLayout(context, isNameInputHidden, email, name)
 
-        val dialog = AlertDialog.Builder(context, R.style.Woo_Dialog)
+        val dialog = AlertDialog.Builder(ContextThemeWrapper(context, style.AppTheme))
                 .setView(layout)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
@@ -73,6 +80,22 @@ class SupportHelper {
         val emailSuggestion = if (!accountEmail.isNullOrEmpty()) accountEmail else selectedSite?.email
         val nameSuggestion = if (!accountDisplayName.isNullOrEmpty()) accountDisplayName else selectedSite?.username
         return Pair(emailSuggestion, nameSuggestion)
+    }
+
+    private val SUPPORT_EMAIL = "mobile-support@woocommerce.com"
+
+    /**
+     * This starts the user's email client so they can contact our support team. This is temporary - once
+     * Zendesk integration is complete we can drop this.
+     */
+    fun emailSupport(activity: Activity) {
+        val subject = String.format(activity.getString(R.string.support_email_subject), BuildConfig.VERSION_NAME)
+        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        if (emailIntent.resolveActivity(activity.packageManager) != null) {
+            activity.startActivity(emailIntent)
+        }
+        Toast.makeText(activity, R.string.support_email_toast, Toast.LENGTH_LONG).show()
     }
 }
 

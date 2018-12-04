@@ -1,5 +1,6 @@
 source "https://rubygems.org" do 
   gem 'danger'
+  gem 'nokogiri'
 end
 
 gem "fastlane"

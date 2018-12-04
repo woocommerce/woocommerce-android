@@ -6,12 +6,16 @@ import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.onScrollDown
+import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
@@ -32,6 +36,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
+
+        private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     }
 
     @Inject lateinit var presenter: DashboardContract.Presenter
@@ -68,9 +74,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
-                    presenter.resetTopEarnersForceRefresh()
+                    presenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
-                    refreshDashboard()
+                    refreshDashboard(forced = true)
                 }
             }
 
@@ -92,8 +98,19 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             }
         })
 
+        scroll_view.setOnScrollChangeListener {
+            v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
+            if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
+        }
+
+        dashboard_plugin_version_notice.initView(
+                title = getString(R.string.dashboard_plugin_notice_title),
+                message = getString(R.string.dashboard_plugin_notice_message),
+                buttonLabel = getString(R.string.dashboard_plugin_notice_button_label),
+                buttonAction = { ActivityUtils.openUrlExternal(activity as Context, URL_UPGRADE_WOOCOMMERCE) })
+
         if (isActive) {
-            refreshDashboard()
+            refreshDashboard(forced = this.isRefreshPending)
         } else {
             isRefreshPending = true
         }
@@ -110,7 +127,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
         if (isActive && isRefreshPending) {
-            refreshDashboard()
+            refreshDashboard(forced = false)
         }
     }
 
@@ -193,22 +210,29 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
-    override fun refreshFragmentState() {
-        presenter.resetTopEarnersForceRefresh()
-        refreshDashboard()
+    override fun scrollToTop() {
+        scroll_view.smoothScrollTo(0, 0)
     }
 
-    override fun refreshDashboard() {
+    override fun refreshFragmentState() {
+        presenter.resetForceRefresh()
+        refreshDashboard(forced = false)
+    }
+
+    override fun refreshDashboard(forced: Boolean) {
         // If this fragment is currently active, force a refresh of data. If not, set
         // a flag to force a refresh when it becomes active
         when {
             isActive -> {
                 isRefreshPending = false
                 dashboard_stats.clearLabelValues()
-                presenter.loadStats(dashboard_stats.activeGranularity, forced = true)
-                presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced = true)
-                presenter.fetchUnfilledOrderCount()
+                presenter.loadStats(dashboard_stats.activeGranularity, forced)
+                presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
+                presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
+                if (!AppPrefs.isUsingV3Api()) {
+                    presenter.checkApiVersion()
+                }
             }
             else -> isRefreshPending = true
         }
@@ -247,6 +271,16 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
+    }
+
+    override fun showPluginVersionNoticeCard() {
+        if (dashboard_plugin_version_notice.visibility != View.VISIBLE) {
+            WooAnimUtils.scaleIn(dashboard_plugin_version_notice, Duration.MEDIUM)
+        }
+    }
+
+    override fun hidePluginVersionNoticeCard() {
+        dashboard_plugin_version_notice.visibility = View.GONE
     }
 
     /**

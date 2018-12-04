@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.prefs
 
+import android.content.Context
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_SUCCESS
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CrashlyticsUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 class PrivacySettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val accountStore: AccountStore
+    private val accountStore: AccountStore,
+    private val selectedSite: SelectedSite
 ) : PrivacySettingsContract.Presenter {
     companion object {
         private const val SETTING_TRACKS_OPT_OUT = "tracks_opt_out"
@@ -58,10 +61,10 @@ class PrivacySettingsPresenter @Inject constructor(
 
     override fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
 
-    override fun setCrashReportingEnabled(enabled: Boolean) {
+    override fun setCrashReportingEnabled(context: Context, enabled: Boolean) {
         AppPrefs.setCrashReportingEnabled(enabled)
         if (enabled) {
-            CrashlyticsUtils.initAccount(accountStore.account)
+            CrashlyticsUtils.initCrashlytics(context, accountStore.account, selectedSite.get())
         } else {
             CrashlyticsUtils.resetAccountAndSite()
         }

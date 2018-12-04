@@ -41,13 +41,14 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DashboardPresenterTest {
     private val dashboardView: DashboardContract.View = mock()
     private val dispatcher: Dispatcher = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
     private val wcStatsStore: WCStatsStore = mock()
     private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
@@ -59,7 +60,8 @@ class DashboardPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(DashboardPresenter(dispatcher, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
+        presenter = spy(DashboardPresenter(
+                dispatcher, wooCommerceStore, wcStatsStore, wcOrderStore, selectedSite, networkStatus))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
@@ -77,7 +79,6 @@ class DashboardPresenterTest {
 
         val payload = actionCaptor.firstValue.payload as FetchOrderStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
-        assertFalse(payload.forced)
     }
 
     @Test
@@ -108,7 +109,7 @@ class DashboardPresenterTest {
     @Test
     fun `Requests orders to fulfill count correctly`() {
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
 
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
         assertEquals(WCOrderAction.FETCH_ORDERS_COUNT, actionCaptor.firstValue.type)
@@ -122,7 +123,7 @@ class DashboardPresenterTest {
         val totalOrders = 25
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
@@ -138,7 +139,7 @@ class DashboardPresenterTest {
         val totalOrders = 0
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
@@ -153,7 +154,7 @@ class DashboardPresenterTest {
         val totalOrders = 25
         val filter = CoreOrderStatus.PROCESSING.value
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
         presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
@@ -172,7 +173,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(1)).refreshDashboard()
+        verify(dashboardView, times(1)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -183,7 +184,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(1)).refreshDashboard()
+        verify(dashboardView, times(1)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -194,7 +195,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDER_NOTES })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).refreshDashboard(forced = true)
     }
 
     @Test
@@ -208,7 +209,7 @@ class DashboardPresenterTest {
         })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -218,7 +219,7 @@ class DashboardPresenterTest {
 
         // Simulate the network connected event
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(dashboardView, times(1)).refreshDashboard()
+        verify(dashboardView, times(1)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -228,7 +229,7 @@ class DashboardPresenterTest {
 
         // Simulate the network connected event
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -237,7 +238,7 @@ class DashboardPresenterTest {
 
         // Simulate the network disconnected event
         presenter.onEventMainThread(ConnectionChangeEvent(false))
-        verify(dashboardView, times(0)).refreshDashboard()
+        verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -263,7 +264,6 @@ class DashboardPresenterTest {
 
         val payload = actionCaptor.firstValue.payload as FetchTopEarnersStatsPayload
         assertEquals(StatsGranularity.DAYS, payload.granularity)
-        assertFalse(payload.forced)
     }
 
     @Test
@@ -329,7 +329,7 @@ class DashboardPresenterTest {
     @Test
     fun `Show and hide stats skeleton correctly`() {
         presenter.takeView(dashboardView)
-        presenter.loadStats(StatsGranularity.DAYS)
+        presenter.loadStats(StatsGranularity.DAYS, forced = true)
         verify(dashboardView, times(1)).showChartSkeleton(true)
 
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
@@ -341,7 +341,7 @@ class DashboardPresenterTest {
     @Test
     fun `Show and hide unfilled orders skeleton correctly`() {
         presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount()
+        presenter.fetchUnfilledOrderCount(forced = true)
         verify(dashboardView, times(1)).showUnfilledOrdersSkeleton(true)
 
         val totalOrders = 25

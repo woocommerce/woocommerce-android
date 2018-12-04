@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -16,6 +17,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
+import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
@@ -30,10 +32,13 @@ import org.wordpress.android.fluxc.store.WCStatsStore.FetchVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import javax.inject.Inject
 
 class DashboardPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
+    private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
     private val wcStatsStore: WCStatsStore,
     private val wcOrderStore: WCOrderStore, // Required to ensure the WCOrderStore is initialized!
     private val selectedSite: SelectedSite,
@@ -45,7 +50,12 @@ class DashboardPresenter @Inject constructor(
     }
 
     private var dashboardView: DashboardContract.View? = null
+    private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
     private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
+
+    init {
+        resetForceRefresh()
+    }
 
     override fun takeView(view: DashboardContract.View) {
         dashboardView = view
@@ -65,13 +75,16 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
-        // fetch order stats
-        dashboardView?.showChartSkeleton(true)
-        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced)
+        val forceRefresh = forced || statsForceRefresh[granularity.ordinal]
+        if (forceRefresh) {
+            statsForceRefresh[granularity.ordinal] = false
+            dashboardView?.showChartSkeleton(true)
+        }
+        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
 
         // fetch visitor stats
-        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced)
+        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
     }
 
@@ -81,22 +94,24 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
-        // should we force a refresh?
-        val shouldForce = forced || topEarnersForceRefresh[granularity.ordinal]
-        if (shouldForce) {
+        val forceRefresh = forced || topEarnersForceRefresh[granularity.ordinal]
+        if (forceRefresh) {
             topEarnersForceRefresh[granularity.ordinal] = false
+            dashboardView?.showTopEarnersSkeleton(true)
         }
 
-        dashboardView?.showTopEarnersSkeleton(true)
-        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, shouldForce)
+        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
 
     /**
-     * this tells the presenter to force a refresh for all top earner granularities on the next request - this is
-     * used after a swipe-to-refresh on the dashboard to ensure we don't get cached top earners
+     * this tells the presenter to force a refresh for all granularities on the next request - this is
+     * used after a swipe-to-refresh on the dashboard to ensure we don't get cached data
      */
-    override fun resetTopEarnersForceRefresh() {
+    override fun resetForceRefresh() {
+        for (i in 0 until statsForceRefresh.size) {
+            statsForceRefresh[i] = true
+        }
         for (i in 0 until topEarnersForceRefresh.size) {
             topEarnersForceRefresh[i] = true
         }
@@ -104,13 +119,15 @@ class DashboardPresenter @Inject constructor(
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
-    override fun fetchUnfilledOrderCount() {
+    override fun fetchUnfilledOrderCount(forced: Boolean) {
         if (!networkStatus.isConnected()) {
             dashboardView?.isRefreshPending = true
             return
         }
 
-        dashboardView?.showUnfilledOrdersSkeleton(true)
+        if (forced) {
+            dashboardView?.showUnfilledOrdersSkeleton(true)
+        }
         val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
@@ -121,6 +138,23 @@ class DashboardPresenter @Inject constructor(
     override fun fetchHasOrders() {
         val payload = FetchHasOrdersPayload(selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchHasOrdersAction(payload))
+    }
+
+    override fun checkApiVersion() {
+        dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(selectedSite.get()))
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onApiVersionFetched(event: OnApiVersionFetched) {
+        if (!event.isError) {
+            if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
+                dashboardView?.hidePluginVersionNoticeCard()
+                AppPrefs.setIsUsingV3Api()
+            } else {
+                dashboardView?.showPluginVersionNoticeCard()
+            }
+        }
     }
 
     @Suppress("unused")
@@ -208,7 +242,7 @@ class DashboardPresenter @Inject constructor(
             }
             else -> {
                 if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
-                    dashboardView?.refreshDashboard()
+                    dashboardView?.refreshDashboard(forced = false)
                 }
             }
         }
@@ -221,7 +255,7 @@ class DashboardPresenter @Inject constructor(
             // Refresh data if needed now that a connection is active
             dashboardView?.let { view ->
                 if (view.isRefreshPending) {
-                    view.refreshDashboard()
+                    view.refreshDashboard(forced = false)
                 }
             }
         }

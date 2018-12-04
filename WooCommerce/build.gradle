@@ -37,8 +37,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "0.19"
-        versionCode 20
+        versionName "0.21"
+        versionCode 22
 
         minSdkVersion 21
         targetSdkVersion 27
@@ -89,6 +89,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
+    implementation 'com.google.firebase:firebase-messaging:17.0.0'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
 
     // Support library

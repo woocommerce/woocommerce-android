@@ -19,6 +19,9 @@ import kotlin.math.roundToInt
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object CurrencyUtils {
+    private const val ONE_THOUSAND = 1000
+    private const val ONE_MILLION = 1000000
+
     /**
      * Map of currency code to currency symbol. Ex: USD = $
      */
@@ -27,8 +30,15 @@ object CurrencyUtils {
     /**
      * Formats the value with two decimal places
      */
-    val currencyFormatter: DecimalFormat by lazy {
+    private val currencyFormatter: DecimalFormat by lazy {
         DecimalFormat("0.00")
+    }
+
+    /**
+     * Formats the value with one decimal place
+     */
+    private val currencyFormatterRounded: DecimalFormat by lazy {
+        DecimalFormat("0.0")
     }
 
     /**
@@ -68,7 +78,9 @@ object CurrencyUtils {
 
     /**
      * Rounds the [rawValue] to the nearest int, and returns the value as a currency
-     * string with the appropriate currency symbol.
+     * string with the appropriate currency symbol. If the value is a thousand or more,
+     * we return it rounded to the nearest tenth and suffixed with "k" (2500 -> 2.5k)
+     * Similarly, we add "m" for values a million or higher
      *
      * @param context The active context
      * @param rawValue The value to format as currency
@@ -76,7 +88,13 @@ object CurrencyUtils {
      */
     fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
         val roundedValue = rawValue.roundToInt().toDouble()
-        return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
+        if (roundedValue.absoluteValue >= ONE_MILLION) {
+            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
+        } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
+            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
+        } else {
+            return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
+        }
     }
 
     /**

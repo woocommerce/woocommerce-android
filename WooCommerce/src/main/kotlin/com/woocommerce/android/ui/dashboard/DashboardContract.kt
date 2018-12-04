@@ -9,17 +9,18 @@ interface DashboardContract {
     interface Presenter : BasePresenter<View> {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
-        fun resetTopEarnersForceRefresh()
+        fun resetForceRefresh()
         fun getStatsCurrency(): String?
-        fun fetchUnfilledOrderCount()
+        fun fetchUnfilledOrderCount(forced: Boolean = false)
         fun fetchHasOrders()
+        fun checkApiVersion()
     }
 
     interface View : BaseView<Presenter> {
         var isActive: Boolean
         var isRefreshPending: Boolean
 
-        fun refreshDashboard()
+        fun refreshDashboard(forced: Boolean = false)
         fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Int>, granularity: StatsGranularity)
         fun showStatsError(granularity: StatsGranularity)
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
@@ -29,6 +30,8 @@ interface DashboardContract {
         fun showErrorSnack()
         fun hideUnfilledOrdersCard()
         fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
+        fun showPluginVersionNoticeCard()
+        fun hidePluginVersionNoticeCard()
         fun showNoOrdersView(show: Boolean)
 
         fun showChartSkeleton(show: Boolean)
