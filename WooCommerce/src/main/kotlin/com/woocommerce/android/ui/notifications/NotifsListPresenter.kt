@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.model.NotificationModel
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
@@ -62,7 +63,10 @@ class NotifsListPresenter @Inject constructor(
 
     override fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean) {
         view?.let { notifView ->
-            val notifs = notificationStore.getNotificationsForSite(site = selectedSite.get())
+            val notifs = notificationStore.getNotificationsForSite(
+                    site = selectedSite.get(),
+                    filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
+                    filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
             notifView.showNotifications(notifs, isFreshData = isForceRefresh)
 
             // TODO how to handle empty notifications list view?
