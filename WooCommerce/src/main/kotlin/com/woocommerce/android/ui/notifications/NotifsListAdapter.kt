@@ -93,9 +93,9 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
 
         val didMatch = fun(notification: NotificationModel): Boolean {
             notifsList.forEach {
-                if (it.noteId == notification.noteId
-                        && it.title == notification.title
-                        && it.noteHash == notification.noteHash) {
+                if (it.noteId == notification.noteId &&
+                        it.title == notification.title &&
+                        it.noteHash == notification.noteHash) {
                     return true
                 }
             }

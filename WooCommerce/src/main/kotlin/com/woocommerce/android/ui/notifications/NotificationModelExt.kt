@@ -115,4 +115,5 @@ data class NotificationReviewDetail(
     val msg: String,
     val timestamp: String?,
     val rating: Float?,
-    val userInfo: NotificationUserInfo?)
+    val userInfo: NotificationUserInfo?
+)
