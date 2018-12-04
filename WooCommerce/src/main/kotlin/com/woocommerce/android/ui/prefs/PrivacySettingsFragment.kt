@@ -70,7 +70,7 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
             AnalyticsTracker.track(
                     PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED, mapOf(
                     AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchCrashReporting.isChecked)))
-            presenter.setCrashReportingEnabled(switchCrashReporting.isChecked)
+            presenter.setCrashReportingEnabled(activity!!, switchCrashReporting.isChecked)
         }
     }
 

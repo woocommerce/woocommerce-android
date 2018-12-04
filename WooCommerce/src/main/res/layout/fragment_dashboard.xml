@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="@color/default_window_background">
 
-        <ScrollView
+        <android.support.v4.widget.NestedScrollView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -23,6 +23,15 @@
                 android:animateLayoutChanges="true"
                 android:descendantFocusability="blocksDescendants"
                 android:orientation="vertical">
+
+                <!-- Update API version warning -->
+                <com.woocommerce.android.ui.dashboard.DashboardNoticeCard
+                    android:id="@+id/dashboard_plugin_version_notice"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"/>
 
                 <!-- Order stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardStatsView
@@ -51,7 +60,7 @@
                     android:orientation="vertical"/>
 
             </LinearLayout>
-        </ScrollView>
+        </android.support.v4.widget.NestedScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout

@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.SiteListAdapter.OnSiteClickListener
 import com.woocommerce.android.ui.main.MainActivity
@@ -96,24 +97,22 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         siteAdapter.siteList = wcSites
 
-        button_continue.setOnClickListener {
+        button_continue.setOnClickListener { _ ->
             val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
-            if (site != null) {
-                selectedSite.set(site)
-                CrashlyticsUtils.initSite(site)
+            site?.let { it ->
+                selectedSite.set(it)
+                CrashlyticsUtils.initSite(it)
                 AnalyticsTracker.track(
                         Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
-                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
-                showMainActivityAndFinish()
+                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to it.id))
+                finishEpilogue()
             }
         }
     }
 
     override fun onSiteClick(siteId: Long) {
         val site = presenter.getSiteBySiteId(siteId)
-        if (site != null) {
-            selectedSite.set(site)
-        }
+        site?.let { selectedSite.set(it) }
     }
 
     private fun showNoStoresView() {
@@ -145,7 +144,10 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         finish()
     }
 
-    private fun showMainActivityAndFinish() {
+    private fun finishEpilogue() {
+        // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
+        FCMRegistrationIntentService.enqueueWork(this)
+
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

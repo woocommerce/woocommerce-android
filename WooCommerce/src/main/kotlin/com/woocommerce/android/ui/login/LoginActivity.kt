@@ -7,8 +7,14 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.SupportHelper
+import com.woocommerce.android.support.ZendeskExtraTags
+import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -43,6 +49,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var supportHelper: SupportHelper
 
     private var loginMode: LoginMode? = null
 
@@ -267,14 +275,22 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         // TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)
     }
 
+    private fun viewHelpAndSupport(origin: Origin) {
+        // TODO Zendesk is currently enabled only in debug builds
+        if (BuildConfig.DEBUG) {
+            val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
+            startActivity(HelpActivity.createIntent(this, origin, extraSupportTags))
+        } else {
+            supportHelper.emailSupport(this)
+        }
+    }
+
     override fun helpSiteAddress(url: String?) {
-        // TODO: Helpshift support
-//        launchHelpshift(url, null, false, Tag.ORIGIN_LOGIN_SITE_ADDRESS)
+        viewHelpAndSupport(Origin.LOGIN_SITE_ADDRESS)
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
-        // TODO: Helpshift support
-//        HelpshiftHelper.getInstance().showConversation(this, siteStore, Tag.ORIGIN_LOGIN_SITE_ADDRESS, username)
+        zendeskHelper.createNewTicket(this, Origin.LOGIN_SITE_ADDRESS, null)
     }
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
@@ -283,13 +299,11 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun helpEmailScreen(email: String?) {
-        // TODO: Helpshift support
-//        launchHelpshift(null, email, true, Tag.ORIGIN_LOGIN_EMAIL)
+        viewHelpAndSupport(Origin.LOGIN_EMAIL)
     }
 
     override fun helpSocialEmailScreen(email: String?) {
-        // TODO: Helpshift support
-//        launchHelpshift(null, email, true, Tag.ORIGIN_LOGIN_SOCIAL)
+        viewHelpAndSupport(Origin.LOGIN_SOCIAL)
     }
 
     override fun addGoogleLoginFragment() {
@@ -303,23 +317,19 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun helpMagicLinkRequest(email: String?) {
-        // TODO: Helpshift support
-//        launchHelpshift(null, email, true, Tag.ORIGIN_LOGIN_MAGIC_LINK)
+        viewHelpAndSupport(Origin.LOGIN_MAGIC_LINK)
     }
 
     override fun helpMagicLinkSent(email: String?) {
-        // TODO: Helpshift support
-//        launchHelpshift(null, email, true, Tag.ORIGIN_LOGIN_MAGIC_LINK)
+        viewHelpAndSupport(Origin.LOGIN_MAGIC_LINK)
     }
 
     override fun helpEmailPasswordScreen(email: String?) {
-        // TODO: Helpshift support
-//        launchHelpshift(null, email, true, Tag.ORIGIN_LOGIN_EMAIL_PASSWORD)
+        viewHelpAndSupport(Origin.LOGIN_EMAIL_PASSWORD)
     }
 
     override fun help2FaScreen(email: String?) {
-        // TODO: Helpshift support
-//        launchHelpshift(null, email, true, Tag.ORIGIN_LOGIN_2FA)
+        viewHelpAndSupport(Origin.LOGIN_2FA)
     }
 
     override fun startPostLoginServices() {
@@ -327,8 +337,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun helpUsernamePassword(url: String?, username: String?, isWpcom: Boolean) {
-        // TODO: Helpshift support
-//        launchHelpshift(url, username, isWpcom, Tag.ORIGIN_LOGIN_USERNAME_PASSWORD)
+        viewHelpAndSupport(Origin.LOGIN_USERNAME_PASSWORD)
     }
 
     // SmartLock
@@ -349,11 +358,11 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun helpSignupEmailScreen(email: String?) {
-        // TODO: Signup
+        viewHelpAndSupport(Origin.SIGNUP_EMAIL)
     }
 
     override fun helpSignupMagicLinkScreen(email: String?) {
-        // TODO: Signup
+        viewHelpAndSupport(Origin.SIGNUP_MAGIC_LINK)
     }
 
     override fun showSignupMagicLink(email: String?) {

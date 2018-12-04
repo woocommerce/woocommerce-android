@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.util.OrderStatusUtils
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 /**
@@ -21,13 +22,15 @@ class OrderStatusFilterDialog : DialogFragment() {
     companion object {
         const val TAG: String = "OrderStatusFilterDialog"
 
+        private const val ALL_FILTER_ID: String = "all"
+
         fun newInstance(
             currentFilter: CoreOrderStatus?,
             listener: OrderListFilterListener
         ): OrderStatusFilterDialog {
             val fragment = OrderStatusFilterDialog()
             fragment.listener = listener
-            fragment.selectedFilter = currentFilter
+            fragment.selectedFilter = currentFilter?.value ?: ALL_FILTER_ID
             return fragment
         }
     }
@@ -36,33 +39,40 @@ class OrderStatusFilterDialog : DialogFragment() {
         fun onFilterSelected(orderStatus: String?)
     }
 
-    val filterOptions: Array<String> by lazy {
-        arrayOf(resources.getString(R.string.all)).plus(CoreOrderStatus.values().map { it.label }.toTypedArray())
+    private val filterMap: Map<String, String> by lazy {
+        mapOf(ALL_FILTER_ID to getString(R.string.all)).plus(
+                CoreOrderStatus.values().associate {
+                    it.value to OrderStatusUtils.getLabelForOrderStatus(it, ::getString)
+                }
+        )
     }
 
     var listener: OrderListFilterListener? = null
-    var selectedFilter: CoreOrderStatus? = null
+    var selectedFilter: String? = null
+
+    private fun getCurrentOrderStatusIndex(): Int {
+        return filterMap.keys.indexOfFirst { it == selectedFilter }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val selectedIndex = selectedFilter?.ordinal?.inc() ?: 0
+        val selectedIndex = getCurrentOrderStatusIndex()
 
         return AlertDialog.Builder(context)
                 .setTitle(resources.getString(R.string.orderlist_filter_by))
                 .setCancelable(true)
-                .setSingleChoiceItems(filterOptions, selectedIndex) { _, which ->
-                    val selectedLabel = filterOptions[which]
+                .setSingleChoiceItems(filterMap.values.toTypedArray(), selectedIndex) { _, which ->
+                    selectedFilter = filterMap.keys.toTypedArray()[which]
 
                     AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
-                            mapOf("status" to selectedLabel))
-
-                    selectedFilter = CoreOrderStatus.fromLabel(selectedLabel)
+                            mapOf("status" to selectedFilter))
                 }
                 .setPositiveButton(R.string.orderlist_filter_apply) { dialog, _ ->
                     AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED)
 
-                    val newSelectedIndex = selectedFilter?.ordinal?.inc() ?: 0
+                    val newSelectedIndex = getCurrentOrderStatusIndex()
                     if (newSelectedIndex != selectedIndex) {
-                        listener?.onFilterSelected(selectedFilter?.value)
+                        // If 'All' is selected filter, pass null to signal a filterless refresh
+                        listener?.onFilterSelected(selectedFilter.takeUnless { it == ALL_FILTER_ID })
                     }
                     dialog.cancel()
                 }.create()

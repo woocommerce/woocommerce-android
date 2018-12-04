@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -10,6 +11,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -19,10 +21,13 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.onScrollDown
+import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.OrderStatusUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
@@ -31,6 +36,7 @@ import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
@@ -120,6 +126,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                         presenter.loadOrders(orderStatusFilter, forceRefresh = true)
                     }
                 }
+
+                no_orders_image.visibility =
+                        if (DisplayUtils.isLandscape(activity)) View.GONE else View.VISIBLE
             }
         }
         return view
@@ -142,6 +151,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                    if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
+                }
+            })
         }
 
         presenter.takeView(this)
@@ -185,6 +199,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             filterMenuButton?.isVisible = true
         } else {
             filterMenuButton?.isVisible = false
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        newConfig?.let {
+            no_orders_image.visibility =
+                    if (it.orientation == Configuration.ORIENTATION_LANDSCAPE) View.GONE else View.VISIBLE
         }
     }
 
@@ -312,14 +334,20 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
                 .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
-                    getString(R.string.orderlist_filtered, CoreOrderStatus.fromValue(filter)?.label)
+                    val orderStatusLabel = CoreOrderStatus.fromValue(filter)?.let { orderStatus ->
+                        OrderStatusUtils.getLabelForOrderStatus(orderStatus, ::getString)
+                    }
+                    getString(R.string.orderlist_filtered, orderStatusLabel)
                 } ?: "")
+    }
+
+    override fun scrollToTop() {
+        ordersList.smoothScrollToPosition(0)
     }
 
     override fun refreshFragmentState() {
         isRefreshPending = true
         if (isActive) {
-            ordersList.smoothScrollToPosition(0)
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }

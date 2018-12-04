@@ -144,6 +144,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTINGS_LOGOUT_BUTTON_TAPPED,
         SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
         SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED,
+        SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED,
+        SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED,
         PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
         PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
         PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
@@ -151,12 +153,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
 
         // -- Help & Support
-        SUPPORT_HELP_CENTER_VIEWED,
-        SUPPORT_IDENTITY_SET,
-        SUPPORT_IDENTITY_FORM_VIEWED,
-        SUPPORT_APPLICATION_LOG_VIEWED,
-        SUPPORT_TICKETS_VIEWED,
-        SUPPORT_FAQ_VIEWED,
+        SUPPORT_HELP_CENTER_VIEWED(siteless = true),
+        SUPPORT_IDENTITY_SET(siteless = true),
+        SUPPORT_IDENTITY_FORM_VIEWED(siteless = true),
+        SUPPORT_APPLICATION_LOG_VIEWED(siteless = true),
+        SUPPORT_TICKETS_VIEWED(siteless = true),
+        SUPPORT_FAQ_VIEWED(siteless = true),
+
+        // -- Push notifications
+        PUSH_NOTIFICATION_RECEIVED
     }
     // endregion
 
