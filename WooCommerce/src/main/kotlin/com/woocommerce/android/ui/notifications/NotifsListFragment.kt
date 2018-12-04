@@ -162,7 +162,10 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override fun getFragmentTitle() = getString(R.string.notifications)
 
     override fun refreshFragmentState() {
-        // todo reset any scrolling
+        isRefreshPending = true
+        if (isActive) {
+            presenter.loadNotifs(forceRefresh = true)
+        }
     }
 
     override fun showSkeleton(show: Boolean) {
