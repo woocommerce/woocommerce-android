@@ -27,15 +27,27 @@ env:
     - ANDROID_SDKS=android-21
     - ANDROID_TARGET=android-21
 
+matrix:
+  include:
+    - name: "Lint"
+      env: GRADLE_TASKS="checkstyle ktlint lintVanillaRelease"
+    - name: "Build & Test"
+      env: GRADLE_TASKS="assembleVanillaRelease testVanillaRelease"
+    - name: "Danger"
+      env: GRADLE_TASKS=""
+      language: ruby
+      rvm: 2.3.4
+      cache:
+        directories:
+          - vendor/bundle/
+      install:
+        - bundle install
+      script:
+        - bundle exec danger --fail-on-errors=true
+
 install:
   # Setup gradle.properties
   - cp gradle.properties-example gradle.properties
 
 script:
-  - ./gradlew assembleVanillaRelease --stacktrace
-  - ./gradlew testVanillaRelease --stacktrace
-  - ./gradlew lintVanillaRelease --stacktrace || (grep -A20 -B2 'severity="Error"' */build/**/*.xml; exit 1)
-  - ./gradlew checkstyle --stacktrace
-  - ./gradlew ktlint --stacktrace
-  - bundle install
-  - bundle exec danger
+  - ./gradlew -PdisablePreDex $GRADLE_TASKS || (grep -A20 -B2 'severity="Error"' -r --include="*.xml" WordPress libs; exit 1)
