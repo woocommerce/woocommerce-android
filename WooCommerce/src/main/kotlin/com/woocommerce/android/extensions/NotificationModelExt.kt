@@ -1,8 +1,9 @@
-package com.woocommerce.android.ui.notifications
+package com.woocommerce.android.extensions
 
-import com.woocommerce.android.ui.notifications.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.ui.notifications.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.ui.notifications.WooNotificationType.UNKNOWN
+import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
+import com.woocommerce.android.ui.notifications.NotificationHelper
 import org.wordpress.android.fluxc.model.NotificationModel
 
 enum class WooNotificationType {
@@ -79,7 +80,12 @@ fun NotificationModel.getReviewDetail(): NotificationReviewDetail? {
 
     val userInfo = getUserInfo()
     val rating = getRating()
-    return NotificationReviewDetail(getMessageDetail(), this.timestamp, getRating(), getUserInfo())
+    return NotificationReviewDetail(
+            getMessageDetail(),
+            this.timestamp,
+            getRating(),
+            getUserInfo()
+    )
 }
 
 /**

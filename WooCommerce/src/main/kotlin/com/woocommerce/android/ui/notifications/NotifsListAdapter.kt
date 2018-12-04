@@ -8,9 +8,13 @@ import android.widget.RatingBar
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
-import com.woocommerce.android.ui.notifications.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.ui.notifications.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.ui.notifications.WooNotificationType.UNKNOWN
+import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
+import com.woocommerce.android.extensions.getMessageSnippet
+import com.woocommerce.android.extensions.getRating
+import com.woocommerce.android.extensions.getTitleSnippet
+import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SectionParameters

@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.notifications
 
+import com.woocommerce.android.extensions.WooNotificationType
+import com.woocommerce.android.extensions.getWooType
 import org.wordpress.android.fluxc.model.NotificationModel
 import org.wordpress.android.fluxc.tools.FormattableRangeType.POST
 import org.wordpress.android.fluxc.tools.FormattableContent
