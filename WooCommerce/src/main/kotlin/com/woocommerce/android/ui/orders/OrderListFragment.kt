@@ -510,6 +510,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 Stat.ORDERS_LIST_FILTER,
                 mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
 
+        clearSearchResults()
         orderStatusFilter = orderStatus
         ordersAdapter.clearAdapterData()
         presenter.loadOrders(orderStatusFilter, true)
@@ -586,11 +587,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
      * Return to the non-search order view
      */
     override fun clearSearchResults() {
-        searchQuery = ""
-        isSearching = false
-        disableSearchListeners()
-        activity?.title = getFragmentTitle()
-        presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+        if (isSearching) {
+            searchQuery = ""
+            isSearching = false
+            disableSearchListeners()
+            activity?.title = getFragmentTitle()
+            searchMenuItem?.collapseActionView()
+            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+        }
     }
 
     private fun disableSearchListeners() {
