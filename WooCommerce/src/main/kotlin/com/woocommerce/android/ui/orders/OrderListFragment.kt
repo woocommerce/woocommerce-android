@@ -152,7 +152,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private fun shouldShowFilterMenuItem(): Boolean {
         return when {
             (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) -> false
-            isSearching -> false
             (childFragmentManager.backStackEntryCount > 0) -> false
             else -> true
         }
@@ -161,8 +160,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private fun shouldShowSearchMenuItem(): Boolean {
         return when {
             (childFragmentManager.backStackEntryCount > 0) -> false
-            isShowingAllOrders() -> true
-            else -> false
+            else -> true
         }
     }
     // endregion
@@ -594,7 +592,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         isSearching = false
         disableSearchListeners()
         refreshOptionsMenu()
-        presenter.fetchAndLoadOrdersFromDb(orderStatusFilter = null, isForceRefresh = false)
+        activity?.title = getFragmentTitle()
+        presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
     }
 
     private fun disableSearchListeners() {
