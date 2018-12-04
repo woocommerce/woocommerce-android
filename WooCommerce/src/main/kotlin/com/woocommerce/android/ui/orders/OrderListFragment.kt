@@ -570,7 +570,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
         searchQuery = query
         presenter.searchOrders(query)
-        showSkeleton(true)
     }
 
     /**
