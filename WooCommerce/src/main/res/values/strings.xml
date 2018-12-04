@@ -212,6 +212,10 @@
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
     <!--
+        Notifications View
+    -->
+    <string name="notifs_fetch_error">Error fetching notifications</string>
+    <!--
         Settings
     -->
     <string name="settings">Settings</string>

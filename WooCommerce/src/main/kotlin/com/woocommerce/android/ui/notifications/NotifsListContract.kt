@@ -2,14 +2,14 @@ package com.woocommerce.android.ui.notifications
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
+import org.wordpress.android.fluxc.model.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface NotifsListContract {
     interface Presenter : BasePresenter<View> {
+        var isLoading: Boolean
+
         fun loadNotifs(forceRefresh: Boolean)
-        fun loadMoreNotifs()
-        fun canLoadMore(): Boolean
-        fun isLoading(): Boolean
         fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean)
         fun setNotifsSeen()
         fun setAllNotifsRead()
@@ -20,8 +20,8 @@ interface NotifsListContract {
         var isActive: Boolean
         var isRefreshPending: Boolean
 
-        fun setLoadingMoreIndicator(active: Boolean)
-        fun showNotifications(notifs: List<WCNotificationModel>, isFreshData: Boolean)
+        fun showNotifications(notifsList: List<NotificationModel>, isFreshData: Boolean)
+        fun showLoadNotificationsError()
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
         fun openReviewDetail()
