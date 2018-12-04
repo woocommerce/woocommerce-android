@@ -539,7 +539,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         ordersAdapter.clearAdapterData()
         isSearching = true
-        refreshOptionsMenu()
         return true
     }
 
@@ -591,7 +590,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         searchQuery = ""
         isSearching = false
         disableSearchListeners()
-        refreshOptionsMenu()
         activity?.title = getFragmentTitle()
         presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
     }
