@@ -31,6 +31,7 @@
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
     <string name="continue_button">Continue</string>
+    <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
     <string name="learn_more">Learn More</string>
@@ -50,6 +51,7 @@
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
+    <string name="button_update_instructions">Update instructions</string>
 
     <!--
         Date/Time Labels
@@ -87,6 +89,8 @@
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
     <string name="login_pick_store">Pick store</string>
     <string name="login_connected_store">Connected store</string>
+    <string name="login_verifying_sites">Verifying sites…</string>
+    <string name="login_site_list_update_required">Update to WooCommerce 3.5 required</string>
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
@@ -131,8 +135,7 @@
     <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
 
     <string name="dashboard_plugin_notice_title">Update to WooCommerce 3.5 to keep using this app</string>
-    <string name="dashboard_plugin_notice_message">The upcoming version of this app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
-    <string name="dashboard_plugin_notice_button_label">Update instructions</string>
+    <string name="dashboard_plugin_notice_message">This app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
     <!--
         Order List View
     -->
@@ -173,7 +176,8 @@
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
     <string name="orderdetail_note_private">Private Note</string>
-    <string name="orderdetail_note_public">Public Note</string>
+    <string name="orderdetail_note_public">Note to customer</string>
+    <string name="orderdetail_note_system">System status</string>
     <string name="orderdetail_order_notes">Order Notes</string>
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
