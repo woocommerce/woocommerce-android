@@ -46,18 +46,18 @@ class NotifsListPresenter @Inject constructor(
     }
 
     override fun loadNotifs(forceRefresh: Boolean) {
-        // If view is still valid, show skeleton, else exit this method
-        view?.showSkeleton(true) ?: return
+        view?.let {
+            if (networkStatus.isConnected() && forceRefresh) {
+                it.showSkeleton(true)
+                isLoading = true
+                isRefreshing = forceRefresh
 
-        if (networkStatus.isConnected() && forceRefresh) {
-            isLoading = true
-            isRefreshing = forceRefresh
-
-            val payload = FetchNotificationsPayload()
-            dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
-        } else {
-            // Load cached notifications from the db
-            fetchAndLoadNotifsFromDb(forceRefresh)
+                val payload = FetchNotificationsPayload()
+                dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
+            } else {
+                // Load cached notifications from the db
+                fetchAndLoadNotifsFromDb(forceRefresh)
+            }
         }
     }
 
