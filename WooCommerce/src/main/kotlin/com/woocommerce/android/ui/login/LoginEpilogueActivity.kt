@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -72,6 +73,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             AnalyticsTracker.track(
                     Stat.LOGIN_EPILOGUE_STORES_SHOWN,
                     mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size))
+        }
+
+        // show buttons side-by-side in landscape
+        if (DisplayUtils.isLandscape(this)) {
+            frame_bottom.orientation = LinearLayout.HORIZONTAL
         }
     }
 

@@ -91,7 +91,7 @@ class LoginEpiloguePresenter @Inject constructor(
 
         val totalSitesChecked = supportedWCSites.size + unsupportedWCSites.size
         if (totalSitesChecked == wooCommerceStore.getWooCommerceSites().size) {
-            loginEpilogueView?.showStoreList(supportedWCSites, unsupportedWCSites)
+            loginEpilogueView?.showStoreList(unsupportedWCSites, supportedWCSites)
         }
     }
 }

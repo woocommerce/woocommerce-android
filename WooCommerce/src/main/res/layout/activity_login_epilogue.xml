@@ -152,11 +152,11 @@
 
     <LinearLayout
         android:id="@+id/frame_bottom"
-        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
+        android:clipToPadding="false"
         android:orientation="vertical"
         android:padding="@dimen/margin_extra_large">
 
@@ -166,6 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_weight="1"
             android:text="@string/button_update_instructions"
             android:visibility="gone"
             tools:visibility="visible"/>
@@ -175,6 +176,7 @@
             style="@style/Woo.Button.Purple"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/continue_button"/>
     </LinearLayout>
 </RelativeLayout>
