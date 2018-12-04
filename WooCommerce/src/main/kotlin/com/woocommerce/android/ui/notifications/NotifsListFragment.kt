@@ -209,4 +209,8 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             loadChildFragment(OrderDetailFragment.newInstance(orderId, remoteOrderId), tag)
         }
     }
+
+    override fun scrollToTop() {
+        // TODO
+    }
 }
