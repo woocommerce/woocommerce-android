@@ -133,31 +133,37 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
-        R.id.menu_filter -> {
-            AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
-            showFilterDialog()
-            true
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_filter -> {
+                AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
+                showFilterDialog()
+                true
+            }
+            R.id.menu_search -> {
+                AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
+                enableSearchListeners()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-        R.id.menu_search -> {
-            AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
-            enableSearchListeners()
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
     }
 
-    private fun shouldShowFilterMenuItem() = when {
-        (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) -> false
-        isSearching -> false
-        (childFragmentManager.backStackEntryCount > 0) -> false
-        else -> true
+    private fun shouldShowFilterMenuItem(): Boolean {
+        return when {
+            (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) -> false
+            isSearching -> false
+            (childFragmentManager.backStackEntryCount > 0) -> false
+            else -> true
+        }
     }
 
-    private fun shouldShowSearchMenuItem() = when {
-        (childFragmentManager.backStackEntryCount > 0) -> false
-        isShowingAllOrders() -> true
-        else -> false
+    private fun shouldShowSearchMenuItem(): Boolean {
+        return when {
+            (childFragmentManager.backStackEntryCount > 0) -> false
+            isShowingAllOrders() -> true
+            else -> false
+        }
     }
     // endregion
 
