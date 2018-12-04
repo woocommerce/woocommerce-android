@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login
+package com.woocommerce.android.ui.login.adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.login.SiteListAdapter.SiteViewHolder
+import com.woocommerce.android.ui.login.adapter.SiteListAdapter.SiteViewHolder
 import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
