@@ -37,10 +37,9 @@
         tools:text="text_displayname"/>
 
     <FrameLayout
-        android:id="@+id/frame_list_container"
+        android:id="@+id/supported_frame_list_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/frame_bottom"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/text_username">
 
         <android.support.v7.widget.CardView
@@ -56,7 +55,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/text_list_label"
+                    android:id="@+id/supported_text_list_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingEnd="@dimen/margin_extra_large"
@@ -68,7 +67,53 @@
                     android:textStyle="bold"/>
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycler"
+                    android:id="@+id/supported_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:paddingBottom="@dimen/margin_extra_large"
+                    android:paddingEnd="@dimen/margin_extra_large"
+                    android:paddingStart="@dimen/margin_extra_large"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/unsupported_frame_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/frame_bottom"
+        android:layout_below="@+id/supported_frame_list_container"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_extra_small"
+            android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
+            app:cardElevation="@dimen/card_elevation">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/unsupported_text_list_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/margin_extra_large"
+                    android:paddingStart="@dimen/margin_extra_large"
+                    android:paddingTop="@dimen/margin_extra_large"
+                    android:text="@string/login_site_list_update_required"
+                    android:textColor="@color/wc_purple"
+                    android:textSize="@dimen/text_large"
+                    android:textStyle="bold"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/unsupported_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipChildren="false"
@@ -105,21 +150,31 @@
         android:layout_above="@+id/frame_bottom"
         android:background="@drawable/shadow_top"/>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/frame_bottom"
         android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
+        android:orientation="vertical"
         android:padding="@dimen/margin_extra_large">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/button_update_instructions"
+            style="@style/Woo.Button.Grey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:text="@string/button_update_instructions"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_continue"
             style="@style/Woo.Button.Purple"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:text="@string/continue_button"/>
-    </FrameLayout>
+    </LinearLayout>
 </RelativeLayout>
