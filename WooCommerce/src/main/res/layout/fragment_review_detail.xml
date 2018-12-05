@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
     android:background="@color/default_window_bg">
 
     <android.support.constraint.ConstraintLayout
@@ -14,44 +14,42 @@
         android:background="@color/white"
         android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/review_product_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_product"
-            android:tint="@color/wc_grey_dark"
-            app:layout_constraintBottom_toTopOf="@+id/divider"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <TextView
-            android:id="@+id/review_product_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:textAppearance="@style/Woo.TextAppearance"
-            app:layout_constraintBottom_toTopOf="@+id/divider"
-            app:layout_constraintEnd_toStartOf="@+id/review_open_product"
-            app:layout_constraintStart_toEndOf="@+id/review_product_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Left Handed Candlestick"/>
-
-        <ImageButton
+        <LinearLayout
             android:id="@+id/review_open_product"
-            style="@style/Base.Widget.AppCompat.ActionButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/wc_view_the_product_external"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_external"/>
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/review_product_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_product"
+                android:tint="@color/wc_grey_darker"/>
+
+            <TextView
+                android:id="@+id/review_product_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:textAppearance="@style/Woo.TextAppearance.Medium"
+                tools:text="Left Handed Candlestick"/>
+
+            <ImageButton
+                style="@style/Base.Widget.AppCompat.ActionButton"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@string/wc_view_the_product_external"
+                android:tint="@color/wc_grey_darker"
+                app:srcCompat="@drawable/ic_external"/>
+        </LinearLayout>
 
         <View
             android:id="@+id/divider"
@@ -65,10 +63,10 @@
 
         <ImageView
             android:id="@+id/review_gravatar"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:importantForAccessibility="no"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider"
@@ -79,9 +77,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="12dp"
-            android:textAppearance="@style/Woo.TextAppearance.Title"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/Woo.TextAppearance.Title.Bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/review_gravatar"
             app:layout_constraintTop_toBottomOf="@+id/divider"
@@ -91,8 +89,8 @@
             android:id="@+id/review_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textAppearance="@style/Woo.TextAppearance"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/Woo.TextAppearance.Small"
             app:layout_constraintStart_toStartOf="@+id/review_user_name"
             app:layout_constraintTop_toBottomOf="@+id/review_user_name"
             tools:text="23 hrs ago"/>
@@ -103,13 +101,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:isIndicator="true"
             android:numStars="5"
             android:progressTint="@color/alert_yellow"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/review_gravatar"
-            tools:rating="4"/>
+            tools:rating="4"
+            tools:visibility="visible"/>
 
         <TextView
             android:id="@+id/review_description"
@@ -118,9 +118,9 @@
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:textAppearance="@style/Woo.TextAppearance"
-            app:layout_constraintBottom_toTopOf="@+id/review_approve"
+            app:layout_constraintBottom_toTopOf="@+id/review_trash"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/review_rating_bar"
@@ -130,12 +130,11 @@
             android:id="@+id/review_approve"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:textOff="@string/wc_approve"
-            android:textOn="@string/wc_approved"
             android:background="@android:color/transparent"
             android:textAppearance="@style/Woo.TextAppearance.Button.Toggle"
+            android:textOff="@string/wc_approve"
+            android:textOn="@string/wc_approved"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -143,7 +142,6 @@
             android:id="@+id/review_spam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/wc_spam"
             android:textAppearance="@style/Woo.TextAppearance.Button"
@@ -154,7 +152,6 @@
             android:id="@+id/review_trash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/wc_trash"
             android:textAppearance="@style/Woo.TextAppearance.Button"
