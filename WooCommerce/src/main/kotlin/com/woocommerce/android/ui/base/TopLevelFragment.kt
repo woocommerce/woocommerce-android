@@ -76,12 +76,14 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     }
 
     override fun loadChildFragment(fragment: Fragment, tag: String) {
+        // before changing the custom animation, please read this PR:
+        // TODO
         childFragmentManager.beginTransaction()
                 .setCustomAnimations(
-                        R.anim.activity_fade_in,  // applied to child as it appears
-                        R.anim.activity_fade_out, // applied to parent as it's replaced
-                        R.anim.activity_fade_in,  // applied to parent as it returns
-                        0                 // applied to child as it's removed
+                        R.anim.activity_fade_in,
+                        R.anim.activity_fade_out,
+                        R.anim.activity_fade_in,
+                        0
                 )
                 .replace(R.id.container, fragment, tag)
                 .addToBackStack(tag)
