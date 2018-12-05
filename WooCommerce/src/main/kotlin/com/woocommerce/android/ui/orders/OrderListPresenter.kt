@@ -32,13 +32,18 @@ class OrderListPresenter @Inject constructor(
         private val TAG: String = OrderListPresenter::class.java.simpleName
     }
 
-    private var orderView: OrderListContract.View? = null
-    private var isLoadingOrders = false
-    private var isLoadingMoreOrders = false
-    private var canLoadMore = false
+    private enum class OrderListState {
+        IDLE,
+        LOADING,
+        LOADING_MORE,
+        SEARCHING,
+        SEARCHING_MORE
+    }
 
-    private var isSearchingOrders = false
-    private var isSearchingMoreOrders = false
+    private var orderView: OrderListContract.View? = null
+    private var orderListState = OrderListState.IDLE
+
+    private var canLoadMore = false
     private var canSearchMore = false
     private var nextSearchOffset = 0
 
@@ -56,7 +61,7 @@ class OrderListPresenter @Inject constructor(
 
     override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
         if (networkStatus.isConnected() && forceRefresh) {
-            isLoadingOrders = true
+            orderListState = OrderListState.LOADING
             orderView?.showNoOrdersView(false)
             orderView?.showSkeleton(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
@@ -70,7 +75,7 @@ class OrderListPresenter @Inject constructor(
         if (!networkStatus.isConnected()) return
 
         orderView?.setLoadingMoreIndicator(true)
-        isLoadingMoreOrders = true
+        orderListState = OrderListState.LOADING_MORE
         val payload = FetchOrdersPayload(selectedSite.get(), orderStatusFilter, loadMore = true)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
     }
@@ -81,7 +86,7 @@ class OrderListPresenter @Inject constructor(
         when {
             searchQuery.isBlank() -> orderView?.showSearchResults(searchQuery, emptyList())
             networkStatus.isConnected() -> {
-                isSearchingOrders = true
+                orderListState = OrderListState.SEARCHING
                 orderView?.showSkeleton(true)
                 val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, 0)
                 dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
@@ -93,14 +98,14 @@ class OrderListPresenter @Inject constructor(
     override fun searchMoreOrders(searchQuery: String) {
         if (!networkStatus.isConnected()) return
 
-        isSearchingMoreOrders = true
+        orderListState = OrderListState.SEARCHING_MORE
         orderView?.setLoadingMoreIndicator(true)
         val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, nextSearchOffset)
         dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
     }
 
     override fun isLoading(): Boolean {
-        return isLoadingOrders || isLoadingMoreOrders || isSearchingOrders || isSearchingMoreOrders
+        return orderListState != OrderListState.IDLE
     }
 
     override fun canLoadMore(): Boolean {
@@ -123,19 +128,18 @@ class OrderListPresenter @Inject constructor(
                 } else {
                     AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(
                             AnalyticsTracker.KEY_STATUS to event.statusFilter.orEmpty(),
-                            AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMoreOrders))
+                            AnalyticsTracker.KEY_IS_LOADING_MORE to (orderListState == OrderListState.LOADING_MORE)))
 
                     canLoadMore = event.canLoadMore
-                    val isForceRefresh = !isLoadingMoreOrders
+                    val isForceRefresh = orderListState != OrderListState.LOADING_MORE
                     fetchAndLoadOrdersFromDb(event.statusFilter, isForceRefresh)
                 }
 
-                if (isLoadingMoreOrders) {
-                    isLoadingMoreOrders = false
+                if (orderListState == OrderListState.LOADING_MORE) {
                     orderView?.setLoadingMoreIndicator(active = false)
-                } else {
-                    isLoadingOrders = false
                 }
+
+                orderListState = OrderListState.IDLE
             }
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
@@ -154,7 +158,7 @@ class OrderListPresenter @Inject constructor(
             orderView?.showLoadOrdersError()
         } else {
             if (event.searchResults.isNotEmpty()) {
-                if (isSearchingMoreOrders) {
+                if (orderListState == OrderListState.SEARCHING_MORE) {
                     orderView?.addSearchResults(event.searchQuery, event.searchResults)
                 } else {
                     orderView?.showSearchResults(event.searchQuery, event.searchResults)
@@ -162,13 +166,13 @@ class OrderListPresenter @Inject constructor(
             }
         }
 
-        if (isSearchingMoreOrders) {
-            isSearchingMoreOrders = false
+        if (orderListState == OrderListState.SEARCHING_MORE) {
             orderView?.setLoadingMoreIndicator(active = false)
         } else {
-            isSearchingOrders = false
             orderView?.showSkeleton(false)
         }
+
+        orderListState = OrderListState.IDLE
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
