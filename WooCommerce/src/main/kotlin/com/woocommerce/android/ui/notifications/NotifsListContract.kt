@@ -11,9 +11,6 @@ interface NotifsListContract {
 
         fun loadNotifs(forceRefresh: Boolean)
         fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean)
-        fun setNotifsSeen()
-        fun setAllNotifsRead()
-        fun setNotificationRead()
     }
 
     interface View : BaseView<Presenter> {
