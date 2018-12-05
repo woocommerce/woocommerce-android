@@ -604,7 +604,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun addSearchResults(query: String, orders: List<WCOrderModel>) {
         if (query == searchQuery) {
-            ordersAdapter.addOders(orders)
+            ordersAdapter.addOrders(orders)
         }
     }
 

@@ -89,27 +89,27 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         orderList.addAll(orders)
     }
 
+    private fun containsOrder(order: WCOrderModel): Boolean {
+        orderList.forEach {
+            if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
+                return true
+            }
+        }
+        return false
+    }
+
     /**
      * Adds the passed list of orders to the existing list, making sure not to add orders that
      * are already in the existing list
      */
-    fun addOders(orders: List<WCOrderModel>) {
+    fun addOrders(orders: List<WCOrderModel>) {
         if (orders.isEmpty()) return
-
-        val didMatch = fun(order: WCOrderModel): Boolean {
-            orderList.forEach {
-                if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
-                    return true
-                }
-            }
-            return false
-        }
 
         val allOrders = ArrayList<WCOrderModel>()
         allOrders.addAll(orderList)
 
         orders.forEach {
-            if (!didMatch(it)) {
+            if (!containsOrder(it)) {
                 allOrders.add(it)
             }
         }
@@ -127,17 +127,8 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             return false
         }
 
-        val didMatch = fun(order: WCOrderModel): Boolean {
-            orderList.forEach {
-                if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
-                    return true
-                }
-            }
-            return false
-        }
-
         orders.forEach {
-            if (!didMatch(it)) {
+            if (!containsOrder(it)) {
                 return false
             }
         }
