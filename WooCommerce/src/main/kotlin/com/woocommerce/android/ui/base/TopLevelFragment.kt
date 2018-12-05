@@ -77,7 +77,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
 
     override fun loadChildFragment(fragment: Fragment, tag: String) {
         // before changing the custom animation, please read this PR:
-        // TODO
+        // https://github.com/woocommerce/woocommerce-android/pull/554
         childFragmentManager.beginTransaction()
                 .setCustomAnimations(
                         R.anim.activity_fade_in,
