@@ -78,15 +78,15 @@ class OrderListPresenter @Inject constructor(
     override fun searchOrders(searchQuery: String) {
         nextSearchOffset = 0
 
-        if (searchQuery.isBlank()) {
-            orderView?.showSearchResults(searchQuery, emptyList())
-        } else if (networkStatus.isConnected()) {
-            isSearchingOrders = true
-            orderView?.showSkeleton(true)
-            val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, 0)
-            dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
-        } else {
-            orderView?.showNoConnectionError()
+        when {
+            searchQuery.isBlank() -> orderView?.showSearchResults(searchQuery, emptyList())
+            networkStatus.isConnected() -> {
+                isSearchingOrders = true
+                orderView?.showSkeleton(true)
+                val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, 0)
+                dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
+            }
+            else -> orderView?.showNoConnectionError()
         }
     }
 
