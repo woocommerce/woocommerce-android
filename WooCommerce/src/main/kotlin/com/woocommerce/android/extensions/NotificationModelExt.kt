@@ -1,5 +1,6 @@
 package com.woocommerce.android.extensions
 
+import android.annotation.SuppressLint
 import android.os.Parcelable
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
@@ -121,12 +122,17 @@ fun NotificationModel.getRemoteOrderId(): Long? {
 
 fun NotificationModel.getConvertedTimestamp(): Long = DateTimeUtils.timestampFromIso8601(timestamp)
 
+// TODO: Temporarily suppress lint errors around ParcelCreator due to this error:
+// https://youtrack.jetbrains.com/issue/KT-19300
+@SuppressLint("ParcelCreator")
 @Parcelize
 data class NotificationProductInfo(val name: String, val url: String) : Parcelable
 
+@SuppressLint("ParcelCreator")
 @Parcelize
 data class NotificationUserInfo(val name: String, val iconUrl: String?, val email: String?) : Parcelable
 
+@SuppressLint("ParcelCreator")
 @Parcelize
 data class NotificationReviewDetail(
     val msg: String,
