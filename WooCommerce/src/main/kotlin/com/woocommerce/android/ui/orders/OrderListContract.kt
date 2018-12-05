@@ -8,8 +8,8 @@ interface OrderListContract {
     interface Presenter : BasePresenter<View> {
         fun loadOrders(filterByStatus: String? = null, forceRefresh: Boolean)
         fun loadMoreOrders(orderStatusFilter: String? = null)
-        fun canLoadMore(): Boolean
-        fun isLoading(): Boolean
+        fun canLoadMoreOrders(): Boolean
+        fun isLoadingOrders(): Boolean
         fun openOrderDetail(order: WCOrderModel)
         fun fetchAndLoadOrdersFromDb(orderStatusFilter: String? = null, isForceRefresh: Boolean)
         fun searchOrders(searchQuery: String)

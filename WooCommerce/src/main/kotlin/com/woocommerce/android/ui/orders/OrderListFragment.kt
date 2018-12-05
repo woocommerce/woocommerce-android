@@ -333,7 +333,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
      * User scrolled to the last order and the adapter is requesting us to fetch more orders
      */
     override fun onRequestLoadMore() {
-        if (presenter.canLoadMore() && !presenter.isLoading()) {
+        if (presenter.canLoadMoreOrders() && !presenter.isLoadingOrders()) {
             if (isSearching) {
                 presenter.searchMoreOrders(searchQuery)
             } else {

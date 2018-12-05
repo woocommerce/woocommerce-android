@@ -104,11 +104,11 @@ class OrderListPresenter @Inject constructor(
         dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
     }
 
-    override fun isLoading(): Boolean {
+    override fun isLoadingOrders(): Boolean {
         return orderListState != OrderListState.IDLE
     }
 
-    override fun canLoadMore(): Boolean {
+    override fun canLoadMoreOrders(): Boolean {
         orderView?.let {
             if (it.isSearching) return canSearchMore
         }
