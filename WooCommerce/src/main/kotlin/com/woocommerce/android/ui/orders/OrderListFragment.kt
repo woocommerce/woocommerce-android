@@ -603,6 +603,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
     }
 
+    /**
+     * Presenter received search result with an offset due to infinite scroll, add them to the adapter
+     */
     override fun addSearchResults(query: String, orders: List<WCOrderModel>) {
         if (query == searchQuery) {
             ordersAdapter.addOrders(orders)

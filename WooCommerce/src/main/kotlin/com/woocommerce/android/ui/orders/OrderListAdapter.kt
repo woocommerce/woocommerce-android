@@ -84,23 +84,14 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
         notifyDataSetChanged()
 
-        // remember these orders for comparison in isSameOrderList() below
+        // remember these orders for comparison in containsOrder() below
         orderList.clear()
         orderList.addAll(orders)
     }
 
-    private fun containsOrder(order: WCOrderModel): Boolean {
-        orderList.forEach {
-            if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
-                return true
-            }
-        }
-        return false
-    }
-
     /**
-     * Adds the passed list of orders to the existing list, making sure not to add orders that
-     * are already in the existing list
+     * Adds the passed list of orders to the current list, making sure not to add orders that
+     * are already in the current list
      */
     fun addOrders(orders: List<WCOrderModel>) {
         if (orders.isEmpty()) return
@@ -117,6 +108,18 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         if (allOrders.size > orderList.size) {
             setOrders(allOrders)
         }
+    }
+
+    /**
+     * Returns true if the passed order is in the current list of orders
+     */
+    private fun containsOrder(order: WCOrderModel): Boolean {
+        orderList.forEach {
+            if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
+                return true
+            }
+        }
+        return false
     }
 
     /**

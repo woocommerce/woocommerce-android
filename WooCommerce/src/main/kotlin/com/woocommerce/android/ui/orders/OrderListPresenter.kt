@@ -162,7 +162,6 @@ class OrderListPresenter @Inject constructor(
             }
         }
 
-        isSearchingOrders = false
         if (isSearchingMoreOrders) {
             isSearchingMoreOrders = false
             orderView?.setLoadingMoreIndicator(active = false)
