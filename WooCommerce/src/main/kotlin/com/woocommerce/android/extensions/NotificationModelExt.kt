@@ -120,6 +120,10 @@ fun NotificationModel.getRemoteOrderId(): Long? {
     return this.meta?.ids?.order
 }
 
+/**
+ * Converts the ISO8601 String into a Date() object and returns that date represented as the number of
+ * milliseconds since January 1, 1970, 00:00:00 GMT.
+ */
 fun NotificationModel.getConvertedTimestamp(): Long = DateTimeUtils.timestampFromIso8601(timestamp)
 
 // TODO: Temporarily suppress lint errors around ParcelCreator due to this error:
