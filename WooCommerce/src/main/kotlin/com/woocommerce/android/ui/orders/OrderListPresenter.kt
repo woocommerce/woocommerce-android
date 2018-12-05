@@ -155,7 +155,11 @@ class OrderListPresenter @Inject constructor(
             orderView?.showLoadOrdersError()
         } else {
             if (event.searchResults.isNotEmpty()) {
-                orderView?.showSearchResults(event.searchQuery, event.searchResults)
+                if (isSearchingMoreOrders) {
+                    orderView?.addSearchResults(event.searchQuery, event.searchResults)
+                } else {
+                    orderView?.showSearchResults(event.searchQuery, event.searchResults)
+                }
             }
         }
 

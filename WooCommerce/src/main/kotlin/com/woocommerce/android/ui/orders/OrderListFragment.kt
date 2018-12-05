@@ -598,6 +598,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
      */
     override fun showSearchResults(query: String, orders: List<WCOrderModel>) {
         if (query == searchQuery) {
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
             ordersAdapter.setOrders(orders)
         }
     }
