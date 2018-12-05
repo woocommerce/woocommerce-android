@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.base
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
@@ -78,9 +77,14 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
 
     override fun loadChildFragment(fragment: Fragment, tag: String) {
         childFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                        R.anim.activity_fade_in,  // applied to child as it appears
+                        R.anim.activity_fade_out, // applied to parent as it's replaced
+                        R.anim.activity_fade_in,  // applied to parent as it returns
+                        0                 // applied to child as it's removed
+                )
                 .replace(R.id.container, fragment, tag)
                 .addToBackStack(tag)
-                .setTransition(TRANSIT_FRAGMENT_FADE)
                 .commit()
     }
 
