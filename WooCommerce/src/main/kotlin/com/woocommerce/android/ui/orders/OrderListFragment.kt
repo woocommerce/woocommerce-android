@@ -30,6 +30,7 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.OrderListAdapter.OnLoadMoreListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.OrderStatusUtils
 import com.woocommerce.android.util.WooAnimUtils
@@ -45,7 +46,7 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener,
-        OnQueryTextListener, OnActionExpandListener {
+        OnQueryTextListener, OnActionExpandListener, OnLoadMoreListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -97,6 +98,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
+
+        ordersAdapter.setOnLoadMoreListener(this)
     }
 
     // region options menu
@@ -326,8 +329,21 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         activity?.title = getFragmentTitle()
     }
 
+    /**
+     * User scrolled to the last order and the adapter is requesting us to fetch more orders
+     */
+    override fun onRequestLoadMore() {
+        if (presenter.canLoadMore() && !presenter.isLoading()) {
+            if (isSearching) {
+                presenter.searchMoreOrders(searchQuery)
+            } else {
+                presenter.loadMoreOrders(orderStatusFilter)
+            }
+        }
+    }
+
     private fun isShowingAllOrders(): Boolean {
-        return orderStatusFilter.isNullOrEmpty()
+        return !isSearching && orderStatusFilter.isNullOrEmpty()
     }
 
     /**

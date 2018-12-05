@@ -83,7 +83,7 @@ class OrderListPresenter @Inject constructor(
             orderView?.showSearchResults(searchQuery, emptyList())
         } else if (networkStatus.isConnected()) {
             isSearchingOrders = true
-            orderView?.setLoadingMoreIndicator(true)
+            orderView?.showSkeleton(true)
             val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, 0)
             dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
         } else {
@@ -95,7 +95,7 @@ class OrderListPresenter @Inject constructor(
         if (!networkStatus.isConnected()) return
 
         isSearchingMoreOrders = true
-        orderView?.showSkeleton(true)
+        orderView?.setLoadingMoreIndicator(true)
         val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, nextSearchOffset)
         dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
     }

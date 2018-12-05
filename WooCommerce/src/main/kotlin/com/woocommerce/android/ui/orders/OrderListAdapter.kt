@@ -24,8 +24,17 @@ import javax.inject.Inject
  */
 class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
     : SectionedRecyclerViewAdapter() {
+    interface OnLoadMoreListener {
+        fun onRequestLoadMore()
+    }
+
+    private var loadMoreListener: OnLoadMoreListener? = null
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
     private var orderStatusFilter: String? = null
+
+    fun setOnLoadMoreListener(listener: OnLoadMoreListener?) {
+        loadMoreListener = listener
+    }
 
     fun setOrders(orders: List<WCOrderModel>, filterByStatus: String? = null) {
         orderStatusFilter = filterByStatus
@@ -146,8 +155,8 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        if (presenter.canLoadMore() && !presenter.isLoading() && position == itemCount - 1) {
-            presenter.loadMoreOrders(orderStatusFilter)
+        if (position == itemCount - 1) {
+            loadMoreListener?.onRequestLoadMore()
         }
     }
 
