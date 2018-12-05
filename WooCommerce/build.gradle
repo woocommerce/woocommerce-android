@@ -31,6 +31,10 @@ repositories {
     maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
 }
 
+androidExtensions {
+    experimental = true
+}
+
 android {
     compileSdkVersion 27
     buildToolsVersion "27.0.3"
