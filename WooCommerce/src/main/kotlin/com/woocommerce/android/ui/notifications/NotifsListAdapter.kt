@@ -8,43 +8,51 @@ import android.widget.RatingBar
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
-import com.woocommerce.android.ui.notifications.WCNotificationModel.Order
-import com.woocommerce.android.ui.notifications.WCNotificationModel.Review
+import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
+import com.woocommerce.android.extensions.getMessageSnippet
+import com.woocommerce.android.extensions.getRating
+import com.woocommerce.android.extensions.getTitleSnippet
+import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.StatelessSection
 import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
+import org.wordpress.android.fluxc.model.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
 
 class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) : SectionedRecyclerViewAdapter() {
     interface ReviewListListener {
-        fun onNotificationClicked(notification: WCNotificationModel)
+        fun onNotificationClicked(notification: NotificationModel)
     }
 
-    private val notifsList: ArrayList<WCNotificationModel> = ArrayList()
+    private val notifsList: ArrayList<NotificationModel> = ArrayList()
     private var listener: ReviewListListener? = null
 
     fun setListener(listener: ReviewListListener) {
         this.listener = listener
     }
 
-    fun setNotifications(notifs: List<WCNotificationModel>) {
+    fun setNotifications(notifs: List<NotificationModel>) {
         // clear all the current data from the adapter
         removeAllSections()
 
         // Build a notifs for each [TimeGroup] section
-        val listToday = ArrayList<WCNotificationModel>()
-        val listYesterday = ArrayList<WCNotificationModel>()
-        val listTwoDays = ArrayList<WCNotificationModel>()
-        val listWeek = ArrayList<WCNotificationModel>()
-        val listMonth = ArrayList<WCNotificationModel>()
+        val listToday = ArrayList<NotificationModel>()
+        val listYesterday = ArrayList<NotificationModel>()
+        val listTwoDays = ArrayList<NotificationModel>()
+        val listWeek = ArrayList<NotificationModel>()
+        val listMonth = ArrayList<NotificationModel>()
 
         notifs.forEach {
             // Default to today if the date cannot be parsed
-            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
+            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.timestamp) ?: Date()
             val timeGroup = TimeGroup.getTimeGroupForDate(date)
             when (timeGroup) {
                 TimeGroup.GROUP_TODAY -> listToday.add(it)
@@ -82,14 +90,16 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         notifsList.addAll(notifs)
     }
 
-    fun isSameList(notifs: List<WCNotificationModel>): Boolean {
+    fun isSameList(notifs: List<NotificationModel>): Boolean {
         if (notifs.size != notifsList.size) {
             return false
         }
 
-        val didMatch = fun(notification: WCNotificationModel): Boolean {
+        val didMatch = fun(notification: NotificationModel): Boolean {
             notifsList.forEach {
-                if (it.id == notification.id && it.title == notification.title && it.desc == notification.desc) {
+                if (it.noteId == notification.noteId &&
+                        it.title == notification.title &&
+                        it.noteHash == notification.noteHash) {
                     return true
                 }
             }
@@ -111,14 +121,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         notifyDataSetChanged()
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
-        if (presenter.canLoadMore() && !presenter.isLoading() && position == itemCount - 1) {
-            presenter.loadMoreNotifs()
-        }
-    }
-
-    private inner class NotifsListSection(val title: String, val list: List<WCNotificationModel>) : StatelessSection(
+    private inner class NotifsListSection(val title: String, val list: List<NotificationModel>) : StatelessSection(
             SectionParameters.Builder(R.layout.notifs_list_item).headerResourceId(R.layout.order_list_header).build()
     ) {
         override fun getContentItemsTotal() = list.size
@@ -128,21 +131,28 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val notif = list[position]
             val itemHolder = holder as ItemViewHolder
+            itemHolder.rating.visibility = View.GONE
 
-            when (notif) {
-                is Order -> {
-                    itemHolder.rating.visibility = View.GONE
+            when (notif.getWooType()) {
+                NEW_ORDER -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_cart)
                 }
-                is Review -> {
+                PRODUCT_REVIEW -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_comment)
-                    itemHolder.rating.visibility = View.VISIBLE
-                    itemHolder.rating.rating = notif.rating
+
+                    notif.getRating()?.let {
+                        itemHolder.rating.rating = it
+                        itemHolder.rating.visibility = View.VISIBLE
+                    }
                 }
+                UNKNOWN -> WooLog.e(
+                        NOTIFICATIONS,
+                        "Unsupported woo notification type: ${notif.type} | ${notif.subtype}")
             }
 
-            itemHolder.title.text = notif.title
-            itemHolder.desc.text = notif.desc
+            itemHolder.title.text = notif.getTitleSnippet()
+            itemHolder.desc.text = notif.getMessageSnippet()
+
             itemHolder.itemView.setOnClickListener {
                 listener?.onNotificationClicked(notif)
             }

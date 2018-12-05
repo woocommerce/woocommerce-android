@@ -5,80 +5,72 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.notifications.NotifsListContract.View
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.action.NotificationAction
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.model.NotificationModel
+import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
+import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import javax.inject.Inject
 
 class NotifsListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val orderStore: WCOrderStore,
+    private val notificationStore: NotificationStore,
     private val networkStatus: NetworkStatus
 ) : NotifsListContract.Presenter {
     companion object {
         private val TAG: String = NotifsListPresenter::class.java.simpleName
     }
 
+    override var isLoading = false
     private var view: NotifsListContract.View? = null
-    private var isLoading = false
-    private var isLoadingMore = false
-    private var canLoadMore = false
+    private var isRefreshing = false
 
     override fun takeView(view: View) {
         this.view = view
         ConnectionChangeReceiver.getEventBus().register(this)
-
-        // TODO - register dispatcher
+        dispatcher.register(this)
     }
 
     override fun dropView() {
         view = null
         ConnectionChangeReceiver.getEventBus().unregister(this)
-
-        // TODO - unregister dispatcher
+        dispatcher.unregister(this)
     }
 
     override fun loadNotifs(forceRefresh: Boolean) {
-        if (networkStatus.isConnected() && forceRefresh) {
-            isLoading = true
-            view?.showSkeleton(true)
+        view?.let {
+            if (networkStatus.isConnected() && forceRefresh) {
+                it.showSkeleton(true)
+                isLoading = true
+                isRefreshing = forceRefresh
 
-            // TODO add real data here
-            val notifs = listOf(
-                    WCNotificationModel.Order(1, "You have a new order!",
-                            "Amanda test placed a $9.00 order from Candle Kingdom.", "2018-10-22T21:08:11+00:00",
-                            "1-1660-35", 1467),
-                    WCNotificationModel.Review(7, "Joe Smith left a review", "Review for Eyes Wide Shut",
-                            "2018-10-22T21:08:11+00:00", 2, 1F, ""),
-                    WCNotificationModel.Review(7, "Yuval Noah Harari left a review",
-                            "Review for Sapiens: A Brief History of Humankind", "2018-7-22T21:08:11+00:00", 5, 5F, ""),
-                    WCNotificationModel.Review(7, "Yuval Noah Harari left a review",
-                            "Review for Homo Deus: A Brief History of tomorrow", "2018-9-22T21:08:11+00:00", 4, 4F, ""),
-                    WCNotificationModel.Review(7, "Gillian Flynn left a review", "Review for Sharp Objects",
-                            "2018-11-1T21:08:11+00:00", 2, 3.5F, "")
-            )
-            view?.let {
-                it.showNotifications(notifs, true)
+                val payload = FetchNotificationsPayload()
+                dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
+            } else {
+                // Load cached notifications from the db
+                fetchAndLoadNotifsFromDb(forceRefresh)
             }
-        } else {
-            // Load cached notifications from the db
         }
     }
 
-    override fun loadMoreNotifs() {
-        if (!networkStatus.isConnected()) return
-
-        TODO("not implemented")
-    }
-
-    override fun canLoadMore() = canLoadMore
-
-    override fun isLoading() = isLoading || isLoadingMore
-
     override fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean) {
-        TODO("not implemented")
+        view?.let { notifView ->
+            val notifs = notificationStore.getNotificationsForSite(
+                    site = selectedSite.get(),
+                    filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
+                    filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
+            notifView.showNotifications(notifs, isFreshData = isForceRefresh)
+
+            // TODO how to handle empty notifications list view?
+        }
     }
 
     override fun setNotifsSeen() {
@@ -98,7 +90,38 @@ class NotifsListPresenter @Inject constructor(
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
-            // TODO refresh notifications if needed
+            view?.let { notifView ->
+                if (notifView.isRefreshPending) {
+                    notifView.refreshFragmentState()
+                }
+            }
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onNotificationChanged(event: OnNotificationChanged) {
+        view?.showSkeleton(false)
+        when (event.causeOfChange) {
+            NotificationAction.FETCH_NOTIFICATIONS -> {
+                if (event.isError) {
+                    // TODO - track event
+
+                    WooLog.e(NOTIFICATIONS, "$TAG - Error fetching notifications: ${event.error.message}")
+                    view?.showLoadNotificationsError()
+                    fetchAndLoadNotifsFromDb(false)
+                } else {
+                    // TODO - track event
+                    val forceRefresh = isRefreshing
+                    fetchAndLoadNotifsFromDb(forceRefresh)
+                }
+                isLoading = false
+                isRefreshing = false
+            }
+            NotificationAction.MARK_NOTIFICATIONS_SEEN -> {
+                // TODO
+            }
+            else -> {}
         }
     }
 }
