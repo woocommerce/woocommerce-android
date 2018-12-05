@@ -66,7 +66,6 @@ class OrderListPresenter @Inject constructor(
         }
     }
 
-
     override fun loadMoreOrders(orderStatusFilter: String?) {
         if (!networkStatus.isConnected()) return
 
