@@ -583,7 +583,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun showSearchResults(query: String, orders: List<WCOrderModel>) {
         if (query == searchQuery) {
             ordersAdapter.setOrders(orders)
-            showSkeleton(false)
+        }
+    }
+
+    override fun addSearchResults(query: String, orders: List<WCOrderModel>) {
+        if (query == searchQuery) {
+            ordersAdapter.addOders(orders)
         }
     }
 

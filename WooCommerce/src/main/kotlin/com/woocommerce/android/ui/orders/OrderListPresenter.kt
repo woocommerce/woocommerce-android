@@ -35,8 +35,12 @@ class OrderListPresenter @Inject constructor(
     private var orderView: OrderListContract.View? = null
     private var isLoadingOrders = false
     private var isLoadingMoreOrders = false
-    private var isSearchingOrders = false
     private var canLoadMore = false
+
+    private var isSearchingOrders = false
+    private var isSearchingMoreOrders = false
+    private var canSearchMore = false
+    private var nextSearchOffset = 0
 
     override fun takeView(view: OrderListContract.View) {
         orderView = view
@@ -62,30 +66,6 @@ class OrderListPresenter @Inject constructor(
         }
     }
 
-    override fun searchOrders(searchQuery: String) {
-        if (searchQuery.isBlank()) {
-            orderView?.showSearchResults(searchQuery, emptyList())
-        } else if (networkStatus.isConnected()) {
-            isSearchingOrders = true
-            orderView?.showSkeleton(true)
-            val payload = SearchOrdersPayload(selectedSite.get(), searchQuery)
-            dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
-        } else {
-            orderView?.showNoConnectionError()
-        }
-    }
-
-    override fun isLoading(): Boolean {
-        return isLoadingOrders || isLoadingMoreOrders || isSearchingOrders
-    }
-
-    override fun canLoadMore(): Boolean {
-        // TODO: infinite scroll isn't supported in search results yet
-        orderView?.let {
-            if (it.isSearching) return false
-        }
-        return canLoadMore
-    }
 
     override fun loadMoreOrders(orderStatusFilter: String?) {
         if (!networkStatus.isConnected()) return
@@ -94,6 +74,41 @@ class OrderListPresenter @Inject constructor(
         isLoadingMoreOrders = true
         val payload = FetchOrdersPayload(selectedSite.get(), orderStatusFilter, loadMore = true)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+    }
+
+    override fun searchOrders(searchQuery: String) {
+        nextSearchOffset = 0
+
+        if (searchQuery.isBlank()) {
+            orderView?.showSearchResults(searchQuery, emptyList())
+        } else if (networkStatus.isConnected()) {
+            isSearchingOrders = true
+            orderView?.setLoadingMoreIndicator(true)
+            val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, 0)
+            dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
+        } else {
+            orderView?.showNoConnectionError()
+        }
+    }
+
+    override fun searchMoreOrders(searchQuery: String) {
+        if (!networkStatus.isConnected()) return
+
+        isSearchingMoreOrders = true
+        orderView?.showSkeleton(true)
+        val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, nextSearchOffset)
+        dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
+    }
+
+    override fun isLoading(): Boolean {
+        return isLoadingOrders || isLoadingMoreOrders || isSearchingOrders || isSearchingMoreOrders
+    }
+
+    override fun canLoadMore(): Boolean {
+        orderView?.let {
+            if (it.isSearching) return canSearchMore
+        }
+        return canLoadMore
     }
 
     @Suppress("unused")
@@ -132,8 +147,8 @@ class OrderListPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrdersSearched(event: OnOrdersSearched) {
-        orderView?.showSkeleton(false)
-        isSearchingOrders = false
+        canSearchMore = event.canLoadMore
+        nextSearchOffset = event.nextOffset
 
         if (event.isError) {
             WooLog.e(T.ORDERS, "$TAG - Error searching orders : ${event.error.message}")
@@ -141,9 +156,16 @@ class OrderListPresenter @Inject constructor(
         } else {
             if (event.searchResults.isNotEmpty()) {
                 orderView?.showSearchResults(event.searchQuery, event.searchResults)
-            } else {
-                orderView?.showNoOrdersView(true)
             }
+        }
+
+        isSearchingOrders = false
+        if (isSearchingMoreOrders) {
+            isSearchingMoreOrders = false
+            orderView?.setLoadingMoreIndicator(active = false)
+        } else {
+            isSearchingOrders = false
+            orderView?.showSkeleton(false)
         }
     }
 

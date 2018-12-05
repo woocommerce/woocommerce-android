@@ -81,6 +81,36 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
     }
 
     /**
+     * Adds the passed list of orders to the existing list, making sure not to add orders that
+     * are already in the existing list
+     */
+    fun addOders(orders: List<WCOrderModel>) {
+        if (orders.isEmpty()) return
+
+        val didMatch = fun(order: WCOrderModel): Boolean {
+            orderList.forEach {
+                if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        val allOrders = ArrayList<WCOrderModel>()
+        allOrders.addAll(orderList)
+
+        orders.forEach {
+            if (!didMatch(it)) {
+                allOrders.add(it)
+            }
+        }
+
+        if (allOrders.size > orderList.size) {
+            setOrders(allOrders)
+        }
+    }
+
+    /**
      * returns true if the passed list of orders is the same as the current list
      */
     fun isSameOrderList(orders: List<WCOrderModel>): Boolean {

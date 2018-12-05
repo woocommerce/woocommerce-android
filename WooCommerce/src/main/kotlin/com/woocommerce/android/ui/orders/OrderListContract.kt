@@ -13,6 +13,7 @@ interface OrderListContract {
         fun openOrderDetail(order: WCOrderModel)
         fun fetchAndLoadOrdersFromDb(orderStatusFilter: String? = null, isForceRefresh: Boolean)
         fun searchOrders(searchQuery: String)
+        fun searchMoreOrders(searchQuery: String)
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
@@ -31,6 +32,7 @@ interface OrderListContract {
         fun submitSearch(query: String)
         fun submitSearchDelayed(query: String)
         fun showSearchResults(query: String, orders: List<WCOrderModel>)
+        fun addSearchResults(query: String, orders: List<WCOrderModel>)
         fun clearSearchResults()
 
         fun showSkeleton(show: Boolean)
