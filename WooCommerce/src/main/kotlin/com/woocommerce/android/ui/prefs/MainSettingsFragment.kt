@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
@@ -62,6 +63,24 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             listener.onRequestLogout()
         }
 
+        switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
+        switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
+            AppPrefs.setOrderNotificationsEnabled(isChecked)
+            updateNotificationSettings()
+        }
+
+        switchNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
+        switchNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
+            AppPrefs.setReviewNotificationsEnabled(isChecked)
+        }
+
+        switchNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
+        switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
+            AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
+        }
+
+        updateNotificationSettings()
+
         textPrivacySettings.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             listener.onRequestShowPrivacySettings()
@@ -76,6 +95,15 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
             listener.onRequestShowLicenses()
         }
+    }
+
+    /**
+     * The review and tone notification switches are only enabled when order notifications are enabled
+     */
+    private fun updateNotificationSettings() {
+        val enable = AppPrefs.isOrderNotificationsEnabled()
+        switchNotifsReviews.isEnabled = enable
+        switchNotifsTone.isEnabled = enable
     }
 
     override fun onResume() {

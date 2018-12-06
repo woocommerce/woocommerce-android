@@ -30,7 +30,13 @@ object AppPrefs {
         // The last stored versionCode of the app
         LAST_APP_VERSION_CODE,
         // Whether or not automatic crash reporting is enabled
-        ENABLE_CRASH_REPORTING
+        ENABLE_CRASH_REPORTING,
+        // Enable notifications for new orders
+        NOTIFS_ORDERS_ENABLED,
+        // Enble notifications for new reviews
+        NOTIFS_REVIEWS_ENABLED,
+        // Play cha-ching sound on new order notifications
+        NOTIFS_ORDERS_CHA_CHING_ENABLED
     }
 
     fun init(context: Context) {
@@ -83,6 +89,24 @@ object AppPrefs {
 
     fun setCrashReportingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, enabled)
+    }
+
+    fun isOrderNotificationsEnabled(): Boolean = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, true)
+
+    fun setOrderNotificationsEnabled(enabled: Boolean) {
+        setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, enabled)
+    }
+
+    fun isReviewNotificationsEnabled(): Boolean = getBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, true)
+
+    fun setReviewNotificationsEnabled(enabled: Boolean) {
+        setBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, enabled)
+    }
+
+    fun isOrderNotificationsChaChingEnabled(): Boolean = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, true)
+
+    fun setOrderNotificationsChaChingEnabled(enabled: Boolean) {
+        setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
     /**
