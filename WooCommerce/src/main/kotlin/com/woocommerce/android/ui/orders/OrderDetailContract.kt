@@ -12,7 +12,7 @@ interface OrderDetailContract {
         var orderIdentifier: OrderIdentifier?
         var isUsingCachedNotes: Boolean
         fun fetchOrder(remoteOrderId: Long)
-        fun loadOrderDetail(orderIdentifier: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean)
+        fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
         fun doChangeOrderStatus(newStatus: String)
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)

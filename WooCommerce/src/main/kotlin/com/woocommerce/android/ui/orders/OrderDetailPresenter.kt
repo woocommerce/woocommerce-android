@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
@@ -44,6 +45,7 @@ class OrderDetailPresenter @Inject constructor(
     override var orderModel: WCOrderModel? = null
     override var orderIdentifier: OrderIdentifier? = null
     override var isUsingCachedNotes = false
+    var pendingRemoteOrderId: Long? = null
 
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
@@ -61,7 +63,7 @@ class OrderDetailPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
@@ -69,7 +71,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showOrderDetail(it)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
-            } ?: fetchOrder(remoteOrderId)
+            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId)
         }
     }
 
@@ -133,7 +135,7 @@ class OrderDetailPresenter @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_SINGLE_ORDER) {
-            if (event.isError || orderIdentifier.isNullOrBlank()) {
+            if (event.isError || (orderIdentifier.isNullOrBlank() && pendingRemoteOrderId == null)) {
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : ${event.error.message}")
                 orderView?.showLoadOrderError()
             } else {

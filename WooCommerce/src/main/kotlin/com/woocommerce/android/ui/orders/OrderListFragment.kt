@@ -299,14 +299,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             getFragmentFromBackStack(tag)?.let {
                 val args = it.arguments ?: Bundle()
                 args.putString(OrderDetailFragment.FIELD_ORDER_IDENTIFIER, order.getIdentifier())
-                args.putLong(OrderDetailFragment.FIELD_REMOTE_ORDER_ID, order.remoteOrderId)
                 args.putBoolean(OrderDetailFragment.FIELD_MARK_COMPLETE, markOrderComplete)
                 it.arguments = args
                 popToState(tag)
             } ?: loadChildFragment(
                     OrderDetailFragment.newInstance(
                             order.getIdentifier(),
-                            order.remoteOrderId,
                             markOrderComplete
                     ), tag
             )

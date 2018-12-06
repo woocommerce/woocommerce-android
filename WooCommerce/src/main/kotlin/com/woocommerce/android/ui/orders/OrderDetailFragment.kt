@@ -33,14 +33,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
-        const val FIELD_REMOTE_ORDER_ID = "remote_order_id"
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
         const val REQUEST_CODE_ADD_NOTE = 100
 
-        fun newInstance(orderId: OrderIdentifier, remoteOrderId: Long, markComplete: Boolean = false): Fragment {
+        fun newInstance(orderId: OrderIdentifier, markComplete: Boolean = false): Fragment {
             val args = Bundle()
             args.putString(FIELD_ORDER_IDENTIFIER, orderId)
-            args.putLong(FIELD_REMOTE_ORDER_ID, remoteOrderId)
 
             // True if order fulfillment requested, else false
             args.putBoolean(FIELD_MARK_COMPLETE, markComplete)
@@ -48,6 +46,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             val fragment = OrderDetailFragment()
             fragment.arguments = args
             return fragment
+        }
+
+        fun newInstance(localSiteId: Int, remoteOrderId: Long, markComplete: Boolean = false): Fragment {
+            val tempOrder = WCOrderModel().apply {
+                this.localSiteId = localSiteId
+                this.remoteOrderId = remoteOrderId
+            }
+            return newInstance(tempOrder.getIdentifier(), markComplete)
         }
     }
 
@@ -80,8 +86,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             it.remove(FIELD_MARK_COMPLETE)
 
             val orderIdentifier = it.getString(FIELD_ORDER_IDENTIFIER) as OrderIdentifier
-            val remoteOrderId = it.getLong(FIELD_REMOTE_ORDER_ID)
-            presenter.loadOrderDetail(orderIdentifier, remoteOrderId, markComplete)
+            presenter.loadOrderDetail(orderIdentifier, markComplete)
         }
 
         scrollView.setOnScrollChangeListener {

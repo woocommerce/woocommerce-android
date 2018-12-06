@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.notifications
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.NotificationModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface NotifsListContract {
     interface Presenter : BasePresenter<View> {
@@ -22,6 +21,6 @@ interface NotifsListContract {
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
         fun openReviewDetail(notification: NotificationModel)
-        fun openOrderDetail(orderId: OrderIdentifier, remoteOrderId: Long)
+        fun openOrderDetail(remoteOrderId: Long?)
     }
 }
