@@ -69,20 +69,20 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
 
         switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
         switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
-            doSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
+            trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
             AppPrefs.setOrderNotificationsEnabled(isChecked)
             updateNotificationSettings()
         }
 
         switchNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
         switchNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
-            doSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
+            trackSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
             AppPrefs.setReviewNotificationsEnabled(isChecked)
         }
 
         switchNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
         switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
-            doSettingToggled(SETTING_NOTIFS_TONE, isChecked)
+            trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
             AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
         }
 
@@ -120,11 +120,15 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         switchNotifsTone.isEnabled = enable
     }
 
-    private fun doSettingToggled(keyName: String, newValue: Boolean) {
+    /**
+     * Called when a boolean setting is changed so we can track it
+     */
+    private fun trackSettingToggled(keyName: String, newValue: Boolean) {
         AnalyticsTracker.track(
                 SETTING_CHANGE, mapOf(
                 AnalyticsTracker.KEY_NAME to keyName,
                 AnalyticsTracker.KEY_FROM to !newValue,
-                AnalyticsTracker.KEY_TO to newValue))
+                AnalyticsTracker.KEY_TO to newValue)
+        )
     }
 }
