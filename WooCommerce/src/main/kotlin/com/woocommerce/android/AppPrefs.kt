@@ -91,19 +91,22 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, enabled)
     }
 
-    fun isOrderNotificationsEnabled(): Boolean = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, true)
+    fun isOrderNotificationsEnabled(): Boolean =
+            getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, true)
 
     fun setOrderNotificationsEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, enabled)
     }
 
-    fun isReviewNotificationsEnabled(): Boolean = getBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, true)
+    fun isReviewNotificationsEnabled(): Boolean =
+            getBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, true)
 
     fun setReviewNotificationsEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, enabled)
     }
 
-    fun isOrderNotificationsChaChingEnabled(): Boolean = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, true)
+    fun isOrderNotificationsChaChingEnabled(): Boolean =
+            getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, true)
 
     fun setOrderNotificationsChaChingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
