@@ -12,11 +12,17 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
+import com.woocommerce.android.extensions.getReviewDetail
+import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
@@ -162,7 +168,10 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override fun getFragmentTitle() = getString(R.string.notifications)
 
     override fun refreshFragmentState() {
-        // todo reset any scrolling
+        isRefreshPending = true
+        if (isActive) {
+            presenter.loadNotifs(forceRefresh = true)
+        }
     }
 
     override fun showSkeleton(show: Boolean) {
@@ -173,20 +182,25 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     }
 
     override fun onNotificationClicked(notification: NotificationModel) {
-        // TODO open notification detail
-//        when (notification) {
+        when (notification.getWooType()) {
 //            is Order -> openOrderDetail(notification.orderIdentifier, notification.remoteOrderId)
-//            is Review -> openReviewDetail()
-//        }
+            PRODUCT_REVIEW -> openReviewDetail(notification)
+            UNKNOWN -> {
+                WooLog.w(NOTIFICATIONS, "Unknown notification type!")
+            }
+        }
     }
 
-    override fun openReviewDetail() {
+    override fun openReviewDetail(notification: NotificationModel) {
         if (!notifsRefreshLayout.isRefreshing) {
             val tag = ReviewDetailFragment.TAG
             getFragmentFromBackStack(tag)?.let {
-                // TODO add arguments for the review to display
+                val args = it.arguments ?: Bundle()
+                args.putLong(ReviewDetailFragment.FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
+                args.putParcelable(ReviewDetailFragment.FIELD_REVIEW_DETAIL, notification.getReviewDetail())
+                it.arguments = args
                 popToState(tag)
-            } ?: loadChildFragment(ReviewDetailFragment.newInstance(), tag)
+            } ?: loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
         }
     }
 

@@ -1,10 +1,14 @@
 package com.woocommerce.android.extensions
 
+import android.annotation.SuppressLint
+import android.os.Parcelable
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.ui.notifications.NotificationHelper
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.NotificationModel
+import org.wordpress.android.util.DateTimeUtils
 
 enum class WooNotificationType {
     NEW_ORDER,
@@ -13,7 +17,9 @@ enum class WooNotificationType {
 }
 
 /**
- * Returns a simplified Woo Notification type
+ * Returns a simplified Woo Notification type.
+ *
+ * Currently there are only two supported types: NEW_ORDER and PRODUCT_REVIEW.
  */
 fun NotificationModel.getWooType(): WooNotificationType {
     return when {
@@ -82,9 +88,10 @@ fun NotificationModel.getReviewDetail(): NotificationReviewDetail? {
     val rating = getRating()
     return NotificationReviewDetail(
             getMessageDetail(),
-            this.timestamp,
+            getConvertedTimestamp(),
             getRating(),
-            getUserInfo()
+            getUserInfo(),
+            getProductInfo()
     )
 }
 
@@ -113,13 +120,28 @@ fun NotificationModel.getRemoteOrderId(): Long? {
     return this.meta?.ids?.order
 }
 
-data class NotificationProductInfo(val name: String, val url: String)
+/**
+ * Converts the ISO8601 String into a Date() object and returns that date represented as the number of
+ * milliseconds since January 1, 1970, 00:00:00 GMT.
+ */
+fun NotificationModel.getConvertedTimestamp(): Long = DateTimeUtils.timestampFromIso8601(timestamp)
 
-data class NotificationUserInfo(val name: String, val iconUrl: String?, val email: String?)
+// TODO: Temporarily suppress lint errors around ParcelCreator due to this error:
+// https://youtrack.jetbrains.com/issue/KT-19300
+@SuppressLint("ParcelCreator")
+@Parcelize
+data class NotificationProductInfo(val name: String, val url: String) : Parcelable
 
+@SuppressLint("ParcelCreator")
+@Parcelize
+data class NotificationUserInfo(val name: String, val iconUrl: String?, val email: String?) : Parcelable
+
+@SuppressLint("ParcelCreator")
+@Parcelize
 data class NotificationReviewDetail(
     val msg: String,
-    val timestamp: String?,
+    val timestamp: Long,
     val rating: Float?,
-    val userInfo: NotificationUserInfo?
-)
+    val userInfo: NotificationUserInfo?,
+    val productInfo: NotificationProductInfo?
+) : Parcelable
