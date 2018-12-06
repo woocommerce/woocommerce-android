@@ -56,9 +56,9 @@ object AddressUtils {
             try {
                 formatInterpreter.getEnvelopeAddress(it).joinToString(System.getProperty("line.separator"))
             } catch (e: NullPointerException) {
-                WooLog.e(T.UTILS, e)
                 // in rare cases getEnvelopeAddress() will throw a NPE due to invalid region data
                 // see https://github.com/woocommerce/woocommerce-android/issues/509
+                WooLog.e(T.UTILS, e)
                 orderAddressToString(address)
             }
         } ?: orderAddressToString(address)
