@@ -229,6 +229,13 @@
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic</string>
     <string name="settings_primary_store">Primary store</string>
+    <string name="settings_notifs">Notifications</string>
+    <string name="settings_notifs_orders">Orders</string>
+    <string name="settings_notifs_orders_detail">Get alerts when notifications come in</string>
+    <string name="settings_notifs_tone">Tone</string>
+    <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
+    <string name="settings_notifs_reviews">Product reviews</string>
+    <string name="settings_notifs_reviews_detail">Get alerts for new product reviews</string>
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
