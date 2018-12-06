@@ -24,8 +24,17 @@ import javax.inject.Inject
  */
 class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
     : SectionedRecyclerViewAdapter() {
+    interface OnLoadMoreListener {
+        fun onRequestLoadMore()
+    }
+
+    private var loadMoreListener: OnLoadMoreListener? = null
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
     private var orderStatusFilter: String? = null
+
+    fun setOnLoadMoreListener(listener: OnLoadMoreListener?) {
+        loadMoreListener = listener
+    }
 
     fun setOrders(orders: List<WCOrderModel>, filterByStatus: String? = null) {
         orderStatusFilter = filterByStatus
@@ -75,9 +84,42 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
         notifyDataSetChanged()
 
-        // remember these orders for comparison in isSameOrderList() below
+        // remember these orders for comparison in containsOrder() below
         orderList.clear()
         orderList.addAll(orders)
+    }
+
+    /**
+     * Adds the passed list of orders to the current list, making sure not to add orders that
+     * are already in the current list
+     */
+    fun addOrders(orders: List<WCOrderModel>) {
+        if (orders.isEmpty()) return
+
+        val allOrders = ArrayList<WCOrderModel>()
+        allOrders.addAll(orderList)
+
+        orders.forEach {
+            if (!containsOrder(it)) {
+                allOrders.add(it)
+            }
+        }
+
+        if (allOrders.size > orderList.size) {
+            setOrders(allOrders)
+        }
+    }
+
+    /**
+     * Returns true if the passed order is in the current list of orders
+     */
+    private fun containsOrder(order: WCOrderModel): Boolean {
+        orderList.forEach {
+            if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
+                return true
+            }
+        }
+        return false
     }
 
     /**
@@ -88,17 +130,8 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             return false
         }
 
-        val didMatch = fun(order: WCOrderModel): Boolean {
-            orderList.forEach {
-                if (it.remoteOrderId == order.remoteOrderId && it.status == order.status) {
-                    return true
-                }
-            }
-            return false
-        }
-
         orders.forEach {
-            if (!didMatch(it)) {
+            if (!containsOrder(it)) {
                 return false
             }
         }
@@ -116,8 +149,8 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        if (presenter.canLoadMore() && !presenter.isLoading() && position == itemCount - 1) {
-            presenter.loadMoreOrders(orderStatusFilter)
+        if (position == itemCount - 1) {
+            loadMoreListener?.onRequestLoadMore()
         }
     }
 
