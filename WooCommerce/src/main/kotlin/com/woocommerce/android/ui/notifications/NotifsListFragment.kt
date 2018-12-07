@@ -52,6 +52,9 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override var isRefreshPending = true
+    override var isRefreshing: Boolean
+        get() = notifsRefreshLayout.isRefreshing
+        set(value) {}
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     private val skeletonView = SkeletonView()

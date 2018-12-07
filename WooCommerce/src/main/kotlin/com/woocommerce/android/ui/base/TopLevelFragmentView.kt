@@ -6,13 +6,20 @@ import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.ui.orders.OrderDetailFragment
+import com.woocommerce.android.ui.orders.OrderFulfillmentFragment
+import com.woocommerce.android.ui.orders.OrderProductListFragment
+import com.woocommerce.android.ui.orders.OrdersViewRouter
+import org.wordpress.android.fluxc.model.WCOrderModel
 
 /**
  * Special interface for top-level fragments like those hosted by the bottom bar.
  * Adds an extra layer of management to ensure proper routing and handling of child
  * fragments and their associated back stack.
  */
-interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener {
+interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, OrdersViewRouter {
+    var isRefreshing: Boolean
+
     /**
      * Load the provided fragment into the current view and disable the main
      * underlying fragment view.
@@ -63,4 +70,43 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener {
      * @return The fragment matching the provided tag, or null if not found.
      */
     fun getFragmentFromBackStack(tag: String): Fragment?
+
+    /**
+     * Only open the order detail if the list is not actively being refreshed.
+     */
+    override fun openOrderDetail(order: WCOrderModel, markOrderComplete: Boolean) {
+        if (!isRefreshing) {
+            val tag = OrderDetailFragment.TAG
+            getFragmentFromBackStack(tag)?.let {
+                val args = it.arguments ?: Bundle()
+                args.putString(OrderDetailFragment.FIELD_ORDER_IDENTIFIER, order.getIdentifier())
+                args.putBoolean(OrderDetailFragment.FIELD_MARK_COMPLETE, markOrderComplete)
+                it.arguments = args
+                popToState(tag)
+            } ?: loadChildFragment(
+                    OrderDetailFragment.newInstance(
+                            order.getIdentifier(),
+                            markOrderComplete
+                    ), tag
+            )
+        }
+    }
+
+    override fun openOrderFulfillment(order: WCOrderModel) {
+        if (!isRefreshing) {
+            val tag = OrderFulfillmentFragment.TAG
+            if (!popToState(tag)) {
+                loadChildFragment(OrderFulfillmentFragment.newInstance(order), tag)
+            }
+        }
+    }
+
+    override fun openOrderProductList(order: WCOrderModel) {
+        if (!isRefreshing) {
+            val tag = OrderProductListFragment.TAG
+            if (!popToState(tag)) {
+                loadChildFragment(OrderProductListFragment.newInstance(order), tag)
+            }
+        }
+    }
 }
