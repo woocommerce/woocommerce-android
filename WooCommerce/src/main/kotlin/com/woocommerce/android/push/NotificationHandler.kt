@@ -52,6 +52,18 @@ object NotificationHandler {
         ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
     }
 
+    /**
+     * This is here to simplify testing notifications
+     */
+    fun testNotification(context: Context, title: String, message: String, account: AccountModel) {
+        val data = Bundle()
+        data.putString(PUSH_ARG_TYPE, PUSH_TYPE_NEW_ORDER)
+        data.putString(PUSH_ARG_TITLE, title)
+        data.putString(PUSH_ARG_MSG, message)
+        data.putString(PUSH_ARG_USER, account.userId.toString())
+        buildAndShowNotificationFromNoteData(context, data, account)
+    }
+
     fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
         if (data.isEmpty) {
             WooLog.e(T.NOTIFS, "Push notification received without a valid Bundle!")
@@ -76,9 +88,11 @@ object NotificationHandler {
         // TODO: Store note object in database
 
         val noteType = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
-        if (noteType == PUSH_TYPE_NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) {
-            return
-        } else if (noteType == PUSH_TYPE_COMMENT && !AppPrefs.isReviewNotificationsEnabled()) {
+
+        // skip if user chose to disable this type of notification
+        if ((noteType == PUSH_TYPE_NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
+                (noteType == PUSH_TYPE_COMMENT && !AppPrefs.isReviewNotificationsEnabled())) {
+            WooLog.i(T.NOTIFS, "Skipped $noteType notification")
             return
         }
 
