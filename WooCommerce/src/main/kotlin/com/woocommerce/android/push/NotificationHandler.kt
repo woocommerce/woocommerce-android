@@ -4,11 +4,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -74,6 +76,11 @@ object NotificationHandler {
         // TODO: Store note object in database
 
         val noteType = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
+        if (noteType == PUSH_TYPE_NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) {
+            return
+        } else if (noteType == PUSH_TYPE_COMMENT && !AppPrefs.isReviewNotificationsEnabled()) {
+            return
+        }
 
         val title = if (noteType == PUSH_TYPE_NEW_ORDER) {
             // New order notifications have title 'WordPress.com' - just show the app name instead
@@ -179,8 +186,18 @@ object NotificationHandler {
         pushId: Int,
         notifyUser: Boolean
     ) {
-        if (noteType == PUSH_TYPE_COMMENT) {
-            // TODO: Add quick actions for comments
+        when (noteType) {
+            PUSH_TYPE_NEW_ORDER -> {
+                if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
+                    builder.setSound(Uri.parse("file:///android_asset/WooChaChing.wav"))
+                } else {
+                    builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
+                }
+            }
+            PUSH_TYPE_COMMENT -> {
+                builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
+                // TODO: Add quick actions for comments
+            }
         }
 
         showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId, notifyUser)
