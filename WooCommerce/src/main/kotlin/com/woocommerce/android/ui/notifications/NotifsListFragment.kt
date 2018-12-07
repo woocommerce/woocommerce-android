@@ -21,7 +21,6 @@ import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -187,8 +186,12 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun onNotificationClicked(notification: NotificationModel) {
         when (notification.getWooType()) {
-            NEW_ORDER -> openOrderDetail(notification.getRemoteOrderId())
             PRODUCT_REVIEW -> openReviewDetail(notification)
+            NEW_ORDER -> {
+                notification.getRemoteOrderId()?.let {
+                    openOrderDetail(selectedSite.get().id, it)
+                } ?: WooLog.w(NOTIFICATIONS, "New order notification is missing the order id!")
+            }
             UNKNOWN -> {
                 WooLog.w(NOTIFICATIONS, "Unknown notification type!")
             }
@@ -206,16 +209,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
                 popToState(tag)
             } ?: loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
         }
-    }
-
-    override fun openOrderDetail(remoteOrderId: Long?) {
-        remoteOrderId?.let {
-            if (!notifsRefreshLayout.isRefreshing) {
-                val tag = OrderDetailFragment.TAG
-                val localSiteId = selectedSite.get().id
-                loadChildFragment(OrderDetailFragment.newInstance(localSiteId, it), tag)
-            }
-        } ?: WooLog.w(NOTIFICATIONS, "New order notification is missing the order id!")
     }
 
     override fun scrollToTop() {

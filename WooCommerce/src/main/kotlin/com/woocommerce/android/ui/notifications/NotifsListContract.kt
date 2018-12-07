@@ -21,6 +21,5 @@ interface NotifsListContract {
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
         fun openReviewDetail(notification: NotificationModel)
-        fun openOrderDetail(remoteOrderId: Long?)
     }
 }
