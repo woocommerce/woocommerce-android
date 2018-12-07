@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.main.MainContract
 import kotlinx.android.synthetic.main.fragment_parent.*
 
 /**
@@ -113,6 +114,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
      */
     override fun onBackStackChanged() {
         updateParentViewState(childFragmentManager.backStackEntryCount > 0)
+        (activity as? MainContract.View)?.showBottomNav()
     }
 
     /**
