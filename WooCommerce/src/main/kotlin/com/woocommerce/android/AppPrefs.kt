@@ -33,7 +33,7 @@ object AppPrefs {
         ENABLE_CRASH_REPORTING,
         // Enable notifications for new orders
         NOTIFS_ORDERS_ENABLED,
-        // Enble notifications for new reviews
+        // Enable notifications for new reviews
         NOTIFS_REVIEWS_ENABLED,
         // Play cha-ching sound on new order notifications
         NOTIFS_ORDERS_CHA_CHING_ENABLED
