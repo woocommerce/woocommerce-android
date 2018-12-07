@@ -51,14 +51,14 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 productList_btnDetails.setOnClickListener(null)
                 productList_btnFulfill.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-                    listener.openOrderFulfillment(order)
+                    listener.viewOrderFulfillment(order)
                 }
             } else {
                 productList_btnFulfill.visibility = View.GONE
                 productList_btnDetails.visibility = View.VISIBLE
                 productList_btnDetails.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED)
-                    listener.openOrderProductList(order)
+                    listener.viewProductList(order)
                 }
                 productList_btnFulfill.setOnClickListener(null)
             }
@@ -83,13 +83,13 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 productList_btnDetails.visibility = View.GONE
                 productList_btnDetails.setOnClickListener(null)
                 productList_btnFulfill.setOnClickListener {
-                    listener.openOrderFulfillment(order)
+                    listener.viewOrderFulfillment(order)
                 }
             } else {
                 productList_btnFulfill.visibility = View.GONE
                 productList_btnDetails.visibility = View.VISIBLE
                 productList_btnDetails.setOnClickListener {
-                    listener.openOrderProductList(order)
+                    listener.viewProductList(order)
                 }
                 productList_btnFulfill.setOnClickListener(null)
             }
