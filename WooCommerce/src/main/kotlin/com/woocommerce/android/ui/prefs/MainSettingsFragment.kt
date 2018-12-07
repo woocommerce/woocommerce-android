@@ -71,7 +71,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
             trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
             AppPrefs.setOrderNotificationsEnabled(isChecked)
-            updateNotificationSettings()
+            switchNotifsTone.isEnabled = isChecked
         }
 
         switchNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
@@ -81,12 +81,11 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         }
 
         switchNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
+        switchNotifsTone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
         switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
             trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
             AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
         }
-
-        updateNotificationSettings()
 
         textPrivacySettings.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
@@ -109,15 +108,6 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         AnalyticsTracker.trackViewShown(this)
 
         activity?.setTitle(R.string.settings)
-    }
-
-    /**
-     * The review and tone notification switches are only enabled when order notifications are enabled
-     */
-    private fun updateNotificationSettings() {
-        val enable = AppPrefs.isOrderNotificationsEnabled()
-        switchNotifsReviews.isEnabled = enable
-        switchNotifsTone.isEnabled = enable
     }
 
     /**
