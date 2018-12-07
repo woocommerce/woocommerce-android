@@ -1,6 +1,7 @@
 package com.woocommerce.android.push
 
 import android.app.PendingIntent
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -203,7 +204,13 @@ object NotificationHandler {
         when (noteType) {
             PUSH_TYPE_NEW_ORDER -> {
                 if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
-                    builder.setSound(Uri.parse("file:///android_asset/WooChaChing.wav"))
+                    builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+                    val soundUri = Uri.parse(
+                            ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                                    context.packageName + "/" + R.raw.cha_ching
+                    )
+                    // TODO: API 26+ requires a notification channel for a custom sound
+                    builder.setSound(soundUri)
                 } else {
                     builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
                 }
