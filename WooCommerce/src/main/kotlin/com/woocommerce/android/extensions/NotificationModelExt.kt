@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.ui.notifications.NotificationHelper
 import kotlinx.android.parcel.Parcelize
+import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 
@@ -69,7 +70,8 @@ fun NotificationModel.getUserInfo(): NotificationUserInfo? {
         block.text?.let { name ->
             val url = block.media?.asSequence()?.filter { it.type == "image" }?.first()?.url
             val email = block.meta?.links?.email
-            NotificationUserInfo(name, url, email)
+            val home = block.meta?.links?.home
+            NotificationUserInfo(name, url, email, home)
         }
     }
 }
@@ -132,15 +134,34 @@ fun NotificationModel.getConvertedTimestamp(): Long = DateTimeUtils.timestampFro
  * the [org.wordpress.android.fluxc.model.CommentModel] from the API which is required for moderating the
  * review.
  */
-fun NotificationModel.getCommentId(): Long? {
+fun NotificationModel.getCommentId(): Long {
     if (this.getWooType() != PRODUCT_REVIEW) {
-        return null
+        return 0L
     }
 
-    return this.meta?.ids?.comment
+    return this.meta?.ids?.comment ?: 0L
 }
 
-// TODO: Temporarily suppress lint errors around ParcelCreator due to this error:
+/**
+ * Builds a comment object from the Notification data. Not everything to build a comment is available in the
+ * notification, but this gets us 95% there.
+ */
+fun NotificationModel.buildComment(): CommentModel {
+    val noteDetail = getReviewDetail()
+    return CommentModel().apply {
+        remotePostId = meta?.ids?.post ?: 0
+        remoteCommentId = getCommentId() ?: 0
+        authorName = noteDetail?.userInfo?.name.orEmpty()
+        datePublished = timestamp
+        content = noteDetail?.msg
+        status = "approved" // todo parse real status
+        postTitle = noteDetail?.productInfo?.name.orEmpty()
+        authorUrl = noteDetail?.userInfo?.home.orEmpty()
+        authorProfileImageUrl = icon
+    }
+}
+
+// Temporarily suppress lint errors around ParcelCreator due to this error:
 // https://youtrack.jetbrains.com/issue/KT-19300
 @SuppressLint("ParcelCreator")
 @Parcelize
@@ -148,7 +169,12 @@ data class NotificationProductInfo(val name: String, val url: String) : Parcelab
 
 @SuppressLint("ParcelCreator")
 @Parcelize
-data class NotificationUserInfo(val name: String, val iconUrl: String?, val email: String?) : Parcelable
+data class NotificationUserInfo(
+    val name: String,
+    val iconUrl: String?,
+    val email: String?,
+    val home: String?
+) : Parcelable
 
 @SuppressLint("ParcelCreator")
 @Parcelize
