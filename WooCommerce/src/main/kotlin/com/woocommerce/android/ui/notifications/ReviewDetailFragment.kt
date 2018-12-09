@@ -8,26 +8,30 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.extensions.NotificationReviewDetail
+import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getReviewDetail
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
-import org.wordpress.android.fluxc.model.NotificationModel
+import org.wordpress.android.fluxc.model.CommentModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 import javax.inject.Inject
 
 class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     companion object {
         const val TAG = "ReviewDetailFragment"
-        const val FIELD_REVIEW_DETAIL = "notif-review-detail"
         const val FIELD_REMOTE_NOTIF_ID = "notif-remote-id"
+        const val FIELD_REMOTE_COMMENT_ID = "remote-comment-id"
+
+        // TODO remove review detail
+        const val FIELD_REVIEW_DETAIL = "notif-review-detail"
 
         fun newInstance(notification: NotificationModel): ReviewDetailFragment {
             val args = Bundle()
             args.putLong(FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
+            args.putLong(FIELD_REMOTE_COMMENT_ID, notification.getCommentId() ?: 0L)
             args.putParcelable(FIELD_REVIEW_DETAIL, notification.getReviewDetail())
 
             val fragment = ReviewDetailFragment()
@@ -40,8 +44,8 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val skeletonView = SkeletonView()
-    private var review: NotificationReviewDetail? = null
-    private var remoteNoteId: Long? = null
+    private var remoteNoteId: Long = 0L
+    private var remoteCommentId: Long = 0L
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -57,8 +61,8 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         presenter.takeView(this)
 
         arguments?.let {
-            review = it.getParcelable(FIELD_REVIEW_DETAIL)
             remoteNoteId = it.getLong(FIELD_REMOTE_NOTIF_ID)
+            remoteCommentId = it.getLong(FIELD_REMOTE_COMMENT_ID)
         }
 
         review_approve.setOnCheckedChangeListener { _, isChecked ->
@@ -72,11 +76,24 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         review_trash.setOnClickListener { trashReview() }
         review_open_product.setOnClickListener { openProduct() }
 
-        populateView()
+        presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
     }
 
-    private fun populateView() {
-        review?.let {
+    override fun onDestroyView() {
+        presenter.dropView()
+        super.onDestroyView()
+    }
+
+    override fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(container, R.layout.skeleton_notif_detail, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
+    }
+
+    override fun setNotification(note: NotificationModel, comment: CommentModel) {
+        note.getReviewDetail()?.let {
             it.productInfo?.let { product ->
                 review_product_name.text = product.name
             }
@@ -102,19 +119,16 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
             review_description.text = it.msg
         }
+
+        // TODO parse actions and set button status
     }
 
-    override fun onDestroyView() {
-        presenter.dropView()
-        super.onDestroyView()
+    override fun showLoadReviewError() {
+        // todo
     }
 
-    override fun showSkeleton(show: Boolean) {
-        if (show) {
-            skeletonView.show(container, R.layout.skeleton_notif_detail, delayed = true)
-        } else {
-            skeletonView.hide()
-        }
+    override fun showModerateReviewError() {
+        // todo
     }
 
     private fun trashReview() {
@@ -137,10 +151,11 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
      * Open the product detail page in an external browser
      */
     private fun openProduct() {
-        review?.let {
-            it.productInfo?.url?.let { url ->
-                ActivityUtils.openUrlExternal(activity as Context, url)
-            }
-        }
+        // TODO - open product
+//        review?.let {
+//            it.productInfo?.url?.let { url ->
+//                ActivityUtils.openUrlExternal(activity as Context, url)
+//            }
+//        }
     }
 }
