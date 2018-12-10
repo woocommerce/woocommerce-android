@@ -122,12 +122,13 @@ object NotificationHandler {
         }
 
         // Build the new notification, add group to support wearable stacking
+        val channel = getNotificationChannel(context)
         val builder = getNotificationBuilder(context, title, message)
         val largeIconBitmap = getLargeIconBitmap(context, data.getString("icon"),
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
-        showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId)
+        showSingleNotificationForBuilder(context, builder, channel, noteType, wpComNoteId, localPushId)
 
         // Also add a group summary notification, which is required for non-wearable devices
         // Do not need to play the sound again. We've already played it in the individual builder.
@@ -173,6 +174,29 @@ object NotificationHandler {
     }
 
     /**
+     * Returns a notification channel for API 26+, null otherwise
+     */
+    private fun getNotificationChannel(context: Context): NotificationChannel? {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channelId = context.getString(R.string.notification_channel_general_id)
+
+            // check for existing channel first
+            manager.getNotificationChannel(channelId)?.let {
+                return it
+            }
+
+            // create the channel since it doesn't already exist
+            val channelName = context.getString(R.string.notification_channel_general_title)
+            val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
+            manager.createNotificationChannel(channel)
+            return channel
+        } else {
+            return null
+        }
+    }
+
+    /**
      * Returns true if the note type is known to have a Gravatar.
      */
     private fun shouldCircularizeNoteIcon(noteType: String): Boolean {
@@ -200,6 +224,7 @@ object NotificationHandler {
     private fun showSingleNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
+        channel: NotificationChannel?,
         noteType: String,
         wpComNoteId: String,
         pushId: Int
@@ -214,19 +239,15 @@ object NotificationHandler {
                     )
                     // API 26+ requires a notification channel for a custom sound
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                        val channelId = context.getString(R.string.notification_channel_general_id)
-                        val channelName = context.getString(R.string.notification_channel_general_title)
                         val attributes = AudioAttributes.Builder()
                                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                                 .build()
-                        val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
-                        channel.setSound(soundUri, attributes)
-                        manager.createNotificationChannel(channel)
+                        channel?.let { it.setSound(soundUri, attributes) }
                     } else {
                         builder.setSound(soundUri)
                     }
                 } else {
+                    // use turned off cha-ching so use default sound
                     builder.setDefaults(NotificationCompat.DEFAULT_ALL)
                 }
             }
