@@ -8,13 +8,26 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.canMarkAsSpam
+import com.woocommerce.android.extensions.canModerate
+import com.woocommerce.android.extensions.canTrash
 import com.woocommerce.android.extensions.getCommentId
+import com.woocommerce.android.extensions.getConvertedTimestamp
+import com.woocommerce.android.extensions.getProductInfo
+import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.extensions.getReviewDetail
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
 import org.wordpress.android.fluxc.model.CommentModel
+import org.wordpress.android.fluxc.model.CommentStatus
+import org.wordpress.android.fluxc.model.CommentStatus.APPROVED
+import org.wordpress.android.fluxc.model.CommentStatus.DELETED
+import org.wordpress.android.fluxc.model.CommentStatus.SPAM
+import org.wordpress.android.fluxc.model.CommentStatus.TRASH
+import org.wordpress.android.fluxc.model.CommentStatus.UNAPPROVED
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 import javax.inject.Inject
@@ -46,6 +59,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     private val skeletonView = SkeletonView()
     private var remoteNoteId: Long = 0L
     private var remoteCommentId: Long = 0L
+    private var productUrl: String? = null
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -65,17 +79,6 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
             remoteCommentId = it.getLong(FIELD_REMOTE_COMMENT_ID)
         }
 
-        review_approve.setOnCheckedChangeListener { _, isChecked ->
-            when (isChecked) {
-                true -> disapproveReview()
-                false -> approveReview()
-            }
-        }
-
-        review_spam.setOnClickListener { spamReview() }
-        review_trash.setOnClickListener { trashReview() }
-        review_open_product.setOnClickListener { openProduct() }
-
         presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
     }
 
@@ -93,34 +96,86 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     }
 
     override fun setNotification(note: NotificationModel, comment: CommentModel) {
-        note.getReviewDetail()?.let {
-            it.productInfo?.let { product ->
-                review_product_name.text = product.name
-            }
+        // Populate reviewer section
+        GlideApp.with(review_gravatar.context)
+                .load(comment.authorProfileImageUrl)
+                .placeholder(R.drawable.ic_user_circle_grey_24dp)
+                .circleCrop()
+                .into(review_gravatar)
+        review_user_name.text = comment.authorName
+        review_time.text = DateTimeUtils.timeSpanFromTimestamp(note.getConvertedTimestamp(), activity as Context)
 
-            it.userInfo?.let { user ->
-                // Load the user gravatar image if available
-                user.iconUrl?.let { icon ->
-                    GlideApp.with(review_gravatar.context)
-                            .load(icon)
-                            .placeholder(R.drawable.ic_user_circle_grey_24dp)
-                            .circleCrop()
-                            .into(review_gravatar)
-                }
-                review_user_name.text = user.name
-            }
+        // Populate reviewed product info
+        review_product_name.text = comment.postTitle
+        note.getProductInfo()?.url?.let { url ->
+            review_open_product.setOnClickListener { ActivityUtils.openUrlExternal(activity as Context, url) }
+        }
+        productUrl = note.getProductInfo()?.url
 
-            review_time.text = DateTimeUtils.timeSpanFromTimestamp(it.timestamp, activity as Context)
-
-            it.rating?.let { rating ->
-                review_rating_bar.rating = rating
-                review_rating_bar.visibility = View.VISIBLE
-            }
-
-            review_description.text = it.msg
+        // Set the rating if available, or hide
+        note.getRating()?.let { rating ->
+            review_rating_bar.rating = rating
+            review_rating_bar.visibility = View.VISIBLE
         }
 
-        // TODO parse actions and set button status
+        // Set the review text
+        review_description.text = comment.content
+
+        // Initialize moderation buttons and set comment status
+        configureModerationButtons(note)
+        updateStatus(CommentStatus.fromString(comment.status))
+    }
+
+    private fun configureModerationButtons(note: NotificationModel) {
+        if (note.canModerate()) {
+            review_approve.visibility = View.VISIBLE
+            review_approve.setOnCheckedChangeListener { _, isChecked ->
+                when (isChecked) {
+                    true -> disapproveReview()
+                    false -> approveReview()
+                }
+            }
+        } else {
+            review_approve.visibility = View.GONE
+        }
+
+        if (note.canMarkAsSpam()) {
+            review_spam.visibility = View.VISIBLE
+            review_spam.setOnCheckedChangeListener { _, isChecked ->
+                when (isChecked) {
+                    // User has marked this review as spam
+                    true -> spamReview()
+                    // User has marked this review as not spam, set as approved automatically
+                    false -> approveReview()
+                }
+            }
+        } else {
+            review_spam.visibility = View.GONE
+        }
+
+        if (note.canTrash()) {
+            review_trash.visibility = View.VISIBLE
+            review_trash.setOnCheckedChangeListener { _, isChecked ->
+                when (isChecked) {
+                    true -> trashReview()
+                    // If un-trashed, mark it as approved automatically
+                    false -> approveReview()
+                }
+            }
+        } else {
+            review_trash.visibility = View.GONE
+        }
+    }
+
+    override fun updateStatus(status: CommentStatus) {
+        when (status) {
+            APPROVED -> review_approve.isChecked = true
+            UNAPPROVED -> review_approve.isChecked = false
+            SPAM -> {}
+            TRASH -> {}
+            DELETED -> {}
+            else -> {}
+        }
     }
 
     override fun showLoadReviewError() {
@@ -145,17 +200,5 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     private fun disapproveReview() {
         uiMessageResolver.showSnack("Disapprove logic not implemented")
-    }
-
-    /**
-     * Open the product detail page in an external browser
-     */
-    private fun openProduct() {
-        // TODO - open product
-//        review?.let {
-//            it.productInfo?.url?.let { url ->
-//                ActivityUtils.openUrlExternal(activity as Context, url)
-//            }
-//        }
     }
 }
