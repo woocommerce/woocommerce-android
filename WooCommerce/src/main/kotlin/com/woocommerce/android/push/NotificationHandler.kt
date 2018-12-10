@@ -1,11 +1,16 @@
 package com.woocommerce.android.push
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.AudioAttributes
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
@@ -180,8 +185,7 @@ object NotificationHandler {
     }
 
     private fun getNotificationBuilder(context: Context, title: String, message: String?): NotificationCompat.Builder {
-        return NotificationCompat.Builder(context,
-                context.getString(R.string.notification_channel_general_id))
+        return NotificationCompat.Builder(context, context.getString(R.string.notification_channel_general_id))
                 .setSmallIcon(R.drawable.ic_woo_w_notification)
                 .setColor(ContextCompat.getColor(context, R.color.wc_purple))
                 .setContentTitle(title)
@@ -203,19 +207,31 @@ object NotificationHandler {
         when (noteType) {
             PUSH_TYPE_NEW_ORDER -> {
                 if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
-                    builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+                    builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
                     val soundUri = Uri.parse(
                             ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
                                     context.packageName + "/" + R.raw.cha_ching
                     )
-                    // TODO: API 26+ requires a notification channel for a custom sound
-                    builder.setSound(soundUri)
+                    // API 26+ requires a notification channel for a custom sound
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val channelId = context.getString(R.string.notification_channel_general_id)
+                        val channelName = context.getString(R.string.notification_channel_general_title)
+                        val attributes = AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                                .build()
+                        val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
+                        channel.setSound(soundUri, attributes)
+                        manager.createNotificationChannel(channel)
+                    } else {
+                        builder.setSound(soundUri)
+                    }
                 } else {
-                    builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
+                    builder.setDefaults(NotificationCompat.DEFAULT_ALL)
                 }
             }
             PUSH_TYPE_COMMENT -> {
-                builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
+                builder.setDefaults(NotificationCompat.DEFAULT_ALL)
                 // TODO: Add quick actions for comments
             }
         }
