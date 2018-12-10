@@ -4,7 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.PendingIntent
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -122,8 +122,8 @@ object NotificationHandler {
         }
 
         // Build the new notification, add group to support wearable stacking
-        val channel = getNotificationChannel(context)
-        val builder = getNotificationBuilder(context, title, message)
+        val channel = getNotificationChannel(context, noteType)
+        val builder = getNotificationBuilder(context, noteType, title, message)
         val largeIconBitmap = getLargeIconBitmap(context, data.getString("icon"),
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
@@ -173,13 +173,21 @@ object NotificationHandler {
         return null
     }
 
+    private fun getChannelIdForNoteType(context: Context, noteType: String): String {
+        return when (noteType) {
+            PUSH_TYPE_NEW_ORDER -> context.getString(R.string.notification_channel_order_id)
+            PUSH_TYPE_COMMENT -> context.getString(R.string.notification_channel_review_id)
+            else -> context.getString(R.string.notification_channel_general_id)
+        }
+    }
+
     /**
      * Returns a notification channel for API 26+, null otherwise
      */
-    private fun getNotificationChannel(context: Context): NotificationChannel? {
+    private fun getNotificationChannel(context: Context, noteType: String): NotificationChannel? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channelId = context.getString(R.string.notification_channel_general_id)
+            val channelId = getChannelIdForNoteType(context, noteType)
 
             // check for existing channel first
             manager.getNotificationChannel(channelId)?.let {
@@ -189,11 +197,36 @@ object NotificationHandler {
             // create the channel since it doesn't already exist
             val channelName = context.getString(R.string.notification_channel_general_title)
             val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
+            if (noteType == PUSH_TYPE_NEW_ORDER && AppPrefs.isOrderNotificationsChaChingEnabled()) {
+                val attributes = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .build()
+                channel.setSound(getChaChingUri(context), attributes)
+            }
             manager.createNotificationChannel(channel)
             return channel
         } else {
             return null
         }
+    }
+
+    /**
+     * Resets the notification channels, called when user changes notification preferences so the next time
+     * we call getNotificationChannel() the channel is recreated
+     */
+    fun resetNotificationChannels(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.deleteNotificationChannel(getChannelIdForNoteType(context, PUSH_TYPE_NEW_ORDER))
+            manager.deleteNotificationChannel(getChannelIdForNoteType(context, PUSH_TYPE_COMMENT))
+        }
+    }
+
+    /**
+     * Returns the URI to use for the cha-ching order notification sound
+     */
+    private fun getChaChingUri(context: Context): Uri {
+        return Uri.parse(SCHEME_ANDROID_RESOURCE + "://" + context.packageName + "/" + R.raw.cha_ching)
     }
 
     /**
@@ -208,8 +241,14 @@ object NotificationHandler {
         }
     }
 
-    private fun getNotificationBuilder(context: Context, title: String, message: String?): NotificationCompat.Builder {
-        return NotificationCompat.Builder(context, context.getString(R.string.notification_channel_general_id))
+    private fun getNotificationBuilder(
+        context: Context,
+        noteType: String,
+        title: String,
+        message: String?
+    ): NotificationCompat.Builder {
+        val channelId = getChannelIdForNoteType(context, noteType)
+        return NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_woo_w_notification)
                 .setColor(ContextCompat.getColor(context, R.color.wc_purple))
                 .setContentTitle(title)
@@ -233,19 +272,7 @@ object NotificationHandler {
             PUSH_TYPE_NEW_ORDER -> {
                 if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
                     builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
-                    val soundUri = Uri.parse(
-                            ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
-                                    context.packageName + "/" + R.raw.cha_ching
-                    )
-                    // API 26+ requires a notification channel for a custom sound
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val attributes = AudioAttributes.Builder()
-                                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                                .build()
-                        channel?.let { it.setSound(soundUri, attributes) }
-                    } else {
-                        builder.setSound(soundUri)
-                    }
+                    builder.setSound(getChaChingUri(context))
                 } else {
                     // use turned off cha-ching so use default sound
                     builder.setDefaults(NotificationCompat.DEFAULT_ALL)

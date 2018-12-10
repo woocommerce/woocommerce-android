@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WO
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.push.NotificationHandler
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
@@ -89,6 +90,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
             trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
             AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
+            NotificationHandler.resetNotificationChannels(activity!!)
         }
 
         textPrivacySettings.setOnClickListener {
