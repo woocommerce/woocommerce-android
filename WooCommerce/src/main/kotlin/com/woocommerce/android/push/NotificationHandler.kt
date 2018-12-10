@@ -122,7 +122,7 @@ object NotificationHandler {
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
-        showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId, true)
+        showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId)
 
         // Also add a group summary notification, which is required for non-wearable devices
         // Do not need to play the sound again. We've already played it in the individual builder.
@@ -198,8 +198,7 @@ object NotificationHandler {
         builder: NotificationCompat.Builder,
         noteType: String,
         wpComNoteId: String,
-        pushId: Int,
-        notifyUser: Boolean
+        pushId: Int
     ) {
         when (noteType) {
             PUSH_TYPE_NEW_ORDER -> {
@@ -221,7 +220,7 @@ object NotificationHandler {
             }
         }
 
-        showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId, notifyUser)
+        showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId)
     }
 
     private fun showGroupNotificationForBuilder(
@@ -275,13 +274,15 @@ object NotificationHandler {
                     .setContentTitle(context.getString(R.string.app_name))
                     .setContentText(subject)
                     .setStyle(inboxStyle)
+                    .setSound(null)
+                    .setVibrate(null)
 
-            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID, false)
+            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID)
         } else {
             // Set the individual notification we've already built as the group summary
             builder.setGroupSummary(true)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID, false)
+            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID)
         }
     }
 
@@ -292,13 +293,12 @@ object NotificationHandler {
         builder: NotificationCompat.Builder,
         context: Context,
         wpComNoteId: String,
-        pushId: Int,
-        notifyUser: Boolean
+        pushId: Int
     ) {
         // TODO Create an Intent containing the wpComNoteId that launches the MainActivity to handle the tap action
         // (and open the notifications tab)
         val resultIntent = Intent() // placeholder
-        showNotificationForBuilder(builder, context, resultIntent, pushId, notifyUser)
+        showNotificationForBuilder(builder, context, resultIntent, pushId)
     }
 
     // Displays a notification to the user
@@ -306,20 +306,8 @@ object NotificationHandler {
         builder: NotificationCompat.Builder,
         context: Context,
         resultIntent: Intent,
-        pushId: Int,
-        notifyUser: Boolean
+        pushId: Int
     ) {
-        // TODO This should respect user preferences, and should have sound
-        if (notifyUser) {
-            builder.setVibrate(longArrayOf(500, 500, 500))
-            builder.setLights(-0xffff01, 1000, 5000)
-        } else {
-            builder.setVibrate(null)
-            builder.setSound(null)
-            // Do not turn the led off otherwise the previous (single) notification led is not shown.
-            // We're re-using the same builder for single and group.
-        }
-
         // Call processing service when notification is dismissed
         val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForNotificationDismiss(context, pushId)
         builder.setDeleteIntent(pendingDeleteIntent)
