@@ -11,12 +11,6 @@ import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 
-enum class WooNotificationType {
-    NEW_ORDER,
-    PRODUCT_REVIEW,
-    UNKNOWN
-}
-
 /**
  * Returns a simplified Woo Notification type.
  *
@@ -161,6 +155,30 @@ fun NotificationModel.buildComment(): CommentModel {
     }
 }
 
+/**
+ * If true, user can approve or un-approve this notification.
+ */
+fun NotificationModel.canModerate(): Boolean {
+    return NotificationHelper
+            .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
+}
+
+/**
+ * If true, user can mark this notification as spam.
+ */
+fun NotificationModel.canMarkAsSpam(): Boolean {
+    return NotificationHelper
+            .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_SPAM) ?: false
+}
+
+/**
+ * There is an action option for trash, but in the interest of consistent notification UX
+ * between WPAndroid and WCAndroid, following WPAndroid.
+ *
+ * If true, the user can trash the notification.
+ */
+fun NotificationModel.canTrash() = canModerate()
+
 // Temporarily suppress lint errors around ParcelCreator due to this error:
 // https://youtrack.jetbrains.com/issue/KT-19300
 @SuppressLint("ParcelCreator")
@@ -185,3 +203,15 @@ data class NotificationReviewDetail(
     val userInfo: NotificationUserInfo?,
     val productInfo: NotificationProductInfo?
 ) : Parcelable
+
+enum class WooNotificationType {
+    NEW_ORDER,
+    PRODUCT_REVIEW,
+    UNKNOWN
+}
+
+object ReviewActionKeys {
+    val ACTION_KEY_REPLY = "replyto-comment"
+    val ACTION_KEY_APPROVE = "approve-comment"
+    val ACTION_KEY_SPAM = "spam-comment"
+}
