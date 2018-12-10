@@ -121,18 +121,20 @@ object NotificationHandler {
             AnalyticsTracker.flush()
         }
 
+        // make sure we have a notification channel for this note type
+        createNotificationChannel(context, noteType)
+
         // Build the new notification, add group to support wearable stacking
-        val channel = getNotificationChannel(context, noteType)
         val builder = getNotificationBuilder(context, noteType, title, message)
         val largeIconBitmap = getLargeIconBitmap(context, data.getString("icon"),
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
-        showSingleNotificationForBuilder(context, builder, channel, noteType, wpComNoteId, localPushId)
+        showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId)
 
         // Also add a group summary notification, which is required for non-wearable devices
         // Do not need to play the sound again. We've already played it in the individual builder.
-        showGroupNotificationForBuilder(context, builder, wpComNoteId, message)
+        showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
     }
 
     /**
@@ -181,32 +183,41 @@ object NotificationHandler {
         }
     }
 
+    private fun getChannelTitleForNoteType(context: Context, noteType: String): String {
+        return when (noteType) {
+            PUSH_TYPE_NEW_ORDER -> context.getString(R.string.notification_channel_order_title)
+            PUSH_TYPE_COMMENT -> context.getString(R.string.notification_channel_review_title)
+            else -> context.getString(R.string.notification_channel_general_title)
+        }
+    }
+
     /**
-     * Returns a notification channel for API 26+, null otherwise
+     * Ensures the desired notification channel is created when on API 26+, does nothing otherwise since notification
+     * channels weren't added until API 26
      */
-    private fun getNotificationChannel(context: Context, noteType: String): NotificationChannel? {
+    private fun createNotificationChannel(context: Context, noteType: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = getChannelIdForNoteType(context, noteType)
 
             // check for existing channel first
             manager.getNotificationChannel(channelId)?.let {
-                return it
+                return
             }
 
             // create the channel since it doesn't already exist
-            val channelName = context.getString(R.string.notification_channel_general_title)
+            val channelName = getChannelTitleForNoteType(context, noteType)
             val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
+
+            // set the custom sound if this is an order notification channel and the user hasn't disable cha-ching
             if (noteType == PUSH_TYPE_NEW_ORDER && AppPrefs.isOrderNotificationsChaChingEnabled()) {
                 val attributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .build()
                 channel.setSound(getChaChingUri(context), attributes)
             }
+
             manager.createNotificationChannel(channel)
-            return channel
-        } else {
-            return null
         }
     }
 
@@ -263,7 +274,6 @@ object NotificationHandler {
     private fun showSingleNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
-        channel: NotificationChannel?,
         noteType: String,
         wpComNoteId: String,
         pushId: Int
@@ -274,8 +284,9 @@ object NotificationHandler {
                     builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
                     builder.setSound(getChaChingUri(context))
                 } else {
-                    // use turned off cha-ching so use default sound
+                    // user turned off cha-ching so use default sound
                     builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+                    builder.setSound(null)
                 }
             }
             PUSH_TYPE_COMMENT -> {
@@ -290,6 +301,7 @@ object NotificationHandler {
     private fun showGroupNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
+        noteType: String,
         wpComNoteId: String,
         message: String?
     ) {
@@ -325,9 +337,7 @@ object NotificationHandler {
             }
 
             val subject = String.format(context.getString(R.string.new_notifications), notesMap.size)
-            val groupBuilder = NotificationCompat.Builder(
-                    context,
-                    context.getString(R.string.notification_channel_general_id))
+            val groupBuilder = NotificationCompat.Builder(context, getChannelIdForNoteType(context, noteType))
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                     .setSmallIcon(R.drawable.ic_woo_w_notification)
                     .setColor(ContextCompat.getColor(context, R.color.wc_purple))
