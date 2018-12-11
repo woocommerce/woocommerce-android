@@ -65,11 +65,8 @@ class ReviewDetailPresenter @Inject constructor(
 
     override fun getOrBuildCommentForNotification(notif: NotificationModel): CommentModel {
         // Pull comment from db or create a temporary one if none exists.
-        return commentStore.getCommentBySiteAndRemoteId(selectedSite.get(), notif.getCommentId()) ?:
-        notif.buildComment().also {
-            // fetch comment from the api
-            fetchComment()
-        }
+        return commentStore.getCommentBySiteAndRemoteId(selectedSite.get(), notif.getCommentId())
+                ?: notif.buildComment().also { fetchComment() }
     }
 
     override fun reloadComment() {
