@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
-import org.wordpress.android.fluxc.model.notification.NoteIdSet
 
 interface ReviewDetailContract {
     interface Presenter : BasePresenter<View> {
@@ -15,7 +14,6 @@ interface ReviewDetailContract {
         fun loadNotificationDetail(noteId: Long, commentId: Long)
         fun getOrBuildCommentForNotification(notif: NotificationModel): CommentModel
         fun reloadComment()
-        fun fetchNotification(idSet: NoteIdSet)
         fun fetchComment()
         fun moderateComment(comment: CommentModel)
     }

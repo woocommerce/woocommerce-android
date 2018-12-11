@@ -57,11 +57,11 @@ class ReviewDetailPresenter @Inject constructor(
             // show an error.
             notificationStore.getNotificationByIdSet(noteIdSet)?.let { note ->
                 notification = note
-                getOrBuildCommentForNotification(note).also {
+
+                comment = getOrBuildCommentForNotification(note).also {
                     view?.setNotification(note, it)
-                    comment = it
                 }
-            } ?: fetchNotification(noteIdSet) // fetch from api
+            }
         }
     }
 
@@ -76,12 +76,6 @@ class ReviewDetailPresenter @Inject constructor(
             commentStore.getCommentBySiteAndRemoteId(selectedSite.get(), it)?.let { comment ->
                 view?.let { it.updateStatus(CommentStatus.fromString(comment.status)) }
             }
-        }
-    }
-
-    override fun fetchNotification(idSet: NoteIdSet) {
-        if (networkStatus.isConnected()) {
-            // TODO fetch notifications from api or just single?
         }
     }
 
