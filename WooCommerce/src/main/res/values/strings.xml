@@ -8,6 +8,7 @@
     <string name="notification_channel_order_title">Orders</string>
     <string name="notification_channel_order_id" translatable="false" content_override="true">wooandroid_notification_channel_order_id</string>
     <string name="notification_channel_review_title">Reviews</string>
+    <string name="notification_channel_order_cha_ching_id" translatable="false" content_override="true">wooandroid_notification_channel_order_cha_ching_id</string>
     <string name="notification_channel_review_id" translatable="false" content_override="true">wooandroid_notification_channel_review_id</string>
 
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->

@@ -20,6 +20,10 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.push.NotificationHandler.NotificationType.NEW_ORDER
+import com.woocommerce.android.push.NotificationHandler.NotificationType.NEW_ORDER_CHA_CHING
+import com.woocommerce.android.push.NotificationHandler.NotificationType.REVIEW
+import com.woocommerce.android.push.NotificationHandler.NotificationType.UNKNOWN
 import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -47,6 +51,17 @@ object NotificationHandler {
 
     private const val PUSH_TYPE_COMMENT = "c"
     private const val PUSH_TYPE_NEW_ORDER = "store_order"
+
+    private enum class NotificationType {
+        UNKNOWN,
+        REVIEW,
+        NEW_ORDER,
+        NEW_ORDER_CHA_CHING;
+
+        fun isOrder(): Boolean {
+            return this == NEW_ORDER || this == NEW_ORDER_CHA_CHING
+        }
+    }
 
     @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
 
@@ -93,16 +108,31 @@ object NotificationHandler {
 
         // TODO: Store note object in database
 
-        val noteType = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
+        val noteTypeStr = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
+        val noteType = when (noteTypeStr) {
+            PUSH_TYPE_NEW_ORDER -> {
+                if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
+                    NEW_ORDER_CHA_CHING
+                } else {
+                    NEW_ORDER
+                }
+            }
+            PUSH_TYPE_COMMENT -> {
+                REVIEW
+            }
+            else -> {
+                UNKNOWN
+            }
+        }
 
         // skip if user chose to disable this type of notification
-        if ((noteType == PUSH_TYPE_NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
-                (noteType == PUSH_TYPE_COMMENT && !AppPrefs.isReviewNotificationsEnabled())) {
-            WooLog.i(T.NOTIFS, "Skipped $noteType notification")
+        if ((noteType.isOrder() && !AppPrefs.isOrderNotificationsEnabled()) ||
+                (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
+            WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
             return
         }
 
-        val title = if (noteType == PUSH_TYPE_NEW_ORDER) {
+        val title = if (noteType.isOrder()) {
             // New order notifications have title 'WordPress.com' - just show the app name instead
             // TODO Consider revising this, perhaps use the contents of the note as the title/body of the notification
             context.getString(R.string.app_name)
@@ -175,18 +205,19 @@ object NotificationHandler {
         return null
     }
 
-    private fun getChannelIdForNoteType(context: Context, noteType: String): String {
+    private fun getChannelIdForNoteType(context: Context, noteType: NotificationType): String {
         return when (noteType) {
-            PUSH_TYPE_NEW_ORDER -> context.getString(R.string.notification_channel_order_id)
-            PUSH_TYPE_COMMENT -> context.getString(R.string.notification_channel_review_id)
+            NEW_ORDER -> context.getString(R.string.notification_channel_order_id)
+            NEW_ORDER_CHA_CHING -> context.getString(R.string.notification_channel_order_cha_ching_id)
+            REVIEW -> context.getString(R.string.notification_channel_review_id)
             else -> context.getString(R.string.notification_channel_general_id)
         }
     }
 
-    private fun getChannelTitleForNoteType(context: Context, noteType: String): String {
+    private fun getChannelTitleForNoteType(context: Context, noteType: NotificationType): String {
         return when (noteType) {
-            PUSH_TYPE_NEW_ORDER -> context.getString(R.string.notification_channel_order_title)
-            PUSH_TYPE_COMMENT -> context.getString(R.string.notification_channel_review_title)
+            NEW_ORDER, NEW_ORDER_CHA_CHING -> context.getString(R.string.notification_channel_order_title)
+            REVIEW -> context.getString(R.string.notification_channel_review_title)
             else -> context.getString(R.string.notification_channel_general_title)
         }
     }
@@ -195,7 +226,7 @@ object NotificationHandler {
      * Ensures the desired notification channel is created when on API 26+, does nothing otherwise since notification
      * channels weren't added until API 26
      */
-    private fun createNotificationChannel(context: Context, noteType: String) {
+    private fun createNotificationChannel(context: Context, noteType: NotificationType) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = getChannelIdForNoteType(context, noteType)
@@ -209,8 +240,7 @@ object NotificationHandler {
             val channelName = getChannelTitleForNoteType(context, noteType)
             val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
 
-            // set the custom sound if this is an order notification channel and the user hasn't disable cha-ching
-            if (noteType == PUSH_TYPE_NEW_ORDER && AppPrefs.isOrderNotificationsChaChingEnabled()) {
+            if (noteType == NEW_ORDER_CHA_CHING) {
                 val attributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .build()
@@ -218,18 +248,6 @@ object NotificationHandler {
             }
 
             manager.createNotificationChannel(channel)
-        }
-    }
-
-    /**
-     * Resets the notification channels, called when user changes notification preferences so the next time
-     * we call getNotificationChannel() the channel is recreated
-     */
-    fun resetNotificationChannels(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.deleteNotificationChannel(getChannelIdForNoteType(context, PUSH_TYPE_NEW_ORDER))
-            manager.deleteNotificationChannel(getChannelIdForNoteType(context, PUSH_TYPE_COMMENT))
         }
     }
 
@@ -243,18 +261,16 @@ object NotificationHandler {
     /**
      * Returns true if the note type is known to have a Gravatar.
      */
-    private fun shouldCircularizeNoteIcon(noteType: String): Boolean {
-        if (noteType.isEmpty()) return false
-
+    private fun shouldCircularizeNoteIcon(noteType: NotificationType): Boolean {
         return when (noteType) {
-            PUSH_TYPE_COMMENT -> true
+            REVIEW -> true
             else -> false
         }
     }
 
     private fun getNotificationBuilder(
         context: Context,
-        noteType: String,
+        noteType: NotificationType,
         title: String,
         message: String?
     ): NotificationCompat.Builder {
@@ -274,24 +290,24 @@ object NotificationHandler {
     private fun showSingleNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
-        noteType: String,
+        noteType: NotificationType,
         wpComNoteId: String,
         pushId: Int
     ) {
         when (noteType) {
-            PUSH_TYPE_NEW_ORDER -> {
-                if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
-                    builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
-                    builder.setSound(getChaChingUri(context))
-                } else {
-                    // user turned off cha-ching so use default sound
-                    builder.setDefaults(NotificationCompat.DEFAULT_ALL)
-                    builder.setSound(null)
-                }
-            }
-            PUSH_TYPE_COMMENT -> {
+            NEW_ORDER -> {
                 builder.setDefaults(NotificationCompat.DEFAULT_ALL)
-                // TODO: Add quick actions for comments
+            }
+            NEW_ORDER_CHA_CHING -> {
+                builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
+                builder.setSound(getChaChingUri(context))
+            }
+            REVIEW -> {
+                builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+                // TODO: Add quick actions for reviews
+            }
+            else -> {
+                builder.setDefaults(NotificationCompat.DEFAULT_ALL)
             }
         }
 
@@ -301,7 +317,7 @@ object NotificationHandler {
     private fun showGroupNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
-        noteType: String,
+        noteType: NotificationType,
         wpComNoteId: String,
         message: String?
     ) {
@@ -318,7 +334,7 @@ object NotificationHandler {
                 // Skip notes with no content from the 5-line inbox
                 if (pushBundle.getString(PUSH_ARG_MSG) == null) continue
 
-                if (pushBundle.getString(PUSH_ARG_TYPE, "") == PUSH_TYPE_COMMENT) {
+                if (noteType == REVIEW) {
                     val pnTitle = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_TITLE))
                     val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG))
                     inboxStyle.addLine("$pnTitle: $pnMessage")
