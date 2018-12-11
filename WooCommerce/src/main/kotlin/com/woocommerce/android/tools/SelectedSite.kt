@@ -41,8 +41,6 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
         AnalyticsTracker.refreshSiteMetadata(siteModel)
     }
 
-    fun isSet() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1) != -1
-
     fun exists(): Boolean {
         val localSiteId = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
         val siteModel = siteStore.getSiteByLocalId(localSiteId)
