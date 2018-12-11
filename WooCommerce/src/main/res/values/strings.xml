@@ -286,6 +286,8 @@
     <string name="wc_approved">Approved</string>
     <string name="wc_spam">Spam</string>
     <string name="wc_trash">Trash</string>
+    <string name="wc_load_review_error">Error loading product review detail</string>
+    <string name="wc_moderate_review_error">Error updating product review status</string>
 
     <!--
         Login Library Imported Strings

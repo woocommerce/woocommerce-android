@@ -122,7 +122,7 @@ class NotifsListPresenter @Inject constructor(
                 isRefreshing = false
             }
             NotificationAction.MARK_NOTIFICATIONS_SEEN -> {
-                // TODO
+                // TODO mark notification seen
             }
             else -> {}
         }

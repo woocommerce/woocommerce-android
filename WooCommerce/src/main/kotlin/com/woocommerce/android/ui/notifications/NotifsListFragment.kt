@@ -14,7 +14,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
-import com.woocommerce.android.extensions.getReviewDetail
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -197,7 +196,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             getFragmentFromBackStack(tag)?.let {
                 val args = it.arguments ?: Bundle()
                 args.putLong(ReviewDetailFragment.FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
-                args.putParcelable(ReviewDetailFragment.FIELD_REVIEW_DETAIL, notification.getReviewDetail())
                 it.arguments = args
                 popToState(tag)
             } ?: loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)

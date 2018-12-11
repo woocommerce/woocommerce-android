@@ -21,8 +21,6 @@ interface ReviewDetailContract {
     interface View : BaseView<Presenter> {
         fun showSkeleton(show: Boolean)
         fun setNotification(note: NotificationModel, comment: CommentModel)
-        fun showLoadReviewError()
-        fun showModerateReviewError()
         fun updateStatus(status: CommentStatus)
     }
 }

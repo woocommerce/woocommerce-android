@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.notifications
 
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.buildComment
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.notifications.ReviewDetailContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -28,7 +30,8 @@ class ReviewDetailPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val commentStore: CommentStore,
     private val notificationStore: NotificationStore,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val uiMessageResolver: UIMessageResolver
 ) : ReviewDetailContract.Presenter {
     companion object {
         private val TAG: String = ReviewDetailPresenter::class.java.simpleName
@@ -111,9 +114,8 @@ class ReviewDetailPresenter @Inject constructor(
         if (event.isError) {
             WooLog.e(NOTIFICATIONS, "$TAG - Error pushing comment changes to server! ${event.error.message}")
 
-            // todo - set comment status back to previous status
-            // todo - update the view labels
-            view?.showModerateReviewError()
+            // TODO add tracks for moderating comment error
+            uiMessageResolver.showSnack(R.string.wc_load_review_error)
         } else {
             // Comment has been saved to the server.
             reloadComment()
@@ -124,7 +126,9 @@ class ReviewDetailPresenter @Inject constructor(
         if (event.isError) {
             WooLog.e(NOTIFICATIONS, "$TAG - Error fetching comment for note_id: " +
                     "${notification?.noteId} and comment_id: ${comment?.id}, ${event.error.message}")
-            view?.showLoadReviewError()
+
+            // TODO add tracks for fetching comment error
+            uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
         } else {
             // Comment has been fetched from the api successfully.
             // TODO add tracks for COMMENTS

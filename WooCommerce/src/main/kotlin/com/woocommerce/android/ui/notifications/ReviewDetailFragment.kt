@@ -17,7 +17,6 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getConvertedTimestamp
 import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
-import com.woocommerce.android.extensions.getReviewDetail
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
@@ -38,14 +37,10 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         const val FIELD_REMOTE_NOTIF_ID = "notif-remote-id"
         const val FIELD_REMOTE_COMMENT_ID = "remote-comment-id"
 
-        // TODO remove review detail
-        const val FIELD_REVIEW_DETAIL = "notif-review-detail"
-
         fun newInstance(notification: NotificationModel): ReviewDetailFragment {
             val args = Bundle()
             args.putLong(FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
             args.putLong(FIELD_REMOTE_COMMENT_ID, notification.getCommentId())
-            args.putParcelable(FIELD_REVIEW_DETAIL, notification.getReviewDetail())
 
             val fragment = ReviewDetailFragment()
             fragment.arguments = args
@@ -180,14 +175,6 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
             else -> WooLog.w(NOTIFICATIONS, "Unable to process Notification with a status of $status")
         }
         review_approve.setOnCheckedChangeListener(moderateListener)
-    }
-
-    override fun showLoadReviewError() {
-        // todo
-    }
-
-    override fun showModerateReviewError() {
-        // todo
     }
 
     private fun trashReview() {
