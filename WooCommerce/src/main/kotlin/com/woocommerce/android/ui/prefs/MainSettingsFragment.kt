@@ -58,6 +58,10 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         } else {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         textPrimaryStoreDomain.text = presenter.getStoreDomainName()
         textPrimaryStoreUsername.text = presenter.getUserDisplayName()
