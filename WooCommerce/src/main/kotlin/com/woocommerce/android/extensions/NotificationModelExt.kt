@@ -8,6 +8,8 @@ import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.ui.notifications.NotificationHelper
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.CommentModel
+import org.wordpress.android.fluxc.model.CommentStatus.UNAPPROVED
+import org.wordpress.android.fluxc.model.CommentStatus.APPROVED
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 
@@ -142,13 +144,14 @@ fun NotificationModel.getCommentId(): Long {
  */
 fun NotificationModel.buildComment(): CommentModel {
     val noteDetail = getReviewDetail()
+    val commentStatus = if (this.isApproved()) APPROVED.toString() else UNAPPROVED.toString()
     return CommentModel().apply {
         remotePostId = meta?.ids?.post ?: 0
-        remoteCommentId = getCommentId() ?: 0
+        remoteCommentId = getCommentId()
         authorName = noteDetail?.userInfo?.name.orEmpty()
         datePublished = timestamp
         content = noteDetail?.msg
-        status = "approved" // todo parse real status
+        status = commentStatus
         postTitle = noteDetail?.productInfo?.name.orEmpty()
         authorUrl = noteDetail?.userInfo?.home.orEmpty()
         authorProfileImageUrl = icon
@@ -158,18 +161,20 @@ fun NotificationModel.buildComment(): CommentModel {
 /**
  * If true, user can approve or un-approve this notification.
  */
-fun NotificationModel.canModerate(): Boolean {
-    return NotificationHelper
-            .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
-}
+fun NotificationModel.canModerate() = NotificationHelper
+        .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
+
+/**
+ * If the notification has been approved, return true, else false
+ */
+fun NotificationModel.isApproved() = NotificationHelper
+        .getCommentBlockFromBody(this)?.actions?.getValue(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
 
 /**
  * If true, user can mark this notification as spam.
  */
-fun NotificationModel.canMarkAsSpam(): Boolean {
-    return NotificationHelper
-            .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_SPAM) ?: false
-}
+fun NotificationModel.canMarkAsSpam() = NotificationHelper
+        .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_SPAM) ?: false
 
 /**
  * There is an action option for trash, but in the interest of consistent notification UX
