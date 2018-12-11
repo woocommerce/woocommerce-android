@@ -137,7 +137,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     private fun configureModerationButtons(note: NotificationModel) {
         // Configure the moderate button
-        with (review_approve) {
+        with(review_approve) {
             if (note.canModerate()) {
                 visibility = View.VISIBLE
                 setOnCheckedChangeListener(moderateListener)
@@ -147,7 +147,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
 
         // Configure the spam button
-        with (review_spam) {
+        with(review_spam) {
             if (note.canMarkAsSpam()) {
                 visibility = View.VISIBLE
                 setOnClickListener { spamReview() }
@@ -157,7 +157,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
 
         // Configure the trash button
-        with (review_trash) {
+        with(review_trash) {
             if (note.canTrash()) {
                 visibility = View.VISIBLE
                 setOnClickListener { trashReview() }
