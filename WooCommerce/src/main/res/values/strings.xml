@@ -215,6 +215,7 @@
         Notifications View
     -->
     <string name="notifs_fetch_error">Error fetching notifications</string>
+    <string name="notifs_review_moderation_undo">Review marked as %1$s</string>
     <!--
         Settings
     -->

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.notifications
 
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import com.woocommerce.android.extensions.getConvertedTimestamp
 import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.extensions.getReviewDetail
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooLog
@@ -26,8 +28,6 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
 import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
-import org.wordpress.android.fluxc.model.CommentStatus.APPROVED
-import org.wordpress.android.fluxc.model.CommentStatus.UNAPPROVED
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 import javax.inject.Inject
@@ -55,6 +55,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     @Inject lateinit var presenter: ReviewDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var networkStatus: NetworkStatus
 
     private val skeletonView = SkeletonView()
     private var remoteNoteId: Long = 0L
@@ -66,6 +67,8 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
             false -> disapproveReview()
         }
     }
+
+    private var changeCommentStatusSnackbar: Snackbar? = null
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -86,6 +89,11 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
 
         presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
+    }
+
+    override fun onStop() {
+        changeCommentStatusSnackbar?.dismiss()
+        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -167,8 +175,8 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     override fun updateStatus(status: CommentStatus) {
         review_approve.setOnCheckedChangeListener(null)
         when (status) {
-            APPROVED -> review_approve.isChecked = true
-            UNAPPROVED -> review_approve.isChecked = false
+            CommentStatus.APPROVED -> review_approve.isChecked = true
+            CommentStatus.UNAPPROVED -> review_approve.isChecked = false
             else -> WooLog.w(NOTIFICATIONS, "Unable to process Notification with a status of $status")
         }
         review_approve.setOnCheckedChangeListener(moderateListener)
@@ -183,18 +191,76 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     }
 
     private fun trashReview() {
-        uiMessageResolver.showSnack("Trash logic not implemented")
+        showChangeCommentStatusSnackbar(CommentStatus.TRASH)
     }
 
     private fun spamReview() {
-        uiMessageResolver.showSnack("Spam logic not implemented")
+        showChangeCommentStatusSnackbar(CommentStatus.SPAM)
     }
 
     private fun approveReview() {
-        uiMessageResolver.showSnack("Approve logic not implemented")
+        showChangeCommentStatusSnackbar(CommentStatus.APPROVED)
     }
 
     private fun disapproveReview() {
-        uiMessageResolver.showSnack("Disapprove logic not implemented")
+        showChangeCommentStatusSnackbar(CommentStatus.UNAPPROVED)
+    }
+
+    private fun showChangeCommentStatusSnackbar(newStatus: CommentStatus) {
+        if (networkStatus.isConnected()) {
+            // Disable the moderation buttons
+            disableModerationButtons()
+
+            var changeCommentStatusCanceled = false
+
+            // TODO Add tracks events
+
+            // Listener for the UNDO button in the snackbar
+            val actionListener = View.OnClickListener {
+                // TODO tracks events
+
+                // User canceled the action to change the order status
+                changeCommentStatusCanceled = true
+
+                enableModerationButtons()
+                presenter.comment?.let { updateStatus(CommentStatus.fromString(it.status)) }
+            }
+
+            val callback = object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (!changeCommentStatusCanceled) {
+                        enableModerationButtons()
+                        presenter.comment?.let { comment ->
+                            comment.status = newStatus.toString()
+                            presenter.moderateComment(comment)
+                        }
+                        activity?.onBackPressed()
+                    }
+                }
+            }
+
+            changeCommentStatusSnackbar = uiMessageResolver
+                    .getUndoSnack(
+                            R.string.notifs_review_moderation_undo,
+                            newStatus.toString(),
+                            actionListener = actionListener
+                    ).also {
+                        it.addCallback(callback)
+                        it.show()
+                    }
+        }
+    }
+
+    private fun disableModerationButtons() {
+        review_approve.isEnabled = false
+        review_spam.isEnabled = false
+        review_trash.isEnabled = false
+    }
+
+    private fun enableModerationButtons() {
+        review_approve.isEnabled = true
+        review_spam.isEnabled = true
+        review_trash.isEnabled = true
     }
 }

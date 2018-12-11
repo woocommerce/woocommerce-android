@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.action.CommentAction.FETCH_COMMENT
 import org.wordpress.android.fluxc.action.CommentAction.PUSH_COMMENT
 import org.wordpress.android.fluxc.generated.CommentActionBuilder
 import org.wordpress.android.fluxc.model.CommentModel
+import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.notification.NoteIdSet
 import org.wordpress.android.fluxc.store.CommentStore
@@ -58,6 +59,7 @@ class ReviewDetailPresenter @Inject constructor(
                 notification = note
                 getOrBuildCommentForNotification(note).also {
                     view?.setNotification(note, it)
+                    comment = it
                 }
             } ?: fetchNotification(noteIdSet) // fetch from api
         }
@@ -71,10 +73,10 @@ class ReviewDetailPresenter @Inject constructor(
 
     override fun reloadComment() {
         notification?.getCommentId()?.let {
-            commentStore.getCommentBySiteAndRemoteId(selectedSite.get(), it)
+            commentStore.getCommentBySiteAndRemoteId(selectedSite.get(), it)?.let { comment ->
+                view?.let { it.updateStatus(CommentStatus.fromString(comment.status)) }
+            }
         }
-
-        // TODO update the status of the view
     }
 
     override fun fetchNotification(idSet: NoteIdSet) {
@@ -90,6 +92,13 @@ class ReviewDetailPresenter @Inject constructor(
                 val payload = RemoteCommentPayload(selectedSite.get(), it)
                 dispatcher.dispatch(CommentActionBuilder.newFetchCommentAction(payload))
             }
+        }
+    }
+
+    override fun moderateComment(comment: CommentModel) {
+        if (networkStatus.isConnected()) {
+            val payload = RemoteCommentPayload(selectedSite.get(), comment)
+            dispatcher.dispatch(CommentActionBuilder.newPushCommentAction(payload))
         }
     }
 

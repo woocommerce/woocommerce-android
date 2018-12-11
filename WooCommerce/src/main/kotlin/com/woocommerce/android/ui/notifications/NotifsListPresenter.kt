@@ -11,9 +11,12 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.CommentAction.DELETE_COMMENT
+import org.wordpress.android.fluxc.action.CommentAction.PUSH_COMMENT
 import org.wordpress.android.fluxc.action.NotificationAction
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.store.CommentStore.OnCommentChanged
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
@@ -122,6 +125,14 @@ class NotifsListPresenter @Inject constructor(
                 // TODO
             }
             else -> {}
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onCommentChanged(event: OnCommentChanged) {
+        when (event.causeOfChange) {
+            DELETE_COMMENT, PUSH_COMMENT -> view?.refreshFragmentState()
         }
     }
 }
