@@ -66,6 +66,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         textPrimaryStoreDomain.text = presenter.getStoreDomainName()
         textPrimaryStoreUsername.text = presenter.getUserDisplayName()
 
+        // TODO: this is for testing only, remove before merging
         textPrimaryStoreDomain.setOnClickListener {
             presenter.testNotif(activity!!)
         }
