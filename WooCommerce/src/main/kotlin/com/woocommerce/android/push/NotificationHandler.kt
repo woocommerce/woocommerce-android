@@ -20,10 +20,10 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.push.NotificationHandler.NotificationType.NEW_ORDER
-import com.woocommerce.android.push.NotificationHandler.NotificationType.NEW_ORDER_CHA_CHING
-import com.woocommerce.android.push.NotificationHandler.NotificationType.REVIEW
-import com.woocommerce.android.push.NotificationHandler.NotificationType.UNKNOWN
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER_CHA_CHING
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
 import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -52,8 +52,14 @@ object NotificationHandler {
     private const val PUSH_TYPE_COMMENT = "c"
     private const val PUSH_TYPE_NEW_ORDER = "store_order"
 
-    private enum class NotificationType {
-        UNKNOWN,
+    /**
+     * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
+     * necessary because once a channel is created we can't change it, and if we delete the channel and re-create
+     * it then it will be re-created with the same settings it previously had (ie: we can't simply have a single
+     * channel for orders and add/remove the sound from it)
+     */
+    private enum class NotificationChannelType {
+        OTHER,
         REVIEW,
         NEW_ORDER,
         NEW_ORDER_CHA_CHING;
@@ -121,7 +127,7 @@ object NotificationHandler {
                 REVIEW
             }
             else -> {
-                UNKNOWN
+                OTHER
             }
         }
 
@@ -205,7 +211,7 @@ object NotificationHandler {
         return null
     }
 
-    private fun getChannelIdForNoteType(context: Context, noteType: NotificationType): String {
+    private fun getChannelIdForNoteType(context: Context, noteType: NotificationChannelType): String {
         return when (noteType) {
             NEW_ORDER -> context.getString(R.string.notification_channel_order_id)
             NEW_ORDER_CHA_CHING -> context.getString(R.string.notification_channel_order_cha_ching_id)
@@ -214,7 +220,7 @@ object NotificationHandler {
         }
     }
 
-    private fun getChannelTitleForNoteType(context: Context, noteType: NotificationType): String {
+    private fun getChannelTitleForNoteType(context: Context, noteType: NotificationChannelType): String {
         return when (noteType) {
             NEW_ORDER, NEW_ORDER_CHA_CHING -> context.getString(R.string.notification_channel_order_title)
             REVIEW -> context.getString(R.string.notification_channel_review_title)
@@ -226,7 +232,7 @@ object NotificationHandler {
      * Ensures the desired notification channel is created when on API 26+, does nothing otherwise since notification
      * channels weren't added until API 26
      */
-    private fun createNotificationChannel(context: Context, noteType: NotificationType) {
+    private fun createNotificationChannel(context: Context, noteType: NotificationChannelType) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = getChannelIdForNoteType(context, noteType)
@@ -240,6 +246,7 @@ object NotificationHandler {
             val channelName = getChannelTitleForNoteType(context, noteType)
             val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
 
+            // add cha-ching sound if necessary
             if (noteType == NEW_ORDER_CHA_CHING) {
                 val attributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -261,7 +268,7 @@ object NotificationHandler {
     /**
      * Returns true if the note type is known to have a Gravatar.
      */
-    private fun shouldCircularizeNoteIcon(noteType: NotificationType): Boolean {
+    private fun shouldCircularizeNoteIcon(noteType: NotificationChannelType): Boolean {
         return when (noteType) {
             REVIEW -> true
             else -> false
@@ -270,7 +277,7 @@ object NotificationHandler {
 
     private fun getNotificationBuilder(
         context: Context,
-        noteType: NotificationType,
+        noteType: NotificationChannelType,
         title: String,
         message: String?
     ): NotificationCompat.Builder {
@@ -290,7 +297,7 @@ object NotificationHandler {
     private fun showSingleNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
-        noteType: NotificationType,
+        noteType: NotificationChannelType,
         wpComNoteId: String,
         pushId: Int
     ) {
@@ -317,7 +324,7 @@ object NotificationHandler {
     private fun showGroupNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
-        noteType: NotificationType,
+        noteType: NotificationChannelType,
         wpComNoteId: String,
         message: String?
     ) {
