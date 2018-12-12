@@ -217,7 +217,6 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
                     if (!changeCommentStatusCanceled) {
-                        enableModerationButtons()
                         presenter.comment?.let { comment ->
                             comment.status = newStatus.toString()
                             presenter.moderateComment(comment)
