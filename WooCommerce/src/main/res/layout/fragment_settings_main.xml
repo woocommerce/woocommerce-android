@@ -13,6 +13,9 @@
         android:background="@color/white"
         android:orientation="vertical">
 
+        <!--
+            Primary store
+        -->
         <TextView
             style="@style/Woo.Settings.Caption"
             android:layout_width="match_parent"
@@ -36,6 +39,45 @@
         <View
             style="@style/Woo.Settings.Divider"/>
 
+        <!--
+            Notifications
+        -->
+        <TextView
+            style="@style/Woo.Settings.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_notifs"/>
+
+        <com.woocommerce.android.widgets.WCToggleSingleOptionView
+            android:id="@+id/switchNotifsOrders"
+            style="@style/Woo.Settings.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:switchSummary="@string/settings_notifs_orders_detail"
+            app:switchTitle="@string/settings_notifs_orders"/>
+
+        <com.woocommerce.android.widgets.WCToggleSingleOptionView
+            android:id="@+id/switchNotifsTone"
+            style="@style/Woo.Settings.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:switchSummary="@string/settings_notifs_tone_detail"
+            app:switchTitle="@string/settings_notifs_tone"/>
+
+        <com.woocommerce.android.widgets.WCToggleSingleOptionView
+            android:id="@+id/switchNotifsReviews"
+            style="@style/Woo.Settings.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:switchSummary="@string/settings_notifs_reviews_detail"
+            app:switchTitle="@string/settings_notifs_reviews"/>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <!--
+            Privacy
+        -->
         <TextView
             android:id="@+id/textPrivacySettings"
             style="@style/Woo.Settings.Label"
@@ -46,6 +88,9 @@
         <View
             style="@style/Woo.Settings.Divider"/>
 
+        <!--
+            About
+        -->
         <TextView
             style="@style/Woo.Settings.Caption"
             android:layout_width="match_parent"
