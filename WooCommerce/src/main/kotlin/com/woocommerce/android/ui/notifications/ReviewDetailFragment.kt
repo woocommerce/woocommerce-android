@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
 class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
@@ -128,7 +129,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
 
         // Set the review text
-        review_description.text = comment.content
+        review_description.text = HtmlUtils.fromHtml(comment.content)
 
         // Initialize moderation buttons and set comment status
         configureModerationButtons(note)
