@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -84,11 +85,17 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             AppPrefs.setReviewNotificationsEnabled(isChecked)
         }
 
-        switchNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
-        switchNotifsTone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
-        switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
-            trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
-            AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
+        // TODO: for now we're hiding the ability to disable the cha-ching on API 26+.
+        // this will be addressed in a later PR
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            switchNotifsTone.visibility = View.GONE
+        } else {
+            switchNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
+            switchNotifsTone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
+            switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
+                trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
+                AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
+            }
         }
 
         textPrivacySettings.setOnClickListener {
