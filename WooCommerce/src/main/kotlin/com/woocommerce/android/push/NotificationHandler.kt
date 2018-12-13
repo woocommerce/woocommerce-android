@@ -257,6 +257,15 @@ object NotificationHandler {
     }
 
     /**
+     * Called at startup to ensure we create the notification channels
+     */
+    fun createNotificationChannels(context: Context) {
+        for (noteType in NotificationChannelType.values()) {
+            createNotificationChannel(context, noteType)
+        }
+    }
+
+    /**
      * Returns the URI to use for the cha-ching order notification sound
      */
     private fun getChaChingUri(context: Context): Uri {

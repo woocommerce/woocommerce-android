@@ -15,6 +15,7 @@ import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
@@ -80,6 +81,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             null
         }
         CrashlyticsUtils.initCrashlytics(this, accountStore.account, site)
+
+        NotificationHandler.createNotificationChannels(this)
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
