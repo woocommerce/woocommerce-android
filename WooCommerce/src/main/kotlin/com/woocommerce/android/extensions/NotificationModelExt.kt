@@ -82,8 +82,6 @@ fun NotificationModel.getReviewDetail(): NotificationReviewDetail? {
         return null
     }
 
-    val userInfo = getUserInfo()
-    val rating = getRating()
     return NotificationReviewDetail(
             getMessageDetail(),
             getConvertedTimestamp(),
@@ -216,7 +214,6 @@ enum class WooNotificationType {
 }
 
 object ReviewActionKeys {
-    val ACTION_KEY_REPLY = "replyto-comment"
-    val ACTION_KEY_APPROVE = "approve-comment"
-    val ACTION_KEY_SPAM = "spam-comment"
+    const val ACTION_KEY_APPROVE = "approve-comment"
+    const val ACTION_KEY_SPAM = "spam-comment"
 }
