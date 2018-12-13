@@ -45,7 +45,7 @@ class OrderDetailPresenter @Inject constructor(
     override var orderModel: WCOrderModel? = null
     override var orderIdentifier: OrderIdentifier? = null
     override var isUsingCachedNotes = false
-    var pendingRemoteOrderId: Long? = null
+    private var pendingRemoteOrderId: Long? = null
 
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
