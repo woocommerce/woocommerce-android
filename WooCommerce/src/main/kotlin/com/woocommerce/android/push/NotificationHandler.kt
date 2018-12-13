@@ -21,7 +21,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER_CHA_CHING
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
 import com.woocommerce.android.util.NotificationsUtils
@@ -61,10 +60,7 @@ object NotificationHandler {
     private enum class NotificationChannelType {
         OTHER,
         REVIEW,
-        NEW_ORDER,
-        NEW_ORDER_CHA_CHING;
-
-        fun isOrder() = this == NEW_ORDER || this == NEW_ORDER_CHA_CHING
+        NEW_ORDER
     }
 
     @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
@@ -115,11 +111,7 @@ object NotificationHandler {
         val noteTypeStr = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
         val noteType = when (noteTypeStr) {
             PUSH_TYPE_NEW_ORDER -> {
-                if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
-                    NEW_ORDER_CHA_CHING
-                } else {
-                    NEW_ORDER
-                }
+                NEW_ORDER
             }
             PUSH_TYPE_COMMENT -> {
                 REVIEW
@@ -130,13 +122,13 @@ object NotificationHandler {
         }
 
         // skip if user chose to disable this type of notification
-        if ((noteType.isOrder() && !AppPrefs.isOrderNotificationsEnabled()) ||
+        if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
                 (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
             WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
             return
         }
 
-        val title = if (noteType.isOrder()) {
+        val title = if (noteType == NEW_ORDER) {
             // New order notifications have title 'WordPress.com' - just show the app name instead
             // TODO Consider revising this, perhaps use the contents of the note as the title/body of the notification
             context.getString(R.string.app_name)
@@ -212,7 +204,6 @@ object NotificationHandler {
     private fun getChannelIdForNoteType(context: Context, noteType: NotificationChannelType): String {
         return when (noteType) {
             NEW_ORDER -> context.getString(R.string.notification_channel_order_id)
-            NEW_ORDER_CHA_CHING -> context.getString(R.string.notification_channel_order_cha_ching_id)
             REVIEW -> context.getString(R.string.notification_channel_review_id)
             else -> context.getString(R.string.notification_channel_general_id)
         }
@@ -220,7 +211,7 @@ object NotificationHandler {
 
     private fun getChannelTitleForNoteType(context: Context, noteType: NotificationChannelType): String {
         return when (noteType) {
-            NEW_ORDER, NEW_ORDER_CHA_CHING -> context.getString(R.string.notification_channel_order_title)
+            NEW_ORDER -> context.getString(R.string.notification_channel_order_title)
             REVIEW -> context.getString(R.string.notification_channel_review_title)
             else -> context.getString(R.string.notification_channel_general_title)
         }
@@ -245,7 +236,7 @@ object NotificationHandler {
             val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
 
             // add cha-ching sound if necessary
-            if (noteType == NEW_ORDER_CHA_CHING) {
+            if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
                 val attributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .build()
@@ -310,11 +301,12 @@ object NotificationHandler {
     ) {
         when (noteType) {
             NEW_ORDER -> {
-                builder.setDefaults(NotificationCompat.DEFAULT_ALL)
-            }
-            NEW_ORDER_CHA_CHING -> {
-                builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
-                builder.setSound(getChaChingUri(context))
+                if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
+                    builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
+                    builder.setSound(getChaChingUri(context))
+                } else {
+                    builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+                }
             }
             REVIEW -> {
                 builder.setDefaults(NotificationCompat.DEFAULT_ALL)
