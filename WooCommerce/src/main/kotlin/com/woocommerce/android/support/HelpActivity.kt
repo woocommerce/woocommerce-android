@@ -117,7 +117,7 @@ class HelpActivity : AppCompatActivity() {
      * Help activity may have been called during the login flow before the selected site has been set
      */
     private fun selectedSiteOrNull(): SiteModel? {
-        return if (selectedSite.isSet()) {
+        return if (selectedSite.exists()) {
             selectedSite.get()
         } else {
             null

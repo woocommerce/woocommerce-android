@@ -135,7 +135,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             else
                 getString(R.string.login_pick_store)
 
-            if (selectedSite.isSet()) {
+            if (selectedSite.exists()) {
                 siteAdapter.selectedSiteId = selectedSite.get().siteId
             } else {
                 siteAdapter.selectedSiteId = supportedWCSites[0].siteId
