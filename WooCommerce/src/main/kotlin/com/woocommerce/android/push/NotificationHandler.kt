@@ -64,9 +64,7 @@ object NotificationHandler {
         NEW_ORDER,
         NEW_ORDER_CHA_CHING;
 
-        fun isOrder(): Boolean {
-            return this == NEW_ORDER || this == NEW_ORDER_CHA_CHING
-        }
+        fun isOrder() = this == NEW_ORDER || this == NEW_ORDER_CHA_CHING
     }
 
     @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
