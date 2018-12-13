@@ -49,11 +49,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
 
         fun newInstance(localSiteId: Int, remoteOrderId: Long, markComplete: Boolean = false): Fragment {
-            val tempOrder = WCOrderModel().apply {
-                this.localSiteId = localSiteId
-                this.remoteOrderId = remoteOrderId
-            }
-            return newInstance(tempOrder.getIdentifier(), markComplete)
+            val orderIdentifier = OrderIdentifier(localSiteId, remoteOrderId)
+            return newInstance(orderIdentifier, markComplete)
         }
     }
 
