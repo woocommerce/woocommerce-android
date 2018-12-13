@@ -166,7 +166,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         orderDetail_noteList.updateView(notes)
     }
 
-    override fun viewOrderFulfillment(order: WCOrderModel) {
+    override fun openOrderFulfillment(order: WCOrderModel) {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
                 router.openOrderFulfillment(order)
@@ -174,7 +174,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun viewProductList(order: WCOrderModel) {
+    override fun openOrderProductList(order: WCOrderModel) {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
                 router.openOrderProductList(order)
