@@ -22,7 +22,7 @@ import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.StatelessSection
 import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
-import org.wordpress.android.fluxc.model.NotificationModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject

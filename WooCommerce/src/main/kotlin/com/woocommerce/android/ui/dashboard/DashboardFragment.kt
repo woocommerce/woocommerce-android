@@ -45,6 +45,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
+    override var isRefreshing: Boolean
+        get() = dashboard_refresh_layout.isRefreshing
+        set(value) {}
     private var errorSnackbar: Snackbar? = null
 
     override var isActive: Boolean = false

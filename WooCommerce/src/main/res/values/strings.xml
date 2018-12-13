@@ -220,6 +220,7 @@
         Notifications View
     -->
     <string name="notifs_fetch_error">Error fetching notifications</string>
+    <string name="notifs_detail_loading_error">Error loading notification detail</string>
     <!--
         Settings
     -->

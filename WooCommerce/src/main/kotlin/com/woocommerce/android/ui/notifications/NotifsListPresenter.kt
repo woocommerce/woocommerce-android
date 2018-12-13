@@ -13,7 +13,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
-import org.wordpress.android.fluxc.model.NotificationModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
@@ -73,18 +73,6 @@ class NotifsListPresenter @Inject constructor(
         }
     }
 
-    override fun setNotifsSeen() {
-        TODO("not implemented")
-    }
-
-    override fun setNotificationRead() {
-        TODO("not implemented")
-    }
-
-    override fun setAllNotifsRead() {
-        TODO("not implemented")
-    }
-
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
@@ -117,9 +105,6 @@ class NotifsListPresenter @Inject constructor(
                 }
                 isLoading = false
                 isRefreshing = false
-            }
-            NotificationAction.MARK_NOTIFICATIONS_SEEN -> {
-                // TODO
             }
             else -> {}
         }
