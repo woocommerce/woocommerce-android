@@ -18,6 +18,7 @@ interface NotifsListContract {
 
         fun showNotifications(notifsList: List<NotificationModel>, isFreshData: Boolean)
         fun showLoadNotificationsError()
+        fun showLoadNotificationDetailError()
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
         fun openReviewDetail(notification: NotificationModel)

@@ -190,10 +190,13 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             NEW_ORDER -> {
                 notification.getRemoteOrderId()?.let {
                     openOrderDetail(selectedSite.get().id, it)
-                } ?: WooLog.w(NOTIFICATIONS, "New order notification is missing the order id!")
+                } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
+                    showLoadNotificationDetailError()
+                }
             }
             UNKNOWN -> {
-                WooLog.w(NOTIFICATIONS, "Unknown notification type!")
+                WooLog.e(NOTIFICATIONS, "Unknown notification type!")
+                showLoadNotificationDetailError()
             }
         }
     }
@@ -217,5 +220,9 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun showLoadNotificationsError() {
         uiMessageResolver.getSnack(R.string.notifs_fetch_error).show()
+    }
+
+    override fun showLoadNotificationDetailError() {
+        uiMessageResolver.showSnack(R.string.notifs_detail_loading_error)
     }
 }
