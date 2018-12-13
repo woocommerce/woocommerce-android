@@ -11,9 +11,6 @@ interface NotifsListContract {
 
         fun loadNotifs(forceRefresh: Boolean)
         fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean)
-        fun setNotifsSeen()
-        fun setAllNotifsRead()
-        fun setNotificationRead()
     }
 
     interface View : BaseView<Presenter> {
@@ -22,9 +19,9 @@ interface NotifsListContract {
 
         fun showNotifications(notifsList: List<NotificationModel>, isFreshData: Boolean)
         fun showLoadNotificationsError()
+        fun showLoadNotificationDetailError()
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
         fun openReviewDetail(notification: NotificationModel)
-        fun openOrderDetail(orderId: OrderIdentifier, remoteOrderId: Long)
     }
 }

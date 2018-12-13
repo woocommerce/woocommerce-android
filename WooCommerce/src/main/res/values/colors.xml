@@ -40,6 +40,7 @@
     <color name="default_window_bg">@color/wc_border_color</color>
     <color name="default_text">@color/wc_grey_dark</color>
     <color name="default_text_title">@color/grey_dark_highlight</color>
+    <color name="default_text_title_disabled">@color/wc_grey_17</color>
     <!--
         Default Widget Color Definitions
     -->

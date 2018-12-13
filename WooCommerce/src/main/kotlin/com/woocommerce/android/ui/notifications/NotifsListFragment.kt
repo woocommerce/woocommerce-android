@@ -12,13 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
+import com.woocommerce.android.extensions.getRemoteOrderId
+import com.woocommerce.android.extensions.getReviewDetail
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -50,6 +52,9 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override var isRefreshPending = true
+    override var isRefreshing: Boolean
+        get() = notifsRefreshLayout.isRefreshing
+        set(value) {}
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     private val skeletonView = SkeletonView()
@@ -182,10 +187,17 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun onNotificationClicked(notification: NotificationModel) {
         when (notification.getWooType()) {
-//            is Order -> openOrderDetail(notification.orderIdentifier, notification.remoteOrderId)
             PRODUCT_REVIEW -> openReviewDetail(notification)
+            NEW_ORDER -> {
+                notification.getRemoteOrderId()?.let {
+                    openOrderDetail(selectedSite.get().id, it)
+                } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
+                    showLoadNotificationDetailError()
+                }
+            }
             UNKNOWN -> {
-                WooLog.w(NOTIFICATIONS, "Unknown notification type!")
+                WooLog.e(NOTIFICATIONS, "Unknown notification type!")
+                showLoadNotificationDetailError()
             }
         }
     }
@@ -202,18 +214,15 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         }
     }
 
-    override fun openOrderDetail(orderId: OrderIdentifier, remoteOrderId: Long) {
-        if (!notifsRefreshLayout.isRefreshing) {
-            val tag = OrderDetailFragment.TAG
-            loadChildFragment(OrderDetailFragment.newInstance(orderId, remoteOrderId), tag)
-        }
-    }
-
     override fun scrollToTop() {
         notifsList?.smoothScrollToPosition(0)
     }
 
     override fun showLoadNotificationsError() {
         uiMessageResolver.getSnack(R.string.notifs_fetch_error).show()
+    }
+
+    override fun showLoadNotificationDetailError() {
+        uiMessageResolver.showSnack(R.string.notifs_detail_loading_error)
     }
 }
