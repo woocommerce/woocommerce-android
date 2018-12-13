@@ -24,7 +24,6 @@ class MainSettingsPresenter @Inject constructor(
     override fun getUserDisplayName(): String = accountStore.account.displayName
     override fun getStoreDomainName(): String = StringUtils.getSiteDomainAndPath(selectedSite.get())
 
-    // TODO: remove this before merging
     override fun testNotif(context: Context) {
         NotificationHandler.testNotification(context, "title", "message", accountStore.account)
     }

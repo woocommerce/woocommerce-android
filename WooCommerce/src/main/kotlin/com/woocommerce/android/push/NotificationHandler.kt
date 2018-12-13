@@ -73,9 +73,7 @@ object NotificationHandler {
         ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
     }
 
-    /**
-     * This is here to simplify testing notifications
-     */
+    // TODO: this is useful while we're developing notifications but can be removed when we're done
     fun testNotification(context: Context, title: String, message: String, account: AccountModel) {
         val data = Bundle()
         data.putString(PUSH_ARG_TYPE, PUSH_TYPE_NEW_ORDER)

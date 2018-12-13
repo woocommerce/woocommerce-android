@@ -67,11 +67,6 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         textPrimaryStoreDomain.text = presenter.getStoreDomainName()
         textPrimaryStoreUsername.text = presenter.getUserDisplayName()
 
-        // TODO: this is for testing only, remove before merging
-        textPrimaryStoreDomain.setOnClickListener {
-            presenter.testNotif(activity!!)
-        }
-
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
             listener.onRequestLogout()

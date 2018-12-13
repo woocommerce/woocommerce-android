@@ -8,7 +8,7 @@ interface MainSettingsContract {
     interface Presenter : BasePresenter<View> {
         fun getUserDisplayName(): String
         fun getStoreDomainName(): String
-        fun testNotif(context: Context) // TODO: remove before merging
+        fun testNotif(context: Context)
     }
 
     interface View : BaseView<Presenter> {
