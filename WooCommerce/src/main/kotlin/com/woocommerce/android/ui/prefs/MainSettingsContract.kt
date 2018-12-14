@@ -10,6 +10,6 @@ interface MainSettingsContract {
     }
 
     interface View : BaseView<Presenter> {
-        fun showDeviceNotificationSettings()
+        fun showDeviceAppNotificationSettings()
     }
 }

@@ -78,7 +78,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             notifsContainerOlder.visibility = View.GONE
             textDeviceNotifSettings.visibility = View.VISIBLE
             textDeviceNotifSettings.setOnClickListener {
-                showDeviceNotificationSettings()
+                showDeviceAppNotificationSettings()
             }
         } else {
             notifsContainerOlder.visibility = View.VISIBLE
@@ -128,8 +128,11 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         activity?.setTitle(R.string.settings)
     }
 
-
-    override fun showDeviceNotificationSettings() {
+    /**
+     * Shows the device's notification settings for this app - only implemented for API 26+ since we only call
+     * this on API 26+ devices (will do nothing on older devices)
+     */
+    override fun showDeviceAppNotificationSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent()
             intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
@@ -137,7 +140,6 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             activity?.startActivity(intent)
         }
     }
-
 
     /**
      * Called when a boolean setting is changed so we can track it
