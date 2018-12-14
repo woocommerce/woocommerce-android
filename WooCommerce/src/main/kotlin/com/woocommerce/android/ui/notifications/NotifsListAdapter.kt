@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import com.woocommerce.android.widgets.Section
 import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.StatelessSection
@@ -35,6 +36,9 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
     private val notifsList: ArrayList<NotificationModel> = ArrayList()
     private var listener: ReviewListListener? = null
 
+    // Copy of a notification manually removed from the list so the action may be undone.
+    private var pendingRemovalNotification: Triple<NotificationModel, NotifsListSection, Int>? = null
+
     fun setListener(listener: ReviewListListener) {
         this.listener = listener
     }
@@ -42,6 +46,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
     fun setNotifications(notifs: List<NotificationModel>) {
         // clear all the current data from the adapter
         removeAllSections()
+        pendingRemovalNotification = null
 
         // Build a notifs for each [TimeGroup] section
         val listToday = ArrayList<NotificationModel>()
@@ -116,46 +121,109 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
     }
 
     /**
-     * Manually find a notification by it's [remoteNoteId], remove it, and then return the notification
-     * along with its original position in the list. Used for temporarily modifying the list.
+     * Locates and removes the notification from the appropriate section, but keeps a reference to
+     * it so it may be be restored if needed. This temporary object will get cleared either manually
+     * by reverting the action, or by loading a fresh list of notifications.
      */
-    fun removeAndReturnNotifWithIndex(remoteNoteId: Long): Pair<Int, NotificationModel>? {
-        return notifsList.firstOrNull { it.remoteNoteId == remoteNoteId }?.let { notif ->
+    fun hideNotificationWithId(remoteNoteId: Long) {
+        notifsList.firstOrNull { it.remoteNoteId == remoteNoteId }?.let { notif ->
             // get the index
-            val index = notifsList.indexOfFirst { it == notif }
+            val pos = notifsList.indexOfFirst { it == notif }
 
             // remove from the list
-            removeNotifFromList(index)
+            val section = getSectionForListItemPosition(pos) as NotifsListSection
+            val posInSection = getPositionInSectionByListPos(pos)
+            pendingRemovalNotification = Triple(notif, section, posInSection)
 
-            Pair(index, notif)
+            section.list.removeAt(posInSection)
+            notifyItemRemovedFromSection(section, posInSection)
+
+            if (section.list.size == 0) {
+                val sectionPos = getSectionPosition(section)
+                section.isVisible = false
+                notifySectionChangedToInvisible(section, sectionPos)
+            }
         }
     }
 
     /**
-     * Remove a notification from the list and rebuild the adapter list
+     * Inserts the previously removed notification and notifies the recycler view.
+     * @return The position in the adapter the item was added to
      */
-    private fun removeNotifFromList(pos: Int) {
-        val newList = notifsList.toMutableList()
-        newList.removeAt(pos)
-        setNotifications(newList)
+    fun revertHiddenNotificationAndReturnPos(): Int {
+        return pendingRemovalNotification?.let { (notif, section, pos) ->
+            with (section) {
+                if (pos < list.size) {
+                    list.add(pos, notif)
+                } else {
+                    list.add(notif)
+                }
+            }
+
+            if (!section.isVisible) {
+                section.isVisible = true
+                notifySectionChangedToVisible(section)
+            }
+
+            notifyItemInsertedInSection(section, pos)
+            getPositionInAdapter(section, pos)
+        }.also { pendingRemovalNotification = null } ?: 0
     }
 
     /**
-     * Add notification back to the list in the position specified and then rebuild
-     * the adapter.
+     * Return the item position relative to the section.
+     *
+     * @param position position of the item in the original backing list
+     * @return position of the item in the section
      */
-    fun addNotifBackToList(notifListItem: Pair<Int, NotificationModel>) {
-        val (pos, notif) = notifListItem
-        val newList = notifsList.toMutableList()
-        if (pos < newList.size) {
-            newList.add(pos, notif)
-        } else {
-            newList.add(notif)
+    private fun getPositionInSectionByListPos(position: Int): Int {
+        var currentPos = 0
+
+        sectionsMap.entries.forEach {
+            val section = it.value
+            val sectionTotal = section.contentItemsTotal
+
+            // check if position is in this section
+            if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
+                return position - currentPos
+            }
+
+            currentPos += sectionTotal
         }
-        setNotifications(newList)
+
+        // position not found, fail fast
+        throw IndexOutOfBoundsException("Unable to find matching position in section")
     }
 
-    private inner class NotifsListSection(val title: String, val list: List<NotificationModel>) : StatelessSection(
+    /**
+     * Returns the Section object for a position in the backing list.
+     *
+     * @param position position in the original list
+     * @return Section object for that position
+     */
+    private fun getSectionForListItemPosition(position: Int): Section {
+        var currentPos = 0
+
+        sectionsMap.entries.forEach {
+            val section = it.value
+            val sectionTotal = section.contentItemsTotal
+
+            // check if position is in this section
+            if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
+                return section
+            }
+
+            currentPos += sectionTotal
+        }
+
+        // position not found, fail fast
+        throw IndexOutOfBoundsException("Unable to find matching position in section")
+    }
+
+    private inner class NotifsListSection(
+        val title: String,
+        val list: MutableList<NotificationModel>
+    ) : StatelessSection(
             SectionParameters.Builder(R.layout.notifs_list_item).headerResourceId(R.layout.order_list_header).build()
     ) {
         override fun getContentItemsTotal() = list.size

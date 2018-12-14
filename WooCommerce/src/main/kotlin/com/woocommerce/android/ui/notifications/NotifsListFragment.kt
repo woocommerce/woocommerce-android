@@ -55,7 +55,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     private var changeCommentStatusSnackbar: Snackbar? = null
 
     // Holds a reference to the index and notification object pending moderation
-    private var listItemPendingModeration: Pair<Int, NotificationModel>? = null
     private var pendingModerationNewStatus: String? = null
     private var pendingModerationRemoteNoteId: Long? = null
 
@@ -338,18 +337,16 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     }
 
     private fun revertPendingModeratedNotifState() {
-        listItemPendingModeration?.let {
-            notifsAdapter.addNotifBackToList(it)
-        }
+        val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
+        notifsList.smoothScrollToPosition(itemPosition)
         resetPendingModerationVariables()
     }
 
     private fun removeModeratedNotifFromList(remoteNoteId: Long) {
-        listItemPendingModeration = notifsAdapter.removeAndReturnNotifWithIndex(remoteNoteId)
+        notifsAdapter.hideNotificationWithId(remoteNoteId)
     }
 
     private fun resetPendingModerationVariables() {
-        listItemPendingModeration = null
         pendingModerationNewStatus = null
         pendingModerationRemoteNoteId = null
     }
