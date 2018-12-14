@@ -146,9 +146,10 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
 
                 AnalyticsTracker.track(
-                        Stat.ORDER_STATUS_CHANGE_FAILED,
-                        this.javaClass.simpleName,
-                        event.error.type.toString(), event.error.message)
+                        Stat.ORDER_STATUS_CHANGE_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
 
                 orderView?.let {
                     it.showOrderStatusChangedError()
@@ -166,10 +167,10 @@ class OrderDetailPresenter @Inject constructor(
         } else if (event.causeOfChange == POST_ORDER_NOTE) {
             if (event.isError) {
                 AnalyticsTracker.track(
-                        ORDER_NOTE_ADD_FAILED,
-                        this::class.java.simpleName,
-                        event.error.type.toString(),
-                        event.error.message)
+                        ORDER_NOTE_ADD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
 
                 WooLog.e(T.ORDERS, "$TAG - Error posting order note : ${event.error.message}")
                 orderView?.showAddOrderNoteErrorSnack()
