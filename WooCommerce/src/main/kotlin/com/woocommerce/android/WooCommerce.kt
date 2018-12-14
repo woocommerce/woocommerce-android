@@ -83,7 +83,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         CrashlyticsUtils.initCrashlytics(this, accountStore.account, site)
 
         NotificationHandler.createNotificationChannels(this)
-        NotificationHandler.installChaChing(this)
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)

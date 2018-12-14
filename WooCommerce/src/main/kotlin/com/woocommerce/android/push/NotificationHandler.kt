@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.PendingIntent
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -14,7 +13,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.provider.MediaStore
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
@@ -251,43 +249,6 @@ object NotificationHandler {
     fun createNotificationChannels(context: Context) {
         for (noteType in NotificationChannelType.values()) {
             createNotificationChannel(context, noteType)
-        }
-    }
-
-    /**
-     * Installs the cha-ching ringtone to the device media library and registers it as a notification
-     * sound - note this only operates on API 26+ so we can enable users to choose this ringtone as
-     * the new order notification sound in the device's notification settings for the app
-     */
-    fun installChaChing(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val cr = context.contentResolver
-            try {
-                val title = context.getString(R.string.notification_order_ringtone_title)
-                val fileName = getChaChingUri(context).toString()
-                val uri = MediaStore.Audio.Media.getContentUriForPath(fileName)
-
-                val values = ContentValues()
-                values.put(MediaStore.MediaColumns.DATA, fileName)
-                values.put(MediaStore.MediaColumns.TITLE, title)
-                values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/wav")
-                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true)
-                values.put(MediaStore.Audio.Media.IS_RINGTONE, false)
-                values.put(MediaStore.Audio.Media.IS_ALARM, false)
-                values.put(MediaStore.Audio.Media.IS_MUSIC, false)
-
-                /*val where = "title=?"
-                val args = arrayOf(title)
-                val numDeleted = cr.delete(uri, where, args)
-                WooLog.d(T.NOTIFICATIONS, "Deleted $numDeleted ringtones")*/
-
-                // note that insert() will return null if the ringtone already exists
-                cr.insert(uri, values)?.let {
-                    WooLog.d(T.NOTIFICATIONS, "Installed ringtone $it")
-                }
-            } catch (e: Exception) {
-                WooLog.e(T.NOTIFICATIONS, e)
-            }
         }
     }
 
