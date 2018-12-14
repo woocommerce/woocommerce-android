@@ -261,26 +261,9 @@ object NotificationHandler {
      * order notification sound in the device's notification settings for the app
      */
     fun installChaChing(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val cr = context.getContentResolver()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !AppPrefs.isChaChingRingtoneInstalled()) {
+            val cr = context.contentResolver
             val file = File(getChaChingUri(context).toString())
-            val mediaUri = MediaStore.Audio.Media.getContentUriForPath(file.absolutePath)
-
-            // check if it already exists
-            val projection = arrayOf(MediaStore.MediaColumns.DATA)
-            val cursor = cr.query(mediaUri, projection, null, null, null)
-            cursor?.let {
-                try {
-                    if (it.moveToFirst()) {
-                        val filePath = it.getString(0)
-                        if (File(filePath).exists()) {
-                            return
-                        }
-                    }
-                } finally {
-                    cursor.close()
-                }
-            }
 
             val values = ContentValues()
             values.put(MediaStore.MediaColumns.DATA, file.absolutePath)
@@ -292,8 +275,10 @@ object NotificationHandler {
             values.put(MediaStore.Audio.Media.IS_ALARM, false)
             values.put(MediaStore.Audio.Media.IS_MUSIC, false)
 
-            val newUri = cr.insert(mediaUri, values)
-            WooLog.w(T.NOTIFICATIONS, "Installed ringtone ${newUri.toString()}")
+            val uri = MediaStore.Audio.Media.getContentUriForPath(file.absolutePath)
+            val newUri = cr.insert(uri, values)
+            WooLog.w(T.NOTIFICATIONS, "Installed ringtone $newUri")
+            AppPrefs.setIsChaChingRingtoneInstalled(true)
         }
     }
 

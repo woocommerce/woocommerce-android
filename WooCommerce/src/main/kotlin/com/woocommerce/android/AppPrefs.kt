@@ -36,7 +36,9 @@ object AppPrefs {
         // Enable notifications for new reviews
         NOTIFS_REVIEWS_ENABLED,
         // Play cha-ching sound on new order notifications
-        NOTIFS_ORDERS_CHA_CHING_ENABLED
+        NOTIFS_ORDERS_CHA_CHING_ENABLED,
+        // Set to true when the cha-ching ringtone has been installed
+        NOTIFS_ORDERS_CHA_CHING_INSTALLED
     }
 
     fun init(context: Context) {
@@ -109,6 +111,11 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
+    fun isChaChingRingtoneInstalled() = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_INSTALLED, false)
+
+    fun setIsChaChingRingtoneInstalled(installed: Boolean) {
+        setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_INSTALLED, installed)
+    }
     /**
      * Remove all user-related preferences.
      */
