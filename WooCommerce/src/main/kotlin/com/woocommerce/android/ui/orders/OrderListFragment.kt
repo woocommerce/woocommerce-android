@@ -64,7 +64,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
     override var isRefreshing: Boolean
         get() = orderRefreshLayout.isRefreshing
-        set(value) {}
+        set(_) {}
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
     private var filterMenuButton: MenuItem? = null

@@ -29,7 +29,6 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
 import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
 import org.wordpress.android.fluxc.model.notification.NotificationModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
 class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsListAdapter.ReviewListListener {
@@ -54,7 +53,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override var isRefreshPending = true
     override var isRefreshing: Boolean
         get() = notifsRefreshLayout.isRefreshing
-        set(value) {}
+        set(_) {}
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     private val skeletonView = SkeletonView()
