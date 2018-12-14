@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.notifications
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -88,11 +90,17 @@ class NotifsListPresenter @Inject constructor(
 
     private fun onCommentModerated(event: OnCommentChanged) {
         if (event.isError) {
+            AnalyticsTracker.track(Stat.REVIEW_ACTION_FAILED, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
             WooLog.e(NOTIFICATIONS, "${NotifsListFragment.TAG} - Error pushing comment changes to server! " +
                     "${event.error.message}")
 
-            // TODO add tracks for moderating comment error
             view?.notificationModerationError()
+        } else {
+            AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
         }
         fetchAndLoadNotifsFromDb(false)
         view?.notificationModerationSuccess()
@@ -118,13 +126,12 @@ class NotifsListPresenter @Inject constructor(
         when (event.causeOfChange) {
             NotificationAction.FETCH_NOTIFICATIONS -> {
                 if (event.isError) {
-                    // TODO - track event
-
                     WooLog.e(NOTIFICATIONS, "$TAG - Error fetching notifications: ${event.error.message}")
                     view?.showLoadNotificationsError()
                     fetchAndLoadNotifsFromDb(false)
                 } else {
-                    // TODO - track event
+                    AnalyticsTracker.track(Stat.NOTIFICATIONS_LOADED)
+
                     val forceRefresh = isRefreshing
                     fetchAndLoadNotifsFromDb(forceRefresh)
                 }

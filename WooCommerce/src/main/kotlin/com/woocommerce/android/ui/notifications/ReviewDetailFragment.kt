@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.canMarkAsSpam
 import com.woocommerce.android.extensions.canModerate
@@ -60,9 +62,10 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     private var commentStatusOverride: CommentStatus? = null
     private var productUrl: String? = null
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
+        AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
         when (isChecked) {
-            true -> approveReview()
-            false -> disapproveReview()
+            true -> processCommentModeration(CommentStatus.APPROVED)
+            false -> processCommentModeration(CommentStatus.UNAPPROVED)
         }
     }
 
@@ -149,7 +152,11 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         with(review_spam) {
             if (note.canMarkAsSpam()) {
                 visibility = View.VISIBLE
-                setOnClickListener { spamReview() }
+                setOnClickListener {
+                    AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
+
+                    processCommentModeration(CommentStatus.SPAM)
+                }
             } else {
                 visibility = View.GONE
             }
@@ -159,7 +166,11 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         with(review_trash) {
             if (note.canTrash()) {
                 visibility = View.VISIBLE
-                setOnClickListener { trashReview() }
+                setOnClickListener {
+                    AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
+
+                    processCommentModeration(CommentStatus.TRASH)
+                }
             } else {
                 visibility = View.GONE
             }
@@ -177,22 +188,6 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
             else -> WooLog.w(NOTIFICATIONS, "Unable to process Notification with a status of $status")
         }
         review_approve.setOnCheckedChangeListener(moderateListener)
-    }
-
-    private fun trashReview() {
-        processCommentModeration(CommentStatus.TRASH)
-    }
-
-    private fun spamReview() {
-        processCommentModeration(CommentStatus.SPAM)
-    }
-
-    private fun approveReview() {
-        processCommentModeration(CommentStatus.APPROVED)
-    }
-
-    private fun disapproveReview() {
-        processCommentModeration(CommentStatus.UNAPPROVED)
     }
 
     private fun processCommentModeration(newStatus: CommentStatus) {

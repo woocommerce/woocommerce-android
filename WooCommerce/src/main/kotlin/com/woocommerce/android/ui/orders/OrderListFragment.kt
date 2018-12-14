@@ -235,7 +235,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         orderStatusFilter = filterByStatus
 
         if (!ordersAdapter.isSameOrderList(orders)) {
-            ordersList?.let { _ ->
+            ordersList?.let {
                 if (isFreshData) {
                     ordersList.scrollToPosition(0)
                 }
