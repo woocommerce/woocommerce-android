@@ -10,6 +10,6 @@ interface MainSettingsContract {
     }
 
     interface View : BaseView<Presenter> {
-        // TODO: empty for now but will be added to as more settings are added
+        fun showDeviceNotificationSettings()
     }
 }

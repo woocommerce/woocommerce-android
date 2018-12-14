@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -72,24 +73,30 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             listener.onRequestLogout()
         }
 
-        switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
-        switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
-            trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
-            AppPrefs.setOrderNotificationsEnabled(isChecked)
-            switchNotifsTone.isEnabled = isChecked
-        }
-
-        switchNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
-        switchNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
-            trackSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
-            AppPrefs.setReviewNotificationsEnabled(isChecked)
-        }
-
-        // TODO: for now we're hiding the ability to disable the cha-ching on API 26+.
-        // this will be addressed in a later PR
+        // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            switchNotifsTone.visibility = View.GONE
+            notifsContainerOlder.visibility = View.GONE
+            textDeviceNotifSettings.visibility = View.VISIBLE
+            textDeviceNotifSettings.setOnClickListener {
+                showDeviceNotificationSettings()
+            }
         } else {
+            notifsContainerOlder.visibility = View.VISIBLE
+            textDeviceNotifSettings.visibility = View.GONE
+
+            switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
+            switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
+                trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
+                AppPrefs.setOrderNotificationsEnabled(isChecked)
+                switchNotifsTone.isEnabled = isChecked
+            }
+
+            switchNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
+            switchNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
+                trackSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
+                AppPrefs.setReviewNotificationsEnabled(isChecked)
+            }
+
             switchNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
             switchNotifsTone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
             switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
@@ -120,6 +127,17 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
 
         activity?.setTitle(R.string.settings)
     }
+
+
+    override fun showDeviceNotificationSettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val intent = Intent()
+            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+            intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.getPackageName())
+            activity?.startActivity(intent)
+        }
+    }
+
 
     /**
      * Called when a boolean setting is changed so we can track it
