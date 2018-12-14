@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
+import android.content.Context
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.store.AccountStore
@@ -22,4 +24,8 @@ class MainSettingsPresenter @Inject constructor(
     override fun getUserDisplayName(): String = accountStore.account.displayName
 
     override fun getStoreDomainName(): String = StringUtils.getSiteDomainAndPath(selectedSite.get())
+
+    override fun testNotification(context: Context) {
+        NotificationHandler.testNotification(context, "Title", "Message", accountStore.account)
+    }
 }

@@ -236,7 +236,8 @@
     <string name="settings_footer">Made with love by Automattic</string>
     <string name="settings_primary_store">Primary store</string>
     <string name="settings_notifs">Notifications</string>
-    <string name="settings_notifs_device">Notification settings</string>
+    <string name="settings_notifs_device">Manage notifications</string>
+    <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_orders">Orders</string>
     <string name="settings_notifs_orders_detail">Get alerts when notifications come in</string>
     <string name="settings_notifs_tone">Tone</string>

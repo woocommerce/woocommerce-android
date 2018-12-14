@@ -81,14 +81,27 @@
 
         <!--
             Notifications (API 26+)
-
         -->
-        <TextView
-            android:id="@+id/textDeviceNotifSettings"
-            style="@style/Woo.Settings.Label"
+        <LinearLayout
+            android:id="@+id/notifsContainerNewer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_notifs_device"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textDeviceNotifSettings"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_notifs_device"/>
+
+            <TextView
+                style="@style/Woo.Settings.Label.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_notifs_device_detail"/>
+
+        </LinearLayout>
 
         <View
             style="@style/Woo.Settings.Divider"/>

@@ -68,6 +68,11 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         textPrimaryStoreDomain.text = presenter.getStoreDomainName()
         textPrimaryStoreUsername.text = presenter.getUserDisplayName()
 
+        // TODO: this is just for testing - remove before merging
+        textPrimaryStoreDomain.setOnClickListener {
+            presenter.testNotification(activity!!)
+        }
+
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
             listener.onRequestLogout()
@@ -76,13 +81,13 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifsContainerOlder.visibility = View.GONE
-            textDeviceNotifSettings.visibility = View.VISIBLE
-            textDeviceNotifSettings.setOnClickListener {
+            notifsContainerNewer.visibility = View.VISIBLE
+            notifsContainerNewer.setOnClickListener {
                 showDeviceAppNotificationSettings()
             }
         } else {
             notifsContainerOlder.visibility = View.VISIBLE
-            textDeviceNotifSettings.visibility = View.GONE
+            notifsContainerNewer.visibility = View.GONE
 
             switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
             switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
