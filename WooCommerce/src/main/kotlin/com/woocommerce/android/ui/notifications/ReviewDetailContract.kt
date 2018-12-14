@@ -15,7 +15,6 @@ interface ReviewDetailContract {
         fun getOrBuildCommentForNotification(notif: NotificationModel): CommentModel
         fun reloadComment()
         fun fetchComment()
-        fun moderateComment(comment: CommentModel)
     }
 
     interface View : BaseView<Presenter> {

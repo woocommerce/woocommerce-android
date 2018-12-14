@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.notifications
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -64,8 +63,6 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
     }
 
-    private var changeCommentStatusSnackbar: Snackbar? = null
-
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -85,11 +82,6 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
 
         presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
-    }
-
-    override fun onStop() {
-        changeCommentStatusSnackbar?.dismiss()
-        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -179,75 +171,36 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     }
 
     private fun trashReview() {
-        showChangeCommentStatusSnackbar(CommentStatus.TRASH)
+        processCommentModeration(CommentStatus.TRASH)
     }
 
     private fun spamReview() {
-        showChangeCommentStatusSnackbar(CommentStatus.SPAM)
+        processCommentModeration(CommentStatus.SPAM)
     }
 
     private fun approveReview() {
-        showChangeCommentStatusSnackbar(CommentStatus.APPROVED)
+        processCommentModeration(CommentStatus.APPROVED)
     }
 
     private fun disapproveReview() {
-        showChangeCommentStatusSnackbar(CommentStatus.UNAPPROVED)
+        processCommentModeration(CommentStatus.UNAPPROVED)
     }
 
-    private fun showChangeCommentStatusSnackbar(newStatus: CommentStatus) {
-        if (networkStatus.isConnected()) {
-            // Disable the moderation buttons
-            disableModerationButtons()
-
-            var changeCommentStatusCanceled = false
-
-            // TODO Add tracks events
-
-            // Listener for the UNDO button in the snackbar
-            val actionListener = View.OnClickListener {
-                // TODO tracks events
-
-                // User canceled the action to change the order status
-                changeCommentStatusCanceled = true
-
-                enableModerationButtons()
-                presenter.comment?.let { updateStatus(CommentStatus.fromString(it.status)) }
-            }
-
-            val callback = object : Snackbar.Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (!changeCommentStatusCanceled) {
-                        presenter.comment?.let { comment ->
-                            comment.status = newStatus.toString()
-                            presenter.moderateComment(comment)
-                        }
-                        activity?.onBackPressed()
-                    }
+    private fun processCommentModeration(newStatus: CommentStatus) {
+        parentFragment?.let { listener ->
+            if (listener is ReviewActionListener) {
+                presenter.comment?.let {
+                    listener.moderateComment(remoteNoteId, it, newStatus)
                 }
+
+                // Close this fragment
+                activity?.onBackPressed()
+            } else {
+                WooLog.e(NOTIFICATIONS, "$TAG - ParentFragment must implement ReviewActionListener to " +
+                        "moderate product review notifications!")
+
+                uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
             }
-
-            changeCommentStatusSnackbar = uiMessageResolver
-                    .getUndoSnack(
-                            R.string.notifs_review_moderation_undo,
-                            newStatus.toString(),
-                            actionListener = actionListener
-                    ).also {
-                        it.addCallback(callback)
-                        it.show()
-                    }
         }
-    }
-
-    private fun disableModerationButtons() {
-        review_approve.isEnabled = false
-        review_spam.isEnabled = false
-        review_trash.isEnabled = false
-    }
-
-    private fun enableModerationButtons() {
-        review_approve.isEnabled = true
-        review_spam.isEnabled = true
-        review_trash.isEnabled = true
     }
 }

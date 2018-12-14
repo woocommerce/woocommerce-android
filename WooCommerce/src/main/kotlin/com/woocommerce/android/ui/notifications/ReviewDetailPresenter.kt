@@ -13,7 +13,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.CommentAction.FETCH_COMMENT
-import org.wordpress.android.fluxc.action.CommentAction.PUSH_COMMENT
 import org.wordpress.android.fluxc.generated.CommentActionBuilder
 import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
@@ -61,8 +60,8 @@ class ReviewDetailPresenter @Inject constructor(
             notificationStore.getNotificationByIdSet(noteIdSet)?.let { note ->
                 notification = note
 
-                comment = getOrBuildCommentForNotification(note).also {
-                    view?.setNotification(note, it)
+                comment = getOrBuildCommentForNotification(note).also { comment ->
+                    view?.setNotification(note, comment)
                 }
             }
         }
@@ -77,7 +76,7 @@ class ReviewDetailPresenter @Inject constructor(
     override fun reloadComment() {
         notification?.getCommentId()?.let {
             commentStore.getCommentBySiteAndRemoteId(selectedSite.get(), it)?.let { comment ->
-                view?.let { it.updateStatus(CommentStatus.fromString(comment.status)) }
+                view?.updateStatus(CommentStatus.fromString(comment.status))
             }
         }
     }
@@ -92,13 +91,6 @@ class ReviewDetailPresenter @Inject constructor(
         }
     }
 
-    override fun moderateComment(comment: CommentModel) {
-        if (networkStatus.isConnected()) {
-            val payload = RemoteCommentPayload(selectedSite.get(), comment)
-            dispatcher.dispatch(CommentActionBuilder.newPushCommentAction(payload))
-        }
-    }
-
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onCommentChanged(event: OnCommentChanged) {
@@ -106,19 +98,6 @@ class ReviewDetailPresenter @Inject constructor(
 
         when (event.causeOfChange) {
             FETCH_COMMENT -> onCommentFetched(event)
-            PUSH_COMMENT -> onCommentModerated(event)
-        }
-    }
-
-    private fun onCommentModerated(event: OnCommentChanged) {
-        if (event.isError) {
-            WooLog.e(NOTIFICATIONS, "$TAG - Error pushing comment changes to server! ${event.error.message}")
-
-            // TODO add tracks for moderating comment error
-            uiMessageResolver.showSnack(R.string.wc_load_review_error)
-        } else {
-            // Comment has been saved to the server.
-            reloadComment()
         }
     }
 
@@ -128,7 +107,7 @@ class ReviewDetailPresenter @Inject constructor(
                     "${notification?.noteId} and comment_id: ${comment?.id}, ${event.error.message}")
 
             // TODO add tracks for fetching comment error
-            uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
+            uiMessageResolver.showSnack(R.string.wc_load_review_error)
         } else {
             // Comment has been fetched from the api successfully.
             // TODO add tracks for COMMENTS
