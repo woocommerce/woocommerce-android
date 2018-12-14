@@ -152,7 +152,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
      */
     fun revertHiddenNotificationAndReturnPos(): Int {
         return pendingRemovalNotification?.let { (notif, section, pos) ->
-            with (section) {
+            with(section) {
                 if (pos < list.size) {
                     list.add(pos, notif)
                 } else {
