@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
@@ -100,7 +101,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
                 // Set the scrolling view in the custom SwipeRefreshLayout
                 scrollUpChild = notifsList
                 setOnRefreshListener {
-                    // TODO track analytics
+                    AnalyticsTracker.track(Stat.NOTIFICATIONS_LIST_PULLED_TO_REFRESH)
 
                     notifsRefreshLayout.isRefreshing = false
 
@@ -220,6 +221,10 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             PRODUCT_REVIEW -> openReviewDetail(notification)
             NEW_ORDER -> {
                 notification.getRemoteOrderId()?.let {
+                    AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                            AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
+                            AnalyticsTracker.KEY_ALREADY_READ to notification.read))
+
                     openOrderDetail(selectedSite.get().id, it)
                 } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
                     showLoadNotificationDetailError()
@@ -234,6 +239,10 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun openReviewDetail(notification: NotificationModel) {
         if (!notifsRefreshLayout.isRefreshing) {
+            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                    AnalyticsTracker.KEY_ALREADY_READ to notification.read))
+
             // If the notification is pending moderation, override the status to display in
             // the detail view.
             val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
@@ -292,11 +301,11 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
             var changeCommentStatusCanceled = false
 
-            // TODO Add tracks events
+            AnalyticsTracker.track(Stat.REVIEW_ACTION, mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
-                // TODO tracks events
+                AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
 
                 // User canceled the action to change the order status
                 changeCommentStatusCanceled = true
@@ -337,6 +346,8 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     }
 
     private fun revertPendingModeratedNotifState() {
+        AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
+
         val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
         notifsList.smoothScrollToPosition(itemPosition)
         resetPendingModerationVariables()

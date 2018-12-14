@@ -133,6 +133,7 @@
     -->
     <color name="orderNote_private">@color/wc_grey</color>
     <color name="orderNote_public">@color/wc_blue_light</color>
+    <color name="orderNote_system">@color/wc_purple</color>
 
     <!-- Login -->
     <!-- Login uses snake_case instead of CamelCase for the main color palette,

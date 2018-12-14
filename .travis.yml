@@ -1,6 +1,15 @@
 language: android
 jdk: oraclejdk8
-rvm: 2.0.0
+sudo: required
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 
 android:
   components:
@@ -18,15 +27,27 @@ env:
     - ANDROID_SDKS=android-21
     - ANDROID_TARGET=android-21
 
+matrix:
+  include:
+    - name: "Lint"
+      env: GRADLE_TASKS="checkstyle ktlint lintVanillaRelease"
+    - name: "Build & Test"
+      env: GRADLE_TASKS="assembleVanillaRelease testVanillaRelease"
+    - name: "Danger"
+      env: GRADLE_TASKS=""
+      language: ruby
+      rvm: 2.3.4
+      cache:
+        directories:
+          - vendor/bundle/
+      install:
+        - bundle install
+      script:
+        - bundle exec danger --fail-on-errors=true
+
 install:
   # Setup gradle.properties
   - cp gradle.properties-example gradle.properties
 
 script:
-  - ./gradlew assembleVanillaRelease
-  - ./gradlew testVanillaRelease
-  - ./gradlew lintVanillaRelease || (grep -A20 -B2 'severity="Error"' */build/**/*.xml; exit 1)
-  - ./gradlew checkstyle
-  - ./gradlew ktlint
-  - bundle install
-  - bundle exec danger
+  - ./gradlew -PdisablePreDex $GRADLE_TASKS || (grep -A20 -B2 'severity="Error"' -r --include="*.xml" WordPress libs; exit 1)
