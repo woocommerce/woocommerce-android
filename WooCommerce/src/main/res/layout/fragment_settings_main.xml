@@ -90,7 +90,7 @@
 
             <TextView
                 android:id="@+id/textDeviceNotifSettings"
-                style="@style/Woo.Settings.Label"
+                style="@style/Woo.Settings.LabelWithDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_notifs_device"/>
