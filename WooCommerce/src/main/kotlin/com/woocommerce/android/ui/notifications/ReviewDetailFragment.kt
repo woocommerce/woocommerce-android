@@ -119,7 +119,10 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         // Populate reviewed product info
         review_product_name.text = comment.postTitle
         note.getProductInfo()?.url?.let { url ->
-            review_open_product.setOnClickListener { ActivityUtils.openUrlExternal(activity as Context, url) }
+            review_open_product.setOnClickListener {
+                AnalyticsTracker.track(Stat.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
+                ActivityUtils.openUrlExternal(activity as Context, url)
+            }
         }
         productUrl = note.getProductInfo()?.url
 
