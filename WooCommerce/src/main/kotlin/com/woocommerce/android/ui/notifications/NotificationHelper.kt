@@ -54,4 +54,10 @@ object NotificationHelper {
             block.ranges?.asSequence()?.filter { it.rangeType() == POST }?.firstOrNull()?.url
         }
     }
+
+    /**
+     * Parses the comment block from the body of a notification object.
+     */
+    fun getCommentBlockFromBody(notif: NotificationModel) =
+            notif.body?.asSequence()?.filter { it.type == "comment" }?.firstOrNull()
 }

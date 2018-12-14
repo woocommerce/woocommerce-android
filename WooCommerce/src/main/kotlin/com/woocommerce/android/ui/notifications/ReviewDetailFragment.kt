@@ -6,29 +6,43 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton.OnCheckedChangeListener
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.extensions.NotificationReviewDetail
-import com.woocommerce.android.extensions.getReviewDetail
+import com.woocommerce.android.extensions.canMarkAsSpam
+import com.woocommerce.android.extensions.canModerate
+import com.woocommerce.android.extensions.canTrash
+import com.woocommerce.android.extensions.getCommentId
+import com.woocommerce.android.extensions.getConvertedTimestamp
+import com.woocommerce.android.extensions.getProductInfo
+import com.woocommerce.android.extensions.getRating
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
+import org.wordpress.android.fluxc.model.CommentModel
+import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 
 class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     companion object {
         const val TAG = "ReviewDetailFragment"
-        const val FIELD_REVIEW_DETAIL = "notif-review-detail"
         const val FIELD_REMOTE_NOTIF_ID = "notif-remote-id"
+        const val FIELD_REMOTE_COMMENT_ID = "remote-comment-id"
+        const val FIELD_COMMENT_STATUS_OVERRIDE = "status-override"
 
-        fun newInstance(notification: NotificationModel): ReviewDetailFragment {
+        fun newInstance(notification: NotificationModel, tempStatus: String? = null): ReviewDetailFragment {
             val args = Bundle()
             args.putLong(FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
-            args.putParcelable(FIELD_REVIEW_DETAIL, notification.getReviewDetail())
+            args.putLong(FIELD_REMOTE_COMMENT_ID, notification.getCommentId())
+            tempStatus?.let { args.putString(FIELD_COMMENT_STATUS_OVERRIDE, tempStatus) }
 
             val fragment = ReviewDetailFragment()
             fragment.arguments = args
@@ -38,10 +52,19 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     @Inject lateinit var presenter: ReviewDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var networkStatus: NetworkStatus
 
     private val skeletonView = SkeletonView()
-    private var review: NotificationReviewDetail? = null
-    private var remoteNoteId: Long? = null
+    private var remoteNoteId: Long = 0L
+    private var remoteCommentId: Long = 0L
+    private var commentStatusOverride: CommentStatus? = null
+    private var productUrl: String? = null
+    private val moderateListener = OnCheckedChangeListener { _, isChecked ->
+        when (isChecked) {
+            true -> approveReview()
+            false -> disapproveReview()
+        }
+    }
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -57,51 +80,14 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         presenter.takeView(this)
 
         arguments?.let {
-            review = it.getParcelable(FIELD_REVIEW_DETAIL)
             remoteNoteId = it.getLong(FIELD_REMOTE_NOTIF_ID)
-        }
-
-        review_approve.setOnCheckedChangeListener { _, isChecked ->
-            when (isChecked) {
-                true -> disapproveReview()
-                false -> approveReview()
+            remoteCommentId = it.getLong(FIELD_REMOTE_COMMENT_ID)
+            commentStatusOverride = it.getString(FIELD_COMMENT_STATUS_OVERRIDE, null)?.let {
+                CommentStatus.fromString(it)
             }
         }
 
-        review_spam.setOnClickListener { spamReview() }
-        review_trash.setOnClickListener { trashReview() }
-        review_open_product.setOnClickListener { openProduct() }
-
-        populateView()
-    }
-
-    private fun populateView() {
-        review?.let {
-            it.productInfo?.let { product ->
-                review_product_name.text = product.name
-            }
-
-            it.userInfo?.let { user ->
-                // Load the user gravatar image if available
-                user.iconUrl?.let { icon ->
-                    GlideApp.with(review_gravatar.context)
-                            .load(icon)
-                            .placeholder(R.drawable.ic_user_circle_grey_24dp)
-                            .circleCrop()
-                            .into(review_gravatar)
-                }
-                review_user_name.text = user.name
-            }
-
-            review_time.text = DateTimeUtils.timeSpanFromTimestamp(it.timestamp, activity as Context)
-
-            it.rating?.let { rating ->
-                review_rating_bar.rating = rating
-                review_rating_bar.visibility = View.VISIBLE
-            }
-
-            review_description.text = it.msg
-        }
+        presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
     }
 
     override fun onDestroyView() {
@@ -117,29 +103,112 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
     }
 
+    override fun setNotification(note: NotificationModel, comment: CommentModel) {
+        // Populate reviewer section
+        GlideApp.with(review_gravatar.context)
+                .load(comment.authorProfileImageUrl)
+                .placeholder(R.drawable.ic_user_circle_grey_24dp)
+                .circleCrop()
+                .into(review_gravatar)
+        review_user_name.text = comment.authorName
+        review_time.text = DateTimeUtils.timeSpanFromTimestamp(note.getConvertedTimestamp(), activity as Context)
+
+        // Populate reviewed product info
+        review_product_name.text = comment.postTitle
+        note.getProductInfo()?.url?.let { url ->
+            review_open_product.setOnClickListener { ActivityUtils.openUrlExternal(activity as Context, url) }
+        }
+        productUrl = note.getProductInfo()?.url
+
+        // Set the rating if available, or hide
+        note.getRating()?.let { rating ->
+            review_rating_bar.rating = rating
+            review_rating_bar.visibility = View.VISIBLE
+        }
+
+        // Set the review text
+        review_description.text = HtmlUtils.fromHtml(comment.content)
+
+        // Initialize moderation buttons and set comment status
+        configureModerationButtons(note)
+        updateStatus(CommentStatus.fromString(comment.status))
+    }
+
+    private fun configureModerationButtons(note: NotificationModel) {
+        // Configure the moderate button
+        with(review_approve) {
+            if (note.canModerate()) {
+                visibility = View.VISIBLE
+                setOnCheckedChangeListener(moderateListener)
+            } else {
+                visibility = View.GONE
+            }
+        }
+
+        // Configure the spam button
+        with(review_spam) {
+            if (note.canMarkAsSpam()) {
+                visibility = View.VISIBLE
+                setOnClickListener { spamReview() }
+            } else {
+                visibility = View.GONE
+            }
+        }
+
+        // Configure the trash button
+        with(review_trash) {
+            if (note.canTrash()) {
+                visibility = View.VISIBLE
+                setOnClickListener { trashReview() }
+            } else {
+                visibility = View.GONE
+            }
+        }
+    }
+
+    override fun updateStatus(status: CommentStatus) {
+        review_approve.setOnCheckedChangeListener(null)
+
+        // Use the status override if present, else new status
+        val newStatus = commentStatusOverride ?: status
+        when (newStatus) {
+            CommentStatus.APPROVED -> review_approve.isChecked = true
+            CommentStatus.UNAPPROVED -> review_approve.isChecked = false
+            else -> WooLog.w(NOTIFICATIONS, "Unable to process Notification with a status of $status")
+        }
+        review_approve.setOnCheckedChangeListener(moderateListener)
+    }
+
     private fun trashReview() {
-        uiMessageResolver.showSnack("Trash logic not implemented")
+        processCommentModeration(CommentStatus.TRASH)
     }
 
     private fun spamReview() {
-        uiMessageResolver.showSnack("Spam logic not implemented")
+        processCommentModeration(CommentStatus.SPAM)
     }
 
     private fun approveReview() {
-        uiMessageResolver.showSnack("Approve logic not implemented")
+        processCommentModeration(CommentStatus.APPROVED)
     }
 
     private fun disapproveReview() {
-        uiMessageResolver.showSnack("Disapprove logic not implemented")
+        processCommentModeration(CommentStatus.UNAPPROVED)
     }
 
-    /**
-     * Open the product detail page in an external browser
-     */
-    private fun openProduct() {
-        review?.let {
-            it.productInfo?.url?.let { url ->
-                ActivityUtils.openUrlExternal(activity as Context, url)
+    private fun processCommentModeration(newStatus: CommentStatus) {
+        parentFragment?.let { listener ->
+            if (listener is ReviewActionListener) {
+                presenter.comment?.let {
+                    listener.moderateComment(remoteNoteId, it, newStatus)
+                }
+
+                // Close this fragment
+                activity?.onBackPressed()
+            } else {
+                WooLog.e(NOTIFICATIONS, "$TAG - ParentFragment must implement ReviewActionListener to " +
+                        "moderate product review notifications!")
+
+                uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
             }
         }
     }

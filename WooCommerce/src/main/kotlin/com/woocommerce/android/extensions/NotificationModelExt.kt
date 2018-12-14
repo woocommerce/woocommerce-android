@@ -7,14 +7,11 @@ import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.ui.notifications.NotificationHelper
 import kotlinx.android.parcel.Parcelize
+import org.wordpress.android.fluxc.model.CommentModel
+import org.wordpress.android.fluxc.model.CommentStatus.UNAPPROVED
+import org.wordpress.android.fluxc.model.CommentStatus.APPROVED
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
-
-enum class WooNotificationType {
-    NEW_ORDER,
-    PRODUCT_REVIEW,
-    UNKNOWN
-}
 
 /**
  * Returns a simplified Woo Notification type.
@@ -69,7 +66,8 @@ fun NotificationModel.getUserInfo(): NotificationUserInfo? {
         block.text?.let { name ->
             val url = block.media?.asSequence()?.filter { it.type == "image" }?.first()?.url
             val email = block.meta?.links?.email
-            NotificationUserInfo(name, url, email)
+            val home = block.meta?.links?.home
+            NotificationUserInfo(name, url, email, home)
         }
     }
 }
@@ -84,8 +82,6 @@ fun NotificationModel.getReviewDetail(): NotificationReviewDetail? {
         return null
     }
 
-    val userInfo = getUserInfo()
-    val rating = getRating()
     return NotificationReviewDetail(
             getMessageDetail(),
             getConvertedTimestamp(),
@@ -126,7 +122,67 @@ fun NotificationModel.getRemoteOrderId(): Long? {
  */
 fun NotificationModel.getConvertedTimestamp(): Long = DateTimeUtils.timestampFromIso8601(timestamp)
 
-// TODO: Temporarily suppress lint errors around ParcelCreator due to this error:
+/**
+ * Returns the remote comment_id associated with this notification. Product reviews are comments under the
+ * hood so only parse the comment_id if the notification is a product review. This id can be used to fetch
+ * the [org.wordpress.android.fluxc.model.CommentModel] from the API which is required for moderating the
+ * review.
+ */
+fun NotificationModel.getCommentId(): Long {
+    if (this.getWooType() != PRODUCT_REVIEW) {
+        return 0L
+    }
+
+    return this.meta?.ids?.comment ?: 0L
+}
+
+/**
+ * Builds a comment object from the Notification data. Not everything to build a comment is available in the
+ * notification, but this gets us 95% there.
+ */
+fun NotificationModel.buildComment(): CommentModel {
+    val noteDetail = getReviewDetail()
+    val commentStatus = if (this.isApproved()) APPROVED.toString() else UNAPPROVED.toString()
+    return CommentModel().apply {
+        remotePostId = meta?.ids?.post ?: 0
+        remoteCommentId = getCommentId()
+        authorName = noteDetail?.userInfo?.name.orEmpty()
+        datePublished = timestamp
+        content = noteDetail?.msg
+        status = commentStatus
+        postTitle = noteDetail?.productInfo?.name.orEmpty()
+        authorUrl = noteDetail?.userInfo?.home.orEmpty()
+        authorProfileImageUrl = icon
+    }
+}
+
+/**
+ * If true, user can approve or un-approve this notification.
+ */
+fun NotificationModel.canModerate() = NotificationHelper
+        .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
+
+/**
+ * If the notification has been approved, return true, else false
+ */
+fun NotificationModel.isApproved() = NotificationHelper
+        .getCommentBlockFromBody(this)?.actions?.getValue(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
+
+/**
+ * If true, user can mark this notification as spam.
+ */
+fun NotificationModel.canMarkAsSpam() = NotificationHelper
+        .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_SPAM) ?: false
+
+/**
+ * There is an action option for trash, but in the interest of consistent notification UX
+ * between WPAndroid and WCAndroid, following WPAndroid.
+ *
+ * If true, the user can trash the notification.
+ */
+fun NotificationModel.canTrash() = canModerate()
+
+// Temporarily suppress lint errors around ParcelCreator due to this error:
 // https://youtrack.jetbrains.com/issue/KT-19300
 @SuppressLint("ParcelCreator")
 @Parcelize
@@ -134,7 +190,12 @@ data class NotificationProductInfo(val name: String, val url: String) : Parcelab
 
 @SuppressLint("ParcelCreator")
 @Parcelize
-data class NotificationUserInfo(val name: String, val iconUrl: String?, val email: String?) : Parcelable
+data class NotificationUserInfo(
+    val name: String,
+    val iconUrl: String?,
+    val email: String?,
+    val home: String?
+) : Parcelable
 
 @SuppressLint("ParcelCreator")
 @Parcelize
@@ -145,3 +206,14 @@ data class NotificationReviewDetail(
     val userInfo: NotificationUserInfo?,
     val productInfo: NotificationProductInfo?
 ) : Parcelable
+
+enum class WooNotificationType {
+    NEW_ORDER,
+    PRODUCT_REVIEW,
+    UNKNOWN
+}
+
+object ReviewActionKeys {
+    const val ACTION_KEY_APPROVE = "approve-comment"
+    const val ACTION_KEY_SPAM = "spam-comment"
+}

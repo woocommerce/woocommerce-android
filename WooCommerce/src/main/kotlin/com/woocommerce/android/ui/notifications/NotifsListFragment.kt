@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.notifications
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -16,8 +17,8 @@ import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.extensions.getRemoteOrderId
-import com.woocommerce.android.extensions.getReviewDetail
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -28,6 +29,10 @@ import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
 import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
+import org.wordpress.android.fluxc.model.CommentModel
+import org.wordpress.android.fluxc.model.CommentStatus
+import org.wordpress.android.fluxc.model.CommentStatus.SPAM
+import org.wordpress.android.fluxc.model.CommentStatus.TRASH
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import javax.inject.Inject
 
@@ -44,8 +49,14 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     @Inject lateinit var notifsAdapter: NotifsListAdapter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var networkStatus: NetworkStatus
 
     private lateinit var dividerDecoration: DividerItemDecoration
+    private var changeCommentStatusSnackbar: Snackbar? = null
+
+    // Holds a reference to the index and notification object pending moderation
+    private var pendingModerationNewStatus: String? = null
+    private var pendingModerationRemoteNoteId: Long? = null
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
@@ -53,7 +64,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override var isRefreshPending = true
     override var isRefreshing: Boolean
         get() = notifsRefreshLayout.isRefreshing
-        set(value) {}
+        set(_) {}
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     private val skeletonView = SkeletonView()
@@ -147,11 +158,31 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override fun onBackStackChanged() {
         super.onBackStackChanged()
 
-        // If this fragment is now visible and we've deferred loading orders due to it not
-        // being visible - go ahead and load the orders.
         if (isActive) {
-            presenter.loadNotifs(forceRefresh = this.isRefreshPending)
+            // If this fragment is now visible and we've deferred loading orders due to it not
+            // being visible - go ahead and load the orders.
+            if (isRefreshPending) {
+                presenter.loadNotifs(true)
+            }
+        } else {
+            // If this fragment is no longer visible, dismiss the pending notification
+            // moderation so it can be processed immediately.
+            changeCommentStatusSnackbar?.dismiss()
         }
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        // If this fragment is no longer visible, dismiss the pending notification
+        // moderation so it can be processed immediately.
+        changeCommentStatusSnackbar?.dismiss()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        changeCommentStatusSnackbar?.dismiss()
     }
 
     override fun onDestroyView() {
@@ -203,14 +234,32 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun openReviewDetail(notification: NotificationModel) {
         if (!notifsRefreshLayout.isRefreshing) {
+            // If the notification is pending moderation, override the status to display in
+            // the detail view.
+            val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
+
             val tag = ReviewDetailFragment.TAG
-            getFragmentFromBackStack(tag)?.let {
-                val args = it.arguments ?: Bundle()
+            getFragmentFromBackStack(tag)?.let { frag ->
+                val args = frag.arguments ?: Bundle()
+
                 args.putLong(ReviewDetailFragment.FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
-                args.putParcelable(ReviewDetailFragment.FIELD_REVIEW_DETAIL, notification.getReviewDetail())
-                it.arguments = args
+
+                // Reset any existing comment status overrides
+                args.remove(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE)
+
+                // Add comment status override if needed
+                if (isPendingModeration) {
+                    pendingModerationNewStatus?.let {
+                        args.putString(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE, it)
+                    }
+                }
+                frag.arguments = args
                 popToState(tag)
-            } ?: loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
+            } ?: if (isPendingModeration) {
+                loadChildFragment(ReviewDetailFragment.newInstance(notification, pendingModerationNewStatus), tag)
+            } else {
+                loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
+            }
         }
     }
 
@@ -224,5 +273,81 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun showLoadNotificationDetailError() {
         uiMessageResolver.showSnack(R.string.notifs_detail_loading_error)
+    }
+
+    override fun notificationModerationError() {
+        uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
+
+        revertPendingModeratedNotifState()
+    }
+
+    override fun notificationModerationSuccess() {
+        resetPendingModerationVariables()
+    }
+
+    override fun moderateComment(remoteNoteId: Long, comment: CommentModel, newStatus: CommentStatus) {
+        if (networkStatus.isConnected()) {
+            pendingModerationNewStatus = newStatus.toString()
+            pendingModerationRemoteNoteId = remoteNoteId
+
+            var changeCommentStatusCanceled = false
+
+            // TODO Add tracks events
+
+            // Listener for the UNDO button in the snackbar
+            val actionListener = View.OnClickListener {
+                // TODO tracks events
+
+                // User canceled the action to change the order status
+                changeCommentStatusCanceled = true
+
+                // Add the notification back to the list
+                revertPendingModeratedNotifState()
+            }
+
+            val callback = object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+
+                    if (!changeCommentStatusCanceled) {
+                        comment.status = newStatus.toString()
+                        presenter.pushUpdatedComment(comment)
+                    }
+                }
+            }
+
+            changeCommentStatusSnackbar = uiMessageResolver
+                    .getUndoSnack(
+                            R.string.notifs_review_moderation_undo,
+                            newStatus.toString(),
+                            actionListener = actionListener
+                    ).also {
+                        it.addCallback(callback)
+                        it.show()
+                    }
+
+            // Manually remove the notification from the list if it's new
+            // status will be spam or trash
+            if (newStatus == SPAM || newStatus == TRASH) {
+                removeModeratedNotifFromList(remoteNoteId)
+            }
+        } else {
+            uiMessageResolver.showOfflineSnack()
+        }
+    }
+
+    private fun revertPendingModeratedNotifState() {
+        val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
+        notifsList.smoothScrollToPosition(itemPosition)
+        resetPendingModerationVariables()
+    }
+
+    private fun removeModeratedNotifFromList(remoteNoteId: Long) {
+        notifsAdapter.hideNotificationWithId(remoteNoteId)
+    }
+
+    private fun resetPendingModerationVariables() {
+        pendingModerationNewStatus = null
+        pendingModerationRemoteNoteId = null
     }
 }
