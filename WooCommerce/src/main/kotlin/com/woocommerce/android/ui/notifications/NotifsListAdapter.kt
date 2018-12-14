@@ -115,10 +115,44 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         return true
     }
 
-    fun clearAdapterData() {
-        removeAllSections()
-        notifsList.clear()
-        notifyDataSetChanged()
+    /**
+     * Manually find a notification by it's [remoteNoteId], remove it, and then return the notification
+     * along with its original position in the list. Used for temporarily modifying the list.
+     */
+    fun removeAndReturnNotifWithIndex(remoteNoteId: Long): Pair<Int, NotificationModel>? {
+        return notifsList.firstOrNull { it.remoteNoteId == remoteNoteId }?.let { notif ->
+            // get the index
+            val index = notifsList.indexOfFirst { it == notif }
+
+            // remove from the list
+            removeNotifFromList(index)
+
+            Pair(index, notif)
+        }
+    }
+
+    /**
+     * Remove a notification from the list and rebuild the adapter list
+     */
+    private fun removeNotifFromList(pos: Int) {
+        val newList = notifsList.toMutableList()
+        newList.removeAt(pos)
+        setNotifications(newList)
+    }
+
+    /**
+     * Add notification back to the list in the position specified and then rebuild
+     * the adapter.
+     */
+    fun addNotifBackToList(notifListItem: Pair<Int, NotificationModel>) {
+        val (pos, notif) = notifListItem
+        val newList = notifsList.toMutableList()
+        if (pos < newList.size) {
+            newList.add(pos, notif)
+        } else {
+            newList.add(notif)
+        }
+        setNotifications(newList)
     }
 
     private inner class NotifsListSection(val title: String, val list: List<NotificationModel>) : StatelessSection(
