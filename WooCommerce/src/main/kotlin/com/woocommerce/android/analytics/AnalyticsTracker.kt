@@ -161,7 +161,23 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SUPPORT_FAQ_VIEWED(siteless = true),
 
         // -- Push notifications
-        PUSH_NOTIFICATION_RECEIVED
+        PUSH_NOTIFICATION_RECEIVED,
+
+        // -- Notifications List
+        NOTIFICATION_OPEN,
+        NOTIFICATIONS_LOADED,
+        NOTIFICATIONS_LIST_PULLED_TO_REFRESH,
+
+        // -- Product Review
+        REVIEW_ACTION,
+        REVIEW_ACTION_FAILED,
+        REVIEW_ACTION_SUCCESS,
+        REVIEW_ACTION_UNDO,
+        SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED,
+        REVIEW_DETAIL_APPROVE_BUTTON_TAPPED,
+        REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED,
+        REVIEW_DETAIL_SPAM_BUTTON_TAPPED,
+        REVIEW_DETAIL_TRASH_BUTTON_TAPPED
     }
     // endregion
 
@@ -284,6 +300,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
+        const val KEY_ALREADY_READ = "already_read"
         const val KEY_BLOG_ID = "blog_id"
         const val KEY_CONTEXT = "context"
         const val KEY_ERROR_CONTEXT = "error_context"
@@ -304,6 +321,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_STATUS = "status"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
+
+        const val VALUE_ORDER = "order"
+        const val VALUE_REVIEW = "review"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
