@@ -33,7 +33,6 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
-import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 
@@ -256,29 +255,33 @@ object NotificationHandler {
     }
 
     /**
-     * Installs the cha-ching notification sound to the device media library and registers it as a notification
-     * sound - note this only operates on API 26+ so we can enable users to choose this ringtone as the new
-     * order notification sound in the device's notification settings for the app
+     * Installs the cha-ching ringtone to the device media library and registers it as a notification
+     * sound - note this only operates on API 26+ so we can enable users to choose this ringtone as
+     * the new order notification sound in the device's notification settings for the app
      */
     fun installChaChing(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !AppPrefs.isChaChingRingtoneInstalled()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val cr = context.contentResolver
-            val file = File(getChaChingUri(context).toString())
+            try {
+                val fileName = getChaChingUri(context).toString()
+                val uri = MediaStore.Audio.Media.getContentUriForPath(fileName)
 
-            val values = ContentValues()
-            values.put(MediaStore.MediaColumns.DATA, file.absolutePath)
-            values.put(MediaStore.MediaColumns.TITLE, context.getString(R.string.notification_order_ringtone_title))
-            values.put(MediaStore.MediaColumns.SIZE, file.totalSpace)
-            values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/wav")
-            values.put(MediaStore.Audio.Media.IS_RINGTONE, false)
-            values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true)
-            values.put(MediaStore.Audio.Media.IS_ALARM, false)
-            values.put(MediaStore.Audio.Media.IS_MUSIC, false)
+                val values = ContentValues()
+                values.put(MediaStore.MediaColumns.DATA, fileName)
+                values.put(MediaStore.MediaColumns.TITLE, context.getString(R.string.notification_order_ringtone_title))
+                values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/wav")
+                values.put(MediaStore.Audio.Media.IS_RINGTONE, false)
+                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true)
+                values.put(MediaStore.Audio.Media.IS_ALARM, false)
+                values.put(MediaStore.Audio.Media.IS_MUSIC, false)
 
-            val uri = MediaStore.Audio.Media.getContentUriForPath(file.absolutePath)
-            val newUri = cr.insert(uri, values)
-            WooLog.w(T.NOTIFICATIONS, "Installed ringtone $newUri")
-            AppPrefs.setIsChaChingRingtoneInstalled(true)
+                // note that insert() will return null if the ringtone already exists
+                cr.insert(uri, values)?.let {
+                    WooLog.w(T.NOTIFICATIONS, "Installed ringtone $it")
+                }
+            } catch (e: Exception) {
+                WooLog.e(T.NOTIFICATIONS, e)
+            }
         }
     }
 
