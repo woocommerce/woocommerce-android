@@ -36,11 +36,13 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         const val TAG = "ReviewDetailFragment"
         const val FIELD_REMOTE_NOTIF_ID = "notif-remote-id"
         const val FIELD_REMOTE_COMMENT_ID = "remote-comment-id"
+        const val FIELD_COMMENT_STATUS_OVERRIDE = "status-override"
 
-        fun newInstance(notification: NotificationModel): ReviewDetailFragment {
+        fun newInstance(notification: NotificationModel, tempStatus: String? = null): ReviewDetailFragment {
             val args = Bundle()
             args.putLong(FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
             args.putLong(FIELD_REMOTE_COMMENT_ID, notification.getCommentId())
+            tempStatus?.let { args.putString(FIELD_COMMENT_STATUS_OVERRIDE, tempStatus) }
 
             val fragment = ReviewDetailFragment()
             fragment.arguments = args
@@ -55,6 +57,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     private val skeletonView = SkeletonView()
     private var remoteNoteId: Long = 0L
     private var remoteCommentId: Long = 0L
+    private var commentStatusOverride: CommentStatus? = null
     private var productUrl: String? = null
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
         when (isChecked) {
@@ -79,6 +82,9 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         arguments?.let {
             remoteNoteId = it.getLong(FIELD_REMOTE_NOTIF_ID)
             remoteCommentId = it.getLong(FIELD_REMOTE_COMMENT_ID)
+            commentStatusOverride = it.getString(FIELD_COMMENT_STATUS_OVERRIDE, null)?.let {
+                CommentStatus.fromString(it)
+            }
         }
 
         presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
@@ -162,7 +168,10 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     override fun updateStatus(status: CommentStatus) {
         review_approve.setOnCheckedChangeListener(null)
-        when (status) {
+
+        // Use the status override if present, else new status
+        val newStatus = commentStatusOverride ?: status
+        when (newStatus) {
             CommentStatus.APPROVED -> review_approve.isChecked = true
             CommentStatus.UNAPPROVED -> review_approve.isChecked = false
             else -> WooLog.w(NOTIFICATIONS, "Unable to process Notification with a status of $status")

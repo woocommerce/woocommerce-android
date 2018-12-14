@@ -14,9 +14,12 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.CommentAction.DELETE_COMMENT
 import org.wordpress.android.fluxc.action.CommentAction.PUSH_COMMENT
 import org.wordpress.android.fluxc.action.NotificationAction
+import org.wordpress.android.fluxc.generated.CommentActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.CommentStore.OnCommentChanged
+import org.wordpress.android.fluxc.store.CommentStore.RemoteCommentPayload
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
@@ -76,6 +79,25 @@ class NotifsListPresenter @Inject constructor(
         }
     }
 
+    override fun pushUpdatedComment(comment: CommentModel) {
+        if (networkStatus.isConnected()) {
+            val payload = RemoteCommentPayload(selectedSite.get(), comment)
+            dispatcher.dispatch(CommentActionBuilder.newPushCommentAction(payload))
+        }
+    }
+
+    private fun onCommentModerated(event: OnCommentChanged) {
+        if (event.isError) {
+            WooLog.e(NOTIFICATIONS, "${NotifsListFragment.TAG} - Error pushing comment changes to server! " +
+                    "${event.error.message}")
+
+            // TODO add tracks for moderating comment error
+            view?.notificationModerationError()
+        }
+        fetchAndLoadNotifsFromDb(false)
+        view?.notificationModerationSuccess()
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
@@ -116,8 +138,6 @@ class NotifsListPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onCommentChanged(event: OnCommentChanged) {
-        when (event.causeOfChange) {
-            DELETE_COMMENT, PUSH_COMMENT -> view?.refreshFragmentState()
-        }
+        if (event.causeOfChange == DELETE_COMMENT || event.causeOfChange == PUSH_COMMENT) onCommentModerated(event)
     }
 }
