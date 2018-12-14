@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -220,12 +219,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun contactSupport() {
-        // TODO: only use Zendesk in internal debug builds - this will change once Zendesk integration is completed
-        if (BuildConfig.DEBUG) {
-            startActivity(HelpActivity.createIntent(this, Origin.MAIN_ACTIVITY, null))
-        } else {
-            supportHelper.emailSupport(this)
-        }
+        startActivity(HelpActivity.createIntent(this, Origin.MAIN_ACTIVITY, null))
     }
 
     override fun updateSelectedSite() {

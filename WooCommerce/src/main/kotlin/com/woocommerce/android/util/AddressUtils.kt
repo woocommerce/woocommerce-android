@@ -4,6 +4,7 @@ import com.google.i18n.addressinput.common.AddressData
 import com.google.i18n.addressinput.common.FormOptions
 import com.google.i18n.addressinput.common.FormatInterpreter
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
+import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import java.util.Locale
 
@@ -52,7 +53,14 @@ object AddressUtils {
     fun getEnvelopeAddress(address: OrderAddress): String {
         return getAddressData(address).takeIf { it.postalCountry != null }?.let {
             val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
-            formatInterpreter.getEnvelopeAddress(it).joinToString(System.getProperty("line.separator"))
+            try {
+                formatInterpreter.getEnvelopeAddress(it).joinToString(System.getProperty("line.separator"))
+            } catch (e: NullPointerException) {
+                // in rare cases getEnvelopeAddress() will throw a NPE due to invalid region data
+                // see https://github.com/woocommerce/woocommerce-android/issues/509
+                WooLog.e(T.UTILS, e)
+                orderAddressToString(address)
+            }
         } ?: orderAddressToString(address)
     }
 

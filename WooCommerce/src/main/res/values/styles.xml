@@ -150,6 +150,12 @@
         <item name="colorButtonNormal">@color/white</item>
     </style>
 
+    <style name="Woo.Button.Grey" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="colorButtonNormal">@color/wc_grey_light</item>
+        <item name="android:backgroundTint">@color/wc_grey_light</item>
+    </style>
+
     <!--
         Default TagView Style
     -->

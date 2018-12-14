@@ -69,7 +69,7 @@ class FCMRegistrationIntentService : JobIntentService() {
     }
 
     private fun sendRegistrationToken(fcmToken: String) {
-        if (accountStore.hasAccessToken() && selectedSite.isSet()) {
+        if (accountStore.hasAccessToken() && selectedSite.exists()) {
             // Register for WordPress.com notifications
             WooLog.i(T.NOTIFS, "Sending FCM token to our remote services: $fcmToken")
 
