@@ -263,21 +263,27 @@ object NotificationHandler {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val cr = context.contentResolver
             try {
+                val title = context.getString(R.string.notification_order_ringtone_title)
                 val fileName = getChaChingUri(context).toString()
                 val uri = MediaStore.Audio.Media.getContentUriForPath(fileName)
 
                 val values = ContentValues()
                 values.put(MediaStore.MediaColumns.DATA, fileName)
-                values.put(MediaStore.MediaColumns.TITLE, context.getString(R.string.notification_order_ringtone_title))
+                values.put(MediaStore.MediaColumns.TITLE, title)
                 values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/wav")
-                values.put(MediaStore.Audio.Media.IS_RINGTONE, false)
                 values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true)
+                values.put(MediaStore.Audio.Media.IS_RINGTONE, false)
                 values.put(MediaStore.Audio.Media.IS_ALARM, false)
                 values.put(MediaStore.Audio.Media.IS_MUSIC, false)
 
+                /*val where = "title=?"
+                val args = arrayOf(title)
+                val numDeleted = cr.delete(uri, where, args)
+                WooLog.d(T.NOTIFICATIONS, "Deleted $numDeleted ringtones")*/
+
                 // note that insert() will return null if the ringtone already exists
                 cr.insert(uri, values)?.let {
-                    WooLog.w(T.NOTIFICATIONS, "Installed ringtone $it")
+                    WooLog.d(T.NOTIFICATIONS, "Installed ringtone $it")
                 }
             } catch (e: Exception) {
                 WooLog.e(T.NOTIFICATIONS, e)
