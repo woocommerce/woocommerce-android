@@ -157,9 +157,6 @@ class NotificationHandler @Inject constructor(
             AnalyticsTracker.flush()
         }
 
-        // make sure we have a notification channel for this note type
-        createNotificationChannel(context, noteType)
-
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, noteType, title, message)
         val largeIconBitmap = getLargeIconBitmap(context, data.getString("icon"),
