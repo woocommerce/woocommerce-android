@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationManagerCompat
 
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import javax.inject.Inject
 
 class NotificationsProcessingService : Service() {
     companion object {
@@ -26,6 +27,8 @@ class NotificationsProcessingService : Service() {
     }
 
     private lateinit var actionProcessor: ActionProcessor
+
+    @Inject lateinit var notificationHandler: NotificationHandler
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -60,11 +63,11 @@ class NotificationsProcessingService : Service() {
                 if (actionType == ARG_ACTION_NOTIFICATION_DISMISS) {
                     val notificationId = intent.getIntExtra(ARG_PUSH_ID, 0)
                     if (notificationId == NotificationHandler.GROUP_NOTIFICATION_ID) {
-                        NotificationHandler.clearNotifications()
+                        notificationHandler.clearNotifications()
                     } else {
-                        NotificationHandler.removeNotification(notificationId)
+                        notificationHandler.removeNotification(notificationId)
                         // Dismiss the grouped notification if a user dismisses all notifications from a wear device
-                        if (!NotificationHandler.hasNotifications()) {
+                        if (!notificationHandler.hasNotifications()) {
                             val notificationManager = NotificationManagerCompat.from(context)
                             notificationManager.cancel(NotificationHandler.GROUP_NOTIFICATION_ID)
                         }

@@ -51,6 +51,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var notificationHandler: NotificationHandler
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -82,7 +83,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         }
         CrashlyticsUtils.initCrashlytics(this, accountStore.account, site)
 
-        NotificationHandler.createNotificationChannels(this)
+        notificationHandler.createNotificationChannels(this)
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
