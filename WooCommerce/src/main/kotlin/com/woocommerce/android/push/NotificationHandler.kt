@@ -233,11 +233,13 @@ object NotificationHandler {
             val channelName = getChannelTitleForNoteType(context, noteType)
             val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
 
-            // add cha-ching sound
-            val attributes = AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                    .build()
-            channel.setSound(getChaChingUri(context), attributes)
+            // add cha-ching sound to new order notifications
+            if (noteType == NEW_ORDER) {
+                val attributes = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .build()
+                channel.setSound(getChaChingUri(context), attributes)
+            }
 
             manager.createNotificationChannel(channel)
         }
