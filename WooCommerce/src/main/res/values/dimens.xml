@@ -133,6 +133,12 @@
     <dimen name="order_note_icon">26dp</dimen>
 
     <!--
+        Notifications
+    -->
+    <dimen name="notification_badge_sz">12dp</dimen>
+    <dimen name="notification_badge_offset">6dp</dimen>
+
+    <!--
         Skeletons
     -->
     <dimen name="skeleton_bar_chart_padding">30dp</dimen>
