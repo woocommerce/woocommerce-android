@@ -237,38 +237,37 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     }
 
     override fun openReviewDetail(notification: NotificationModel) {
-        if (!notifsRefreshLayout.isRefreshing) {
-            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
-                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
-                    AnalyticsTracker.KEY_ALREADY_READ to notification.read))
+        AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                AnalyticsTracker.KEY_ALREADY_READ to notification.read))
 
-            // If the notification is pending moderation, override the status to display in
-            // the detail view.
-            val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
+        // If the notification is pending moderation, override the status to display in
+        // the detail view.
+        val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
 
-            val tag = ReviewDetailFragment.TAG
-            getFragmentFromBackStack(tag)?.let { frag ->
-                val args = frag.arguments ?: Bundle()
+        val tag = ReviewDetailFragment.TAG
+        getFragmentFromBackStack(tag)?.let { frag ->
+            val args = frag.arguments ?: Bundle()
 
-                args.putLong(ReviewDetailFragment.FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
+            args.putLong(ReviewDetailFragment.FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
 
-                // Reset any existing comment status overrides
-                args.remove(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE)
+            // Reset any existing comment status overrides
+            args.remove(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE)
 
-                // Add comment status override if needed
-                if (isPendingModeration) {
-                    pendingModerationNewStatus?.let {
-                        args.putString(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE, it)
-                    }
+            // Add comment status override if needed
+            if (isPendingModeration) {
+                pendingModerationNewStatus?.let {
+                    args.putString(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE, it)
                 }
-                frag.arguments = args
-                popToState(tag)
-            } ?: if (isPendingModeration) {
-                loadChildFragment(ReviewDetailFragment.newInstance(notification, pendingModerationNewStatus), tag)
-            } else {
-                loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
             }
+            frag.arguments = args
+            popToState(tag)
+        } ?: if (isPendingModeration) {
+            loadChildFragment(ReviewDetailFragment.newInstance(notification, pendingModerationNewStatus), tag)
+        } else {
+            loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
         }
+
     }
 
     override fun scrollToTop() {
