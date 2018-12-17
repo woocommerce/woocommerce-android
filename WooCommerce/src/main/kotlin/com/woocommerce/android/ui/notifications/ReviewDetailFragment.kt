@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.getConvertedTimestamp
 import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooLog
@@ -201,7 +202,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
                 }
 
                 // Close this fragment
-                activity?.onBackPressed()
+                (parentFragment as? TopLevelFragmentView)?.closeCurrentChildFragment()
             } else {
                 WooLog.e(NOTIFICATIONS, "$TAG - ParentFragment must implement ReviewActionListener to " +
                         "moderate product review notifications!")
