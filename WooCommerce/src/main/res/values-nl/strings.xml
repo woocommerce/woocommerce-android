@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-27 11:54:02+0000
+Translation-Revision-Date: 2018-12-11 13:54:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="orderdetail_note_system">Systeemstatus</string>
+    <string name="orderdetail_note_public">Bericht aan klant</string>
+    <string name="dashboard_no_orders_with_search">Geen overeenkomende bestellingen</string>
+    <string name="login_site_list_update_required">Site moet worden bijgewerkt naar WooCommerce 3.5</string>
+    <string name="login_verifying_sites">Sites worden geverifieerd …</string>
+    <string name="button_update_instructions">Update-instructies</string>
+    <string name="search">Zoeken</string>
+    <string name="refresh_button">Vernieuwen</string>
+    <string name="more_notifications">en nog %d.</string>
+    <string name="new_notifications">%d nieuwe meldingen</string>
+    <string name="dashboard_plugin_notice_message">Voor deze app moet WooCommerce 3.5 op je server zijn geïnstalleerd. Werk WooCommerce zo snel mogelijk bij om deze app te blijven gebruiken.</string>
+    <string name="dashboard_plugin_notice_title">Werk WooCommerce bij naar 3.5 om deze app te blijven gebruiken</string>
     <string name="about_version">Versie %s</string>
     <string name="about_tos">Servicevoorwaarden</string>
     <string name="about_publisher">Publisher: Automattic, Inc</string>
     <string name="about_appname">WooCommerce voor Android</string>
     <string name="support_identity_input_dialog_name_label">Naam</string>
-    <string name="support_email_toast">E-mailapp openen om contact op te nemen met de ondersteuning</string>
     <string name="settings_licenses">Bronlicenties openen</string>
     <string name="settings_about">Over de app</string>
     <string name="logviewer_share_error">Log delen mislukt</string>
@@ -193,7 +204,6 @@ Language: nl
     <string name="orderdetail_payment_cleared">Betaling gewist</string>
     <string name="orderdetail_order_fulfillment">Bestelling %s voltooien</string>
     <string name="orderdetail_order_notes">Berichten van bestelling</string>
-    <string name="orderdetail_note_public">Openbaar bericht</string>
     <string name="orderdetail_note_private">Privébericht</string>
     <string name="orderdetail_note_hint">Een bericht van bestelling opstellen</string>
     <string name="orderdetail_customer_image_contentdesc">Profielfoto klant</string>

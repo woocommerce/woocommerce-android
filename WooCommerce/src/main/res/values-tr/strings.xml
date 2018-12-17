@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-27 13:54:01+0000
+Translation-Revision-Date: 2018-12-11 14:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="orderdetail_note_system">Sistem durumu</string>
+    <string name="orderdetail_note_public">Müşteriye not</string>
+    <string name="dashboard_no_orders_with_search">Eşleşen sipariş yok</string>
+    <string name="login_site_list_update_required">WooCommerce 3.5 güncellemesi gerekli</string>
+    <string name="login_verifying_sites">Siteler doğrulanıyor…</string>
+    <string name="button_update_instructions">Güncelleme yönergeleri</string>
+    <string name="search">Ara</string>
+    <string name="refresh_button">Yenile</string>
+    <string name="more_notifications">ve %d tane daha.</string>
+    <string name="new_notifications">%d yeni bildirim</string>
+    <string name="dashboard_plugin_notice_message">Bu uygulama için sunucunuza WooCommerce 3.5\'i yüklemeniz gerekir. Bu uygulamayı kullanmaya devam etmek için mümkün olan en kısa süre içinde güncelleyin.</string>
+    <string name="dashboard_plugin_notice_title">Bu uygulamayı kullanmaya devam etmek için WooCommerce 3.5\'e güncelleyin</string>
     <string name="about_version">Sürüm %s</string>
     <string name="about_tos">Hizmet koşulları</string>
     <string name="about_publisher">Yayımlayan: Automattic, Inc</string>
     <string name="about_appname">Android İçin WooCommerce</string>
     <string name="support_identity_input_dialog_name_label">Ad</string>
-    <string name="support_email_toast">Destek ile iletişime geçmek için e-posta uygulaması açılıyor</string>
     <string name="settings_licenses">Açık kaynak lisanslar</string>
     <string name="settings_about">Uygulama hakkında</string>
     <string name="logviewer_share_error">Kayıt paylaşılamadı</string>
@@ -193,7 +204,6 @@ Language: tr
     <string name="orderdetail_payment_cleared">Ödeme Tamamlandı</string>
     <string name="orderdetail_order_fulfillment">%s Numaralı Siparişi Yerine Getirin</string>
     <string name="orderdetail_order_notes">Sipariş Notları</string>
-    <string name="orderdetail_note_public">Açık Not</string>
     <string name="orderdetail_note_private">Özel Not</string>
     <string name="orderdetail_note_hint">Sipariş notu oluşturun</string>
     <string name="orderdetail_customer_image_contentdesc">Müşteri profil görseli</string>

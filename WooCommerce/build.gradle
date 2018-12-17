@@ -37,8 +37,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "0.21"
-        versionCode 22
+        versionName "0.22"
+        versionCode 23
 
         minSdkVersion 21
         targetSdkVersion 27
@@ -246,7 +246,7 @@ if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.h
     android {
         signingConfigs {
             release {
-                storeFile = file(project.storeFile)
+                storeFile = file(project.storeFile.replaceFirst("^~", System.getProperty("user.home")))
                 storePassword = project.storePassword
                 keyAlias = project.keyAlias
                 keyPassword = project.keyPassword
