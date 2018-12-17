@@ -23,12 +23,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.text.StringEscapeUtils
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
-import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
@@ -406,9 +409,13 @@ class NotificationHandler @Inject constructor(
         wpComNoteId: String,
         pushId: Int
     ) {
-        // TODO Create an Intent containing the wpComNoteId that launches the MainActivity to handle the tap action
-        // (and open the notifications tab)
-        val resultIntent = Intent() // placeholder
+        // Open the app and load the notifications tab
+        val resultIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
+            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId)
+        }
+
         showNotificationForBuilder(builder, context, resultIntent, pushId)
     }
 
