@@ -63,9 +63,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override var isRefreshPending = true
-    override var isRefreshing: Boolean
-        get() = notifsRefreshLayout.isRefreshing
-        set(_) {}
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     private val skeletonView = SkeletonView()
@@ -216,7 +213,11 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
     override fun onNotificationClicked(notification: NotificationModel) {
         when (notification.getWooType()) {
-            PRODUCT_REVIEW -> openReviewDetail(notification)
+            PRODUCT_REVIEW -> {
+                if (!notifsRefreshLayout.isRefreshing) {
+                    openReviewDetail(notification)
+                }
+            }
             NEW_ORDER -> {
                 notification.getRemoteOrderId()?.let {
                     AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
