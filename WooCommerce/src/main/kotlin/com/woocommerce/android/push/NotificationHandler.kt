@@ -412,7 +412,7 @@ class NotificationHandler @Inject constructor(
         val resultIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
-            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId)
+            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId.toLong())
         }
 
         showNotificationForBuilder(builder, context, resultIntent, pushId)
