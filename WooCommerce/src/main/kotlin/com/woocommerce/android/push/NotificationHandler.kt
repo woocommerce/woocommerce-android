@@ -41,7 +41,7 @@ import javax.inject.Singleton
 @Singleton
 class NotificationHandler @Inject constructor(
     private val siteStore: SiteStore,
-    private val notificationStore: NotificationStore
+    private val dispatcher: Dispatcher
 ) {
     companion object {
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
@@ -57,7 +57,6 @@ class NotificationHandler @Inject constructor(
         const val PUSH_ARG_MSG = "msg"
         const val PUSH_ARG_NOTE_ID = "note_id"
         const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
-        const val PUSH_ARG_NOTE_TIMESTAMP = "note_timestamp"
 
         const val PUSH_TYPE_COMMENT = "c"
         const val PUSH_TYPE_NEW_ORDER = "store_order"
@@ -95,7 +94,7 @@ class NotificationHandler @Inject constructor(
         buildAndShowNotificationFromNoteData(context, data, account)
     }
 
-    fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
+    @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
         if (data.isEmpty) {
             WooLog.e(T.NOTIFS, "Push notification received without a valid Bundle!")
             return
@@ -116,8 +115,6 @@ class NotificationHandler @Inject constructor(
             return
         }
 
-        // TODO: Store note object in database
-
         val noteTypeStr = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
         val noteType = when (noteTypeStr) {
             PUSH_TYPE_NEW_ORDER -> {
@@ -131,7 +128,18 @@ class NotificationHandler @Inject constructor(
             }
         }
 
-        // skip if user chose to disable this type of notification
+        // Build notification from message data, save to the database, and send request to
+        // fetch the actual notification from the api.
+        NotificationsUtils.buildNotificationModelFromBundle(siteStore, data)?.let {
+            // Save temporary notification to the database.
+            dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(it))
+
+            // Fire off the event to fetch the actual notification from the api
+            dispatcher.dispatch(NotificationActionBuilder
+                    .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
+        }
+
+        // skip displaying the notification if user chose to disable this type of notification
         if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
                 (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
             WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
