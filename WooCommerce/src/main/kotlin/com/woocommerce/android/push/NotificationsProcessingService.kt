@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationManagerCompat
 
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import dagger.android.AndroidInjection
 import javax.inject.Inject
 
 class NotificationsProcessingService : Service() {
@@ -35,6 +36,7 @@ class NotificationsProcessingService : Service() {
     }
 
     override fun onCreate() {
+        AndroidInjection.inject(this)
         super.onCreate()
         WooLog.i(T.NOTIFS, "NotificationsProcessingService > created")
     }
