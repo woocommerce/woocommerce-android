@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-27 00:54:02+0000
+Translation-Revision-Date: 2018-12-10 19:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="orderdetail_note_system">Status do sistema</string>
+    <string name="orderdetail_note_public">Nota para o cliente</string>
+    <string name="dashboard_no_orders_with_search">Não há pedidos correspondentes</string>
+    <string name="login_site_list_update_required">É necessário atualizar para o WooCommerce 3.5</string>
+    <string name="login_verifying_sites">Verificando sites…</string>
+    <string name="button_update_instructions">Instruções de atualização</string>
+    <string name="search">Pesquisar</string>
+    <string name="refresh_button">Atualizar</string>
+    <string name="more_notifications">e %d muito mais.</string>
+    <string name="new_notifications">%d novas notificações</string>
+    <string name="dashboard_plugin_notice_message">Esse aplicativo requer a instalação do WooCommerce 3.5 no seu servidor. Atualize o quanto antes para continuar a usar esse aplicativo.</string>
+    <string name="dashboard_plugin_notice_title">Atualize para o WooCommerce 3.5 para continuar a usar esse aplicativo</string>
     <string name="about_version">Versão %s</string>
     <string name="about_tos">Termos de serviço</string>
     <string name="about_publisher">Editor: Automattic, Inc</string>
     <string name="about_appname">WooCommerce para Android</string>
     <string name="support_identity_input_dialog_name_label">Nome</string>
-    <string name="support_email_toast">Abrindo aplicativo de e-mail para contatar suporte</string>
     <string name="settings_licenses">Abrir licenças da origem</string>
     <string name="settings_about">Sobre o aplicativo</string>
     <string name="logviewer_share_error">Não foi possível compartilhar o registro</string>
@@ -193,7 +204,6 @@ Language: pt_BR
     <string name="orderdetail_payment_cleared">Pagamento liberado</string>
     <string name="orderdetail_order_fulfillment">Concluir pedido nº %s</string>
     <string name="orderdetail_order_notes">Observações do pedido</string>
-    <string name="orderdetail_note_public">Nota pública</string>
     <string name="orderdetail_note_private">Nota privada</string>
     <string name="orderdetail_note_hint">Escrever uma nota de pedido</string>
     <string name="orderdetail_customer_image_contentdesc">Imagem do perfil do cliente</string>

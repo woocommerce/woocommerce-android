@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-27 10:54:02+0000
+Translation-Revision-Date: 2018-12-11 07:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="orderdetail_note_system">Status sistem</string>
+    <string name="orderdetail_note_public">Catatan untuk pelanggan</string>
+    <string name="dashboard_no_orders_with_search">Tidak ada pesanan yang sesuai</string>
+    <string name="login_site_list_update_required">Perbarui ke WooCommerce 3.5 yang diwajibkan</string>
+    <string name="login_verifying_sites">Memverifikasi situs…</string>
+    <string name="button_update_instructions">Petunjuk pembaruan</string>
+    <string name="search">Cari</string>
+    <string name="refresh_button">Segarkan</string>
+    <string name="more_notifications">dan %d lainnya.</string>
+    <string name="new_notifications">%d pemberitahuan baru</string>
+    <string name="dashboard_plugin_notice_message">Aplikasi ini mewajibkan Anda menginstal WooCommerce 3.5 di server Anda. Perbarui sesegera mungkin untuk terus menggunakan aplikasi ini.</string>
+    <string name="dashboard_plugin_notice_title">Perbarui ke WooCommerce 3.5 untuk terus menggunakan aplikasi ini</string>
     <string name="about_version">Versi %s</string>
     <string name="about_tos">Ketentuan layanan</string>
     <string name="about_publisher">Penerbit: Automattic, Inc</string>
     <string name="about_appname">WooCommerce untuk Android</string>
     <string name="support_identity_input_dialog_name_label">Nama</string>
-    <string name="support_email_toast">Membuka aplikasi email untuk menghubungi dukungan</string>
     <string name="settings_licenses">Lisensi sumber terbuka</string>
     <string name="settings_about">Tentang aplikasi</string>
     <string name="logviewer_share_error">Tidak dapat berbagi log</string>
@@ -193,7 +204,6 @@ Language: id
     <string name="orderdetail_payment_cleared">Pembayaran Beres</string>
     <string name="orderdetail_order_fulfillment">Penuhi Pesanan #%s</string>
     <string name="orderdetail_order_notes">Catatan Pesanan</string>
-    <string name="orderdetail_note_public">Catatan Publik</string>
     <string name="orderdetail_note_private">Catatan Privat</string>
     <string name="orderdetail_note_hint">Tulis catatan pesanan</string>
     <string name="orderdetail_customer_image_contentdesc">Gambar profil pelanggan</string>

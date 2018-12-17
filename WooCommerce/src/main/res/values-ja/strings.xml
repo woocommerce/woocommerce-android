@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-30 13:54:02+0000
+Translation-Revision-Date: 2018-12-14 13:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="orderdetail_note_system">システム状況</string>
+    <string name="orderdetail_note_public">お客様への通知</string>
+    <string name="dashboard_no_orders_with_search">一致する注文はありません</string>
+    <string name="login_site_list_update_required">WooCommerce 3.5への更新が必要です</string>
+    <string name="login_verifying_sites">サイトを認証中です…</string>
+    <string name="button_update_instructions">手順を更新</string>
+    <string name="search">検索</string>
+    <string name="refresh_button">再読み込み</string>
+    <string name="more_notifications">さらに%d件表示。</string>
+    <string name="new_notifications">%d件の新しい通知</string>
+    <string name="dashboard_plugin_notice_message">このアプリではサーバーへの WooCommerce 3.5のインストールが必要です。引き続きアプリを使用するには、すぐにアップデートする必要があります。</string>
+    <string name="dashboard_plugin_notice_title">WooCommerce 3.5に更新して引き続きアプリを使用</string>
     <string name="about_version">バージョン%s</string>
     <string name="about_tos">利用規約</string>
     <string name="about_publisher">投稿者:Automattic, Inc</string>
-    <string name="about_appname">Android 向け WooCommerce</string>
+    <string name="about_appname">WooCommerce for Android</string>
     <string name="support_identity_input_dialog_name_label">名前</string>
-    <string name="support_email_toast">メールアプリを開いてサポートに連絡</string>
     <string name="settings_licenses">オープンソースライセンス</string>
     <string name="settings_about">このアプリについて</string>
     <string name="logviewer_share_error">ログを共有できません</string>
@@ -193,7 +204,6 @@ Language: ja_JP
     <string name="orderdetail_payment_cleared">決済済み</string>
     <string name="orderdetail_order_fulfillment">注文番号%sを履行</string>
     <string name="orderdetail_order_notes">注文メモ</string>
-    <string name="orderdetail_note_public">公開メモ</string>
     <string name="orderdetail_note_private">プライベートメモ</string>
     <string name="orderdetail_note_hint">注文メモを作成します</string>
     <string name="orderdetail_customer_image_contentdesc">顧客プロフィール画像</string>

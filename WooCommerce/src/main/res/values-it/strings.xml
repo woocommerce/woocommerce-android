@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-28 10:54:02+0000
+Translation-Revision-Date: 2018-12-10 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="orderdetail_note_system">Stato di sistema</string>
+    <string name="orderdetail_note_public">Nota per il cliente</string>
+    <string name="dashboard_no_orders_with_search">Nessun ordine corrispondente</string>
+    <string name="login_site_list_update_required">Aggiornamento a WooCommerce 3.5 richiesto</string>
+    <string name="login_verifying_sites">Verifica dei siti…</string>
+    <string name="button_update_instructions">Aggiorna istruzioni</string>
+    <string name="search">Ricerca</string>
+    <string name="refresh_button">Aggiorna</string>
+    <string name="more_notifications">e altre %d.</string>
+    <string name="new_notifications">%d nuove notifiche</string>
+    <string name="dashboard_plugin_notice_message">Questa app richiede l\'installazione di WooCommerce 3.5 sul tuo server. Aggiorna appena possibile per continuare utilizzare questa app.</string>
+    <string name="dashboard_plugin_notice_title">Aggiorna a WooCommerce 3.5 per continuare utilizzare questa app</string>
     <string name="about_version">Versione %s</string>
     <string name="about_tos">Termini di servizio</string>
     <string name="about_publisher">Editore: Automattic, Inc</string>
     <string name="about_appname">WooCommerce per Android</string>
     <string name="support_identity_input_dialog_name_label">Nome</string>
-    <string name="support_email_toast">Aprire l\'app e-mail per contattare il supporto</string>
     <string name="settings_licenses">Licenze open source</string>
     <string name="settings_about">Info sull\'app</string>
     <string name="logviewer_share_error">Impossibile condividere il log</string>
@@ -193,7 +204,6 @@ Language: it
     <string name="orderdetail_payment_cleared">Pagamento cancellato</string>
     <string name="orderdetail_order_fulfillment">Evadi ordine n. %s</string>
     <string name="orderdetail_order_notes">Note ordine</string>
-    <string name="orderdetail_note_public">Nota pubblica</string>
     <string name="orderdetail_note_private">Nota privata</string>
     <string name="orderdetail_note_hint">Scrivi una nota dell\'ordine</string>
     <string name="orderdetail_customer_image_contentdesc">Immagine profilo personalizzata</string>
