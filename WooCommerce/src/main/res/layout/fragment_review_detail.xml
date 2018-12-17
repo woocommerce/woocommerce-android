@@ -105,7 +105,7 @@
             android:layout_marginTop="@dimen/margin_extra_large"
             android:isIndicator="true"
             android:numStars="5"
-            android:progressTint="@color/alert_yellow"
+            android:progressTint="@color/grey_darken_30"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/review_gravatar"
