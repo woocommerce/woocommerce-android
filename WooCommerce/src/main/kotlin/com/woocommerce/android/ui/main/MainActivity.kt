@@ -21,6 +21,7 @@ import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity(),
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
         const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
+        const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
 
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -306,17 +308,32 @@ class MainActivity : AppCompatActivity(),
             // Reset this flag now that it's being processed
             intent.removeExtra(FIELD_OPENED_FROM_PUSH)
 
-            // Check for a notification ID - if one is present, open notification
-            val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
-            if (remoteNoteId > 0) {
-                // Open the detail view for this notification
-                showNotificationDetail(remoteNoteId)
-            } else {
-                // Just open the notifications tab
-                switchFragment(BottomNavigationPosition.NOTIFICATIONS)
-            }
+            if (intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH_GROUP, false)) {
+                // Reset this flag now that it's being processed
+                intent.removeExtra(FIELD_OPENED_FROM_PUSH_GROUP)
 
-            // TODO add tracks events
+                // Send analytics for viewing all notifications
+                NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+
+                // User clicked on a group of notifications. Just show the notifications tab.
+                switchFragment(BottomNavigationPosition.NOTIFICATIONS)
+            } else {
+                // Check for a notification ID - if one is present, open notification
+                val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
+                if (remoteNoteId > 0) {
+                    // Send track event
+                    NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
+
+                    // Open the detail view for this notification
+                    showNotificationDetail(remoteNoteId)
+                } else {
+                    // Send analytics for viewing all notifications
+                    NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+
+                    // Just open the notifications tab
+                    switchFragment(BottomNavigationPosition.NOTIFICATIONS)
+                }
+            }
         } else {
             switchFragment(BottomNavigationPosition.DASHBOARD)
         }
