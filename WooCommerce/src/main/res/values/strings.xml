@@ -9,6 +9,7 @@
     <string name="notification_channel_order_id" translatable="false" content_override="true">wooandroid_notification_channel_order_id</string>
     <string name="notification_channel_review_title">Product review alerts</string>
     <string name="notification_channel_review_id" translatable="false" content_override="true">wooandroid_notification_channel_review_id</string>
+    <string name="notification_order_ringtone_title" translatable="false">WooCommerce Cha-ching</string>
 
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
     <string name="login_notification_channel_id" translatable="false" content_override="true">@string/notification_channel_general_id</string>
@@ -242,8 +243,10 @@
     <string name="settings_footer">Made with love by Automattic</string>
     <string name="settings_primary_store">Primary store</string>
     <string name="settings_notifs">Notifications</string>
+    <string name="settings_notifs_device">Manage notifications</string>
+    <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_orders">Orders</string>
-    <string name="settings_notifs_orders_detail">Get alerts when notifications come in</string>
+    <string name="settings_notifs_orders_detail">Get alerts when new orders come in</string>
     <string name="settings_notifs_tone">Tone</string>
     <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
     <string name="settings_notifs_reviews">Product reviews</string>
