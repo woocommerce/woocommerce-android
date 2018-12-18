@@ -267,7 +267,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         } else {
             loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
         }
-
     }
 
     override fun scrollToTop() {
