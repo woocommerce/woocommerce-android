@@ -447,9 +447,8 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
-        val navPos = BottomNavigationPosition.NOTIFICATIONS.position
-
         if (switchFragment(NOTIFICATIONS, false)) {
+            val navPos = BottomNavigationPosition.NOTIFICATIONS.position
             bottom_nav.active(navPos)
 
             (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {
