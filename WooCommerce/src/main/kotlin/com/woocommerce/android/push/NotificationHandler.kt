@@ -63,6 +63,62 @@ class NotificationHandler @Inject constructor(
 
         const val PUSH_TYPE_COMMENT = "c"
         const val PUSH_TYPE_NEW_ORDER = "store_order"
+
+        @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
+
+        @Synchronized fun clearNotifications() {
+            ACTIVE_NOTIFICATIONS_MAP.clear()
+        }
+
+        @Synchronized fun removeNotification(localPushId: Int) {
+            ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
+        }
+
+        /**
+         * Find the matching notification and send a track event for [Stat.PUSH_NOTIFICATION_TAPPED].
+         */
+        @Synchronized fun bumpPushNotificationsTappedAnalytics(context: Context, noteID: String) {
+            ACTIVE_NOTIFICATIONS_MAP.asSequence()
+                    .firstOrNull { it.value.getString(PUSH_ARG_NOTE_ID, "") == noteID }?.let { row ->
+                        bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, row.value)
+                        AnalyticsTracker.flush() }
+        }
+
+        /**
+         * Loop over all active notifications and send the [Stat.PUSH_NOTIFICATION_TAPPED] track event for each one.
+         */
+        @Synchronized fun bumpPushNotificationsTappedAllAnalytics(context: Context) {
+            ACTIVE_NOTIFICATIONS_MAP.asIterable().forEach {
+                val noteBundle = it.value
+                bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, noteBundle)
+            }
+            AnalyticsTracker.flush()
+        }
+
+        /**
+         * Attach default properties and track given analytics for the given notifications-related [stat].
+         *
+         * Will skip tracking if user has disabled notifications from being shown at the app system settings level.
+         */
+        private fun bumpPushNotificationsAnalytics(context: Context, stat: Stat, noteBundle: Bundle) {
+            if (!NotificationsUtils.isNotificationsEnabled(context)) return
+
+            val wpComNoteId = noteBundle.getString(PUSH_ARG_NOTE_ID, "")
+            if (wpComNoteId.isNotEmpty()) {
+                val properties = mutableMapOf<String, Any>()
+                properties["notification_note_id"] = wpComNoteId
+
+                noteBundle.getString(PUSH_ARG_TYPE)?.takeUnless { it.isEmpty() }?.let { noteType ->
+                    // 'comment' types are sent in PN as type = "c"
+                    properties["notification_type"] = if (noteType == PUSH_TYPE_COMMENT) "comment" else noteType
+                }
+
+                val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val latestGCMToken = preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
+                properties["push_notification_token"] = latestGCMToken ?: ""
+                AnalyticsTracker.track(stat, properties)
+            }
+        }
     }
 
     /**
@@ -75,26 +131,6 @@ class NotificationHandler @Inject constructor(
         OTHER,
         REVIEW,
         NEW_ORDER
-    }
-
-    @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
-
-    @Synchronized fun clearNotifications() {
-        ACTIVE_NOTIFICATIONS_MAP.clear()
-    }
-
-    @Synchronized fun removeNotification(localPushId: Int) {
-        ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
-    }
-
-    // TODO: this is useful while we're developing notifications but can be removed when we're done
-    fun testNotification(context: Context, title: String, message: String, account: AccountModel) {
-        val data = Bundle()
-        data.putString(PUSH_ARG_TYPE, PUSH_TYPE_NEW_ORDER)
-        data.putString(PUSH_ARG_TITLE, title)
-        data.putString(PUSH_ARG_MSG, message)
-        data.putString(PUSH_ARG_USER, account.userId.toString())
-        buildAndShowNotificationFromNoteData(context, data, account)
     }
 
     @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
@@ -412,7 +448,10 @@ class NotificationHandler @Inject constructor(
         val resultIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
-            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId)
+            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId.toLong())
+            if (pushId == GROUP_NOTIFICATION_ID) {
+                putExtra(MainActivity.FIELD_OPENED_FROM_PUSH_GROUP, true)
+            }
         }
 
         showNotificationForBuilder(builder, context, resultIntent, pushId)
@@ -436,30 +475,5 @@ class NotificationHandler @Inject constructor(
         builder.setContentIntent(pendingIntent)
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(pushId, builder.build())
-    }
-
-    /**
-     * Attach default properties and track given analytics for the given notifications-related [stat].
-     *
-     * Will skip tracking if user has disabled notifications from being shown at the app system settings level.
-     */
-    private fun bumpPushNotificationsAnalytics(context: Context, stat: Stat, noteBundle: Bundle) {
-        if (!NotificationsUtils.isNotificationsEnabled(context)) return
-
-        val wpComNoteId = noteBundle.getString(PUSH_ARG_NOTE_ID, "")
-        if (wpComNoteId.isNotEmpty()) {
-            val properties = mutableMapOf<String, Any>()
-            properties["notification_note_id"] = wpComNoteId
-
-            noteBundle.getString(PUSH_ARG_TYPE)?.takeUnless { it.isEmpty() }?.let { noteType ->
-                // 'comment' types are sent in PN as type = "c"
-                properties["notification_type"] = if (noteType == PUSH_TYPE_COMMENT) "comment" else noteType
-            }
-
-            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val latestGCMToken = preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
-            properties["push_notification_token"] = latestGCMToken ?: ""
-            AnalyticsTracker.track(stat, properties)
-        }
     }
 }

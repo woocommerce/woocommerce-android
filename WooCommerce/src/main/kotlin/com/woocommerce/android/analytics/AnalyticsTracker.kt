@@ -164,6 +164,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Push notifications
         PUSH_NOTIFICATION_RECEIVED,
+        PUSH_NOTIFICATION_TAPPED,
 
         // -- Notifications List
         NOTIFICATION_OPEN,

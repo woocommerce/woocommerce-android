@@ -20,7 +20,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.FragmentScrollListener
+import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.getRemoteOrderId
+import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
@@ -28,7 +33,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEpilogueActivity
+import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -62,6 +69,7 @@ class MainActivity : AppCompatActivity(),
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
         const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
+        const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
 
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -320,11 +328,32 @@ class MainActivity : AppCompatActivity(),
             // Reset this flag now that it's being processed
             intent.removeExtra(FIELD_OPENED_FROM_PUSH)
 
-            // Open the notifications tab
-            switchFragment(BottomNavigationPosition.NOTIFICATIONS)
+            if (intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH_GROUP, false)) {
+                // Reset this flag now that it's being processed
+                intent.removeExtra(FIELD_OPENED_FROM_PUSH_GROUP)
 
-            // TODO check if only one notification, if so, open detail
-            // TODO add tracks events
+                // Send analytics for viewing all notifications
+                NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+
+                // User clicked on a group of notifications. Just show the notifications tab.
+                switchFragment(BottomNavigationPosition.NOTIFICATIONS)
+            } else {
+                // Check for a notification ID - if one is present, open notification
+                val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
+                if (remoteNoteId > 0) {
+                    // Send track event
+                    NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
+
+                    // Open the detail view for this notification
+                    showNotificationDetail(remoteNoteId)
+                } else {
+                    // Send analytics for viewing all notifications
+                    NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+
+                    // Just open the notifications tab
+                    switchFragment(BottomNavigationPosition.NOTIFICATIONS)
+                }
+            }
         } else {
             switchFragment(BottomNavigationPosition.DASHBOARD)
         }
@@ -434,6 +463,27 @@ class MainActivity : AppCompatActivity(),
 
             val fragment = supportFragmentManager.findFragment(ORDERS)
             (fragment as? OrderListFragment)?.onFilterSelected(orderStatusFilter)
+        }
+    }
+
+    override fun showNotificationDetail(remoteNoteId: Long) {
+        if (switchFragment(NOTIFICATIONS, false)) {
+            val navPos = BottomNavigationPosition.NOTIFICATIONS.position
+            bottom_nav.active(navPos)
+
+            (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {
+                val fragment = supportFragmentManager.findFragment(NOTIFICATIONS)
+
+                when (it.getWooType()) {
+                    NEW_ORDER -> {
+                        it.getRemoteOrderId()?.let { orderId ->
+                            (fragment as? NotifsListFragment)?.openOrderDetail(it.localSiteId, orderId)
+                        }
+                    }
+                    PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
+                    else -> { /* do nothing */ }
+                }
+            }
         }
     }
 
