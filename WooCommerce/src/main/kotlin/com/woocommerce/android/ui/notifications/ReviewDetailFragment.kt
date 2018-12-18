@@ -32,6 +32,7 @@ import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.HtmlUtils
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
@@ -108,9 +109,14 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     }
 
     override fun setNotification(note: NotificationModel, comment: CommentModel) {
+        // adjust the gravatar url so it's requested at the desired size and a has default image of 404 (this causes the
+        // request to return a 404 rather than an actual default image URL, so we can stick with our default avatar)
+        val size = activity?.resources?.getDimensionPixelSize(R.dimen.avatar_sz_large) ?: 256
+        val avatarUrl = UrlUtils.removeQuery(comment.authorProfileImageUrl) + "?s=" + size + "&d=404"
+
         // Populate reviewer section
         GlideApp.with(review_gravatar.context)
-                .load(comment.authorProfileImageUrl)
+                .load(avatarUrl)
                 .placeholder(R.drawable.ic_user_circle_grey_24dp)
                 .circleCrop()
                 .into(review_gravatar)
