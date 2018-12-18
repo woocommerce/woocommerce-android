@@ -15,10 +15,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WO
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
-import com.woocommerce.android.push.NotificationHandler
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
-import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 class MainSettingsFragment : Fragment(), MainSettingsContract.View {
@@ -34,10 +32,6 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
     }
 
     @Inject lateinit var presenter: MainSettingsContract.Presenter
-
-    // TODO AMANDA - For testing only...
-    @Inject lateinit var account: AccountStore
-    @Inject lateinit var notificationHandler: NotificationHandler
 
     interface AppSettingsListener {
         fun onRequestLogout()
@@ -105,13 +99,6 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         }
 
         textPrivacySettings.setOnClickListener {
-            // TODO AMANDA --- TESTING
-            notificationHandler.testNotification(
-                    context!!,
-                    "Test Notification",
-                    "This is a test, this is only a test",
-                    account.account)
-
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             listener.onRequestShowPrivacySettings()
         }
