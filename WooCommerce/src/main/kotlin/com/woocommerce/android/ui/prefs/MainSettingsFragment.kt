@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import dagger.android.support.AndroidSupportInjection
@@ -67,29 +69,41 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         textPrimaryStoreDomain.text = presenter.getStoreDomainName()
         textPrimaryStoreUsername.text = presenter.getUserDisplayName()
 
+        // TODO: this is just for testing and can be removed when notification work is completed
+        /* textPrimaryStoreDomain.setOnClickListener {
+            presenter.testNotification(activity!!)
+        }*/
+
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
             listener.onRequestLogout()
         }
 
-        switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
-        switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
-            trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
-            AppPrefs.setOrderNotificationsEnabled(isChecked)
-            switchNotifsTone.isEnabled = isChecked
-        }
-
-        switchNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
-        switchNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
-            trackSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
-            AppPrefs.setReviewNotificationsEnabled(isChecked)
-        }
-
-        // TODO: for now we're hiding the ability to disable the cha-ching on API 26+.
-        // this will be addressed in a later PR
+        // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            switchNotifsTone.visibility = View.GONE
+            notifsContainerOlder.visibility = View.GONE
+            notifsContainerNewer.visibility = View.VISIBLE
+            notifsContainerNewer.setOnClickListener {
+                AnalyticsTracker.track(SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
+                showDeviceAppNotificationSettings()
+            }
         } else {
+            notifsContainerOlder.visibility = View.VISIBLE
+            notifsContainerNewer.visibility = View.GONE
+
+            switchNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
+            switchNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
+                trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
+                AppPrefs.setOrderNotificationsEnabled(isChecked)
+                switchNotifsTone.isEnabled = isChecked
+            }
+
+            switchNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
+            switchNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
+                trackSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
+                AppPrefs.setReviewNotificationsEnabled(isChecked)
+            }
+
             switchNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
             switchNotifsTone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
             switchNotifsTone.setOnCheckedChangeListener { _, isChecked ->
@@ -119,6 +133,19 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         AnalyticsTracker.trackViewShown(this)
 
         activity?.setTitle(R.string.settings)
+    }
+
+    /**
+     * Shows the device's notification settings for this app - only implemented for API 26+ since we only call
+     * this on API 26+ devices (will do nothing on older devices)
+     */
+    override fun showDeviceAppNotificationSettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val intent = Intent()
+            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+            intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.getPackageName())
+            activity?.startActivity(intent)
+        }
     }
 
     /**

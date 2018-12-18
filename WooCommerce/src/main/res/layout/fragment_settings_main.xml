@@ -40,37 +40,68 @@
             style="@style/Woo.Settings.Divider"/>
 
         <!--
-            Notifications
+            Notifications (pre- API 26)
         -->
-        <TextView
-            style="@style/Woo.Settings.Caption"
+        <LinearLayout
+            android:id="@+id/notifsContainerOlder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_notifs"/>
+            android:orientation="vertical">
 
-        <com.woocommerce.android.widgets.WCToggleSingleOptionView
-            android:id="@+id/switchNotifsOrders"
-            style="@style/Woo.Settings.Label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:switchSummary="@string/settings_notifs_orders_detail"
-            app:switchTitle="@string/settings_notifs_orders"/>
+            <TextView
+                style="@style/Woo.Settings.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_notifs"/>
 
-        <com.woocommerce.android.widgets.WCToggleSingleOptionView
-            android:id="@+id/switchNotifsTone"
-            style="@style/Woo.Settings.Label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:switchSummary="@string/settings_notifs_tone_detail"
-            app:switchTitle="@string/settings_notifs_tone"/>
+            <com.woocommerce.android.widgets.WCToggleSingleOptionView
+                android:id="@+id/switchNotifsOrders"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:switchSummary="@string/settings_notifs_orders_detail"
+                app:switchTitle="@string/settings_notifs_orders"/>
 
-        <com.woocommerce.android.widgets.WCToggleSingleOptionView
-            android:id="@+id/switchNotifsReviews"
-            style="@style/Woo.Settings.Label"
+            <com.woocommerce.android.widgets.WCToggleSingleOptionView
+                android:id="@+id/switchNotifsTone"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:switchSummary="@string/settings_notifs_tone_detail"
+                app:switchTitle="@string/settings_notifs_tone"/>
+
+            <com.woocommerce.android.widgets.WCToggleSingleOptionView
+                android:id="@+id/switchNotifsReviews"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:switchSummary="@string/settings_notifs_reviews_detail"
+                app:switchTitle="@string/settings_notifs_reviews"/>
+        </LinearLayout>
+
+        <!--
+            Notifications (API 26+)
+        -->
+        <LinearLayout
+            android:id="@+id/notifsContainerNewer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:switchSummary="@string/settings_notifs_reviews_detail"
-            app:switchTitle="@string/settings_notifs_reviews"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textDeviceNotifSettings"
+                style="@style/Woo.Settings.LabelWithDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_notifs_device"/>
+
+            <TextView
+                style="@style/Woo.Settings.Label.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_notifs_device_detail"/>
+
+        </LinearLayout>
 
         <View
             style="@style/Woo.Settings.Divider"/>
