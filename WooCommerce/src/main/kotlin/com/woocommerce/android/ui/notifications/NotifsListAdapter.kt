@@ -44,9 +44,14 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
     }
 
     fun setNotifications(notifs: List<NotificationModel>) {
+        // If moderation pending review is present, make sure it's removed
+        // before processing the list.
+        val newList = pendingRemovalNotification?.let { (notif, _, _) ->
+            notifs.toMutableList().also { it.remove(notif) }
+        } ?: notifs
+
         // clear all the current data from the adapter
         removeAllSections()
-        pendingRemovalNotification = null
 
         // Build a notifs for each [TimeGroup] section
         val listToday = ArrayList<NotificationModel>()
@@ -55,7 +60,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         val listWeek = ArrayList<NotificationModel>()
         val listMonth = ArrayList<NotificationModel>()
 
-        notifs.forEach {
+        newList.forEach {
             // Default to today if the date cannot be parsed
             val date: Date = DateTimeUtils.dateUTCFromIso8601(it.timestamp) ?: Date()
             val timeGroup = TimeGroup.getTimeGroupForDate(date)
@@ -92,7 +97,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
 
         // remember these notifications for comparison in isSameList() below
         notifsList.clear()
-        notifsList.addAll(notifs)
+        notifsList.addAll(newList)
     }
 
     fun isSameList(notifs: List<NotificationModel>): Boolean {
@@ -168,6 +173,13 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
             notifyItemInsertedInSection(section, pos)
             getPositionInAdapter(section, pos)
         }.also { pendingRemovalNotification = null } ?: 0
+    }
+
+    /**
+     * Resets any pending review moderation state
+     */
+    fun resetPendingModerationState() {
+        pendingRemovalNotification = null
     }
 
     /**

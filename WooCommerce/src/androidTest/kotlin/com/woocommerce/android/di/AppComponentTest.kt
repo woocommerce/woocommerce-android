@@ -25,6 +25,7 @@ import javax.inject.Singleton
         MockedActivityBindingModule::class,
         MockedSelectedSiteModule::class,
         FCMServiceModule::class,
+        NotificationProcessingModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class,
         NetworkStatusModule::class,

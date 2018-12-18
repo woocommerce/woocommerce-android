@@ -23,33 +23,47 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.text.StringEscapeUtils
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object NotificationHandler {
-    private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
+@Singleton
+class NotificationHandler @Inject constructor(
+    private val siteStore: SiteStore,
+    private val dispatcher: Dispatcher
+) {
+    companion object {
+        private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
 
-    private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
-    private const val PUSH_NOTIFICATION_ID = 10000
-    const val GROUP_NOTIFICATION_ID = 30000
-    private const val MAX_INBOX_ITEMS = 5
+        private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
+        private const val PUSH_NOTIFICATION_ID = 10000
+        const val GROUP_NOTIFICATION_ID = 30000
+        private const val MAX_INBOX_ITEMS = 5
 
-    private const val PUSH_ARG_USER = "user"
-    private const val PUSH_ARG_TYPE = "type"
-    private const val PUSH_ARG_TITLE = "title"
-    private const val PUSH_ARG_MSG = "msg"
-    private const val PUSH_ARG_NOTE_ID = "note_id"
+        const val PUSH_ARG_USER = "user"
+        const val PUSH_ARG_TYPE = "type"
+        const val PUSH_ARG_TITLE = "title"
+        const val PUSH_ARG_MSG = "msg"
+        const val PUSH_ARG_NOTE_ID = "note_id"
+        const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
 
-    private const val PUSH_TYPE_COMMENT = "c"
-    private const val PUSH_TYPE_NEW_ORDER = "store_order"
+        const val PUSH_TYPE_COMMENT = "c"
+        const val PUSH_TYPE_NEW_ORDER = "store_order"
+    }
 
     /**
      * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
@@ -83,19 +97,18 @@ object NotificationHandler {
         buildAndShowNotificationFromNoteData(context, data, account)
     }
 
-    fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
+    @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
         if (data.isEmpty) {
             WooLog.e(T.NOTIFS, "Push notification received without a valid Bundle!")
             return
         }
 
         val wpComNoteId = data.getString(PUSH_ARG_NOTE_ID, "")
-        // TODO Temporarily disabled so it's easier to test spoofed notifications, restore
-//        if (wpComNoteId.isNullOrEmpty()) {
-//            // At this point 'note_id' is always available in the notification bundle.
-//            WooLog.e(T.NOTIFS, "Push notification received without a valid note_id in the payload!")
-//            return
-//        }
+        if (wpComNoteId.isNullOrEmpty()) {
+            // At this point 'note_id' is always available in the notification bundle.
+            WooLog.e(T.NOTIFS, "Push notification received without a valid note_id in the payload!")
+            return
+        }
 
         val pushUserId = data.getString(PUSH_ARG_USER)
         // pushUserId is always set server side, but better to double check it here.
@@ -103,8 +116,6 @@ object NotificationHandler {
             WooLog.e(T.NOTIFS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
             return
         }
-
-        // TODO: Store note object in database
 
         val noteTypeStr = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
         val noteType = when (noteTypeStr) {
@@ -119,7 +130,18 @@ object NotificationHandler {
             }
         }
 
-        // skip if user chose to disable this type of notification
+        // Build notification from message data, save to the database, and send request to
+        // fetch the actual notification from the api.
+        NotificationsUtils.buildNotificationModelFromBundle(siteStore, data)?.let {
+            // Save temporary notification to the database.
+            dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(it))
+
+            // Fire off the event to fetch the actual notification from the api
+            dispatcher.dispatch(NotificationActionBuilder
+                    .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
+        }
+
+        // skip displaying the notification if user chose to disable this type of notification
         if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
                 (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
             WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
@@ -144,9 +166,6 @@ object NotificationHandler {
             bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_RECEIVED, data)
             AnalyticsTracker.flush()
         }
-
-        // make sure we have a notification channel for this note type
-        createNotificationChannel(context, noteType)
 
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, noteType, title, message)
@@ -389,9 +408,13 @@ object NotificationHandler {
         wpComNoteId: String,
         pushId: Int
     ) {
-        // TODO Create an Intent containing the wpComNoteId that launches the MainActivity to handle the tap action
-        // (and open the notifications tab)
-        val resultIntent = Intent() // placeholder
+        // Open the app and load the notifications tab
+        val resultIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
+            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId)
+        }
+
         showNotificationForBuilder(builder, context, resultIntent, pushId)
     }
 

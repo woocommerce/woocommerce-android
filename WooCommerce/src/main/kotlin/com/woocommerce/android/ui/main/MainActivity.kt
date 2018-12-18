@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity(),
         private const val TOKEN_PARAMETER = "token"
         private const val STATE_KEY_POSITION = "key-position"
 
+        // push notification-related constants
+        const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
+        const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
+
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         }
@@ -289,7 +293,21 @@ class MainActivity : AppCompatActivity(),
 
     // region Fragment Processing
     private fun initFragment(savedInstanceState: Bundle?) {
-        savedInstanceState ?: switchFragment(BottomNavigationPosition.DASHBOARD)
+        val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
+
+        // Check if opened from a push notification
+        if (savedInstanceState == null && openedFromPush) {
+            // Reset this flag now that it's being processed
+            intent.removeExtra(FIELD_OPENED_FROM_PUSH)
+
+            // Open the notifications tab
+            switchFragment(BottomNavigationPosition.NOTIFICATIONS)
+
+            // TODO check if only one notification, if so, open detail
+            // TODO add tracks events
+        } else {
+            switchFragment(BottomNavigationPosition.DASHBOARD)
+        }
     }
 
     /**

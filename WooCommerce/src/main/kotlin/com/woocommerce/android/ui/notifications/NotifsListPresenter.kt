@@ -138,6 +138,13 @@ class NotifsListPresenter @Inject constructor(
                 isLoading = false
                 isRefreshing = false
             }
+            NotificationAction.UPDATE_NOTIFICATION, NotificationAction.FETCH_NOTIFICATION -> {
+                // TODO eventually we'll want to implement inserting or updating notifications
+                // in the notifications list individually.
+
+                // Refresh the list of notifications from the database
+                fetchAndLoadNotifsFromDb(false)
+            }
             else -> {}
         }
     }

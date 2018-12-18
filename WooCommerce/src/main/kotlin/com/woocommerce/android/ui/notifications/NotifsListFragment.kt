@@ -162,9 +162,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         if (isActive) {
             // If this fragment is now visible and we've deferred loading orders due to it not
             // being visible - go ahead and load the orders.
-            if (isRefreshPending) {
-                presenter.loadNotifs(true)
-            }
+            presenter.loadNotifs(forceRefresh = this.isRefreshPending)
         } else {
             // If this fragment is no longer visible, dismiss the pending notification
             // moderation so it can be processed immediately.
@@ -360,5 +358,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     private fun resetPendingModerationVariables() {
         pendingModerationNewStatus = null
         pendingModerationRemoteNoteId = null
+        notifsAdapter.resetPendingModerationState()
     }
 }

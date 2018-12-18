@@ -65,6 +65,11 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
     fun popToState(tag: String): Boolean
 
     /**
+     * Closes the current child fragment by popping it from the backstack
+     */
+    fun closeCurrentChildFragment()
+
+    /**
      * Locate a fragment on the back stack using the back stack tag provided.
      *
      * @return The fragment matching the provided tag, or null if not found.

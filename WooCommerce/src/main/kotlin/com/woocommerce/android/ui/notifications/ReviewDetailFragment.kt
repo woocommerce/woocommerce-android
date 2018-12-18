@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.getConvertedTimestamp
 import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooLog
@@ -119,7 +120,10 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         // Populate reviewed product info
         review_product_name.text = comment.postTitle
         note.getProductInfo()?.url?.let { url ->
-            review_open_product.setOnClickListener { ActivityUtils.openUrlExternal(activity as Context, url) }
+            review_open_product.setOnClickListener {
+                AnalyticsTracker.track(Stat.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
+                ActivityUtils.openUrlExternal(activity as Context, url)
+            }
         }
         productUrl = note.getProductInfo()?.url
 
@@ -198,7 +202,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
                 }
 
                 // Close this fragment
-                activity?.onBackPressed()
+                (parentFragment as? TopLevelFragmentView)?.closeCurrentChildFragment()
             } else {
                 WooLog.e(NOTIFICATIONS, "$TAG - ParentFragment must implement ReviewActionListener to " +
                         "moderate product review notifications!")
