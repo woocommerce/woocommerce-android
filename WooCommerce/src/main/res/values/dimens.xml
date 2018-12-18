@@ -123,6 +123,12 @@
     <dimen name="top_earner_product_image_sz">40dp</dimen>
 
     <!--
+         Notifications
+     -->
+    <dimen name="notification_badge_sz">12dp</dimen>
+    <dimen name="notification_badge_offset">6dp</dimen>
+
+    <!--
         Offline Status Bar
     -->
     <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>

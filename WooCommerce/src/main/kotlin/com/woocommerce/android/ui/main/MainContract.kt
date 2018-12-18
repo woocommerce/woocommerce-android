@@ -20,5 +20,6 @@ interface MainContract {
         fun updateOfflineStatusBar(isConnected: Boolean)
         fun hideBottomNav()
         fun showBottomNav()
+        fun showNotificationBadge(show: Boolean)
     }
 }
