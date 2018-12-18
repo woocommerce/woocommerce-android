@@ -4,19 +4,14 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.support.design.internal.BottomNavigationItemView
-import android.support.design.internal.BottomNavigationMenuView
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -40,7 +35,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.notification_badge_view.*
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -258,21 +252,6 @@ class MainActivity : AppCompatActivity(),
         bottom_nav.active(activeNavPosition.position)
         bottom_nav.setOnNavigationItemSelectedListener(this)
         bottom_nav.setOnNavigationItemReselectedListener(this)
-
-        // add the badge to the notifications item
-        val menuView = bottom_nav.getChildAt(0) as BottomNavigationMenuView
-        val itemView = menuView.getChildAt(BottomNavigationPosition.NOTIFICATIONS.position) as BottomNavigationItemView
-        val badgeView = LayoutInflater.from(this).inflate(R.layout.notification_badge_view, menuView, false)
-        itemView.addView(badgeView)
-    }
-
-    // TODO: add logic to show badge when there are unseen store notifications
-    override fun showNotificationBadge(show: Boolean) {
-        if (show && badge.visibility != View.VISIBLE) {
-            WooAnimUtils.fadeIn(badge, Duration.MEDIUM)
-        } else if (!show && badge.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(badge, Duration.MEDIUM)
-        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -284,12 +263,6 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
-
-        // TODO: remove this test code before merging
-        showNotificationBadge(true)
-        Handler().postDelayed({
-            showNotificationBadge(false)
-        }, 1500)
 
         return switchFragment(navPosition)
     }
