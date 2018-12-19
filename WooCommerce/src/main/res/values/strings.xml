@@ -238,7 +238,7 @@
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>
     <string name="settings_crash_reporting">Crash reports</string>
-    <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports.</string>
+    <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports</string>
     <!--
         WCToggleSingleOptionView
     -->
