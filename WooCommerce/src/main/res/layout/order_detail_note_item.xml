@@ -39,6 +39,7 @@
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Label"
+        android:textColor="@color/grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/orderNote_icon"
