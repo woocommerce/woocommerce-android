@@ -153,7 +153,7 @@
     <!--
         Order Detail Views
     -->
-    <string name="customer_information">Customer Information</string>
+    <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
@@ -175,13 +175,13 @@
     <string name="orderdetail_new_total">New Total</string>
     <string name="orderdetail_payment_refunded">Payment - Refunded</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_customer_provided_note">Customer Provided Note</string>
+    <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
     <string name="orderdetail_note_private">Private Note</string>
     <string name="orderdetail_note_public">Note to customer</string>
     <string name="orderdetail_note_system">System status</string>
-    <string name="orderdetail_order_notes">Order Notes</string>
+    <string name="orderdetail_order_notes">Order notes</string>
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
