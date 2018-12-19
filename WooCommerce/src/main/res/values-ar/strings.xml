@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-28 10:54:02+0000
+Translation-Revision-Date: 2018-12-11 13:54:06+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="orderdetail_note_system">حالة النظام</string>
+    <string name="orderdetail_note_public">ملاحظة إلى العميل</string>
+    <string name="dashboard_no_orders_with_search">لا توجد طلبات مطابقة</string>
+    <string name="login_site_list_update_required">يلزم التحديث إلى WooCommerce 3.5</string>
+    <string name="login_verifying_sites">جارٍ التحقق من المواقع…</string>
+    <string name="button_update_instructions">إرشادات التحديث</string>
+    <string name="search">بحث</string>
+    <string name="refresh_button">تجديد</string>
+    <string name="more_notifications">و%d إضافي.</string>
+    <string name="new_notifications">%d من الإخطارات الجديدة</string>
+    <string name="dashboard_plugin_notice_message">يتطلب هذا التطبيق أن تقوم بتثبيت WooCommerce 3.5 على خادمك. يمكنك التحديث في أقرب وقت ممكن للاستمرار في استخدام هذا التطبيق.</string>
+    <string name="dashboard_plugin_notice_title">التحديث إلى WooCommerce 3.5 للاستمرار في استخدام هذا التطبيق</string>
     <string name="about_version">الإصدار %s</string>
     <string name="about_tos">شروط الخدمة</string>
     <string name="about_publisher">الناشر: Automattic, Inc</string>
     <string name="about_appname">WooCommerce لنظام التشغيل Android</string>
     <string name="support_identity_input_dialog_name_label">الاسم</string>
-    <string name="support_email_toast">فتح تطبيق البريد الإلكتروني للاتصال بالدعم</string>
     <string name="settings_licenses">تراخيص المصدر المفتوحة</string>
     <string name="settings_about">حول التطبيق</string>
     <string name="logviewer_share_error">لا يمكن مشاركة السجل</string>
@@ -193,7 +204,6 @@ Language: ar
     <string name="orderdetail_payment_cleared">تم مسح الدفع</string>
     <string name="orderdetail_order_fulfillment">إتمام الطلب رقم #%s</string>
     <string name="orderdetail_order_notes">ملاحظات الطلب</string>
-    <string name="orderdetail_note_public">ملاحظة عامة</string>
     <string name="orderdetail_note_private">ملاحظة خاصة</string>
     <string name="orderdetail_note_hint">إنشاء ملاحظة طلب</string>
     <string name="orderdetail_customer_image_contentdesc">صورة الملف الشخصي للعميل</string>

@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-27 11:54:02+0000
+Translation-Revision-Date: 2018-12-13 07:54:02+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="orderdetail_note_system">Состояние системы</string>
+    <string name="orderdetail_note_public">Примечание для клиента</string>
+    <string name="dashboard_no_orders_with_search">Нет совпадающих заказов</string>
+    <string name="login_site_list_update_required">Требуется обновление WooCommerce до версии 3.5</string>
+    <string name="login_verifying_sites">Проверка сайтов…</string>
+    <string name="button_update_instructions">Инструкции по обновлению</string>
+    <string name="search">Поиск</string>
+    <string name="refresh_button">Обновить</string>
+    <string name="more_notifications">и еще %d.</string>
+    <string name="new_notifications">Новых уведомлений: %d</string>
+    <string name="dashboard_plugin_notice_message">Для использования этого приложения необходимо установить на сервер WooCommerce 3.5. Чтобы продолжить работу с приложением, как можно скорее установите обновление.</string>
+    <string name="dashboard_plugin_notice_title">Чтобы продолжить использовать приложение, обновите WooCommerce до версии 3.5</string>
     <string name="about_tos">Условия предоставления услуг</string>
     <string name="about_publisher">Автор: Automattic, Inc</string>
     <string name="about_appname">WooCommerce для Android</string>
     <string name="support_identity_input_dialog_name_label">Имя</string>
-    <string name="support_email_toast">Запуск почтового приложения для обращения в службу поддержки</string>
     <string name="settings_licenses">Лицензии на ПО с открытым исходным кодом</string>
     <string name="settings_about">О приложении</string>
     <string name="logviewer_share_error">Не удается опубликовать журнал</string>
@@ -204,7 +215,6 @@ Language: ru
     <string name="orderdetail_show_billing">Показать платёжные сведения</string>
     <string name="orderdetail_payment_cleared">Платёж погашен</string>
     <string name="orderdetail_order_notes">Примечания к заказу</string>
-    <string name="orderdetail_note_public">Публичное примечание</string>
     <string name="orderdetail_note_private">Конфиденциальное примечание</string>
     <string name="orderdetail_note_hint">Составить примечание к заказу</string>
     <string name="orderdetail_customer_image_contentdesc">Изображение профиля клиента</string>

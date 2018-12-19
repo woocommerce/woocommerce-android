@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-28 07:54:02+0000
+Translation-Revision-Date: 2018-12-11 08:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="orderdetail_note_system">系統狀態</string>
+    <string name="orderdetail_note_public">給顧客的備註</string>
+    <string name="dashboard_no_orders_with_search">沒有相符的訂單</string>
+    <string name="login_site_list_update_required">必須更新至 WooCommerce 3.5</string>
+    <string name="login_verifying_sites">正在驗證網站…</string>
+    <string name="button_update_instructions">更新指示</string>
+    <string name="search">搜尋</string>
+    <string name="refresh_button">重新整理</string>
+    <string name="more_notifications">還有 %d 則通知。</string>
+    <string name="new_notifications">%d 則新通知</string>
+    <string name="dashboard_plugin_notice_message">此應用程式要求你在伺服器上安裝 WooCommerce 3.5，請儘快更新以繼續使用此應用程式。</string>
+    <string name="dashboard_plugin_notice_title">更新至 WooCommerce 3.5 以繼續使用此應用程式</string>
     <string name="about_version">版本 %s</string>
     <string name="about_tos">服務條款</string>
     <string name="about_publisher">發表者：Automattic, Inc</string>
     <string name="about_appname">Android 版 WooCommerce</string>
     <string name="support_identity_input_dialog_name_label">名稱</string>
-    <string name="support_email_toast">開啟電子郵件應用程式，以聯絡支援團隊</string>
     <string name="settings_licenses">開啟來源授權</string>
     <string name="settings_about">關於此應用程式</string>
     <string name="logviewer_share_error">無法共用記錄檔</string>
@@ -193,7 +204,6 @@ Language: zh_TW
     <string name="orderdetail_payment_cleared">款項已結清</string>
     <string name="orderdetail_order_fulfillment">履行訂單編號%s</string>
     <string name="orderdetail_order_notes">訂單備註</string>
-    <string name="orderdetail_note_public">公開備註</string>
     <string name="orderdetail_note_private">私人備註</string>
     <string name="orderdetail_note_hint">撰寫訂單備註</string>
     <string name="orderdetail_customer_image_contentdesc">客戶個人檔案圖片</string>

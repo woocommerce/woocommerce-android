@@ -13,11 +13,13 @@ interface LoginEpilogueContract {
         fun getUserDisplayName(): String?
         fun logout()
         fun userIsLoggedIn(): Boolean
+        fun checkWCVersionsForAllSites()
+        fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel>
     }
 
     interface View : BaseView<Presenter> {
         fun showUserInfo()
-        fun showStoreList()
+        fun showStoreList(supportedWCSites: List<SiteModel>, unsupportedWCSites: List<SiteModel>)
         fun cancel()
     }
 }
