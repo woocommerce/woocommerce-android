@@ -16,7 +16,7 @@ interface MainContract {
         fun showLoginEpilogueScreen()
         fun updateSelectedSite()
         fun showSettingsScreen()
-        fun contactSupport()
+        fun showHelpAndSupport()
         fun updateOfflineStatusBar(isConnected: Boolean)
         fun hideBottomNav()
         fun showBottomNav()

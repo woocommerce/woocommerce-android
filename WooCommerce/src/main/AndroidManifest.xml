@@ -63,7 +63,7 @@
 
         <activity
             android:name=".support.HelpActivity"
-            android:label="@string/help_screen_title"
+            android:label="@string/support_help"
             android:theme="@style/AppTheme" />
 
         <!-- Services -->

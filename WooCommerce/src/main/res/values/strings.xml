@@ -248,7 +248,7 @@
     <!--
         Help and support
     -->
-    <string name="contact_support">Contact support</string>
+    <string name="support_help">Help &amp; support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
     <string name="invalid_email_message">Your email address isn\'t valid</string>
     <string name="support_identity_input_dialog_enter_email_and_name">To continue please enter your email address and name</string>
@@ -269,7 +269,6 @@
     <string name="support_contact_email_not_set">Not set</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_push_notification_message">New message from \'Help &amp; Support\'</string>
-    <string name="help_screen_title">Help &amp; Support</string>
     <string name="logviewer_activity_title">Application log</string>
     <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
     <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
