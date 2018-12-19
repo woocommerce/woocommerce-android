@@ -163,7 +163,8 @@
     <string name="orderdetail_email_contentdesc">email customer</string>
     <string name="orderdetail_call_contentdesc">call customer</string>
     <string name="orderdetail_sms_contentdesc">send customer sms message</string>
-    <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
