@@ -47,5 +47,13 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
             // todo Product Image
         }
+
+        // we need to put some space before the product name when the product image is showing
+        val margin: Int = if (expanded) {
+            context.resources.getDimensionPixelSize(R.dimen.margin_large)
+        } else {
+            0
+        }
+        (productInfo_name.layoutParams as MarginLayoutParams).marginStart = margin
     }
 }
