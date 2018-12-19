@@ -93,6 +93,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
         ORDERS_LIST_PULLED_TO_REFRESH,
         ORDERS_LIST_MENU_FILTER_TAPPED,
+        ORDERS_LIST_MENU_SEARCH_TAPPED,
 
         // -- Order filter by status dialog
         FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
@@ -302,6 +303,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SELECTED_STORE_ID = "selected_store_id"
         const val KEY_STATE = "state"
         const val KEY_STATUS = "status"
+        const val KEY_SEARCH = "search"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
 
@@ -337,10 +339,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param errorType The type of error.
          * @param errorDescription The error text or other description.
          */
-        fun track(stat: Stat, errorContext: String, errorType: String, errorDescription: String?) {
+        fun track(stat: Stat, errorContext: String?, errorType: String?, errorDescription: String?) {
             val props = HashMap<String, String>()
-            props[KEY_ERROR_CONTEXT] = errorContext
-            props[KEY_ERROR_TYPE] = errorType
+            errorContext?.let {
+                props[KEY_ERROR_CONTEXT] = it
+            }
+            errorType?.let {
+                props[KEY_ERROR_TYPE] = it
+            }
             errorDescription?.let {
                 props[KEY_ERROR_DESC] = it
             }

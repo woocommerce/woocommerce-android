@@ -23,12 +23,19 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
         orderNote_created.text = DateUtils.getFriendlyLongDateAtTimeString(context, note.dateCreated).capitalize()
         orderNote_note.text = getHtmlText(note.note)
 
-        if (note.isCustomerNote) {
-            orderNote_type.text = context.getString(R.string.orderdetail_note_public)
-            orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_public))
-        } else {
-            orderNote_type.text = context.getString(R.string.orderdetail_note_private)
-            orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_private))
+        when {
+            note.isCustomerNote -> {
+                orderNote_type.text = context.getString(R.string.orderdetail_note_public)
+                orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_public))
+            }
+            note.isSystemNote -> {
+                orderNote_type.text = context.getString(R.string.orderdetail_note_system)
+                orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_system))
+            }
+            else -> {
+                orderNote_type.text = context.getString(R.string.orderdetail_note_private)
+                orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_private))
+            }
         }
     }
 

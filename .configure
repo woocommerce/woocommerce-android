@@ -10,5 +10,4 @@
       "file": "android/WCAndroid/google-services.json",
       "destination": "WooCommerce/google-services.json"
     }
-  ]
 }

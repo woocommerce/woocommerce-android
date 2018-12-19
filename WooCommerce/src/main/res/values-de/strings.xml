@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-14 08:54:04+0000
+Translation-Revision-Date: 2018-12-11 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="orderdetail_note_system">Systemstatus</string>
+    <string name="orderdetail_note_public">Hinweis an Kunden</string>
+    <string name="dashboard_no_orders_with_search">Keine übereinstimmenden Bestellungen</string>
+    <string name="login_site_list_update_required">Aktualisierung auf WooCommerce 3.5 erforderlich</string>
+    <string name="login_verifying_sites">Websites werden verifiziert …</string>
+    <string name="button_update_instructions">Aktualisierungsanweisungen</string>
+    <string name="search">Suche</string>
+    <string name="refresh_button">Neu laden</string>
+    <string name="more_notifications">und %d weitere.</string>
+    <string name="new_notifications">%d neue Benachrichtigungen</string>
+    <string name="dashboard_plugin_notice_message">Für diese App musst du WooCommerce 3.5 auf deinem Server installieren. Nimm die Aktualisierung so bald wie möglich vor, um diese App weiterhin zu verwenden.</string>
+    <string name="dashboard_plugin_notice_title">Auf WooCommerce 3.5 aktualisieren, um diese App weiterhin zu verwenden</string>
+    <string name="about_version">Version %s</string>
+    <string name="about_tos">Geschäftsbedingungen</string>
+    <string name="about_publisher">Herausgeber: Automattic, Inc</string>
+    <string name="about_appname">WooCommerce für Android</string>
+    <string name="support_identity_input_dialog_name_label">Name</string>
+    <string name="settings_licenses">Open-Source-Lizenzen</string>
+    <string name="settings_about">Über die App</string>
     <string name="logviewer_share_error">Protokoll kann nicht geteilt werden</string>
     <string name="logviewer_error_copy_to_clipboard">Fehler beim Kopieren in Zwischenablage</string>
     <string name="logviewer_copied_to_clipboard">Protokoll in Zwischenablage kopiert</string>
@@ -140,6 +159,7 @@ Language: de
     <string name="send_link">Link senden</string>
     <string name="invalid_verification_code">Ungültiger Überprüfungscode</string>
     <string name="verification_code">Überprüfungscode</string>
+    <string name="email_address">E-Mail-Adresse</string>
     <string name="support_email_subject">WooCommerce Android %s-Unterstützung</string>
     <string name="contact_support">Support kontaktieren</string>
     <string name="toggle_option_not_checked">Option nicht aktiviert</string>
@@ -184,7 +204,6 @@ Language: de
     <string name="orderdetail_payment_cleared">Zahlung gelöscht</string>
     <string name="orderdetail_order_fulfillment">Bestellung Nr. %s abschließen</string>
     <string name="orderdetail_order_notes">Bestellhinweise</string>
-    <string name="orderdetail_note_public">Öffentlicher Hinweis</string>
     <string name="orderdetail_note_private">Interner Hinweis</string>
     <string name="orderdetail_note_hint">Bestellhinweis verfassen</string>
     <string name="orderdetail_customer_image_contentdesc">Kundenprofilbild</string>
@@ -209,7 +228,6 @@ Language: de
     <string name="orderdetail_orderstatus_created">%1$s erstellt</string>
     <string name="orderdetail_orderstatus_heading">Nr. %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Bestellung Nr. %s</string>
-    <string name="orderdetail">Auftragsdetails</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Kundeninformationen</string>
     <string name="orderlist_filter">Filter</string>
@@ -304,14 +322,11 @@ Language: de
     <string name="total">Insgesamt</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="email_address">E-Mail-Adresse</string>
     <string name="orders">Bestellungen</string>
     <string name="my_store">Mein Shop</string>
     <string name="signout">Abmelden</string>
     <string name="logging_in">Anmeldung läuft</string>
     <string name="all">Alle</string>
-    <string name="login_notification_channel_id">\@string/notification_channel_general_id</string>
-    <string name="notification_channel_general_id">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_general_title">Allgemein</string>
     <string name="app_name">WooCommerce</string>
 </resources>

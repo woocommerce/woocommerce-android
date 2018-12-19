@@ -37,8 +37,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "0.20"
-        versionCode 21
+        versionName "0.22"
+        versionCode 23
 
         minSdkVersion 21
         targetSdkVersion 27
@@ -64,8 +64,14 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            // Proguard is used to shrink our apk, and reduce the number of methods in our final apk,
+            // but we don't obfuscate the bytecode.
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
         }
     }
 
