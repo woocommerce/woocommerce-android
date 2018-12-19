@@ -131,7 +131,7 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun confirmLogout() {
         val message = String.format(
                 Locale.getDefault(),
-                getString(R.string.settings_confirm_signout),
+                getString(R.string.settings_confirm_logout),
                 presenter.getAccountDisplayName()
         )
         AlertDialog.Builder(ContextThemeWrapper(this, R.style.AppTheme))
