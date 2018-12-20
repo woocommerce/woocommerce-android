@@ -1,6 +1,6 @@
 {
   "branch": "master",
-  "pinned_hash": "b553ca03b595acac33f06f308100ab4ef78355e7",
+  "pinned_hash": "791049e91ebdeab631dee9a7befd59d9ffe7ea05",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/gradle.properties",
@@ -10,5 +10,8 @@
       "file": "android/WCAndroid/google-services.json",
       "destination": "WooCommerce/google-services.json"
     }
+  ],
+  "file_dependencies": [
+
   ]
 }
