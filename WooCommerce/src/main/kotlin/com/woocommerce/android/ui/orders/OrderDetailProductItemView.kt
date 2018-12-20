@@ -41,17 +41,17 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
             val res = context.resources
             val orderTotal = CurrencyUtils.currencyString(context, item.total, currencyCode)
             val productPrice = CurrencyUtils.currencyString(context, item.price, currencyCode)
-            item.quantity?.let {
-                if (it > 1) {
-                    productInfo_productTotal.text = res.getString(
-                            R.string.orderdetail_product_lineitem_total_multiple, orderTotal, productPrice, it
-                    )
-                } else {
-                    productInfo_productTotal.text = res.getString(
-                            R.string.orderdetail_product_lineitem_total_single, orderTotal
-                    )
-                }
+
+            item.quantity?.takeIf { it > 1 }?.let {
+                productInfo_productTotal.text = res.getString(
+                        R.string.orderdetail_product_lineitem_total_multiple, orderTotal, productPrice, it
+                )
+            } ?: run {
+                productInfo_productTotal.text = res.getString(
+                        R.string.orderdetail_product_lineitem_total_single, orderTotal
+                )
             }
+
             productInfo_totalTax.text = CurrencyUtils.currencyString(context, item.totalTax, currencyCode)
 
             // todo Product Image
