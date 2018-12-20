@@ -56,7 +56,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                 customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
                 customerInfo_phone.visibility = View.VISIBLE
                 customerInfo_callOrMessageBtn.visibility = View.VISIBLE
-                customerInfo_callOrMessageBtn.setOnClickListener{
+                customerInfo_callOrMessageBtn.setOnClickListener {
                     showCallOrMessagePopup(order, listener)
                 }
             } else {
