@@ -146,7 +146,6 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         configureModerationButtons(note)
         updateStatus(CommentStatus.fromString(comment.status))
 
-        // Mark notification as read
         activity?.let { presenter.markOrderNotificationRead(it, note) }
     }
 
