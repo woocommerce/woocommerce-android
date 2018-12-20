@@ -294,7 +294,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         var title: TextView = view.notif_title
         var desc: TextView = view.notif_desc
         var rating: RatingBar = view.notif_rating
-        var unreadIndicator:  View = view.notif_unreadIndicator
+        var unreadIndicator: View = view.notif_unreadIndicator
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
