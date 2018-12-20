@@ -224,7 +224,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
                             AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
                             AnalyticsTracker.KEY_ALREADY_READ to notification.read))
 
-                    openOrderDetail(selectedSite.get().id, it)
+                    openOrderDetail(selectedSite.get().id, it, notification.remoteNoteId)
                 } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
                     showLoadNotificationDetailError()
                 }

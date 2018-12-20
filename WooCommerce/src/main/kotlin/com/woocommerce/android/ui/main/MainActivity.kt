@@ -477,7 +477,7 @@ class MainActivity : AppCompatActivity(),
                 when (it.getWooType()) {
                     NEW_ORDER -> {
                         it.getRemoteOrderId()?.let { orderId ->
-                            (fragment as? NotifsListFragment)?.openOrderDetail(it.localSiteId, orderId)
+                            (fragment as? NotifsListFragment)?.openOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
                         }
                     }
                     PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)

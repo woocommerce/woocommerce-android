@@ -34,23 +34,36 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
+        const val FIELD_REMOTE_NOTE_ID = "remote-notification-id"
         const val REQUEST_CODE_ADD_NOTE = 100
 
-        fun newInstance(orderId: OrderIdentifier, markComplete: Boolean = false): Fragment {
+        fun newInstance(
+            orderId: OrderIdentifier,
+            remoteNoteId: Long? = null,
+            markComplete: Boolean = false
+        ): Fragment {
             val args = Bundle()
             args.putString(FIELD_ORDER_IDENTIFIER, orderId)
 
             // True if order fulfillment requested, else false
             args.putBoolean(FIELD_MARK_COMPLETE, markComplete)
 
+            // If opened from a notification, add the remote_note_id
+            remoteNoteId?.let { args.putLong(FIELD_REMOTE_NOTE_ID, it) }
+
             val fragment = OrderDetailFragment()
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(localSiteId: Int, remoteOrderId: Long, markComplete: Boolean = false): Fragment {
+        fun newInstance(
+            localSiteId: Int,
+            remoteOrderId: Long,
+            remoteNoteId: Long? = null,
+            markComplete: Boolean = false
+        ): Fragment {
             val orderIdentifier = OrderIdentifier(localSiteId, remoteOrderId)
-            return newInstance(orderIdentifier, markComplete)
+            return newInstance(orderIdentifier, remoteNoteId, markComplete)
         }
     }
 
@@ -84,6 +97,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
             val orderIdentifier = it.getString(FIELD_ORDER_IDENTIFIER) as OrderIdentifier
             presenter.loadOrderDetail(orderIdentifier, markComplete)
+
+            val remoteNoteId = it.getLong(FIELD_REMOTE_NOTE_ID, 0)
+            activity?.let { ctx ->
+                if (remoteNoteId > 0) {
+                    presenter.markOrderNotificationRead(ctx, remoteNoteId)
+                }
+            }
         }
 
         scrollView.setOnScrollChangeListener {

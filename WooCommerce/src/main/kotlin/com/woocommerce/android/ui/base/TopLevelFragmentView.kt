@@ -87,15 +87,15 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
             popToState(tag)
         } ?: loadChildFragment(
                 OrderDetailFragment.newInstance(
-                        order.getIdentifier(),
-                        markOrderComplete
+                        orderId = order.getIdentifier(),
+                        markComplete = markOrderComplete
                 ), tag
         )
     }
 
-    override fun openOrderDetail(localSiteId: Int, remoteOrderId: Long) {
+    override fun openOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long?) {
         val tag = OrderDetailFragment.TAG
-        loadChildFragment(OrderDetailFragment.newInstance(localSiteId, remoteOrderId), tag)
+        loadChildFragment(OrderDetailFragment.newInstance(localSiteId, remoteOrderId, remoteNoteId), tag)
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
