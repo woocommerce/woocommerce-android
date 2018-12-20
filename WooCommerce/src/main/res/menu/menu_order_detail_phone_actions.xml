@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/menu_call"
-        android:icon="@drawable/ic_phone_compat"
-        android:title="@string/orderdetail_call_customer"
-        app:showAsAction="never"/>
+        android:title="@string/orderdetail_call_customer"/>
 
     <item
-        android:id="@+id/menu_text"
-        android:icon="@drawable/ic_message_compat"
-        android:title="@string/orderdetail_message_customer"
-        app:showAsAction="never"/>
+        android:id="@+id/menu_message"
+        android:title="@string/orderdetail_message_customer"/>
 
 </menu>
