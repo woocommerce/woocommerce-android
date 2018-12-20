@@ -69,11 +69,6 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         textPrimaryStoreDomain.text = presenter.getStoreDomainName()
         textPrimaryStoreUsername.text = presenter.getUserDisplayName()
 
-        // TODO: this is just for testing and can be removed when notification work is completed
-        /* textPrimaryStoreDomain.setOnClickListener {
-            presenter.testNotification(activity!!)
-        }*/
-
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
             listener.onRequestLogout()
