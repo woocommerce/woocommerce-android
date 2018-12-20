@@ -33,9 +33,6 @@ class FCMRegistrationIntentService : JobIntentService() {
         const val WPCOM_PUSH_DEVICE_TOKEN = "WC_PREF_NOTIFICATIONS_TOKEN"
 
         fun enqueueWork(context: Context) {
-            // TODO: Enable registration for release builds when push notification support is ready
-            if (!BuildConfig.DEBUG) return
-
             val work = Intent(context, FCMRegistrationIntentService::class.java)
             JobIntentService.enqueueWork(context, FCMRegistrationIntentService::class.java,
                     JOB_FCM_REGISTRATION_SERVICE_ID, work)
