@@ -146,9 +146,9 @@ class OrderDetailPresenter @Inject constructor(
      * Removes the notification from the system bar if present, fetch the new order notification from the database,
      * and fire the event to mark it as read.
      */
-    override fun markOrderNotificationRead(context: Context, remoteNoteId: Long) {
-        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNoteId.toString())
-        notificationStore.getNotificationByRemoteId(remoteNoteId)?.let {
+    override fun markOrderNotificationRead(context: Context, remoteNotificationId: Long) {
+        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNotificationId.toString())
+        notificationStore.getNotificationByRemoteId(remoteNotificationId)?.let {
             if (!it.read) {
                 it.read = true
                 pendingMarkReadNotification = it
