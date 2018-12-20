@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
@@ -15,6 +14,7 @@ import com.woocommerce.android.extensions.getMessageSnippet
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.Section
@@ -109,6 +109,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
             notifsList.forEach {
                 if (it.noteId == notification.noteId &&
                         it.title == notification.title &&
+                        it.read == notification.read &&
                         it.noteHash == notification.noteHash) {
                     return true
                 }
@@ -266,6 +267,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
 
             itemHolder.title.text = notif.getTitleSnippet()
             itemHolder.desc.text = notif.getMessageSnippet()
+            itemHolder.unreadIndicator.visibility = if (notif.read) View.GONE else View.VISIBLE
 
             itemHolder.itemView.setOnClickListener {
                 listener?.onNotificationClicked(notif)
@@ -292,6 +294,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         var title: TextView = view.notif_title
         var desc: TextView = view.notif_desc
         var rating: RatingBar = view.notif_rating
+        var unreadIndicator: View = view.notif_unreadIndicator
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
