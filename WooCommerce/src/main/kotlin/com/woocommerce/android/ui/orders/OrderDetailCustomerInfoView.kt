@@ -53,6 +53,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             // display phone
             if (!order.billingPhone.isEmpty()) {
                 customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
+                customerInfo_phone.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.setOnClickListener{
+                    // TODO: show menu
+                }
+            } else {
+                customerInfo_phone.visibility = View.GONE
+                customerInfo_callOrMessageBtn.visibility = View.GONE
             }
 
             // configure more/less button
@@ -73,7 +81,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                 listener?.createEmail(order, order.billingEmail)
             }
 
-            customerInfo_phoneBtn.setOnClickListener {
+            // TODO: remove this
+            /*customerInfo_phoneBtn.setOnClickListener {
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
 
                 listener?.dialPhone(order, order.billingPhone)
@@ -83,7 +92,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
 
                 listener?.sendSms(order, order.billingPhone)
-            }
+            }*/
         }
     }
 
