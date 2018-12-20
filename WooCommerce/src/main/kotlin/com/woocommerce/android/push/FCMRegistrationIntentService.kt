@@ -15,7 +15,6 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.NotificationAppKey.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.NotificationStore.RegisterDevicePayload
-import org.wordpress.android.login.BuildConfig
 import javax.inject.Inject
 
 class FCMRegistrationIntentService : JobIntentService() {
