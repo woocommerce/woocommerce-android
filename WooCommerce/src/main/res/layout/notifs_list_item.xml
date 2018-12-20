@@ -9,7 +9,7 @@
 
     <View
         android:id="@+id/notif_unreadIndicator"
-        android:layout_width="4dp"
+        android:layout_width="3dp"
         android:layout_height="match_parent"
         android:background="@color/wc_green"
         android:visibility="gone"
