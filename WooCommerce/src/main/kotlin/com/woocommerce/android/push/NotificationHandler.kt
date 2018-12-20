@@ -96,6 +96,29 @@ class NotificationHandler @Inject constructor(
         }
 
         /**
+         * Removes a specific notification from the system bar.
+         */
+        @Synchronized fun removeNotificationWithNoteIdFromSystemBar(context: Context, wpComNoteId: String) {
+            if (wpComNoteId.isEmpty() or !hasNotifications()) {
+                return
+            }
+
+            val notificationManager = NotificationManagerCompat.from(context)
+
+            ACTIVE_NOTIFICATIONS_MAP.asSequence().firstOrNull {
+                it.value.getString(PUSH_ARG_NOTE_ID) == wpComNoteId
+            }?.key?.let {
+                notificationManager.cancel(it)
+                ACTIVE_NOTIFICATIONS_MAP.remove(it)
+            }
+
+            // If there are no notifications left, cancel the group as well
+            if (!hasNotifications()) {
+                notificationManager.cancel(GROUP_NOTIFICATION_ID)
+            }
+        }
+
+        /**
          * Attach default properties and track given analytics for the given notifications-related [stat].
          *
          * Will skip tracking if user has disabled notifications from being shown at the app system settings level.

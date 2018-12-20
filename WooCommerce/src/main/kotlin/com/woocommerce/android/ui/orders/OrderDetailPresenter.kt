@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FA
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -146,6 +147,7 @@ class OrderDetailPresenter @Inject constructor(
      * and fire the event to mark it as read.
      */
     override fun markOrderNotificationRead(context: Context, remoteNoteId: Long) {
+        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNoteId.toString())
         notificationStore.getNotificationByRemoteId(remoteNoteId)?.let {
             if (!it.read) {
                 it.read = true

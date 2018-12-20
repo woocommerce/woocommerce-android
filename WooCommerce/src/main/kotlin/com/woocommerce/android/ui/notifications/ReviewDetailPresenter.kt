@@ -4,6 +4,7 @@ import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.buildComment
 import com.woocommerce.android.extensions.getCommentId
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -100,6 +101,7 @@ class ReviewDetailPresenter @Inject constructor(
      * Fires the event to mark a notification as read and removes it from the notification bar if needed.
      */
     override fun markOrderNotificationRead(context: Context, notification: NotificationModel) {
+        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, notification.remoteNoteId.toString())
         if (!notification.read) {
             notification.read = true
             val payload = MarkNotificationReadPayload(notification)
