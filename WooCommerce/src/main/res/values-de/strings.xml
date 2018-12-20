@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-29 10:54:02+0000
+Translation-Revision-Date: 2018-12-11 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="orderdetail_note_system">Systemstatus</string>
+    <string name="orderdetail_note_public">Hinweis an Kunden</string>
+    <string name="dashboard_no_orders_with_search">Keine übereinstimmenden Bestellungen</string>
+    <string name="login_site_list_update_required">Aktualisierung auf WooCommerce 3.5 erforderlich</string>
+    <string name="login_verifying_sites">Websites werden verifiziert …</string>
+    <string name="button_update_instructions">Aktualisierungsanweisungen</string>
+    <string name="search">Suche</string>
+    <string name="refresh_button">Neu laden</string>
+    <string name="more_notifications">und %d weitere.</string>
+    <string name="new_notifications">%d neue Benachrichtigungen</string>
+    <string name="dashboard_plugin_notice_message">Für diese App musst du WooCommerce 3.5 auf deinem Server installieren. Nimm die Aktualisierung so bald wie möglich vor, um diese App weiterhin zu verwenden.</string>
+    <string name="dashboard_plugin_notice_title">Auf WooCommerce 3.5 aktualisieren, um diese App weiterhin zu verwenden</string>
     <string name="about_version">Version %s</string>
     <string name="about_tos">Geschäftsbedingungen</string>
     <string name="about_publisher">Herausgeber: Automattic, Inc</string>
-    <string name="about_appname">WooCommerce for Android</string>
+    <string name="about_appname">WooCommerce für Android</string>
     <string name="support_identity_input_dialog_name_label">Name</string>
-    <string name="support_email_toast">E-Mail-App wird zur Kontaktaufnahme mit Support geöffnet</string>
     <string name="settings_licenses">Open-Source-Lizenzen</string>
     <string name="settings_about">Über die App</string>
     <string name="logviewer_share_error">Protokoll kann nicht geteilt werden</string>
@@ -193,7 +204,6 @@ Language: de
     <string name="orderdetail_payment_cleared">Zahlung gelöscht</string>
     <string name="orderdetail_order_fulfillment">Bestellung Nr. %s abschließen</string>
     <string name="orderdetail_order_notes">Bestellhinweise</string>
-    <string name="orderdetail_note_public">Öffentlicher Hinweis</string>
     <string name="orderdetail_note_private">Interner Hinweis</string>
     <string name="orderdetail_note_hint">Bestellhinweis verfassen</string>
     <string name="orderdetail_customer_image_contentdesc">Kundenprofilbild</string>

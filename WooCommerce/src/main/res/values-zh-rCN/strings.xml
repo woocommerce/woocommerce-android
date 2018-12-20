@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-28 08:54:02+0000
+Translation-Revision-Date: 2018-12-12 06:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="orderdetail_note_system">系统状态</string>
+    <string name="orderdetail_note_public">给客户的备注</string>
+    <string name="dashboard_no_orders_with_search">没有匹配的订单</string>
+    <string name="login_site_list_update_required">需要更新至 WooCommerce 3.5</string>
+    <string name="login_verifying_sites">正在验证站点…</string>
+    <string name="button_update_instructions">更新说明</string>
+    <string name="search">搜索</string>
+    <string name="refresh_button">刷新</string>
+    <string name="more_notifications">和另外 %d 个。</string>
+    <string name="new_notifications">%d 条新通知</string>
+    <string name="dashboard_plugin_notice_message">此应用程序需要您在服务器上安装 WooCommerce 3.5。请尽快更新以便继续使用此应用程序。</string>
+    <string name="dashboard_plugin_notice_title">更新至 WooCommerce 3.5，继续使用此应用程序</string>
     <string name="about_version">版本 %s</string>
     <string name="about_tos">服务条款</string>
     <string name="about_publisher">发布者：Automattic, Inc</string>
     <string name="about_appname">WooCommerce for Android</string>
     <string name="support_identity_input_dialog_name_label">名称</string>
-    <string name="support_email_toast">打开电子邮件应用程序以联系支持人员</string>
     <string name="settings_licenses">开源许可协议</string>
     <string name="settings_about">关于该应用程序</string>
     <string name="logviewer_share_error">无法共享日志</string>
@@ -193,7 +204,6 @@ Language: zh_CN
     <string name="orderdetail_payment_cleared">已付款</string>
     <string name="orderdetail_order_fulfillment">完成订单号 %s</string>
     <string name="orderdetail_order_notes">订单备注</string>
-    <string name="orderdetail_note_public">公开备注</string>
     <string name="orderdetail_note_private">私人备注</string>
     <string name="orderdetail_note_hint">撰写订单备注</string>
     <string name="orderdetail_customer_image_contentdesc">客户个人资料图片</string>

@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-26 18:54:02+0000
+Translation-Revision-Date: 2018-12-12 08:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="orderdetail_note_system">Estado del sistema</string>
+    <string name="orderdetail_note_public">Enviar la nota al cliente</string>
+    <string name="dashboard_no_orders_with_search">Ningún pedido coincide con tu búsqueda</string>
+    <string name="login_site_list_update_required">Es necesario actualizar a WooCommerce 3.5</string>
+    <string name="login_verifying_sites">Verificando los sitios…</string>
+    <string name="button_update_instructions">Actualizar instrucciones</string>
+    <string name="search">Buscar</string>
+    <string name="refresh_button">Actualizar</string>
+    <string name="more_notifications">y %d más.</string>
+    <string name="new_notifications">%d notificaciones nuevas</string>
+    <string name="dashboard_plugin_notice_message">Para usar esta aplicación, debes instalar WooCommerce 3.5 en el servidor. Actualízala cuanto antes para poder seguir usando esta aplicación.</string>
+    <string name="dashboard_plugin_notice_title">Actualiza a WooCommerce 3.5 para seguir usando esta aplicación</string>
     <string name="about_version">Versión %s</string>
     <string name="about_tos">Condiciones del servicio</string>
     <string name="about_publisher">Editor: Automattic, Inc</string>
     <string name="about_appname">WooCommerce para Android</string>
     <string name="support_identity_input_dialog_name_label">Nombre</string>
-    <string name="support_email_toast">Abriendo la aplicación de correo electrónico para contactar con soporte</string>
     <string name="settings_licenses">Abrir licencias de origen</string>
     <string name="settings_about">Acerca de la aplicación</string>
     <string name="logviewer_share_error">No se ha podido compartir el registro</string>
@@ -193,7 +204,6 @@ Language: es
     <string name="orderdetail_payment_cleared">Se ha abonado el pago</string>
     <string name="orderdetail_order_fulfillment">Realizar el pedido núm. %s</string>
     <string name="orderdetail_order_notes">Notas del pedido</string>
-    <string name="orderdetail_note_public">Nota pública</string>
     <string name="orderdetail_note_private">Nota privada</string>
     <string name="orderdetail_note_hint">Redactar una nota de pedido</string>
     <string name="orderdetail_customer_image_contentdesc">Imagen de perfil del cliente</string>

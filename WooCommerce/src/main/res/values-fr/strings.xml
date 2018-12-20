@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-27 11:54:01+0000
+Translation-Revision-Date: 2018-12-11 10:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="orderdetail_note_system">État du système</string>
+    <string name="orderdetail_note_public">Note au client</string>
+    <string name="dashboard_no_orders_with_search">Aucune commande correspondante</string>
+    <string name="login_site_list_update_required">Mise à jour vers WooCommerce 3.5 obligatoire</string>
+    <string name="login_verifying_sites">Vérification des sites…</string>
+    <string name="button_update_instructions">Mettre à jour les instructions</string>
+    <string name="search">Recherche</string>
+    <string name="refresh_button">Rafraîchir</string>
+    <string name="more_notifications">et %d de plus.</string>
+    <string name="new_notifications">%d nouvelles notifications</string>
+    <string name="dashboard_plugin_notice_message">Cette application nécessite l\'installation de WooCommerce 3.5 sur votre serveur. Exécutez la mise à jour dès que possible pour continuer d\'utiliser cette application.</string>
+    <string name="dashboard_plugin_notice_title">Exécutez la mise à jour vers WooCommerce 3.5 pour continuer d\'utiliser cette application</string>
     <string name="about_version">Version %s</string>
     <string name="about_tos">Conditions d\'utilisation</string>
     <string name="about_publisher">Éditeur : Automattic, Inc</string>
     <string name="about_appname">WooCommerce pour Android</string>
     <string name="support_identity_input_dialog_name_label">Nom</string>
-    <string name="support_email_toast">Ouverture d\'une messagerie électronique pour contacter l\'assistance</string>
     <string name="settings_licenses">Licences open sources</string>
     <string name="settings_about">À propos de l\'application</string>
     <string name="logviewer_share_error">Impossible de partager le journal</string>
@@ -193,7 +204,6 @@ Language: fr
     <string name="orderdetail_payment_cleared">Paiement supprimé</string>
     <string name="orderdetail_order_fulfillment">Exécuter la commande n° %s</string>
     <string name="orderdetail_order_notes">Notes de commande</string>
-    <string name="orderdetail_note_public">Note publique</string>
     <string name="orderdetail_note_private">Note privée</string>
     <string name="orderdetail_note_hint">Rédiger une note de commande</string>
     <string name="orderdetail_customer_image_contentdesc">Image de profil du client</string>

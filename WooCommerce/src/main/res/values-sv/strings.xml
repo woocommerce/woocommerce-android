@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-27 15:54:01+0000
+Translation-Revision-Date: 2018-12-11 08:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="orderdetail_note_system">Systemstatus</string>
+    <string name="orderdetail_note_public">Kundmeddelande</string>
+    <string name="dashboard_no_orders_with_search">Inga matchande ordrar</string>
+    <string name="login_site_list_update_required">Kräver uppdatering till WooCommerce 3.5</string>
+    <string name="login_verifying_sites">Verifierar webbplatser…</string>
+    <string name="button_update_instructions">Uppdatera instruktioner</string>
+    <string name="search">Sök</string>
+    <string name="refresh_button">Uppdatera</string>
+    <string name="more_notifications">och %d mer.</string>
+    <string name="new_notifications">%d nya notiser</string>
+    <string name="dashboard_plugin_notice_message">Du behöver installera WooCommerce 3.5 på din server för att kunna använda den här appen. Uppdatera så snart möjligt för att kunna fortsätta använda den här appen.</string>
+    <string name="dashboard_plugin_notice_title">Uppdatera till WooCommerce 3.5 för att fortsätta använda den här appen</string>
     <string name="about_version">Version %s</string>
     <string name="about_tos">Användarvillkor</string>
     <string name="about_publisher">Utgivare: Automattic, Inc</string>
     <string name="about_appname">WooCommerce för Android</string>
     <string name="support_identity_input_dialog_name_label">Namn</string>
-    <string name="support_email_toast">Öppna e-postappen för att kontakta supporten</string>
     <string name="settings_licenses">Öppen källkodslicens</string>
     <string name="settings_about">Om appen</string>
     <string name="logviewer_share_error">Kunde inte dela loggen</string>
@@ -204,7 +215,6 @@ Language: sv_SE
     <string name="orderdetail_payment_cleared">Betalning godkänd</string>
     <string name="orderdetail_order_fulfillment">Fullfölj order med nummer %s</string>
     <string name="orderdetail_order_notes">Ordernoteringar</string>
-    <string name="orderdetail_note_public">Offentlig notering</string>
     <string name="orderdetail_note_private">Privat notering</string>
     <string name="orderdetail_note_hint">Skapa en ordernotering</string>
     <string name="orderdetail_customer_image_contentdesc">Kundprofilsbild</string>

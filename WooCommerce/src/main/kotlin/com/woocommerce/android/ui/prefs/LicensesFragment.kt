@@ -6,9 +6,9 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import kotlinx.android.synthetic.main.fragment_licenses.*
 
 class LicensesFragment : Fragment() {
     companion object {
@@ -20,9 +20,12 @@ class LicensesFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val webView = WebView(context)
+        return inflater.inflate(R.layout.fragment_licenses, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         webView.loadUrl("file:///android_asset/licenses.html")
-        return webView
     }
 
     override fun onResume() {

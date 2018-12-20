@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-27 09:54:02+0000
+Translation-Revision-Date: 2018-12-11 06:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="orderdetail_note_system">סטטוס מערכת</string>
+    <string name="orderdetail_note_public">הערה ללקוח</string>
+    <string name="dashboard_no_orders_with_search">לא נמצאו הזמנות תואמות</string>
+    <string name="login_site_list_update_required">נדרש עדכון ל-WooCommerce 3.5</string>
+    <string name="login_verifying_sites">מאמת אתרים…</string>
+    <string name="button_update_instructions">יש לעדכן את ההוראות</string>
+    <string name="search">חיפוש</string>
+    <string name="refresh_button">רענון</string>
+    <string name="more_notifications">ו-%d נוספים.</string>
+    <string name="new_notifications">%d הודעות חדשות</string>
+    <string name="dashboard_plugin_notice_message">כדי להשתמש באפליקציה זו, יש להתקין את WooCommerce 3.5 בשרת. כדאי לבצע עדכון בהקדם האפשרי כדי להמשיך להשתמש באפליקציה זו.</string>
+    <string name="dashboard_plugin_notice_title">יש לעדכן ל-WooCommerce 3.5 כדי להמשיך להשתמש באפליקציה זו</string>
     <string name="about_version">גרסה %s</string>
     <string name="about_tos">תנאי שימוש</string>
     <string name="about_publisher">פורסם על ידי: Automattic, Inc‎</string>
     <string name="about_appname">WooCommerce ל-Android</string>
     <string name="support_identity_input_dialog_name_label">שם</string>
-    <string name="support_email_toast">פותח את האפליקציה של האימייל כדי לפנות לתמיכה</string>
     <string name="settings_licenses">רישיונות קוד פתוח</string>
     <string name="settings_about">מידע על האפליקציה</string>
     <string name="logviewer_share_error">לא ניתן לשתף את היומן</string>
@@ -193,7 +204,6 @@ Language: he_IL
     <string name="orderdetail_payment_cleared">התשלום אושר</string>
     <string name="orderdetail_order_fulfillment">השלמת הזמנה מספר %s</string>
     <string name="orderdetail_order_notes">הערות להזמנה</string>
-    <string name="orderdetail_note_public">הערה ציבורית</string>
     <string name="orderdetail_note_private">הערה פרטית</string>
     <string name="orderdetail_note_hint">יצירת הערה להזמנה</string>
     <string name="orderdetail_customer_image_contentdesc">תמונת פרופיל של לקוח</string>

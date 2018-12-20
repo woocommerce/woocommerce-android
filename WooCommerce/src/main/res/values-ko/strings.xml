@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-11-28 08:54:02+0000
+Translation-Revision-Date: 2018-12-11 08:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="orderdetail_note_system">시스템 상태</string>
+    <string name="orderdetail_note_public">고객에게 남길 메모</string>
+    <string name="dashboard_no_orders_with_search">일치하는 주문이 없음</string>
+    <string name="login_site_list_update_required">WooCommerce 3.5로 업데이트해야 함</string>
+    <string name="login_verifying_sites">사이트 확인 중…</string>
+    <string name="button_update_instructions">업데이트 지침</string>
+    <string name="search">검색</string>
+    <string name="refresh_button">새로 고침</string>
+    <string name="more_notifications">외 %d개의 알림</string>
+    <string name="new_notifications">%d개의 새 알림</string>
+    <string name="dashboard_plugin_notice_message">이 앱을 사용하려면 서버에 WooCommerce 3.5를 설치해야 합니다. 이 앱을 계속 사용하려면 가능한 한 빨리 업데이트하세요.</string>
+    <string name="dashboard_plugin_notice_title">이 앱을 계속 사용하려면 WooCommerce 3.5로 업데이트하세요.</string>
     <string name="about_version">%s 버전</string>
     <string name="about_tos">서비스 약관</string>
     <string name="about_publisher">발행인: Automattic, Inc</string>
     <string name="about_appname">Android용 WooCommerce</string>
     <string name="support_identity_input_dialog_name_label">이름</string>
-    <string name="support_email_toast">지원팀에 연락하기 위해 이메일 앱 열기</string>
     <string name="settings_licenses">오픈 소스 라이선스</string>
     <string name="settings_about">앱 정보</string>
     <string name="logviewer_share_error">로그를 공유할 수 없음</string>
@@ -193,7 +204,6 @@ Language: ko_KR
     <string name="orderdetail_payment_cleared">결제가 처리됨</string>
     <string name="orderdetail_order_fulfillment">주문 #%s 처리</string>
     <string name="orderdetail_order_notes">주문 메모</string>
-    <string name="orderdetail_note_public">공개 메모</string>
     <string name="orderdetail_note_private">비공개 메모</string>
     <string name="orderdetail_note_hint">주문 메모 작성</string>
     <string name="orderdetail_customer_image_contentdesc">고객 프로필 이미지</string>
