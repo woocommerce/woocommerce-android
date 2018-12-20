@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.notifications
 
+import android.content.Context
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.CommentModel
@@ -15,6 +16,7 @@ interface ReviewDetailContract {
         fun getOrBuildCommentForNotification(notif: NotificationModel): CommentModel
         fun reloadComment()
         fun fetchComment()
+        fun markOrderNotificationRead(context: Context, notification: NotificationModel)
     }
 
     interface View : BaseView<Presenter> {
