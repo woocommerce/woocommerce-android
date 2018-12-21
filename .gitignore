@@ -52,6 +52,9 @@ local.properties
 # Log Files
 *.log
 
+# Backup Files
+*.bak
+
 # Android Studio Navigation editor temp files
 .navigation/
 

@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity(),
                 true
             }
             R.id.menu_support -> {
-                contactSupport()
+                showHelpAndSupport()
                 AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
                 true
             }
@@ -235,7 +235,7 @@ class MainActivity : AppCompatActivity(),
         startActivityForResult(intent, REQUEST_CODE_SETTINGS)
     }
 
-    override fun contactSupport() {
+    override fun showHelpAndSupport() {
         startActivity(HelpActivity.createIntent(this, Origin.MAIN_ACTIVITY, null))
     }
 
