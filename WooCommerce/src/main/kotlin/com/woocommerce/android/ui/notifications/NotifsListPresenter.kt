@@ -67,7 +67,7 @@ class NotifsListPresenter @Inject constructor(
         }
     }
 
-    override fun reloadNotifications() {
+    override fun reloadNotifs() {
         if (networkStatus.isConnected()) {
             val payload = FetchNotificationsPayload()
             isRefreshing = true
@@ -113,7 +113,7 @@ class NotifsListPresenter @Inject constructor(
 
             // Request fresh notification data be fetched from the api to reflect deleted
             // notifications.
-            reloadNotifications()
+            reloadNotifs()
         }
     }
 
