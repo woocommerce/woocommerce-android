@@ -1,13 +1,10 @@
 package com.woocommerce.android
 
 import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import android.os.Build
 import android.support.multidex.MultiDexApplication
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -18,6 +15,7 @@ import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
@@ -53,6 +51,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var notificationHandler: NotificationHandler
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -84,7 +83,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         }
         CrashlyticsUtils.initCrashlytics(this, accountStore.account, site)
 
-        createNotificationChannelsOnSdk26()
+        notificationHandler.createNotificationChannels(this)
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         registerActivityLifecycleCallbacks(lifecycleMonitor)
@@ -162,22 +161,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
         }
         AppPrefs.setLastAppVersionCode(versionCode)
-    }
-
-    private fun createNotificationChannelsOnSdk26() {
-        // Create Notification channels introduced in Android Oreo
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            // Create the General channel
-            val generalChannel = NotificationChannel(
-                    getString(R.string.notification_channel_general_id),
-                    getString(R.string.notification_channel_general_title),
-                    NotificationManager.IMPORTANCE_DEFAULT)
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            notificationManager.createNotificationChannel(generalChannel)
-        }
     }
 
     @Suppress("unused")

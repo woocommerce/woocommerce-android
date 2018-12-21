@@ -15,7 +15,6 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.NotificationAppKey.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.NotificationStore.RegisterDevicePayload
-import org.wordpress.android.login.BuildConfig
 import javax.inject.Inject
 
 class FCMRegistrationIntentService : JobIntentService() {
@@ -33,9 +32,6 @@ class FCMRegistrationIntentService : JobIntentService() {
         const val WPCOM_PUSH_DEVICE_TOKEN = "WC_PREF_NOTIFICATIONS_TOKEN"
 
         fun enqueueWork(context: Context) {
-            // TODO: Enable registration for release builds when push notification support is ready
-            if (!BuildConfig.DEBUG) return
-
             val work = Intent(context, FCMRegistrationIntentService::class.java)
             JobIntentService.enqueueWork(context, FCMRegistrationIntentService::class.java,
                     JOB_FCM_REGISTRATION_SERVICE_ID, work)
