@@ -37,7 +37,6 @@ class NotifsListPresenter @Inject constructor(
         private val TAG: String = NotifsListPresenter::class.java.simpleName
     }
 
-    override var isLoading = false
     private var view: NotifsListContract.View? = null
     private var isRefreshing = false
 
@@ -57,7 +56,6 @@ class NotifsListPresenter @Inject constructor(
         view?.let {
             if (networkStatus.isConnected() && forceRefresh) {
                 it.showSkeleton(true)
-                isLoading = true
                 isRefreshing = forceRefresh
 
                 val payload = FetchNotificationsPayload()
@@ -66,6 +64,14 @@ class NotifsListPresenter @Inject constructor(
                 // Load cached notifications from the db
                 fetchAndLoadNotifsFromDb(forceRefresh)
             }
+        }
+    }
+
+    override fun reloadNotifications() {
+        if (networkStatus.isConnected()) {
+            val payload = FetchNotificationsPayload()
+            isRefreshing = true
+            dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
         }
     }
 
@@ -99,11 +105,16 @@ class NotifsListPresenter @Inject constructor(
                     "${event.error.message}")
 
             view?.notificationModerationError()
+            fetchAndLoadNotifsFromDb(false)
         } else {
             AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
+
+            view?.notificationModerationSuccess()
+
+            // Request fresh notification data be fetched from the api to reflect deleted
+            // notifications.
+            reloadNotifications()
         }
-        fetchAndLoadNotifsFromDb(false)
-        view?.notificationModerationSuccess()
     }
 
     @Suppress("unused")
@@ -135,7 +146,6 @@ class NotifsListPresenter @Inject constructor(
                     val forceRefresh = isRefreshing
                     fetchAndLoadNotifsFromDb(forceRefresh)
                 }
-                isLoading = false
                 isRefreshing = false
             }
             NotificationAction.UPDATE_NOTIFICATION, NotificationAction.FETCH_NOTIFICATION -> {

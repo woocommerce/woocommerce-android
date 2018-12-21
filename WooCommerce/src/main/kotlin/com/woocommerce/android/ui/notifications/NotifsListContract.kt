@@ -7,9 +7,8 @@ import org.wordpress.android.fluxc.model.notification.NotificationModel
 
 interface NotifsListContract {
     interface Presenter : BasePresenter<View> {
-        var isLoading: Boolean
-
         fun loadNotifs(forceRefresh: Boolean)
+        fun reloadNotifications()
         fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean)
         fun pushUpdatedComment(comment: CommentModel)
     }
