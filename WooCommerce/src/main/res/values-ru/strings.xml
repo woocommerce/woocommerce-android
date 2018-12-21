@@ -28,7 +28,6 @@ Language: ru
     <string name="logviewer_error_copy_to_clipboard">Ошибка при копировании в буфер обмена</string>
     <string name="logviewer_copied_to_clipboard">Журнал скопирован в буфер обмена</string>
     <string name="logviewer_activity_title">Журнал приложения</string>
-    <string name="help_screen_title">Помощь и техническая поддержка</string>
     <string name="support_push_notification_message">Новое сообщение из раздела \"Помощь и техническая поддержка\"</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_contact_email_not_set">Не указано</string>
@@ -159,7 +158,6 @@ Language: ru
     <string name="magic_link_unavailable_error_message">В настоящий момент ссылка недоступна. Введите пароль</string>
     <string name="logging_in">Вход в систему</string>
     <string name="enter_your_password_instead">Введите пароль.</string>
-    <string name="contact_support">Обратиться в службу поддержки</string>
     <string name="email_address">Адрес электронной почты</string>
     <string name="details">Подробнее</string>
     <string name="undo">Назад</string>
@@ -187,7 +185,6 @@ Language: ru
     <string name="settings_privacy_detail">Эти сведения помогают нам улучшать продукты, предлагать более полезную рекламу, настраивать WooCommerce согласно вашим предпочтениям и решать другие задачи. Дополнительную информацию см. в политике конфиденциальности</string>
     <string name="settings_send_stats_detail">Отправлять информацию об использовании сервисов во время работы в учётной записи WordPress в службу аналитики</string>
     <string name="settings_send_stats">Собирать информацию</string>
-    <string name="settings_confirm_signout">Выйти из WooCommerce?</string>
     <string name="settings_signout">Выйти из учётной записи</string>
     <string name="privacy_settings">Настройки конфиденциальности</string>
     <string name="orderstatus_contentDesc">Статус заказа</string>
@@ -202,7 +199,6 @@ Language: ru
     <string name="add_order_note_error">Не удалось добавить примечание</string>
     <string name="add_order_note_added">Добавлено примечание к заказу</string>
     <string name="add_order_note_menu_item">Добавить</string>
-    <string name="add_order_note_sublabel">Если параметр отключен, примечание будет добавлено как конфиденциальное</string>
     <string name="add_order_note_label">Отправить примечание клиенту по электронной почте</string>
     <string name="order_error_update_general">Ошибка при изменении заказа</string>
     <string name="order_error_fetch_notes_generic">Ошибка при получении примечаний об ошибках</string>
@@ -246,7 +242,6 @@ Language: ru
     <string name="dashboard_no_orders_contentdesc">Ожидание изображения клиентов</string>
     <string name="dashboard_no_orders_with_filter">Заказов нет</string>
     <string name="dashboard_no_orders">Ожидание клиентов</string>
-    <string name="dashboard_fulfill_orders_msg">Ваши клиенты ждут. Чем быстрее вы отправите заказы, тем благодарнее будут ваши клиенты.</string>
     <string name="dashboard_fulfill_orders_title">У вас есть невыполненные заказы (%1$d%2$s)</string>
     <string name="dashboard_fulfill_order_title">У вас есть невыполненный заказ</string>
     <string name="dashboard_action_view_orders">Просмотреть заказы</string>
@@ -295,7 +290,6 @@ Language: ru
     <string name="date_timeframe_today">Сегодня</string>
     <string name="no_orders_share_store_title">Поделиться URL-адресом своего магазина</string>
     <string name="no_orders_share_store">Поделитесь адресом своего магазина</string>
-    <string name="notifications_coming_soon">Уведомления ещё не реализованы. Они появятся в одной из следующих версий. Следите за информацией!</string>
     <string name="notifications">Уведомления</string>
     <string name="products">Товары</string>
     <string name="this_year">В этом году</string>

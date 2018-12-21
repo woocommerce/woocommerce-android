@@ -1,68 +1,173 @@
 package com.woocommerce.android.push
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.PendingIntent
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.AudioAttributes
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.text.StringEscapeUtils
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object NotificationHandler {
-    private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
+@Singleton
+class NotificationHandler @Inject constructor(
+    private val siteStore: SiteStore,
+    private val dispatcher: Dispatcher
+) {
+    companion object {
+        private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
 
-    private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
-    private const val PUSH_NOTIFICATION_ID = 10000
-    const val GROUP_NOTIFICATION_ID = 30000
-    private const val MAX_INBOX_ITEMS = 5
+        private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
+        private const val PUSH_NOTIFICATION_ID = 10000
+        const val GROUP_NOTIFICATION_ID = 30000
+        private const val MAX_INBOX_ITEMS = 5
 
-    private const val PUSH_ARG_USER = "user"
-    private const val PUSH_ARG_TYPE = "type"
-    private const val PUSH_ARG_TITLE = "title"
-    private const val PUSH_ARG_MSG = "msg"
-    private const val PUSH_ARG_NOTE_ID = "note_id"
+        const val PUSH_ARG_USER = "user"
+        const val PUSH_ARG_TYPE = "type"
+        const val PUSH_ARG_TITLE = "title"
+        const val PUSH_ARG_MSG = "msg"
+        const val PUSH_ARG_NOTE_ID = "note_id"
+        const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
 
-    private const val PUSH_TYPE_COMMENT = "c"
-    private const val PUSH_TYPE_NEW_ORDER = "store_order"
+        const val PUSH_TYPE_COMMENT = "c"
+        const val PUSH_TYPE_NEW_ORDER = "store_order"
 
-    @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
+        @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
 
-    @Synchronized fun clearNotifications() {
-        ACTIVE_NOTIFICATIONS_MAP.clear()
+        @Synchronized fun clearNotifications() {
+            ACTIVE_NOTIFICATIONS_MAP.clear()
+        }
+
+        @Synchronized fun removeNotification(localPushId: Int) {
+            ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
+        }
+
+        /**
+         * Find the matching notification and send a track event for [Stat.PUSH_NOTIFICATION_TAPPED].
+         */
+        @Synchronized fun bumpPushNotificationsTappedAnalytics(context: Context, noteID: String) {
+            ACTIVE_NOTIFICATIONS_MAP.asSequence()
+                    .firstOrNull { it.value.getString(PUSH_ARG_NOTE_ID, "") == noteID }?.let { row ->
+                        bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, row.value)
+                        AnalyticsTracker.flush() }
+        }
+
+        /**
+         * Loop over all active notifications and send the [Stat.PUSH_NOTIFICATION_TAPPED] track event for each one.
+         */
+        @Synchronized fun bumpPushNotificationsTappedAllAnalytics(context: Context) {
+            ACTIVE_NOTIFICATIONS_MAP.asIterable().forEach {
+                val noteBundle = it.value
+                bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, noteBundle)
+            }
+            AnalyticsTracker.flush()
+        }
+
+        /**
+         * Removes a specific notification from the system bar.
+         */
+        @Synchronized fun removeNotificationWithNoteIdFromSystemBar(context: Context, wpComNoteId: String) {
+            if (wpComNoteId.isEmpty() or !hasNotifications()) {
+                return
+            }
+
+            val notificationManager = NotificationManagerCompat.from(context)
+
+            ACTIVE_NOTIFICATIONS_MAP.asSequence().firstOrNull {
+                it.value.getString(PUSH_ARG_NOTE_ID) == wpComNoteId
+            }?.key?.let {
+                notificationManager.cancel(it)
+                ACTIVE_NOTIFICATIONS_MAP.remove(it)
+            }
+
+            // If there are no notifications left, cancel the group as well
+            if (!hasNotifications()) {
+                notificationManager.cancel(GROUP_NOTIFICATION_ID)
+            }
+        }
+
+        /**
+         * Attach default properties and track given analytics for the given notifications-related [stat].
+         *
+         * Will skip tracking if user has disabled notifications from being shown at the app system settings level.
+         */
+        private fun bumpPushNotificationsAnalytics(context: Context, stat: Stat, noteBundle: Bundle) {
+            if (!NotificationsUtils.isNotificationsEnabled(context)) return
+
+            val wpComNoteId = noteBundle.getString(PUSH_ARG_NOTE_ID, "")
+            if (wpComNoteId.isNotEmpty()) {
+                val properties = mutableMapOf<String, Any>()
+                properties["notification_note_id"] = wpComNoteId
+
+                noteBundle.getString(PUSH_ARG_TYPE)?.takeUnless { it.isEmpty() }?.let { noteType ->
+                    // 'comment' types are sent in PN as type = "c"
+                    properties["notification_type"] = if (noteType == PUSH_TYPE_COMMENT) "comment" else noteType
+                }
+
+                val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val latestGCMToken = preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
+                properties["push_notification_token"] = latestGCMToken ?: ""
+                AnalyticsTracker.track(stat, properties)
+            }
+        }
     }
 
-    @Synchronized fun removeNotification(localPushId: Int) {
-        ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
+    /**
+     * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
+     * necessary because once a channel is created we can't change it, and if we delete the channel and re-create
+     * it then it will be re-created with the same settings it previously had (ie: we can't simply have a single
+     * channel for orders and add/remove the sound from it)
+     */
+    private enum class NotificationChannelType {
+        OTHER,
+        REVIEW,
+        NEW_ORDER
     }
 
-    fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
+    @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
         if (data.isEmpty) {
             WooLog.e(T.NOTIFS, "Push notification received without a valid Bundle!")
             return
         }
 
         val wpComNoteId = data.getString(PUSH_ARG_NOTE_ID, "")
-        // TODO Temporarily disabled so it's easier to test spoofed notifications, restore
-//        if (wpComNoteId.isNullOrEmpty()) {
-//            // At this point 'note_id' is always available in the notification bundle.
-//            WooLog.e(T.NOTIFS, "Push notification received without a valid note_id in the payload!")
-//            return
-//        }
+        if (wpComNoteId.isNullOrEmpty()) {
+            // At this point 'note_id' is always available in the notification bundle.
+            WooLog.e(T.NOTIFS, "Push notification received without a valid note_id in the payload!")
+            return
+        }
 
         val pushUserId = data.getString(PUSH_ARG_USER)
         // pushUserId is always set server side, but better to double check it here.
@@ -71,11 +176,38 @@ object NotificationHandler {
             return
         }
 
-        // TODO: Store note object in database
+        val noteTypeStr = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
+        val noteType = when (noteTypeStr) {
+            PUSH_TYPE_NEW_ORDER -> {
+                NEW_ORDER
+            }
+            PUSH_TYPE_COMMENT -> {
+                REVIEW
+            }
+            else -> {
+                OTHER
+            }
+        }
 
-        val noteType = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
+        // Build notification from message data, save to the database, and send request to
+        // fetch the actual notification from the api.
+        NotificationsUtils.buildNotificationModelFromBundle(siteStore, data)?.let {
+            // Save temporary notification to the database.
+            dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(it))
 
-        val title = if (noteType == PUSH_TYPE_NEW_ORDER) {
+            // Fire off the event to fetch the actual notification from the api
+            dispatcher.dispatch(NotificationActionBuilder
+                    .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
+        }
+
+        // skip displaying the notification if user chose to disable this type of notification
+        if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
+                (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
+            WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
+            return
+        }
+
+        val title = if (noteType == NEW_ORDER) {
             // New order notifications have title 'WordPress.com' - just show the app name instead
             // TODO Consider revising this, perhaps use the contents of the note as the title/body of the notification
             context.getString(R.string.app_name)
@@ -95,16 +227,16 @@ object NotificationHandler {
         }
 
         // Build the new notification, add group to support wearable stacking
-        val builder = getNotificationBuilder(context, title, message)
+        val builder = getNotificationBuilder(context, noteType, title, message)
         val largeIconBitmap = getLargeIconBitmap(context, data.getString("icon"),
                 shouldCircularizeNoteIcon(noteType))
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
-        showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId, true)
+        showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId)
 
         // Also add a group summary notification, which is required for non-wearable devices
         // Do not need to play the sound again. We've already played it in the individual builder.
-        showGroupNotificationForBuilder(context, builder, wpComNoteId, message)
+        showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
     }
 
     /**
@@ -145,21 +277,86 @@ object NotificationHandler {
         return null
     }
 
+    private fun getChannelIdForNoteType(context: Context, noteType: NotificationChannelType): String {
+        return when (noteType) {
+            NEW_ORDER -> context.getString(R.string.notification_channel_order_id)
+            REVIEW -> context.getString(R.string.notification_channel_review_id)
+            else -> context.getString(R.string.notification_channel_general_id)
+        }
+    }
+
+    private fun getChannelTitleForNoteType(context: Context, noteType: NotificationChannelType): String {
+        return when (noteType) {
+            NEW_ORDER -> context.getString(R.string.notification_channel_order_title)
+            REVIEW -> context.getString(R.string.notification_channel_review_title)
+            else -> context.getString(R.string.notification_channel_general_title)
+        }
+    }
+
+    /**
+     * Ensures the desired notification channel is created when on API 26+, does nothing otherwise since notification
+     * channels weren't added until API 26
+     */
+    private fun createNotificationChannel(context: Context, noteType: NotificationChannelType) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channelId = getChannelIdForNoteType(context, noteType)
+
+            // check for existing channel first
+            manager.getNotificationChannel(channelId)?.let {
+                return
+            }
+
+            // create the channel since it doesn't already exist
+            val channelName = getChannelTitleForNoteType(context, noteType)
+            val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
+
+            // add cha-ching sound to new order notifications
+            if (noteType == NEW_ORDER) {
+                val attributes = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .build()
+                channel.setSound(getChaChingUri(context), attributes)
+            }
+
+            manager.createNotificationChannel(channel)
+        }
+    }
+
+    /**
+     * Called at startup to ensure we create the notification channels
+     */
+    fun createNotificationChannels(context: Context) {
+        for (noteType in NotificationChannelType.values()) {
+            createNotificationChannel(context, noteType)
+        }
+    }
+
+    /**
+     * Returns the URI to use for the cha-ching order notification sound
+     */
+    private fun getChaChingUri(context: Context): Uri {
+        return Uri.parse(SCHEME_ANDROID_RESOURCE + "://" + context.packageName + "/" + R.raw.cha_ching)
+    }
+
     /**
      * Returns true if the note type is known to have a Gravatar.
      */
-    private fun shouldCircularizeNoteIcon(noteType: String): Boolean {
-        if (noteType.isEmpty()) return false
-
+    private fun shouldCircularizeNoteIcon(noteType: NotificationChannelType): Boolean {
         return when (noteType) {
-            PUSH_TYPE_COMMENT -> true
+            REVIEW -> true
             else -> false
         }
     }
 
-    private fun getNotificationBuilder(context: Context, title: String, message: String?): NotificationCompat.Builder {
-        return NotificationCompat.Builder(context,
-                context.getString(R.string.notification_channel_general_id))
+    private fun getNotificationBuilder(
+        context: Context,
+        noteType: NotificationChannelType,
+        title: String,
+        message: String?
+    ): NotificationCompat.Builder {
+        val channelId = getChannelIdForNoteType(context, noteType)
+        return NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_woo_w_notification)
                 .setColor(ContextCompat.getColor(context, R.color.wc_purple))
                 .setContentTitle(title)
@@ -174,21 +371,35 @@ object NotificationHandler {
     private fun showSingleNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
-        noteType: String,
+        noteType: NotificationChannelType,
         wpComNoteId: String,
-        pushId: Int,
-        notifyUser: Boolean
+        pushId: Int
     ) {
-        if (noteType == PUSH_TYPE_COMMENT) {
-            // TODO: Add quick actions for comments
+        when (noteType) {
+            NEW_ORDER -> {
+                if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
+                    builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
+                    builder.setSound(getChaChingUri(context))
+                } else {
+                    builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+                }
+            }
+            REVIEW -> {
+                builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+                // TODO: Add quick actions for reviews
+            }
+            else -> {
+                builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+            }
         }
 
-        showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId, notifyUser)
+        showWPComNotificationForBuilder(builder, context, wpComNoteId, pushId)
     }
 
     private fun showGroupNotificationForBuilder(
         context: Context,
         builder: NotificationCompat.Builder,
+        noteType: NotificationChannelType,
         wpComNoteId: String,
         message: String?
     ) {
@@ -205,7 +416,7 @@ object NotificationHandler {
                 // Skip notes with no content from the 5-line inbox
                 if (pushBundle.getString(PUSH_ARG_MSG) == null) continue
 
-                if (pushBundle.getString(PUSH_ARG_TYPE, "") == PUSH_TYPE_COMMENT) {
+                if (noteType == REVIEW) {
                     val pnTitle = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_TITLE))
                     val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG))
                     inboxStyle.addLine("$pnTitle: $pnMessage")
@@ -224,9 +435,7 @@ object NotificationHandler {
             }
 
             val subject = String.format(context.getString(R.string.new_notifications), notesMap.size)
-            val groupBuilder = NotificationCompat.Builder(
-                    context,
-                    context.getString(R.string.notification_channel_general_id))
+            val groupBuilder = NotificationCompat.Builder(context, getChannelIdForNoteType(context, noteType))
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                     .setSmallIcon(R.drawable.ic_woo_w_notification)
                     .setColor(ContextCompat.getColor(context, R.color.wc_purple))
@@ -237,13 +446,15 @@ object NotificationHandler {
                     .setContentTitle(context.getString(R.string.app_name))
                     .setContentText(subject)
                     .setStyle(inboxStyle)
+                    .setSound(null)
+                    .setVibrate(null)
 
-            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID, false)
+            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID)
         } else {
             // Set the individual notification we've already built as the group summary
             builder.setGroupSummary(true)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID, false)
+            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID)
         }
     }
 
@@ -254,13 +465,19 @@ object NotificationHandler {
         builder: NotificationCompat.Builder,
         context: Context,
         wpComNoteId: String,
-        pushId: Int,
-        notifyUser: Boolean
+        pushId: Int
     ) {
-        // TODO Create an Intent containing the wpComNoteId that launches the MainActivity to handle the tap action
-        // (and open the notifications tab)
-        val resultIntent = Intent() // placeholder
-        showNotificationForBuilder(builder, context, resultIntent, pushId, notifyUser)
+        // Open the app and load the notifications tab
+        val resultIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
+            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId.toLong())
+            if (pushId == GROUP_NOTIFICATION_ID) {
+                putExtra(MainActivity.FIELD_OPENED_FROM_PUSH_GROUP, true)
+            }
+        }
+
+        showNotificationForBuilder(builder, context, resultIntent, pushId)
     }
 
     // Displays a notification to the user
@@ -268,20 +485,8 @@ object NotificationHandler {
         builder: NotificationCompat.Builder,
         context: Context,
         resultIntent: Intent,
-        pushId: Int,
-        notifyUser: Boolean
+        pushId: Int
     ) {
-        // TODO This should respect user preferences, and should have sound
-        if (notifyUser) {
-            builder.setVibrate(longArrayOf(500, 500, 500))
-            builder.setLights(-0xffff01, 1000, 5000)
-        } else {
-            builder.setVibrate(null)
-            builder.setSound(null)
-            // Do not turn the led off otherwise the previous (single) notification led is not shown.
-            // We're re-using the same builder for single and group.
-        }
-
         // Call processing service when notification is dismissed
         val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForNotificationDismiss(context, pushId)
         builder.setDeleteIntent(pendingDeleteIntent)
@@ -293,30 +498,5 @@ object NotificationHandler {
         builder.setContentIntent(pendingIntent)
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(pushId, builder.build())
-    }
-
-    /**
-     * Attach default properties and track given analytics for the given notifications-related [stat].
-     *
-     * Will skip tracking if user has disabled notifications from being shown at the app system settings level.
-     */
-    private fun bumpPushNotificationsAnalytics(context: Context, stat: Stat, noteBundle: Bundle) {
-        if (!NotificationsUtils.isNotificationsEnabled(context)) return
-
-        val wpComNoteId = noteBundle.getString(PUSH_ARG_NOTE_ID, "")
-        if (wpComNoteId.isNotEmpty()) {
-            val properties = mutableMapOf<String, Any>()
-            properties["notification_note_id"] = wpComNoteId
-
-            noteBundle.getString(PUSH_ARG_TYPE)?.takeUnless { it.isEmpty() }?.let { noteType ->
-                // 'comment' types are sent in PN as type = "c"
-                properties["notification_type"] = if (noteType == PUSH_TYPE_COMMENT) "comment" else noteType
-            }
-
-            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val latestGCMToken = preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
-            properties["push_notification_token"] = latestGCMToken ?: ""
-            AnalyticsTracker.track(stat, properties)
-        }
     }
 }

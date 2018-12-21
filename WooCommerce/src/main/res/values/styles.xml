@@ -95,7 +95,7 @@
     </style>
 
     <style name="Woo.TextAppearance.Large">
-        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textColor">@color/default_text_title_color</item>
         <item name="android:textSize">@dimen/text_large</item>
     </style>
 
@@ -124,6 +124,10 @@
         <item name="android:textColor">@color/default_button_fg_color</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Button.Toggle">
+        <item name="android:textColor">@color/toggle_button_text_color</item>
     </style>
     <!--
         Button Styles

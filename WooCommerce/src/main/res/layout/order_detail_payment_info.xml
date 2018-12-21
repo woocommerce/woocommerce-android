@@ -130,21 +130,12 @@
             tools:text="$1.00"/>
     </LinearLayout>
 
-    <!-- Divider -->
-    <FrameLayout
-        android:id="@+id/paymentInfo_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="@dimen/card_item_padding_intra_h"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:background="@color/list_divider"
-        app:srcCompat="@drawable/list_divider"/>
-
     <!-- Total -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:orientation="horizontal"
         android:paddingBottom="@dimen/card_item_padding_intra_h"
         android:paddingTop="@dimen/card_item_padding_intra_h">

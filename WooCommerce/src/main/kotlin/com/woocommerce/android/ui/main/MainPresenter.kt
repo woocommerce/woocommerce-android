@@ -9,10 +9,12 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
+import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import javax.inject.Inject
@@ -21,7 +23,8 @@ import javax.inject.Inject
 class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val notificationStore: NotificationStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -45,6 +48,9 @@ class MainPresenter @Inject constructor(
         // Save Token to the AccountStore. This will trigger an OnAuthenticationChanged.
         dispatcher.dispatch(AccountActionBuilder.newUpdateAccessTokenAction(UpdateTokenPayload(token)))
     }
+
+    override fun getNotificationByRemoteNoteId(remoteNoteId: Long): NotificationModel? =
+            notificationStore.getNotificationByRemoteId(remoteNoteId)
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -5,6 +5,11 @@
     <!-- Android O notification channels, these show in the Android app settings -->
     <string name="notification_channel_general_title">General</string>
     <string name="notification_channel_general_id" translatable="false" content_override="true">wooandroid_notification_channel_general_id</string>
+    <string name="notification_channel_order_title">New order alerts</string>
+    <string name="notification_channel_order_id" translatable="false" content_override="true">wooandroid_notification_channel_order_id</string>
+    <string name="notification_channel_review_title">Product review alerts</string>
+    <string name="notification_channel_review_id" translatable="false" content_override="true">wooandroid_notification_channel_review_id</string>
+    <string name="notification_order_ringtone_title" translatable="false">WooCommerce Cha-ching</string>
 
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
     <string name="login_notification_channel_id" translatable="false" content_override="true">@string/notification_channel_general_id</string>
@@ -45,13 +50,13 @@
     <string name="discard">Discard</string>
     <string name="products">Products</string>
     <string name="notifications">Notifications</string>
-    <string name="notifications_coming_soon">Notifications aren\'t ready yet, but coming in a future release. Stay tuned!</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="no_orders_share_store">Share your store</string>
     <string name="no_orders_share_store_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="back">Back</string>
     <string name="button_update_instructions">Update instructions</string>
 
     <!--
@@ -129,7 +134,7 @@
     <string name="dashboard_action_view_orders">View Orders</string>
     <string name="dashboard_fulfill_order_title">You have 1 order to fulfill</string>
     <string name="dashboard_fulfill_orders_title">You have %1$d%2$s orders to fulfill</string>
-    <string name="dashboard_fulfill_orders_msg">Your customers are waiting. The faster you ship it out, the happier you\'ll make them.</string>
+    <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
     <string name="dashboard_no_orders">Waiting for customers</string>
     <string name="dashboard_no_orders_with_filter">No orders</string>
@@ -152,7 +157,7 @@
     <!--
         Order Detail Views
     -->
-    <string name="customer_information">Customer Information</string>
+    <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
@@ -162,7 +167,8 @@
     <string name="orderdetail_email_contentdesc">email customer</string>
     <string name="orderdetail_call_contentdesc">call customer</string>
     <string name="orderdetail_sms_contentdesc">send customer sms message</string>
-    <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
@@ -174,13 +180,13 @@
     <string name="orderdetail_new_total">New Total</string>
     <string name="orderdetail_payment_refunded">Payment - Refunded</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_customer_provided_note">Customer Provided Note</string>
+    <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
     <string name="orderdetail_note_private">Private Note</string>
     <string name="orderdetail_note_public">Note to customer</string>
     <string name="orderdetail_note_system">System status</string>
-    <string name="orderdetail_order_notes">Order Notes</string>
+    <string name="orderdetail_order_notes">Order notes</string>
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
@@ -192,11 +198,12 @@
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
     <string name="order_error_update_general">Error changing order</string>
+    <string name="order_error_fetch_generic">Error fetching order</string>
     <!--
         Add Order Note
     -->
     <string name="add_order_note_label">Email note to customer</string>
-    <string name="add_order_note_sublabel">If disabled will add the note as private</string>
+    <string name="add_order_note_sublabel">If disabled the note will be private</string>
     <string name="add_order_note_menu_item">Add</string>
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
@@ -218,12 +225,18 @@
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
     <!--
+        Notifications View
+    -->
+    <string name="notifs_fetch_error">Error fetching notifications</string>
+    <string name="notifs_review_moderation_undo">Review marked as %1$s</string>
+    <string name="notifs_detail_loading_error">Error loading notification detail</string>
+    <!--
         Settings
     -->
     <string name="settings">Settings</string>
     <string name="privacy_settings">Privacy settings</string>
     <string name="settings_signout">Logout account</string>
-    <string name="settings_confirm_signout">Log out of WooCommerce?</string>
+    <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
@@ -231,13 +244,22 @@
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic</string>
     <string name="settings_primary_store">Primary store</string>
+    <string name="settings_notifs">Notifications</string>
+    <string name="settings_notifs_device">Manage notifications</string>
+    <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
+    <string name="settings_notifs_orders">Orders</string>
+    <string name="settings_notifs_orders_detail">Get alerts when new orders come in</string>
+    <string name="settings_notifs_tone">Tone</string>
+    <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
+    <string name="settings_notifs_reviews">Product reviews</string>
+    <string name="settings_notifs_reviews_detail">Get alerts for new product reviews</string>
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>
     <string name="settings_crash_reporting">Crash reports</string>
-    <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports.</string>
+    <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -246,7 +268,7 @@
     <!--
         Help and support
     -->
-    <string name="contact_support">Contact support</string>
+    <string name="support_help">Help &amp; support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
     <string name="invalid_email_message">Your email address isn\'t valid</string>
     <string name="support_identity_input_dialog_enter_email_and_name">To continue please enter your email address and name</string>
@@ -267,7 +289,6 @@
     <string name="support_contact_email_not_set">Not set</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_push_notification_message">New message from \'Help &amp; Support\'</string>
-    <string name="help_screen_title">Help &amp; Support</string>
     <string name="logviewer_activity_title">Application log</string>
     <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
     <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
@@ -278,6 +299,16 @@
     <string name="about_url_text" translatable="false">automattic.com</string>
     <string name="about_version">Version %s</string>
     <string name="about_copyright" translatable="false">© %1$d Automattic, Inc</string>
+    <!--
+        Review Notification Detail
+    -->
+    <string name="wc_view_the_product_external">View the product</string>
+    <string name="wc_approve">Approve</string>
+    <string name="wc_approved">Approved</string>
+    <string name="wc_spam">Spam</string>
+    <string name="wc_trash">Trash</string>
+    <string name="wc_load_review_error">Error loading product review detail</string>
+    <string name="wc_moderate_review_error">Error updating product review status</string>
 
     <!--
         Login Library Imported Strings

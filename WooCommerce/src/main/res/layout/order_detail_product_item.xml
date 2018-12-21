@@ -22,7 +22,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
-        android:layout_marginStart="12dp"
         android:ellipsize="end"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:paddingEnd="8dp"
