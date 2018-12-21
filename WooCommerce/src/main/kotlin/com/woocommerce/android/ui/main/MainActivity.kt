@@ -4,19 +4,28 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.internal.BottomNavigationItemView
+import android.support.design.internal.BottomNavigationMenuView
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.FragmentScrollListener
+import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.getRemoteOrderId
+import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
@@ -24,7 +33,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEpilogueActivity
+import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -35,6 +46,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.notification_badge_view.*
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -53,6 +65,11 @@ class MainActivity : AppCompatActivity(),
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
         private const val STATE_KEY_POSITION = "key-position"
+
+        // push notification-related constants
+        const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
+        const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
+        const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
 
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -249,9 +266,24 @@ class MainActivity : AppCompatActivity(),
 
     // region Bottom Navigation
     private fun setupBottomNavigation() {
+        // add the badge to the notifications item
+        val menuView = bottom_nav.getChildAt(0) as BottomNavigationMenuView
+        val itemView = menuView.getChildAt(BottomNavigationPosition.NOTIFICATIONS.position) as BottomNavigationItemView
+        val badgeView = LayoutInflater.from(this).inflate(R.layout.notification_badge_view, menuView, false)
+        itemView.addView(badgeView)
+
         bottom_nav.active(activeNavPosition.position)
         bottom_nav.setOnNavigationItemSelectedListener(this)
         bottom_nav.setOnNavigationItemReselectedListener(this)
+    }
+
+    // TODO: add logic to show badge when there are unseen store notifications
+    override fun showNotificationBadge(show: Boolean) {
+        if (show && badge.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(badge, Duration.MEDIUM)
+        } else if (!show && badge.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(badge, Duration.MEDIUM)
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -289,7 +321,42 @@ class MainActivity : AppCompatActivity(),
 
     // region Fragment Processing
     private fun initFragment(savedInstanceState: Bundle?) {
-        savedInstanceState ?: switchFragment(BottomNavigationPosition.DASHBOARD)
+        val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
+
+        // Check if opened from a push notification
+        if (savedInstanceState == null && openedFromPush) {
+            // Reset this flag now that it's being processed
+            intent.removeExtra(FIELD_OPENED_FROM_PUSH)
+
+            if (intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH_GROUP, false)) {
+                // Reset this flag now that it's being processed
+                intent.removeExtra(FIELD_OPENED_FROM_PUSH_GROUP)
+
+                // Send analytics for viewing all notifications
+                NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+
+                // User clicked on a group of notifications. Just show the notifications tab.
+                switchFragment(BottomNavigationPosition.NOTIFICATIONS)
+            } else {
+                // Check for a notification ID - if one is present, open notification
+                val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
+                if (remoteNoteId > 0) {
+                    // Send track event
+                    NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
+
+                    // Open the detail view for this notification
+                    showNotificationDetail(remoteNoteId)
+                } else {
+                    // Send analytics for viewing all notifications
+                    NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+
+                    // Just open the notifications tab
+                    switchFragment(BottomNavigationPosition.NOTIFICATIONS)
+                }
+            }
+        } else {
+            switchFragment(BottomNavigationPosition.DASHBOARD)
+        }
     }
 
     /**
@@ -396,6 +463,27 @@ class MainActivity : AppCompatActivity(),
 
             val fragment = supportFragmentManager.findFragment(ORDERS)
             (fragment as? OrderListFragment)?.onFilterSelected(orderStatusFilter)
+        }
+    }
+
+    override fun showNotificationDetail(remoteNoteId: Long) {
+        if (switchFragment(NOTIFICATIONS, false)) {
+            val navPos = BottomNavigationPosition.NOTIFICATIONS.position
+            bottom_nav.active(navPos)
+
+            (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {
+                val fragment = supportFragmentManager.findFragment(NOTIFICATIONS)
+
+                when (it.getWooType()) {
+                    NEW_ORDER -> {
+                        it.getRemoteOrderId()?.let { orderId ->
+                            (fragment as? NotifsListFragment)?.openOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
+                        }
+                    }
+                    PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
+                    else -> { /* do nothing */ }
+                }
+            }
         }
     }
 

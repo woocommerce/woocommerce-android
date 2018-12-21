@@ -77,6 +77,13 @@ interface UIMessageResolver {
     fun showSnack(msg: String) = Snackbar.make(snackbarRoot, msg, Snackbar.LENGTH_LONG).show()
 
     /**
+     * Display a snackbar with the provided string resource.
+     *
+     * @param [msgId] The resource ID of the message to display in the snackbar
+     */
+    fun showSnack(@StringRes msgId: Int) = Snackbar.make(snackbarRoot, msgId, Snackbar.LENGTH_LONG).show()
+
+    /**
      * Display a generic offline message.
      */
     fun showOfflineSnack() = Snackbar
