@@ -23,5 +23,6 @@ interface MainContract {
         fun hideBottomNav()
         fun showBottomNav()
         fun showNotificationBadge(show: Boolean)
+        fun updateNotificationBadge()
     }
 }

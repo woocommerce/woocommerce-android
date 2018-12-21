@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -277,7 +278,10 @@ class MainActivity : AppCompatActivity(),
         bottom_nav.setOnNavigationItemReselectedListener(this)
     }
 
-    // TODO: add logic to show badge when there are unseen store notifications
+    override fun updateNotificationBadge() {
+        showNotificationBadge(AppPrefs.getHasUnseenNotifs())
+    }
+
     override fun showNotificationBadge(show: Boolean) {
         if (show && badge.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(badge, Duration.MEDIUM)
