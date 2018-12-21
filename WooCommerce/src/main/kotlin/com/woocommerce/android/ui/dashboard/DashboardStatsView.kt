@@ -180,9 +180,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 valueFormatter = StartEndDateAxisFormatter()
             }
 
-            axisRight.isEnabled = false
+            axisLeft.isEnabled = false
 
-            with(axisLeft) {
+            with(axisRight) {
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
