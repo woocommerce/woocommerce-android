@@ -123,6 +123,12 @@
     <dimen name="top_earner_product_image_sz">40dp</dimen>
 
     <!--
+         Notifications
+     -->
+    <dimen name="notification_badge_sz">12dp</dimen>
+    <dimen name="notification_badge_offset">6dp</dimen>
+
+    <!--
         Offline Status Bar
     -->
     <dimen name="offline_status_bar_padding">@dimen/default_padding</dimen>
@@ -142,4 +148,5 @@
     <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
     <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
     <dimen name="skeleton_order_note_item_height">96dp</dimen>
+    <dimen name="skeleton_default_text_height">20sp</dimen>
 </resources>

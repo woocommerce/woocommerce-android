@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/notif_unreadIndicator"
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:background="@color/wc_green"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <android.support.constraint.ConstraintLayout
+        style="@style/Woo.ListItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/notif_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            tools:srcCompat="@drawable/ic_cart"/>
+
+        <TextView
+            android:id="@+id/notif_title"
+            style="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/notif_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="You have a new order!"/>
+
+        <TextView
+            android:id="@+id/notif_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/notif_rating"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/notif_title"
+            app:layout_constraintTop_toBottomOf="@+id/notif_title"
+            tools:text="Will Gorski placed a $18.00 order from Candle Kingdom."/>
+
+        <RatingBar
+            android:id="@+id/notif_rating"
+            style="@style/Base.Widget.AppCompat.RatingBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:isIndicator="true"
+            android:numStars="5"
+            android:progressTint="@color/grey_darken_30"
+            android:rating="0"
+            android:stepSize="1"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/notif_desc"
+            tools:rating="4"
+            tools:visibility="visible"/>
+
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

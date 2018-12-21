@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -34,15 +35,18 @@ class OrderDetailPresenterTest {
     private val selectedSite: SelectedSite = mock()
     private val uiMessageResolver: UIMessageResolver = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val notificationStore: NotificationStore = mock()
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
+    private val remoteOderId = order.remoteOrderId
     private val orderNotes = OrderTestUtils.generateOrderNotes(10, 2, 1)
     private lateinit var presenter: OrderDetailPresenter
 
     @Before
     fun setup() {
-        presenter = spy(OrderDetailPresenter(dispatcher, orderStore, selectedSite, uiMessageResolver, networkStatus))
+        presenter = spy(OrderDetailPresenter(
+                dispatcher, orderStore, selectedSite, uiMessageResolver, networkStatus, notificationStore))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()

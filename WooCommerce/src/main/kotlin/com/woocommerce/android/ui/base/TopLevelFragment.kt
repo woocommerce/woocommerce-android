@@ -76,6 +76,10 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         return childFragmentManager.popBackStackImmediate(tag, 0)
     }
 
+    override fun closeCurrentChildFragment() {
+        childFragmentManager.popBackStackImmediate()
+    }
+
     override fun loadChildFragment(fragment: Fragment, tag: String) {
         // before changing the custom animation, please read this PR:
         // https://github.com/woocommerce/woocommerce-android/pull/554

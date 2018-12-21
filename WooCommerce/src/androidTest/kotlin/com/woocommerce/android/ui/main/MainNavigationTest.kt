@@ -50,6 +50,9 @@ class MainNavigationTest : TestBase() {
 
     @Test
     fun appDisplaysDashboardOnLaunch() {
+        // Make sure the bottom navigation view is showing
+        activityTestRule.activity.showBottomNav()
+
         // The Dashboard tab should be active if the app is launched
         onView(withId(R.id.bottom_nav)).check { view, noMatchException ->
             view?.let {
@@ -65,6 +68,9 @@ class MainNavigationTest : TestBase() {
 
     @Test
     fun ordersMenuOptionDisplaysOrdersView() {
+        // Make sure the bottom navigation view is showing
+        activityTestRule.activity.showBottomNav()
+
         // Select the orders bottom menu option
         onView(withId(R.id.orders)).perform(click())
 
@@ -75,6 +81,9 @@ class MainNavigationTest : TestBase() {
 
     @Test
     fun notificationsMenuOptionDisplaysNotificationsView() {
+        // Make sure the bottom navigation view is showing
+        activityTestRule.activity.showBottomNav()
+
         // Select the notifications bottom bar option
         onView(withId(R.id.notifications)).perform(click())
 
@@ -85,6 +94,9 @@ class MainNavigationTest : TestBase() {
 
     @Test
     fun dashboardMenuOptionDisplaysDashboardView() {
+        // Make sure the bottom navigation view is showing
+        activityTestRule.activity.showBottomNav()
+
         // Switch away from the default selected dashboard option
         onView(withId(R.id.notifications)).perform(click())
 

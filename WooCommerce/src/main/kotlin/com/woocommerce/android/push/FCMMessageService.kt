@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 class FCMMessageService : FirebaseMessagingService() {
     @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var notificationHandler: NotificationHandler
 
     override fun onCreate() {
         AndroidInjection.inject(this)
@@ -23,7 +24,7 @@ class FCMMessageService : FirebaseMessagingService() {
         if (!accountStore.hasAccessToken()) return
 
         message?.data?.let {
-            NotificationHandler.buildAndShowNotificationFromNoteData(this, convertMapToBundle(it), accountStore.account)
+            notificationHandler.buildAndShowNotificationFromNoteData(this, convertMapToBundle(it), accountStore.account)
         } ?: WooLog.d(T.NOTIFS, "No notification message content received. Aborting.")
     }
 
