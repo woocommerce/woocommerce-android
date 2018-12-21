@@ -29,7 +29,6 @@ Language: sv_SE
     <string name="logviewer_error_copy_to_clipboard">Det gick inte att kopiera till urklipp</string>
     <string name="logviewer_copied_to_clipboard">Logg kopierad till urklipp</string>
     <string name="logviewer_activity_title">Logg för applikationen</string>
-    <string name="help_screen_title">Hjälp och support</string>
     <string name="support_push_notification_message">Nytt meddelande från ”Hjälp och support”</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_contact_email_not_set">Har inte angetts</string>
@@ -161,7 +160,6 @@ Language: sv_SE
     <string name="magic_link_unavailable_error_message">Inte tillgänglig för närvarande. Ange ditt lösenord</string>
     <string name="logging_in">Loggar in</string>
     <string name="enter_your_password_instead">Ange ditt lösenord istället</string>
-    <string name="contact_support">Kontakta support</string>
     <string name="email_address">E-postadress</string>
     <string name="details">Information</string>
     <string name="undo">Ångra</string>
@@ -189,7 +187,6 @@ Language: sv_SE
     <string name="settings_privacy_detail">Denna information hjälper oss att förbättra våra produkter, se till att marknadsföringen till dig är mer relevant, anpassa din upplevelse av WooCommerce och annat som finns beskrivet i vår integritetspolicy.</string>
     <string name="settings_send_stats_detail">Dela information med vårt analysverktyg om din användning av olika tjänster medan du är inloggad på ditt WordPress-konto</string>
     <string name="settings_send_stats">Samla in information</string>
-    <string name="settings_confirm_signout">Logga ut från WooCommerce?</string>
     <string name="settings_signout">Logga ut konto</string>
     <string name="privacy_settings">Integritetsinställningar</string>
     <string name="orderstatus_contentDesc">Orderstatus</string>
@@ -201,7 +198,6 @@ Language: sv_SE
     <string name="add_order_note_error">Kunde inte lägga till notering</string>
     <string name="add_order_note_added">Ordernotering tillagd</string>
     <string name="add_order_note_menu_item">Lägg till</string>
-    <string name="add_order_note_sublabel">Om detta inaktiveras läggs noteringen till som privat</string>
     <string name="add_order_note_label">Skicka notering till kund via e-post</string>
     <string name="order_error_update_general">Det gick inte att ändra ordern</string>
     <string name="order_error_fetch_notes_generic">Det gick inte att hämta ordernoteringar</string>
@@ -230,7 +226,6 @@ Language: sv_SE
     <string name="orderdetail_product_image_contentdesc">Produktbild</string>
     <string name="orderdetail_product_lineitem_sku">Artikelnr:</string>
     <string name="orderdetail_product_lineitem_tax">Moms:</string>
-    <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
     <string name="orderdetail_sms_contentdesc">skicka kundmeddelande via sms</string>
     <string name="orderdetail_call_contentdesc">ring kund</string>
     <string name="orderdetail_email_contentdesc">e-posta kund</string>
@@ -251,7 +246,6 @@ Language: sv_SE
     <string name="dashboard_no_orders_contentdesc">Väntar på kundbild</string>
     <string name="dashboard_no_orders_with_filter">Inga ordrar</string>
     <string name="dashboard_no_orders">Väntar på kunder</string>
-    <string name="dashboard_fulfill_orders_msg">Dina kunder väntar. Ju snabbare du skickar leveransen, desto gladare kommer du att göra dem.</string>
     <string name="dashboard_fulfill_orders_title">Du har %1$d%2$s ordrar att fullfölja</string>
     <string name="dashboard_fulfill_order_title">Du har 1 order att fullfölja</string>
     <string name="dashboard_action_view_orders">Visa ordrar</string>
@@ -272,7 +266,6 @@ Language: sv_SE
     <string name="error_no_phone_app">Ingen telefonappen hittades</string>
     <string name="error_cant_open_url">Kan inte öppna länken</string>
     <string name="date_at_time">%1$s at %2$s</string>
-    <string name="notifications_coming_soon">Aviseringar är inte klara ännu, men kommer i en framtida version. Håll ögonen öppna!</string>
     <string name="notifications">Aviseringar</string>
     <string name="offline_error">Ditt nätverk är inte tillgängligt. Kontrollera din data- eller WiFi-anslutning.</string>
     <string name="offline_message">Offline u2014 med cachade data</string>
