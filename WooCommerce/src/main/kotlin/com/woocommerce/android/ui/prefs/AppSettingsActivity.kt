@@ -22,6 +22,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_app_settings.*
+import java.util.Locale
 import javax.inject.Inject
 
 class AppSettingsActivity : AppCompatActivity(),
@@ -128,15 +129,20 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun confirmLogout() {
+        val message = String.format(
+                Locale.getDefault(),
+                getString(R.string.settings_confirm_logout),
+                presenter.getAccountDisplayName()
+        )
         AlertDialog.Builder(ContextThemeWrapper(this, R.style.AppTheme))
-                .setMessage(R.string.settings_confirm_signout)
+                .setMessage(message)
                 .setPositiveButton(R.string.signout) { _, _ ->
                     AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
                             AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)))
 
                     presenter.logout()
                 }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+                .setNegativeButton(R.string.back) { _, _ ->
                     AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
                             AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(false)))
                 }

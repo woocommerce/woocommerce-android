@@ -9,6 +9,6 @@
 
     <item
         android:id="@+id/menu_support"
-        android:title="@string/contact_support"
+        android:title="@string/support_help"
         app:showAsAction="never"/>
 </menu>

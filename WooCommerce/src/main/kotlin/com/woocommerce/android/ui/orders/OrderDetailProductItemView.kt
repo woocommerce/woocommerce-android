@@ -41,11 +41,28 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
             val res = context.resources
             val orderTotal = CurrencyUtils.currencyString(context, item.total, currencyCode)
             val productPrice = CurrencyUtils.currencyString(context, item.price, currencyCode)
-            productInfo_productTotal.text = res.getString(
-                    R.string.orderdetail_product_lineitem_total, orderTotal, productPrice, item.quantity)
+
+            item.quantity?.takeIf { it > 1 }?.let {
+                productInfo_productTotal.text = res.getString(
+                        R.string.orderdetail_product_lineitem_total_multiple, orderTotal, productPrice, it
+                )
+            } ?: run {
+                productInfo_productTotal.text = res.getString(
+                        R.string.orderdetail_product_lineitem_total_single, orderTotal
+                )
+            }
+
             productInfo_totalTax.text = CurrencyUtils.currencyString(context, item.totalTax, currencyCode)
 
             // todo Product Image
         }
+
+        // we need to put some space before the product name when the product image is showing
+        val margin: Int = if (expanded) {
+            context.resources.getDimensionPixelSize(R.dimen.margin_large)
+        } else {
+            0
+        }
+        (productInfo_name.layoutParams as MarginLayoutParams).marginStart = margin
     }
 }

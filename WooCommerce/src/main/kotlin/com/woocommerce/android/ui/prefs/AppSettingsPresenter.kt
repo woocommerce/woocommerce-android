@@ -38,6 +38,10 @@ class AppSettingsPresenter @Inject constructor(
         return accountStore.hasAccessToken()
     }
 
+    override fun getAccountDisplayName(): String {
+        return accountStore.account?.displayName ?: ""
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDeviceUnregistered(event: OnDeviceUnregistered) {
