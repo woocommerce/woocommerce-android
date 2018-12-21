@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import android.widget.PopupMenu
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -53,6 +54,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             // display phone
             if (!order.billingPhone.isEmpty()) {
                 customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
+                customerInfo_phone.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.setOnClickListener {
+                    showCallOrMessagePopup(order, listener)
+                }
+            } else {
+                customerInfo_phone.visibility = View.GONE
+                customerInfo_callOrMessageBtn.visibility = View.GONE
             }
 
             // configure more/less button
@@ -72,19 +81,26 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
 
                 listener?.createEmail(order, order.billingEmail)
             }
-
-            customerInfo_phoneBtn.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
-
-                listener?.dialPhone(order, order.billingPhone)
-            }
-
-            customerInfo_hangoutsBtn.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
-
-                listener?.sendSms(order, order.billingPhone)
-            }
         }
+    }
+
+    private fun showCallOrMessagePopup(order: WCOrderModel, listener: OrderCustomerActionListener?) {
+        val popup = PopupMenu(context, customerInfo_callOrMessageBtn)
+        popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
+
+        popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
+            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
+            listener?.dialPhone(order, order.billingPhone)
+            true
+        }
+
+        popup.menu.findItem(R.id.menu_message)?.setOnMenuItemClickListener {
+            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
+            listener?.sendSms(order, order.billingPhone)
+            true
+        }
+
+        popup.show()
     }
 
     private fun formatViewAsShippingOnly() {
