@@ -133,6 +133,7 @@ class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        showNotificationBadge(AppPrefs.getHasUnseenNotifs())
 
         checkConnection()
     }
@@ -391,8 +392,11 @@ class MainActivity : AppCompatActivity(),
         clearFragmentBackStack(activeFragment)
 
         // remove the badge when switching to the notifs item
-        if (navPosition == BottomNavigationPosition.DASHBOARD) {
+        if (navPosition == BottomNavigationPosition.NOTIFICATIONS) {
             NotificationHandler.setHasUnseenNotifications(false)
+        } else {
+            // TODO: remove this test code
+            NotificationHandler.setHasUnseenNotifications(true)
         }
 
         // Grab the requested top-level fragment and load if not already
