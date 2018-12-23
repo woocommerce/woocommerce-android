@@ -394,9 +394,6 @@ class MainActivity : AppCompatActivity(),
         // remove the badge when switching to the notifs item
         if (navPosition == BottomNavigationPosition.NOTIFICATIONS) {
             NotificationHandler.setHasUnseenNotifications(false)
-        } else {
-            // TODO: remove this test code
-            NotificationHandler.setHasUnseenNotifications(true)
         }
 
         // Grab the requested top-level fragment and load if not already
