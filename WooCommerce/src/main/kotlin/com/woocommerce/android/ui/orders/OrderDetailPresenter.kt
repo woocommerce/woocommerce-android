@@ -154,11 +154,6 @@ class OrderDetailPresenter @Inject constructor(
                 pendingMarkReadNotification = it
                 val payload = MarkNotificationReadPayload(it)
                 dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationReadAction(payload))
-                with(NotificationHandler) {
-                    if (!hasNotifications()) {
-                        NotificationHandler.setHasUnseenNotifications(false)
-                    }
-                }
             }
         }
     }

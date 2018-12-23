@@ -113,9 +113,10 @@ class NotificationHandler @Inject constructor(
                 ACTIVE_NOTIFICATIONS_MAP.remove(it)
             }
 
-            // If there are no notifications left, cancel the group as well
+            // If there are no notifications left, cancel the group as well and clear the unseen state
             if (!hasNotifications()) {
                 notificationManager.cancel(GROUP_NOTIFICATION_ID)
+                setHasUnseenNotifications(false)
             }
         }
 
