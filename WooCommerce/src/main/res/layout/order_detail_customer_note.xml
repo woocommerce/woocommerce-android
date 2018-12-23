@@ -19,8 +19,8 @@
 
     <ImageView
         android:id="@+id/customerNote_avatar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:layout_marginBottom="@dimen/card_item_padding_intra_h"
         android:importantForAccessibility="no"

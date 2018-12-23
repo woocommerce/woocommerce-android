@@ -7,6 +7,7 @@ interface AppSettingsContract {
     interface Presenter : BasePresenter<View> {
         fun logout()
         fun userIsLoggedIn(): Boolean
+        fun getAccountDisplayName(): String
     }
 
     interface View : BaseView<Presenter> {

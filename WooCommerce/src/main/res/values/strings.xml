@@ -56,6 +56,7 @@
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="back">Back</string>
     <string name="button_update_instructions">Update instructions</string>
 
     <!--
@@ -133,7 +134,7 @@
     <string name="dashboard_action_view_orders">View Orders</string>
     <string name="dashboard_fulfill_order_title">You have 1 order to fulfill</string>
     <string name="dashboard_fulfill_orders_title">You have %1$d%2$s orders to fulfill</string>
-    <string name="dashboard_fulfill_orders_msg">Your customers are waiting. The faster you ship it out, the happier you\'ll make them.</string>
+    <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
     <string name="dashboard_no_orders">Waiting for customers</string>
     <string name="dashboard_no_orders_with_filter">No orders</string>
@@ -156,7 +157,7 @@
     <!--
         Order Detail Views
     -->
-    <string name="customer_information">Customer Information</string>
+    <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
@@ -164,9 +165,11 @@
     <string name="orderdetail_shipping_details">Shipping Details</string>
     <string name="orderdetail_billing_details">Billing Details</string>
     <string name="orderdetail_email_contentdesc">email customer</string>
-    <string name="orderdetail_call_contentdesc">call customer</string>
-    <string name="orderdetail_sms_contentdesc">send customer sms message</string>
-    <string name="orderdetail_product_lineitem_total">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
+    <string name="orderdetail_call_customer">Call</string>
+    <string name="orderdetail_message_customer">Message</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
@@ -178,13 +181,13 @@
     <string name="orderdetail_new_total">New Total</string>
     <string name="orderdetail_payment_refunded">Payment - Refunded</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_customer_provided_note">Customer Provided Note</string>
+    <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
     <string name="orderdetail_note_private">Private Note</string>
     <string name="orderdetail_note_public">Note to customer</string>
     <string name="orderdetail_note_system">System status</string>
-    <string name="orderdetail_order_notes">Order Notes</string>
+    <string name="orderdetail_order_notes">Order notes</string>
     <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
@@ -201,7 +204,7 @@
         Add Order Note
     -->
     <string name="add_order_note_label">Email note to customer</string>
-    <string name="add_order_note_sublabel">If disabled will add the note as private</string>
+    <string name="add_order_note_sublabel">If disabled the note will be private</string>
     <string name="add_order_note_menu_item">Add</string>
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
@@ -234,7 +237,7 @@
     <string name="settings">Settings</string>
     <string name="privacy_settings">Privacy settings</string>
     <string name="settings_signout">Logout account</string>
-    <string name="settings_confirm_signout">Log out of WooCommerce?</string>
+    <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
@@ -257,7 +260,7 @@
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>
     <string name="settings_crash_reporting">Crash reports</string>
-    <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports.</string>
+    <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -266,7 +269,7 @@
     <!--
         Help and support
     -->
-    <string name="contact_support">Contact support</string>
+    <string name="support_help">Help &amp; support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
     <string name="invalid_email_message">Your email address isn\'t valid</string>
     <string name="support_identity_input_dialog_enter_email_and_name">To continue please enter your email address and name</string>
@@ -287,7 +290,6 @@
     <string name="support_contact_email_not_set">Not set</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_push_notification_message">New message from \'Help &amp; Support\'</string>
-    <string name="help_screen_title">Help &amp; Support</string>
     <string name="logviewer_activity_title">Application log</string>
     <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
     <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
