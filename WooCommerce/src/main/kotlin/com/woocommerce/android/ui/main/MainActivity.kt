@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        showNotificationBadge(AppPrefs.getHasUnseenNotifs())
+        updateNotificationBadge()
 
         checkConnection()
     }
