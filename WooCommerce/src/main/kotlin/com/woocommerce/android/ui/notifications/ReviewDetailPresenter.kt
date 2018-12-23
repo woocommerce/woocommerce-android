@@ -106,7 +106,7 @@ class ReviewDetailPresenter @Inject constructor(
             notification.read = true
             val payload = MarkNotificationReadPayload(notification)
             dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationReadAction(payload))
-            with (NotificationHandler) {
+            with(NotificationHandler) {
                 if (!hasNotifications()) {
                     NotificationHandler.setHasUnseenNotifications(false)
                 }
