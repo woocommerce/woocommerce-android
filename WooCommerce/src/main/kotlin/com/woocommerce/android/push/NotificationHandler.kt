@@ -144,7 +144,6 @@ class NotificationHandler @Inject constructor(
             }
         }
 
-
         /**
          * Called from various places when we want to update the unseen state of notifications - changes
          * the related shared preference and emits an EventBus event so main activity can update the
