@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.notifications
 
 import android.content.Context
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.buildComment
 import com.woocommerce.android.extensions.getCommentId
@@ -107,7 +106,7 @@ class ReviewDetailPresenter @Inject constructor(
             notification.read = true
             val payload = MarkNotificationReadPayload(notification)
             dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationReadAction(payload))
-            AppPrefs.setHasUnseenNotifs(false)
+            NotificationHandler.setHasUnseenNotifications(false)
         }
     }
 

@@ -392,7 +392,7 @@ class MainActivity : AppCompatActivity(),
 
         // remove the badge when switching to the notifs item
         if (navPosition == BottomNavigationPosition.DASHBOARD) {
-            AppPrefs.setHasUnseenNotifs(false)
+            NotificationHandler.setHasUnseenNotifications(false)
         }
 
         // Grab the requested top-level fragment and load if not already

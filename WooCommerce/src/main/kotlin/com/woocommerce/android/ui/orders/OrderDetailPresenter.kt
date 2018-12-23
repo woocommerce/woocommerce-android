@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
@@ -155,7 +154,7 @@ class OrderDetailPresenter @Inject constructor(
                 pendingMarkReadNotification = it
                 val payload = MarkNotificationReadPayload(it)
                 dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationReadAction(payload))
-                AppPrefs.setHasUnseenNotifs(false)
+                NotificationHandler.setHasUnseenNotifications(false)
             }
         }
     }

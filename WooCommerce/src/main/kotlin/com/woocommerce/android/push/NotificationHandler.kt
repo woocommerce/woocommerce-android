@@ -143,6 +143,20 @@ class NotificationHandler @Inject constructor(
                 AnalyticsTracker.track(stat, properties)
             }
         }
+
+
+        /**
+         * Called from various places when we want to update the unseen state of notifications
+         */
+        fun setHasUnseenNotifications(hasUnseen: Boolean) {
+            if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
+                // change the shared preference
+                AppPrefs.setHasUnseenNotifs(hasUnseen)
+
+                // emit event so main activity can update the notification badge
+                EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))
+            }
+        }
     }
 
     class NotificationsUnseenChangeEvent(var hasUnseen: Boolean)
@@ -241,7 +255,7 @@ class NotificationHandler @Inject constructor(
         // Do not need to play the sound again. We've already played it in the individual builder.
         showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
 
-        AppPrefs.setHasUnseenNotifs(true)
+        setHasUnseenNotifications(true)
     }
 
     /**
@@ -503,18 +517,5 @@ class NotificationHandler @Inject constructor(
         builder.setContentIntent(pendingIntent)
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(pushId, builder.build())
-    }
-
-    /**
-     * Called from various places when we want to update the unseen state of notifications
-     */
-    fun setHasUnseenNotifications(hasUnseen: Boolean) {
-        if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
-            // change the shared preference
-            AppPrefs.setHasUnseenNotifs(hasUnseen)
-
-            // emit event so main activity can update the notification badge
-            EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))
-        }
     }
 }
