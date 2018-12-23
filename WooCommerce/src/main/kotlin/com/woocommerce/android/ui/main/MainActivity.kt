@@ -390,6 +390,11 @@ class MainActivity : AppCompatActivity(),
         // Remove any child fragments in the back stack
         clearFragmentBackStack(activeFragment)
 
+        // remove the badge when switching to the notifs item
+        if (navPosition == BottomNavigationPosition.DASHBOARD) {
+            AppPrefs.setHasUnseenNotifs(false)
+        }
+
         // Grab the requested top-level fragment and load if not already
         // in the current view.
         supportFragmentManager.findFragment(navPosition)?.let { frag ->
