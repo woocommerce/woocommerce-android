@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.notifications
 
 import android.content.Context
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.buildComment
 import com.woocommerce.android.extensions.getCommentId
@@ -20,8 +21,8 @@ import org.wordpress.android.fluxc.generated.CommentActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
-import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.notification.NoteIdSet
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.CommentStore
 import org.wordpress.android.fluxc.store.CommentStore.OnCommentChanged
 import org.wordpress.android.fluxc.store.CommentStore.RemoteCommentPayload
@@ -106,6 +107,7 @@ class ReviewDetailPresenter @Inject constructor(
             notification.read = true
             val payload = MarkNotificationReadPayload(notification)
             dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationReadAction(payload))
+            AppPrefs.setHasUnseenNotifs(false)
         }
     }
 

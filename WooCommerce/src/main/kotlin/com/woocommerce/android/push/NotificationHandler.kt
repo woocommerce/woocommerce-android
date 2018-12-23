@@ -237,6 +237,8 @@ class NotificationHandler @Inject constructor(
         // Also add a group summary notification, which is required for non-wearable devices
         // Do not need to play the sound again. We've already played it in the individual builder.
         showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
+
+        AppPrefs.setHasUnseenNotifs(true)
     }
 
     /**
