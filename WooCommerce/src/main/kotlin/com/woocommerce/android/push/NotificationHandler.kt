@@ -146,9 +146,8 @@ class NotificationHandler @Inject constructor(
         }
 
         /**
-         * Called from various places when we want to update the unseen state of notifications - changes
-         * the related shared preference and emits an EventBus event so main activity can update the
-         * notification badge
+         * Called when we want to update the unseen state of notifications - changes the related
+         * shared preference and posts an EventBus event so main activity can update the badge
          */
         fun setHasUnseenNotifications(hasUnseen: Boolean) {
             if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
