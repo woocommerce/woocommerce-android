@@ -28,6 +28,7 @@ import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.text.StringEscapeUtils
+import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
@@ -143,6 +144,8 @@ class NotificationHandler @Inject constructor(
             }
         }
     }
+
+    class NotificationsUnseenChangeEvent(var hasUnseen: Boolean)
 
     /**
      * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
@@ -500,5 +503,18 @@ class NotificationHandler @Inject constructor(
         builder.setContentIntent(pendingIntent)
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(pushId, builder.build())
+    }
+
+    /**
+     * Called from various places when we want to update the unseen state of notifications
+     */
+    fun setHasUnseenNotifications(hasUnseen: Boolean) {
+        if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
+            // change the shared preference
+            AppPrefs.setHasUnseenNotifs(hasUnseen)
+
+            // emit event so main activity can update the notification badge
+            EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))
+        }
     }
 }
