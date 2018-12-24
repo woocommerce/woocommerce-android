@@ -110,7 +110,6 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
-    // TODO: should this default to True?
     fun getHasUnseenNotifs() = getBoolean(DeletablePrefKey.HAS_UNSEEN_NOTIFS, false)
 
     fun setHasUnseenNotifs(hasUnseen: Boolean) {
