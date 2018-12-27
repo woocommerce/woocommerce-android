@@ -326,7 +326,9 @@ class NotificationHandler @Inject constructor(
 
             // create the channel since it doesn't already exist
             val channelName = getChannelTitleForNoteType(context, noteType)
-            val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(channelId, channelName, IMPORTANCE_DEFAULT).apply {
+                setShowBadge(true)
+            }
 
             // add cha-ching sound to new order notifications
             if (noteType == NEW_ORDER) {
