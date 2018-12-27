@@ -19,7 +19,8 @@ object AppPrefs {
     private enum class DeletablePrefKey : PrefKey {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
-        IS_USING_V3_API
+        IS_USING_V3_API,
+        HAS_UNSEEN_NOTIFS
     }
 
     /**
@@ -107,6 +108,12 @@ object AppPrefs {
 
     fun setOrderNotificationsChaChingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
+    }
+
+    fun getHasUnseenNotifs() = getBoolean(DeletablePrefKey.HAS_UNSEEN_NOTIFS, false)
+
+    fun setHasUnseenNotifs(hasUnseen: Boolean) {
+        setBoolean(DeletablePrefKey.HAS_UNSEEN_NOTIFS, hasUnseen)
     }
 
     /**

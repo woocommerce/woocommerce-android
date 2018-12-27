@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -132,6 +133,7 @@ class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        updateNotificationBadge()
 
         checkConnection()
     }
@@ -277,7 +279,10 @@ class MainActivity : AppCompatActivity(),
         bottom_nav.setOnNavigationItemReselectedListener(this)
     }
 
-    // TODO: add logic to show badge when there are unseen store notifications
+    override fun updateNotificationBadge() {
+        showNotificationBadge(AppPrefs.getHasUnseenNotifs())
+    }
+
     override fun showNotificationBadge(show: Boolean) {
         if (show && badge.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(badge, Duration.MEDIUM)
@@ -385,6 +390,11 @@ class MainActivity : AppCompatActivity(),
 
         // Remove any child fragments in the back stack
         clearFragmentBackStack(activeFragment)
+
+        // remove the badge when switching to the notifs item
+        if (navPosition == BottomNavigationPosition.NOTIFICATIONS) {
+            NotificationHandler.setHasUnseenNotifications(false)
+        }
 
         // Grab the requested top-level fragment and load if not already
         // in the current view.

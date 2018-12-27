@@ -28,6 +28,7 @@ import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.text.StringEscapeUtils
+import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
@@ -112,9 +113,10 @@ class NotificationHandler @Inject constructor(
                 ACTIVE_NOTIFICATIONS_MAP.remove(it)
             }
 
-            // If there are no notifications left, cancel the group as well
+            // If there are no notifications left, cancel the group as well and clear the unseen state
             if (!hasNotifications()) {
                 notificationManager.cancel(GROUP_NOTIFICATION_ID)
+                setHasUnseenNotifications(false)
             }
         }
 
@@ -142,7 +144,20 @@ class NotificationHandler @Inject constructor(
                 AnalyticsTracker.track(stat, properties)
             }
         }
+
+        /**
+         * Called when we want to update the unseen state of notifications - changes the related
+         * shared preference and posts an EventBus event so main activity can update the badge
+         */
+        fun setHasUnseenNotifications(hasUnseen: Boolean) {
+            if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
+                AppPrefs.setHasUnseenNotifs(hasUnseen)
+                EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))
+            }
+        }
     }
+
+    class NotificationsUnseenChangeEvent(var hasUnseen: Boolean)
 
     /**
      * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
@@ -237,6 +252,8 @@ class NotificationHandler @Inject constructor(
         // Also add a group summary notification, which is required for non-wearable devices
         // Do not need to play the sound again. We've already played it in the individual builder.
         showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
+
+        setHasUnseenNotifications(true)
     }
 
     /**
