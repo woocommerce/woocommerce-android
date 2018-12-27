@@ -10,6 +10,9 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -69,13 +72,22 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     private val skeletonView = SkeletonView()
+    private var menuMarkAllRead: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(OrderListFragment.STATE_KEY_LIST)
             isRefreshPending = bundle.getBoolean(OrderListFragment.STATE_KEY_REFRESH_PENDING, false)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_notifs_list_fragment, menu)
+        menuMarkAllRead = menu?.findItem(R.id.menu_mark_all_read)
+
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onAttach(context: Context?) {
@@ -151,6 +163,26 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             notifsList.layoutManager.onRestoreInstanceState(listState)
             listState = null
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_mark_all_read -> {
+                presenter.markAllNotificationsRead()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        refreshOptionsMenu()
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    private fun refreshOptionsMenu() {
+        val showMarkAllRead = isActive
+        menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -348,6 +380,10 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         } else {
             uiMessageResolver.showOfflineSnack()
         }
+    }
+
+    override fun showMarkAllNotificationsReadError() {
+        uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
     }
 
     private fun revertPendingModeratedNotifState() {

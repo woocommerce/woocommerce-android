@@ -11,6 +11,7 @@ interface NotifsListContract {
         fun reloadNotifs()
         fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean)
         fun pushUpdatedComment(comment: CommentModel)
+        fun markAllNotificationsRead()
     }
 
     interface View : BaseView<Presenter>, ReviewActionListener {
@@ -25,5 +26,6 @@ interface NotifsListContract {
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
         fun openReviewDetail(notification: NotificationModel)
+        fun showMarkAllNotificationsReadError()
     }
 }
