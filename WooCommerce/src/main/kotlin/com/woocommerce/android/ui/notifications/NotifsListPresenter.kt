@@ -104,6 +104,8 @@ class NotifsListPresenter @Inject constructor(
             if (unreadNotifs.isNotEmpty()) {
                 val payload = MarkNotificationsReadPayload(unreadNotifs)
                 dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+            } else {
+                WooLog.d(NOTIFICATIONS, "Mark all as read: No unread notifications found. Exiting.")
             }
         }
     }
