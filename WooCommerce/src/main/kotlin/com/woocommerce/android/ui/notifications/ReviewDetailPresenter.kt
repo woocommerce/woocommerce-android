@@ -15,7 +15,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.CommentAction.FETCH_COMMENT
-import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATION_READ
+import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.generated.CommentActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.CommentModel
@@ -26,7 +26,7 @@ import org.wordpress.android.fluxc.store.CommentStore
 import org.wordpress.android.fluxc.store.CommentStore.OnCommentChanged
 import org.wordpress.android.fluxc.store.CommentStore.RemoteCommentPayload
 import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationReadPayload
+import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import javax.inject.Inject
 
@@ -104,8 +104,8 @@ class ReviewDetailPresenter @Inject constructor(
         NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, notification.remoteNoteId.toString())
         if (!notification.read) {
             notification.read = true
-            val payload = MarkNotificationReadPayload(notification)
-            dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationReadAction(payload))
+            val payload = MarkNotificationsReadPayload(listOf(notification))
+            dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
         }
     }
 
@@ -123,7 +123,7 @@ class ReviewDetailPresenter @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
         when (event.causeOfChange) {
-            MARK_NOTIFICATION_READ -> onNotificationMarkedRead(event)
+            MARK_NOTIFICATIONS_READ -> onNotificationMarkedRead(event)
         }
     }
 
