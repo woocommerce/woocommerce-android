@@ -100,7 +100,7 @@ class ReviewDetailPresenter @Inject constructor(
     /**
      * Fires the event to mark a notification as read and removes it from the notification bar if needed.
      */
-    override fun markOrderNotificationRead(context: Context, notification: NotificationModel) {
+    override fun markNotificationRead(context: Context, notification: NotificationModel) {
         NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, notification.remoteNoteId.toString())
         if (!notification.read) {
             notification.read = true
