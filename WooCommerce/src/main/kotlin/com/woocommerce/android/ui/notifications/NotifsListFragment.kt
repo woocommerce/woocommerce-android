@@ -384,6 +384,14 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         }
     }
 
+    /**
+     * Update the UI to visually mark all notifications as read while the request to
+     * officially mark notifications as read is being processed.
+     */
+    override fun visuallyMarkNotificationsAsRead() {
+        notifsAdapter.markAllNotifsAsRead()
+    }
+
     override fun showMarkAllNotificationsReadError() {
         uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
     }

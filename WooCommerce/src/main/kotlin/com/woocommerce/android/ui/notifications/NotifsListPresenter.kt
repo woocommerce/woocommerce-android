@@ -104,6 +104,10 @@ class NotifsListPresenter @Inject constructor(
             if (unreadNotifs.isNotEmpty()) {
                 val payload = MarkNotificationsReadPayload(unreadNotifs)
                 dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+
+                // Optimistic design - update the UI immediately to show all notifs are now
+                // marked as read. If this fails, the list will be reloaded by the database.
+                view?.visuallyMarkNotificationsAsRead()
             } else {
                 WooLog.d(NOTIFICATIONS, "Mark all as read: No unread notifications found. Exiting.")
             }
@@ -175,15 +179,12 @@ class NotifsListPresenter @Inject constructor(
                 if (event.isError) {
                     WooLog.e(NOTIFICATIONS, "$TAG - Error marking all notifications as read: ${event.error.message}")
                     view?.showMarkAllNotificationsReadError()
-                } else {
-                    if (event.rowsAffected > 0) {
-                        // TODO eventually we'll want to implement updating individual notifications in
-                        // the notifications list.
-
-                        // Refresh the list of notifications from the database
-                        fetchAndLoadNotifsFromDb(false)
-                    }
                 }
+                // TODO eventually we'll want to implement updating individual notifications in
+                // the notifications list.
+
+                // Refresh the list of notifications from the database
+                fetchAndLoadNotifsFromDb(false)
             }
             else -> {}
         }
