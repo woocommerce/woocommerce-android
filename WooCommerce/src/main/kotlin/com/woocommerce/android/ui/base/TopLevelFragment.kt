@@ -129,11 +129,11 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     private fun updateParentViewState(childActive: Boolean) {
         val mainActivity: AppCompatActivity? = activity as? AppCompatActivity
         if (childActive) {
-            container.getChildAt(0).visibility = View.GONE
+            container?.getChildAt(0)?.visibility = View.GONE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(true)
         } else {
-            container.getChildAt(0).visibility = View.VISIBLE
+            container?.getChildAt(0)?.visibility = View.VISIBLE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
             mainActivity?.title = getFragmentTitle()
