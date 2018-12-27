@@ -11,7 +11,7 @@ interface NotifsListContract {
         fun reloadNotifs()
         fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean)
         fun pushUpdatedComment(comment: CommentModel)
-        fun markAllNotificationsRead()
+        fun markAllNotifsRead()
     }
 
     interface View : BaseView<Presenter>, ReviewActionListener {

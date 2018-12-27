@@ -95,7 +95,7 @@ class NotifsListPresenter @Inject constructor(
         }
     }
 
-    override fun markAllNotificationsRead() {
+    override fun markAllNotifsRead() {
         if (networkStatus.isConnected()) {
             val unreadNotifs = notificationStore.getNotificationsForSite(
                     site = selectedSite.get(),
