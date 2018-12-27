@@ -206,6 +206,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             // moderation so it can be processed immediately.
             changeCommentStatusSnackbar?.dismiss()
         }
+        refreshOptionsMenu()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
