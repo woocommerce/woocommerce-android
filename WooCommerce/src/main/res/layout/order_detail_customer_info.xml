@@ -49,6 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            android:textIsSelectable="true"
             tools:text="123 Sesame Pl\nWarner, FL"/>
 
         <!-- Shipping Country -->
@@ -112,6 +113,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                android:textIsSelectable="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingName"
                 tools:text="123 Sesame Pl\nWarner, FL 12345-6789"/>
