@@ -284,10 +284,12 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showNotificationBadge(show: Boolean) {
-        if (show && badge.visibility != View.VISIBLE) {
-            WooAnimUtils.fadeIn(badge, Duration.MEDIUM)
-        } else if (!show && badge.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(badge, Duration.MEDIUM)
+        badge?.let {
+            if (show && it.visibility != View.VISIBLE) {
+                WooAnimUtils.fadeIn(it, Duration.MEDIUM)
+            } else if (!show && it.visibility == View.VISIBLE) {
+                WooAnimUtils.fadeOut(it, Duration.MEDIUM)
+            }
         }
     }
 
