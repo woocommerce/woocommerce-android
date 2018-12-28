@@ -16,7 +16,7 @@ interface ReviewDetailContract {
         fun getOrBuildCommentForNotification(notif: NotificationModel): CommentModel
         fun reloadComment()
         fun fetchComment()
-        fun markOrderNotificationRead(context: Context, notification: NotificationModel)
+        fun markNotificationRead(context: Context, notification: NotificationModel)
     }
 
     interface View : BaseView<Presenter> {

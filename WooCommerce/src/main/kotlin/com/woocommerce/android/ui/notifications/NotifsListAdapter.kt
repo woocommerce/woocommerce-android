@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import com.woocommerce.android.util.applyTransform
 import com.woocommerce.android.widgets.Section
 import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
@@ -33,12 +34,13 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         fun onNotificationClicked(notification: NotificationModel)
     }
 
-    private val notifsList: ArrayList<NotificationModel> = ArrayList()
+    private val notifsList = mutableListOf<NotificationModel>()
     private var listener: ReviewListListener? = null
 
     // Copy of a notification manually removed from the list so the action may be undone.
     private var pendingRemovalNotification: Triple<NotificationModel, NotifsListSection, Int>? = null
 
+    // region Public methods
     fun setListener(listener: ReviewListListener) {
         this.listener = listener
     }
@@ -184,6 +186,20 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
     }
 
     /**
+     * Superficially marks all notifications in the current list as read by creating a
+     * copy of the existing list, then setting the [NotificationModel#read] property to true and
+     * feeding the updated list back into the adapter.
+     */
+    fun markAllNotifsAsRead() {
+        val newList = mutableListOf<NotificationModel>()
+                .apply { addAll(notifsList) }.applyTransform { it.apply { read = true } }
+
+        setNotifications(newList)
+    }
+    // endregion
+
+    // region Private methods
+    /**
      * Return the item position relative to the section.
      *
      * @param position position of the item in the original backing list
@@ -232,6 +248,7 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         // position not found, fail fast
         throw IndexOutOfBoundsException("Unable to find matching position in section")
     }
+    // endregion
 
     private inner class NotifsListSection(
         val title: String,
