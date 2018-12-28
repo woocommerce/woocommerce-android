@@ -25,6 +25,7 @@ import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -389,6 +390,9 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
      * officially mark notifications as read is being processed.
      */
     override fun visuallyMarkNotificationsAsRead() {
+        // Remove all active notifications from the system bar
+        context?.let { NotificationHandler.removeAllNotificationsFromSystemBar(it) }
+
         notifsAdapter.markAllNotifsAsRead()
     }
 

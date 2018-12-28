@@ -96,6 +96,16 @@ class NotificationHandler @Inject constructor(
         }
 
         /**
+         * Removes all the notifications from the system bar and clears the active map.
+         */
+        @Synchronized fun removeAllNotificationsFromSystemBar(context: Context) {
+            ACTIVE_NOTIFICATIONS_MAP.clear()
+
+            val notificationManager = NotificationManagerCompat.from(context)
+            notificationManager.cancelAll()
+        }
+
+        /**
          * Removes a specific notification from the system bar.
          */
         @Synchronized fun removeNotificationWithNoteIdFromSystemBar(context: Context, wpComNoteId: String) {
