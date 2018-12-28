@@ -225,11 +225,14 @@ class NotificationHandler @Inject constructor(
                     .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
         }
 
-        // skip displaying the notification if user chose to disable this type of notification
-        if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
-                (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
-            WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
-            return
+        // don't display the notification if user chose to disable this type of notification - note
+        // that we skip this for API 26+ since Oreo added per-app notification settings via channels
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
+                    (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
+                WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
+                return
+            }
         }
 
         val title = if (noteType == NEW_ORDER) {
