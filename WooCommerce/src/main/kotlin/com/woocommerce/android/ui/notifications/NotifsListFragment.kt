@@ -136,16 +136,18 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Set the divider decoration for the list
-        dividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-
         notifsAdapter.setListener(this)
+
+        // addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        // addItemDecoration(VerticalItemDecoration())
+        val itemDecoration = NotifsListItemDecoration(activity as Context)
 
         notifsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
-            addItemDecoration(dividerDecoration)
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            addItemDecoration(itemDecoration)
             adapter = notifsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
