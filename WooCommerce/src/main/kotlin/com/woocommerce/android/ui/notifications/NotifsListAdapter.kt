@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.applyTransform
 import com.woocommerce.android.widgets.Section
@@ -156,17 +155,12 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
     }
 
     fun isUnreadNotifAtPosition(position: Int): Boolean {
-        // a view type of zero is a header
-        if (getItemViewType(position) == 0) {
-            return false
-        }
-
+        // TODO: this isn't working correctly, need to ensure that decoration is never added for headers
         try {
             val section = getSectionForListItemPosition(position) as NotifsListSection
             val posInSection = getPositionInSectionByListPos(position)
             val notif = section.list.get(posInSection)
-            WooLog.w(T.NOTIFICATIONS, notif.remoteNoteId.toString())
-            return notif.type != NotificationModel.Kind.STORE_ORDER
+            return !notif.read
         } catch (e: IndexOutOfBoundsException) {
             return false
         }

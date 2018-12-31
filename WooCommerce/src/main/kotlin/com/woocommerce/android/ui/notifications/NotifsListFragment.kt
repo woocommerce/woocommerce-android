@@ -44,7 +44,10 @@ import org.wordpress.android.fluxc.model.CommentStatus.TRASH
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import javax.inject.Inject
 
-class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsListAdapter.ReviewListListener, NotifsListItemDecoration.ItemDecorationListener {
+class NotifsListFragment : TopLevelFragment(),
+        NotifsListContract.View,
+        NotifsListAdapter.ReviewListListener,
+        NotifsListItemDecoration.ItemDecorationListener {
     companion object {
         val TAG: String = NotifsListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -137,17 +140,17 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
         notifsAdapter.setListener(this)
 
-        val itemDecoration = NotifsListItemDecoration(activity as Context)
-        itemDecoration.setListener(this)
+        val unreadDecoration = NotifsListItemDecoration(activity as Context)
+        unreadDecoration.setListener(this)
 
         notifsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
-            // divider between items
+            // divider decoration between items
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             // unread item decoration
-            addItemDecoration(itemDecoration)
+            addItemDecoration(unreadDecoration)
             adapter = notifsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {

@@ -9,12 +9,15 @@ import android.support.v7.widget.RecyclerView
 import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
 
+/**
+ * Custom item decoration used to show an unread indicator next to unread notifs in the notifs list
+ */
 class NotifsListItemDecoration(context: Context) : DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL) {
     interface ItemDecorationListener {
         fun shouldShowItemDecoration(position: Int): Boolean
     }
 
-    private val dividerWidth = DisplayUtils.dpToPx(context, 10).toFloat()
+    private val dividerWidth = DisplayUtils.dpToPx(context, 4).toFloat()
     private val dividerPaint = Paint()
     private var listener: ItemDecorationListener? = null
 
