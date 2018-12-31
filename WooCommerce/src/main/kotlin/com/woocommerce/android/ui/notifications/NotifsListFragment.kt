@@ -44,7 +44,7 @@ import org.wordpress.android.fluxc.model.CommentStatus.TRASH
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import javax.inject.Inject
 
-class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsListAdapter.ReviewListListener {
+class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsListAdapter.ReviewListListener, NotifsListItemDecoration.ItemDecorationListener {
     companion object {
         val TAG: String = NotifsListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -59,7 +59,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
 
-    private lateinit var dividerDecoration: DividerItemDecoration
     private var changeCommentStatusSnackbar: Snackbar? = null
 
     // Holds a reference to the index and notification object pending moderation
@@ -138,15 +137,16 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
         notifsAdapter.setListener(this)
 
-        // addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-        // addItemDecoration(VerticalItemDecoration())
         val itemDecoration = NotifsListItemDecoration(activity as Context)
+        itemDecoration.setListener(this)
 
         notifsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
+            // divider between items
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            // unread item decoration
             addItemDecoration(itemDecoration)
             adapter = notifsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -418,5 +418,12 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         pendingModerationNewStatus = null
         pendingModerationRemoteNoteId = null
         notifsAdapter.resetPendingModerationState()
+    }
+
+    /**
+     * Determines whether to show the unread indicator item decoration for the passed position
+     */
+    override fun shouldShowItemDecoration(position: Int): Boolean {
+        return notifsAdapter.isUnreadNotifAtPosition(position)
     }
 }

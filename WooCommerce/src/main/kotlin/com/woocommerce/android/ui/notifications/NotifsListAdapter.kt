@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.applyTransform
 import com.woocommerce.android.widgets.Section
@@ -154,6 +155,23 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         }
     }
 
+    fun isUnreadNotifAtPosition(position: Int): Boolean {
+        // a view type of zero is a header
+        if (getItemViewType(position) == 0) {
+            return false
+        }
+
+        try {
+            val section = getSectionForListItemPosition(position) as NotifsListSection
+            val posInSection = getPositionInSectionByListPos(position)
+            val notif = section.list.get(posInSection)
+            WooLog.w(T.NOTIFICATIONS, notif.remoteNoteId.toString())
+            return notif.type != NotificationModel.Kind.STORE_ORDER
+        } catch (e: IndexOutOfBoundsException) {
+            return false
+        }
+    }
+
     /**
      * Inserts the previously removed notification and notifies the recycler view.
      * @return The position in the adapter the item was added to
@@ -284,7 +302,6 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
 
             itemHolder.title.text = notif.getTitleSnippet()
             itemHolder.desc.text = notif.getMessageSnippet()
-            itemHolder.unreadIndicator.visibility = if (notif.read) View.GONE else View.VISIBLE
 
             itemHolder.itemView.setOnClickListener {
                 listener?.onNotificationClicked(notif)
@@ -311,7 +328,6 @@ class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) 
         var title: TextView = view.notif_title
         var desc: TextView = view.notif_desc
         var rating: RatingBar = view.notif_rating
-        var unreadIndicator: View = view.notif_unreadIndicator
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {

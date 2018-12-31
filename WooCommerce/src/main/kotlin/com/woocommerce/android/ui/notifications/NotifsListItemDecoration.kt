@@ -10,21 +10,29 @@ import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
 
 class NotifsListItemDecoration(context: Context) : DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL) {
+    interface ItemDecorationListener {
+        fun shouldShowItemDecoration(position: Int): Boolean
+    }
+
     private val dividerWidth = DisplayUtils.dpToPx(context, 10).toFloat()
     private val dividerPaint = Paint()
+    private var listener: ItemDecorationListener? = null
 
     init {
         dividerPaint.color = ContextCompat.getColor(context, R.color.wc_green)
     }
 
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state:  RecyclerView.State) {
+    fun setListener(listener: ItemDecorationListener?) {
+        this.listener = listener
+    }
+
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
             val position = parent.getChildAdapterPosition(child)
-            val viewType = parent.adapter.getItemViewType(position)
+            val showDecoration = listener?.shouldShowItemDecoration(position) ?: false
 
-            // a viewType of 0 is a header
-            if (viewType > 0) {
+            if (showDecoration) {
                 val left = child.left.toFloat()
                 val right = left + dividerWidth
                 val top = child.top.toFloat()
