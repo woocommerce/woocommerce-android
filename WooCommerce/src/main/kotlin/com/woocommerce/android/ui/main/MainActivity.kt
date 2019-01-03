@@ -167,8 +167,12 @@ class MainActivity : AppCompatActivity(),
         AnalyticsTracker.trackBackPressed(this)
 
         val fragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
-        if (!fragment.childFragmentManager.popBackStackImmediate()) {
-            super.onBackPressed()
+        with(fragment.childFragmentManager) {
+            if (backStackEntryCount > 0) {
+                popBackStack()
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 
