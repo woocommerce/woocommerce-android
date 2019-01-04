@@ -362,7 +362,7 @@ class MainActivity : AppCompatActivity(),
                 }
             }
         } else {
-            switchFragment(BottomNavigationPosition.DASHBOARD)
+            switchFragment(activeNavPosition)
         }
     }
 
