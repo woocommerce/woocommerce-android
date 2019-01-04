@@ -171,7 +171,7 @@ class LoginAnalyticsTracker : LoginAnalyticsListener {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_ERROR_UNKNOWN_USER)
     }
 
-    override fun trackSocialFailure(errorContext: String, errorType: String, errorDescription: String) {
+    override fun trackSocialFailure(errorContext: String, errorType: String, errorDescription: String?) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_FAILURE, errorContext, errorType, errorDescription)
     }
 
