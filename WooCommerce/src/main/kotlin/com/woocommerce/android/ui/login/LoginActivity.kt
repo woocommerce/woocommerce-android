@@ -372,8 +372,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     //  -- BEGIN: GoogleListener implementation methods
 
     override fun onGoogleEmailSelected(email: String?) {
-        val loginEmailFragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG) as LoginEmailFragment
-        loginEmailFragment.setGoogleEmail(email)
+        (supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG) as? LoginEmailFragment)?.setGoogleEmail(email)
     }
 
     override fun onGoogleLoginFinished() {
