@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-11 08:54:02+0000
+Translation-Revision-Date: 2019-01-03 09:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="wc_moderate_review_error">Det gick inte att uppdatera produktrecensionsstatusen</string>
+    <string name="wc_load_review_error">Det gick inte att uppdatera produktrecensionsinformationen</string>
+    <string name="wc_trash">Ta bort</string>
+    <string name="wc_spam">Skräppost</string>
+    <string name="wc_approved">Godkänd</string>
+    <string name="wc_approve">Godkänn</string>
+    <string name="wc_view_the_product_external">Visa produkten</string>
+    <string name="support_help">Hjälp och support</string>
+    <string name="settings_notifs_reviews_detail">Få aviseringar om nya produktrecensioner</string>
+    <string name="settings_notifs_reviews">Produktrecensioner</string>
+    <string name="settings_notifs_tone_detail">Spela upp ka-ching-ljud vid ny order</string>
+    <string name="settings_notifs_tone">Ton</string>
+    <string name="settings_notifs_orders_detail">Få aviseringar när nya ordrar kommer in</string>
+    <string name="settings_notifs_orders">Ordrar</string>
+    <string name="settings_notifs_device_detail">Ljud, brådskande och aviseringspunkt</string>
+    <string name="settings_notifs_device">Hantera notifikationer</string>
+    <string name="settings_notifs">Aviseringar</string>
+    <string name="settings_confirm_logout">Är du säker på att du vill logga ut från kontot %s?</string>
+    <string name="notifs_detail_loading_error">Det gick inte att läsa in aviseringsdetaljer</string>
+    <string name="notifs_review_moderation_undo">Recension markerad som %1$s</string>
+    <string name="notifs_fetch_error">Det gick inte att hämta aviseringar</string>
+    <string name="add_order_note_sublabel">Om detta inaktiveras kommer noteringen att vara privat</string>
+    <string name="order_error_fetch_generic">Det gick inte att hämta ordern</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">Granska, förbered och skicka dessa väntande ordrar</string>
+    <string name="back">Tillbaka</string>
+    <string name="notification_channel_review_title">Produktrecensionsaviseringar</string>
+    <string name="notification_channel_order_title">Ny order-aviseringar</string>
     <string name="orderdetail_note_system">Systemstatus</string>
     <string name="orderdetail_note_public">Kundmeddelande</string>
     <string name="dashboard_no_orders_with_search">Inga matchande ordrar</string>
@@ -226,8 +254,7 @@ Language: sv_SE
     <string name="orderdetail_product_image_contentdesc">Produktbild</string>
     <string name="orderdetail_product_lineitem_sku">Artikelnr:</string>
     <string name="orderdetail_product_lineitem_tax">Moms:</string>
-    <string name="orderdetail_sms_contentdesc">skicka kundmeddelande via sms</string>
-    <string name="orderdetail_call_contentdesc">ring kund</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
     <string name="orderdetail_email_contentdesc">e-posta kund</string>
     <string name="orderdetail_billing_details">Faktureringsinformation</string>
     <string name="orderdetail_shipping_details">Leveransadress</string>
