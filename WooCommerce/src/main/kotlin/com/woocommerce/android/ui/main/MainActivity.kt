@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onSaveInstanceState(outState: Bundle?) {
         // Store the current bottom bar navigation position.
-        outState?.putInt(STATE_KEY_POSITION, bottomNavView.currentPosition.position)
+        outState?.putInt(STATE_KEY_POSITION, bottomNavView.currentPosition.id)
         super.onSaveInstanceState(outState)
     }
 
