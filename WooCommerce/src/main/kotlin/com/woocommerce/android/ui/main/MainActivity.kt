@@ -138,6 +138,13 @@ class MainActivity : AppCompatActivity(),
         checkConnection()
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        setIntent(intent)
+        initFragment(null)
+    }
+
     public override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()

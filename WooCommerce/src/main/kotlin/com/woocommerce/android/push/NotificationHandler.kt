@@ -499,7 +499,7 @@ class NotificationHandler @Inject constructor(
     ) {
         // Open the app and load the notifications tab
         val resultIntent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
             putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId.toLong())
             if (pushId == GROUP_NOTIFICATION_ID) {
