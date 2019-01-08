@@ -231,7 +231,6 @@ class MainActivity : AppCompatActivity(),
             putString(NotificationHandler.PUSH_ARG_USER, accountStore.account.userId.toString())
         }
         notificationHandler.buildAndShowNotificationFromNoteData(this, noteBundle, accountStore.account)
-
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
@@ -312,6 +311,14 @@ class MainActivity : AppCompatActivity(),
         showNotificationBadge(AppPrefs.getHasUnseenNotifs())
     }
 
+    override fun showNotificationBadge(show: Boolean) {
+        bottomNavView.showNotificationBadge(show)
+
+        if (!show) {
+            NotificationHandler.removeAllNotificationsFromSystemBar(this)
+        }
+    }
+
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_SELECTED
@@ -319,6 +326,11 @@ class MainActivity : AppCompatActivity(),
             NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
+
+        // Update the unseen notifications badge visiblility
+        if (navPos == NOTIFICATIONS) {
+            NotificationHandler.removeAllNotificationsFromSystemBar(this)
+        }
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
@@ -328,16 +340,6 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
-    }
-
-    override fun showNotificationBadge(show: Boolean) {
-        badge?.let {
-            if (show && it.visibility != View.VISIBLE) {
-                WooAnimUtils.fadeIn(it, Duration.MEDIUM)
-            } else if (!show && it.visibility == View.VISIBLE) {
-                WooAnimUtils.fadeOut(it, Duration.MEDIUM)
-            }
-        }
     }
     // endregion
 
@@ -360,6 +362,9 @@ class MainActivity : AppCompatActivity(),
                 // Send analytics for viewing all notifications
                 NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
 
+                // Clear unread messages from the system bar
+                NotificationHandler.removeAllNotificationsFromSystemBar(this)
+
                 // User clicked on a group of notifications. Just show the notifications tab.
                 bottomNavView.currentPosition = NOTIFICATIONS
             } else {
@@ -369,11 +374,17 @@ class MainActivity : AppCompatActivity(),
                     // Send track event
                     NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
 
+                    // Remove single notification from the system bar
+                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
+
                     // Open the detail view for this notification
                     showNotificationDetail(remoteNoteId)
                 } else {
                     // Send analytics for viewing all notifications
                     NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+
+                    // Clear unread messages from the system bar
+                    NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                     // Just open the notifications tab
                     bottomNavView.currentPosition = NOTIFICATIONS

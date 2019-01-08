@@ -104,6 +104,8 @@ class NotificationHandler @Inject constructor(
 
             val notificationManager = NotificationManagerCompat.from(context)
             notificationManager.cancelAll()
+
+            setHasUnseenNotifications(false)
         }
 
         /**
@@ -159,7 +161,7 @@ class NotificationHandler @Inject constructor(
          * Called when we want to update the unseen state of notifications - changes the related
          * shared preference and posts an EventBus event so main activity can update the badge
          */
-        fun setHasUnseenNotifications(hasUnseen: Boolean) {
+        private fun setHasUnseenNotifications(hasUnseen: Boolean) {
             if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
                 AppPrefs.setHasUnseenNotifs(hasUnseen)
                 EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))

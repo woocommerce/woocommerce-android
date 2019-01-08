@@ -12,10 +12,13 @@ import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooAnimUtils.Duration
 
 class MainNavigationView @JvmOverloads constructor(
     context: Context,
@@ -26,6 +29,7 @@ class MainNavigationView @JvmOverloads constructor(
     private lateinit var navAdapter: NavAdapter
     private lateinit var fragmentManager: FragmentManager
     private lateinit var listener: MainNavigationListener
+    private lateinit var badgeView: View
 
     interface MainNavigationListener {
         fun onNavItemSelected(navPos: BottomNavigationPosition)
@@ -50,7 +54,7 @@ class MainNavigationView @JvmOverloads constructor(
         val menuView = getChildAt(0) as BottomNavigationMenuView
         val inflater = LayoutInflater.from(context)
         val itemView = menuView.getChildAt(BottomNavigationPosition.NOTIFICATIONS.position) as BottomNavigationItemView
-        val badgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
+        badgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
         itemView.addView(badgeView)
 
         assignNavigationListeners(true)
@@ -63,6 +67,16 @@ class MainNavigationView @JvmOverloads constructor(
 
     fun updatePositionAndDeferInit(navPos: BottomNavigationPosition) {
         updateCurrentPosition(navPos, true)
+    }
+
+    fun showNotificationBadge(show: Boolean) {
+        with(badgeView) {
+            if (show && visibility != View.VISIBLE) {
+                WooAnimUtils.fadeIn(this, Duration.MEDIUM)
+            } else if (!show && visibility == View.VISIBLE) {
+                WooAnimUtils.fadeOut(this, Duration.MEDIUM)
+            }
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
