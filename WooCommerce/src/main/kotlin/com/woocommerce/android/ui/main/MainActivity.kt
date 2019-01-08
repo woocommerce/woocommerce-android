@@ -48,6 +48,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.notification_badge_view.*
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -82,6 +83,10 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var supportHelper: SupportHelper
+
+    // TODO testing only - remove before merge
+    @Inject lateinit var notificationHandler: NotificationHandler
+    @Inject lateinit var accountStore: AccountStore
 
     private var activeNavPosition: BottomNavigationPosition = BottomNavigationPosition.DASHBOARD
     private var isBottomNavShowing = true
@@ -192,8 +197,10 @@ class MainActivity : AppCompatActivity(),
             }
             // User selected the settings menu option
             R.id.menu_settings -> {
-                showSettingsScreen()
-                AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
+                // TODO testing only - remove before merge
+                testNotification()
+//                showSettingsScreen()
+//                AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
                 true
             }
             R.id.menu_support -> {
@@ -203,6 +210,16 @@ class MainActivity : AppCompatActivity(),
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    // TODO testing only - remove before merge
+    fun testNotification() {
+        val noteBundle = Bundle().apply {
+            putString(NotificationHandler.PUSH_ARG_NOTE_ID, "3616322875")
+            putString(NotificationHandler.PUSH_ARG_TYPE, "store_order")
+            putString(NotificationHandler.PUSH_ARG_USER, accountStore.account.userId.toString())
+        }
+        notificationHandler.buildAndShowNotificationFromNoteData(this, noteBundle, accountStore.account)
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
