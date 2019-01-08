@@ -313,8 +313,9 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
+        switchFragment(navPosition)
 
-        return switchFragment(navPosition)
+        return true
     }
 
     /**
@@ -381,8 +382,8 @@ class MainActivity : AppCompatActivity(),
      * Extension function for retrieving an existing fragment from the [FragmentManager]
      * if one exists, if not, create a new instance of the requested fragment.
      */
-    private fun FragmentManager.findFragment(position: BottomNavigationPosition): TopLevelFragment? {
-        return (findFragmentByTag(position.getTag()) ?: position.createFragment()) as? TopLevelFragment
+    private fun FragmentManager.findFragment(position: BottomNavigationPosition): TopLevelFragment {
+        return (findFragmentByTag(position.getTag()) ?: position.createFragment()) as TopLevelFragment
     }
 
     /**
@@ -398,7 +399,7 @@ class MainActivity : AppCompatActivity(),
      * @param deferInit If true, the [TopLevelFragment] may use this variable to defer a part of its
      * normal initialization until manually requested.
      */
-    private fun switchFragment(navPosition: BottomNavigationPosition, deferInit: Boolean = false): Boolean {
+    private fun switchFragment(navPosition: BottomNavigationPosition, deferInit: Boolean = false): TopLevelFragment {
         val activeFragment = supportFragmentManager.findFragmentByTag(activeNavPosition.getTag())
 
         // Remove any child fragments in the back stack
@@ -411,18 +412,16 @@ class MainActivity : AppCompatActivity(),
 
         // Grab the requested top-level fragment and load if not already
         // in the current view.
-        supportFragmentManager.findFragment(navPosition)?.let { frag ->
+        return supportFragmentManager.findFragment(navPosition).let { frag ->
             frag.deferInit = deferInit
             if (frag.isHidden || !frag.isAdded) {
                 // Remove the active fragment and replace with this newly selected one
                 hideParentFragment(activeFragment)
                 showTopLevelFragment(frag, navPosition.getTag())
                 activeNavPosition = navPosition
-                return true
             }
+            frag
         }
-
-        return false
     }
 
     /**
@@ -433,7 +432,7 @@ class MainActivity : AppCompatActivity(),
         if (fragment.isHidden) {
             supportFragmentManager.beginTransaction().show(fragment).commitAllowingStateLoss()
         } else {
-            supportFragmentManager.beginTransaction().add(R.id.container, fragment, tag).commitAllowingStateLoss()
+            supportFragmentManager.beginTransaction().add(R.id.container, fragment, tag).commit()
         }
     }
 
@@ -470,23 +469,19 @@ class MainActivity : AppCompatActivity(),
     override fun showOrderList(orderStatusFilter: String?) {
         val navPos = BottomNavigationPosition.ORDERS.position
 
-        if (switchFragment(ORDERS, true)) {
+        switchFragment(ORDERS, true).let { fragment ->
             // Set the active bottom bar selection without firing its changed event
             bottom_nav.active(navPos)
-
-            val fragment = supportFragmentManager.findFragment(ORDERS)
-            (fragment as? OrderListFragment)?.onFilterSelected(orderStatusFilter)
+            (fragment as OrderListFragment).onFilterSelected(orderStatusFilter)
         }
     }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
-        if (switchFragment(NOTIFICATIONS, false)) {
+        switchFragment(NOTIFICATIONS, false).let { fragment ->
             val navPos = BottomNavigationPosition.NOTIFICATIONS.position
             bottom_nav.active(navPos)
 
             (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {
-                val fragment = supportFragmentManager.findFragment(NOTIFICATIONS)
-
                 when (it.getWooType()) {
                     NEW_ORDER -> {
                         it.getRemoteOrderId()?.let { orderId ->
