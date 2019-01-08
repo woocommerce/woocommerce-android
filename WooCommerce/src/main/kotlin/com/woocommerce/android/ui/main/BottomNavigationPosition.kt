@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.main
 
-import android.support.v4.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.notifications.NotifsListFragment
@@ -25,7 +25,7 @@ fun BottomNavigationPosition.getTag(): String = when (this) {
     BottomNavigationPosition.NOTIFICATIONS -> NotifsListFragment.TAG
 }
 
-fun BottomNavigationPosition.createFragment(): Fragment = when (this) {
+fun BottomNavigationPosition.createFragment(): TopLevelFragment = when (this) {
     BottomNavigationPosition.DASHBOARD -> DashboardFragment.newInstance()
     BottomNavigationPosition.ORDERS -> OrderListFragment.newInstance()
     BottomNavigationPosition.NOTIFICATIONS -> NotifsListFragment.newInstance()
