@@ -93,6 +93,10 @@ class MainNavigationView @JvmOverloads constructor(
 
         val fragment = navAdapter.getFragment(navPos)
         fragment.deferInit = deferInit
+
+        // Close any child fragments if open
+        clearFragmentBackStack(fragment)
+
         fragmentManager.beginTransaction().replace(R.id.container, fragment, navPos.getTag()).commitNow()
     }
 
@@ -107,6 +111,9 @@ class MainNavigationView @JvmOverloads constructor(
      */
     private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
         fragment?.let {
+            if (!it.isAdded) {
+                return false
+            }
             with(it.childFragmentManager) {
                 if (backStackEntryCount > 0) {
                     val firstEntry = getBackStackEntryAt(0)
