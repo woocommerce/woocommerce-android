@@ -182,6 +182,9 @@ Language: ru
     <string name="username">Имя</string>
     <string name="enter_your_password_instead">Введите пароль.</string>
     <string name="send_link">Отправить ссылку</string>
+    <string name="email_address">Адрес электронной почты</string>
+    <string name="details">Подробнее</string>
+    <string name="undo">Назад</string>
     <string name="invalid_verification_code">Неверный код подтверждения</string>
     <string name="verification_code">Код подтверждения</string>
     <string name="email_address">Адрес электронной почты</string>
