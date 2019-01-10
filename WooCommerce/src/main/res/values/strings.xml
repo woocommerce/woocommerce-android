@@ -168,7 +168,7 @@
     <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$f)</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
