@@ -170,6 +170,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         return when (item?.itemId) {
             R.id.menu_mark_all_read -> {
                 AnalyticsTracker.track(Stat.NOTIFICATIONS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
+
                 presenter.markAllNotifsRead()
                 true
             }
