@@ -201,10 +201,12 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onJetpackTimeoutError(event: OnJetpackTimeoutError) {
         with(event) {
+            // Replace numeric IDs with a placeholder so events can be aggregated
+            val genericPath = apiPath.replace(Regex("/[0-9]*/"), "/ID/")
             val protocol = Regex("_method=([a-z]*)").find(apiPath)?.groups?.get(1)?.value ?: ""
 
             val properties = mapOf(
-                    "path" to apiPath,
+                    "path" to genericPath,
                     "protocol" to protocol,
                     "times_retried" to timesRetried.toString()
             )
