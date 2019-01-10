@@ -33,6 +33,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -193,6 +194,21 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     fun onUnexpectedError(event: OnUnexpectedError) {
         with(event) {
             CrashlyticsUtils.logException(exception, message = "FluxC: ${exception.message}: $description")
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onJetpackTimeoutError(event: OnJetpackTimeoutError) {
+        with(event) {
+            val protocol = Regex("_method=([a-z]*)").find(apiPath)?.groups?.get(1)?.value ?: ""
+
+            val properties = mapOf(
+                    "path" to apiPath,
+                    "protocol" to protocol,
+                    "times_retried" to timesRetried.toString()
+            )
+            AnalyticsTracker.track(Stat.JETPACK_TUNNEL_TIMEOUT, properties)
         }
     }
 
