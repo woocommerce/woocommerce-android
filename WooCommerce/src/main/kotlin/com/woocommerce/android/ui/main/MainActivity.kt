@@ -78,12 +78,6 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var supportHelper: SupportHelper
 
-    // TODO testing only - remove before merge
-    @Inject lateinit var notificationHandler: NotificationHandler
-    @Inject lateinit var accountStore: AccountStore
-    private var reviewCount = 0
-    private var reviewIds = listOf("3715234281", "3715170953", "3715168363")
-
     private var isBottomNavShowing = true
     private lateinit var bottomNavView: MainNavigationView
 
@@ -192,45 +186,17 @@ class MainActivity : AppCompatActivity(),
             }
             // User selected the settings menu option
             R.id.menu_settings -> {
-                // TODO testing only - remove before merge
-                testOrderNotification()
-//                showSettingsScreen()
-//                AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
+                showSettingsScreen()
+                AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
                 true
             }
             R.id.menu_support -> {
-                // TODO testing only - remove before merge
-                testReviewNotification()
-//                showHelpAndSupport()
-//                AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
+                showHelpAndSupport()
+                AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    // TODO testing only - remove before merge
-    fun testOrderNotification() {
-        val noteBundle = Bundle().apply {
-            putString(NotificationHandler.PUSH_ARG_NOTE_ID, "3616322875")
-            putString(NotificationHandler.PUSH_ARG_TYPE, "store_order")
-            putString(NotificationHandler.PUSH_ARG_USER, accountStore.account.userId.toString())
-        }
-        notificationHandler.buildAndShowNotificationFromNoteData(this, noteBundle, accountStore.account)
-    }
-
-    // TODO testing only - remove before merge
-    fun testReviewNotification() {
-        val noteBundle = Bundle().apply {
-            if (reviewCount == 2) {
-                reviewCount = 0
-            }
-            val remote_note_id = reviewIds[reviewCount++]
-            putString(NotificationHandler.PUSH_ARG_NOTE_ID, remote_note_id)
-            putString(NotificationHandler.PUSH_ARG_TYPE, "c")
-            putString(NotificationHandler.PUSH_ARG_USER, accountStore.account.userId.toString())
-        }
-        notificationHandler.buildAndShowNotificationFromNoteData(this, noteBundle, accountStore.account)
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
