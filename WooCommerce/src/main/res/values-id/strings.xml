@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-11 07:54:02+0000
+Translation-Revision-Date: 2019-01-08 07:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Terjadi error saat menandai semua pemberitahuan sudah dibaca</string>
+    <string name="wc_mark_all_read">Tandai semua sudah dibaca</string>
+    <string name="orderdetail_message_customer">Pesan</string>
+    <string name="orderdetail_call_customer">Telepon</string>
+    <string name="orderdetail_call_or_message_contentdesc">Telepon atau kirim pesan ke pelanggan</string>
+    <string name="wc_moderate_review_error">Terjadi error saat memperbarui status ulasan produk</string>
+    <string name="wc_load_review_error">Terjadi error saat memuat detail ulasan produk</string>
+    <string name="wc_trash">Buang</string>
+    <string name="wc_spam">Spam</string>
+    <string name="wc_approved">Disetujui</string>
+    <string name="wc_approve">Setujui</string>
+    <string name="wc_view_the_product_external">Tampilkan produk</string>
+    <string name="support_help">Bantuan &amp; dukungan</string>
+    <string name="settings_notifs_reviews_detail">Dapatkan pemberitahuan untuk ulasan produk baru</string>
+    <string name="settings_notifs_reviews">Tinjauan produk</string>
+    <string name="settings_notifs_tone_detail">Mainkan suara Cha-Ching saat ada pesanan baru</string>
+    <string name="settings_notifs_tone">Nada</string>
+    <string name="settings_notifs_orders_detail">Dapatkan pemberitahuan saat ada pesanan baru</string>
+    <string name="settings_notifs_orders">Pesanan</string>
+    <string name="settings_notifs_device_detail">Suara, tingkat kepentingan, dan titik pemberitahuan</string>
+    <string name="settings_notifs_device">Kelola pemberitahuan</string>
+    <string name="settings_notifs">Pemberitahuan</string>
+    <string name="settings_confirm_logout">Anda yakin ingin logout dari akun %s?</string>
+    <string name="notifs_detail_loading_error">Terjadi error saat memuat detail pemberitahuan</string>
+    <string name="notifs_review_moderation_undo">Ulasan ditandai %1$s</string>
+    <string name="notifs_fetch_error">Terjadi error saat mengambil pemberitahuan</string>
+    <string name="add_order_note_sublabel">Jika dinonaktifkan, catatan akan diatur sebagai pribadi</string>
+    <string name="order_error_fetch_generic">Terjadi error saat mengambil pesanan</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">Tinjau, siapkan, dan kirimkan pesanan yang tertunda ini</string>
+    <string name="back">Kembali</string>
+    <string name="notification_channel_review_title">Pemberitahuan ulasan produk</string>
+    <string name="notification_channel_order_title">Pemberitahuan pesanan baru</string>
     <string name="orderdetail_note_system">Status sistem</string>
     <string name="orderdetail_note_public">Catatan untuk pelanggan</string>
     <string name="dashboard_no_orders_with_search">Tidak ada pesanan yang sesuai</string>
@@ -229,8 +262,7 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
-    <string name="orderdetail_sms_contentdesc">kirim pesan sms ke pelanggan</string>
-    <string name="orderdetail_call_contentdesc">hubungi pelanggan</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import android.widget.PopupMenu
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -19,20 +20,23 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
     }
 
     fun initView(order: WCOrderModel, shippingOnly: Boolean, listener: OrderCustomerActionListener? = null) {
-        // Populate Shipping information
-        customerInfo_shippingName.text = context
-                .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
-
+        // Populate Shipping & Billing information
+        val billingName = context
+                .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
         val billingAddr = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
+        val billingAddrFull = getFullAddress(billingName, billingAddr, billingCountry)
 
-        // display shipping address info
         if (order.hasSeparateShippingDetails()) {
-            customerInfo_shippingAddr.text = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
-            customerInfo_shippingCountry.text = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
+            val shippingName = context
+                    .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
+
+            val shippingAddr = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
+            val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
+            val shippingAddrFull = getFullAddress(shippingName, shippingAddr, shippingCountry)
+            customerInfo_shippingAddr.text = shippingAddrFull
         } else {
-            customerInfo_shippingAddr.text = billingAddr
-            customerInfo_shippingCountry.text = billingCountry
+            customerInfo_shippingAddr.text = billingAddrFull
         }
 
         if (shippingOnly) {
@@ -40,12 +44,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             formatViewAsShippingOnly()
         } else {
             // Populate Billing Information
-            customerInfo_billingName.text = context
-                    .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
-
-            // display billing address info
-            customerInfo_billingAddr.text = billingAddr
-            customerInfo_billingCountry.text = billingCountry
+            customerInfo_billingAddr.text = billingAddrFull
 
             // display email address info
             customerInfo_emailAddr.text = order.billingEmail
@@ -53,6 +52,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             // display phone
             if (!order.billingPhone.isEmpty()) {
                 customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
+                customerInfo_phone.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.setOnClickListener {
+                    showCallOrMessagePopup(order, listener)
+                }
+            } else {
+                customerInfo_phone.visibility = View.GONE
+                customerInfo_callOrMessageBtn.visibility = View.GONE
             }
 
             // configure more/less button
@@ -72,19 +79,33 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
 
                 listener?.createEmail(order, order.billingEmail)
             }
-
-            customerInfo_phoneBtn.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
-
-                listener?.dialPhone(order, order.billingPhone)
-            }
-
-            customerInfo_hangoutsBtn.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
-
-                listener?.sendSms(order, order.billingPhone)
-            }
         }
+    }
+
+    private fun getFullAddress(name: String, address: String, country: String): String {
+        var fullAddr = if (!name.isBlank()) "$name\n" else ""
+        if (!address.isBlank()) fullAddr += "$address\n"
+        if (!country.isBlank()) fullAddr += country
+        return fullAddr
+    }
+
+    private fun showCallOrMessagePopup(order: WCOrderModel, listener: OrderCustomerActionListener?) {
+        val popup = PopupMenu(context, customerInfo_callOrMessageBtn)
+        popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
+
+        popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
+            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
+            listener?.dialPhone(order, order.billingPhone)
+            true
+        }
+
+        popup.menu.findItem(R.id.menu_message)?.setOnMenuItemClickListener {
+            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
+            listener?.sendSms(order, order.billingPhone)
+            true
+        }
+
+        popup.show()
     }
 
     private fun formatViewAsShippingOnly() {

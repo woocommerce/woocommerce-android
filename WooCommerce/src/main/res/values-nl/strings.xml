@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-11 13:54:06+0000
+Translation-Revision-Date: 2019-01-08 12:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Fout bij alle meldingen als gelezen markeren</string>
+    <string name="wc_mark_all_read">Alles als gelezen markeren</string>
+    <string name="orderdetail_message_customer">Bericht</string>
+    <string name="orderdetail_call_customer">Bellen</string>
+    <string name="orderdetail_call_or_message_contentdesc">Klant bellen of een bericht sturen</string>
+    <string name="wc_moderate_review_error">Bijwerken productbeoordelingsstatus mislukt</string>
+    <string name="wc_load_review_error">Laden productbeoordelingsgegevens mislukt</string>
+    <string name="wc_trash">Prullenbak</string>
+    <string name="wc_spam">Spam</string>
+    <string name="wc_approved">Goedgekeurd</string>
+    <string name="wc_approve">Goedkeuren</string>
+    <string name="wc_view_the_product_external">Het product weergeven</string>
+    <string name="support_help">Hulp en ondersteuning</string>
+    <string name="settings_notifs_reviews_detail">Meldingen voor nieuwe productbeoordelingen ontvangen</string>
+    <string name="settings_notifs_reviews">Productbeoordelingen</string>
+    <string name="settings_notifs_tone_detail">\'Cha-Ching\'-geluid afspelen bij nieuwe bestelling</string>
+    <string name="settings_notifs_tone">Pieptoon</string>
+    <string name="settings_notifs_orders_detail">Ontvang meldingen bij nieuwe bestellingen</string>
+    <string name="settings_notifs_orders">Bestellingen</string>
+    <string name="settings_notifs_device_detail">Punt voor geluiden, urgentie en meldingen</string>
+    <string name="settings_notifs_device">Meldingen beheren</string>
+    <string name="settings_notifs">Meldingen</string>
+    <string name="settings_confirm_logout">Weet je zeker dat je wilt uitloggen bij het account %s?</string>
+    <string name="notifs_detail_loading_error">Meldingsgegevens laden mislukt</string>
+    <string name="notifs_review_moderation_undo">Beoordeling gemarkeerd als %1$s</string>
+    <string name="notifs_fetch_error">Fout bij ophalen meldingen</string>
+    <string name="add_order_note_sublabel">Als deze functie is uitgeschakeld, is de opmerking privé</string>
+    <string name="order_error_fetch_generic">Fout bij ophalen bestelling</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">Controleer deze bestellingen in behandeling, bereid ze voor en verzend ze</string>
+    <string name="back">Terug</string>
+    <string name="notification_channel_review_title">Meldingen productbeoordeling</string>
+    <string name="notification_channel_order_title">Meldingen nieuwe bestelling</string>
     <string name="orderdetail_note_system">Systeemstatus</string>
     <string name="orderdetail_note_public">Bericht aan klant</string>
     <string name="dashboard_no_orders_with_search">Geen overeenkomende bestellingen</string>
@@ -229,8 +262,7 @@ Language: nl
     <string name="orderdetail_product_image_contentdesc">Productafbeelding</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Belasting:</string>
-    <string name="orderdetail_sms_contentdesc">sms-bericht naar klant verzenden</string>
-    <string name="orderdetail_call_contentdesc">klant bellen</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-mail verzenden naar klant</string>
     <string name="orderdetail_billing_details">Factuurgegevens</string>
     <string name="orderdetail_shipping_details">Verzendgegevens</string>

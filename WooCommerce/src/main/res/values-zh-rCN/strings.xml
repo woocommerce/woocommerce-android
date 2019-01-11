@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-12 06:54:02+0000
+Translation-Revision-Date: 2019-01-09 10:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="wc_mark_all_read_error">将所有通知标记为已读时出错</string>
+    <string name="wc_mark_all_read">全部标为已读</string>
+    <string name="orderdetail_message_customer">邮件</string>
+    <string name="orderdetail_call_customer">致电</string>
+    <string name="orderdetail_call_or_message_contentdesc">向客户致电或发送邮件</string>
+    <string name="wc_moderate_review_error">更新产品评论状态时出错</string>
+    <string name="wc_load_review_error">加载产品评论详细信息时出错</string>
+    <string name="wc_trash">回收站</string>
+    <string name="wc_spam">垃圾评论</string>
+    <string name="wc_approved">已批准</string>
+    <string name="wc_approve">批准</string>
+    <string name="wc_view_the_product_external">查看产品</string>
+    <string name="support_help">帮助与支持</string>
+    <string name="settings_notifs_reviews_detail">有新的产品评论时收到提醒</string>
+    <string name="settings_notifs_reviews">产品评论</string>
+    <string name="settings_notifs_tone_detail">有新订单时播放收银机打开的声音</string>
+    <string name="settings_notifs_tone">音调</string>
+    <string name="settings_notifs_orders_detail">有新订单时收到提醒</string>
+    <string name="settings_notifs_orders">订单</string>
+    <string name="settings_notifs_device_detail">声音、紧急和通知点</string>
+    <string name="settings_notifs_device">管理通知</string>
+    <string name="settings_notifs">通知</string>
+    <string name="settings_confirm_logout">是否确定要注销帐户 %s？</string>
+    <string name="notifs_detail_loading_error">加载通知详细信息时出错</string>
+    <string name="notifs_review_moderation_undo">评论已标记为 %1$s</string>
+    <string name="notifs_fetch_error">抓取通知时出错</string>
+    <string name="add_order_note_sublabel">如果禁用，备注将不会公开</string>
+    <string name="order_error_fetch_generic">抓取订单时出错</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">审核、准备和配送这些待处理订单</string>
+    <string name="back">返回</string>
+    <string name="notification_channel_review_title">产品评论提醒</string>
+    <string name="notification_channel_order_title">新订单提醒</string>
     <string name="orderdetail_note_system">系统状态</string>
     <string name="orderdetail_note_public">给客户的备注</string>
     <string name="dashboard_no_orders_with_search">没有匹配的订单</string>
@@ -229,8 +262,7 @@ Language: zh_CN
     <string name="orderdetail_product_image_contentdesc">产品图片</string>
     <string name="orderdetail_product_lineitem_sku">SKU：</string>
     <string name="orderdetail_product_lineitem_tax">税费：</string>
-    <string name="orderdetail_sms_contentdesc">向客户发送短信</string>
-    <string name="orderdetail_call_contentdesc">致电客户</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">向客户发送电子邮件</string>
     <string name="orderdetail_billing_details">账单详情</string>
     <string name="orderdetail_shipping_details">配送详情</string>

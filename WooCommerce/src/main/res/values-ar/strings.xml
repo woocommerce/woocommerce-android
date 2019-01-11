@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-11 13:54:06+0000
+Translation-Revision-Date: 2019-01-08 12:54:02+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="wc_mark_all_read_error">حدث خطأ أثناء وسم جميع التنبيهات كمقروءة</string>
+    <string name="wc_mark_all_read">وسم الجميع كمقروء</string>
+    <string name="orderdetail_message_customer">رسالة</string>
+    <string name="orderdetail_call_customer">اتصال</string>
+    <string name="orderdetail_call_or_message_contentdesc">الاتصال بالعميل أو إرسال رسالة إليه</string>
+    <string name="wc_moderate_review_error">حدث خطأ أثناء تحديث حالة مراجعة المنتج</string>
+    <string name="wc_load_review_error">حدث خطأ أثناء تحميل تفاصيل مراجعة المنتج</string>
+    <string name="wc_trash">سلة المهملات</string>
+    <string name="wc_spam">البريد المزعج</string>
+    <string name="wc_approved">تمت الموافقة</string>
+    <string name="wc_approve">موافقة</string>
+    <string name="wc_view_the_product_external">عرض المنتج</string>
+    <string name="support_help">المساعدة والدعم</string>
+    <string name="settings_notifs_reviews_detail">اتسالم تنبيهات لمراجعات المنتجات الجديدة</string>
+    <string name="settings_notifs_reviews">مراجعات المنتجات</string>
+    <string name="settings_notifs_tone_detail">تشغيل صوت \"تشا تشينج\" عند وصول طلب جديد</string>
+    <string name="settings_notifs_tone">نغمة</string>
+    <string name="settings_notifs_orders_detail">استلام التنبيهات عندما تظهر طلبات جديدة</string>
+    <string name="settings_notifs_orders">الطلبات</string>
+    <string name="settings_notifs_device_detail">الأصوات والضرورة ونقطة الإخطار</string>
+    <string name="settings_notifs_device">إدارة الإخطارات</string>
+    <string name="settings_notifs">الإخطارات</string>
+    <string name="settings_confirm_logout">هل تريد بالتأكيد تسجيل الخروج من الحساب %s؟</string>
+    <string name="notifs_detail_loading_error">حدث خطأ أثناء تحميل تفاصيل الإخطار</string>
+    <string name="notifs_review_moderation_undo">تم وسم المراجعة كـ %1$s</string>
+    <string name="notifs_fetch_error">حدث خطأ أثناء إحضار الإخطارات</string>
+    <string name="add_order_note_sublabel">في حالة تعطيلها، فستكون الملاحظة خاصة</string>
+    <string name="order_error_fetch_generic">حدث خطأ أثناء إحضار الطلب</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">مراجعة هذه الطلبات المُعلّقة وإعدادها وشحنها</string>
+    <string name="back">رجوع</string>
+    <string name="notification_channel_review_title">تنبيهات مراجعة المنتجات</string>
+    <string name="notification_channel_order_title">تنبيهات الطلب الجديد</string>
     <string name="orderdetail_note_system">حالة النظام</string>
     <string name="orderdetail_note_public">ملاحظة إلى العميل</string>
     <string name="dashboard_no_orders_with_search">لا توجد طلبات مطابقة</string>
@@ -229,8 +262,7 @@ Language: ar
     <string name="orderdetail_product_image_contentdesc">صورة المنتج</string>
     <string name="orderdetail_product_lineitem_sku">وحدة SKU:</string>
     <string name="orderdetail_product_lineitem_tax">الضريبة:</string>
-    <string name="orderdetail_sms_contentdesc">إرسال رسالة sms إلى العميل</string>
-    <string name="orderdetail_call_contentdesc">الاتصال بالعميل</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">إرسال بريد إلكتروني إلى العميل</string>
     <string name="orderdetail_billing_details">تفاصيل الفوترة</string>
     <string name="orderdetail_shipping_details">تفاصيل الشحن</string>

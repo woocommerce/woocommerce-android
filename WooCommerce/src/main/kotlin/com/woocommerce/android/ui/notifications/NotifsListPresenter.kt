@@ -24,6 +24,7 @@ import org.wordpress.android.fluxc.store.CommentStore.OnCommentChanged
 import org.wordpress.android.fluxc.store.CommentStore.RemoteCommentPayload
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
+import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import javax.inject.Inject
 
@@ -94,6 +95,25 @@ class NotifsListPresenter @Inject constructor(
         }
     }
 
+    override fun markAllNotifsRead() {
+        if (networkStatus.isConnected()) {
+            val unreadNotifs = notificationStore.getNotificationsForSite(
+                    site = selectedSite.get(),
+                    filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
+                    filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString())).filter { !it.read }
+            if (unreadNotifs.isNotEmpty()) {
+                val payload = MarkNotificationsReadPayload(unreadNotifs)
+                dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+
+                // Optimistic design - update the UI immediately to show all notifs are now
+                // marked as read. If this fails, the list will be reloaded by the database.
+                view?.visuallyMarkNotificationsAsRead()
+            } else {
+                WooLog.d(NOTIFICATIONS, "Mark all as read: No unread notifications found. Exiting.")
+            }
+        }
+    }
+
     private fun onCommentModerated(event: OnCommentChanged) {
         if (event.isError) {
             AnalyticsTracker.track(Stat.REVIEW_ACTION_FAILED, mapOf(
@@ -151,6 +171,17 @@ class NotifsListPresenter @Inject constructor(
             NotificationAction.UPDATE_NOTIFICATION, NotificationAction.FETCH_NOTIFICATION -> {
                 // TODO eventually we'll want to implement inserting or updating notifications
                 // in the notifications list individually.
+
+                // Refresh the list of notifications from the database
+                fetchAndLoadNotifsFromDb(false)
+            }
+            NotificationAction.MARK_NOTIFICATIONS_READ -> {
+                if (event.isError) {
+                    WooLog.e(NOTIFICATIONS, "$TAG - Error marking all notifications as read: ${event.error.message}")
+                    view?.showMarkAllNotificationsReadError()
+                }
+                // TODO eventually we'll want to implement updating individual notifications in
+                // the notifications list.
 
                 // Refresh the list of notifications from the database
                 fetchAndLoadNotifsFromDb(false)
