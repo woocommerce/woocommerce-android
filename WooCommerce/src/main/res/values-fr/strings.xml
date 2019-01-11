@@ -242,7 +242,7 @@ Language: fr
     <string name="orderdetail_product_image_contentdesc">Image produit</string>
     <string name="orderdetail_product_lineitem_sku">UGS :</string>
     <string name="orderdetail_product_lineitem_tax">TVA :</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$f)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">envoyer un e-mail au client</string>
     <string name="orderdetail_billing_details">Détails de facturation</string>
     <string name="orderdetail_shipping_details">Détails de livraison</string>

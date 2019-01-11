@@ -243,7 +243,7 @@ Language: ar
     <string name="orderdetail_product_image_contentdesc">صورة المنتج</string>
     <string name="orderdetail_product_lineitem_sku">وحدة SKU:</string>
     <string name="orderdetail_product_lineitem_tax">الضريبة:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$f)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">إرسال بريد إلكتروني إلى العميل</string>
     <string name="orderdetail_billing_details">تفاصيل الفوترة</string>
     <string name="orderdetail_shipping_details">تفاصيل الشحن</string>
