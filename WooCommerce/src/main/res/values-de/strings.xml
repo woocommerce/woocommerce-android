@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-03 09:54:02+0000
+Translation-Revision-Date: 2019-01-11 11:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Fehler beim Markieren aller Benachrichtigungen als gelesen</string>
+    <string name="wc_mark_all_read">Alle als gelesen markieren</string>
+    <string name="orderdetail_message_customer">Nachricht</string>
+    <string name="orderdetail_call_customer">Telefon</string>
+    <string name="orderdetail_call_or_message_contentdesc">Anruf oder Nachricht an Kunden</string>
     <string name="wc_moderate_review_error">Fehler beim Aktualisieren des Produktbewertungsstatus</string>
     <string name="wc_load_review_error">Fehler beim Laden des Produktbewertungsstatus</string>
     <string name="wc_trash">Papierkorb</string>
@@ -243,7 +248,7 @@ Language: de
     <string name="orderdetail_product_image_contentdesc">Produktabbildung</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Steuern:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
     <string name="orderdetail_email_contentdesc">E-Mail an Kunden senden</string>
     <string name="orderdetail_billing_details">Abrechnungsdetails</string>
     <string name="orderdetail_shipping_details">Versanddetails</string>

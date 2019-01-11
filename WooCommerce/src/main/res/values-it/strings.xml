@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-03 10:54:02+0000
+Translation-Revision-Date: 2019-01-08 15:54:01+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Errore durante il contrassegno di tutte le notifiche come lette</string>
+    <string name="wc_mark_all_read">Contrassegna tutte come lette</string>
+    <string name="orderdetail_message_customer">Messaggio</string>
+    <string name="orderdetail_call_customer">Chiamata</string>
+    <string name="orderdetail_call_or_message_contentdesc">Chiama o manda un messaggio al cliente</string>
     <string name="wc_moderate_review_error">Errore durante l\'aggiornamento dello stato della recensione del prodotto</string>
     <string name="wc_load_review_error">Errore durante il caricamento dei dettagli della recensione del prodotto</string>
     <string name="wc_trash">Cestino</string>
@@ -243,7 +248,7 @@ Language: it
     <string name="orderdetail_product_image_contentdesc">Immagine prodotto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Tasse:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
     <string name="orderdetail_email_contentdesc">invia e-mail al cliente</string>
     <string name="orderdetail_billing_details">Dati di fatturazione</string>
     <string name="orderdetail_shipping_details">Dati di spedizione</string>

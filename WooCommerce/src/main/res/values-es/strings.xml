@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-02 11:54:02+0000
+Translation-Revision-Date: 2019-01-08 10:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Se ha producido un error al marcar todas las notificaciones como leídas</string>
+    <string name="wc_mark_all_read">Marcar todo como leído</string>
+    <string name="orderdetail_message_customer">Enviar mensaje</string>
+    <string name="orderdetail_call_customer">Llamar</string>
+    <string name="orderdetail_call_or_message_contentdesc">Enviar mensaje al cliente o llamarlo</string>
     <string name="wc_moderate_review_error">Error al actualizar el estado de la reseña del producto</string>
     <string name="wc_load_review_error">Error al cargar el detalle de la reseña del producto</string>
     <string name="wc_trash">Papelera</string>
@@ -243,7 +248,7 @@ Language: es
     <string name="orderdetail_product_image_contentdesc">Imagen del producto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Impuesto:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$sx%3$s)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$sx%3$d)</string>
     <string name="orderdetail_email_contentdesc">enviar correo electrónico al cliente</string>
     <string name="orderdetail_billing_details">Detalles de la facturación</string>
     <string name="orderdetail_shipping_details">Detalles del envío</string>

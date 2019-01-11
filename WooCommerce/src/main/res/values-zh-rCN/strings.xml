@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-02 08:54:02+0000
+Translation-Revision-Date: 2019-01-09 10:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="wc_mark_all_read_error">将所有通知标记为已读时出错</string>
+    <string name="wc_mark_all_read">全部标为已读</string>
+    <string name="orderdetail_message_customer">邮件</string>
+    <string name="orderdetail_call_customer">致电</string>
+    <string name="orderdetail_call_or_message_contentdesc">向客户致电或发送邮件</string>
     <string name="wc_moderate_review_error">更新产品评论状态时出错</string>
     <string name="wc_load_review_error">加载产品评论详细信息时出错</string>
     <string name="wc_trash">回收站</string>
@@ -243,7 +248,7 @@ Language: zh_CN
     <string name="orderdetail_product_image_contentdesc">产品图片</string>
     <string name="orderdetail_product_lineitem_sku">SKU：</string>
     <string name="orderdetail_product_lineitem_tax">税费：</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
     <string name="orderdetail_email_contentdesc">向客户发送电子邮件</string>
     <string name="orderdetail_billing_details">账单详情</string>
     <string name="orderdetail_shipping_details">配送详情</string>

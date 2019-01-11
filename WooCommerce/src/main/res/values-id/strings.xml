@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-02 10:54:02+0000
+Translation-Revision-Date: 2019-01-08 07:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Terjadi error saat menandai semua pemberitahuan sudah dibaca</string>
+    <string name="wc_mark_all_read">Tandai semua sudah dibaca</string>
+    <string name="orderdetail_message_customer">Pesan</string>
+    <string name="orderdetail_call_customer">Telepon</string>
+    <string name="orderdetail_call_or_message_contentdesc">Telepon atau kirim pesan ke pelanggan</string>
     <string name="wc_moderate_review_error">Terjadi error saat memperbarui status ulasan produk</string>
     <string name="wc_load_review_error">Terjadi error saat memuat detail ulasan produk</string>
     <string name="wc_trash">Buang</string>
@@ -243,7 +248,7 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>
