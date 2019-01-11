@@ -243,7 +243,7 @@ Language: ko_KR
     <string name="orderdetail_product_image_contentdesc">상품 이미지</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">세금:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s(%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s(%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">고객에게 이메일 보내기</string>
     <string name="orderdetail_billing_details">청구 상세 내역</string>
     <string name="orderdetail_shipping_details">배송 상세 내역</string>

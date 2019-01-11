@@ -243,7 +243,7 @@ Language: pt_BR
     <string name="orderdetail_product_image_contentdesc">Imagem do produto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Imposto:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">enviar e-mail para o cliente</string>
     <string name="orderdetail_billing_details">Detalhes de cobrança</string>
     <string name="orderdetail_shipping_details">Detalhes de envio</string>
