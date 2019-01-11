@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-03 15:54:02+0000
+Translation-Revision-Date: 2019-01-09 12:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Erreur lors du marquage de toutes les notifications comme étant lues</string>
+    <string name="wc_mark_all_read">Tout marquer comme lu</string>
+    <string name="orderdetail_message_customer">Message</string>
+    <string name="orderdetail_call_customer">Appel</string>
+    <string name="orderdetail_call_or_message_contentdesc">Appeler ou envoyer un message au client</string>
     <string name="wc_moderate_review_error">Erreur lors de la mise à jour de l’état de l’avis sur le produit</string>
     <string name="wc_load_review_error">Erreur lors du chargement des détails de l’avis sur le produit</string>
     <string name="wc_spam">Indésirables</string>

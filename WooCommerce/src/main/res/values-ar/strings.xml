@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-02 10:54:02+0000
+Translation-Revision-Date: 2019-01-08 12:54:02+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="wc_mark_all_read_error">حدث خطأ أثناء وسم جميع التنبيهات كمقروءة</string>
+    <string name="wc_mark_all_read">وسم الجميع كمقروء</string>
+    <string name="orderdetail_message_customer">رسالة</string>
+    <string name="orderdetail_call_customer">اتصال</string>
+    <string name="orderdetail_call_or_message_contentdesc">الاتصال بالعميل أو إرسال رسالة إليه</string>
     <string name="wc_moderate_review_error">حدث خطأ أثناء تحديث حالة مراجعة المنتج</string>
     <string name="wc_load_review_error">حدث خطأ أثناء تحميل تفاصيل مراجعة المنتج</string>
     <string name="wc_trash">سلة المهملات</string>

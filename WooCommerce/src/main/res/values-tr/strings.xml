@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-03 12:54:12+0000
+Translation-Revision-Date: 2019-01-09 14:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Tüm bildirimler okundu olarak işaretlenirken hata oluştu</string>
+    <string name="wc_mark_all_read">Tümünü okundu olarak işaretle</string>
+    <string name="orderdetail_message_customer">Mesaj Gönder</string>
+    <string name="orderdetail_call_customer">Ara</string>
+    <string name="orderdetail_call_or_message_contentdesc">Müşteriyi arayın veya ona mesaj gönderin</string>
     <string name="wc_moderate_review_error">Ürün inceleme durumu güncellenirken hata oluştu</string>
     <string name="wc_load_review_error">Ürün inceleme bilgileri yüklenirken hata oluştu</string>
     <string name="wc_trash">Çöp Kutusu</string>

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-03 10:54:02+0000
+Translation-Revision-Date: 2019-01-09 09:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="wc_mark_all_read_error">將全部通知標示為已讀時發生錯誤</string>
+    <string name="wc_mark_all_read">將全部標示為已讀</string>
+    <string name="orderdetail_message_customer">訊息</string>
+    <string name="orderdetail_call_customer">致電</string>
+    <string name="orderdetail_call_or_message_contentdesc">撥打電話或傳訊給客戶</string>
     <string name="wc_moderate_review_error">更新產品評論狀態時發生錯誤</string>
     <string name="wc_load_review_error">載入產品評論狀態時發生錯誤</string>
     <string name="wc_trash">垃圾桶</string>

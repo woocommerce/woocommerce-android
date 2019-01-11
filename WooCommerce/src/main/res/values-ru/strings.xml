@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-04 13:54:02+0000
+Translation-Revision-Date: 2019-01-09 11:54:02+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Ошибка отметки всех уведомлений как прочитанных</string>
+    <string name="wc_mark_all_read">Отметить все как прочитанные</string>
+    <string name="orderdetail_message_customer">Сообщение</string>
+    <string name="orderdetail_call_customer">Звонок</string>
+    <string name="orderdetail_call_or_message_contentdesc">Позвонить или отправить сообщение клиенту</string>
     <string name="wc_moderate_review_error">Ошибка при обновлении статуса обзора товара</string>
     <string name="wc_load_review_error">Ошибка при обновлении подробностей обзора товара</string>
     <string name="wc_trash">Корзина</string>

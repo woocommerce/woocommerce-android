@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-02 09:54:02+0000
+Translation-Revision-Date: 2019-01-09 09:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="wc_mark_all_read_error">모든 알림을 읽음으로 표시하는 중에 오류가 발생했습니다.</string>
+    <string name="wc_mark_all_read">모두 읽음으로 표시</string>
+    <string name="orderdetail_message_customer">메시지</string>
+    <string name="orderdetail_call_customer">전화</string>
+    <string name="orderdetail_call_or_message_contentdesc">전화 또는 메시지 고객</string>
     <string name="wc_moderate_review_error">제품 리뷰 상태를 업데이트하는 동안 오류가 발생했습니다</string>
     <string name="wc_load_review_error">제품 리뷰 세부정보를 로드하는 동안 오류가 발생했습니다</string>
     <string name="wc_trash">휴지통</string>
