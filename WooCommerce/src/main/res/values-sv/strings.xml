@@ -188,13 +188,7 @@ Language: sv_SE
     <string name="password">Lösenord</string>
     <string name="username">Användarnamn</string>
     <string name="enter_your_password_instead">Ange ditt lösenord istället</string>
-<<<<<<< HEAD
-    <string name="email_address">E-postadress</string>
-    <string name="details">Information</string>
-    <string name="undo">Ångra</string>
-=======
     <string name="send_link">Skicka länk</string>
->>>>>>> release/1.0
     <string name="invalid_verification_code">Ogiltig verifieringskod</string>
     <string name="verification_code">Verifieringskod</string>
     <string name="email_address">E-postadress</string>
