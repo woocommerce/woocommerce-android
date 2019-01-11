@@ -19,7 +19,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATION_READ
+import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationReadPayload
+import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
@@ -152,8 +152,8 @@ class OrderDetailPresenter @Inject constructor(
             if (!it.read) {
                 it.read = true
                 pendingMarkReadNotification = it
-                val payload = MarkNotificationReadPayload(it)
-                dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationReadAction(payload))
+                val payload = MarkNotificationsReadPayload(listOf(it))
+                dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
             }
         }
     }
@@ -272,7 +272,7 @@ class OrderDetailPresenter @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
         when (event.causeOfChange) {
-            MARK_NOTIFICATION_READ -> onNotificationMarkedRead(event)
+            MARK_NOTIFICATIONS_READ -> onNotificationMarkedRead(event)
         }
     }
 

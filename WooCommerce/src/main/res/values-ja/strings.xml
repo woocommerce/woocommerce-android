@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-14 13:54:02+0000
+Translation-Revision-Date: 2019-01-09 06:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="wc_mark_all_read_error">すべてを既読にする際にエラーが発生</string>
+    <string name="wc_mark_all_read">すべてを既読にする</string>
+    <string name="orderdetail_message_customer">メッセージ</string>
+    <string name="orderdetail_call_customer">通話</string>
+    <string name="orderdetail_call_or_message_contentdesc">カスタマーにコールまたはメッセージを送信</string>
+    <string name="wc_moderate_review_error">製品レビューステータスの更新の際にエラーが発生しました</string>
+    <string name="wc_load_review_error">製品レビューの詳細を読み込む際にエラーが発生しました</string>
+    <string name="wc_trash">ゴミ箱</string>
+    <string name="wc_spam">スパム</string>
+    <string name="wc_approved">Approved</string>
+    <string name="wc_approve">承認</string>
+    <string name="wc_view_the_product_external">製品を表示する</string>
+    <string name="support_help">ヘルプ &amp; サポート</string>
+    <string name="settings_notifs_reviews_detail">新しい製品レビューのアラートを有効にする</string>
+    <string name="settings_notifs_reviews">製品レビュー</string>
+    <string name="settings_notifs_tone_detail">新しい注文が入った際の効果音を有効にする</string>
+    <string name="settings_notifs_tone">トーン</string>
+    <string name="settings_notifs_orders_detail">新しい注文が入った際のアラートを有効にする</string>
+    <string name="settings_notifs_orders">注文</string>
+    <string name="settings_notifs_device_detail">サウンド、緊急性、通知ドット</string>
+    <string name="settings_notifs_device">通知の管理</string>
+    <string name="settings_notifs">通知</string>
+    <string name="settings_confirm_logout">アカウントからログアウトしてもよいですか%s?</string>
+    <string name="notifs_detail_loading_error">通知の詳細を読み込む際にエラーが発生しました</string>
+    <string name="notifs_review_moderation_undo">レビューを%1$sとしてマークする</string>
+    <string name="notifs_fetch_error">通知をダウンロードする際にエラーが発生しました</string>
+    <string name="add_order_note_sublabel">無効にするとメモは公開されません</string>
+    <string name="order_error_fetch_generic">注文を取得する際にエラーが発生しました</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">これらの保留中の注文を確認して準備し、配送してください</string>
+    <string name="back">戻る</string>
+    <string name="notification_channel_review_title">製品レビューアラート</string>
+    <string name="notification_channel_order_title">新規注文アラート</string>
     <string name="orderdetail_note_system">システム状況</string>
     <string name="orderdetail_note_public">お客様への通知</string>
     <string name="dashboard_no_orders_with_search">一致する注文はありません</string>
@@ -229,8 +262,7 @@ Language: ja_JP
     <string name="orderdetail_product_image_contentdesc">商品画像</string>
     <string name="orderdetail_product_lineitem_sku">商品コード:</string>
     <string name="orderdetail_product_lineitem_tax">税:</string>
-    <string name="orderdetail_sms_contentdesc">顧客に SMS メッセージを送信</string>
-    <string name="orderdetail_call_contentdesc">顧客に電話で連絡</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">顧客にメールを送信</string>
     <string name="orderdetail_billing_details">請求詳細</string>
     <string name="orderdetail_shipping_details">配送詳細</string>

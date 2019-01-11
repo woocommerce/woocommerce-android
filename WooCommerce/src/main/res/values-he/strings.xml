@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-11 06:54:02+0000
+Translation-Revision-Date: 2019-01-08 16:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="wc_mark_all_read_error">שגיאה בעת סימון של התגובות כ\'נקרא\'</string>
+    <string name="wc_mark_all_read">סימון כל הפריטים כ\'נקרא\'</string>
+    <string name="orderdetail_message_customer">הודעה</string>
+    <string name="orderdetail_call_customer">להתקשר</string>
+    <string name="orderdetail_call_or_message_contentdesc">להתקשר או לשלוח הודעה ללקוח</string>
+    <string name="wc_moderate_review_error">שגיאה בעדכון המצב של ביקורות המוצר</string>
+    <string name="wc_load_review_error">שגיאה בטעינת הפרטים של ביקורת המוצר</string>
+    <string name="wc_trash">פח</string>
+    <string name="wc_spam">תגובת זבל</string>
+    <string name="wc_approved">מאושר</string>
+    <string name="wc_approve">אישור</string>
+    <string name="wc_view_the_product_external">הצגת המוצר</string>
+    <string name="support_help">עזרה ותמיכה</string>
+    <string name="settings_notifs_reviews_detail">קבלת התראות על ביקורות חדשות למוצר</string>
+    <string name="settings_notifs_reviews">ביקורות על מוצר</string>
+    <string name="settings_notifs_tone_detail">הפעלת אפקט קולי של קופה רושמת בביצוע הזמנה חדשה</string>
+    <string name="settings_notifs_tone">צליל</string>
+    <string name="settings_notifs_orders_detail">קבלת התראות בביצוע של הזמנות חדשות</string>
+    <string name="settings_notifs_orders">הזמנות</string>
+    <string name="settings_notifs_device_detail">קולות, דחיפות ונקודה לציון הודעות</string>
+    <string name="settings_notifs_device">ניהול הודעות</string>
+    <string name="settings_notifs">הודעות</string>
+    <string name="settings_confirm_logout">האם ברצונך להתנתק מהחשבון %s?</string>
+    <string name="notifs_detail_loading_error">שגיאה בטעינת הפרטים של ההודעה</string>
+    <string name="notifs_review_moderation_undo">הביקורת סומנה בתור \"%1$s\"</string>
+    <string name="notifs_fetch_error">שגיאה בהבאת ההודעות</string>
+    <string name="add_order_note_sublabel">אם האפשרות מושבתת, הפתק יהיה פרטי</string>
+    <string name="order_error_fetch_generic">שגיאה בהבאת ההזמנה</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">בדיקה, הכנה ומשלוח של ההזמנות שבהמתנה</string>
+    <string name="back">חזרה</string>
+    <string name="notification_channel_review_title">התראות לגבי ביקורות על המוצר</string>
+    <string name="notification_channel_order_title">התראות על הזמנות חדשות</string>
     <string name="orderdetail_note_system">סטטוס מערכת</string>
     <string name="orderdetail_note_public">הערה ללקוח</string>
     <string name="dashboard_no_orders_with_search">לא נמצאו הזמנות תואמות</string>
@@ -229,8 +262,7 @@ Language: he_IL
     <string name="orderdetail_product_image_contentdesc">תמונת מוצר</string>
     <string name="orderdetail_product_lineitem_sku">מק\"ט:</string>
     <string name="orderdetail_product_lineitem_tax">מס:</string>
-    <string name="orderdetail_sms_contentdesc">שליחת הודעת טקסט ללקוח</string>
-    <string name="orderdetail_call_contentdesc">חיוג ללקוח</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">שליחת הודעת אימייל ללקוח</string>
     <string name="orderdetail_billing_details">פרטי חיוב</string>
     <string name="orderdetail_shipping_details">פרטי משלוח</string>

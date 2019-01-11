@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-11 14:54:02+0000
+Translation-Revision-Date: 2019-01-09 14:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Tüm bildirimler okundu olarak işaretlenirken hata oluştu</string>
+    <string name="wc_mark_all_read">Tümünü okundu olarak işaretle</string>
+    <string name="orderdetail_message_customer">Mesaj Gönder</string>
+    <string name="orderdetail_call_customer">Ara</string>
+    <string name="orderdetail_call_or_message_contentdesc">Müşteriyi arayın veya ona mesaj gönderin</string>
+    <string name="wc_moderate_review_error">Ürün inceleme durumu güncellenirken hata oluştu</string>
+    <string name="wc_load_review_error">Ürün inceleme bilgileri yüklenirken hata oluştu</string>
+    <string name="wc_trash">Çöp Kutusu</string>
+    <string name="wc_spam">İstenmeyen</string>
+    <string name="wc_approved">Onaylandı</string>
+    <string name="wc_approve">Onayla</string>
+    <string name="wc_view_the_product_external">Ürünü görüntüle</string>
+    <string name="support_help">Yardım ve destek</string>
+    <string name="settings_notifs_reviews_detail">Yeni ürün incelemeleri için uyarı al</string>
+    <string name="settings_notifs_reviews">Ürün incelemeleri</string>
+    <string name="settings_notifs_tone_detail">Yeni siparişte Cha-Ching sesini çal</string>
+    <string name="settings_notifs_tone">Bildirim sesi</string>
+    <string name="settings_notifs_orders_detail">Yeni sipariş alındığında uyarı al</string>
+    <string name="settings_notifs_orders">Siparişler</string>
+    <string name="settings_notifs_device_detail">Sesler, acil durum ve bildirim noktası</string>
+    <string name="settings_notifs_device">Bildirimleri yönet</string>
+    <string name="settings_notifs">Bildirimler</string>
+    <string name="settings_confirm_logout">%s hesabının oturumunu kapatmak istediğinizden emin misiniz?</string>
+    <string name="notifs_detail_loading_error">Bildirim ayrıntıları yüklenirken hata oluştu</string>
+    <string name="notifs_review_moderation_undo">İnceleme %1$s olarak işaretlendi</string>
+    <string name="notifs_fetch_error">Bildirimler alınırken hata oluştu</string>
+    <string name="add_order_note_sublabel">Devre dışıysa not gizli olur</string>
+    <string name="order_error_fetch_generic">Sipariş alınırken hata oluştu</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">Bu bekleyen siparişleri inceleyin, hazırlayın ve gönderin</string>
+    <string name="back">Geri</string>
+    <string name="notification_channel_review_title">Ürün incelemesi uyarıları</string>
+    <string name="notification_channel_order_title">Yeni sipariş uyarıları</string>
     <string name="orderdetail_note_system">Sistem durumu</string>
     <string name="orderdetail_note_public">Müşteriye not</string>
     <string name="dashboard_no_orders_with_search">Eşleşen sipariş yok</string>
@@ -229,8 +262,7 @@ Language: tr
     <string name="orderdetail_product_image_contentdesc">Ürün Görseli</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Vergi:</string>
-    <string name="orderdetail_sms_contentdesc">müşteriye sms mesajı gönderin</string>
-    <string name="orderdetail_call_contentdesc">müşteriyi arayın</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">müşteriye e-posta gönderin</string>
     <string name="orderdetail_billing_details">Fatura Ayrıntıları</string>
     <string name="orderdetail_shipping_details">Gönderim Ayrıntıları</string>

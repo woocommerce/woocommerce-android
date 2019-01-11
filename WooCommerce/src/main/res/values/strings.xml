@@ -165,9 +165,10 @@
     <string name="orderdetail_shipping_details">Shipping Details</string>
     <string name="orderdetail_billing_details">Billing Details</string>
     <string name="orderdetail_email_contentdesc">email customer</string>
-    <string name="orderdetail_call_contentdesc">call customer</string>
-    <string name="orderdetail_sms_contentdesc">send customer sms message</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
+    <string name="orderdetail_call_customer">Call</string>
+    <string name="orderdetail_message_customer">Message</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
@@ -309,7 +310,11 @@
     <string name="wc_trash">Trash</string>
     <string name="wc_load_review_error">Error loading product review detail</string>
     <string name="wc_moderate_review_error">Error updating product review status</string>
-
+    <!--
+        Notifications List
+    -->
+    <string name="wc_mark_all_read">Mark all as read</string>
+    <string name="wc_mark_all_read_error">Error marking all notifications as read</string>
     <!--
         Login Library Imported Strings
     -->

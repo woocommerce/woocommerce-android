@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-10 15:54:03+0000
+Translation-Revision-Date: 2019-01-08 15:54:01+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Errore durante il contrassegno di tutte le notifiche come lette</string>
+    <string name="wc_mark_all_read">Contrassegna tutte come lette</string>
+    <string name="orderdetail_message_customer">Messaggio</string>
+    <string name="orderdetail_call_customer">Chiamata</string>
+    <string name="orderdetail_call_or_message_contentdesc">Chiama o manda un messaggio al cliente</string>
+    <string name="wc_moderate_review_error">Errore durante l\'aggiornamento dello stato della recensione del prodotto</string>
+    <string name="wc_load_review_error">Errore durante il caricamento dei dettagli della recensione del prodotto</string>
+    <string name="wc_trash">Cestino</string>
+    <string name="wc_spam">Spam</string>
+    <string name="wc_approved">Approvato</string>
+    <string name="wc_approve">Approva</string>
+    <string name="wc_view_the_product_external">Visualizza il prodotto</string>
+    <string name="support_help">Aiuto e supporto</string>
+    <string name="settings_notifs_reviews_detail">Ottieni avvisi relativi alle nuove recensioni del prodotto</string>
+    <string name="settings_notifs_reviews">Recensioni del prodotto</string>
+    <string name="settings_notifs_tone_detail">Riproduci Cha-Ching per il nuovo ordine</string>
+    <string name="settings_notifs_tone">Tono</string>
+    <string name="settings_notifs_orders_detail">Ottieni avvisi quando arrivano nuovi ordini</string>
+    <string name="settings_notifs_orders">Ordini</string>
+    <string name="settings_notifs_device_detail">Suoni, urgenza e punto di notifica</string>
+    <string name="settings_notifs_device">Gestisci notifiche</string>
+    <string name="settings_notifs">Notifiche</string>
+    <string name="settings_confirm_logout">Desideri uscire dall\'account %s?</string>
+    <string name="notifs_detail_loading_error">Errore durante il caricamento dei dettagli della notifica</string>
+    <string name="notifs_review_moderation_undo">Recensione segnalata come %1$s</string>
+    <string name="notifs_fetch_error">Errore durante recupero delle notifiche</string>
+    <string name="add_order_note_sublabel">Se disabilitata, la nota diventerà privata</string>
+    <string name="order_error_fetch_generic">Errore durante il recupero dell\'ordine</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">Rivedi, prepara e invia questi ordini in attesa</string>
+    <string name="back">Indietro</string>
+    <string name="notification_channel_review_title">Avvisi delle recensioni del prodotto</string>
+    <string name="notification_channel_order_title">Avvisi dei nuovi ordini</string>
     <string name="orderdetail_note_system">Stato di sistema</string>
     <string name="orderdetail_note_public">Nota per il cliente</string>
     <string name="dashboard_no_orders_with_search">Nessun ordine corrispondente</string>
@@ -229,8 +262,7 @@ Language: it
     <string name="orderdetail_product_image_contentdesc">Immagine prodotto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Tasse:</string>
-    <string name="orderdetail_sms_contentdesc">invia messaggio sms cliente</string>
-    <string name="orderdetail_call_contentdesc">chiama cliente</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">invia e-mail al cliente</string>
     <string name="orderdetail_billing_details">Dati di fatturazione</string>
     <string name="orderdetail_shipping_details">Dati di spedizione</string>

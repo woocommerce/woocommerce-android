@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-11 08:54:02+0000
+Translation-Revision-Date: 2019-01-09 09:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="wc_mark_all_read_error">모든 알림을 읽음으로 표시하는 중에 오류가 발생했습니다.</string>
+    <string name="wc_mark_all_read">모두 읽음으로 표시</string>
+    <string name="orderdetail_message_customer">메시지</string>
+    <string name="orderdetail_call_customer">전화</string>
+    <string name="orderdetail_call_or_message_contentdesc">전화 또는 메시지 고객</string>
+    <string name="wc_moderate_review_error">제품 리뷰 상태를 업데이트하는 동안 오류가 발생했습니다</string>
+    <string name="wc_load_review_error">제품 리뷰 세부정보를 로드하는 동안 오류가 발생했습니다</string>
+    <string name="wc_trash">휴지통</string>
+    <string name="wc_spam">스팸</string>
+    <string name="wc_approved">승인됨</string>
+    <string name="wc_approve">승인하기</string>
+    <string name="wc_view_the_product_external">제품 보기</string>
+    <string name="support_help">도움 및 지원</string>
+    <string name="settings_notifs_reviews_detail">새 제품 리뷰 알림 받기</string>
+    <string name="settings_notifs_reviews">제품 리뷰</string>
+    <string name="settings_notifs_tone_detail">새 주문에 대해 금전 등록기 소리 재생</string>
+    <string name="settings_notifs_tone">톤</string>
+    <string name="settings_notifs_orders_detail">새 주문이 들어올 때 알림 받기</string>
+    <string name="settings_notifs_orders">주문</string>
+    <string name="settings_notifs_device_detail">소리, 긴급 및 알림 점</string>
+    <string name="settings_notifs_device">알림 관리</string>
+    <string name="settings_notifs">알림</string>
+    <string name="settings_confirm_logout">%s 계정에서 로그아웃하시겠습니까?</string>
+    <string name="notifs_detail_loading_error">알림 세부정보를 로드하는 동안 오류가 발생했습니다</string>
+    <string name="notifs_review_moderation_undo">%1$s(으)로 표시된 리뷰</string>
+    <string name="notifs_fetch_error">알림을 가져오는 동안 오류가 발생했습니다</string>
+    <string name="add_order_note_sublabel">해제된 경우 메모는 비공개가 됩니다.</string>
+    <string name="order_error_fetch_generic">주문을 가져오는 동안 오류가 발생했습니다</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">대기 중인 주문 검토, 준비 및 배송</string>
+    <string name="back">뒤로</string>
+    <string name="notification_channel_review_title">제품 리뷰 알림</string>
+    <string name="notification_channel_order_title">새 주문 알림</string>
     <string name="orderdetail_note_system">시스템 상태</string>
     <string name="orderdetail_note_public">고객에게 남길 메모</string>
     <string name="dashboard_no_orders_with_search">일치하는 주문이 없음</string>
@@ -225,8 +258,7 @@ Language: ko_KR
     <string name="orderdetail_product_image_contentdesc">상품 이미지</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">세금:</string>
-    <string name="orderdetail_sms_contentdesc">고객에게 SMS 메시지 보내기</string>
-    <string name="orderdetail_call_contentdesc">고객에게 전화 걸기</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s(%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">고객에게 이메일 보내기</string>
     <string name="orderdetail_billing_details">청구 상세 내역</string>
     <string name="orderdetail_shipping_details">배송 상세 내역</string>

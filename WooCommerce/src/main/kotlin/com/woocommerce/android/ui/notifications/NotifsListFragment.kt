@@ -8,7 +8,11 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -19,6 +23,9 @@ import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.extensions.onScrollDown
+import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -66,13 +73,22 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     private val skeletonView = SkeletonView()
+    private var menuMarkAllRead: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(OrderListFragment.STATE_KEY_LIST)
             isRefreshPending = bundle.getBoolean(OrderListFragment.STATE_KEY_REFRESH_PENDING, false)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_notifs_list_fragment, menu)
+        menuMarkAllRead = menu?.findItem(R.id.menu_mark_all_read)
+
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onAttach(context: Context?) {
@@ -131,6 +147,11 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             setHasFixedSize(false)
             addItemDecoration(dividerDecoration)
             adapter = notifsAdapter
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                    if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
+                }
+            })
         }
 
         presenter.takeView(this)
@@ -143,6 +164,28 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             notifsList.layoutManager.onRestoreInstanceState(listState)
             listState = null
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_mark_all_read -> {
+                AnalyticsTracker.track(Stat.NOTIFICATIONS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
+
+                presenter.markAllNotifsRead()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        refreshOptionsMenu()
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    private fun refreshOptionsMenu() {
+        val showMarkAllRead = isActive
+        menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -165,6 +208,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             // moderation so it can be processed immediately.
             changeCommentStatusSnackbar?.dismiss()
         }
+        refreshOptionsMenu()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -340,6 +384,21 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         } else {
             uiMessageResolver.showOfflineSnack()
         }
+    }
+
+    /**
+     * Update the UI to visually mark all notifications as read while the request to
+     * officially mark notifications as read is being processed.
+     */
+    override fun visuallyMarkNotificationsAsRead() {
+        // Remove all active notifications from the system bar
+        context?.let { NotificationHandler.removeAllNotificationsFromSystemBar(it) }
+
+        notifsAdapter.markAllNotifsAsRead()
+    }
+
+    override fun showMarkAllNotificationsReadError() {
+        uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
     }
 
     private fun revertPendingModeratedNotifState() {

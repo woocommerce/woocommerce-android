@@ -146,7 +146,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         configureModerationButtons(note)
         updateStatus(CommentStatus.fromString(comment.status))
 
-        activity?.let { presenter.markOrderNotificationRead(it, note) }
+        activity?.let { presenter.markNotificationRead(it, note) }
     }
 
     private fun configureModerationButtons(note: NotificationModel) {

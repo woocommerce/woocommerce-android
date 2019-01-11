@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2018-12-12 08:54:07+0000
+Translation-Revision-Date: 2019-01-08 10:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="wc_mark_all_read_error">Se ha producido un error al marcar todas las notificaciones como leídas</string>
+    <string name="wc_mark_all_read">Marcar todo como leído</string>
+    <string name="orderdetail_message_customer">Enviar mensaje</string>
+    <string name="orderdetail_call_customer">Llamar</string>
+    <string name="orderdetail_call_or_message_contentdesc">Enviar mensaje al cliente o llamarlo</string>
+    <string name="wc_moderate_review_error">Error al actualizar el estado de la reseña del producto</string>
+    <string name="wc_load_review_error">Error al cargar el detalle de la reseña del producto</string>
+    <string name="wc_trash">Papelera</string>
+    <string name="wc_spam">Spam</string>
+    <string name="wc_approved">Se ha aprobado</string>
+    <string name="wc_approve">Aprobar</string>
+    <string name="wc_view_the_product_external">Ver el producto</string>
+    <string name="support_help">Ayuda y soporte</string>
+    <string name="settings_notifs_reviews_detail">Recibir alertas para las nuevas reseñas de productos</string>
+    <string name="settings_notifs_reviews">Reseñas de productos</string>
+    <string name="settings_notifs_tone_detail">Reproducir sonido cuando haya un nuevo pedido</string>
+    <string name="settings_notifs_tone">Tono</string>
+    <string name="settings_notifs_orders_detail">Recibir alertas cuando lleguen nuevos pedidos</string>
+    <string name="settings_notifs_orders">Pedidos</string>
+    <string name="settings_notifs_device_detail">Sonidos, urgencia y punto de notificación</string>
+    <string name="settings_notifs_device">Gestionar notificaciones</string>
+    <string name="settings_notifs">Notificaciones</string>
+    <string name="settings_confirm_logout">¿Estás seguro que quieres salir de la cuenta %s?</string>
+    <string name="notifs_detail_loading_error">Error al cargar el detalle de la notificación</string>
+    <string name="notifs_review_moderation_undo">La reseña se ha marcado como %1$s</string>
+    <string name="notifs_fetch_error">Error al recuperar el notificaciones</string>
+    <string name="add_order_note_sublabel">Si se desactiva, la nota será privada</string>
+    <string name="order_error_fetch_generic">Error al recuperar el pedido</string>
+    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
+    <string name="dashboard_fulfill_orders_msg">Revisa, prepara y envía estos pedidos pendientes</string>
+    <string name="back">Volver</string>
+    <string name="notification_channel_review_title">Alertas de reseña de producto</string>
+    <string name="notification_channel_order_title">Alertas de nuevo pedido</string>
     <string name="orderdetail_note_system">Estado del sistema</string>
     <string name="orderdetail_note_public">Enviar la nota al cliente</string>
     <string name="dashboard_no_orders_with_search">Ningún pedido coincide con tu búsqueda</string>
@@ -229,8 +262,7 @@ Language: es
     <string name="orderdetail_product_image_contentdesc">Imagen del producto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Impuesto:</string>
-    <string name="orderdetail_sms_contentdesc">enviar SMS al cliente</string>
-    <string name="orderdetail_call_contentdesc">llamar al cliente</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$sx%3$s)</string>
     <string name="orderdetail_email_contentdesc">enviar correo electrónico al cliente</string>
     <string name="orderdetail_billing_details">Detalles de la facturación</string>
     <string name="orderdetail_shipping_details">Detalles del envío</string>
