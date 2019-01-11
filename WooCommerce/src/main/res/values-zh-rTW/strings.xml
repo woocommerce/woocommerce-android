@@ -243,7 +243,7 @@ Language: zh_TW
     <string name="orderdetail_product_image_contentdesc">商品圖片</string>
     <string name="orderdetail_product_lineitem_sku">貨號：</string>
     <string name="orderdetail_product_lineitem_tax">稅金：</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$f)</string>
     <string name="orderdetail_email_contentdesc">傳送電子郵件給客戶</string>
     <string name="orderdetail_billing_details">帳單詳細資料</string>
     <string name="orderdetail_shipping_details">運送詳細資料</string>

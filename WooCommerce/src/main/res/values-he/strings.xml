@@ -243,7 +243,7 @@ Language: he_IL
     <string name="orderdetail_product_image_contentdesc">תמונת מוצר</string>
     <string name="orderdetail_product_lineitem_sku">מק\"ט:</string>
     <string name="orderdetail_product_lineitem_tax">מס:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$f)</string>
     <string name="orderdetail_email_contentdesc">שליחת הודעת אימייל ללקוח</string>
     <string name="orderdetail_billing_details">פרטי חיוב</string>
     <string name="orderdetail_shipping_details">פרטי משלוח</string>

@@ -243,7 +243,7 @@ Language: nl
     <string name="orderdetail_product_image_contentdesc">Productafbeelding</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Belasting:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$f)</string>
     <string name="orderdetail_email_contentdesc">e-mail verzenden naar klant</string>
     <string name="orderdetail_billing_details">Factuurgegevens</string>
     <string name="orderdetail_shipping_details">Verzendgegevens</string>
