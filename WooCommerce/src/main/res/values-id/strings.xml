@@ -248,7 +248,7 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>

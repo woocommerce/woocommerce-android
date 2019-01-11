@@ -248,7 +248,7 @@ Language: tr
     <string name="orderdetail_product_image_contentdesc">Ürün Görseli</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Vergi:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">müşteriye e-posta gönderin</string>
     <string name="orderdetail_billing_details">Fatura Ayrıntıları</string>
     <string name="orderdetail_shipping_details">Gönderim Ayrıntıları</string>
