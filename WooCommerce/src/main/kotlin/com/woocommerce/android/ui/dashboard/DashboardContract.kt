@@ -29,7 +29,7 @@ interface DashboardContract {
         fun showVisitorStatsError(granularity: StatsGranularity)
         fun showErrorSnack()
         fun hideUnfilledOrdersCard()
-        fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean)
+        fun showUnfilledOrdersCard(count: Int)
         fun showPluginVersionNoticeCard()
         fun hidePluginVersionNoticeCard()
         fun showNoOrdersView(show: Boolean)

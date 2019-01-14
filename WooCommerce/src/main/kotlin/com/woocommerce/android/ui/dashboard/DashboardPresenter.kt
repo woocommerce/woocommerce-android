@@ -237,7 +237,7 @@ class DashboardPresenter @Inject constructor(
                         mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0)))
 
                 event.rowsAffected.takeIf { it > 0 }?.let { count ->
-                    dashboardView?.showUnfilledOrdersCard(count, event.canLoadMore)
+                    dashboardView?.showUnfilledOrdersCard(count)
                 } ?: dashboardView?.hideUnfilledOrdersCard()
             }
             else -> {

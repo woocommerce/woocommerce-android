@@ -132,8 +132,8 @@
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
-    <string name="dashboard_fulfill_order_title">You have 1 order to fulfill</string>
-    <string name="dashboard_fulfill_orders_title">You have %1$d%2$s orders to fulfill</string>
+    <string name="dashboard_fulfill_order_title_single">You have 1 order to fulfill</string>
+    <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
     <string name="dashboard_no_orders">Waiting for customers</string>
