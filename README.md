@@ -20,8 +20,8 @@ Next, you'll have to get a WordPress.com OAuth2 ID and secret, for use in the `g
 
 ## Running Tests ##
 
-    $ ./gradlew testDebug # Unit tests
-    $ ./gradlew cAT       # UI tests
+    $ ./gradlew testVanillaDebug                     # Unit tests
+    $ ./gradlew connectedVanillaDebugAndroidTest     # UI tests
 
 ## Setting up Checkstyle ##
 
