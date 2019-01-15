@@ -68,13 +68,15 @@ Google Sign-In requires configuration files which contain client and server info
 that can't be shared publicly. More documentation and guides can be found on the
 [Google Identity Platform website](https://developers.google.com/identity/).
 
-## How we work ##
+## Need help? ##
 
-TODO
+Usage docs can be found here: [docs.woocommerce.com](https://docs.woocommerce.com/)
 
-## Need help to build? ##
+General usage and development questions:
 
-TODO
+* [WooCommerce Slack Community](https://woocommerce.com/community-slack/)
+* [WordPress.org Forums](https://wordpress.org/support/plugin/woocommerce)
+* The WooCommerce Help and Share Facebook group
 
 ## License ##
 
