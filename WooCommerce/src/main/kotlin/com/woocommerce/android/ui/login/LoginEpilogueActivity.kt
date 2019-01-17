@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.login
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -179,6 +181,14 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     override fun onSiteClick(siteId: Long) {
         val site = presenter.getSiteBySiteId(siteId)
         site?.let { selectedSite.set(it) }
+    }
+
+    override fun errorVerifyingSites() {
+        Snackbar.make(
+                login_root as ViewGroup,
+                R.string.login_verifying_sites_error,
+                Snackbar.LENGTH_LONG
+        ).show()
     }
 
     private fun showNoStoresView() {

@@ -21,5 +21,6 @@ interface LoginEpilogueContract {
         fun showUserInfo()
         fun showStoreList(supportedWCSites: List<SiteModel>, unsupportedWCSites: List<SiteModel>)
         fun cancel()
+        fun errorVerifyingSites()
     }
 }

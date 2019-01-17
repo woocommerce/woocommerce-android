@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -83,6 +85,20 @@ class LoginEpiloguePresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onApiVersionFetched(event: OnApiVersionFetched) {
+        if (event.isError) {
+            WooLog.e(T.LOGIN, "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
+                    "${event.error?.message}")
+            loginEpilogueView?.errorVerifyingSites()
+            return
+        }
+
+        // Check for empty API version as well (which may not result in an error from the api)
+        if (event.apiVersion.isBlank()) {
+            WooLog.e(T.LOGIN, "Empty apiVersion for site [${event.site.siteId} : ${event.site.name}]!")
+            loginEpilogueView?.errorVerifyingSites()
+            return
+        }
+
         if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
             supportedWCSites.add(event.site)
         } else {
