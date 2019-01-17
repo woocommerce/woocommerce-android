@@ -24,9 +24,6 @@ class LoginEpiloguePresenter @Inject constructor(
 ) : LoginEpilogueContract.Presenter {
     private var loginEpilogueView: LoginEpilogueContract.View? = null
 
-    private var supportedWCSites = mutableListOf<SiteModel>()
-    private var unsupportedWCSites = mutableListOf<SiteModel>()
-
     override fun takeView(view: LoginEpilogueContract.View) {
         dispatcher.register(this)
         loginEpilogueView = view
@@ -56,18 +53,13 @@ class LoginEpiloguePresenter @Inject constructor(
         return accountStore.hasAccessToken()
     }
 
-    override fun checkWCVersionsForAllSites() {
-        supportedWCSites.clear()
-        unsupportedWCSites.clear()
+    override fun loadSites() {
         val wcSites = wooCommerceStore.getWooCommerceSites()
-        if (wcSites.isEmpty()) {
-            loginEpilogueView?.showStoreList(emptyList(), emptyList())
-            return
-        }
+        loginEpilogueView?.showStoreList(wcSites)
+    }
 
-        for (site in wcSites) {
-            dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(site))
-        }
+    override fun verifySiteApiVersion(site: SiteModel) {
+        dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(site))
     }
 
     override fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel> {
@@ -88,26 +80,21 @@ class LoginEpiloguePresenter @Inject constructor(
         if (event.isError) {
             WooLog.e(T.LOGIN, "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
                     "${event.error?.message}")
-            loginEpilogueView?.errorVerifyingSites()
+            loginEpilogueView?.siteVerificationError(event.site)
             return
         }
 
         // Check for empty API version as well (which may not result in an error from the api)
         if (event.apiVersion.isBlank()) {
             WooLog.e(T.LOGIN, "Empty apiVersion for site [${event.site.siteId} : ${event.site.name}]!")
-            loginEpilogueView?.errorVerifyingSites()
+            loginEpilogueView?.siteVerificationError(event.site)
             return
         }
 
         if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
-            supportedWCSites.add(event.site)
+            loginEpilogueView?.siteVerificationPassed(event.site)
         } else {
-            unsupportedWCSites.add(event.site)
-        }
-
-        val totalSitesChecked = supportedWCSites.size + unsupportedWCSites.size
-        if (totalSitesChecked == wooCommerceStore.getWooCommerceSites().size) {
-            loginEpilogueView?.showStoreList(supportedWCSites, unsupportedWCSites)
+            loginEpilogueView?.siteVerificationFailed(event.site)
         }
     }
 }
