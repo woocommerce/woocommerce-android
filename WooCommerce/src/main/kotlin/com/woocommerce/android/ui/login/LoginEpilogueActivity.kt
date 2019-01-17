@@ -48,9 +48,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
         presenter.takeView(this)
 
-        supported_recycler.layoutManager = LinearLayoutManager(this)
+        sites_recycler.layoutManager = LinearLayoutManager(this)
         siteAdapter = SiteListAdapter(this, this)
-        supported_recycler.adapter = siteAdapter
+        sites_recycler.adapter = siteAdapter
 
         showUserInfo()
 
@@ -58,7 +58,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
             showStoreList(sites)
         } ?: run {
-            supported_frame_list_container.visibility = View.GONE
+            site_list_container.visibility = View.GONE
             presenter.loadSites()
 
             AnalyticsTracker.track(
@@ -110,8 +110,8 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             return
         }
 
-        supported_frame_list_container.visibility = View.VISIBLE
-        supported_text_list_label.text = if (wcSites.size == 1)
+        site_list_container.visibility = View.VISIBLE
+        site_list_label.text = if (wcSites.size == 1)
             getString(R.string.login_connected_store)
         else
             getString(R.string.login_pick_store)
@@ -174,7 +174,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     }
 
     private fun showNoStoresView() {
-        supported_frame_list_container.visibility = View.GONE
+        site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
         val noStoresImage =
