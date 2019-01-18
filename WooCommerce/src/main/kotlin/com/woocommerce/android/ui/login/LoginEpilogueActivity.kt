@@ -153,6 +153,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         loginProgressDialog?.dismiss()
 
         siteAdapter.selectedSiteId = 0
+        button_continue.isEnabled = false
 
         val ft = supportFragmentManager.beginTransaction()
         val prev = supportFragmentManager.findFragmentByTag(WooUpgradeRequiredDialog.TAG)
