@@ -118,33 +118,35 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         siteAdapter.siteList = wcSites
 
+        if (selectedSite.exists()) {
+            siteAdapter.selectedSiteId = selectedSite.get().siteId
+        } else {
+            siteAdapter.selectedSiteId = wcSites[0].siteId
+        }
+
         button_continue.text = getString(R.string.continue_button)
-        button_continue.isEnabled = false
+        button_continue.isEnabled = true
         button_continue.setOnClickListener { _ ->
             val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
             site?.let { it ->
-                selectedSite.set(it)
-                CrashlyticsUtils.initSite(it)
-                AnalyticsTracker.track(
-                        Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
-                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to it.id))
-                finishEpilogue()
+                loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
+                presenter.verifySiteApiVersion(it)
             }
         }
     }
 
     override fun onSiteClick(siteId: Long) {
-        button_continue.isEnabled = false
-        presenter.getSiteBySiteId(siteId)?.let { site ->
-            loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
-            presenter.verifySiteApiVersion(site)
-        }
+        button_continue.isEnabled = true
     }
 
     override fun siteVerificationPassed(site: SiteModel) {
         loginProgressDialog?.dismiss()
-
-        button_continue.isEnabled = true
+        selectedSite.set(site)
+        CrashlyticsUtils.initSite(site)
+        AnalyticsTracker.track(
+                Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
+                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
+        finishEpilogue()
     }
 
     override fun siteVerificationFailed(site: SiteModel) {
