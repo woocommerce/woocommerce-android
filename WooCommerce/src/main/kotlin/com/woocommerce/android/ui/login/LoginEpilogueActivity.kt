@@ -129,6 +129,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         button_continue.setOnClickListener { _ ->
             val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
             site?.let { it ->
+                AnalyticsTracker.track(
+                        Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
+                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
                 loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
                 presenter.verifySiteApiVersion(it)
             }
@@ -143,9 +146,6 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         loginProgressDialog?.dismiss()
         selectedSite.set(site)
         CrashlyticsUtils.initSite(site)
-        AnalyticsTracker.track(
-                Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
-                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
         finishEpilogue()
     }
 
