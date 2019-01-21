@@ -131,7 +131,7 @@ class DashboardPresenterTest {
             canLoadMore = true
         })
 
-        verify(dashboardView).showUnfilledOrdersCard(totalOrders, true)
+        verify(dashboardView).showUnfilledOrdersCard(totalOrders)
     }
 
     @Test
@@ -171,7 +171,7 @@ class DashboardPresenterTest {
 
         // Simulate onOrderChanged event: FETCH-ORDERS - Dashboard should refresh
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
-        verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
+        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(1)).refreshDashboard(forced = any())
     }
@@ -182,7 +182,7 @@ class DashboardPresenterTest {
 
         // Simulate onOrderChanged event: UPDATE-ORDER-STATUS - Dashboard should refresh
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
+        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(1)).refreshDashboard(forced = any())
     }
@@ -193,7 +193,7 @@ class DashboardPresenterTest {
 
         // Simulate onOrderChanged event: FETCH-ORDER-NOTES - Dashboard should ignore
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDER_NOTES })
-        verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
+        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard(forced = true)
     }
@@ -207,7 +207,7 @@ class DashboardPresenterTest {
             causeOfChange = FETCH_ORDERS
             error = OrderError()
         })
-        verify(dashboardView, times(0)).showUnfilledOrdersCard(any(), any())
+        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }

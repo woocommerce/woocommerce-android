@@ -266,8 +266,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
-    override fun showUnfilledOrdersCard(count: Int, canLoadMore: Boolean) {
-        dashboard_unfilled_orders.updateOrdersCount(count, canLoadMore)
+    override fun showUnfilledOrdersCard(count: Int) {
+        dashboard_unfilled_orders.updateOrdersCount(count)
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
