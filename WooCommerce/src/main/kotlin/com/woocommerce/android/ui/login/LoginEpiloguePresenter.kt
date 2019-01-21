@@ -79,7 +79,7 @@ class LoginEpiloguePresenter @Inject constructor(
     fun onApiVersionFetched(event: OnApiVersionFetched) {
         if (event.isError) {
             WooLog.e(T.LOGIN, "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
-                    "${event.error?.message}")
+                    "${event.error?.type} - ${event.error?.message}")
             loginEpilogueView?.siteVerificationError(event.site)
             return
         }
