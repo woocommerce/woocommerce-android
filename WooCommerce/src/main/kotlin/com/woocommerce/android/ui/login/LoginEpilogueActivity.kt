@@ -38,7 +38,6 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
     private lateinit var siteAdapter: SiteListAdapter
 
-
     private var loginProgressDialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
