@@ -440,4 +440,9 @@
     <string name="http_authorization_required">Authorization required</string>
     <string name="httpuser">HTTP username</string>
     <string name="httppassword">HTTP password</string>
+
+    <!-- App rating dialog -->
+    <string name="app_rating_title">Enjoying Woo?</string>
+    <string name="app_rating_subtitle">Tap a star to rate it on the Google Play Store</string>
+    <string name="app_rating_not_now">Not now</string>
 </resources>
