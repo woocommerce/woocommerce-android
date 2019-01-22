@@ -23,22 +23,18 @@ object AppRatingDialog {
     private const val KEY_OPT_OUT = "rate_opt_out"
     private const val KEY_ASK_LATER_DATE = "rate_ask_later_date"
 
+    // app must have been installed this long before the rating dialog will appear
+    private const val criteriaInstallDays: Int = 7
+    // app must have been launched this many times before the rating dialog will appear
+    private const val criteriaLaunchTimes: Int = 10
+
     private var installDate = Date()
     private var askLaterDate = Date()
     private var launchTimes = 0
     private var optOut = false
-    private var config = Config()
 
     // Weak ref to avoid leaking the context
     private var dialogRef: WeakReference<AlertDialog>? = null
-
-    /**
-     * Initialize RateThisApp configuration.
-     * @param config Configuration object.
-     */
-    fun init(config: Config) {
-        this.config = config
-    }
 
     /**
      * Call this API when the launcher activity is launched.<br></br>
@@ -93,10 +89,10 @@ object AppRatingDialog {
         if (optOut) {
             return false
         } else {
-            if (launchTimes >= config.criteriaLaunchTimes) {
+            if (launchTimes >= criteriaLaunchTimes) {
                 return true
             }
-            val thresholdMs = TimeUnit.DAYS.toMillis(config.criteriaInstallDays.toLong())
+            val thresholdMs = TimeUnit.DAYS.toMillis(criteriaInstallDays.toLong())
             return Date().time - installDate.time >= thresholdMs && Date().time - askLaterDate.time >= thresholdMs
         }
     }
@@ -197,18 +193,5 @@ object AppRatingDialog {
         val editor = pref.edit()
         editor.putLong(KEY_ASK_LATER_DATE, System.currentTimeMillis())
         editor.apply()
-    }
-
-    /**
-     * Configuration.
-     */
-    class Config
-    /**
-     * Constructor.
-     * @param criteriaInstallDays
-     * @param criteriaLaunchTimes
-     */
-    @JvmOverloads constructor(val criteriaInstallDays: Int = 7, val criteriaLaunchTimes: Int = 10) {
-        //
     }
 }
