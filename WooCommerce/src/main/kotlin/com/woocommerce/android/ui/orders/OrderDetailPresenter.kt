@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
-import com.woocommerce.android.widgets.AppRatingDialog
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -139,8 +138,6 @@ class OrderDetailPresenter @Inject constructor(
 
         val payload = WCOrderStore.PostOrderNotePayload(orderModel!!, selectedSite.get(), noteModel)
         dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
-
-        AppRatingDialog.incrementInteractions()
 
         orderView?.showAddOrderNoteSnack()
     }

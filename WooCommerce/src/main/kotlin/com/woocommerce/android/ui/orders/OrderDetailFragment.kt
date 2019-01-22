@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
+import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -124,6 +125,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
             orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
             presenter.pushOrderNote(noteText, isCustomerNote)
+            AppRatingDialog.incrementInteractions()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

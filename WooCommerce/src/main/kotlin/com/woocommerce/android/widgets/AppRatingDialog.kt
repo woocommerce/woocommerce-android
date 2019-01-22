@@ -121,11 +121,11 @@ object AppRatingDialog {
 
                     setOptOut(true)
                 }
-                .setNeutralButton(R.string.app_rating_rate_later) { dialog, which ->
+                .setNeutralButton(R.string.app_rating_rate_later) { _, _ ->
                     clearSharedPreferences()
                     storeAskLaterDate()
                 }
-                .setNegativeButton(R.string.app_rating_rate_never) { dialog, which ->
+                .setNegativeButton(R.string.app_rating_rate_never) { _, _ ->
                     setOptOut(true)
                 }
                 .setOnCancelListener {
@@ -141,7 +141,7 @@ object AppRatingDialog {
      * This API is called when the "Later" is pressed or canceled.
      */
     private fun clearSharedPreferences() {
-        preferences?.edit()?.remove(KEY_INSTALL_DATE)?.remove(KEY_LAUNCH_TIMES)?.remove(KEY_INTERACTIONS)?.apply()
+        preferences.edit().remove(KEY_INSTALL_DATE)?.remove(KEY_LAUNCH_TIMES)?.remove(KEY_INTERACTIONS)?.apply()
     }
 
     /**
@@ -150,7 +150,7 @@ object AppRatingDialog {
      * @param optOut
      */
     private fun setOptOut(optOut: Boolean) {
-        preferences?.edit()?.putBoolean(KEY_OPT_OUT, optOut)?.apply()
+        preferences.edit().putBoolean(KEY_OPT_OUT, optOut)?.apply()
         this.optOut = optOut
     }
 
@@ -160,7 +160,7 @@ object AppRatingDialog {
      */
     fun incrementInteractions() {
         interactions++
-        preferences?.edit()?.putInt(KEY_INTERACTIONS, interactions)?.apply()
+        preferences.edit().putInt(KEY_INTERACTIONS, interactions)?.apply()
     }
 
     /**
@@ -177,7 +177,7 @@ object AppRatingDialog {
         } catch (e: PackageManager.NameNotFoundException) {
             WooLog.e(T.UTILS, e)
         }
-        preferences?.edit()?.putLong(KEY_INSTALL_DATE, installDate.time)?.apply()
+        preferences.edit().putLong(KEY_INSTALL_DATE, installDate.time)?.apply()
     }
 
     /**
@@ -185,6 +185,6 @@ object AppRatingDialog {
      */
     private fun storeAskLaterDate() {
         val nextAskDate = System.currentTimeMillis()
-        preferences?.edit()?.putLong(KEY_ASK_LATER_DATE, nextAskDate)?.apply()
+        preferences.edit().putLong(KEY_ASK_LATER_DATE, nextAskDate)?.apply()
     }
 }
