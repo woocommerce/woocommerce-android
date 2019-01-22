@@ -14,6 +14,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import java.lang.ref.WeakReference
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 object AppRatingDialog {
     private const val PREF_NAME = "rate_woo"
@@ -42,8 +43,7 @@ object AppRatingDialog {
     private var dialogRef: WeakReference<AlertDialog>? = null
 
     /**
-     * Call this when the launcher activity is launched.<br></br>
-     * @param context Context
+     * Call this when the launcher activity is launched.
      */
     fun onCreate(context: Context) {
         preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -68,13 +68,11 @@ object AppRatingDialog {
 
     /**
      * Show the rate dialog if the criteria is satisfied.
-     * @param context Context
      * @return true if shown, false otherwise.
      */
     fun showRateDialogIfNeeded(context: Context): Boolean {
         return if (shouldShowRateDialog()) {
-            val builder = AlertDialog.Builder(context)
-            showRateDialog(context, builder)
+            showRateDialog(context)
             true
         } else {
             false
@@ -82,25 +80,34 @@ object AppRatingDialog {
     }
 
     /**
+     * Called from various places in the app where the user has performed a non-trivial action, such as fulfilling
+     * an order. We use this to avoid showing the rating dialog to uninvolved users
+     */
+    fun incrementInteractions() {
+        interactions++
+        preferences.edit().putInt(KEY_INTERACTIONS, interactions)?.apply()
+    }
+
+    /**
      * Check whether the rate dialog should be shown or not.
-     * @return
+     * @return true if the dialog should be shown
      */
     private fun shouldShowRateDialog(): Boolean {
-        return interactions >= criteriaInteractions
-        /*return if (optOut or (launchTimes < criteriaLaunchTimes)) {
+        return if (optOut or (launchTimes < criteriaLaunchTimes) or (interactions < criteriaInteractions)) {
             false
         } else {
             val thresholdMs = TimeUnit.DAYS.toMillis(criteriaInstallDays.toLong())
             Date().time - installDate.time >= thresholdMs && Date().time - askLaterDate.time >= thresholdMs
-        }*/
+        }
     }
 
-    private fun showRateDialog(context: Context, builder: AlertDialog.Builder) {
+    private fun showRateDialog(context: Context) {
         dialogRef?.get()?.let {
             // Dialog is already present
             return
         }
 
+        val builder = AlertDialog.Builder(context)
         builder.setTitle(R.string.app_rating_title)
                 .setMessage(R.string.app_rating_message)
                 .setCancelable(true)
@@ -137,7 +144,7 @@ object AppRatingDialog {
     }
 
     /**
-     * Clear data other than opt-out in shared preferences - called when the "Later" is pressed or canceled.
+     * Clear data other than opt-out in shared preferences - called when the "Later" is pressed or dialog is canceled.
      */
     private fun clearSharedPreferences() {
         preferences.edit().remove(KEY_INSTALL_DATE)?.remove(KEY_LAUNCH_TIMES)?.remove(KEY_INTERACTIONS)?.apply()
@@ -145,7 +152,6 @@ object AppRatingDialog {
 
     /**
      * Set opt out flag - when true, the rate dialog will never shown unless app data is cleared.
-     * @param optOut
      */
     private fun setOptOut(optOut: Boolean) {
         preferences.edit().putBoolean(KEY_OPT_OUT, optOut)?.apply()
@@ -153,17 +159,7 @@ object AppRatingDialog {
     }
 
     /**
-     * Called from various places in the app where the user has performed a non-trivial action, such as fulfilling
-     * an order. We use this to avoid showing the rating dialog to uninvolved users
-     */
-    fun incrementInteractions() {
-        interactions++
-        preferences.edit().putInt(KEY_INTERACTIONS, interactions)?.apply()
-    }
-
-    /**
      * Store install date - retrieved from package manager if possible.
-     * @param context
      */
     private fun storeInstallDate(context: Context) {
         var installDate = Date()

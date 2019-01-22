@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -114,11 +113,8 @@ class MainActivity : AppCompatActivity(),
 
         initFragment(savedInstanceState)
 
-        // TODO: this should be enabled for production builds prior to 1.1 (submit issue for this prior to merge)
-        if (savedInstanceState == null && BuildConfig.DEBUG) {
-            AppRatingDialog.onCreate(this)
-            AppRatingDialog.showRateDialogIfNeeded(this)
-        }
+        AppRatingDialog.onCreate(this)
+        AppRatingDialog.showRateDialogIfNeeded(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
