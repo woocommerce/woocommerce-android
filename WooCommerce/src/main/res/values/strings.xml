@@ -443,6 +443,8 @@
 
     <!-- App rating dialog -->
     <string name="app_rating_title">Enjoying Woo?</string>
-    <string name="app_rating_subtitle">Tap a star to rate it on the Google Play Store</string>
-    <string name="app_rating_not_now">Not now</string>
+    <string name="app_rating_message">If you\'re enjoying this app, would you take a minute to rate it?</string>
+    <string name="app_rating_rate_now">Rate now</string>
+    <string name="app_rating_rate_later">Later</string>
+    <string name="app_rating_rate_never">No thanks</string>
 </resources>
