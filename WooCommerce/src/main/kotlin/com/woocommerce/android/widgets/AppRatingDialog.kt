@@ -21,16 +21,22 @@ object AppRatingDialog {
     private const val KEY_LAUNCH_TIMES = "rate_launch_times"
     private const val KEY_OPT_OUT = "rate_opt_out"
     private const val KEY_ASK_LATER_DATE = "rate_ask_later_date"
+    private const val KEY_INTERACTIONS = "rate_interactions"
 
     // app must have been installed this long before the rating dialog will appear
     private const val criteriaInstallDays: Int = 7
     // app must have been launched this many times before the rating dialog will appear
     private const val criteriaLaunchTimes: Int = 10
+    // user must have performed this many interactions before the rating dialog will appear
+    private const val criteriaInteractions: Int = 10
 
     private var installDate = Date()
     private var askLaterDate = Date()
     private var launchTimes = 0
+    private var interactions = 0
     private var optOut = false
+
+    private lateinit var preferences: SharedPreferences
 
     // Weak ref to avoid leaking the context
     private var dialogRef: WeakReference<AlertDialog>? = null
@@ -40,23 +46,24 @@ object AppRatingDialog {
      * @param context Context
      */
     fun onCreate(context: Context) {
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        val editor = pref.edit()
+        preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val editor = preferences.edit()
 
         // If it is the first launch, save the date in shared preference.
-        if (pref.getLong(KEY_INSTALL_DATE, 0) == 0L) {
-            storeInstallDate(context, editor)
+        if (preferences.getLong(KEY_INSTALL_DATE, 0) == 0L) {
+            storeInstallDate(context)
         }
 
         // Increment launch times
-        launchTimes = pref.getInt(KEY_LAUNCH_TIMES, 0)
+        launchTimes = preferences.getInt(KEY_LAUNCH_TIMES, 0)
         launchTimes++
         editor.putInt(KEY_LAUNCH_TIMES, launchTimes)
         editor.apply()
 
-        installDate = Date(pref.getLong(KEY_INSTALL_DATE, 0))
-        optOut = pref.getBoolean(KEY_OPT_OUT, false)
-        askLaterDate = Date(pref.getLong(KEY_ASK_LATER_DATE, 0))
+        interactions = preferences.getInt(KEY_INTERACTIONS, 0)
+        optOut = preferences.getBoolean(KEY_OPT_OUT, false)
+        installDate = Date(preferences.getLong(KEY_INSTALL_DATE, 0))
+        askLaterDate = Date(preferences.getLong(KEY_ASK_LATER_DATE, 0))
     }
 
     /**
@@ -79,7 +86,7 @@ object AppRatingDialog {
      * @return
      */
     private fun shouldShowRateDialog(): Boolean {
-        return true
+        return interactions >= criteriaInteractions
         /*return if (optOut or (launchTimes < criteriaLaunchTimes)) {
             false
         } else {
@@ -112,18 +119,18 @@ object AppRatingDialog {
                         )
                     }
 
-                    setOptOut(context, true)
+                    setOptOut(true)
                 }
                 .setNeutralButton(R.string.app_rating_rate_later) { dialog, which ->
-                    clearSharedPreferences(context)
-                    storeAskLaterDate(context)
+                    clearSharedPreferences()
+                    storeAskLaterDate()
                 }
                 .setNegativeButton(R.string.app_rating_rate_never) { dialog, which ->
-                    setOptOut(context, true)
+                    setOptOut(true)
                 }
                 .setOnCancelListener {
-                    clearSharedPreferences(context)
-                    storeAskLaterDate(context)
+                    clearSharedPreferences()
+                    storeAskLaterDate()
                 }
                 .setOnDismissListener { dialogRef?.clear() }
         dialogRef = WeakReference(builder.show())
@@ -132,37 +139,36 @@ object AppRatingDialog {
     /**
      * Clear data in shared preferences.<br></br>
      * This API is called when the "Later" is pressed or canceled.
-     * @param context
      */
-    private fun clearSharedPreferences(context: Context) {
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        pref.edit()
-                .remove(KEY_INSTALL_DATE)
-                .remove(KEY_LAUNCH_TIMES)
-                .apply()
+    private fun clearSharedPreferences() {
+        preferences?.edit()?.remove(KEY_INSTALL_DATE)?.remove(KEY_LAUNCH_TIMES)?.remove(KEY_INTERACTIONS)?.apply()
     }
 
     /**
      * Set opt out flag.
      * If it is true, the rate dialog will never shown unless app data is cleared.
-     * @param context
      * @param optOut
      */
-    private fun setOptOut(context: Context, optOut: Boolean) {
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        pref.edit()
-                .putBoolean(KEY_OPT_OUT, optOut)
-                .apply()
+    private fun setOptOut(optOut: Boolean) {
+        preferences?.edit()?.putBoolean(KEY_OPT_OUT, optOut)?.apply()
         this.optOut = optOut
+    }
+
+    /**
+     * Called from various places in the app where the user has performed a non-trivial actions, such as fulfilling
+     * an order. We use this to avoid showing the rating dialog to uninvolved users
+     */
+    fun incrementInteractions() {
+        interactions++
+        preferences?.edit()?.putInt(KEY_INTERACTIONS, interactions)?.apply()
     }
 
     /**
      * Store install date.
      * Install date is retrieved from package manager if possible.
      * @param context
-     * @param editor
      */
-    private fun storeInstallDate(context: Context, editor: SharedPreferences.Editor) {
+    private fun storeInstallDate(context: Context) {
         var installDate = Date()
         val packMan = context.packageManager
         try {
@@ -171,18 +177,14 @@ object AppRatingDialog {
         } catch (e: PackageManager.NameNotFoundException) {
             WooLog.e(T.UTILS, e)
         }
-        editor.putLong(KEY_INSTALL_DATE, installDate.time)
+        preferences?.edit()?.putLong(KEY_INSTALL_DATE, installDate.time)?.apply()
     }
 
     /**
      * Store the date the user asked for being asked again later.
-     * @param context
      */
-    private fun storeAskLaterDate(context: Context) {
+    private fun storeAskLaterDate() {
         val nextAskDate = System.currentTimeMillis()
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        pref.edit()
-                .putLong(KEY_ASK_LATER_DATE, nextAskDate)
-                .apply()
+        preferences?.edit()?.putLong(KEY_ASK_LATER_DATE, nextAskDate)?.apply()
     }
 }

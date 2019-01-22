@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderFulfillmentContract.View
+import com.woocommerce.android.widgets.AppRatingDialog
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -46,6 +47,8 @@ class OrderFulfillmentPresenter @Inject constructor(
             view.fulfillOrder()
 
             view.toggleCompleteButton(true)
+
+            AppRatingDialog.incrementInteractions()
         }
     }
 }
