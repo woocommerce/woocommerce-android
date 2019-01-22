@@ -1,5 +1,5 @@
 /**
- * Adapted and converted to Kotlin from https://github.com/kobakei/Android-RateThisApp
+ * Loosely based on https://github.com/kobakei/Android-RateThisApp but highly modified and simplified for our use
  */
 package com.woocommerce.android.widgets
 
@@ -71,7 +71,7 @@ object AppRatingDialog {
      * @return true if shown, false otherwise.
      */
     fun showRateDialogIfNeeded(context: Context): Boolean {
-        return if (shouldShowRateDialog()) {
+        return if (!shouldShowRateDialog()) {
             showRateDialog(context)
             true
         } else {
@@ -151,7 +151,7 @@ object AppRatingDialog {
     }
 
     /**
-     * Set opt out flag - when true, the rate dialog will never shown unless app data is cleared.
+     * Set opt out flag - when true, the rate dialog will never be shown unless app data is cleared.
      */
     private fun setOptOut(optOut: Boolean) {
         preferences.edit().putBoolean(KEY_OPT_OUT, optOut)?.apply()
