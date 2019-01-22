@@ -37,8 +37,7 @@ object AppRatingDialog {
     private var dialogRef: WeakReference<AlertDialog>? = null
 
     /**
-     * Call this API when the launcher activity is launched.<br></br>
-     * It is better to call this API in onCreate() of the launcher activity.
+     * Call this when the launcher activity is launched.<br></br>
      * @param context Context
      */
     fun onCreate(context: Context) {
@@ -51,14 +50,12 @@ object AppRatingDialog {
         }
 
         // Increment launch times
-        var launchTimes = pref.getInt(KEY_LAUNCH_TIMES, 0)
+        launchTimes = pref.getInt(KEY_LAUNCH_TIMES, 0)
         launchTimes++
-
         editor.putInt(KEY_LAUNCH_TIMES, launchTimes)
         editor.apply()
 
         installDate = Date(pref.getLong(KEY_INSTALL_DATE, 0))
-        this.launchTimes = pref.getInt(KEY_LAUNCH_TIMES, 0)
         optOut = pref.getBoolean(KEY_OPT_OUT, false)
         askLaterDate = Date(pref.getLong(KEY_ASK_LATER_DATE, 0))
     }
@@ -81,19 +78,14 @@ object AppRatingDialog {
 
     /**
      * Check whether the rate dialog should be shown or not.
-     * Developers may call this method directly if they want to show their own view instead of
-     * dialog provided by this library.
      * @return
      */
     private fun shouldShowRateDialog(): Boolean {
-        if (optOut) {
-            return false
+        return if (optOut or (launchTimes < criteriaLaunchTimes)) {
+            false
         } else {
-            if (launchTimes >= criteriaLaunchTimes) {
-                return true
-            }
             val thresholdMs = TimeUnit.DAYS.toMillis(criteriaInstallDays.toLong())
-            return Date().time - installDate.time >= thresholdMs && Date().time - askLaterDate.time >= thresholdMs
+            Date().time - installDate.time >= thresholdMs && Date().time - askLaterDate.time >= thresholdMs
         }
     }
 
@@ -145,24 +137,23 @@ object AppRatingDialog {
      */
     private fun clearSharedPreferences(context: Context) {
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        val editor = pref.edit()
-        editor.remove(KEY_INSTALL_DATE)
-        editor.remove(KEY_LAUNCH_TIMES)
-        editor.apply()
+        pref.edit()
+                .remove(KEY_INSTALL_DATE)
+                .remove(KEY_LAUNCH_TIMES)
+                .apply()
     }
 
     /**
      * Set opt out flag.
      * If it is true, the rate dialog will never shown unless app data is cleared.
-     * This method is called when Yes or No is pressed.
      * @param context
      * @param optOut
      */
     private fun setOptOut(context: Context, optOut: Boolean) {
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        val editor = pref.edit()
-        editor.putBoolean(KEY_OPT_OUT, optOut)
-        editor.apply()
+        pref.edit()
+                .putBoolean(KEY_OPT_OUT, optOut)
+                .apply()
         this.optOut = optOut
     }
 
@@ -189,9 +180,10 @@ object AppRatingDialog {
      * @param context
      */
     private fun storeAskLaterDate(context: Context) {
+        val nextAskDate = System.currentTimeMillis()
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        val editor = pref.edit()
-        editor.putLong(KEY_ASK_LATER_DATE, System.currentTimeMillis())
-        editor.apply()
+        pref.edit()
+                .putLong(KEY_ASK_LATER_DATE, nextAskDate)
+                .apply()
     }
 }
