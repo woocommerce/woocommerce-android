@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity(),
         // TODO: this should be enabled for production builds prior to 1.1 (submit issue for this prior to merge)
         if (savedInstanceState == null && BuildConfig.DEBUG) {
             AppRatingDialog.onCreate(this)
-            AppRatingDialog.showRateDialogIfNeeded(this, R.style.AppTheme)
+            AppRatingDialog.showRateDialogIfNeeded(this)
         }
     }
 

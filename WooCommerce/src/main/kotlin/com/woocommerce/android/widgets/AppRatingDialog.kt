@@ -14,7 +14,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import java.lang.ref.WeakReference
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 object AppRatingDialog {
     private const val PREF_NAME = "rate_woo"
@@ -63,12 +62,11 @@ object AppRatingDialog {
     /**
      * Show the rate dialog if the criteria is satisfied.
      * @param context Context
-     * @param themeId Theme ID
      * @return true if shown, false otherwise.
      */
-    fun showRateDialogIfNeeded(context: Context, themeId: Int): Boolean {
+    fun showRateDialogIfNeeded(context: Context): Boolean {
         return if (shouldShowRateDialog()) {
-            val builder = AlertDialog.Builder(context, themeId)
+            val builder = AlertDialog.Builder(context)
             showRateDialog(context, builder)
             true
         } else {
@@ -81,16 +79,17 @@ object AppRatingDialog {
      * @return
      */
     private fun shouldShowRateDialog(): Boolean {
-        return if (optOut or (launchTimes < criteriaLaunchTimes)) {
+        return true
+        /*return if (optOut or (launchTimes < criteriaLaunchTimes)) {
             false
         } else {
             val thresholdMs = TimeUnit.DAYS.toMillis(criteriaInstallDays.toLong())
             Date().time - installDate.time >= thresholdMs && Date().time - askLaterDate.time >= thresholdMs
-        }
+        }*/
     }
 
     private fun showRateDialog(context: Context, builder: AlertDialog.Builder) {
-        if (dialogRef != null && dialogRef!!.get() != null) {
+        dialogRef?.get()?.let {
             // Dialog is already present
             return
         }
@@ -126,7 +125,7 @@ object AppRatingDialog {
                     clearSharedPreferences(context)
                     storeAskLaterDate(context)
                 }
-                .setOnDismissListener { dialogRef!!.clear() }
+                .setOnDismissListener { dialogRef?.clear() }
         dialogRef = WeakReference(builder.show())
     }
 
