@@ -137,16 +137,14 @@ object AppRatingDialog {
     }
 
     /**
-     * Clear data in shared preferences.<br></br>
-     * This API is called when the "Later" is pressed or canceled.
+     * Clear data other than opt-out in shared preferences - called when the "Later" is pressed or canceled.
      */
     private fun clearSharedPreferences() {
         preferences.edit().remove(KEY_INSTALL_DATE)?.remove(KEY_LAUNCH_TIMES)?.remove(KEY_INTERACTIONS)?.apply()
     }
 
     /**
-     * Set opt out flag.
-     * If it is true, the rate dialog will never shown unless app data is cleared.
+     * Set opt out flag - when true, the rate dialog will never shown unless app data is cleared.
      * @param optOut
      */
     private fun setOptOut(optOut: Boolean) {
@@ -155,7 +153,7 @@ object AppRatingDialog {
     }
 
     /**
-     * Called from various places in the app where the user has performed a non-trivial actions, such as fulfilling
+     * Called from various places in the app where the user has performed a non-trivial action, such as fulfilling
      * an order. We use this to avoid showing the rating dialog to uninvolved users
      */
     fun incrementInteractions() {
@@ -164,8 +162,7 @@ object AppRatingDialog {
     }
 
     /**
-     * Store install date.
-     * Install date is retrieved from package manager if possible.
+     * Store install date - retrieved from package manager if possible.
      * @param context
      */
     private fun storeInstallDate(context: Context) {
