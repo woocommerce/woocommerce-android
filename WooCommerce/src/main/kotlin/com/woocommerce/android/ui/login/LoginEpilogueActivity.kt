@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.login
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
+import android.text.TextUtils
 import android.view.View
-import android.widget.LinearLayout
+import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -16,7 +18,6 @@ import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.adapter.SiteListAdapter
 import com.woocommerce.android.ui.login.adapter.SiteListAdapter.OnSiteClickListener
-import com.woocommerce.android.ui.login.adapter.SiteListUnsupportedAdapter
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CrashlyticsUtils
@@ -29,17 +30,13 @@ import javax.inject.Inject
 
 class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, OnSiteClickListener {
     companion object {
-        private const val STATE_KEY_SUPPORTED_SITE_ID_LIST = "key-supported-site-id-list"
-        private const val STATE_KEY_UNSUPPORTED_SITE_ID_LIST = "key-unsupported-site-id-list"
-
-        private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
+        private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
     }
 
     @Inject lateinit var presenter: LoginEpilogueContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var siteAdapter: SiteListAdapter
-    private lateinit var unsupportedSiteAdapter: SiteListUnsupportedAdapter
 
     private var loginProgressDialog: ProgressDialog? = null
 
@@ -51,33 +48,22 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
         presenter.takeView(this)
 
-        supported_recycler.layoutManager = LinearLayoutManager(this)
+        sites_recycler.layoutManager = LinearLayoutManager(this)
         siteAdapter = SiteListAdapter(this, this)
-        supported_recycler.adapter = siteAdapter
-
-        unsupported_recycler.layoutManager = LinearLayoutManager(this)
-        unsupportedSiteAdapter = SiteListUnsupportedAdapter(this)
-        unsupported_recycler.adapter = unsupportedSiteAdapter
+        sites_recycler.adapter = siteAdapter
 
         showUserInfo()
 
         savedInstanceState?.let { bundle ->
-            val supportedSites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SUPPORTED_SITE_ID_LIST))
-            val unsupportedSites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_UNSUPPORTED_SITE_ID_LIST))
-            showStoreList(supportedSites, unsupportedSites)
+            val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
+            showStoreList(sites)
         } ?: run {
-            loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_sites))
-            supported_frame_list_container.visibility = View.GONE
-            presenter.checkWCVersionsForAllSites()
+            site_list_container.visibility = View.GONE
+            presenter.loadSites()
 
             AnalyticsTracker.track(
                     Stat.LOGIN_EPILOGUE_STORES_SHOWN,
                     mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size))
-        }
-
-        // show buttons side-by-side in landscape
-        if (DisplayUtils.isLandscape(this)) {
-            frame_bottom.orientation = LinearLayout.HORIZONTAL
         }
     }
 
@@ -94,11 +80,9 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     public override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        val supportedSiteIdList = siteAdapter.siteList.map { it.id }
-        val unsupportedSiteIdList = unsupportedSiteAdapter.siteList.map { it.id }
+        val sitesList = siteAdapter.siteList.map { it.id }
 
-        outState.putIntArray(STATE_KEY_SUPPORTED_SITE_ID_LIST, supportedSiteIdList.toIntArray())
-        outState.putIntArray(STATE_KEY_UNSUPPORTED_SITE_ID_LIST, unsupportedSiteIdList.toIntArray())
+        outState.putIntArray(STATE_KEY_SITE_ID_LIST, sitesList.toIntArray())
     }
 
     override fun onBackPressed() {
@@ -118,72 +102,82 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                 .into(image_avatar)
     }
 
-    override fun showStoreList(supportedWCSites: List<SiteModel>, unsupportedWCSites: List<SiteModel>) {
+    override fun showStoreList(wcSites: List<SiteModel>) {
         loginProgressDialog?.takeIf { it.isShowing }?.dismiss()
 
-        if (supportedWCSites.isEmpty() && unsupportedWCSites.isEmpty()) {
+        if (wcSites.isEmpty()) {
             showNoStoresView()
             return
         }
 
-        if (supportedWCSites.isNotEmpty()) {
-            supported_frame_list_container.visibility = View.VISIBLE
-            button_update_instructions.visibility = View.GONE
+        site_list_container.visibility = View.VISIBLE
+        site_list_label.text = if (wcSites.size == 1)
+            getString(R.string.login_connected_store)
+        else
+            getString(R.string.login_pick_store)
 
-            supported_text_list_label.text = if (supportedWCSites.size == 1)
-                getString(R.string.login_connected_store)
-            else
-                getString(R.string.login_pick_store)
+        siteAdapter.siteList = wcSites
 
-            if (selectedSite.exists()) {
-                siteAdapter.selectedSiteId = selectedSite.get().siteId
-            } else {
-                siteAdapter.selectedSiteId = supportedWCSites[0].siteId
-            }
-
-            siteAdapter.siteList = supportedWCSites
-
-            button_continue.text = getString(R.string.continue_button)
-            button_continue.setOnClickListener { _ ->
-                val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
-                site?.let { it ->
-                    selectedSite.set(it)
-                    CrashlyticsUtils.initSite(it)
-                    AnalyticsTracker.track(
-                            Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to it.id))
-                    finishEpilogue()
-                }
-            }
+        if (selectedSite.exists()) {
+            siteAdapter.selectedSiteId = selectedSite.get().siteId
         } else {
-            // Show 'Update instructions' button, and replace 'Continue' button with 'Refresh'
-            button_update_instructions.visibility = View.VISIBLE
-            button_update_instructions.setOnClickListener {
-                ActivityUtils.openUrlExternal(this, URL_UPGRADE_WOOCOMMERCE)
-            }
-
-            button_continue.text = getString(R.string.refresh_button)
-            button_continue.setOnClickListener {
-                loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_sites))
-                presenter.checkWCVersionsForAllSites()
-            }
-            supported_frame_list_container.visibility = View.GONE
+            siteAdapter.selectedSiteId = wcSites[0].siteId
         }
 
-        if (unsupportedWCSites.isNotEmpty()) {
-            unsupported_frame_list_container.visibility = View.VISIBLE
-            unsupportedSiteAdapter.siteList = unsupportedWCSites
+        button_continue.text = getString(R.string.continue_button)
+        button_continue.isEnabled = true
+        button_continue.setOnClickListener { _ ->
+            val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
+            site?.let { it ->
+                AnalyticsTracker.track(
+                        Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
+                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
+                loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
+                presenter.verifySiteApiVersion(it)
+            }
         }
     }
 
     override fun onSiteClick(siteId: Long) {
-        val site = presenter.getSiteBySiteId(siteId)
-        site?.let { selectedSite.set(it) }
+        button_continue.isEnabled = true
+    }
+
+    override fun siteVerificationPassed(site: SiteModel) {
+        loginProgressDialog?.dismiss()
+        selectedSite.set(site)
+        CrashlyticsUtils.initSite(site)
+        finishEpilogue()
+    }
+
+    override fun siteVerificationFailed(site: SiteModel) {
+        loginProgressDialog?.dismiss()
+
+        siteAdapter.selectedSiteId = 0
+        button_continue.isEnabled = false
+
+        val ft = supportFragmentManager.beginTransaction()
+        val prev = supportFragmentManager.findFragmentByTag(WooUpgradeRequiredDialog.TAG)
+        if (prev != null) {
+            ft.remove(prev)
+        }
+        ft.addToBackStack(null)
+        val dialogFragment = WooUpgradeRequiredDialog()
+        dialogFragment.show(ft, WooUpgradeRequiredDialog.TAG)
+    }
+
+    override fun siteVerificationError(site: SiteModel) {
+        loginProgressDialog?.dismiss()
+
+        val siteName = if (!TextUtils.isEmpty(site.name)) site.name else getString(R.string.untitled)
+        Snackbar.make(
+                login_root as ViewGroup,
+                getString(R.string.login_verifying_site_error, siteName),
+                Snackbar.LENGTH_LONG
+        ).show()
     }
 
     private fun showNoStoresView() {
-        supported_frame_list_container.visibility = View.GONE
-        unsupported_frame_list_container.visibility = View.GONE
+        site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
         val noStoresImage =
@@ -192,6 +186,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         no_stores_view.setCompoundDrawablesWithIntrinsicBounds(null, noStoresImage, null, null)
 
         button_continue.text = getString(R.string.login_with_a_different_account)
+        button_continue.isEnabled = true
         button_continue.setOnClickListener {
             presenter.logout()
         }
