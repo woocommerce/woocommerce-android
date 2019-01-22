@@ -58,6 +58,7 @@
     <string name="search">Search</string>
     <string name="back">Back</string>
     <string name="button_update_instructions">Update instructions</string>
+    <string name="dismiss">Dismiss</string>
 
     <!--
         Date/Time Labels
@@ -95,8 +96,10 @@
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
     <string name="login_pick_store">Pick store</string>
     <string name="login_connected_store">Connected store</string>
-    <string name="login_verifying_sites">Verifying sites…</string>
-    <string name="login_site_list_update_required">Update to WooCommerce 3.5 required</string>
+    <string name="login_verifying_site">Verifying site…</string>
+    <string name="login_verifying_site_error">Cannot connect to %s</string>
+    <string name="login_update_required_title">Update Store to WooCommerce 3.5</string>
+    <string name="login_update_required_desc">This app requires WooCommerce 3.5 on your server. To continue using this app, please update your store.</string>
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>

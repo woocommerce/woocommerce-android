@@ -29,7 +29,8 @@ object WooLog {
         DEVICE,
         SUPPORT,
         WP,
-        NOTIFICATIONS
+        NOTIFICATIONS,
+        LOGIN
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
