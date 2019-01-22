@@ -1,4 +1,4 @@
-/*
+/**
  * Adapted and converted to Kotlin from https://github.com/kobakei/Android-RateThisApp
  */
 package com.woocommerce.android.widgets
@@ -27,7 +27,6 @@ object AppRatingDialog {
     private var askLaterDate = Date()
     private var launchTimes = 0
     private var optOut = false
-
     private var config = Config()
 
     // Weak ref to avoid leaking the context
@@ -71,26 +70,13 @@ object AppRatingDialog {
     /**
      * Show the rate dialog if the criteria is satisfied.
      * @param context Context
-     * @return true if shown, false otherwise.
-     */
-    fun showRateDialogIfNeeded(context: Context): Boolean {
-        return if (shouldShowRateDialog()) {
-            showRateDialog(context)
-            true
-        } else {
-            false
-        }
-    }
-
-    /**
-     * Show the rate dialog if the criteria is satisfied.
-     * @param context Context
      * @param themeId Theme ID
      * @return true if shown, false otherwise.
      */
     fun showRateDialogIfNeeded(context: Context, themeId: Int): Boolean {
         return if (shouldShowRateDialog()) {
-            showRateDialog(context, themeId)
+            val builder = AlertDialog.Builder(context, themeId)
+            showRateDialog(context, builder)
             true
         } else {
             false
@@ -103,7 +89,7 @@ object AppRatingDialog {
      * dialog provided by this library.
      * @return
      */
-    fun shouldShowRateDialog(): Boolean {
+    private fun shouldShowRateDialog(): Boolean {
         if (optOut) {
             return false
         } else {
@@ -115,42 +101,6 @@ object AppRatingDialog {
         }
     }
 
-    /**
-     * Show the rate dialog
-     * @param context
-     */
-    fun showRateDialog(context: Context) {
-        val builder = AlertDialog.Builder(context)
-        showRateDialog(context, builder)
-    }
-
-    /**
-     * Show the rate dialog
-     * @param context
-     * @param themeId
-     */
-    fun showRateDialog(context: Context, themeId: Int) {
-        val builder = AlertDialog.Builder(context, themeId)
-        showRateDialog(context, builder)
-    }
-
-    /**
-     * Stop showing the rate dialog
-     * @param context
-     */
-    fun stopRateDialog(context: Context) {
-        setOptOut(context, true)
-    }
-
-    /**
-     * Get count number of the rate dialog launches
-     * @return
-     */
-    private fun getLaunchCount(context: Context): Int {
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        return pref.getInt(KEY_LAUNCH_TIMES, 0)
-    }
-
     private fun showRateDialog(context: Context, builder: AlertDialog.Builder) {
         if (dialogRef != null && dialogRef!!.get() != null) {
             // Dialog is already present
@@ -158,36 +108,37 @@ object AppRatingDialog {
         }
 
         builder.setTitle(R.string.app_rating_title)
-        builder.setMessage(R.string.app_rating_message)
-        builder.setCancelable(true)
-        builder.setPositiveButton(R.string.app_rating_rate_now) { dialog, which ->
-            val appPackage = context.packageName
-            val url: String? = "market://details?id=$appPackage"
-            try {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-            } catch (e: android.content.ActivityNotFoundException) {
-                context.startActivity(
-                        Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("http://play.google.com/store/apps/details?id=" + context.packageName)
+                .setMessage(R.string.app_rating_message)
+                .setCancelable(true)
+                .setPositiveButton(R.string.app_rating_rate_now) { dialog, which ->
+                    val appPackage = context.packageName
+                    val url: String? = "market://details?id=$appPackage"
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    } catch (e: android.content.ActivityNotFoundException) {
+                        // play store app isn't on this device so open app's page in browser instead
+                        context.startActivity(
+                                Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("http://play.google.com/store/apps/details?id=" + context.packageName)
+                                )
                         )
-                )
-            }
+                    }
 
-            setOptOut(context, true)
-        }
-        builder.setNeutralButton(R.string.app_rating_rate_later) { dialog, which ->
-            clearSharedPreferences(context)
-            storeAskLaterDate(context)
-        }
-        builder.setNegativeButton(R.string.app_rating_rate_never) { dialog, which ->
-            setOptOut(context, true)
-        }
-        builder.setOnCancelListener {
-            clearSharedPreferences(context)
-            storeAskLaterDate(context)
-        }
-        builder.setOnDismissListener { dialogRef!!.clear() }
+                    setOptOut(context, true)
+                }
+                .setNeutralButton(R.string.app_rating_rate_later) { dialog, which ->
+                    clearSharedPreferences(context)
+                    storeAskLaterDate(context)
+                }
+                .setNegativeButton(R.string.app_rating_rate_never) { dialog, which ->
+                    setOptOut(context, true)
+                }
+                .setOnCancelListener {
+                    clearSharedPreferences(context)
+                    storeAskLaterDate(context)
+                }
+                .setOnDismissListener { dialogRef!!.clear() }
         dialogRef = WeakReference(builder.show())
     }
 
