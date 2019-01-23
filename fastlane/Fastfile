@@ -11,6 +11,45 @@ ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 ########################################################################
 # Release Lanes
 ########################################################################  
+#####################################################################################
+# update_ps_strings 
+# -----------------------------------------------------------------------------------
+# This lane gets the data from the txt files in the WooCommerce/metadata/ folder
+# and updates the .pot file that is then picked by GlotPress for translations.
+# -----------------------------------------------------------------------------------
+# Usage:
+# fastlane update_ps_strings version:<version>
+#
+# Example:
+# fastlane update_ps_strings version:1.1
+#####################################################################################
+desc "Updates the PlayStoreStrings.pot file"
+lane :update_ps_strings do |options| 
+  prj_folder = Dir.pwd + "/.."
+
+  files = {
+    release_note: prj_folder + "/WooCommerce/metadata/release_notes.txt",
+    play_store_promo: prj_folder + "/WooCommerce/metadata/short_description.txt",
+    play_store_desc: prj_folder + "/WooCommerce/metadata/full_description.txt",
+    play_store_app_title: prj_folder + "/WooCommerce/metadata/title.txt"
+  }
+
+  an_update_metadata_source(po_file_path: prj_folder + "/WooCommerce/metadata/PlayStoreStrings.pot", 
+    source_files: files, 
+    release_version: options[:version])
+end 
+
+#####################################################################################
+# localize_libs 
+# -----------------------------------------------------------------------------------
+# This lane gets the data from the dependencies and updates the main strings.xml file
+# -----------------------------------------------------------------------------------
+# Usage:
+# fastlane localize_libs 
+#
+# Example:
+# fastlane localize_libs 
+#####################################################################################
 desc "Merge libraries strings files into the main app one"
 lane :localize_libs do | options |
   main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
