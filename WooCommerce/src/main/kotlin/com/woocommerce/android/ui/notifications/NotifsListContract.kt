@@ -28,5 +28,6 @@ interface NotifsListContract {
         fun openReviewDetail(notification: NotificationModel)
         fun visuallyMarkNotificationsAsRead()
         fun showMarkAllNotificationsReadError()
+        fun showMarkAllNotificationsReadSuccess()
     }
 }

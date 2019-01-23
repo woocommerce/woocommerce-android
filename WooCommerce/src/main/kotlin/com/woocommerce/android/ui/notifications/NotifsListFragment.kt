@@ -397,8 +397,12 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         notifsAdapter.markAllNotifsAsRead()
     }
 
-    override fun showMarkAllNotificationsReadError() {
+    override fun showMarkAllNotificationsReadSuccess() {
         uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
+    }
+
+    override fun showMarkAllNotificationsReadError() {
+        uiMessageResolver.showSnack(R.string.wc_mark_all_read_success)
     }
 
     private fun revertPendingModeratedNotifState() {
