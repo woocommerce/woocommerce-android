@@ -110,6 +110,7 @@ class NotifsListPresenter @Inject constructor(
                 view?.visuallyMarkNotificationsAsRead()
                 view?.showMarkAllNotificationsReadSuccess()
             } else {
+                view?.showMarkAllNotificationsReadNone()
                 WooLog.d(NOTIFICATIONS, "Mark all as read: No unread notifications found. Exiting.")
             }
         }

@@ -29,5 +29,6 @@ interface NotifsListContract {
         fun visuallyMarkNotificationsAsRead()
         fun showMarkAllNotificationsReadError()
         fun showMarkAllNotificationsReadSuccess()
+        fun showMarkAllNotificationsReadNone()
     }
 }

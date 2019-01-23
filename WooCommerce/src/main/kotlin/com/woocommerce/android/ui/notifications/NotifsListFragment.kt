@@ -398,11 +398,20 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     }
 
     override fun showMarkAllNotificationsReadSuccess() {
-        uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
+        uiMessageResolver.showSnack(R.string.wc_mark_all_read_success)
+    }
+
+    /*
+     * TODO: this snack is shown when the user taps to marks all notifs as read and there
+     * are no unread notifs - this is temporary, there is a separate issue filed to hide
+     * the mark all read option when there are no unread notfs
+     */
+    override fun showMarkAllNotificationsReadNone() {
+        uiMessageResolver.showSnack(R.string.wc_mark_all_read_none)
     }
 
     override fun showMarkAllNotificationsReadError() {
-        uiMessageResolver.showSnack(R.string.wc_mark_all_read_success)
+        uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
     }
 
     private fun revertPendingModeratedNotifState() {
