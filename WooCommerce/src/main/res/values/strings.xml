@@ -317,7 +317,9 @@
         Notifications List
     -->
     <string name="wc_mark_all_read">Mark all as read</string>
+    <string name="wc_mark_all_read_success">All notifications marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all notifications as read</string>
+    <string name="wc_mark_all_read_none">No unread notifications</string>
     <!--
         Login Library Imported Strings
     -->
