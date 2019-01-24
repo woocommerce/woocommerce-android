@@ -31,7 +31,16 @@ lane :update_ps_strings do |options|
     release_note: prj_folder + "/WooCommerce/metadata/release_notes.txt",
     play_store_promo: prj_folder + "/WooCommerce/metadata/short_description.txt",
     play_store_desc: prj_folder + "/WooCommerce/metadata/full_description.txt",
-    play_store_app_title: prj_folder + "/WooCommerce/metadata/title.txt"
+    play_store_app_title: prj_folder + "/WooCommerce/metadata/title.txt",
+    play_store_screenshot_1: prj_folder + "/WooCommerce/metadata/promo_screenshot_1.txt",
+    play_store_screenshot_1_b: prj_folder + "/WooCommerce/metadata/promo_screenshot_1_b.txt",
+    play_store_screenshot_2: prj_folder + "/WooCommerce/metadata/promo_screenshot_2.txt",
+    play_store_screenshot_3: prj_folder + "/WooCommerce/metadata/promo_screenshot_3.txt",
+    play_store_screenshot_4: prj_folder + "/WooCommerce/metadata/promo_screenshot_4.txt",
+    play_store_screenshot_5: prj_folder + "/WooCommerce/metadata/promo_screenshot_5.txt",
+    play_store_screenshot_6: prj_folder + "/WooCommerce/metadata/promo_screenshot_6.txt",
+    play_store_screenshot_7: prj_folder + "/WooCommerce/metadata/promo_screenshot_7.txt",
+    play_store_screenshot_8: prj_folder + "/WooCommerce/metadata/promo_screenshot_8.txt"
   }
 
   android_update_metadata_source(po_file_path: prj_folder + "/WooCommerce/metadata/PlayStoreStrings.pot", 
