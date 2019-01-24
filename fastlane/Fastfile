@@ -34,7 +34,7 @@ lane :update_ps_strings do |options|
     play_store_app_title: prj_folder + "/WooCommerce/metadata/title.txt"
   }
 
-  an_update_metadata_source(po_file_path: prj_folder + "/WooCommerce/metadata/PlayStoreStrings.pot", 
+  android_update_metadata_source(po_file_path: prj_folder + "/WooCommerce/metadata/PlayStoreStrings.pot", 
     source_files: files, 
     release_version: options[:version])
 end 
