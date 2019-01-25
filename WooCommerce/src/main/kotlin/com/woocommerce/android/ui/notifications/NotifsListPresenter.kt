@@ -117,10 +117,19 @@ class NotifsListPresenter @Inject constructor(
                     view?.showMarkAllNotificationsReadSuccess()
                 }
             } else {
-                view?.showMarkAllNotificationsReadNone()
                 WooLog.d(NOTIFICATIONS, "Mark all as read: No unread notifications found. Exiting.")
             }
+
+            view?.updateMarkAllReadMenuItem()
         }
+    }
+
+    override fun hasUnreadNotifs(): Boolean {
+        return notificationStore.hasUnreadNotificationsForSite(
+                site = selectedSite.get(),
+                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
+                filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString())
+        )
     }
 
     private fun onCommentModerated(event: OnCommentChanged) {
@@ -197,6 +206,8 @@ class NotifsListPresenter @Inject constructor(
             }
             else -> {}
         }
+
+        view?.updateMarkAllReadMenuItem()
     }
 
     @Suppress("unused")
