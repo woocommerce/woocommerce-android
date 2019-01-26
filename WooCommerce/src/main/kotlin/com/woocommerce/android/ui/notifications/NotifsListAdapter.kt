@@ -15,6 +15,8 @@ import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
+import com.woocommerce.android.ui.notifications.NotifsListItemDecoration.ItemType
+import com.woocommerce.android.ui.notifications.NotifsListItemDecoration.ItemType.READ_NOTIF
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -156,11 +158,11 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     }
 
     /**
-     * Return true if the item at the passed position is a header or a footer
+     * Return true if the item at the passed position is a header
      *
      * @param position position of the item in the recycler
      */
-    private fun isHeaderOrFooterAtPosition(position: Int): Boolean {
+    private fun isHeaderAtPosition(position: Int): Boolean {
         var currentPos = 0
         val sections = sectionsMap
 
@@ -172,9 +174,6 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
                 if (section.hasHeader() && position == currentPos) {
                     return true
                 }
-                if (section.hasFooter() && position == currentPos + sectionTotal - 1) {
-                    return true
-                }
             }
 
             currentPos += sectionTotal
@@ -184,25 +183,27 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     }
 
     /**
-     * Return true if the item at the passed position is an unread notification
+     * Returns the type of item at the passed position
      *
      * @param position position of the item in the recycler
      */
-    fun isUnreadNotifAtPosition(position: Int): Boolean {
-        if (isHeaderOrFooterAtPosition(position)) {
-            WooLog.w(T.NOTIFICATIONS, "header or footer as position $position")
-            return false
+    fun getItemTypeAtPosition(position: Int): ItemType {
+        if (isHeaderAtPosition(position)) {
+            return ItemType.HEADER
         }
 
         return try {
             val section = getSectionForListItemPosition(position) as NotifsListSection
             val posInSection = getPositionInSectionByListPos(position)
-            WooLog.w(T.NOTIFICATIONS, "position= $position, posInSection= $posInSection")
             val notif = section.list[posInSection]
-            notif.read // TODO: change to !notif.read
+            if (notif.read) {
+                ItemType.READ_NOTIF
+            } else {
+                ItemType.UNREAD_NOTIF
+            }
         } catch (e: IndexOutOfBoundsException) {
             WooLog.e(T.NOTIFICATIONS, e)
-            false
+            READ_NOTIF
         }
     }
 
