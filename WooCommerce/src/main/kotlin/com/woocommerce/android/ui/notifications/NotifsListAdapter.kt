@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.applyTransform
 import com.woocommerce.android.widgets.Section
@@ -154,15 +155,54 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
     }
 
+    /**
+     * Return true if the item at the passed position is a header or a footer
+     *
+     * @param position position of the item in the recycler
+     */
+    private fun isHeaderOrFooterAtPosition(position: Int): Boolean {
+        var currentPos = 0
+        val sections = sectionsMap
+
+        for ((_, section) in sections) {
+            val sectionTotal = section.sectionItemsTotal
+
+            // check if position is in this section
+            if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
+                if (section.hasHeader() && position == currentPos) {
+                    return true
+                }
+                if (section.hasFooter() && position == currentPos + sectionTotal - 1) {
+                    return true
+                }
+            }
+
+            currentPos += sectionTotal
+        }
+
+        return false
+    }
+
+    /**
+     * Return true if the item at the passed position is an unread notification
+     *
+     * @param position position of the item in the recycler
+     */
     fun isUnreadNotifAtPosition(position: Int): Boolean {
-        // TODO: this isn't working correctly, need to ensure that decoration is never added for headers
-        try {
+        if (isHeaderOrFooterAtPosition(position)) {
+            WooLog.w(T.NOTIFICATIONS, "header or footer as position $position")
+            return false
+        }
+
+        return try {
             val section = getSectionForListItemPosition(position) as NotifsListSection
             val posInSection = getPositionInSectionByListPos(position)
-            val notif = section.list.get(posInSection)
-            return !notif.read
+            WooLog.w(T.NOTIFICATIONS, "position= $position, posInSection= $posInSection")
+            val notif = section.list[posInSection]
+            notif.read // TODO: change to !notif.read
         } catch (e: IndexOutOfBoundsException) {
-            return false
+            WooLog.e(T.NOTIFICATIONS, e)
+            false
         }
     }
 
