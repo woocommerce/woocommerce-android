@@ -25,16 +25,7 @@ class NotifsListItemDecoration(context: Context) : DividerItemDecoration(context
     }
 
     private val dividerWidth = DisplayUtils.dpToPx(context, 4).toFloat()
-    private val headerPaint = Paint()
-    private val unreadPaint = Paint()
-    private val readPaint = Paint()
     private var listener: ItemDecorationListener? = null
-
-    init {
-        headerPaint.color = ContextCompat.getColor(context, R.color.list_header_bg)
-        unreadPaint.color = ContextCompat.getColor(context, R.color.wc_green)
-        readPaint.color = ContextCompat.getColor(context, R.color.list_item_bg)
-    }
 
     fun setListener(listener: ItemDecorationListener?) {
         this.listener = listener
@@ -46,16 +37,20 @@ class NotifsListItemDecoration(context: Context) : DividerItemDecoration(context
             val position = parent.getChildAdapterPosition(child)
             val itemType = listener?.getItemTypeAtPosition(position) ?: READ_NOTIF
 
+            val colorId = when (itemType) {
+                ItemType.HEADER -> R.color.list_header_bg
+                ItemType.UNREAD_NOTIF -> R.color.wc_green
+                else -> R.color.list_item_bg
+            }
+
+            val paint = Paint()
+            paint.color = ContextCompat.getColor(parent.context, colorId)
+
             val left = child.left.toFloat()
             val right = left + dividerWidth
             val top = child.top.toFloat()
             val bottom = top + child.bottom.toFloat()
 
-            val paint = when (itemType) {
-                ItemType.HEADER -> headerPaint
-                ItemType.UNREAD_NOTIF -> unreadPaint
-                else -> readPaint
-            }
             canvas.drawRect(left, top, right, bottom, paint)
         }
     }
