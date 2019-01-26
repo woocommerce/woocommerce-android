@@ -76,6 +76,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     private var previousOrderStatus: String? = null
     private var notesSnack: Snackbar? = null
     private var pendingNotesError = false
+    private var runOnStartFunc: (() -> Unit)? = null
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -125,6 +126,15 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             presenter.pushOrderNote(noteText, isCustomerNote)
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        runOnStartFunc?.let {
+            it.invoke()
+            runOnStartFunc = null
+        }
     }
 
     override fun onStop() {
@@ -279,7 +289,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showLoadOrderError() {
         loadingProgress.visibility = View.GONE
         uiMessageResolver.showSnack(R.string.order_error_fetch_generic)
-        activity?.onBackPressed()
+
+        if (isStateSaved) {
+            runOnStartFunc = { activity?.onBackPressed() }
+        } else {
+            activity?.onBackPressed()
+        }
     }
 
     override fun onRequestAddNote() {

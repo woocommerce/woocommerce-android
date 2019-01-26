@@ -21,6 +21,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashlyticsUtils
+import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
+import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.yarolegovich.wellsql.WellSql
@@ -33,6 +35,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -193,6 +196,23 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     fun onUnexpectedError(event: OnUnexpectedError) {
         with(event) {
             CrashlyticsUtils.logException(exception, message = "FluxC: ${exception.message}: $description")
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onJetpackTimeoutError(event: OnJetpackTimeoutError) {
+        with(event) {
+            // Replace numeric IDs with a placeholder so events can be aggregated
+            val genericPath = apiPath.replace(REGEX_API_NUMERIC_PARAM, "/ID/")
+            val protocol = REGEX_API_JETPACK_TUNNEL_METHOD.find(apiPath)?.groups?.get(1)?.value ?: ""
+
+            val properties = mapOf(
+                    "path" to genericPath,
+                    "protocol" to protocol,
+                    "times_retried" to timesRetried.toString()
+            )
+            AnalyticsTracker.track(Stat.JETPACK_TUNNEL_TIMEOUT, properties)
         }
     }
 

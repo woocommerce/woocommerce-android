@@ -58,6 +58,7 @@
     <string name="search">Search</string>
     <string name="back">Back</string>
     <string name="button_update_instructions">Update instructions</string>
+    <string name="dismiss">Dismiss</string>
 
     <!--
         Date/Time Labels
@@ -95,8 +96,10 @@
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
     <string name="login_pick_store">Pick store</string>
     <string name="login_connected_store">Connected store</string>
-    <string name="login_verifying_sites">Verifying sites…</string>
-    <string name="login_site_list_update_required">Update to WooCommerce 3.5 required</string>
+    <string name="login_verifying_site">Verifying site…</string>
+    <string name="login_verifying_site_error">Cannot connect to %s</string>
+    <string name="login_update_required_title">Update Store to WooCommerce 3.5</string>
+    <string name="login_update_required_desc">This app requires WooCommerce 3.5 on your server. To continue using this app, please update your store.</string>
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
@@ -132,8 +135,8 @@
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
-    <string name="dashboard_fulfill_order_title">You have 1 order to fulfill</string>
-    <string name="dashboard_fulfill_orders_title">You have %1$d%2$s orders to fulfill</string>
+    <string name="dashboard_fulfill_order_title_single">You have 1 order to fulfill</string>
+    <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
     <string name="dashboard_no_orders">Waiting for customers</string>
@@ -168,7 +171,7 @@
     <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$d)</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
@@ -236,7 +239,7 @@
     -->
     <string name="settings">Settings</string>
     <string name="privacy_settings">Privacy settings</string>
-    <string name="settings_signout">Logout account</string>
+    <string name="settings_signout">Log out account</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -314,6 +317,7 @@
         Notifications List
     -->
     <string name="wc_mark_all_read">Mark all as read</string>
+    <string name="wc_mark_all_read_success">All notifications marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all notifications as read</string>
     <!--
         Login Library Imported Strings

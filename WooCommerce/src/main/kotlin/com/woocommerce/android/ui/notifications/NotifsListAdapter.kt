@@ -29,7 +29,7 @@ import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
 
-class NotifsListAdapter @Inject constructor(val presenter: NotifsListPresenter) : SectionedRecyclerViewAdapter() {
+class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     interface ReviewListListener {
         fun onNotificationClicked(notification: NotificationModel)
     }

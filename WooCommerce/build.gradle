@@ -37,12 +37,12 @@ androidExtensions {
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "0.23"
-        versionCode 24
+        versionName "1.0.1"
+        versionCode 31
 
         minSdkVersion 21
         targetSdkVersion 27

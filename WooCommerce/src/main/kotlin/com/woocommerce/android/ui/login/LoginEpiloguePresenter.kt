@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -21,9 +23,6 @@ class LoginEpiloguePresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) : LoginEpilogueContract.Presenter {
     private var loginEpilogueView: LoginEpilogueContract.View? = null
-
-    private var supportedWCSites = mutableListOf<SiteModel>()
-    private var unsupportedWCSites = mutableListOf<SiteModel>()
 
     override fun takeView(view: LoginEpilogueContract.View) {
         dispatcher.register(this)
@@ -54,18 +53,13 @@ class LoginEpiloguePresenter @Inject constructor(
         return accountStore.hasAccessToken()
     }
 
-    override fun checkWCVersionsForAllSites() {
-        supportedWCSites.clear()
-        unsupportedWCSites.clear()
+    override fun loadSites() {
         val wcSites = wooCommerceStore.getWooCommerceSites()
-        if (wcSites.isEmpty()) {
-            loginEpilogueView?.showStoreList(emptyList(), emptyList())
-            return
-        }
+        loginEpilogueView?.showStoreList(wcSites)
+    }
 
-        for (site in wcSites) {
-            dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(site))
-        }
+    override fun verifySiteApiVersion(site: SiteModel) {
+        dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(site))
     }
 
     override fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel> {
@@ -83,15 +77,24 @@ class LoginEpiloguePresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onApiVersionFetched(event: OnApiVersionFetched) {
-        if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
-            supportedWCSites.add(event.site)
-        } else {
-            unsupportedWCSites.add(event.site)
+        if (event.isError) {
+            WooLog.e(T.LOGIN, "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
+                    "${event.error?.type} - ${event.error?.message}")
+            loginEpilogueView?.siteVerificationError(event.site)
+            return
         }
 
-        val totalSitesChecked = supportedWCSites.size + unsupportedWCSites.size
-        if (totalSitesChecked == wooCommerceStore.getWooCommerceSites().size) {
-            loginEpilogueView?.showStoreList(supportedWCSites, unsupportedWCSites)
+        // Check for empty API version as well (which may not result in an error from the api)
+        if (event.apiVersion.isBlank()) {
+            WooLog.e(T.LOGIN, "Empty apiVersion for site [${event.site.siteId} : ${event.site.name}]!")
+            loginEpilogueView?.siteVerificationError(event.site)
+            return
+        }
+
+        if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
+            loginEpilogueView?.siteVerificationPassed(event.site)
+        } else {
+            loginEpilogueView?.siteVerificationFailed(event.site)
         }
     }
 }

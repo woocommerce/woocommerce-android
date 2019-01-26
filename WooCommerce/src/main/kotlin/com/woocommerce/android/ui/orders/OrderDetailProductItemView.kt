@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.CurrencyUtils
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import java.text.NumberFormat
 
 class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
@@ -17,7 +18,11 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
     fun initView(item: WCOrderModel.LineItem, currencyCode: String, expanded: Boolean) {
         productInfo_name.text = item.name
-        productInfo_qty.text = item.quantity.toString()
+
+        val numberFormatter = NumberFormat.getNumberInstance().apply {
+            maximumFractionDigits = 2
+        }
+        productInfo_qty.text = numberFormatter.format(item.quantity)
 
         // Modify views for expanded or collapsed mode
         val viewMode = if (expanded) View.VISIBLE else View.GONE
@@ -43,8 +48,9 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
             val productPrice = CurrencyUtils.currencyString(context, item.price, currencyCode)
 
             item.quantity?.takeIf { it > 1 }?.let {
+                val itemQty = numberFormatter.format(it)
                 productInfo_productTotal.text = res.getString(
-                        R.string.orderdetail_product_lineitem_total_multiple, orderTotal, productPrice, it
+                        R.string.orderdetail_product_lineitem_total_multiple, orderTotal, productPrice, itemQty
                 )
             } ?: run {
                 productInfo_productTotal.text = res.getString(

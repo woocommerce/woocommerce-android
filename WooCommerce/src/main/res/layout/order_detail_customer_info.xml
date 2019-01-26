@@ -35,30 +35,15 @@
             android:text="@string/orderdetail_shipping_details"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"/>
 
-        <!-- Customer Name -->
-        <TextView
-            android:id="@+id/customerInfo_shippingName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="Michelle Frederickson"/>
-
         <!-- Shipping Address -->
         <TextView
             android:id="@+id/customerInfo_shippingAddr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="123 Sesame Pl\nWarner, FL"/>
+            android:textIsSelectable="true"
+            tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
 
-        <!-- Shipping Country -->
-        <TextView
-            android:id="@+id/customerInfo_shippingCountry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/card_section_padding_h"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            tools:text="United States"/>
 
         <!-- Billing Section -->
         <android.support.constraint.ConstraintLayout
@@ -96,35 +81,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider"/>
 
-            <!-- Billing Name -->
-            <TextView
-                android:id="@+id/customerInfo_billingName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
-                tools:text="John Vilanzo"/>
-
             <!-- Billing Address -->
             <TextView
                 android:id="@+id/customerInfo_billingAddr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                android:textIsSelectable="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingName"
-                tools:text="123 Sesame Pl\nWarner, FL 12345-6789"/>
-
-            <!-- Billing Country -->
-            <TextView
-                android:id="@+id/customerInfo_billingCountry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddr"
-                tools:text="United States"/>
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
+                tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
 
             <!-- Divider -->
             <FrameLayout
@@ -135,7 +101,7 @@
                 android:background="@color/list_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingCountry"
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddr"
                 app:srcCompat="@drawable/list_divider"/>
 
             <!-- Billing Phone -->
@@ -146,6 +112,7 @@
                 android:paddingBottom="@dimen/card_item_padding_intra_h"
                 android:paddingTop="@dimen/card_item_padding_intra_h"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                android:textIsSelectable="true"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@+id/customerInfo_divider3"
                 app:layout_constraintEnd_toStartOf="@+id/customerInfo_callOrMessageBtn"
@@ -187,6 +154,7 @@
                 android:paddingBottom="@dimen/card_item_padding_intra_h"
                 android:paddingTop="@dimen/card_item_padding_intra_h"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                android:textIsSelectable="true"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/customerInfo_emailBtn"

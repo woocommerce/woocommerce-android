@@ -104,6 +104,8 @@ class NotificationHandler @Inject constructor(
 
             val notificationManager = NotificationManagerCompat.from(context)
             notificationManager.cancelAll()
+
+            setHasUnseenNotifications(false)
         }
 
         /**
@@ -159,7 +161,7 @@ class NotificationHandler @Inject constructor(
          * Called when we want to update the unseen state of notifications - changes the related
          * shared preference and posts an EventBus event so main activity can update the badge
          */
-        fun setHasUnseenNotifications(hasUnseen: Boolean) {
+        private fun setHasUnseenNotifications(hasUnseen: Boolean) {
             if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
                 AppPrefs.setHasUnseenNotifs(hasUnseen)
                 EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))
@@ -225,11 +227,14 @@ class NotificationHandler @Inject constructor(
                     .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
         }
 
-        // skip displaying the notification if user chose to disable this type of notification
-        if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
-                (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
-            WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
-            return
+        // don't display the notification if user chose to disable this type of notification - note
+        // that we skip this for API 26+ since Oreo added per-app notification settings via channels
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
+                    (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
+                WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
+                return
+            }
         }
 
         val title = if (noteType == NEW_ORDER) {
@@ -496,7 +501,7 @@ class NotificationHandler @Inject constructor(
     ) {
         // Open the app and load the notifications tab
         val resultIntent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
             putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId.toLong())
             if (pushId == GROUP_NOTIFICATION_ID) {

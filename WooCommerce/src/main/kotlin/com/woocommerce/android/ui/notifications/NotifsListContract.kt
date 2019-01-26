@@ -12,6 +12,7 @@ interface NotifsListContract {
         fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean)
         fun pushUpdatedComment(comment: CommentModel)
         fun markAllNotifsRead()
+        fun hasUnreadNotifs(): Boolean
     }
 
     interface View : BaseView<Presenter>, ReviewActionListener {
@@ -28,5 +29,7 @@ interface NotifsListContract {
         fun openReviewDetail(notification: NotificationModel)
         fun visuallyMarkNotificationsAsRead()
         fun showMarkAllNotificationsReadError()
+        fun showMarkAllNotificationsReadSuccess()
+        fun updateMarkAllReadMenuItem()
     }
 }
