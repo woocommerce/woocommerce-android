@@ -438,6 +438,6 @@ class NotifsListFragment : TopLevelFragment(),
      * Determines whether to show the unread indicator item decoration for the passed position
      */
     override fun getItemTypeAtPosition(position: Int): ItemType {
-        return notifsAdapter.getItemTypeAtPosition(position)
+        return notifsAdapter.getItemTypeAtRecyclerPosition(position)
     }
 }

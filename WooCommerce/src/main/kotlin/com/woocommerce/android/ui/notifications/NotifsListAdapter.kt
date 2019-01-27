@@ -192,7 +192,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      *
      * @param position position of the item in the recycler
      */
-    private fun isHeaderAtPosition(position: Int): Boolean {
+    private fun isHeaderAtRecyclerPosition(position: Int): Boolean {
         var currentPos = 0
         val sections = sectionsMap
 
@@ -217,24 +217,24 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      *
      * @param position position of the item in the recycler
      */
-    fun getItemTypeAtPosition(position: Int): ItemType {
-        if (isHeaderAtPosition(position)) {
+    fun getItemTypeAtRecyclerPosition(position: Int): ItemType {
+        if (isHeaderAtRecyclerPosition(position)) {
             return ItemType.HEADER
         }
 
-        return try {
-            val section = getSectionForListItemPosition(position) as NotifsListSection
-            val posInSection = getPositionInSectionByListPos(position)
-            val notif = section.list[posInSection]
-            if (notif.read) {
-                ItemType.READ_NOTIF
-            } else {
-                ItemType.UNREAD_NOTIF
+        var currentPos = 0
+        for (notif in notifsList) {
+            if (currentPos == position) {
+                return if (notif.read) ItemType.READ_NOTIF else ItemType.UNREAD_NOTIF
             }
-        } catch (e: IndexOutOfBoundsException) {
-            WooLog.e(T.NOTIFICATIONS, e)
-            ItemType.READ_NOTIF
+            currentPos++
+            if (isHeaderAtRecyclerPosition(currentPos)) {
+                currentPos++
+            }
         }
+
+        WooLog.w(T.NOTIFICATIONS, "Failed to get item type at recycler position $position")
+        return ItemType.READ_NOTIF
     }
 
     /**
@@ -422,7 +422,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
                 val itemType = decorListener?.getItemTypeAtPosition(position) ?: ItemType.READ_NOTIF
 
                 /*
-                 * note that we have to draw the indicator for *all* items rather than just unread notifs
+                 * note that we have to draw the indicator for all items rather than just unread notifs
                  * in order to paint over recycled cells that have a previously-drawn indicator
                  */
                 val colorId = when (itemType) {
@@ -435,12 +435,12 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
                 paint.color = ContextCompat.getColor(parent.context, colorId)
 
                 parent.getDecoratedBoundsWithMargins(child, bounds)
-                val top = bounds.top
-                val bottom = bounds.bottom + Math.round(child.translationY)
-                val left = bounds.left
+                val top = bounds.top.toFloat()
+                val bottom = (bounds.bottom + Math.round(child.translationY)).toFloat()
+                val left = bounds.left.toFloat()
                 val right = left + dividerWidth
 
-                canvas.drawRect(left.toFloat(), top.toFloat(), right, bottom.toFloat(), paint)
+                canvas.drawRect(left, top, right, bottom, paint)
             }
         }
     }
