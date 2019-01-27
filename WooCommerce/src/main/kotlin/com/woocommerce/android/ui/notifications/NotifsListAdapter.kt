@@ -1,5 +1,11 @@
 package com.woocommerce.android.ui.notifications
 
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.View
@@ -15,8 +21,6 @@ import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
-import com.woocommerce.android.ui.notifications.NotifsListItemDecoration.ItemType
-import com.woocommerce.android.ui.notifications.NotifsListItemDecoration.ItemType.READ_NOTIF
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -29,23 +33,34 @@ import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.DisplayUtils
 import java.util.Date
 import javax.inject.Inject
 
 class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
+    enum class ItemType {
+        HEADER,
+        UNREAD_NOTIF,
+        READ_NOTIF
+    }
+
+    interface ItemDecorationListener {
+        fun getItemTypeAtPosition(position: Int): ItemType
+    }
+
     interface ReviewListListener {
         fun onNotificationClicked(notification: NotificationModel)
     }
 
     private val notifsList = mutableListOf<NotificationModel>()
-    private var listener: ReviewListListener? = null
+    private var listListener: ReviewListListener? = null
 
     // Copy of a notification manually removed from the list so the action may be undone.
     private var pendingRemovalNotification: Triple<NotificationModel, NotifsListSection, Int>? = null
 
     // region Public methods
-    fun setListener(listener: ReviewListListener) {
-        this.listener = listener
+    fun setListListener(listener: ReviewListListener) {
+        listListener = listener
     }
 
     fun setNotifications(notifs: List<NotificationModel>) {
@@ -218,7 +233,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             }
         } catch (e: IndexOutOfBoundsException) {
             WooLog.e(T.NOTIFICATIONS, e)
-            READ_NOTIF
+            ItemType.READ_NOTIF
         }
     }
 
@@ -354,7 +369,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             itemHolder.desc.text = notif.getMessageSnippet()
 
             itemHolder.itemView.setOnClickListener {
-                listener?.onNotificationClicked(notif)
+                listListener?.onNotificationClicked(notif)
             }
         }
 
@@ -382,5 +397,51 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.orderListHeader
+    }
+
+    class NotifsListItemDecoration(context: Context) : DividerItemDecoration(
+            context,
+            DividerItemDecoration.HORIZONTAL
+    ) {
+        private val dividerWidth = DisplayUtils.dpToPx(
+                context,
+                context.resources.getDimensionPixelSize(R.dimen.margin_small)
+        ).toFloat()
+
+        private var decorListener: ItemDecorationListener? = null
+        private val bounds = Rect()
+
+        fun setListener(listener: ItemDecorationListener?) {
+            decorListener = listener
+        }
+
+        override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+            for (i in 0 until parent.childCount) {
+                val child = parent.getChildAt(i)
+                val position = parent.getChildAdapterPosition(child)
+                val itemType = decorListener?.getItemTypeAtPosition(position) ?: ItemType.READ_NOTIF
+
+                /*
+                 * note that we have to draw the indicator for *all* items rather than just unread notifs
+                 * in order to paint over recycled cells that have a previously-drawn indicator
+                 */
+                val colorId = when (itemType) {
+                    ItemType.HEADER -> R.color.list_header_bg
+                    ItemType.UNREAD_NOTIF -> R.color.wc_green
+                    else -> R.color.list_item_bg
+                }
+
+                val paint = Paint()
+                paint.color = ContextCompat.getColor(parent.context, colorId)
+
+                parent.getDecoratedBoundsWithMargins(child, bounds)
+                val top = bounds.top
+                val bottom = bounds.bottom + Math.round(child.translationY)
+                val left = bounds.left
+                val right = left + dividerWidth
+
+                canvas.drawRect(left.toFloat(), top.toFloat(), right, bottom.toFloat(), paint)
+            }
+        }
     }
 }

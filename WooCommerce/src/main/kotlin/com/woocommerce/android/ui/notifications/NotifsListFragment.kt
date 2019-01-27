@@ -30,7 +30,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.notifications.NotifsListItemDecoration.ItemType
+import com.woocommerce.android.ui.notifications.NotifsListAdapter.ItemType
+import com.woocommerce.android.ui.notifications.NotifsListAdapter.NotifsListItemDecoration
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -48,7 +49,7 @@ import javax.inject.Inject
 class NotifsListFragment : TopLevelFragment(),
         NotifsListContract.View,
         NotifsListAdapter.ReviewListListener,
-        NotifsListItemDecoration.ItemDecorationListener {
+        NotifsListAdapter.ItemDecorationListener {
     companion object {
         val TAG: String = NotifsListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -140,7 +141,7 @@ class NotifsListFragment : TopLevelFragment(),
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        notifsAdapter.setListener(this)
+        notifsAdapter.setListListener(this)
 
         val unreadDecoration = NotifsListItemDecoration(activity as Context)
         unreadDecoration.setListener(this)
