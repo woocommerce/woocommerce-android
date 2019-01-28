@@ -132,6 +132,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        updateMarkAllReadMenuItem()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -180,13 +181,8 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
-        refreshOptionsMenu()
+        updateMarkAllReadMenuItem()
         super.onPrepareOptionsMenu(menu)
-    }
-
-    private fun refreshOptionsMenu() {
-        val showMarkAllRead = isActive
-        menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -209,7 +205,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             // moderation so it can be processed immediately.
             changeCommentStatusSnackbar?.dismiss()
         }
-        refreshOptionsMenu()
+        updateMarkAllReadMenuItem()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -402,8 +398,20 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         notifsAdapter.markAllNotifsAsRead()
     }
 
+    override fun showMarkAllNotificationsReadSuccess() {
+        uiMessageResolver.showSnack(R.string.wc_mark_all_read_success)
+    }
+
     override fun showMarkAllNotificationsReadError() {
         uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
+    }
+
+    /**
+     * Only show the "mark all read" menu item when this fragment is active and there are unread notifs
+     */
+    override fun updateMarkAllReadMenuItem() {
+        val showMarkAllRead = isActive && presenter.hasUnreadNotifs()
+        menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
     }
 
     private fun revertPendingModeratedNotifState() {

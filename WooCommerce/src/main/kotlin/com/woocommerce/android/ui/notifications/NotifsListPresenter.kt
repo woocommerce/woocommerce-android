@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.notifications
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -108,10 +109,27 @@ class NotifsListPresenter @Inject constructor(
                 // Optimistic design - update the UI immediately to show all notifs are now
                 // marked as read. If this fails, the list will be reloaded by the database.
                 view?.visuallyMarkNotificationsAsRead()
+
+                // we only show this snackbar twice to avoid annoying the user
+                val numTimesShown = AppPrefs.getNumTimesMarkAllReadSnackShown()
+                if (numTimesShown < 2) {
+                    AppPrefs.incNumTimesMarkAllReadSnackShown()
+                    view?.showMarkAllNotificationsReadSuccess()
+                }
             } else {
                 WooLog.d(NOTIFICATIONS, "Mark all as read: No unread notifications found. Exiting.")
             }
+
+            view?.updateMarkAllReadMenuItem()
         }
+    }
+
+    override fun hasUnreadNotifs(): Boolean {
+        return notificationStore.hasUnreadNotificationsForSite(
+                site = selectedSite.get(),
+                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
+                filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString())
+        )
     }
 
     private fun onCommentModerated(event: OnCommentChanged) {
@@ -188,6 +206,8 @@ class NotifsListPresenter @Inject constructor(
             }
             else -> {}
         }
+
+        view?.updateMarkAllReadMenuItem()
     }
 
     @Suppress("unused")
