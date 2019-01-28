@@ -1,0 +1,2 @@
+Bugfixes
+- Issue with order notes not saving properly during activity restore (low memory situations) resolved

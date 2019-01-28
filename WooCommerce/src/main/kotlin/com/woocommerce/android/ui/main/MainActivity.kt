@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity(),
         // Restore the current navigation position
         savedInstanceState?.also {
             val id = it.getInt(STATE_KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
-            bottomNavView.currentPosition = findNavigationPositionById(id)
+            bottomNavView.restoreSelectedItemState(id)
         }
     }
 
