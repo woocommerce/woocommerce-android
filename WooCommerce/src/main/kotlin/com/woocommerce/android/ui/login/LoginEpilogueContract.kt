@@ -16,6 +16,7 @@ interface LoginEpilogueContract {
         fun loadSites()
         fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel>
         fun verifySiteApiVersion(site: SiteModel)
+        fun updateWooSiteSettings(site: SiteModel)
     }
 
     interface View : BaseView<Presenter> {

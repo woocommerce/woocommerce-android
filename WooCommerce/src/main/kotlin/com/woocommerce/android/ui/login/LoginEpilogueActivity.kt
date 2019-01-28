@@ -134,6 +134,8 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
                         mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
                 loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
                 presenter.verifySiteApiVersion(it)
+                // Preemptively also update the site settings so we have them available sooner
+                presenter.updateWooSiteSettings(it)
             }
         }
     }

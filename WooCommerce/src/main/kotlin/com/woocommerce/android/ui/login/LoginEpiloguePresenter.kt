@@ -62,6 +62,10 @@ class LoginEpiloguePresenter @Inject constructor(
         dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(site))
     }
 
+    override fun updateWooSiteSettings(site: SiteModel) {
+        dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(site))
+    }
+
     override fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel> {
         return siteIdList.map { siteStore.getSiteByLocalId(it) }
     }
