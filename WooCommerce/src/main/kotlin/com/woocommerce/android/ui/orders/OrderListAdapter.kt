@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
-import com.woocommerce.android.util.CurrencyUtils
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.FlowLayout
 import com.woocommerce.android.widgets.SectionParameters
 import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
@@ -22,7 +22,10 @@ import javax.inject.Inject
 /**
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
-class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Presenter)
+class OrderListAdapter @Inject constructor(
+    val presenter: OrderListContract.Presenter,
+    val currencyFormatter: CurrencyFormatter
+)
     : SectionedRecyclerViewAdapter() {
     interface OnLoadMoreListener {
         fun onRequestLoadMore()
@@ -176,7 +179,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.number)
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
-            itemHolder.orderTotal.text = CurrencyUtils.currencyString(ctx, order.total, order.currency)
+            itemHolder.orderTotal.text = currencyFormatter.formatCurrency(order.total, order.currency, true)
             itemHolder.rootView.tag = order
             itemHolder.rootView.setOnClickListener {
                 val orderItem = it.tag as WCOrderModel
