@@ -224,13 +224,13 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
         var currentPos = 0
         for (notif in notifsList) {
+            if (isHeaderAtRecyclerPosition(currentPos)) {
+                currentPos++
+            }
             if (currentPos == position) {
                 return if (notif.read) ItemType.READ_NOTIF else ItemType.UNREAD_NOTIF
             }
             currentPos++
-            if (isHeaderAtRecyclerPosition(currentPos)) {
-                currentPos++
-            }
         }
 
         WooLog.w(T.NOTIFICATIONS, "Failed to get item type at recycler position $position")
