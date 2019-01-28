@@ -403,10 +403,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             context,
             DividerItemDecoration.HORIZONTAL
     ) {
-        private val dividerWidth = DisplayUtils.dpToPx(
-                context,
-                context.resources.getDimensionPixelSize(R.dimen.margin_small)
-        ).toFloat()
+        private val dividerWidth = DisplayUtils.dpToPx(context, 3).toFloat()
 
         private var decorListener: ItemDecorationListener? = null
         private val bounds = Rect()
