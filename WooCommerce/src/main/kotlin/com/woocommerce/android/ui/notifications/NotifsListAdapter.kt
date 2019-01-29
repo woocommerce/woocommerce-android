@@ -226,7 +226,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         // position not found, fail fast
-        throw IndexOutOfBoundsException("Unable to find matching position in section")
+        throw IndexOutOfBoundsException("Unable to find matching position $position in section")
     }
 
     /**
