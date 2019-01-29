@@ -444,4 +444,11 @@
     <string name="http_authorization_required">Authorization required</string>
     <string name="httpuser">HTTP username</string>
     <string name="httppassword">HTTP password</string>
+
+    <!-- App rating dialog -->
+    <string name="app_rating_title">Enjoying Woo?</string>
+    <string name="app_rating_message">Nice to see you again! If you’re digging the app, we\’d love a rating on the Google Play Store.</string>
+    <string name="app_rating_rate_now">Rate now</string>
+    <string name="app_rating_rate_later">Later</string>
+    <string name="app_rating_rate_never">No thanks</string>
 </resources>

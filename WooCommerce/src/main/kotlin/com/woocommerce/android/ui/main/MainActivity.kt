@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -110,6 +111,9 @@ class MainActivity : AppCompatActivity(),
         }
 
         initFragment(savedInstanceState)
+
+        AppRatingDialog.init(this)
+        AppRatingDialog.showRateDialogIfNeeded(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
