@@ -70,7 +70,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
 
         button_help.setOnClickListener {
             startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
-            AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
+            AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_HELP_BUTTON_TAPPED)
         }
     }
 
