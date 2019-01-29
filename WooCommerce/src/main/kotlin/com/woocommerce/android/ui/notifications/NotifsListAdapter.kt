@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.applyTransform
 import com.woocommerce.android.widgets.Section
@@ -134,23 +135,26 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      * by reverting the action, or by loading a fresh list of notifications.
      */
     fun hideNotificationWithId(remoteNoteId: Long) {
-        notifsList.firstOrNull { it.remoteNoteId == remoteNoteId }?.let { notif ->
-            // get the index
-            val pos = notifsList.indexOfFirst { it == notif }
+        val pos = notifsList.indexOfFirst { it.remoteNoteId == remoteNoteId }
+        if (pos == -1) {
+            WooLog.w(T.NOTIFICATIONS, "Unable to hide notification, position is -1")
+            pendingRemovalNotification = null
+            return
+        }
 
-            // remove from the list
-            val section = getSectionForListItemPosition(pos) as NotifsListSection
-            val posInSection = getPositionInSectionByListPos(pos)
-            pendingRemovalNotification = Triple(notif, section, posInSection)
+        val notif = notifsList[pos]
+        val section = getSectionForListItemPosition(pos) as NotifsListSection
+        val posInSection = getPositionInSectionByListPos(pos)
+        pendingRemovalNotification = Triple(notif, section, posInSection)
 
-            section.list.removeAt(posInSection)
-            notifyItemRemovedFromSection(section, posInSection)
+        // remove from the list
+        section.list.removeAt(posInSection)
+        notifyItemRemovedFromSection(section, posInSection)
 
-            if (section.list.size == 0) {
-                val sectionPos = getSectionPosition(section)
-                section.isVisible = false
-                notifySectionChangedToInvisible(section, sectionPos)
-            }
+        if (section.list.size == 0) {
+            val sectionPos = getSectionPosition(section)
+            section.isVisible = false
+            notifySectionChangedToInvisible(section, sectionPos)
         }
     }
 
