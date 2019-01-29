@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -119,9 +118,6 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_action_bar, menu)
-        if (!ActivityUtils.isEmailClientAvailable(this)) {
-            menu?.removeItem(R.id.menu_support)
-        }
         return true
     }
 
@@ -155,7 +151,7 @@ class MainActivity : AppCompatActivity(),
         // Restore the current navigation position
         savedInstanceState?.also {
             val id = it.getInt(STATE_KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
-            bottomNavView.currentPosition = findNavigationPositionById(id)
+            bottomNavView.restoreSelectedItemState(id)
         }
     }
 
