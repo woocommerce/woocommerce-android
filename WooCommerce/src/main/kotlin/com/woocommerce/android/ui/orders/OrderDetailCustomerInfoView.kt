@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.PhoneUtils
+import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 
@@ -78,6 +79,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
 
                 listener?.createEmail(order, order.billingEmail)
+                AppRatingDialog.incrementInteractions()
             }
         }
     }
@@ -96,12 +98,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
             listener?.dialPhone(order, order.billingPhone)
+            AppRatingDialog.incrementInteractions()
             true
         }
 
         popup.menu.findItem(R.id.menu_message)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
             listener?.sendSms(order, order.billingPhone)
+            AppRatingDialog.incrementInteractions()
             true
         }
 
