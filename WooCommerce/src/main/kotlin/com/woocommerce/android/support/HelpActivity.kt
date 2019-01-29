@@ -154,6 +154,7 @@ class HelpActivity : AppCompatActivity() {
         LOGIN_SITE_ADDRESS("origin:login-site-address"),
         LOGIN_SOCIAL("origin:login-social"),
         LOGIN_USERNAME_PASSWORD("origin:login-username-password"),
+        LOGIN_EPILOGUE("origin:login-epilogue"),
         SIGNUP_EMAIL("origin:signup-email"),
         SIGNUP_MAGIC_LINK("origin:signup-magic-link");
 

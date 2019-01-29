@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -15,6 +17,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.adapter.SiteListAdapter
 import com.woocommerce.android.ui.login.adapter.SiteListAdapter.OnSiteClickListener
@@ -89,6 +93,20 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         AnalyticsTracker.trackBackPressed(this)
 
         finish()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_help, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item!!.itemId == R.id.menu_help) {
+            startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
+            return true
+        } else {
+            return super.onOptionsItemSelected(item)
+        }
     }
 
     override fun showUserInfo() {
