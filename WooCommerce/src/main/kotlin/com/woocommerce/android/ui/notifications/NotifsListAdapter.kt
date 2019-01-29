@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.applyTransform
 import com.woocommerce.android.widgets.Section
@@ -137,6 +138,10 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         notifsList.firstOrNull { it.remoteNoteId == remoteNoteId }?.let { notif ->
             // get the index
             val pos = notifsList.indexOfFirst { it == notif }
+            if (pos == -1) {
+                WooLog.w(T.NOTIFICATIONS, "Unable to hide notification with remoteId $remoteNoteId")
+                return
+            }
 
             // remove from the list
             val section = getSectionForListItemPosition(pos) as NotifsListSection
