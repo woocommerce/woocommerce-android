@@ -121,7 +121,10 @@ class MainNavigationView @JvmOverloads constructor(
         // Close any child fragments if open
         clearFragmentBackStack(fragment)
 
-        fragmentManager.beginTransaction().replace(R.id.container, fragment, navPos.getTag()).commitNow()
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.container, fragment, navPos.getTag())
+                .commitAllowingStateLoss()
     }
 
     private fun assignNavigationListeners(assign: Boolean) {
