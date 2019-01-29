@@ -84,8 +84,10 @@ object AppRatingDialog {
      * an order. We use this to avoid showing the rating dialog to uninvolved users
      */
     fun incrementInteractions() {
-        interactions++
-        preferences.edit().putInt(KEY_INTERACTIONS, interactions)?.apply()
+        if (!optOut) {
+            interactions++
+            preferences.edit().putInt(KEY_INTERACTIONS, interactions)?.apply()
+        }
     }
 
     /**
