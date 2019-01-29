@@ -93,21 +93,6 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             }
         }
 
-        // ******************************************************************************************
-        // TODO: remove this test code which alternates the read state in the passed notifs list
-        fun testUpdateList(testList: ArrayList<NotificationModel>) {
-            for (i in 0 until testList.size) {
-                testList[i].read = i % 2 == 0
-            }
-        }
-        testUpdateList(listToday)
-        testUpdateList(listYesterday)
-        testUpdateList(listTwoDays)
-        testUpdateList(listWeek)
-        testUpdateList(listMonth)
-
-        // ******************************************************************************************
-
         if (listToday.size > 0) {
             addSection(NotifsListSection(TimeGroup.GROUP_TODAY.name, listToday))
         }
