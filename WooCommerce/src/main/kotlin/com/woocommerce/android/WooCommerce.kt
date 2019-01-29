@@ -74,8 +74,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
-        private var isBackgrounded: Boolean = false
-        fun isBackgrounded() = isBackgrounded
     }
 
     /**
@@ -125,7 +123,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     }
 
     override fun onAppComesFromBackground() {
-        isBackgrounded = false
         AnalyticsTracker.track(Stat.APPLICATION_OPENED)
 
         if (!connectionReceiverRegistered) {
@@ -144,7 +141,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     }
 
     override fun onAppGoesToBackground() {
-        isBackgrounded = true
         AnalyticsTracker.track(Stat.APPLICATION_CLOSED)
 
         if (connectionReceiverRegistered) {

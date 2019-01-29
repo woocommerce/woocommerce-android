@@ -11,7 +11,6 @@ import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
@@ -165,20 +164,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         siteAdapter.selectedSiteId = 0
         button_continue.isEnabled = false
 
-        val ft = supportFragmentManager.beginTransaction()
-        val prev = supportFragmentManager.findFragmentByTag(WooUpgradeRequiredDialog.TAG)
-        if (prev != null) {
-            ft.remove(prev)
-        }
-        ft.addToBackStack(null)
-
-        val dialogFragment = WooUpgradeRequiredDialog()
-        if (WooCommerce.isBackgrounded()) {
-            ft.add(dialogFragment, WooUpgradeRequiredDialog.TAG)
-            ft.commitAllowingStateLoss()
-        } else {
-            dialogFragment.show(ft, WooUpgradeRequiredDialog.TAG)
-        }
+        WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
 
     override fun siteVerificationError(site: SiteModel) {
