@@ -96,7 +96,7 @@ class LoginEpiloguePresenter @Inject constructor(
         }
 
         if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
-            loginEpilogueView?.siteVerificationPassed(event.site)
+            loginEpilogueView?.siteVerificationFailed(event.site) // TODO: passed
         } else {
             loginEpilogueView?.siteVerificationFailed(event.site)
         }

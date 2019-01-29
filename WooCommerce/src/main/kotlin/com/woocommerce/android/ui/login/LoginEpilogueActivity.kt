@@ -11,6 +11,7 @@ import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
@@ -170,8 +171,14 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             ft.remove(prev)
         }
         ft.addToBackStack(null)
+
         val dialogFragment = WooUpgradeRequiredDialog()
-        dialogFragment.show(ft, WooUpgradeRequiredDialog.TAG)
+        if (WooCommerce.isBackgrounded()) {
+            ft.add(dialogFragment, WooUpgradeRequiredDialog.TAG)
+            ft.commitAllowingStateLoss()
+        } else {
+            dialogFragment.show(ft, WooUpgradeRequiredDialog.TAG)
+        }
     }
 
     override fun siteVerificationError(site: SiteModel) {
