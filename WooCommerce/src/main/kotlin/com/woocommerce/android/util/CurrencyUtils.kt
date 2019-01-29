@@ -77,23 +77,23 @@ object CurrencyUtils {
             currencyString(context, rawValue?.toDouble() ?: 0.0, currencyCode)
 
     /**
-     * Rounds the [rawValue] to the nearest int, and returns the value as a currency
-     * string with the appropriate currency symbol. If the value is a thousand or more,
-     * we return it rounded to the nearest tenth and suffixed with "k" (2500 -> 2.5k)
-     * Similarly, we add "m" for values a million or higher
+     * Rounds the [rawValue] to the nearest int, and returns the value as a currency string.
      *
-     * @param context The active context
+     * If the value is a thousand or more, we return it rounded to the nearest tenth
+     * and suffixed with "k" (2500 -> 2.5k).
+     *
+     * Similarly, we add "m" for values a million or higher.
+     *
      * @param rawValue The value to format as currency
-     * @param currencyCode The ISO 4217 currency code (ex: USD)
      */
-    fun currencyStringRounded(context: Context, rawValue: Double, currencyCode: String): String {
+    fun currencyStringRounded(rawValue: Double): String {
         val roundedValue = rawValue.roundToInt().toDouble()
         if (roundedValue.absoluteValue >= ONE_MILLION) {
-            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
+            return currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
         } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
-            return getCurrencySymbol(currencyCode) + currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
+            return currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
         } else {
-            return currencyString(context, roundedValue, currencyCode).removeSuffix(".00")
+            return currencyFormatter.format(rawValue).toString().removeSuffix(".00")
         }
     }
 

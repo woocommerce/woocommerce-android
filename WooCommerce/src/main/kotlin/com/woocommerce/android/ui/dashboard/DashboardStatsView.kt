@@ -25,7 +25,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardStatsMarkerView.RequestMarkerCaptionListener
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
-import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -57,6 +56,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private lateinit var selectedSite: SelectedSite
 
+    private lateinit var formatCurrencyForDisplay: (Double, String, Boolean) -> String
+
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
 
@@ -86,9 +87,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
-        selectedSite: SelectedSite
+        selectedSite: SelectedSite,
+        formatCurrencyForDisplay: (Double, String, Boolean) -> String
     ) {
         this.selectedSite = selectedSite
+        this.formatCurrencyForDisplay = formatCurrencyForDisplay
 
         StatsGranularity.values().forEach { granularity ->
             val tab = tab_layout.newTab().apply {
@@ -192,7 +195,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 axisMinimum = 0F
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
-                    formatAmountForDisplay(context, value.toDouble(), chartCurrencyCode, allowZero = false)
+                    formatCurrencyForDisplay(value.toDouble(), chartCurrencyCode.orEmpty(), false)
                 }
             }
 
@@ -235,7 +238,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         // get the revenue for this entry
         val revenue = barEntry.y.toDouble()
-        val formattedRevenue = formatAmountForDisplay(context, revenue, chartCurrencyCode)
+        val formattedRevenue = formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty(), true)
 
         // show the date and revenue on separate lines
         return formattedDate + "\n" + formattedRevenue
@@ -251,7 +254,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
 
-        val revenue = formatAmountForDisplay(context, revenueStats.values.sum(), currencyCode)
+        val revenue = formatCurrencyForDisplay(revenueStats.values.sum(), currencyCode.orEmpty(), true)
         val orders = orderStats.values.sum().toString()
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)

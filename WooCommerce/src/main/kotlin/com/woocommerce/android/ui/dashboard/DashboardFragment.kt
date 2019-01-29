@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
@@ -42,6 +43,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     @Inject lateinit var presenter: DashboardContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
@@ -90,8 +92,22 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        dashboard_stats.initView(listener = this, selectedSite = selectedSite)
-        dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
+
+        val formatCurrencyForDisplay = { rawValue: Double, currencyCode: String, allowZero: Boolean ->
+            val displayFormatted = DashboardUtils.formatAmountForDisplay(rawValue, allowZero)
+            displayFormatted.takeIf { it.isNotEmpty() }?.let {
+                currencyFormatter.formatCurrency(it, currencyCode, false)
+            }.orEmpty()
+        }
+
+        dashboard_stats.initView(
+                listener = this,
+                selectedSite = selectedSite,
+                formatCurrencyForDisplay = formatCurrencyForDisplay)
+        dashboard_top_earners.initView(
+                listener = this,
+                selectedSite = selectedSite,
+                formatCurrencyForDisplay = formatCurrencyForDisplay)
         dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
             override fun onViewOrdersClicked() {
                 (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)

@@ -19,7 +19,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
-import com.woocommerce.android.ui.dashboard.DashboardUtils.formatAmountForDisplay
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
@@ -43,18 +42,21 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         }
 
     private lateinit var selectedSite: SelectedSite
+    private lateinit var formatCurrencyForDisplay: (Double, String, Boolean) -> String
 
     private var skeletonView = SkeletonView()
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
-        selectedSite: SelectedSite
+        selectedSite: SelectedSite,
+        formatCurrencyForDisplay: (Double, String, Boolean) -> String
     ) {
         this.selectedSite = selectedSite
+        this.formatCurrencyForDisplay = formatCurrencyForDisplay
 
         topEarners_recycler.layoutManager = LinearLayoutManager(context)
-        topEarners_recycler.adapter = TopEarnersAdapter(context)
+        topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay)
         topEarners_recycler.itemAnimator = DefaultItemAnimator()
 
         StatsGranularity.values().forEach { granularity ->
@@ -77,7 +79,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
                         Stat.DASHBOARD_TOP_PERFORMERS_DATE,
                         mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
 
-                topEarners_recycler.adapter = TopEarnersAdapter(context)
+                topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay)
                 showEmptyView(false)
                 showErrorView(false)
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
@@ -128,7 +130,10 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         var divider: View = view.divider
     }
 
-    class TopEarnersAdapter(context: Context) : RecyclerView.Adapter<TopEarnersViewHolder>() {
+    class TopEarnersAdapter(
+        context: Context,
+        val formatCurrencyForDisplay: (Double, String, Boolean) -> String
+    ) : RecyclerView.Adapter<TopEarnersViewHolder>() {
         private val orderString: String
         private val imageSize: Int
         private val topEarnerList: ArrayList<WCTopEarnerModel> = ArrayList()
@@ -156,7 +161,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
             val topEarner = topEarnerList[position]
             val numOrders = String.format(orderString, FormatUtils.formatDecimal(topEarner.quantity))
-            val total = formatAmountForDisplay(holder.itemView.context, topEarner.total, topEarner.currency)
+            val total = formatCurrencyForDisplay(topEarner.total, topEarner.currency, true)
 
             holder.productNameText.text = StringEscapeUtils.unescapeHtml4(topEarner.name)
             holder.productOrdersText.text = numOrders
