@@ -113,7 +113,7 @@ object AppRatingDialog {
         builder.setTitle(R.string.app_rating_title)
                 .setMessage(R.string.app_rating_message)
                 .setCancelable(true)
-                .setPositiveButton(R.string.app_rating_rate_now) { dialog, which ->
+                .setPositiveButton(R.string.app_rating_rate_now) { _, _ ->
                     val appPackage = context.packageName
                     val url: String? = "market://details?id=$appPackage"
                     try {
