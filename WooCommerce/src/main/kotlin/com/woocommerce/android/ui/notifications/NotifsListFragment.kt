@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.notifications.NotifsListAdapter.NotifsListItem
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
@@ -281,6 +282,8 @@ class NotifsListFragment : TopLevelFragment(),
                 showLoadNotificationDetailError()
             }
         }
+
+        AppRatingDialog.incrementInteractions()
     }
 
     override fun openReviewDetail(notification: NotificationModel) {
@@ -384,6 +387,8 @@ class NotifsListFragment : TopLevelFragment(),
             if (newStatus == SPAM || newStatus == TRASH) {
                 removeModeratedNotifFromList(remoteNoteId)
             }
+
+            AppRatingDialog.incrementInteractions()
         } else {
             uiMessageResolver.showOfflineSnack()
         }

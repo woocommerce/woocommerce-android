@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -101,6 +102,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
             presenter.orderModel?.let {
                 presenter.markOrderComplete()
+                AppRatingDialog.incrementInteractions()
             }
         }
     }

@@ -15,6 +15,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.adapter.SiteListAdapter
 import com.woocommerce.android.ui.login.adapter.SiteListAdapter.OnSiteClickListener
@@ -64,6 +66,11 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
             AnalyticsTracker.track(
                     Stat.LOGIN_EPILOGUE_STORES_SHOWN,
                     mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size))
+        }
+
+        button_help.setOnClickListener {
+            startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
+            AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_HELP_BUTTON_TAPPED)
         }
     }
 
