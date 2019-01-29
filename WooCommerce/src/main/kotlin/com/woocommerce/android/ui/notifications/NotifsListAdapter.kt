@@ -152,23 +152,26 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      * by reverting the action, or by loading a fresh list of notifications.
      */
     fun hideNotificationWithId(remoteNoteId: Long) {
-        notifsList.firstOrNull { it.remoteNoteId == remoteNoteId }?.let { notif ->
-            // get the index
-            val pos = notifsList.indexOfFirst { it == notif }
+        val pos = notifsList.indexOfFirst { it.remoteNoteId == remoteNoteId }
+        if (pos == -1) {
+            WooLog.w(T.NOTIFICATIONS, "Unable to hide notification, position is -1")
+            pendingRemovalNotification = null
+            return
+        }
 
-            // remove from the list
-            val section = getSectionForListItemPosition(pos) as NotifsListSection
-            val posInSection = getPositionInSectionByListPos(pos)
-            pendingRemovalNotification = Triple(notif, section, posInSection)
+        val notif = notifsList[pos]
+        val section = getSectionForListItemPosition(pos) as NotifsListSection
+        val posInSection = getPositionInSectionByListPos(pos)
+        pendingRemovalNotification = Triple(notif, section, posInSection)
 
-            section.list.removeAt(posInSection)
-            notifyItemRemovedFromSection(section, posInSection)
+        // remove from the list
+        section.list.removeAt(posInSection)
+        notifyItemRemovedFromSection(section, posInSection)
 
-            if (section.list.size == 0) {
-                val sectionPos = getSectionPosition(section)
-                section.isVisible = false
-                notifySectionChangedToInvisible(section, sectionPos)
-            }
+        if (section.list.size == 0) {
+            val sectionPos = getSectionPosition(section)
+            section.isVisible = false
+            notifySectionChangedToInvisible(section, sectionPos)
         }
     }
 
@@ -289,7 +292,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         // position not found, fail fast
-        throw IndexOutOfBoundsException("Unable to find matching position in section")
+        throw IndexOutOfBoundsException("Unable to find matching position $position in section")
     }
 
     /**
@@ -314,7 +317,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         // position not found, fail fast
-        throw IndexOutOfBoundsException("Unable to find matching position in section")
+        throw IndexOutOfBoundsException("Unable to find matching sectionfor position $position")
     }
     // endregion
 
