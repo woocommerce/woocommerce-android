@@ -111,7 +111,6 @@ class MainActivity : AppCompatActivity(),
         }
 
         initFragment(savedInstanceState)
-        showLoginEpilogueScreen() // TODO: remove
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
