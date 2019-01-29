@@ -199,10 +199,10 @@ class OrderListPresenter @Inject constructor(
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
-            val filteredOrders = removeFutureOrders(orders)
-            if (filteredOrders.count() > 0) {
+            val currentOrders = removeFutureOrders(orders)
+            if (currentOrders.count() > 0) {
                 view.showNoOrdersView(false)
-                view.showOrders(filteredOrders, orderStatusFilter, isForceRefresh)
+                view.showOrders(currentOrders, orderStatusFilter, isForceRefresh)
             } else {
                 if (!networkStatus.isConnected()) {
                     // if the device is offline with no cached orders to display, show the loading
@@ -221,16 +221,17 @@ class OrderListPresenter @Inject constructor(
      */
     private fun removeFutureOrders(orders: List<WCOrderModel>): List<WCOrderModel> {
         val now = DateTimeUtils.nowUTC()
-        val filteredOrders = ArrayList<WCOrderModel>()
-        orders.forEach() {
+        val currentOrders = ArrayList<WCOrderModel>()
+        orders.forEach {
+            // make sure the creation date is before today, or is today
             val orderDate = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
-            if (DateTimeUtils.daysBetween(now, orderDate) >= 0) {
-                filteredOrders.add(it)
+            if (orderDate.time <= now.time || DateTimeUtils.daysBetween(orderDate, now) == 0) {
+                currentOrders.add(it)
             } else {
-                WooLog.w(T.ORDERS, "Hiding future order ${it.dateCreated}")
+                WooLog.i(T.ORDERS, "Hiding future order ${it.dateCreated}")
             }
         }
-        return filteredOrders
+        return currentOrders
     }
 
     @Suppress("unused")
