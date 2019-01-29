@@ -1,3 +1,3 @@
 Bugfixes
 - Issue with order notes not saving properly during activity restore (low memory situations) resolved
-- Scheduled orders with a future creation date are now hidden from the order list
+- Fixed bug that caused the support menu to be hidden when the device has no email client
