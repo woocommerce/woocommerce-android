@@ -45,7 +45,7 @@ object AppRatingDialog {
     /**
      * Call this when the launcher activity is launched.
      */
-    fun onCreate(context: Context) {
+    fun init(context: Context) {
         preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         val editor = preferences.edit()
 

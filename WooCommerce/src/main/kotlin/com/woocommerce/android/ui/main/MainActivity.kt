@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(),
 
         initFragment(savedInstanceState)
 
-        AppRatingDialog.onCreate(this)
+        AppRatingDialog.init(this)
         AppRatingDialog.showRateDialogIfNeeded(this)
     }
 
