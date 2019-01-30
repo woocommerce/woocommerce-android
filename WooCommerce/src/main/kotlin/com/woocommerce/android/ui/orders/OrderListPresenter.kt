@@ -20,6 +20,8 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrdersSearched
 import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
+import org.wordpress.android.util.DateTimeUtils
+import java.util.Date
 import javax.inject.Inject
 
 class OrderListPresenter @Inject constructor(
@@ -197,12 +199,13 @@ class OrderListPresenter @Inject constructor(
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
-            if (orders.count() > 0) {
+            val currentOrders = removeFutureOrders(orders)
+            if (currentOrders.count() > 0) {
                 view.showNoOrdersView(false)
-                view.showOrders(orders, orderStatusFilter, isForceRefresh)
+                view.showOrders(currentOrders, orderStatusFilter, isForceRefresh)
             } else {
                 if (!networkStatus.isConnected()) {
-                    // if the device if offline with no cached orders to display, show the loading
+                    // if the device is offline with no cached orders to display, show the loading
                     // indicator until a successful online refresh.
                     view.showSkeleton(true)
                 } else {
@@ -210,6 +213,25 @@ class OrderListPresenter @Inject constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Removes orders with a future creation date so we don't show them in the order list
+     * https://github.com/woocommerce/woocommerce-android/issues/425
+     */
+    private fun removeFutureOrders(orders: List<WCOrderModel>): List<WCOrderModel> {
+        val now = DateTimeUtils.nowUTC()
+        val currentOrders = ArrayList<WCOrderModel>()
+        orders.forEach {
+            // make sure the creation date is before today, or is today
+            val orderDate = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
+            if (orderDate.time <= now.time || DateTimeUtils.daysBetween(orderDate, now) == 0) {
+                currentOrders.add(it)
+            } else {
+                WooLog.i(T.ORDERS, "Hiding future order ${it.dateCreated}")
+            }
+        }
+        return currentOrders
     }
 
     @Suppress("unused")
