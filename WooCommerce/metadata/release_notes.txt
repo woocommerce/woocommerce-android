@@ -1,0 +1,5 @@
+1.1:
+This version is all about improved reliability and fixes:
+- In the My Store view, the exact number of unfulfilled orders is shown even in case of large numbers.
+- A bug with site validation has been fixed — previously, the app gave a prompt for  an unnecessary update of the Woo plugin.
+- A confirmation message is now shown when the user selects the “Mark all as read” option in the Notifications menu.

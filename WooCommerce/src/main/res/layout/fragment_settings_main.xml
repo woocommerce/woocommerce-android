@@ -165,7 +165,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
         android:importantForAccessibility="no"
-        android:tint="@color/grey"
+        android:tint="@color/wc_grey_mid"
         app:srcCompat="@drawable/ic_gridicons_heart_outline"/>
 
     <TextView
@@ -175,7 +175,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/margin_small"
         android:text="@string/settings_footer"
-        android:textColor="@color/grey"/>
+        android:textColor="@color/wc_grey_mid"/>
 
     <FrameLayout
         android:id="@+id/fragment_container"

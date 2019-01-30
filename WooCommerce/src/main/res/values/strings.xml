@@ -135,8 +135,8 @@
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
-    <string name="dashboard_fulfill_order_title">You have 1 order to fulfill</string>
-    <string name="dashboard_fulfill_orders_title">You have %1$d%2$s orders to fulfill</string>
+    <string name="dashboard_fulfill_order_title_single">You have 1 order to fulfill</string>
+    <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
     <string name="dashboard_no_orders">Waiting for customers</string>
@@ -239,7 +239,7 @@
     -->
     <string name="settings">Settings</string>
     <string name="privacy_settings">Privacy settings</string>
-    <string name="settings_signout">Logout account</string>
+    <string name="settings_signout">Log out account</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -317,7 +317,9 @@
         Notifications List
     -->
     <string name="wc_mark_all_read">Mark all as read</string>
+    <string name="wc_mark_all_read_success">All notifications marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all notifications as read</string>
+    <string name="wc_mark_all_read_none">No unread notifications</string>
     <!--
         Login Library Imported Strings
     -->

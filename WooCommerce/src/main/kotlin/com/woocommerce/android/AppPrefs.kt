@@ -37,7 +37,9 @@ object AppPrefs {
         // Enable notifications for new reviews
         NOTIFS_REVIEWS_ENABLED,
         // Play cha-ching sound on new order notifications
-        NOTIFS_ORDERS_CHA_CHING_ENABLED
+        NOTIFS_ORDERS_CHA_CHING_ENABLED,
+        // Number of times the "mark all notifications read" icon was tapped
+        NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN
     }
 
     fun init(context: Context) {
@@ -114,6 +116,14 @@ object AppPrefs {
 
     fun setHasUnseenNotifs(hasUnseen: Boolean) {
         setBoolean(DeletablePrefKey.HAS_UNSEEN_NOTIFS, hasUnseen)
+    }
+
+    fun getNumTimesMarkAllReadSnackShown(): Int =
+            getInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, 0)
+
+    fun incNumTimesMarkAllReadSnackShown() {
+        val numTimesShown = getNumTimesMarkAllReadSnackShown() + 1
+        setInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, numTimesShown)
     }
 
     /**

@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/skeleton_background"
-        android:text="@string/dashboard_fulfill_order_title"
+        android:text="@string/dashboard_fulfill_order_title_single"
         android:textAppearance="@style/Woo.TextAppearance.Title.Bold"
         android:textColor="@color/transparent"/>
 

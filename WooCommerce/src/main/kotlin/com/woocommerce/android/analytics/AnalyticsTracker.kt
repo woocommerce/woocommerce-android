@@ -181,7 +181,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         REVIEW_DETAIL_APPROVE_BUTTON_TAPPED,
         REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED,
         REVIEW_DETAIL_SPAM_BUTTON_TAPPED,
-        REVIEW_DETAIL_TRASH_BUTTON_TAPPED
+        REVIEW_DETAIL_TRASH_BUTTON_TAPPED,
+
+        // -- Errors
+        JETPACK_TUNNEL_TIMEOUT
     }
     // endregion
 

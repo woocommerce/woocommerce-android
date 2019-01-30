@@ -47,19 +47,14 @@ class DashboardUnfilledOrdersCard @JvmOverloads constructor(ctx: Context, attrs:
     /**
      * Updates the title of the unfilled orders dashboard card using strings that match the
      * quantity of the order count.
-     *
-     * NOTE: The title text is not using the [StringUtils.getQuantityString] method because it
-     * temporarily requires a way of displaying a "+" sign if [canLoadMore] is true. Once we
-     * have an API endpoint that can deliver a total for all orders this can be removed.
      */
-    fun updateOrdersCount(count: Int, canLoadMore: Boolean) {
-        alertAction_title.text = when {
-            count == 1 -> resources.getString(R.string.dashboard_fulfill_order_title)
-            canLoadMore -> resources.getString(R.string.dashboard_fulfill_orders_title, count, "+")
-            else -> resources.getString(R.string.dashboard_fulfill_orders_title, count, "")
-        }
+    fun updateOrdersCount(count: Int) {
+        alertAction_title.text = StringUtils.getQuantityString(context, count,
+                default = R.string.dashboard_fulfill_order_title_multiple,
+                one = R.string.dashboard_fulfill_order_title_single)
 
-        alertAction_action.text = StringUtils.getQuantityString(
-                context, count, R.string.dashboard_action_view_orders, one = R.string.dashboard_action_view_order)
+        alertAction_action.text = StringUtils.getQuantityString(context, count,
+                default = R.string.dashboard_action_view_orders,
+                one = R.string.dashboard_action_view_order)
     }
 }
