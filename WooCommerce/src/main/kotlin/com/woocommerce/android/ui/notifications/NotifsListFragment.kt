@@ -173,8 +173,6 @@ class NotifsListFragment : TopLevelFragment(),
             notifsList.layoutManager.onRestoreInstanceState(listState)
             listState = null
         }
-
-        empty_view.test(R.string.notifs_empty_message) // TODO: remove this before merging
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -416,7 +414,7 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.notifs_empty_message) else empty_view.hide()
+        if (show) empty_view.show(selectedSite.get(), R.string.notifs_empty_message) else empty_view.hide()
     }
     /**
      * Only show the "mark all read" menu item when this fragment is active and there are unread notifs

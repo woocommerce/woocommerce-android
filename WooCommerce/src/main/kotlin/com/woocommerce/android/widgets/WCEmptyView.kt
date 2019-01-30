@@ -10,17 +10,14 @@ import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
-import javax.inject.Inject
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
-    @Inject lateinit var selectedSite: SelectedSite
-
     var showNoCustomersImage = true
 
     init {
@@ -46,7 +43,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         empty_view_image.visibility = if (showNoCustomersImage && !isLandscape) View.VISIBLE else View.GONE
     }
 
-    fun show(@StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
+    fun show(site: SiteModel, @StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
         empty_view_text.text = context.getText(messageId)
         empty_view_share_button.visibility = if (showShareButton) View.VISIBLE else View.GONE
 
@@ -56,8 +53,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         empty_view_share_button.setOnClickListener {
             // TODO: need to support ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED
             AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-            // TODO: BOOM!
-            ActivityUtils.shareStoreUrl(context, selectedSite.get().url)
+            ActivityUtils.shareStoreUrl(context, site.url)
         }
 
         if (visibility != View.VISIBLE) {
@@ -72,12 +68,12 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     }
 
     // TODO: remove this before merging
-    fun test(@StringRes messageId: Int) {
-        show(messageId)
+    fun test(site: SiteModel, @StringRes messageId: Int) {
+        show(site, messageId)
         Handler().postDelayed({
             hide()
             Handler().postDelayed({
-                test(messageId)
+                test(site, messageId)
             }, 2000)
         }, 2000)
     }

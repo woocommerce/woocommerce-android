@@ -363,7 +363,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                     messageId = R.string.orders_empty_message_with_filter
                 }
             }
-            empty_view.show(messageId = messageId, showImage = showImage, showShareButton = showShareButton)
+            empty_view.show(selectedSite.get(), messageId, showImage, showShareButton)
             isRefreshPending = false
         } else {
             empty_view.hide()
