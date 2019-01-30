@@ -2,12 +2,60 @@ package com.woocommerce.android.util
 
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.text.DecimalFormat
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 typealias FormatCurrencyRounded = (rawValue: Double, currencyCode: String) -> String
 
 class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selectedSite: SelectedSite) {
+    companion object {
+        private const val ONE_THOUSAND = 1000
+        private const val ONE_MILLION = 1000000
+
+        // Formats the value to two decimal places
+        private val currencyFormatter: DecimalFormat by lazy {
+            DecimalFormat("0.00")
+        }
+
+        // Formats the value to one decimal place
+        private val currencyFormatterRounded: DecimalFormat by lazy {
+            DecimalFormat("0.0")
+        }
+
+        private fun currencyStringRounded(rawValue: Double): String {
+            val roundedValue = rawValue.roundToInt().toDouble()
+            return if (roundedValue.absoluteValue >= ONE_MILLION) {
+                currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
+            } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
+                currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
+            } else {
+                currencyFormatter.format(rawValue).toString().removeSuffix(".00")
+            }
+        }
+    }
+
     fun formatCurrency(rawValue: String, currencyCode: String, applyDecimalFormatting: Boolean): String {
         return wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, applyDecimalFormatting)
+    }
+
+    /**
+     * Formats a raw amount for display based on the WooCommerce site settings, rounding the values to the nearest int.
+     *
+     * Additionally, if the value is a thousand or more, we return it rounded to the nearest tenth
+     * and suffixed with "k" (2500 -> 2.5k).
+     *
+     * Similarly, we add "m" for values a million or higher.
+     *
+     * @param rawValue the value to be formatted
+     * @param currencyCode the ISO 4217 currency code to use for formatting
+     * @return the formatted value for display
+     */
+    fun formatCurrencyRounded(rawValue: Double, currencyCode: String): String {
+        val displayFormatted = currencyStringRounded(rawValue)
+        return displayFormatted.takeIf { it.isNotEmpty() }?.let {
+            return wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, false)
+        }.orEmpty()
     }
 
     /**
