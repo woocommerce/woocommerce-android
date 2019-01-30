@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.CurrencyUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
@@ -93,8 +94,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         presenter.takeView(this)
 
-        val formatCurrencyForDisplay = { rawValue: Double, currencyCode: String, allowZero: Boolean ->
-            val displayFormatted = DashboardUtils.formatAmountForDisplay(rawValue, allowZero)
+        val formatCurrencyForDisplay = { rawValue: Double, currencyCode: String ->
+            val displayFormatted = CurrencyUtils.currencyStringRounded(rawValue)
             displayFormatted.takeIf { it.isNotEmpty() }?.let {
                 currencyFormatter.formatCurrency(it, currencyCode, false)
             }.orEmpty()

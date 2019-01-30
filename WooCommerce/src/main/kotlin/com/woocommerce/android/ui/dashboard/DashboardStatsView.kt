@@ -56,7 +56,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private lateinit var selectedSite: SelectedSite
 
-    private lateinit var formatCurrencyForDisplay: (Double, String, Boolean) -> String
+    private lateinit var formatCurrencyForDisplay: (Double, String) -> String
 
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
@@ -88,7 +88,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: (Double, String, Boolean) -> String
+        formatCurrencyForDisplay: (Double, String) -> String
     ) {
         this.selectedSite = selectedSite
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
@@ -195,7 +195,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 axisMinimum = 0F
 
                 valueFormatter = IAxisValueFormatter { value, _ ->
-                    formatCurrencyForDisplay(value.toDouble(), chartCurrencyCode.orEmpty(), false)
+                    // Only use non-zero values for the axis
+                    value.toDouble().takeIf { it > 0 }?.let {
+                        formatCurrencyForDisplay(it, chartCurrencyCode.orEmpty())
+                    }.orEmpty()
                 }
             }
 
@@ -238,7 +241,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         // get the revenue for this entry
         val revenue = barEntry.y.toDouble()
-        val formattedRevenue = formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty(), true)
+        val formattedRevenue = formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
 
         // show the date and revenue on separate lines
         return formattedDate + "\n" + formattedRevenue
@@ -254,7 +257,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
 
-        val revenue = formatCurrencyForDisplay(revenueStats.values.sum(), currencyCode.orEmpty(), true)
+        val revenue = formatCurrencyForDisplay(revenueStats.values.sum(), currencyCode.orEmpty())
         val orders = orderStats.values.sum().toString()
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)

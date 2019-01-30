@@ -42,7 +42,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         }
 
     private lateinit var selectedSite: SelectedSite
-    private lateinit var formatCurrencyForDisplay: (Double, String, Boolean) -> String
+    private lateinit var formatCurrencyForDisplay: (Double, String) -> String
 
     private var skeletonView = SkeletonView()
 
@@ -50,7 +50,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: (Double, String, Boolean) -> String
+        formatCurrencyForDisplay: (Double, String) -> String
     ) {
         this.selectedSite = selectedSite
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
@@ -132,7 +132,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     class TopEarnersAdapter(
         context: Context,
-        val formatCurrencyForDisplay: (Double, String, Boolean) -> String
+        val formatCurrencyForDisplay: (Double, String) -> String
     ) : RecyclerView.Adapter<TopEarnersViewHolder>() {
         private val orderString: String
         private val imageSize: Int
@@ -161,7 +161,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
             val topEarner = topEarnerList[position]
             val numOrders = String.format(orderString, FormatUtils.formatDecimal(topEarner.quantity))
-            val total = formatCurrencyForDisplay(topEarner.total, topEarner.currency, true)
+            val total = formatCurrencyForDisplay(topEarner.total, topEarner.currency)
 
             holder.productNameText.text = StringEscapeUtils.unescapeHtml4(topEarner.name)
             holder.productOrdersText.text = numOrders
