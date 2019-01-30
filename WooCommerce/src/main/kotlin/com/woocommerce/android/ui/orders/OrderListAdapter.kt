@@ -179,7 +179,7 @@ class OrderListAdapter @Inject constructor(
             itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.number)
             itemHolder.orderName.text = resources.getString(
                     R.string.orderlist_item_order_name, order.billingFirstName, order.billingLastName)
-            itemHolder.orderTotal.text = currencyFormatter.formatCurrency(order.total, order.currency, true)
+            itemHolder.orderTotal.text = currencyFormatter.formatCurrency(order.total, order.currency)
             itemHolder.rootView.tag = order
             itemHolder.rootView.setOnClickListener {
                 val orderItem = it.tag as WCOrderModel

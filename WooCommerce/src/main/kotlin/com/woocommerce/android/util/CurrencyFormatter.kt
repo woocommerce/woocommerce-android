@@ -35,7 +35,14 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
         }
     }
 
-    fun formatCurrency(rawValue: String, currencyCode: String, applyDecimalFormatting: Boolean): String {
+    /**
+     * Formats a raw amount for display based on the WooCommerce site settings.
+     *
+     * @param rawValue the value to be formatted
+     * @param currencyCode the ISO 4217 currency code to use for formatting
+     * @return the formatted value for display
+     */
+    fun formatCurrency(rawValue: String, currencyCode: String, applyDecimalFormatting: Boolean = true): String {
         return wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, applyDecimalFormatting)
     }
 
