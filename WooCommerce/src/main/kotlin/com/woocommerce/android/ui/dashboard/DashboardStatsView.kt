@@ -23,8 +23,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardStatsMarkerView.RequestMarkerCaptionListener
-import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils

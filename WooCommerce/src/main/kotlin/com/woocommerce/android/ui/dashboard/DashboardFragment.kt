@@ -39,6 +39,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
 
+        val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
+
         private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     }
 
