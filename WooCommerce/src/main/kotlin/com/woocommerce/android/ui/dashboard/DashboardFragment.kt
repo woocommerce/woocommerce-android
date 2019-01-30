@@ -84,6 +84,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
+        empty_view.setSite(selectedSite.get())
+
         dashboard_stats.initView(listener = this, selectedSite = selectedSite)
         dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
         dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
@@ -266,6 +268,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(selectedSite.get(), R.string.waiting_for_customers) else empty_view.hide()
+        if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
     }
 }

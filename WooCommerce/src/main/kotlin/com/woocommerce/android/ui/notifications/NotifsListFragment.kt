@@ -164,6 +164,7 @@ class NotifsListFragment : TopLevelFragment(),
         }
 
         presenter.takeView(this)
+        empty_view.setSite(selectedSite.get())
 
         if (isActive && !deferInit) {
             presenter.loadNotifs(forceRefresh = this.isRefreshPending)
@@ -414,7 +415,7 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(selectedSite.get(), R.string.notifs_empty_message) else empty_view.hide()
+        if (show) empty_view.show(R.string.notifs_empty_message) else empty_view.hide()
     }
     /**
      * Only show the "mark all read" menu item when this fragment is active and there are unread notifs

@@ -18,7 +18,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
-    var showNoCustomersImage = true
+    private var showNoCustomersImage = true
+    private var siteModel: SiteModel? = null
 
     init {
         View.inflate(context, R.layout.wc_empty_view, this)
@@ -43,17 +44,25 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         empty_view_image.visibility = if (showNoCustomersImage && !isLandscape) View.VISIBLE else View.GONE
     }
 
-    fun show(site: SiteModel, @StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
-        empty_view_text.text = context.getText(messageId)
-        empty_view_share_button.visibility = if (showShareButton) View.VISIBLE else View.GONE
+    fun setSite(site: SiteModel?) {
+        siteModel = site
+    }
 
+    fun show(@StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
         showNoCustomersImage = showImage
         checkOrientation()
 
-        empty_view_share_button.setOnClickListener {
-            // TODO: need to support ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED
-            AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-            ActivityUtils.shareStoreUrl(context, site.url)
+        empty_view_text.text = context.getText(messageId)
+
+        if (showShareButton && siteModel != null) {
+            empty_view_share_button.visibility = View.VISIBLE
+            empty_view_share_button.setOnClickListener {
+                // TODO: need to support ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED
+                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(context, siteModel!!.url)
+            }
+        } else {
+            empty_view_share_button.visibility = View.GONE
         }
 
         if (visibility != View.VISIBLE) {
@@ -68,12 +77,12 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     }
 
     // TODO: remove this before merging
-    fun test(site: SiteModel, @StringRes messageId: Int) {
-        show(site, messageId)
+    fun test(@StringRes messageId: Int) {
+        show(messageId)
         Handler().postDelayed({
             hide()
             Handler().postDelayed({
-                test(site, messageId)
+                test(messageId)
             }, 2000)
         }, 2000)
     }

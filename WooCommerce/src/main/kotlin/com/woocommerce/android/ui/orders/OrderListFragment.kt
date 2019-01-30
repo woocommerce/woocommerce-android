@@ -233,6 +233,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
 
         presenter.takeView(this)
+        empty_view.setSite(selectedSite.get())
 
         if (isActive && !deferInit) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
@@ -363,7 +364,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                     messageId = R.string.orders_empty_message_with_filter
                 }
             }
-            empty_view.show(selectedSite.get(), messageId, showImage, showShareButton)
+            empty_view.show(messageId, showImage, showShareButton)
             isRefreshPending = false
         } else {
             empty_view.hide()
