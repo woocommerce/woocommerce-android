@@ -26,6 +26,7 @@ interface NotifsListContract {
         fun notificationModerationSuccess()
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
+        fun showNoOrdersView(show: Boolean)
         fun openReviewDetail(notification: NotificationModel)
         fun visuallyMarkNotificationsAsRead()
         fun showMarkAllNotificationsReadError()

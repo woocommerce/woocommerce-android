@@ -108,8 +108,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         } else {
             isRefreshPending = true
         }
-
-        no_orders_view.test(selectedSite.get())
     }
 
     override fun onResume() {
@@ -268,6 +266,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showNoOrdersView(show: Boolean) {
-        if (show) no_orders_view.show(R.string.dashboard_no_orders, selectedSite.get()) else no_orders_view.hide()
+        if (show) no_orders_view.show(R.string.dashboard_no_orders) else no_orders_view.hide()
     }
 }

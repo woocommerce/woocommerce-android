@@ -27,39 +27,11 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/noOrdersView"
+        <com.woocommerce.android.widgets.NoOrdersView
+            android:id="@+id/no_orders_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/default_window_background"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/no_orders_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="@string/dashboard_no_orders_contentdesc"
-                app:srcCompat="@drawable/ic_woo_waiting_customers"/>
-
-            <TextView
-                android:id="@+id/no_orders_text"
-                style="@style/Woo.TextAppearance.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"
-                android:text="@string/dashboard_no_orders"/>
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/no_orders_share_button"
-                style="@style/Woo.Button.Purple"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"
-                android:text="@string/no_orders_share_store"/>
-        </LinearLayout>
+            android:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"

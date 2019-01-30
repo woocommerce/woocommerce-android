@@ -78,14 +78,15 @@ class NotifsListPresenter @Inject constructor(
     }
 
     override fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean) {
-        view?.let { notifView ->
-            val notifs = notificationStore.getNotificationsForSite(
-                    site = selectedSite.get(),
-                    filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
-                    filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
-            notifView.showNotifications(notifs, isFreshData = isForceRefresh)
-
-            // TODO how to handle empty notifications list view?
+        val notifs = notificationStore.getNotificationsForSite(
+                site = selectedSite.get(),
+                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
+                filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
+        if (notifs.size > 0) {
+            view?.showNoOrdersView(false)
+            view?.showNotifications(notifs, isFreshData = isForceRefresh)
+        } else {
+            view?.showNoOrdersView(true)
         }
     }
 

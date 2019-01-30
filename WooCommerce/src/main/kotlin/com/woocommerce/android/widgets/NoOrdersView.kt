@@ -10,14 +10,17 @@ import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import kotlinx.android.synthetic.main.no_orders_view.view.*
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
+import javax.inject.Inject
 
 class NoOrdersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
+    @Inject lateinit var selectedSite: SelectedSite
+
     init {
         View.inflate(context, R.layout.no_orders_view, this)
         orientation = LinearLayout.VERTICAL
@@ -38,11 +41,16 @@ class NoOrdersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? 
         no_orders_image.visibility = if (isLandscape) View.GONE else View.VISIBLE
     }
 
-    fun show(@StringRes messageId: Int, site: SiteModel) {
+    fun show(@StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
         no_orders_text.text = context.getText(messageId)
+        no_orders_share_button.visibility = if (showShareButton) View.VISIBLE else View.GONE
+        no_orders_image.visibility = if (showImage && !DisplayUtils.isLandscape(context)) View.VISIBLE else View.GONE
+
         no_orders_share_button.setOnClickListener {
+            // TODO: need to support ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED
             AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-            ActivityUtils.shareStoreUrl(context, site.url)
+            // TODO: BOOM!
+            ActivityUtils.shareStoreUrl(context, selectedSite.get().url)
         }
 
         if (visibility != View.VISIBLE) {
@@ -56,12 +64,13 @@ class NoOrdersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? 
         }
     }
 
-    fun test(site: SiteModel) {
-        show(R.string.dashboard_no_orders, site)
+    // TODO: remove this before merging
+    fun test() {
+        show(R.string.dashboard_no_orders)
         Handler().postDelayed({
             hide()
             Handler().postDelayed({
-                test(site)
+                test()
             }, 2000)
         }, 2000)
     }

@@ -234,6 +234,7 @@
     <string name="notifs_fetch_error">Error fetching notifications</string>
     <string name="notifs_review_moderation_undo">Review marked as %1$s</string>
     <string name="notifs_detail_loading_error">Error loading notification detail</string>
+    <string name="notifs_empty_message">No notifications</string>
     <!--
         Settings
     -->
