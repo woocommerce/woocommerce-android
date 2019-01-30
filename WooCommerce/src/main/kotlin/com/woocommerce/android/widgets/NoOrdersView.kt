@@ -2,6 +2,7 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.content.res.Configuration
+import android.os.Handler
 import android.support.annotation.StringRes
 import android.util.AttributeSet
 import android.view.View
@@ -57,6 +58,11 @@ class NoOrdersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? 
 
     fun test(site: SiteModel) {
         show(R.string.dashboard_no_orders, site)
-
+        Handler().postDelayed({
+            hide()
+            Handler().postDelayed({
+                test(site)
+            }, 2000)
+        }, 2000)
     }
 }
