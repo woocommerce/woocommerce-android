@@ -415,7 +415,7 @@ class NotifsListFragment : TopLevelFragment(),
         uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
     }
 
-    override fun showNoOrdersView(show: Boolean) {
+    override fun showEmptyView(show: Boolean) {
         if (show) empty_view.show(R.string.notifs_empty_message) else empty_view.hide()
     }
     /**

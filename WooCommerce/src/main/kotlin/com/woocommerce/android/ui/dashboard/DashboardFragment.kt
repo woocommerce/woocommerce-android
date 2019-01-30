@@ -265,7 +265,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_plugin_version_notice.visibility = View.GONE
     }
 
-    override fun showNoOrdersView(show: Boolean) {
+    override fun showEmptyView(show: Boolean) {
         if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
     }
 }

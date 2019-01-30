@@ -337,7 +337,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     /**
      * shows the view that appears for stores that have have no orders matching the current filter
      */
-    override fun showNoOrdersView(show: Boolean) {
+    override fun showEmptyView(show: Boolean) {
         if (show) {
             // if the user is searching we show a simple "No matching orders" TextView, otherwise if
             // there isn't a filter (ie: we're showing All orders and there aren't any), then we want
@@ -502,7 +502,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         } else {
             ordersAdapter.clearAdapterData()
         }
-        showNoOrdersView(false)
+        showEmptyView(false)
         return true
     }
 

@@ -83,10 +83,10 @@ class NotifsListPresenter @Inject constructor(
                 filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
                 filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
         if (notifs.size > 0) {
-            view?.showNoOrdersView(false)
+            view?.showEmptyView(false)
             view?.showNotifications(notifs, isFreshData = isForceRefresh)
         } else {
-            view?.showNoOrdersView(true)
+            view?.showEmptyView(true)
         }
     }
 
