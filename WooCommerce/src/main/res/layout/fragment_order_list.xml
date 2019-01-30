@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
@@ -27,8 +26,8 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <com.woocommerce.android.widgets.NoOrdersView
-            android:id="@+id/no_orders_view"
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"/>

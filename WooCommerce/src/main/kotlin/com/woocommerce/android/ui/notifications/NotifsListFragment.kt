@@ -174,7 +174,7 @@ class NotifsListFragment : TopLevelFragment(),
             listState = null
         }
 
-        no_orders_view.test() // TODO: remove this before merging
+        empty_view.test() // TODO: remove this before merging
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -416,7 +416,7 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun showNoOrdersView(show: Boolean) {
-        if (show) no_orders_view.show(R.string.notifs_empty_message) else no_orders_view.hide()
+        if (show) empty_view.show(R.string.notifs_empty_message) else empty_view.hide()
     }
     /**
      * Only show the "mark all read" menu item when this fragment is active and there are unread notifs

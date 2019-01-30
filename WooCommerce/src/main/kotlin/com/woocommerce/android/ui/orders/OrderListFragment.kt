@@ -153,7 +153,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     private fun shouldShowFilterMenuItem(): Boolean {
         return when {
-            (isShowingAllOrders() && no_orders_view.visibility == View.VISIBLE) -> false
+            (isShowingAllOrders() && empty_view.visibility == View.VISIBLE) -> false
             (childFragmentManager.backStackEntryCount > 0) -> false
             else -> true
         }
@@ -350,23 +350,23 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 isSearching -> {
                     showImage = false
                     showShareButton = false
-                    messageId = R.string.dashboard_no_orders_with_search
+                    messageId = R.string.orders_empty_message_with_search
                 }
                 isShowingAllOrders() -> {
                     showImage = true
                     showShareButton = true
-                    messageId = R.string.dashboard_no_orders
+                    messageId = R.string.dashboard_empty_message
                 }
                 else -> {
                     showImage = true
                     showShareButton = true
-                    messageId = R.string.dashboard_no_orders_with_filter
+                    messageId = R.string.orders_empty_message_with_filter
                 }
             }
-            no_orders_view.show(messageId = messageId, showImage = showImage, showShareButton = showShareButton)
+            empty_view.show(messageId = messageId, showImage = showImage, showShareButton = showShareButton)
             isRefreshPending = false
         } else {
-            no_orders_view.hide()
+            empty_view.hide()
         }
     }
 

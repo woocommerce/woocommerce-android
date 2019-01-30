@@ -14,15 +14,15 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import kotlinx.android.synthetic.main.no_orders_view.view.*
+import kotlinx.android.synthetic.main.wc_empty_view.view.*
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
-class NoOrdersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
+class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     @Inject lateinit var selectedSite: SelectedSite
 
     init {
-        View.inflate(context, R.layout.no_orders_view, this)
+        View.inflate(context, R.layout.wc_empty_view, this)
         orientation = LinearLayout.VERTICAL
         checkOrientation()
     }
@@ -38,15 +38,15 @@ class NoOrdersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? 
 
     private fun checkOrientation() {
         val isLandscape = DisplayUtils.isLandscape(context)
-        no_orders_image.visibility = if (isLandscape) View.GONE else View.VISIBLE
+        empty_view_image.visibility = if (isLandscape) View.GONE else View.VISIBLE
     }
 
     fun show(@StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
-        no_orders_text.text = context.getText(messageId)
-        no_orders_share_button.visibility = if (showShareButton) View.VISIBLE else View.GONE
-        no_orders_image.visibility = if (showImage && !DisplayUtils.isLandscape(context)) View.VISIBLE else View.GONE
+        empty_view_text.text = context.getText(messageId)
+        empty_view_share_button.visibility = if (showShareButton) View.VISIBLE else View.GONE
+        empty_view_image.visibility = if (showImage && !DisplayUtils.isLandscape(context)) View.VISIBLE else View.GONE
 
-        no_orders_share_button.setOnClickListener {
+        empty_view_share_button.setOnClickListener {
             // TODO: need to support ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED
             AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
             // TODO: BOOM!
@@ -66,7 +66,7 @@ class NoOrdersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? 
 
     // TODO: remove this before merging
     fun test() {
-        show(R.string.dashboard_no_orders)
+        show(R.string.dashboard_empty_message)
         Handler().postDelayed({
             hide()
             Handler().postDelayed({

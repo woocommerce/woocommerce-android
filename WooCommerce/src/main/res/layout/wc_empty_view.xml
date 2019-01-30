@@ -10,27 +10,27 @@
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/no_orders_image"
+        android:id="@+id/empty_view_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:contentDescription="@string/dashboard_no_orders_contentdesc"
+        android:contentDescription="@string/waiting_for_customers_contentdesc"
         app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
     <TextView
-        android:id="@+id/no_orders_text"
+        android:id="@+id/empty_view_text"
         style="@style/Woo.TextAppearance.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_large"
-        tools:text="@string/dashboard_no_orders"/>
+        tools:text="@string/dashboard_empty_message"/>
 
     <android.support.v7.widget.AppCompatButton
-        android:id="@+id/no_orders_share_button"
+        android:id="@+id/empty_view_share_button"
         style="@style/Woo.Button.Purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_large"
-        android:text="@string/no_orders_share_store"/>
+        android:text="@string/share_store_button"/>
 
 </LinearLayout>
