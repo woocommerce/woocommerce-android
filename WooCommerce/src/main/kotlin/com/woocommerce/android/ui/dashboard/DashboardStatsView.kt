@@ -26,6 +26,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardStatsMarkerView.RequestMarkerCaptionListener
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
@@ -56,7 +57,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private lateinit var selectedSite: SelectedSite
 
-    private lateinit var formatCurrencyForDisplay: (Double, String) -> String
+    private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
@@ -88,7 +89,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: (Double, String) -> String
+        formatCurrencyForDisplay: FormatCurrencyRounded
     ) {
         this.selectedSite = selectedSite
         this.formatCurrencyForDisplay = formatCurrencyForDisplay

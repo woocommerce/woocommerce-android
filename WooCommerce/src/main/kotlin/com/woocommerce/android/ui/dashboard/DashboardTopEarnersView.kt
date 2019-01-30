@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardUtils.DEFAULT_STATS_GRANULARITY
+import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
 import kotlinx.android.synthetic.main.top_earner_list_item.view.*
@@ -42,7 +43,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         }
 
     private lateinit var selectedSite: SelectedSite
-    private lateinit var formatCurrencyForDisplay: (Double, String) -> String
+    private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
     private var skeletonView = SkeletonView()
 
@@ -50,7 +51,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: (Double, String) -> String
+        formatCurrencyForDisplay: FormatCurrencyRounded
     ) {
         this.selectedSite = selectedSite
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
@@ -132,7 +133,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     class TopEarnersAdapter(
         context: Context,
-        val formatCurrencyForDisplay: (Double, String) -> String
+        val formatCurrencyForDisplay: FormatCurrencyRounded
     ) : RecyclerView.Adapter<TopEarnersViewHolder>() {
         private val orderString: String
         private val imageSize: Int
