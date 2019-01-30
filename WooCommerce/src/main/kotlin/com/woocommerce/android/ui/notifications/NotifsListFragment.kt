@@ -30,6 +30,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.notifications.NotifsListAdapter.ItemType
+import com.woocommerce.android.ui.notifications.NotifsListAdapter.NotifsListItemDecoration
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -45,7 +47,10 @@ import org.wordpress.android.fluxc.model.CommentStatus.TRASH
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import javax.inject.Inject
 
-class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsListAdapter.ReviewListListener {
+class NotifsListFragment : TopLevelFragment(),
+        NotifsListContract.View,
+        NotifsListAdapter.ReviewListListener,
+        NotifsListAdapter.ItemDecorationListener {
     companion object {
         val TAG: String = NotifsListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -60,7 +65,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
 
-    private lateinit var dividerDecoration: DividerItemDecoration
     private var changeCommentStatusSnackbar: Snackbar? = null
 
     // Holds a reference to the index and notification object pending moderation
@@ -138,16 +142,19 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Set the divider decoration for the list
-        dividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        notifsAdapter.setListListener(this)
 
-        notifsAdapter.setListener(this)
+        val unreadDecoration = NotifsListItemDecoration(activity as Context)
+        unreadDecoration.setListener(this)
 
         notifsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
-            addItemDecoration(dividerDecoration)
+            // divider decoration between items
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            // unread item decoration
+            addItemDecoration(unreadDecoration)
             adapter = notifsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
@@ -430,5 +437,12 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         pendingModerationNewStatus = null
         pendingModerationRemoteNoteId = null
         notifsAdapter.resetPendingModerationState()
+    }
+
+    /**
+     * Determines whether to show the unread indicator item decoration for the passed position
+     */
+    override fun getItemTypeAtPosition(position: Int): ItemType {
+        return notifsAdapter.getItemTypeAtRecyclerPosition(position)
     }
 }
