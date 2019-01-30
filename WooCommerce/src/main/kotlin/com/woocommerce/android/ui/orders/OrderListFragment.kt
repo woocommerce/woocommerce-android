@@ -355,7 +355,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 isShowingAllOrders() -> {
                     showImage = true
                     showShareButton = true
-                    messageId = R.string.dashboard_empty_message
+                    messageId = R.string.waiting_for_customers
                 }
                 else -> {
                     showImage = true

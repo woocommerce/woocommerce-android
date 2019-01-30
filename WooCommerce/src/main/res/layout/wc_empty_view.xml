@@ -2,9 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/default_window_background"
     android:gravity="center"
     android:orientation="vertical">
@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:contentDescription="@string/waiting_for_customers_contentdesc"
+        android:importantForAccessibility="no"
         app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
     <TextView
@@ -23,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_large"
-        tools:text="@string/dashboard_empty_message"/>
+        tools:text="@string/waiting_for_customers"/>
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/empty_view_share_button"

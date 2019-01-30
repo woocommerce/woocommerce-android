@@ -233,11 +233,11 @@
     <!--
         Empty list messages
     -->
-    <string name="dashboard_empty_message">Waiting for customers</string>
+    <string name="waiting_for_customers">Waiting for customers</string>
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
-    <string name="notifs_empty_message">No notifications</string>
     <string name="orders_empty_message_with_filter">No orders</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
+    <string name="notifs_empty_message">No notifications yet!</string>
 
     <!--
         Settings

@@ -174,7 +174,7 @@ class NotifsListFragment : TopLevelFragment(),
             listState = null
         }
 
-        empty_view.test() // TODO: remove this before merging
+        empty_view.test(R.string.notifs_empty_message) // TODO: remove this before merging
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

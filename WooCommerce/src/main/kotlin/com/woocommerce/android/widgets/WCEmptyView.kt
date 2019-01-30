@@ -21,6 +21,8 @@ import javax.inject.Inject
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     @Inject lateinit var selectedSite: SelectedSite
 
+    var showNoCustomersImage = true
+
     init {
         View.inflate(context, R.layout.wc_empty_view, this)
         orientation = LinearLayout.VERTICAL
@@ -36,15 +38,20 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         checkOrientation()
     }
 
+    /**
+     * Hide the "no customers" image in landscape since there isn't enough room for it on most devices
+     */
     private fun checkOrientation() {
         val isLandscape = DisplayUtils.isLandscape(context)
-        empty_view_image.visibility = if (isLandscape) View.GONE else View.VISIBLE
+        empty_view_image.visibility = if (showNoCustomersImage && !isLandscape) View.VISIBLE else View.GONE
     }
 
     fun show(@StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
         empty_view_text.text = context.getText(messageId)
         empty_view_share_button.visibility = if (showShareButton) View.VISIBLE else View.GONE
-        empty_view_image.visibility = if (showImage && !DisplayUtils.isLandscape(context)) View.VISIBLE else View.GONE
+
+        showNoCustomersImage = showImage
+        checkOrientation()
 
         empty_view_share_button.setOnClickListener {
             // TODO: need to support ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED
@@ -65,12 +72,12 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     }
 
     // TODO: remove this before merging
-    fun test() {
-        show(R.string.dashboard_empty_message)
+    fun test(@StringRes messageId: Int) {
+        show(messageId)
         Handler().postDelayed({
             hide()
             Handler().postDelayed({
-                test()
+                test(messageId)
             }, 2000)
         }, 2000)
     }
