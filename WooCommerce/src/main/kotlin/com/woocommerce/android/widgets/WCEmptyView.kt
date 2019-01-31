@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -20,6 +19,7 @@ import org.wordpress.android.util.DisplayUtils
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private var showNoCustomersImage = true
     private var siteModel: SiteModel? = null
+    private var tracksEvent: AnalyticsTracker.Stat? = null
 
     init {
         View.inflate(context, R.layout.wc_empty_view, this)
@@ -48,6 +48,10 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         siteModel = site
     }
 
+    fun setShareButtonTracksEvent(stat: AnalyticsTracker.Stat?) {
+        tracksEvent = stat
+    }
+
     fun show(@StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
         showNoCustomersImage = showImage
         checkOrientation()
@@ -57,8 +61,9 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (showShareButton && siteModel != null) {
             empty_view_share_button.visibility = View.VISIBLE
             empty_view_share_button.setOnClickListener {
-                // TODO: need to support ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED
-                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                tracksEvent?.let {
+                    AnalyticsTracker.track(it)
+                }
                 ActivityUtils.shareStoreUrl(context, siteModel!!.url)
             }
         } else {

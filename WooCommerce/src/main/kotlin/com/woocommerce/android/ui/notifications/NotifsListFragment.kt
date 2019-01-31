@@ -164,7 +164,9 @@ class NotifsListFragment : TopLevelFragment(),
         }
 
         presenter.takeView(this)
+
         empty_view.setSite(selectedSite.get())
+        empty_view.setShareButtonTracksEvent(Stat.NOTIFICATIONS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         if (isActive && !deferInit) {
             presenter.loadNotifs(forceRefresh = this.isRefreshPending)

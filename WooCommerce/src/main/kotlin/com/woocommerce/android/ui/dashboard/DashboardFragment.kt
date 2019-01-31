@@ -84,7 +84,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
+
         empty_view.setSite(selectedSite.get())
+        empty_view.setShareButtonTracksEvent(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         dashboard_stats.initView(listener = this, selectedSite = selectedSite)
         dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)

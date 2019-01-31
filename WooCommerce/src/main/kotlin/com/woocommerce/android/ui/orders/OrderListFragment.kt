@@ -233,7 +233,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
 
         presenter.takeView(this)
+
         empty_view.setSite(selectedSite.get())
+        empty_view.setShareButtonTracksEvent(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         if (isActive && !deferInit) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
