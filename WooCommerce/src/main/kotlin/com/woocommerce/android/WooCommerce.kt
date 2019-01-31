@@ -85,11 +85,9 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
      */
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
-            if (selectedSite.exists()) {
-                selectedSite.get().let {
-                    dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(it))
-                    dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
-                }
+            selectedSite.getIfExists()?.let {
+                dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(it))
+                dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
             }
             return true
         }
