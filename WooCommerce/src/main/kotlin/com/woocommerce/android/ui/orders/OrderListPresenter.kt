@@ -159,15 +159,13 @@ class OrderListPresenter @Inject constructor(
             WooLog.e(T.ORDERS, "$TAG - Error searching orders : ${event.error.message}")
             orderView?.showLoadOrdersError()
         } else {
+            orderView?.showEmptyView(event.searchResults.isEmpty())
             if (event.searchResults.isNotEmpty()) {
-                orderView?.showEmptyView(false)
                 if (orderListState == OrderListState.SEARCHING_MORE) {
                     orderView?.addSearchResults(event.searchQuery, event.searchResults)
                 } else {
                     orderView?.showSearchResults(event.searchQuery, event.searchResults)
                 }
-            } else {
-                orderView?.showEmptyView(true)
             }
         }
 
