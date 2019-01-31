@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
+import android.content.res.Configuration
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
@@ -19,6 +21,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
@@ -27,6 +30,7 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
@@ -34,11 +38,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
 
+        val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
+
         private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     }
 
     @Inject lateinit var presenter: DashboardContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
@@ -76,6 +83,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     refreshDashboard(forced = true)
                 }
             }
+
+            no_orders_image.visibility =
+                    if (DisplayUtils.isLandscape(activity)) View.GONE else View.VISIBLE
         }
         return view
     }
@@ -85,11 +95,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         presenter.takeView(this)
 
-        empty_view.setSite(selectedSite.get())
-        empty_view.setShareButtonTracksEvent(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-
-        dashboard_stats.initView(listener = this, selectedSite = selectedSite)
-        dashboard_top_earners.initView(listener = this, selectedSite = selectedSite)
+        dashboard_stats.initView(
+                listener = this,
+                selectedSite = selectedSite,
+                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
+        dashboard_top_earners.initView(
+                listener = this,
+                selectedSite = selectedSite,
+                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
         dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
             override fun onViewOrdersClicked() {
                 (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
@@ -126,6 +139,18 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // being visible - go ahead and load the data.
         if (isActive && isRefreshPending) {
             refreshDashboard(forced = false)
+        }
+    }
+
+    /**
+     * the main activity has `android:configChanges="orientation|screenSize"` in the manifest, so we have to
+     * handle screen rotation here
+     */
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        newConfig?.let {
+            no_orders_image.visibility =
+                    if (it.orientation == ORIENTATION_LANDSCAPE) View.GONE else View.VISIBLE
         }
     }
 
@@ -269,7 +294,18 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_plugin_version_notice.visibility = View.GONE
     }
 
-    override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
+    /**
+     * shows the "waiting for customers" view that appears for stores that have never had any orders
+     */
+    override fun showNoOrdersView(show: Boolean) {
+        if (show && no_orders_view.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(no_orders_view, Duration.LONG)
+            no_orders_share_button.setOnClickListener {
+                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(activity!!, selectedSite.get().url)
+            }
+        } else if (!show && no_orders_view.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(no_orders_view, Duration.LONG)
+        }
     }
 }

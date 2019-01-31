@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.util.CurrencyUtils
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -18,14 +17,11 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         orientation = LinearLayout.VERTICAL
     }
 
-    fun initView(order: WCOrderModel) {
-        val currencyCode = order.currency
-
-        paymentInfo_subTotal.text = CurrencyUtils.currencyString(context, order.getOrderSubtotal(), currencyCode)
-        paymentInfo_shippingTotal.text = CurrencyUtils.currencyString(
-                context, order.shippingTotal.toDouble(), currencyCode)
-        paymentInfo_taxesTotal.text = CurrencyUtils.currencyString(context, order.totalTax, currencyCode)
-        paymentInfo_total.text = CurrencyUtils.currencyString(context, order.total, currencyCode)
+    fun initView(order: WCOrderModel, formatCurrencyForDisplay: (String) -> String) {
+        paymentInfo_subTotal.text = formatCurrencyForDisplay(order.getOrderSubtotal().toString())
+        paymentInfo_shippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
+        paymentInfo_taxesTotal.text = formatCurrencyForDisplay(order.totalTax)
+        paymentInfo_total.text = formatCurrencyForDisplay(order.total)
 
         if (order.paymentMethodTitle.isEmpty()) {
             paymentInfo_paymentMsg.visibility = View.GONE
@@ -40,7 +36,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                             R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle)
                 }
                 else -> {
-                    val totalPayment = CurrencyUtils.currencyString(context, order.total, currencyCode)
+                    val totalPayment = formatCurrencyForDisplay(order.total)
                     paymentInfo_paymentMsg.text = context.getString(
                             R.string.orderdetail_payment_summary_completed, totalPayment, order.paymentMethodTitle)
                 }
@@ -51,9 +47,9 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         if (order.refundTotal.absoluteValue > 0) {
             paymentInfo_lblTitle.text = context.getString(R.string.orderdetail_payment_refunded)
             paymentInfo_refundSection.visibility = View.VISIBLE
-            paymentInfo_refundTotal.text = CurrencyUtils.currencyString(context, order.refundTotal, currencyCode)
+            paymentInfo_refundTotal.text = formatCurrencyForDisplay(order.refundTotal.toString())
             val newTotal = order.total.toDouble() + order.refundTotal
-            paymentInfo_newTotal.text = CurrencyUtils.currencyString(context, newTotal, currencyCode)
+            paymentInfo_newTotal.text = formatCurrencyForDisplay(newTotal.toString())
         } else {
             paymentInfo_lblTitle.text = context.getString(R.string.payment)
             paymentInfo_refundSection.visibility = View.GONE
@@ -65,7 +61,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_discountSection.visibility = View.GONE
         } else {
             paymentInfo_discountSection.visibility = View.VISIBLE
-            paymentInfo_discountTotal.text = CurrencyUtils.currencyString(context, order.discountTotal, currencyCode)
+            paymentInfo_discountTotal.text = formatCurrencyForDisplay(order.discountTotal)
             paymentInfo_discountItems.text = context.getString(R.string.orderdetail_discount_items, order.discountCodes)
         }
     }

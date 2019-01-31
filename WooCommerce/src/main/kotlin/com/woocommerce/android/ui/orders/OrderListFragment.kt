@@ -282,6 +282,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onDestroyView() {
+        disableSearchListeners()
         presenter.dropView()
         filterMenuItem = null
         searchView = null
