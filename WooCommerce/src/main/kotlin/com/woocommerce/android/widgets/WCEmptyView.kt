@@ -41,16 +41,11 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     }
 
     /**
-     * Pass the site to use when sharing the store's url
+     * Pass the site to use when sharing the store's url along with the tracks event the tracks event to record
+     * when the share button is tapped
      */
-    fun setSite(site: SiteModel?) {
+    fun setSiteToShare(site: SiteModel, stat: AnalyticsTracker.Stat) {
         siteModel = site
-    }
-
-    /**
-     * Pass the tracks event to record when the shar button is tapped
-     */
-    fun setShareButtonTracksEvent(stat: AnalyticsTracker.Stat?) {
         shareTracksEvent = stat
     }
 
