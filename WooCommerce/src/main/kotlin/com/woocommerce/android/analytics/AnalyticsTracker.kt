@@ -172,7 +172,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         NOTIFICATIONS_LOADED,
         NOTIFICATIONS_LIST_PULLED_TO_REFRESH,
         NOTIFICATIONS_LIST_MENU_MARK_READ_BUTTON_TAPPED,
-        NOTIFICATIONS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
+        NOTIFICATIONS_SHARE_YOUR_STORE_BUTTON_TAPPED,
 
         // -- Product Review
         REVIEW_ACTION,
