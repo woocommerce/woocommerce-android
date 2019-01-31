@@ -23,7 +23,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     init {
         View.inflate(context, R.layout.wc_empty_view, this)
-        orientation = LinearLayout.VERTICAL
         checkOrientation()
     }
 
