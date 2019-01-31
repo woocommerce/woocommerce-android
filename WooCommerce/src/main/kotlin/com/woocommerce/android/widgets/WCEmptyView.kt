@@ -19,7 +19,7 @@ import org.wordpress.android.util.DisplayUtils
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private var showNoCustomersImage = true
     private var siteModel: SiteModel? = null
-    private var tracksEvent: AnalyticsTracker.Stat? = null
+    private var shareTracksEvent: AnalyticsTracker.Stat? = null
 
     init {
         View.inflate(context, R.layout.wc_empty_view, this)
@@ -27,10 +27,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         checkOrientation()
     }
 
-    /**
-     * the main activity has android:configChanges="orientation|screenSize" in the manifest, so we have to
-     * handle screen rotation here
-     */
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
         checkOrientation()
@@ -44,12 +40,18 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         empty_view_image.visibility = if (showNoCustomersImage && !isLandscape) View.VISIBLE else View.GONE
     }
 
+    /**
+     * Pass the site to use when sharing the store's url
+     */
     fun setSite(site: SiteModel?) {
         siteModel = site
     }
 
+    /**
+     * Pass the tracks event to record when the shar button is tapped
+     */
     fun setShareButtonTracksEvent(stat: AnalyticsTracker.Stat?) {
-        tracksEvent = stat
+        shareTracksEvent = stat
     }
 
     fun show(@StringRes messageId: Int, showImage: Boolean = true, showShareButton: Boolean = true) {
@@ -61,7 +63,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (showShareButton && siteModel != null) {
             empty_view_share_button.visibility = View.VISIBLE
             empty_view_share_button.setOnClickListener {
-                tracksEvent?.let {
+                shareTracksEvent?.let {
                     AnalyticsTracker.track(it)
                 }
                 ActivityUtils.shareStoreUrl(context, siteModel!!.url)
