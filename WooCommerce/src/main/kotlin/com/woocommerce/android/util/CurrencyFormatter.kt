@@ -30,7 +30,7 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
             } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
                 currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
             } else {
-                currencyFormatter.format(rawValue).toString().removeSuffix(".00")
+                currencyFormatter.format(roundedValue).toString().removeSuffix(".00")
             }
         }
     }
@@ -61,7 +61,7 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
     fun formatCurrencyRounded(rawValue: Double, currencyCode: String): String {
         val displayFormatted = currencyStringRounded(rawValue)
         return displayFormatted.takeIf { it.isNotEmpty() }?.let {
-            return wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, false)
+            return wcStore.formatCurrencyForDisplay(it, selectedSite.get(), currencyCode, false)
         }.orEmpty()
     }
 
