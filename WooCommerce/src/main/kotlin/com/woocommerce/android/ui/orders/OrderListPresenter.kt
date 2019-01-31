@@ -160,11 +160,14 @@ class OrderListPresenter @Inject constructor(
             orderView?.showLoadOrdersError()
         } else {
             if (event.searchResults.isNotEmpty()) {
+                orderView?.showEmptyView(false)
                 if (orderListState == OrderListState.SEARCHING_MORE) {
                     orderView?.addSearchResults(event.searchQuery, event.searchResults)
                 } else {
                     orderView?.showSearchResults(event.searchQuery, event.searchResults)
                 }
+            } else {
+                orderView?.showEmptyView(true)
             }
         }
 
