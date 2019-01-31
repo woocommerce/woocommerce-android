@@ -37,6 +37,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
+import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
@@ -143,6 +144,14 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
+        }
+    }
+
+    override fun onFirstActivityResumed() {
+        // Update the WP.com account details and settings every time the app is completely restarted
+        if (networkStatus.isConnected()) {
+            dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
+            dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
         }
     }
 
