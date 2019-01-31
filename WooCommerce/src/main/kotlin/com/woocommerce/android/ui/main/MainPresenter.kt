@@ -29,6 +29,8 @@ class MainPresenter @Inject constructor(
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
+    private var isHandlingMagicLink: Boolean = false
+
     override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
@@ -46,6 +48,7 @@ class MainPresenter @Inject constructor(
     }
 
     override fun storeMagicLinkToken(token: String) {
+        isHandlingMagicLink = true
         // Save Token to the AccountStore. This will trigger an OnAuthenticationChanged.
         dispatcher.dispatch(AccountActionBuilder.newUpdateAccessTokenAction(UpdateTokenPayload(token)))
     }
@@ -58,6 +61,7 @@ class MainPresenter @Inject constructor(
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
             // TODO Handle AuthenticationErrorType.INVALID_TOKEN
+            isHandlingMagicLink = false
             return
         }
 
@@ -77,15 +81,18 @@ class MainPresenter @Inject constructor(
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
             // TODO: Notify the user of the problem
+            isHandlingMagicLink = false
             return
         }
 
-        if (event.causeOfChange == AccountAction.FETCH_ACCOUNT) {
-            // The user's account info has been fetched and stored - next, fetch the user's settings
-            dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
-        } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
-            // The user's account settings have also been fetched and stored - now we can fetch the user's sites
-            dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+        if (isHandlingMagicLink) {
+            if (event.causeOfChange == AccountAction.FETCH_ACCOUNT) {
+                // The user's account info has been fetched and stored - next, fetch the user's settings
+                dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
+            } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
+                // The user's account settings have also been fetched and stored - now we can fetch the user's sites
+                dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+            }
         }
     }
 
@@ -94,11 +101,15 @@ class MainPresenter @Inject constructor(
     fun onSiteChanged(event: OnSiteChanged) {
         if (event.isError) {
             // TODO: Notify the user of the problem
+            isHandlingMagicLink = false
             return
         }
 
-        // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
-        mainView?.updateSelectedSite()
+        if (isHandlingMagicLink) {
+            // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
+            mainView?.updateSelectedSite()
+            isHandlingMagicLink = false
+        }
     }
 
     @Suppress("unused")

@@ -68,6 +68,9 @@ class MainPresenterTest {
     @Test
     fun `Triggers a selected site update after site info fetch`() {
         // Magic link login requires the presenter to fetch account and site info
+        // Trigger the beginning of magic link flow to put the presenter in 'magic link' mode
+        mainPresenter.storeMagicLinkToken("a-token")
+
         // Check that the final OnSiteChanged triggers a site update
         mainPresenter.onSiteChanged(OnSiteChanged(6))
         verify(mainContractView).updateSelectedSite()
