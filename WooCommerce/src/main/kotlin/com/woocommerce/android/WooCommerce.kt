@@ -37,11 +37,13 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
+import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.PackageUtils
@@ -55,6 +57,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var siteStore: SiteStore // Required to ensure the SiteStore is initialized
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
     @Inject lateinit var selectedSite: SelectedSite
@@ -77,12 +80,15 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     }
 
     /**
-     * Update WooCommerce site settings in a background task.
+     * Update WP.com and WooCommerce site settings in a background task.
      */
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
             if (selectedSite.exists()) {
-                dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(selectedSite.get()))
+                selectedSite.get().let {
+                    dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(it))
+                    dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
+                }
             }
             return true
         }
