@@ -92,7 +92,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
                 )
                 .replace(R.id.container, fragment, tag)
                 .addToBackStack(tag)
-                .commit()
+                .commitAllowingStateLoss()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
