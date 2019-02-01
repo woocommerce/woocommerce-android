@@ -178,15 +178,9 @@ fun NotificationModel.isApproved(): Boolean {
 /**
  * If true, user can mark this notification as spam.
  */
-fun NotificationModel.canMarkAsSpam(): Boolean {
-    NotificationHelper.getCommentBlockFromBody(this)?.actions?.let {
-        return if (it.containsKey(ReviewActionKeys.ACTION_KEY_SPAM)) {
-            it.getValue(ReviewActionKeys.ACTION_KEY_SPAM)
-        } else {
-            false
-        }
-    } ?: return false
-}
+fun NotificationModel.canMarkAsSpam() = NotificationHelper
+        .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_SPAM) ?: false
+
 
 /**
  * There is an action option for trash, but in the interest of consistent notification UX
