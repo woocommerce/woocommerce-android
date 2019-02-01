@@ -181,7 +181,6 @@ fun NotificationModel.isApproved(): Boolean {
 fun NotificationModel.canMarkAsSpam() = NotificationHelper
         .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_SPAM) ?: false
 
-
 /**
  * There is an action option for trash, but in the interest of consistent notification UX
  * between WPAndroid and WCAndroid, following WPAndroid.
