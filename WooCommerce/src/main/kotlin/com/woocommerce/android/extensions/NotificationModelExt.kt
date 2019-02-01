@@ -165,7 +165,7 @@ fun NotificationModel.canModerate() = NotificationHelper
 /**
  * If the notification has been approved, return true, else false
  */
-fun NotificationModel.isApproved(): Boolean{
+fun NotificationModel.isApproved(): Boolean {
     NotificationHelper.getCommentBlockFromBody(this)?.actions?.let {
         return if (it.containsKey(ReviewActionKeys.ACTION_KEY_APPROVE)) {
             it.getValue(ReviewActionKeys.ACTION_KEY_APPROVE)
@@ -178,7 +178,7 @@ fun NotificationModel.isApproved(): Boolean{
 /**
  * If true, user can mark this notification as spam.
  */
-fun NotificationModel.canMarkAsSpam(): Boolean{
+fun NotificationModel.canMarkAsSpam(): Boolean {
     NotificationHelper.getCommentBlockFromBody(this)?.actions?.let {
         return if (it.containsKey(ReviewActionKeys.ACTION_KEY_SPAM)) {
             it.getValue(ReviewActionKeys.ACTION_KEY_SPAM)
