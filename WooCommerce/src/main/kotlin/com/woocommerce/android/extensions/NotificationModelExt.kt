@@ -8,8 +8,8 @@ import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.ui.notifications.NotificationHelper
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.CommentModel
-import org.wordpress.android.fluxc.model.CommentStatus.UNAPPROVED
 import org.wordpress.android.fluxc.model.CommentStatus.APPROVED
+import org.wordpress.android.fluxc.model.CommentStatus.UNAPPROVED
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 
@@ -165,8 +165,15 @@ fun NotificationModel.canModerate() = NotificationHelper
 /**
  * If the notification has been approved, return true, else false
  */
-fun NotificationModel.isApproved() = NotificationHelper
-        .getCommentBlockFromBody(this)?.actions?.getValue(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
+fun NotificationModel.isApproved(): Boolean {
+    NotificationHelper.getCommentBlockFromBody(this)?.actions?.let {
+        return if (it.containsKey(ReviewActionKeys.ACTION_KEY_APPROVE)) {
+            it.getValue(ReviewActionKeys.ACTION_KEY_APPROVE)
+        } else {
+            false
+        }
+    } ?: return false
+}
 
 /**
  * If true, user can mark this notification as spam.
