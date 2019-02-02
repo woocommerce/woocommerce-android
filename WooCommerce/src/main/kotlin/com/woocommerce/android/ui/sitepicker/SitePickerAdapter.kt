@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.SiteViewHolder
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.site_picker_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -18,8 +18,10 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
         RecyclerView.Adapter<SiteViewHolder>() {
     var siteList: List<SiteModel> = ArrayList()
         set(value) {
-            field = value
-            notifyDataSetChanged()
+            if (!isSameSiteList(value)) {
+                field = value
+                notifyDataSetChanged()
+            }
         }
     var selectedSiteId: Long = 0
         set(value) {
@@ -65,6 +67,35 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
         } else {
             holder.itemView.setOnClickListener(null)
         }
+    }
+
+    /**
+     * returns true if the passed list of orders is the same as the current list
+     */
+    private fun isSameSiteList(sites: List<SiteModel>): Boolean {
+        if (sites.size != siteList.size) {
+            return false
+        }
+
+        sites.forEach {
+            if (!containsSite(it)) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    /**
+     * Returns true if the passed order is in the current list of orders
+     */
+    private fun containsSite(site: SiteModel): Boolean {
+        siteList.forEach {
+            if (it.siteId == site.siteId) {
+                return true
+            }
+        }
+        return false
     }
 
     class SiteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
