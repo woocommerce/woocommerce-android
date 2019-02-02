@@ -90,9 +90,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                     mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size))
         }
 
-        button_help.setOnClickListener {
-            startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
-            AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_HELP_BUTTON_TAPPED)
+        if (calledFromLogin) {
+            button_help.setOnClickListener {
+                startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
+                AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_HELP_BUTTON_TAPPED)
+            }
+        } else {
+            button_help.visibility = View.GONE
         }
     }
 
