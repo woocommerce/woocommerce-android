@@ -201,8 +201,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
     }
 
+    override fun onSiteClick(siteId: Long) {
+        button_continue.isEnabled = true
+    }
+
     override fun siteSelected(site: SiteModel) {
-        // quit if user simply selected the current site
+        // finish if user simply selected the current site
         selectedSite.getIfExists()?.let { currentSite ->
             if (site.siteId == currentSite.siteId) {
                 setResult(Activity.RESULT_CANCELED)
@@ -221,10 +225,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // Preemptively also update the site settings so we have them available sooner
         presenter.updateWooSiteSettings(site)
-    }
-
-    override fun onSiteClick(siteId: Long) {
-        button_continue.isEnabled = true
     }
 
     override fun siteVerificationPassed(site: SiteModel) {
