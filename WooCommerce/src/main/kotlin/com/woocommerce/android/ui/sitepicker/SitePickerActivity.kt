@@ -41,7 +41,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
-        const val REQUEST_CODE = 1000 // TODO: we need a separate object to define request codes app-wide
 
         fun showSitePickerFromLogin(context: Context) {
             val intent = Intent(context, SitePickerActivity::class.java)
@@ -49,10 +48,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             context.startActivity(intent)
         }
 
-        fun showSitePickerForResult(activity: Activity) {
+        fun showSitePickerForResult(activity: Activity, requestCode: Int) {
             val intent = Intent(activity, SitePickerActivity::class.java)
             intent.putExtra(KEY_CALLED_FROM_LOGIN, false)
-            activity.startActivityForResult(intent, REQUEST_CODE)
+            activity.startActivityForResult(intent, requestCode)
         }
     }
 

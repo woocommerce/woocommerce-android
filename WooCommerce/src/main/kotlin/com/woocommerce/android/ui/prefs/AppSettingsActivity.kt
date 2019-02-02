@@ -32,6 +32,10 @@ class AppSettingsActivity : AppCompatActivity(),
         AppSettingsListener,
         AppSettingsContract.View,
         HasSupportFragmentInjector {
+    companion object {
+        private const val SITE_PICKER_REQUEST_CODE = 1000
+    }
+
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: AppSettingsContract.Presenter
 
@@ -93,7 +97,7 @@ class AppSettingsActivity : AppCompatActivity(),
         super.onActivityResult(requestCode, resultCode, data)
 
         // if we're returning from the site picker, update the main fragment so the new store is shown
-        if (requestCode == SitePickerActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == SITE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             supportFragmentManager.findFragmentByTag(MainSettingsFragment.TAG)?.let {
                 (it as MainSettingsFragment).updateStoreViews()
             }
@@ -118,7 +122,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onRequestShowSitePicker() {
         if (presenter.hasMultipleStores()) {
-            SitePickerActivity.showSitePickerForResult(this)
+            SitePickerActivity.showSitePickerForResult(this, SITE_PICKER_REQUEST_CODE)
         }
     }
 
