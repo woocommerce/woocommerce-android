@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule
@@ -65,4 +67,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(HelpModule::class))
     abstract fun provideHelpActivity(): HelpActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
+    abstract fun provideSitePickerActivityInjector(): SitePickerActivity
 }
