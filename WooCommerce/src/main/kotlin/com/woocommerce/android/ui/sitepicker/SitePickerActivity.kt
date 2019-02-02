@@ -75,6 +75,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         if (calledFromLogin) {
             toolbar.visibility = View.GONE
             ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
+            button_help.setOnClickListener {
+                startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
+                AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_HELP_BUTTON_TAPPED)
+            }
         } else {
             site_picker_root.setBackgroundColor(
                     ContextCompat.getColor(this, R.color.white))
@@ -84,6 +88,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
             title = getString(R.string.login_pick_store)
+            button_help.visibility = View.GONE
             site_list_label.visibility = View.GONE
             site_list_container.cardElevation = 0f
         }
@@ -101,20 +106,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             showStoreList(sites)
         } ?: run {
             site_list_container.visibility = View.GONE
+
             presenter.loadSites()
+            presenter.fetchSites()
 
             AnalyticsTracker.track(
                     Stat.LOGIN_EPILOGUE_STORES_SHOWN,
                     mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size))
-        }
-
-        if (calledFromLogin) {
-            button_help.setOnClickListener {
-                startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
-                AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_HELP_BUTTON_TAPPED)
-            }
-        } else {
-            button_help.visibility = View.GONE
         }
     }
 

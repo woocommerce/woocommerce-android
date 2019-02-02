@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import javax.inject.Inject
@@ -32,6 +33,10 @@ class SitePickerPresenter @Inject constructor(
     override fun dropView() {
         dispatcher.unregister(this)
         view = null
+    }
+
+    override fun fetchSites() {
+        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
     }
 
     override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
@@ -75,6 +80,14 @@ class SitePickerPresenter @Inject constructor(
     fun onAccountChanged(event: OnAccountChanged) {
         if (!event.isError && !userIsLoggedIn()) {
             view?.didLogout()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSiteChanged(event: OnSiteChanged) {
+        if (!event.isError) {
+            loadSites()
         }
     }
 
