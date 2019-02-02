@@ -26,13 +26,13 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.login.LoginEpilogueActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -226,10 +226,10 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * displays the login epilogue activity which enables choosing a site
+     * displays the site picker activity and finishes this activity
      */
-    override fun showLoginEpilogueScreen() {
-        val intent = Intent(this, LoginEpilogueActivity::class.java)
+    override fun showSitePickerScreen() {
+        val intent = Intent(this, SitePickerActivity::class.java)
         startActivity(intent)
         finish()
     }
@@ -247,7 +247,7 @@ class MainActivity : AppCompatActivity(),
         loginProgressDialog?.apply { if (isShowing) { cancel() } }
 
         if (!selectedSite.exists()) {
-            showLoginEpilogueScreen()
+            showSitePickerScreen()
             return
         }
 

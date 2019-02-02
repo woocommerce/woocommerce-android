@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.sitepicker
 
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -13,15 +14,19 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CrashlyticsUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -193,19 +198,18 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * called by the presenter after logout completes
      */
     override fun cancel() {
-        /*val intent = Intent(this, LoginActivity::class.java)
+        val intent = Intent(this, LoginActivity::class.java)
         LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
         startActivity(intent)
-        finish()*/
+        finish()
     }
 
-    // TODO
-    /*private fun finishEpilogue() {
+    private fun finishEpilogue() {
         // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
         FCMRegistrationIntentService.enqueueWork(this)
 
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
-    }*/
+    }
 }

@@ -15,7 +15,7 @@ interface MainContract {
     interface View : BaseView<Presenter>, TopLevelFragmentRouter {
         fun notifyTokenUpdated()
         fun showLoginScreen()
-        fun showLoginEpilogueScreen()
+        fun showSitePickerScreen()
         fun updateSelectedSite()
         fun showSettingsScreen()
         fun showHelpAndSupport()
