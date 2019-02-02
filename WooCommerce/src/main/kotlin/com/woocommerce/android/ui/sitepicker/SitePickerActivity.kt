@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
@@ -75,11 +76,16 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             toolbar.visibility = View.GONE
             ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
         } else {
+            site_picker_root.setBackgroundColor(
+                    ContextCompat.getColor(this, R.color.white))
+
             toolbar.visibility = View.VISIBLE
             setSupportActionBar(toolbar as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
             title = getString(R.string.login_pick_store)
             site_list_label.visibility = View.GONE
+            site_list_container.cardElevation = 0f
         }
 
         presenter.takeView(this)
@@ -191,18 +197,30 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         button_continue.text = getString(R.string.continue_button)
         button_continue.isEnabled = true
         button_continue.setOnClickListener {
-            val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
-            site?.let { it ->
-                AnalyticsTracker.track(
-                        Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
-                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
-                )
-                progressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
-                presenter.verifySiteApiVersion(it)
-                // Preemptively also update the site settings so we have them available sooner
-                presenter.updateWooSiteSettings(it)
+            presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+        }
+    }
+
+    override fun siteSelected(site: SiteModel) {
+        // quit if user simply selected the current site
+        selectedSite.getIfExists()?.let { currentSite ->
+            if (site.siteId == currentSite.siteId) {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+                return
             }
         }
+
+        AnalyticsTracker.track(
+                Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
+                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
+        )
+
+        progressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
+        presenter.verifySiteApiVersion(site)
+
+        // Preemptively also update the site settings so we have them available sooner
+        presenter.updateWooSiteSettings(site)
     }
 
     override fun onSiteClick(siteId: Long) {
@@ -265,23 +283,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * User has selected a site and it passed the verification process
      */
     private fun finishWithSite(site: SiteModel) {
-        val isSameSite = selectedSite.getIfExists()?.let {
-            it.siteId == site.siteId
-        } ?: false
+        setResult(Activity.RESULT_OK)
 
-        if (isSameSite) {
-            setResult(Activity.RESULT_CANCELED)
-        } else {
-            setResult(Activity.RESULT_OK)
+        selectedSite.set(site)
+        CrashlyticsUtils.initSite(site)
 
-            selectedSite.set(site)
-            CrashlyticsUtils.initSite(site)
+        // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
+        FCMRegistrationIntentService.enqueueWork(this)
 
-            // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
-            FCMRegistrationIntentService.enqueueWork(this)
-
-            // TODO: do we need to clear any existing data since site has changed?
-        }
+        // TODO: do we need to clear any existing data since site has changed?
 
         // if we came here from login, start the main activity
         if (calledFromLogin) {
