@@ -10,11 +10,13 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class AppSettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
+    private val wooCommerceStore: WooCommerceStore,
     private val notificationStore: NotificationStore
 ) : AppSettingsContract.Presenter {
     private var appSettingsView: AppSettingsContract.View? = null
@@ -41,6 +43,8 @@ class AppSettingsPresenter @Inject constructor(
     override fun getAccountDisplayName(): String {
         return accountStore.account?.displayName ?: ""
     }
+
+    override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 1
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

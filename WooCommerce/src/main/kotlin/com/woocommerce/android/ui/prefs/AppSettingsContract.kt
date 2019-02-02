@@ -8,6 +8,7 @@ interface AppSettingsContract {
         fun logout()
         fun userIsLoggedIn(): Boolean
         fun getAccountDisplayName(): String
+        fun hasMultipleStores(): Boolean
     }
 
     interface View : BaseView<Presenter> {

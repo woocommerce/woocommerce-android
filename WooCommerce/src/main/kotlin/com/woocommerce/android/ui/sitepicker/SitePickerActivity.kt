@@ -121,6 +121,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         finish()
     }
 
+    /**
+     * Show the current user info if this was called from login, otherwise hide user views
+     */
     override fun showUserInfo() {
         if (calledFromLogin) {
             text_displayname.text = presenter.getUserDisplayName()
