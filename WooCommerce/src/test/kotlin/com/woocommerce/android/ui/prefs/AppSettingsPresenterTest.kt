@@ -19,6 +19,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 
 class AppSettingsPresenterTest {
@@ -26,6 +27,7 @@ class AppSettingsPresenterTest {
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
     private val notificationStore: NotificationStore = mock()
 
     private lateinit var appSettingsPresenter: AppSettingsPresenter
@@ -34,7 +36,7 @@ class AppSettingsPresenterTest {
 
     @Before
     fun setup() {
-        appSettingsPresenter = spy(AppSettingsPresenter(dispatcher, accountStore, notificationStore))
+        appSettingsPresenter = spy(AppSettingsPresenter(dispatcher, accountStore, wooCommerceStore, notificationStore))
         appSettingsPresenter.takeView(appSettingsContractView)
 
         actionCaptor = argumentCaptor()
