@@ -74,7 +74,7 @@ class SitePickerPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (!event.isError && !userIsLoggedIn()) {
-            view?.cancel()
+            view?.didLogout()
         }
     }
 

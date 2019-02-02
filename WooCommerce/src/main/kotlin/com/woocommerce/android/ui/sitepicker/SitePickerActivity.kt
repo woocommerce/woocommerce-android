@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.sitepicker
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -30,9 +31,18 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
+// TODO: tracks events used below will need to be renamed
+
 class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener {
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
+        private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
+
+        fun showSitePicker(context: Context, calledFromLogin: Boolean) {
+            val intent = Intent(context, SitePickerActivity::class.java)
+            intent.putExtra(KEY_CALLED_FROM_LOGIN, calledFromLogin)
+            context.startActivity(intent)
+        }
     }
 
     @Inject lateinit var presenter: SitePickerContract.Presenter
@@ -40,7 +50,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     private lateinit var siteAdapter: SitePickerAdapter
 
-    private var loginProgressDialog: ProgressDialog? = null
+    private var progressDialog: ProgressDialog? = null
+    private var calledFromLogin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -49,6 +60,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
         presenter.takeView(this)
+
+        calledFromLogin = savedInstanceState?.getBoolean(KEY_CALLED_FROM_LOGIN)
+                ?: intent.getBooleanExtra(KEY_CALLED_FROM_LOGIN, false)
 
         sites_recycler.layoutManager = LinearLayoutManager(this)
         siteAdapter = SitePickerAdapter(this, this)
@@ -88,13 +102,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         super.onSaveInstanceState(outState)
 
         val sitesList = siteAdapter.siteList.map { it.id }
-
         outState.putIntArray(STATE_KEY_SITE_ID_LIST, sitesList.toIntArray())
+
+        outState.putBoolean(KEY_CALLED_FROM_LOGIN, calledFromLogin)
     }
 
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
-
         finish()
     }
 
@@ -110,7 +124,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun showStoreList(wcSites: List<SiteModel>) {
-        loginProgressDialog?.takeIf { it.isShowing }?.dismiss()
+        progressDialog?.takeIf { it.isShowing }?.dismiss()
 
         if (wcSites.isEmpty()) {
             showNoStoresView()
@@ -133,13 +147,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         button_continue.text = getString(R.string.continue_button)
         button_continue.isEnabled = true
-        button_continue.setOnClickListener { _ ->
+        button_continue.setOnClickListener {
             val site = presenter.getSiteBySiteId(siteAdapter.selectedSiteId)
             site?.let { it ->
                 AnalyticsTracker.track(
                         Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
-                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
-                loginProgressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
+                        mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
+                )
+                progressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
                 presenter.verifySiteApiVersion(it)
                 // Preemptively also update the site settings so we have them available sooner
                 presenter.updateWooSiteSettings(it)
@@ -152,14 +167,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun siteVerificationPassed(site: SiteModel) {
-        loginProgressDialog?.dismiss()
-        selectedSite.set(site)
-        CrashlyticsUtils.initSite(site)
-        // TODO finishEpilogue()
+        progressDialog?.dismiss()
+        finishWithSite(site)
     }
 
     override fun siteVerificationFailed(site: SiteModel) {
-        loginProgressDialog?.dismiss()
+        progressDialog?.dismiss()
 
         siteAdapter.selectedSiteId = 0
         button_continue.isEnabled = false
@@ -168,7 +181,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun siteVerificationError(site: SiteModel) {
-        loginProgressDialog?.dismiss()
+        progressDialog?.dismiss()
 
         val siteName = if (!TextUtils.isEmpty(site.name)) site.name else getString(R.string.untitled)
         Snackbar.make(
@@ -197,19 +210,37 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     /**
      * called by the presenter after logout completes
      */
-    override fun cancel() {
+    override fun didLogout() {
         val intent = Intent(this, LoginActivity::class.java)
         LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
         startActivity(intent)
         finish()
     }
 
-    private fun finishEpilogue() {
-        // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
-        FCMRegistrationIntentService.enqueueWork(this)
+    /**
+     * User has selected a site and it passed the verification process
+     */
+    private fun finishWithSite(site: SiteModel) {
+        val isSameSite = selectedSite.getIfExists()?.let {
+            it.siteId == selectedSite.get().siteId
+        } ?: false
 
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        if (!isSameSite) {
+            selectedSite.set(site)
+            CrashlyticsUtils.initSite(site)
+
+            // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
+            FCMRegistrationIntentService.enqueueWork(this)
+
+            // TODO: do we need to clear any existing data since site has changed?
+        }
+
+        // if we came here from login, start the main activity
+        if (calledFromLogin) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
         finish()
     }
 }

@@ -229,8 +229,7 @@ class MainActivity : AppCompatActivity(),
      * displays the site picker activity and finishes this activity
      */
     override fun showSitePickerScreen() {
-        val intent = Intent(this, SitePickerActivity::class.java)
-        startActivity(intent)
+        SitePickerActivity.showSitePicker(this, true)
         finish()
     }
 
