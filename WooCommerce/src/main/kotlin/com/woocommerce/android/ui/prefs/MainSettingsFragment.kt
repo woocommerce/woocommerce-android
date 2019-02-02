@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
@@ -40,6 +41,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         fun onRequestShowPrivacySettings()
         fun onRequestShowAbout()
         fun onRequestShowLicenses()
+        fun onRequestShowSitePicker()
     }
 
     private lateinit var listener: AppSettingsListener
@@ -66,8 +68,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        textPrimaryStoreDomain.text = presenter.getStoreDomainName()
-        textPrimaryStoreUsername.text = presenter.getUserDisplayName()
+        updateStoreViews()
 
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
@@ -121,6 +122,13 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
             listener.onRequestShowLicenses()
         }
+
+        // TODO: for now, showing the site picker is only enabled for debug builds
+        if (BuildConfig.DEBUG) {
+            primaryStoreView.setOnClickListener {
+               listener.onRequestShowSitePicker()
+            }
+        }
     }
 
     override fun onResume() {
@@ -141,6 +149,11 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.getPackageName())
             activity?.startActivity(intent)
         }
+    }
+
+    fun updateStoreViews() {
+        textPrimaryStoreDomain.text = presenter.getStoreDomainName()
+        textPrimaryStoreUsername.text = presenter.getUserDisplayName()
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.sitepicker
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -37,11 +38,18 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
+        const val REQUEST_CODE = 1000 // TODO: we need a separate object to define request codes app-wide
 
         fun showSitePicker(context: Context, calledFromLogin: Boolean) {
             val intent = Intent(context, SitePickerActivity::class.java)
             intent.putExtra(KEY_CALLED_FROM_LOGIN, calledFromLogin)
             context.startActivity(intent)
+        }
+
+        fun showSitePickerForResult(activity: Activity) {
+            val intent = Intent(activity, SitePickerActivity::class.java)
+            intent.putExtra(KEY_CALLED_FROM_LOGIN, false)
+            activity.startActivityForResult(intent, REQUEST_CODE)
         }
     }
 
@@ -108,6 +116,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun onBackPressed() {
+        setResult(Activity.RESULT_CANCELED)
         AnalyticsTracker.trackBackPressed(this)
         finish()
     }
@@ -211,6 +220,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * called by the presenter after logout completes
      */
     override fun didLogout() {
+        setResult(Activity.RESULT_CANCELED)
         val intent = Intent(this, LoginActivity::class.java)
         LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
         startActivity(intent)
@@ -222,10 +232,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private fun finishWithSite(site: SiteModel) {
         val isSameSite = selectedSite.getIfExists()?.let {
-            it.siteId == selectedSite.get().siteId
+            it.siteId == site.siteId
         } ?: false
 
-        if (!isSameSite) {
+        if (isSameSite) {
+            setResult(Activity.RESULT_CANCELED)
+        } else {
+            setResult(Activity.RESULT_OK)
+
             selectedSite.set(site)
             CrashlyticsUtils.initSite(site)
 

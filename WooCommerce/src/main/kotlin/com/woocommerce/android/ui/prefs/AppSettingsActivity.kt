@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.prefs
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
@@ -16,6 +18,7 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.NONE
 import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_IN
 import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_UP
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -86,6 +89,17 @@ class AppSettingsActivity : AppCompatActivity(),
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // if we're returning from the site picker, update the main fragment so the new store is shown
+        if (requestCode == SitePickerActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            supportFragmentManager.findFragmentByTag(MainSettingsFragment.TAG)?.let {
+                (it as MainSettingsFragment).updateStoreViews()
+            }
+        }
+    }
+
     override fun onRequestLogout() {
         confirmLogout()
     }
@@ -100,6 +114,10 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onRequestShowLicenses() {
         showLicensesFragment()
+    }
+
+    override fun onRequestShowSitePicker() {
+        SitePickerActivity.showSitePickerForResult(this)
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
