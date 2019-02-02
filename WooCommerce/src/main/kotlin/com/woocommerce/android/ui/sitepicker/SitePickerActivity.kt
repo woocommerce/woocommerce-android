@@ -40,9 +40,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
         const val REQUEST_CODE = 1000 // TODO: we need a separate object to define request codes app-wide
 
-        fun showSitePicker(context: Context, calledFromLogin: Boolean) {
+        fun showSitePickerFromLogin(context: Context) {
             val intent = Intent(context, SitePickerActivity::class.java)
-            intent.putExtra(KEY_CALLED_FROM_LOGIN, calledFromLogin)
+            intent.putExtra(KEY_CALLED_FROM_LOGIN, true)
             context.startActivity(intent)
         }
 

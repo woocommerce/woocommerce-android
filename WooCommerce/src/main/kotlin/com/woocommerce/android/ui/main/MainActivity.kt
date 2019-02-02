@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(),
      * displays the site picker activity and finishes this activity
      */
     override fun showSitePickerScreen() {
-        SitePickerActivity.showSitePicker(this, true)
+        SitePickerActivity.showSitePickerFromLogin(this)
         finish()
     }
 
