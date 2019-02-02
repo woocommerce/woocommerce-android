@@ -1,4 +1,4 @@
-package com.woocommerce.android.widgets.sitepicker
+package com.woocommerce.android.ui.sitepicker
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -10,8 +10,8 @@ import android.widget.RadioButton
 import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.widgets.sitepicker.SitePickerAdapter.SiteViewHolder
-import kotlinx.android.synthetic.main.site_list_item.view.*
+import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.SiteViewHolder
+import kotlinx.android.synthetic.main.site_picker_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 
 class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
@@ -46,7 +46,7 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SiteViewHolder {
-        return SiteViewHolder(LayoutInflater.from(context).inflate(R.layout.site_list_item, parent, false))
+        return SiteViewHolder(LayoutInflater.from(context).inflate(R.layout.site_picker_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: SiteViewHolder, position: Int) {
