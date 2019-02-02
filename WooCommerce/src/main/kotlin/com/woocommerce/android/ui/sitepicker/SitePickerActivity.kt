@@ -122,14 +122,20 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun showUserInfo() {
-        text_displayname.text = presenter.getUserDisplayName()
-        text_username.text = String.format(getString(R.string.at_username), presenter.getUserName())
+        if (calledFromLogin) {
+            text_displayname.text = presenter.getUserDisplayName()
+            text_username.text = String.format(getString(R.string.at_username), presenter.getUserName())
 
-        GlideApp.with(this)
-                .load(presenter.getUserAvatarUrl())
-                .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp)
-                .circleCrop()
-                .into(image_avatar)
+            GlideApp.with(this)
+                    .load(presenter.getUserAvatarUrl())
+                    .placeholder(R.drawable.ic_placeholder_gravatar_grey_lighten_20_100dp)
+                    .circleCrop()
+                    .into(image_avatar)
+        } else {
+            text_displayname.visibility = View.GONE
+            text_username.visibility = View.GONE
+            image_avatar.visibility = View.GONE
+        }
     }
 
     override fun showStoreList(wcSites: List<SiteModel>) {
