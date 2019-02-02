@@ -18,11 +18,11 @@ import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.adapter.SiteListAdapter
-import com.woocommerce.android.ui.login.adapter.SiteListAdapter.OnSiteClickListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CrashlyticsUtils
+import com.woocommerce.android.widgets.sitepicker.SitePickerAdapter
+import com.woocommerce.android.widgets.sitepicker.SitePickerAdapter.OnSiteClickListener
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login_epilogue.*
 import org.wordpress.android.fluxc.model.SiteModel
@@ -38,7 +38,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
     @Inject lateinit var presenter: LoginEpilogueContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
 
-    private lateinit var siteAdapter: SiteListAdapter
+    private lateinit var siteAdapter: SitePickerAdapter
 
     private var loginProgressDialog: ProgressDialog? = null
 
@@ -51,7 +51,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         presenter.takeView(this)
 
         sites_recycler.layoutManager = LinearLayoutManager(this)
-        siteAdapter = SiteListAdapter(this, this)
+        siteAdapter = SitePickerAdapter(this, this)
         sites_recycler.adapter = siteAdapter
 
         showUserInfo()
