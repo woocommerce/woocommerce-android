@@ -9,7 +9,9 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.Toolbar
 import android.text.TextUtils
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
@@ -66,11 +68,21 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_site_picker)
 
-        ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
-        presenter.takeView(this)
-
         calledFromLogin = savedInstanceState?.getBoolean(KEY_CALLED_FROM_LOGIN)
                 ?: intent.getBooleanExtra(KEY_CALLED_FROM_LOGIN, false)
+
+        if (calledFromLogin) {
+            toolbar.visibility = View.GONE
+            ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
+        } else {
+            toolbar.visibility = View.VISIBLE
+            setSupportActionBar(toolbar as Toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            title = getString(R.string.login_pick_store)
+            site_list_label.visibility = View.GONE
+        }
+
+        presenter.takeView(this)
 
         sites_recycler.layoutManager = LinearLayoutManager(this)
         siteAdapter = SitePickerAdapter(this, this)
@@ -123,6 +135,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         setResult(Activity.RESULT_CANCELED)
         AnalyticsTracker.trackBackPressed(this)
         finish()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            return true
+        }
+
+        return false
     }
 
     /**
