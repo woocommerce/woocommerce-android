@@ -15,6 +15,7 @@ import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_list_header.view.*
 import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
@@ -31,6 +32,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
     private var loadMoreListener: OnLoadMoreListener? = null
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
     private var orderStatusFilter: String? = null
+    private var orderStatusOptionsMap: Map<String, WCOrderStatusModel> = emptyMap()
 
     fun setOnLoadMoreListener(listener: OnLoadMoreListener?) {
         loadMoreListener = listener
@@ -38,6 +40,7 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
 
     fun setOrders(orders: List<WCOrderModel>, filterByStatus: String? = null) {
         orderStatusFilter = filterByStatus
+        orderStatusOptionsMap = presenter.getOrderStatusOptions()
 
         // clear all the current data from the adapter
         removeAllSections()
@@ -87,6 +90,11 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
         // remember these orders for comparison in containsOrder() below
         orderList.clear()
         orderList.addAll(orders)
+    }
+
+    fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
+        this.orderStatusOptionsMap = orderStatusOptions
+        notifyDataSetChanged()
     }
 
     /**
@@ -184,7 +192,17 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
             }
             // clear existing tags and add new ones
             itemHolder.orderTagList.removeAllViews()
-            processTagView(ctx, order.status, itemHolder)
+            val orderStatus = orderStatusOptionsMap[order.status]
+                    ?: refreshOrderStatusOptionsAndCreateTemp(order.status)
+            processTagView(ctx, orderStatus, itemHolder)
+        }
+
+        private fun refreshOrderStatusOptionsAndCreateTemp(status: String): WCOrderStatusModel {
+            presenter.refreshOrderStatusOptions()
+            return WCOrderStatusModel().apply {
+                statusKey = status
+                label = status
+            }
         }
 
         override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
@@ -207,8 +225,8 @@ class OrderListAdapter @Inject constructor(val presenter: OrderListContract.Pres
          * Converts the order status label into an [OrderStatusTag], creates the associated [TagView],
          * and add it to the holder. No need to trim the label text since this is done in [OrderStatusTag]
          */
-        private fun processTagView(ctx: Context, text: String, holder: ItemViewHolder) {
-            val orderTag = OrderStatusTag(text)
+        private fun processTagView(ctx: Context, orderStatus: WCOrderStatusModel, holder: ItemViewHolder) {
+            val orderTag = OrderStatusTag(orderStatus)
             val tagView = TagView(ctx)
             tagView.tag = orderTag
             holder.orderTagList.addView(tagView)

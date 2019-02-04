@@ -40,6 +40,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
@@ -421,6 +422,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun showNoConnectionError() {
         uiMessageResolver.getSnack(R.string.error_generic_network).show()
+    }
+
+    override fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
+        ordersAdapter.setOrderStatusOptions(orderStatusOptions)
     }
 
     // region OrderCustomerActionListener
