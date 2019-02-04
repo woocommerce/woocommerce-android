@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CrashlyticsUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import org.wordpress.android.fluxc.model.SiteModel
@@ -224,8 +223,20 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         presenter.updateWooSiteSettings(site)
     }
 
-    override fun siteVerificationPassed() {
+    override fun siteVerificationPassed(site: SiteModel) {
         progressDialog?.dismiss()
+
+        selectedSite.set(site)
+        FCMRegistrationIntentService.enqueueWork(this)
+
+        // if we came here from login, start the main activity
+        if (calledFromLogin) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 
     override fun siteVerificationFailed(site: SiteModel) {
@@ -265,37 +276,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     /**
-     * called by the presenter after logout completes
+     * called by the presenter after logout completes - this would occur if the user was logged out
+     * as a result of having no stores, which would only happen during the login flow
      */
     override fun didLogout() {
         setResult(Activity.RESULT_CANCELED)
         val intent = Intent(this, LoginActivity::class.java)
         LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
         startActivity(intent)
-        finish()
-    }
-
-    /**
-     * User has selected a site and it passed the verification process
-     */
-    override fun finishWithSite(site: SiteModel) {
-        setResult(Activity.RESULT_OK)
-
-        selectedSite.set(site)
-        CrashlyticsUtils.initSite(site)
-
-        // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
-        // TODO: should we first call dispatcher.dispatch(NotificationActionBuilder.newUnregisterDeviceAction())
-        FCMRegistrationIntentService.enqueueWork(this)
-
-        // TODO: do we need to clear any existing data since site has changed?
-
-        // if we came here from login, start the main activity
-        if (calledFromLogin) {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-
         finish()
     }
 }
