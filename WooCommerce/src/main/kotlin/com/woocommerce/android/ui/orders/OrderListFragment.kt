@@ -91,6 +91,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
 
+    private var runOnStartFunc: (() -> Unit)? = null // function that should not be run until the view is initialized.
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -120,6 +122,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onPrepareOptionsMenu(menu: Menu?) {
         refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        runOnStartFunc?.let {
+            it.invoke()
+            runOnStartFunc = null
+        }
     }
 
     /**
@@ -495,17 +506,24 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onFilterSelected(orderStatus: String?) {
-        AnalyticsTracker.track(
-                Stat.ORDERS_LIST_FILTER,
-                mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
+        if (::ordersAdapter.isInitialized) {
+            AnalyticsTracker.track(
+                    Stat.ORDERS_LIST_FILTER,
+                    mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
 
-        clearSearchResults()
-        orderStatusFilter = orderStatus
-        ordersAdapter.clearAdapterData()
-        presenter.loadOrders(orderStatusFilter, true)
+            clearSearchResults()
+            orderStatusFilter = orderStatus
 
-        activity?.title = getFragmentTitle()
-        searchMenuItem?.isVisible = shouldShowSearchMenuItem()
+            ordersAdapter.clearAdapterData()
+            presenter.loadOrders(orderStatusFilter, true)
+
+            activity?.title = getFragmentTitle()
+            searchMenuItem?.isVisible = shouldShowSearchMenuItem()
+        } else {
+            runOnStartFunc = {
+                onFilterSelected(orderStatus)
+            }
+        }
     }
     // endregion
 
