@@ -38,10 +38,12 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.PackageUtils
@@ -120,6 +122,11 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
                 this, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
                 BuildConfig.ZENDESK_OAUTH_CLIENT_ID
         )
+
+        site?.let { // Fetch order status options on app launch
+            dispatcher.dispatch(
+                    WCOrderActionBuilder.newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(it)))
+        }
     }
 
     override fun onAppComesFromBackground() {
