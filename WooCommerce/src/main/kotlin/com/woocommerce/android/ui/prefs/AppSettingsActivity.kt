@@ -121,9 +121,7 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun onRequestShowSitePicker() {
-        if (presenter.hasMultipleStores()) {
-            SitePickerActivity.showSitePickerForResult(this, SITE_PICKER_REQUEST_CODE)
-        }
+        SitePickerActivity.showSitePickerForResult(this, SITE_PICKER_REQUEST_CODE)
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector

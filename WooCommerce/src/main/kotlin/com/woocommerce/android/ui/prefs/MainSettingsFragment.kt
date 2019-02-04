@@ -124,7 +124,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         }
 
         // TODO: for now, showing the site picker is only enabled for debug builds
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && presenter.hasMultipleStores()) {
             primaryStoreView.setOnClickListener {
                 listener.onRequestShowSitePicker()
             }
