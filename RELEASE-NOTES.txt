@@ -1,5 +1,6 @@
 Features
 - Prices now conform to the WooCommerce store's currency display settings
+- Tapping your store in settings now enables switching stores
 Bugfixes
 - Issue with order notes not saving properly during activity restore (low memory situations) resolved
 - Fixed bug that caused the support menu to be hidden when the device has no email client
