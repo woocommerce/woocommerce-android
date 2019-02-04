@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.CrashlyticsUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import org.wordpress.android.fluxc.model.SiteModel
@@ -223,10 +224,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         presenter.updateWooSiteSettings(site)
     }
 
+    /**
+     * User selected a site and it passed verification - make it the selected site and finish
+     */
     override fun siteVerificationPassed(site: SiteModel) {
         progressDialog?.dismiss()
 
         selectedSite.set(site)
+        CrashlyticsUtils.initSite(site)
         FCMRegistrationIntentService.enqueueWork(this)
 
         // if we came here from login, start the main activity

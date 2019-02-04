@@ -6,13 +6,11 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
-import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -111,18 +109,9 @@ class SitePickerPresenter @Inject constructor(
         }
 
         if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
-            // unregister device from push notifs so we don't get any for the previous site
-            dispatcher.dispatch(NotificationActionBuilder.newUnregisterDeviceAction())
-            // tell the view we're done
             view?.siteVerificationPassed(event.site)
         } else {
             view?.siteVerificationFailed(event.site)
         }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onDeviceUnregistered(event: OnDeviceUnregistered) {
-        // Nothing to do here - we just catch this here so it doesn't get handled by the app settings presenter
     }
 }
