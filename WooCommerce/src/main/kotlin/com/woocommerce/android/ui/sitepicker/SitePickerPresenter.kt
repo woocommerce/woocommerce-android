@@ -109,7 +109,8 @@ class SitePickerPresenter @Inject constructor(
         }
 
         if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
-            view?.siteVerificationPassed(event.site)
+            view?.siteVerificationPassed()
+            view?.finishWithSite(event.site)
         } else {
             view?.siteVerificationFailed(event.site)
         }

@@ -224,9 +224,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         presenter.updateWooSiteSettings(site)
     }
 
-    override fun siteVerificationPassed(site: SiteModel) {
+    override fun siteVerificationPassed() {
         progressDialog?.dismiss()
-        finishWithSite(site)
     }
 
     override fun siteVerificationFailed(site: SiteModel) {
@@ -279,13 +278,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     /**
      * User has selected a site and it passed the verification process
      */
-    private fun finishWithSite(site: SiteModel) {
+    override fun finishWithSite(site: SiteModel) {
         setResult(Activity.RESULT_OK)
 
         selectedSite.set(site)
         CrashlyticsUtils.initSite(site)
 
         // Now that the SelectedSite is set, register the device for WordPress.com Woo push notifications for this site
+        // TODO: should we first call dispatcher.dispatch(NotificationActionBuilder.newUnregisterDeviceAction())
         FCMRegistrationIntentService.enqueueWork(this)
 
         // TODO: do we need to clear any existing data since site has changed?
