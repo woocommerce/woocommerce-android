@@ -38,6 +38,7 @@ import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import javax.inject.Inject
 
@@ -282,6 +283,18 @@ class OrderDetailPresenter @Inject constructor(
         when (event.causeOfChange) {
             MARK_NOTIFICATIONS_READ -> onNotificationMarkedRead(event)
         }
+    }
+
+    @Suppress
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
+        if (event.isError) {
+            WooLog.e(T.ORDERS, "${OrderDetailPresenter.TAG} " +
+                    "- Error fetching order status options from the api : ${event.error.message}")
+            return
+        }
+
+        orderView?.refreshOrderStatus()
     }
 
     private fun onNotificationMarkedRead(event: OnNotificationChanged) {

@@ -221,6 +221,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
+    override fun refreshOrderStatus() {
+        presenter.orderModel?.let {
+            setOrderStatus(it.status)
+        }
+    }
+
     override fun showChangeOrderStatusSnackbar(newStatus: String) {
         changeOrderStatusCanceled = false
 
