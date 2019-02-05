@@ -164,14 +164,7 @@ class LoginEpilogueActivity : AppCompatActivity(), LoginEpilogueContract.View, O
         siteAdapter.selectedSiteId = 0
         button_continue.isEnabled = false
 
-        val ft = supportFragmentManager.beginTransaction()
-        val prev = supportFragmentManager.findFragmentByTag(WooUpgradeRequiredDialog.TAG)
-        if (prev != null) {
-            ft.remove(prev)
-        }
-        ft.addToBackStack(null)
-        val dialogFragment = WooUpgradeRequiredDialog()
-        dialogFragment.show(ft, WooUpgradeRequiredDialog.TAG)
+        WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
 
     override fun siteVerificationError(site: SiteModel) {

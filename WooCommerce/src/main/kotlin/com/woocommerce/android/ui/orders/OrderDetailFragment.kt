@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
@@ -71,6 +72,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     @Inject lateinit var presenter: OrderDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var changeOrderStatusCanceled: Boolean = false
     private var changeOrderStatusSnackbar: Snackbar? = null
@@ -160,7 +162,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             orderDetail_orderStatus.initView(order, orderStatus)
 
             // Populate the Order Product List Card
-            orderDetail_productList.initView(order, false, this)
+            orderDetail_productList.initView(order, false, currencyFormatter.buildFormatter(order.currency), this)
 
             // Populate the Customer Information Card
             if (parentFragment is OrderCustomerActionListener) {
@@ -170,7 +172,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             }
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(order)
+            orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
 
             // Check for customer note, show if available
             if (order.customerNote.isEmpty()) {
@@ -217,7 +219,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         orderDetail_orderStatus.updateStatus(orderStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, false, this)
-            orderDetail_paymentInfo.initView(it)
+            orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency))
         }
     }
 

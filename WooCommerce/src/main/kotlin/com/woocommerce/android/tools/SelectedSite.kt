@@ -53,6 +53,8 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
         return siteModel != null
     }
 
+    fun getIfExists(): SiteModel? = if (exists()) get() else null
+
     fun reset() {
         selectedSite = null
         getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
