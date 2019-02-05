@@ -31,9 +31,15 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
      *
      * @param [order] The order containing the product list to display.
      * @param [expanded] If true, expanded view will be shown, else collapsed view.
+     * @param [formatCurrencyForDisplay] Function to use for formatting currencies for display.
      * @param [listener] Listener for routing click actions. If null, the buttons will be hidden.
      */
-    fun initView(order: WCOrderModel, expanded: Boolean, listener: OrderActionListener? = null) {
+    fun initView(
+        order: WCOrderModel,
+        expanded: Boolean,
+        formatCurrencyForDisplay: (String?) -> String,
+        listener: OrderActionListener? = null
+    ) {
         divider = AlignedDividerDecoration(context,
                 DividerItemDecoration.VERTICAL, R.id.productInfo_name, clipToMargin = true)
 
@@ -42,7 +48,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
 
         val viewManager = LinearLayoutManager(context)
-        val viewAdapter = ProductListAdapter(order.getLineItemList(), order.currency, expanded)
+        val viewAdapter = ProductListAdapter(order.getLineItemList(), formatCurrencyForDisplay, expanded)
 
         listener?.let {
             if (order.status == CoreOrderStatus.PROCESSING.value) {
@@ -109,7 +115,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
 
     class ProductListAdapter(
         private val orderItems: List<WCOrderModel.LineItem>,
-        private val currencyCode: String,
+        private val formatCurrencyForDisplay: (String?) -> String,
         private var isExpanded: Boolean
     ) : RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
@@ -122,7 +128,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.view.initView(orderItems[position], currencyCode, isExpanded)
+            holder.view.initView(orderItems[position], isExpanded, formatCurrencyForDisplay)
         }
 
         override fun getItemCount() = orderItems.size

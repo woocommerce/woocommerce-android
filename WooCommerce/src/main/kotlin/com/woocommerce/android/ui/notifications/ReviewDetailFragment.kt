@@ -83,6 +83,10 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         presenter.takeView(this)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         arguments?.let {
             remoteNoteId = it.getLong(FIELD_REMOTE_NOTIF_ID)

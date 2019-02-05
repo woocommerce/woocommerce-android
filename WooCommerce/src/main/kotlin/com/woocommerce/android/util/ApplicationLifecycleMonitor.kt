@@ -10,6 +10,7 @@ class ApplicationLifecycleMonitor(private val lifecycleListener: ApplicationLife
     : Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
     interface ApplicationLifecycleListener {
         fun onAppComesFromBackground()
+        fun onFirstActivityResumed()
         fun onAppGoesToBackground()
     }
 
@@ -18,6 +19,7 @@ class ApplicationLifecycleMonitor(private val lifecycleListener: ApplicationLife
     }
 
     private var lastState = LastApplicationState.BACKGROUND
+    private var firstActivityResumed = true
 
     override fun onActivityPaused(activity: Activity?) {}
 
@@ -25,6 +27,11 @@ class ApplicationLifecycleMonitor(private val lifecycleListener: ApplicationLife
         if (lastState == LastApplicationState.BACKGROUND) {
             lastState = LastApplicationState.FOREGROUND
             lifecycleListener.onAppComesFromBackground()
+        }
+
+        if (firstActivityResumed) {
+            firstActivityResumed = false
+            lifecycleListener.onFirstActivityResumed()
         }
     }
 

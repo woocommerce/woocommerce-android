@@ -1,9 +1,14 @@
+Features
+- Prices now conform to the WooCommerce store's currency display settings
 Bugfixes
 - Issue with order notes not saving properly during activity restore (low memory situations) resolved
 - Fixed bug that caused the support menu to be hidden when the device has no email client
+- Fixed crash when app is backgrounded during site verification in the login process
 - Fixed bug that caused a crash when switching tabs while an order search was active
 - Scheduled orders with a future creation date are now hidden from the order list
 - Fixed crash in order detail when the "add order note" button is tapped before the order has been downloaded
+- Fixed crash when a review is opened from the notification list
+- Fixed rare crash in login during two-factor authentication
 
 Improvements
 - Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order
