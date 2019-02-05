@@ -33,7 +33,7 @@ public class SectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     private static final int VIEW_TYPE_FAILED = 4;
     private static final int VIEW_TYPE_EMPTY = 5;
 
-    static final int INVALID_POSITION = -1;
+    public static final int INVALID_POSITION = -1;
 
     private final LinkedHashMap<String, Section> mSections;
     private final HashMap<String, Integer> mSectionViewTypeNumbers;

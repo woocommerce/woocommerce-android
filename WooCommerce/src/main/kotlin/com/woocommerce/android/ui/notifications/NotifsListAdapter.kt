@@ -171,7 +171,9 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         if (section.list.size == 0) {
             val sectionPos = getSectionPosition(section)
             section.isVisible = false
-            notifySectionChangedToInvisible(section, sectionPos)
+            if (sectionPos != SectionedRecyclerViewAdapter.INVALID_POSITION) {
+                notifySectionChangedToInvisible(section, sectionPos)
+            }
         }
     }
 
