@@ -33,7 +33,7 @@ class OrderListAdapter @Inject constructor(
 
     private var loadMoreListener: OnLoadMoreListener? = null
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
-    private var orderStatusFilter: String? = null
+    var orderStatusFilter: String? = null
 
     fun setOnLoadMoreListener(listener: OnLoadMoreListener?) {
         loadMoreListener = listener

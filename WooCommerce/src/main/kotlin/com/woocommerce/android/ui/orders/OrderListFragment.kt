@@ -122,6 +122,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (orderStatusFilter != null && orderStatusFilter != ordersAdapter.orderStatusFilter) {
+            onFilterSelected(orderStatusFilter)
+        }
+    }
+
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
      * search menu item to collapse
@@ -495,17 +502,21 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     }
 
     override fun onFilterSelected(orderStatus: String?) {
-        AnalyticsTracker.track(
-                Stat.ORDERS_LIST_FILTER,
-                mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
-
-        clearSearchResults()
         orderStatusFilter = orderStatus
-        ordersAdapter.clearAdapterData()
-        presenter.loadOrders(orderStatusFilter, true)
 
-        activity?.title = getFragmentTitle()
-        searchMenuItem?.isVisible = shouldShowSearchMenuItem()
+        if (isAdded) {
+            AnalyticsTracker.track(
+                    Stat.ORDERS_LIST_FILTER,
+                    mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
+            )
+
+            clearSearchResults()
+            ordersAdapter.clearAdapterData()
+            presenter.loadOrders(orderStatusFilter, true)
+
+            activity?.title = getFragmentTitle()
+            searchMenuItem?.isVisible = shouldShowSearchMenuItem()
+        }
     }
     // endregion
 
