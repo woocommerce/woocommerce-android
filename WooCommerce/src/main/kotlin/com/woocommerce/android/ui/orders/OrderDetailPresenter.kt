@@ -27,6 +27,7 @@ import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
@@ -155,6 +156,13 @@ class OrderDetailPresenter @Inject constructor(
                 val payload = MarkNotificationsReadPayload(listOf(it))
                 dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
             }
+        }
+    }
+
+    override fun getOrderStatusForStatusKey(key: String): WCOrderStatusModel {
+        return orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel().apply {
+            statusKey = key
+            label = key
         }
     }
 
