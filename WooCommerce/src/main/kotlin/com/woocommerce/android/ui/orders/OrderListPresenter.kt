@@ -122,7 +122,7 @@ class OrderListPresenter @Inject constructor(
         return canLoadMore
     }
 
-    override fun getOrderStatusOptions(): Map<String,WCOrderStatusModel> {
+    override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
         val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
         return if (options.isEmpty()) {
             refreshOrderStatusOptions()
@@ -209,7 +209,9 @@ class OrderListPresenter @Inject constructor(
             return
         }
 
-        orderView?.setOrderStatusOptions(getOrderStatusOptions())
+        if (event.rowsAffected > 0) {
+            orderView?.setOrderStatusOptions(getOrderStatusOptions())
+        }
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
