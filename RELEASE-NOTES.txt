@@ -9,3 +9,4 @@ Bugfixes
 - Fixed crash in order detail when the "add order note" button is tapped before the order has been downloaded
 - Fixed crash when a review is opened from the notification list
 - Fixed rare crash in login during two-factor authentication
+- Fixed rare crash after undoing a review moderation
