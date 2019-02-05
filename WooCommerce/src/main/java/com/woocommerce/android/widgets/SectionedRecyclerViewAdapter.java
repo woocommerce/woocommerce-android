@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.wordpress.android.util.AppLog;
+import org.wordpress.android.util.AppLog.T;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -435,6 +438,7 @@ public class SectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             currentPos += sectionTotal;
         }
 
+        AppLog.w(T.NOTIFS, "Invalid section " + section.toString());
         return INVALID_POSITION;
     }
 
@@ -470,7 +474,11 @@ public class SectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
      * @return position of the item in the adapter
      */
     public int getPositionInAdapter(Section section, int position) {
-        return getSectionPosition(section) + (section.mHasHeader ? 1 : 0) + position;
+        int sectionPos = getSectionPosition(section);
+        if (sectionPos == INVALID_POSITION) {
+            return INVALID_POSITION;
+        }
+        return sectionPos + (section.mHasHeader ? 1 : 0) + position;
     }
 
     /**
@@ -522,7 +530,11 @@ public class SectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             throw new IllegalStateException("Section doesn't have a footer");
         }
 
-        return getSectionPosition(section) + section.getSectionItemsTotal() - 1;
+        int sectionPos = getSectionPosition(section);
+        if (sectionPos == INVALID_POSITION) {
+            return INVALID_POSITION;
+        }
+        return sectionPos + section.getSectionItemsTotal() - 1;
     }
 
     /**
@@ -1006,8 +1018,9 @@ public class SectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
      */
     public void notifyHeaderRemovedFromSection(Section section) {
         int position = getSectionPosition(section);
-
-        callSuperNotifyItemRemoved(position);
+        if (position != INVALID_POSITION) {
+            callSuperNotifyItemRemoved(position);
+        }
     }
 
     /**
@@ -1031,9 +1044,11 @@ public class SectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
      * @param section a mVisible section of this adapter
      */
     public void notifyFooterRemovedFromSection(Section section) {
-        int position = getSectionPosition(section) + section.getSectionItemsTotal();
-
-        callSuperNotifyItemRemoved(position);
+        int sectionPos = getSectionPosition(section);
+        if (sectionPos != INVALID_POSITION) {
+            int position = sectionPos + section.getSectionItemsTotal();
+            callSuperNotifyItemRemoved(position);
+        }
     }
 
     /**
@@ -1061,11 +1076,11 @@ public class SectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             throw new IllegalStateException("This section is not mVisible.");
         }
 
-        int sectionPosition = getSectionPosition(section);
-
-        int sectionItemsTotal = section.getSectionItemsTotal();
-
-        callSuperNotifyItemRangeInserted(sectionPosition, sectionItemsTotal);
+        int sectionPos = getSectionPosition(section);
+        if (sectionPos != INVALID_POSITION) {
+            int sectionItemsTotal = section.getSectionItemsTotal();
+            callSuperNotifyItemRangeInserted(sectionPos, sectionItemsTotal);
+        }
     }
 
     /**
