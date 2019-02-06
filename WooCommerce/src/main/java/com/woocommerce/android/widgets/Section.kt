@@ -9,21 +9,7 @@ import android.view.View
  *
  * Original version: https://github.com/luizgrp/SectionedRecyclerViewAdapter
  */
-abstract class Section
-/**
- * Create a Section object based on [SectionParameters]
- * @param sectionParameters section parameters
- */
-(sectionParameters: SectionParameters) {
-
-    /**
-     * Return the current State of this Section
-     * @return current mState of this section
-     */
-    /**
-     * Set the State of this Section
-     * @param state mState of this section
-     */
+abstract class Section(sectionParameters: SectionParameters) {
     var state = State.LOADED
         set(state) {
             when (state) {
@@ -94,17 +80,17 @@ abstract class Section
      */
     val sectionItemsTotal: Int
         get() {
-            val contentItemsTotal: Int
+            val contentTotal: Int
 
             when (state) {
-                Section.State.LOADING -> contentItemsTotal = 1
-                Section.State.LOADED -> contentItemsTotal = contentItemsTotal
-                Section.State.FAILED -> contentItemsTotal = 1
-                Section.State.EMPTY -> contentItemsTotal = 1
+                Section.State.LOADING -> contentTotal = 1
+                Section.State.LOADED -> contentTotal = contentItemsTotal
+                Section.State.FAILED -> contentTotal = 1
+                Section.State.EMPTY -> contentTotal = 1
                 else -> throw IllegalStateException("Invalid mState")
             }
 
-            return contentItemsTotal + (if (mHasHeader) 1 else 0) + if (mHasFooter) 1 else 0
+            return contentTotal + (if (mHasHeader) 1 else 0) + if (mHasFooter) 1 else 0
         }
 
     /**
