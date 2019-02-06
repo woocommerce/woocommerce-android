@@ -1,8 +1,6 @@
 package com.woocommerce.android.widgets
 
 import android.support.annotation.LayoutRes
-import android.support.v7.widget.RecyclerView
-import android.view.View
 
 /**
  * Abstract [Section] with no states.
@@ -28,8 +26,7 @@ abstract class StatelessSection
     constructor(@LayoutRes itemResourceId: Int) : this(
             SectionParameters.Builder(itemResourceId)
                     .build()
-    ) {
-    }
+    )
 
     /**
      * Create a stateless Section object, with a custom header but without footer
@@ -46,8 +43,7 @@ abstract class StatelessSection
             SectionParameters.Builder(itemResourceId)
                     .headerResourceId(headerResourceId)
                     .build()
-    ) {
-    }
+    )
 
     /**
      * Create a stateless Section object, with a custom header and a custom footer
@@ -69,8 +65,7 @@ abstract class StatelessSection
                     .headerResourceId(headerResourceId)
                     .footerResourceId(footerResourceId)
                     .build()
-    ) {
-    }
+    )
 
     init {
         if (sectionParameters.loadingResourceId != null) {
@@ -84,29 +79,5 @@ abstract class StatelessSection
         if (sectionParameters.emptyResourceId != null) {
             throw IllegalArgumentException("Stateless section shouldn't have an empty state resource")
         }
-    }
-
-    override fun onBindLoadingViewHolder(holder: RecyclerView.ViewHolder) {
-        super.onBindLoadingViewHolder(holder)
-    }
-
-    override fun getLoadingViewHolder(view: View): RecyclerView.ViewHolder {
-        return super.getLoadingViewHolder(view)
-    }
-
-    override fun onBindFailedViewHolder(holder: RecyclerView.ViewHolder) {
-        super.onBindFailedViewHolder(holder)
-    }
-
-    override fun getFailedViewHolder(view: View): RecyclerView.ViewHolder {
-        return super.getFailedViewHolder(view)
-    }
-
-    override fun onBindEmptyViewHolder(holder: RecyclerView.ViewHolder) {
-        super.onBindEmptyViewHolder(holder)
-    }
-
-    override fun getEmptyViewHolder(view: View): RecyclerView.ViewHolder {
-        return super.getEmptyViewHolder(view)
     }
 }
