@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderListAdapter.OnLoadMoreListener
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.OrderStatusUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
@@ -41,7 +40,6 @@ import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
@@ -394,9 +392,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
                 .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
-                    val orderStatusLabel = CoreOrderStatus.fromValue(filter)?.let { orderStatus ->
-                        OrderStatusUtils.getLabelForOrderStatus(orderStatus, ::getString)
-                    }
+                    val orderStatusLabel = presenter.getOrderStatusOptions()[filter]?.label
                     getString(R.string.orderlist_filtered, orderStatusLabel)
                 } ?: "")
     }
@@ -492,10 +488,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     // region Filtering
     private fun showFilterDialog() {
-        val orderStatus = orderStatusFilter?.let {
-            CoreOrderStatus.fromValue(it)
-        }
-        OrderStatusFilterDialog.newInstance(orderStatus, listener = this)
+        val orderStatusOptions = presenter.getOrderStatusOptions()
+        OrderStatusFilterDialog.newInstance(orderStatusOptions, orderStatusFilter, listener = this)
                 .show(fragmentManager, OrderStatusFilterDialog.TAG)
     }
 
