@@ -106,7 +106,8 @@ abstract class Section(sectionParameters: SectionParameters) {
                     "      "
     )
     constructor(
-        @LayoutRes itemResourceId: Int, @LayoutRes loadingResourceId: Int,
+        @LayoutRes itemResourceId: Int,
+        @LayoutRes loadingResourceId: Int,
         @LayoutRes failedResourceId: Int
     ) : this(
             SectionParameters.Builder(itemResourceId)
@@ -129,8 +130,10 @@ abstract class Section(sectionParameters: SectionParameters) {
                     "      "
     )
     constructor(
-        @LayoutRes headerResourceId: Int, @LayoutRes itemResourceId: Int,
-        @LayoutRes loadingResourceId: Int, @LayoutRes failedResourceId: Int
+        @LayoutRes headerResourceId: Int,
+        @LayoutRes itemResourceId: Int,
+        @LayoutRes loadingResourceId: Int,
+        @LayoutRes failedResourceId: Int
     ) : this(
             SectionParameters.Builder(itemResourceId)
                     .headerResourceId(headerResourceId)
@@ -154,8 +157,10 @@ abstract class Section(sectionParameters: SectionParameters) {
                     "      "
     )
     constructor(
-        @LayoutRes headerResourceId: Int, @LayoutRes footerResourceId: Int,
-        @LayoutRes itemResourceId: Int, @LayoutRes loadingResourceId: Int,
+        @LayoutRes headerResourceId: Int,
+        @LayoutRes footerResourceId: Int,
+        @LayoutRes itemResourceId: Int,
+        @LayoutRes loadingResourceId: Int,
         @LayoutRes failedResourceId: Int
     ) : this(
             SectionParameters.Builder(itemResourceId)

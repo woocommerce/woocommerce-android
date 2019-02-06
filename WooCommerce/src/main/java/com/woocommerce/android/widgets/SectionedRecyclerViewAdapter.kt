@@ -682,7 +682,9 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      * @param payload optional parameter, use null to identify a "full" update
      */
     fun notifyItemRangeChangedInSection(
-        tag: String, positionStart: Int, itemCount: Int,
+        tag: String,
+        positionStart: Int,
+        itemCount: Int,
         payload: Any
     ) {
         callSuperNotifyItemRangeChanged(getPositionInAdapter(tag, positionStart), itemCount, payload)
@@ -698,7 +700,9 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      * @param payload optional parameter, use null to identify a "full" update
      */
     fun notifyItemRangeChangedInSection(
-        section: Section, positionStart: Int, itemCount: Int,
+        section: Section,
+        positionStart: Int,
+        itemCount: Int,
         payload: Any
     ) {
         callSuperNotifyItemRangeChanged(getPositionInAdapter(section, positionStart), itemCount, payload)

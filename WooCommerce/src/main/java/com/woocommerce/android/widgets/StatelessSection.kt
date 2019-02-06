@@ -58,7 +58,8 @@ abstract class StatelessSection
                     "      "
     )
     constructor(
-        @LayoutRes headerResourceId: Int, @LayoutRes footerResourceId: Int,
+        @LayoutRes headerResourceId: Int,
+        @LayoutRes footerResourceId: Int,
         @LayoutRes itemResourceId: Int
     ) : this(
             SectionParameters.Builder(itemResourceId)
