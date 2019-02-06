@@ -5,12 +5,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import com.woocommerce.android.widgets.Section.State
 import java.util.HashMap
 import java.util.LinkedHashMap
 import java.util.UUID
-
-import com.woocommerce.android.widgets.Section.State
 
 /**
  * A custom RecyclerView Adapter that allows [Sections][Section] to be added to it.
@@ -19,7 +17,6 @@ import com.woocommerce.android.widgets.Section.State
  * Original version: https://github.com/luizgrp/SectionedRecyclerViewAdapter
  */
 open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     /**
      * Return a map with all mSections of this adapter.
      *
@@ -37,9 +34,9 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
 
-        for ((key, value) in mSectionViewTypeNumbers) {
+        for (entry in mSectionViewTypeNumbers) {
             if (viewType >= entry.value && viewType < entry.value + VIEW_TYPE_QTY) {
-                val section = sectionsMap[entry.key]
+                val section = sectionsMap[entry.key]!!
                 val sectionViewType = viewType - entry.value
 
                 when (sectionViewType) {
@@ -66,7 +63,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
             }
         }
 
-        return viewHolder
+        return viewHolder!!
     }
 
     private fun getItemViewHolder(parent: ViewGroup, section: Section): RecyclerView.ViewHolder {
@@ -173,7 +170,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         var currentPos = 0
 
-        for ((key, value) in sectionsMap) {
+        for (entry in sectionsMap) {
             val section = entry.value
 
             // ignore invisible mSections
@@ -216,7 +213,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     override fun getItemCount(): Int {
         var count = 0
 
-        for ((key, value) in sectionsMap) {
+        for (entry in sectionsMap) {
             val section = entry.value
 
             // ignore invisible mSections
@@ -240,7 +237,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
          */
         var currentPos = 0
 
-        for ((key, value) in sectionsMap) {
+        for (entry in sectionsMap) {
             val section = entry.value
 
             // ignore invisible mSections
@@ -250,7 +247,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
 
             // check if position is in this section
             if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
-                val viewType = mSectionViewTypeNumbers[entry.key]
+                val viewType = mSectionViewTypeNumbers[entry.key]!!
 
                 if (section.hasHeader()) {
                     if (position == currentPos) {
@@ -308,7 +305,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     fun getSectionForPosition(position: Int): Section {
         var currentPos = 0
 
-        for ((key, value) in sectionsMap) {
+        for (entry in sectionsMap) {
             val section = entry.value
 
             // ignore invisible mSections
@@ -341,7 +338,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     fun getPositionInSection(position: Int): Int {
         var currentPos = 0
 
-        for ((key, value) in sectionsMap) {
+        for (entry in sectionsMap) {
             val section = entry.value
 
             // ignore invisible mSections
@@ -381,7 +378,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     fun getSectionPosition(section: Section): Int {
         var currentPos = 0
 
-        for ((key, value) in sectionsMap) {
+        for (entry in sectionsMap) {
             val loopSection = entry.value
 
             // ignore invisible mSections
