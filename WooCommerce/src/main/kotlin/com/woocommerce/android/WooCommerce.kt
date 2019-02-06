@@ -127,11 +127,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
                 this, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
                 BuildConfig.ZENDESK_OAUTH_CLIENT_ID
         )
-
-        site?.let { // Fetch order status options on app launch
-            dispatcher.dispatch(
-                    WCOrderActionBuilder.newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(it)))
-        }
     }
 
     override fun onAppComesFromBackground() {
@@ -157,6 +152,16 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         if (networkStatus.isConnected()) {
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
+
+            val site = if (selectedSite.exists()) {
+                selectedSite.get()
+            } else {
+                null
+            }
+            site?.let { // Fetch order status options on app launch
+                dispatcher.dispatch(
+                        WCOrderActionBuilder.newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(it)))
+            }
         }
     }
 
