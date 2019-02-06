@@ -73,7 +73,6 @@ abstract class StatelessSection
     }
 
     init {
-
         if (sectionParameters.loadingResourceId != null) {
             throw IllegalArgumentException("Stateless section shouldn't have a loading state resource")
         }
