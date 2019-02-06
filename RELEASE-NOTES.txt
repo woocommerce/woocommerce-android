@@ -10,6 +10,7 @@ Bugfixes
 - Fixed missing "empty view" in notifications
 - Fixed crash when a review is opened from the notification list
 - Fixed rare crash in login during two-factor authentication
+- Fixed rare crash after undoing a review moderation
 
 Improvements
 - Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order
