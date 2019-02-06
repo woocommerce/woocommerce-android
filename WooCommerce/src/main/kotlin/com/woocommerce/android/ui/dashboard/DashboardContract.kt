@@ -32,7 +32,7 @@ interface DashboardContract {
         fun showUnfilledOrdersCard(count: Int)
         fun showPluginVersionNoticeCard()
         fun hidePluginVersionNoticeCard()
-        fun showNoOrdersView(show: Boolean)
+        fun showEmptyView(show: Boolean)
 
         fun showChartSkeleton(show: Boolean)
         fun showUnfilledOrdersSkeleton(show: Boolean)

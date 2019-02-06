@@ -293,14 +293,14 @@ class DashboardPresenterTest {
     fun `Handles FETCH_HAS_ORDERS when there aren't any orders`() {
         presenter.takeView(dashboardView)
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_HAS_ORDERS })
-        verify(dashboardView, times(1)).showNoOrdersView(true)
+        verify(dashboardView, times(1)).showEmptyView(true)
     }
 
     @Test
     fun `Handles FETCH_HAS_ORDERS when there are orders`() {
         presenter.takeView(dashboardView)
         presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = FETCH_HAS_ORDERS })
-        verify(dashboardView, times(1)).showNoOrdersView(false)
+        verify(dashboardView, times(1)).showEmptyView(false)
     }
 
     @Test

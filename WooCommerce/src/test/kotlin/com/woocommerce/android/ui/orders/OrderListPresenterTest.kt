@@ -77,7 +77,7 @@ class OrderListPresenterTest {
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(noOrders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showNoOrdersView(true)
+        verify(orderListView).showEmptyView(true)
     }
 
     @Test
