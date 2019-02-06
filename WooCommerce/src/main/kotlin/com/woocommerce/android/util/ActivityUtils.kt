@@ -67,7 +67,7 @@ object ActivityUtils {
             putExtra(Intent.EXTRA_TEXT, url)
             type = "text/plain"
         }
-        val title = context.resources.getText(R.string.no_orders_share_store_title)
+        val title = context.resources.getText(R.string.share_store_dialog_title)
         context.startActivity(Intent.createChooser(sendIntent, title))
     }
 

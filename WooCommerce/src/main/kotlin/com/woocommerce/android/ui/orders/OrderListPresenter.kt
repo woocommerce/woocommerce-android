@@ -69,7 +69,7 @@ class OrderListPresenter @Inject constructor(
     override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
         if (networkStatus.isConnected() && forceRefresh) {
             orderListState = OrderListState.LOADING
-            orderView?.showNoOrdersView(false)
+            orderView?.showEmptyView(false)
             orderView?.showSkeleton(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
@@ -181,6 +181,7 @@ class OrderListPresenter @Inject constructor(
             WooLog.e(T.ORDERS, "$TAG - Error searching orders : ${event.error.message}")
             orderView?.showLoadOrdersError()
         } else {
+            orderView?.showEmptyView(event.searchResults.isEmpty())
             if (event.searchResults.isNotEmpty()) {
                 if (orderListState == OrderListState.SEARCHING_MORE) {
                     orderView?.addSearchResults(event.searchQuery, event.searchResults)
@@ -238,7 +239,7 @@ class OrderListPresenter @Inject constructor(
         orderView?.let { view ->
             val currentOrders = removeFutureOrders(orders)
             if (currentOrders.count() > 0) {
-                view.showNoOrdersView(false)
+                view.showEmptyView(false)
                 view.showOrders(currentOrders, orderStatusFilter, isForceRefresh)
             } else {
                 if (!networkStatus.isConnected()) {
@@ -246,7 +247,7 @@ class OrderListPresenter @Inject constructor(
                     // indicator until a successful online refresh.
                     view.showSkeleton(true)
                 } else {
-                    view.showNoOrdersView(true)
+                    view.showEmptyView(true)
                 }
             }
         }
