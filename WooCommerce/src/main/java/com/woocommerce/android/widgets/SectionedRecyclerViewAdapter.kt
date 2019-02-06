@@ -22,14 +22,9 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      *
      * @return a map with all mSections
      */
-    val sectionsMap: LinkedHashMap<String, Section>
-    private val mSectionViewTypeNumbers: HashMap<String, Int>
+    val sectionsMap: LinkedHashMap<String, Section> = LinkedHashMap()
+    private val mSectionViewTypeNumbers: HashMap<String, Int> = HashMap()
     private var mViewTypeCount = 0
-
-    init {
-        sectionsMap = LinkedHashMap()
-        mSectionViewTypeNumbers = HashMap()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
@@ -261,11 +256,11 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
                     }
                 }
 
-                when (section.state) {
-                    Section.State.LOADED -> return viewType + 2
-                    Section.State.LOADING -> return viewType + 3
-                    Section.State.FAILED -> return viewType + 4
-                    Section.State.EMPTY -> return viewType + 5
+                return when (section.state) {
+                    Section.State.LOADED -> viewType + 2
+                    Section.State.LOADING -> viewType + 3
+                    Section.State.FAILED -> viewType + 4
+                    Section.State.EMPTY -> viewType + 5
                     else -> throw IllegalStateException("Invalid state")
                 }
             }
@@ -322,11 +317,6 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
         }
 
         throw IndexOutOfBoundsException("Invalid position")
-    }
-
-    @Deprecated("Use {@link #getPositionInSection} instead.")
-    fun getSectionPosition(position: Int): Int {
-        return getPositionInSection(position)
     }
 
     /**
@@ -991,7 +981,6 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     /**
      * Helper method that calls [.notifyItemRangeInserted] with the position of the section
      * in the adapter. Useful to be called after changing the visibility of the section to mVisible
-     * with [Section.setVisible].
      *
      * @param tag unique identifier of the section
      */
@@ -1004,7 +993,6 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     /**
      * Helper method that calls [.notifyItemRangeInserted] with the position of the section
      * in the adapter. Useful to be called after changing the visibility of the section to mVisible
-     * with [Section.setVisible].
      *
      * @param section a mVisible section of this adapter
      */
@@ -1023,7 +1011,6 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     /**
      * Helper method that calls [.notifyItemRangeInserted] with the position of the section
      * in the adapter. Useful to be called after changing the visibility of the section to invisible
-     * with [Section.setVisible].
      *
      * @param tag unique identifier of the section
      * @param previousSectionPosition previous section position
@@ -1037,7 +1024,6 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     /**
      * Helper method that calls [.notifyItemRangeInserted] with the position of the section
      * in the adapter. Useful to be called after changing the visibility of the section to invisible
-     * with [Section.setVisible].
      *
      * @param section an invisible section of this adapter
      * @param previousSectionPosition previous section position
@@ -1053,9 +1039,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     }
 
     private fun getValidSectionOrThrowException(tag: String): Section {
-        val section = getSection(tag) ?: throw IllegalArgumentException("Invalid tag: $tag")
-
-        return section
+        return getSection(tag) ?: throw IllegalArgumentException("Invalid tag: $tag")
     }
 
     /**
@@ -1066,12 +1050,12 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     class EmptyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     companion object {
-        private val VIEW_TYPE_HEADER = 0
-        private val VIEW_TYPE_FOOTER = 1
-        private val VIEW_TYPE_ITEM_LOADED = 2
-        private val VIEW_TYPE_LOADING = 3
-        private val VIEW_TYPE_FAILED = 4
-        private val VIEW_TYPE_EMPTY = 5
-        private val VIEW_TYPE_QTY = 6
+        private const val VIEW_TYPE_HEADER = 0
+        private const val VIEW_TYPE_FOOTER = 1
+        private const val VIEW_TYPE_ITEM_LOADED = 2
+        private const val VIEW_TYPE_LOADING = 3
+        private const val VIEW_TYPE_FAILED = 4
+        private const val VIEW_TYPE_EMPTY = 5
+        private const val VIEW_TYPE_QTY = 6
     }
 }
