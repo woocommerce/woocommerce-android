@@ -825,7 +825,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
             }
         }
 
-        val contentItemsTotal = section.contentItemsTotal
+        val contentItemsTotal = section.getContentItemsTotal()
 
         if (contentItemsTotal == 0) {
             notifyItemRemovedFromSection(section, 0)

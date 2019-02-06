@@ -363,7 +363,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
         override fun getHeaderViewHolder(view: View) = HeaderViewHolder(view)
 
-        override fun onBindHeaderViewHolder(holder: ViewHolder?) {
+        override fun onBindHeaderViewHolder(holder: ViewHolder) {
             val headerViewHolder = holder as HeaderViewHolder
 
             when (TimeGroup.valueOf(title)) {

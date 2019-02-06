@@ -243,7 +243,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for the Header of this Section
      * @param holder ViewHolder for the Header of this Section
      */
-    open fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder?) {
+    open fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
         // Nothing to bind here.
     }
 
@@ -252,7 +252,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param view View inflated by resource returned by getFooterResourceId
      * @return ViewHolder for the Footer of this Section
      */
-    fun getFooterViewHolder(view: View): RecyclerView.ViewHolder {
+    open fun getFooterViewHolder(view: View): RecyclerView.ViewHolder {
         return EmptyViewHolder(view)
     }
 
@@ -260,7 +260,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for the Footer of this Section
      * @param holder ViewHolder for the Footer of this Section
      */
-    fun onBindFooterViewHolder(holder: RecyclerView.ViewHolder?) {
+    open fun onBindFooterViewHolder(holder: RecyclerView.ViewHolder) {
         // Nothing to bind here.
     }
 
