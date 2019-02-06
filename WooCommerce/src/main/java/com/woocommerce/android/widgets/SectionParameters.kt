@@ -23,13 +23,12 @@ class SectionParameters private constructor(builder: Builder) {
      * Constructor with mandatory parameters of [Section]
      * @param itemResourceId layout resource for Section's items
      */
-    (@param:LayoutRes private val mItemResourceId: Int) {
-
-        @LayoutRes private var mHeaderResourceId: Int? = null
-        @LayoutRes private var mFooterResourceId: Int? = null
-        @LayoutRes private var mLoadingResourceId: Int? = null
-        @LayoutRes private var mFailedResourceId: Int? = null
-        @LayoutRes private var mEmptyResourceId: Int? = null
+    (@param:LayoutRes val mItemResourceId: Int) {
+        @LayoutRes var mHeaderResourceId: Int? = null
+        @LayoutRes var mFooterResourceId: Int? = null
+        @LayoutRes var mLoadingResourceId: Int? = null
+        @LayoutRes var mFailedResourceId: Int? = null
+        @LayoutRes var mEmptyResourceId: Int? = null
 
         /**
          * Set layout resource for Section's header
