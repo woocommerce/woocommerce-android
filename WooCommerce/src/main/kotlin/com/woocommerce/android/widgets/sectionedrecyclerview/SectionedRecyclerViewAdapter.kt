@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State
 import java.util.HashMap
 import java.util.LinkedHashMap
@@ -383,6 +385,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
             currentPos += sectionTotal
         }
 
+        WooLog.w(T.NOTIFICATIONS, "Invalid section " + section.toString());
         throw IllegalArgumentException("Invalid section")
     }
 
@@ -1061,5 +1064,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
         private const val VIEW_TYPE_FAILED = 4
         private const val VIEW_TYPE_EMPTY = 5
         private const val VIEW_TYPE_QTY = 6
+
+        const val INVALID_POSITION = -1
     }
 }
