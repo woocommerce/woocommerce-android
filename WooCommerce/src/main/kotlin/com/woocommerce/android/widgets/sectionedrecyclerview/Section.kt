@@ -7,7 +7,6 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.EMPTY
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.FAILED
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.LOADED
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.LOADING
-import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters.Builder
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter.EmptyViewHolder
 
 /**
@@ -98,84 +97,6 @@ abstract class Section(sectionParameters: SectionParameters) {
     enum class State {
         LOADING, LOADED, FAILED, EMPTY
     }
-
-    /**
-     * Create a Section object with loading/failed states, without header and footer
-     *
-     * @param itemResourceId layout resource for its items
-     * @param loadingResourceId layout resource for its loading mState
-     * @param failedResourceId layout resource for its failed mState
-     */
-    @Deprecated(
-            "Replaced by {@link #Section(SectionParameters)}\n" +
-                    "     \n" +
-                    "      "
-    )
-    constructor(
-        @LayoutRes itemResourceId: Int,
-        @LayoutRes loadingResourceId: Int,
-        @LayoutRes failedResourceId: Int
-    ) : this(
-            Builder(itemResourceId)
-                    .loadingResourceId(loadingResourceId)
-                    .failedResourceId(failedResourceId)
-                    .build()
-    )
-
-    /**
-     * Create a Section object with loading/failed states, with a custom header but without footer
-     *
-     * @param headerResourceId layout resource for its header
-     * @param itemResourceId layout resource for its items
-     * @param loadingResourceId layout resource for its loading mState
-     * @param failedResourceId layout resource for its failed mState
-     */
-    @Deprecated(
-            "Replaced by {@link #Section(SectionParameters)}\n" +
-                    "     \n" +
-                    "      "
-    )
-    constructor(
-        @LayoutRes headerResourceId: Int,
-        @LayoutRes itemResourceId: Int,
-        @LayoutRes loadingResourceId: Int,
-        @LayoutRes failedResourceId: Int
-    ) : this(
-            Builder(itemResourceId)
-                    .headerResourceId(headerResourceId)
-                    .loadingResourceId(loadingResourceId)
-                    .failedResourceId(failedResourceId)
-                    .build()
-    )
-
-    /**
-     * Create a Section object with loading/failed states, with a custom header and a custom footer
-     *
-     * @param headerResourceId layout resource for its header
-     * @param footerResourceId layout resource for its footer
-     * @param itemResourceId layout resource for its items
-     * @param loadingResourceId layout resource for its loading mState
-     * @param failedResourceId layout resource for its failed mState
-     */
-    @Deprecated(
-            "Replaced by {@link #Section(SectionParameters)}\n" +
-                    "     \n" +
-                    "      "
-    )
-    constructor(
-        @LayoutRes headerResourceId: Int,
-        @LayoutRes footerResourceId: Int,
-        @LayoutRes itemResourceId: Int,
-        @LayoutRes loadingResourceId: Int,
-        @LayoutRes failedResourceId: Int
-    ) : this(
-            Builder(itemResourceId)
-                    .headerResourceId(headerResourceId)
-                    .footerResourceId(footerResourceId)
-                    .loadingResourceId(loadingResourceId)
-                    .failedResourceId(failedResourceId)
-                    .build()
-    )
 
     init {
         this.hasHeader = this.headerResourceId != null
