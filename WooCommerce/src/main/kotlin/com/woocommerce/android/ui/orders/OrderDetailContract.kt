@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface OrderDetailContract {
@@ -18,6 +19,7 @@ interface OrderDetailContract {
         fun doChangeOrderStatus(newStatus: String)
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
         fun markOrderNotificationRead(context: Context, remoteNoteId: Long)
+        fun getOrderStatusForStatusKey(key: String): WCOrderStatusModel
     }
 
     interface View : BaseView<Presenter>, OrderActionListener {
@@ -36,5 +38,6 @@ interface OrderDetailContract {
         fun markOrderStatusChangedFailed()
         fun showLoadOrderProgress(show: Boolean)
         fun showLoadOrderError()
+        fun refreshOrderStatus()
     }
 }

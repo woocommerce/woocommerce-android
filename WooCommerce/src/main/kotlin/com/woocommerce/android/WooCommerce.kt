@@ -40,10 +40,12 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
@@ -150,6 +152,16 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         if (networkStatus.isConnected()) {
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
+
+            val site = if (selectedSite.exists()) {
+                selectedSite.get()
+            } else {
+                null
+            }
+            site?.let { // Fetch order status options on app launch
+                dispatcher.dispatch(
+                        WCOrderActionBuilder.newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(it)))
+            }
         }
     }
 
