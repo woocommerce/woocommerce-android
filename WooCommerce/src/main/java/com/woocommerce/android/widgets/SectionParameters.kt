@@ -21,7 +21,7 @@ class SectionParameters private constructor(builder: Builder) {
     class Builder
     /**
      * Constructor with mandatory parameters of [Section]
-     * @param itemResourceId layout resource for Section's items
+     * @param mItemResourceId layout resource for Section's items
      */
     (@param:LayoutRes val mItemResourceId: Int) {
         @LayoutRes var mHeaderResourceId: Int? = null
