@@ -2,7 +2,6 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Handler
 import android.support.annotation.StringRes
 import android.util.AttributeSet
 import android.view.View
@@ -75,16 +74,5 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility == View.VISIBLE) {
             WooAnimUtils.fadeOut(this, Duration.LONG)
         }
-    }
-
-    // TODO: remove this before merging
-    fun test(@StringRes messageId: Int) {
-        show(messageId)
-        Handler().postDelayed({
-            hide()
-            Handler().postDelayed({
-                test(messageId)
-            }, 2000)
-        }, 2000)
     }
 }
