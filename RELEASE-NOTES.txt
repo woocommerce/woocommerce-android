@@ -9,3 +9,9 @@ Bugfixes
 - Fixed crash in order detail when the "add order note" button is tapped before the order has been downloaded
 - Fixed missing "empty view" in notifications
 - Fixed crash when a review is opened from the notification list
+- Fixed rare crash in login during two-factor authentication
+
+Improvements
+- Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order
+status label will now be fetched from the server and properly displayed.
+- Filtering by custom order status now supported!

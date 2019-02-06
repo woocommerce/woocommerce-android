@@ -4,6 +4,7 @@ import android.content.Context
 import android.preference.PreferenceManager
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.PreferenceUtils
+import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Singleton
@@ -16,6 +17,8 @@ import javax.inject.Singleton
 class SelectedSite(private var context: Context, private var siteStore: SiteStore) {
     companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
+
+        fun getEventBus() = EventBus.getDefault()
     }
 
     private var selectedSite: SiteModel? = null
@@ -39,6 +42,9 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
         PreferenceUtils.setInt(getPreferences(), SELECTED_SITE_LOCAL_ID, siteModel.id)
 
         AnalyticsTracker.refreshSiteMetadata(siteModel)
+
+        // Notify listeners
+        getEventBus().post(SelectedSiteChangedEvent(siteModel))
     }
 
     fun exists(): Boolean {
@@ -55,4 +61,6 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     }
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
+
+    class SelectedSiteChangedEvent(val site: SiteModel)
 }

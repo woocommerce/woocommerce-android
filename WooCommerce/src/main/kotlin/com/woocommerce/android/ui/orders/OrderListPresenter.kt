@@ -15,9 +15,12 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrdersSearched
 import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
 import org.wordpress.android.util.DateTimeUtils
@@ -48,6 +51,8 @@ class OrderListPresenter @Inject constructor(
     private var canLoadMore = false
     private var canSearchMore = false
     private var nextSearchOffset = 0
+
+    private var isRefreshingOrderStatusOptions = false
 
     override fun takeView(view: OrderListContract.View) {
         orderView = view
@@ -117,6 +122,23 @@ class OrderListPresenter @Inject constructor(
         return canLoadMore
     }
 
+    override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
+        val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+        return if (options.isEmpty()) {
+            refreshOrderStatusOptions()
+            emptyMap()
+        } else {
+            options.map { it.statusKey to it }.toMap()
+        }
+    }
+
+    override fun refreshOrderStatusOptions() {
+        // Refresh the order status options from the API
+        isRefreshingOrderStatusOptions = true
+        dispatcher.dispatch(WCOrderActionBuilder
+                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get())))
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -176,6 +198,21 @@ class OrderListPresenter @Inject constructor(
         }
 
         orderListState = OrderListState.IDLE
+    }
+
+    @Suppress
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
+        isRefreshingOrderStatusOptions = false
+
+        if (event.isError) {
+            WooLog.e(T.ORDERS, "$TAG - Error fetching order status options from the api : ${event.error.message}")
+            return
+        }
+
+        if (event.rowsAffected > 0) {
+            orderView?.setOrderStatusOptions(getOrderStatusOptions())
+        }
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
