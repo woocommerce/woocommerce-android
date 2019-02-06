@@ -8,9 +8,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.FlowLayout
-import com.woocommerce.android.widgets.sectioned_recyclerview.SectionParameters
-import com.woocommerce.android.widgets.sectioned_recyclerview.SectionedRecyclerViewAdapter
-import com.woocommerce.android.widgets.sectioned_recyclerview.StatelessSection
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
+import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_list_header.view.*
 import kotlinx.android.synthetic.main.order_list_item.view.*

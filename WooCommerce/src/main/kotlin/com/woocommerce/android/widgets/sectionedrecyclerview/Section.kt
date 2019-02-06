@@ -1,14 +1,14 @@
-package com.woocommerce.android.widgets.sectioned_recyclerview
+package com.woocommerce.android.widgets.sectionedrecyclerview
 
 import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import com.woocommerce.android.widgets.sectioned_recyclerview.Section.State.EMPTY
-import com.woocommerce.android.widgets.sectioned_recyclerview.Section.State.FAILED
-import com.woocommerce.android.widgets.sectioned_recyclerview.Section.State.LOADED
-import com.woocommerce.android.widgets.sectioned_recyclerview.Section.State.LOADING
-import com.woocommerce.android.widgets.sectioned_recyclerview.SectionParameters.Builder
-import com.woocommerce.android.widgets.sectioned_recyclerview.SectionedRecyclerViewAdapter.EmptyViewHolder
+import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.EMPTY
+import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.FAILED
+import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.LOADED
+import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.LOADING
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters.Builder
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter.EmptyViewHolder
 
 /**
  * Abstract Section to be used with [SectionedRecyclerViewAdapter].
@@ -80,7 +80,7 @@ abstract class Section(sectionParameters: SectionParameters) {
         get() {
             val contentTotal: Int = when (state) {
                 LOADING -> 1
-                LOADED -> contentItemsTotal
+                LOADED -> getContentItemsTotal()
                 FAILED -> 1
                 EMPTY -> 1
                 else -> throw IllegalStateException("Invalid mState")
@@ -93,7 +93,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Return the total of items of this Section
      * @return total of items of this Section
      */
-    abstract val contentItemsTotal: Int
+    abstract fun getContentItemsTotal(): Int
 
     enum class State {
         LOADING, LOADED, FAILED, EMPTY
@@ -243,7 +243,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for the Header of this Section
      * @param holder ViewHolder for the Header of this Section
      */
-    open fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
+    open fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder?) {
         // Nothing to bind here.
     }
 
@@ -260,7 +260,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for the Footer of this Section
      * @param holder ViewHolder for the Footer of this Section
      */
-    fun onBindFooterViewHolder(holder: RecyclerView.ViewHolder) {
+    fun onBindFooterViewHolder(holder: RecyclerView.ViewHolder?) {
         // Nothing to bind here.
     }
 

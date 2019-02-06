@@ -1,6 +1,7 @@
-package com.woocommerce.android.widgets
+package com.woocommerce.android.widgets.sectionedrecyclerview
 
 import android.support.annotation.LayoutRes
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters.Builder
 
 /**
  * Abstract [Section] with no states.
@@ -24,7 +25,7 @@ abstract class StatelessSection
                     "      "
     )
     constructor(@LayoutRes itemResourceId: Int) : this(
-            SectionParameters.Builder(itemResourceId)
+            Builder(itemResourceId)
                     .build()
     )
 
@@ -40,7 +41,7 @@ abstract class StatelessSection
                     "      "
     )
     constructor(@LayoutRes headerResourceId: Int, @LayoutRes itemResourceId: Int) : this(
-            SectionParameters.Builder(itemResourceId)
+            Builder(itemResourceId)
                     .headerResourceId(headerResourceId)
                     .build()
     )
@@ -62,7 +63,7 @@ abstract class StatelessSection
         @LayoutRes footerResourceId: Int,
         @LayoutRes itemResourceId: Int
     ) : this(
-            SectionParameters.Builder(itemResourceId)
+            Builder(itemResourceId)
                     .headerResourceId(headerResourceId)
                     .footerResourceId(footerResourceId)
                     .build()

@@ -1,4 +1,4 @@
-package com.woocommerce.android.widgets
+package com.woocommerce.android.widgets.sectionedrecyclerview
 
 import android.support.annotation.LayoutRes
 
