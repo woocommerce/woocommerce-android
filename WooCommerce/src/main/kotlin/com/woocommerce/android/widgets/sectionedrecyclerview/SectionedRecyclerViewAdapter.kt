@@ -412,7 +412,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      * @return position of the item in the adapter
      */
     fun getPositionInAdapter(section: Section, position: Int): Int {
-        return getSectionPosition(section) + (if (section.mHasHeader) 1 else 0) + position
+        return getSectionPosition(section) + (if (section.hasHeader) 1 else 0) + position
     }
 
     /**
@@ -434,7 +434,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      * @return position of the header in the adapter
      */
     fun getHeaderPositionInAdapter(section: Section): Int {
-        if (!section.mHasHeader) {
+        if (!section.hasHeader) {
             throw IllegalStateException("Section doesn't have a header")
         }
 
@@ -460,7 +460,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      * @return position of the footer in the adapter
      */
     fun getFooterPositionInAdapter(section: Section): Int {
-        if (!section.mHasFooter) {
+        if (!section.hasFooter) {
             throw IllegalStateException("Section doesn't have a footer")
         }
 

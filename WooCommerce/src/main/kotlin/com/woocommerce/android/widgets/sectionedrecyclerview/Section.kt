@@ -35,8 +35,8 @@ abstract class Section(sectionParameters: SectionParameters) {
 
     var isVisible = true
 
-    internal var mHasHeader = false
-    internal var mHasFooter = false
+    internal var hasHeader = false
+    internal var hasFooter = false
 
     /**
      * Return the layout resource id of the header
@@ -86,7 +86,7 @@ abstract class Section(sectionParameters: SectionParameters) {
                 else -> throw IllegalStateException("Invalid mState")
             }
 
-            return contentTotal + (if (mHasHeader) 1 else 0) + if (mHasFooter) 1 else 0
+            return contentTotal + (if (hasHeader) 1 else 0) + if (hasFooter) 1 else 0
         }
 
     /**
@@ -178,8 +178,8 @@ abstract class Section(sectionParameters: SectionParameters) {
     )
 
     init {
-        this.mHasHeader = this.headerResourceId != null
-        this.mHasFooter = this.footerResourceId != null
+        this.hasHeader = this.headerResourceId != null
+        this.hasFooter = this.footerResourceId != null
     }
 
     /**
@@ -187,7 +187,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @return true if this Section has a header
      */
     fun hasHeader(): Boolean {
-        return mHasHeader
+        return hasHeader
     }
 
     /**
@@ -195,7 +195,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param hasHeader true if this Section has a header
      */
     fun setHasHeader(hasHeader: Boolean) {
-        this.mHasHeader = hasHeader
+        this.hasHeader = hasHeader
     }
 
     /**
@@ -203,7 +203,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @return true if this Section has a footer
      */
     fun hasFooter(): Boolean {
-        return mHasFooter
+        return hasFooter
     }
 
     /**
@@ -211,7 +211,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param hasFooter true if this Section has a footer
      */
     fun setHasFooter(hasFooter: Boolean) {
-        this.mHasFooter = hasFooter
+        this.hasFooter = hasFooter
     }
 
     /**
