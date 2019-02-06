@@ -25,13 +25,13 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      * @return a map with all mSections
      */
     val sectionsMap: LinkedHashMap<String, Section> = LinkedHashMap()
-    private val mSectionViewTypeNumbers: HashMap<String, Int> = HashMap()
-    private var mViewTypeCount = 0
+    private val sectionViewTypeNumbers: HashMap<String, Int> = HashMap()
+    private var viewTypeCount = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
 
-        for (entry in mSectionViewTypeNumbers) {
+        for (entry in sectionViewTypeNumbers) {
             if (viewType >= entry.value && viewType < entry.value + VIEW_TYPE_QTY) {
                 val section = sectionsMap[entry.key]!!
                 val sectionViewType = viewType - entry.value
@@ -120,8 +120,8 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      */
     fun addSection(tag: String, section: Section) {
         this.sectionsMap[tag] = section
-        this.mSectionViewTypeNumbers[tag] = mViewTypeCount
-        mViewTypeCount += VIEW_TYPE_QTY
+        this.sectionViewTypeNumbers[tag] = viewTypeCount
+        viewTypeCount += VIEW_TYPE_QTY
     }
 
     /**
@@ -244,7 +244,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
 
             // check if position is in this section
             if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
-                val viewType = mSectionViewTypeNumbers[entry.key]!!
+                val viewType = sectionViewTypeNumbers[entry.key]!!
 
                 if (section.hasHeader()) {
                     if (position == currentPos) {
@@ -385,7 +385,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
             currentPos += sectionTotal
         }
 
-        WooLog.w(T.NOTIFICATIONS, "Invalid section " + section.toString());
+        WooLog.w(T.NOTIFICATIONS, "Invalid section " + section.toString())
         throw IllegalArgumentException("Invalid section")
     }
 
@@ -1064,7 +1064,5 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
         private const val VIEW_TYPE_FAILED = 4
         private const val VIEW_TYPE_EMPTY = 5
         private const val VIEW_TYPE_QTY = 6
-
-        const val INVALID_POSITION = -1
     }
 }
