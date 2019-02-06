@@ -27,14 +27,6 @@ abstract class Section(sectionParameters: SectionParameters) {
             field = state
         }
 
-    /**
-     * Check if this Section is mVisible
-     * @return true if this Section is mVisible
-     */
-    /**
-     * Set if this Section is mVisible
-     * @param visible true if this Section is mVisible
-     */
     var isVisible = true
 
     internal var mHasHeader = false
@@ -44,34 +36,34 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Return the layout resource id of the header
      * @return layout resource id of the header
      */
-    @LayoutRes val headerResourceId: Int?
+    @LayoutRes val headerResourceId: Int? = sectionParameters.headerResourceId
     /**
      * Return the layout resource id of the footer
      * @return layout resource id of the footer
      */
-    @LayoutRes val footerResourceId: Int?
+    @LayoutRes val footerResourceId: Int? = sectionParameters.footerResourceId
 
     /**
      * Return the layout resource id of the item
      * @return layout resource id of the item
      */
-    @LayoutRes val itemResourceId: Int
+    @LayoutRes val itemResourceId: Int = sectionParameters.itemResourceId
 
     /**
      * Return the layout resource id of the loading view
      * @return layout resource id of the loading view
      */
-    @LayoutRes val loadingResourceId: Int?
+    @LayoutRes val loadingResourceId: Int? = sectionParameters.loadingResourceId
     /**
      * Return the layout resource id of the failed view
      * @return layout resource id of the failed view
      */
-    @LayoutRes val failedResourceId: Int?
+    @LayoutRes val failedResourceId: Int? = sectionParameters.failedResourceId
     /**
      * Return the layout resource id of the empty view
      * @return layout resource id of the empty view
      */
-    @LayoutRes val emptyResourceId: Int?
+    @LayoutRes val emptyResourceId: Int? = sectionParameters.emptyResourceId
 
     /**
      * Return the total of items of this Section, including content items (according to the section
@@ -80,13 +72,11 @@ abstract class Section(sectionParameters: SectionParameters) {
      */
     val sectionItemsTotal: Int
         get() {
-            val contentTotal: Int
-
-            when (state) {
-                Section.State.LOADING -> contentTotal = 1
-                Section.State.LOADED -> contentTotal = contentItemsTotal
-                Section.State.FAILED -> contentTotal = 1
-                Section.State.EMPTY -> contentTotal = 1
+            val contentTotal: Int = when (state) {
+                Section.State.LOADING -> 1
+                Section.State.LOADED -> contentItemsTotal
+                Section.State.FAILED -> 1
+                Section.State.EMPTY -> 1
                 else -> throw IllegalStateException("Invalid mState")
             }
 
@@ -123,8 +113,7 @@ abstract class Section(sectionParameters: SectionParameters) {
                     .loadingResourceId(loadingResourceId)
                     .failedResourceId(failedResourceId)
                     .build()
-    ) {
-    }
+    )
 
     /**
      * Create a Section object with loading/failed states, with a custom header but without footer
@@ -148,8 +137,7 @@ abstract class Section(sectionParameters: SectionParameters) {
                     .loadingResourceId(loadingResourceId)
                     .failedResourceId(failedResourceId)
                     .build()
-    ) {
-    }
+    )
 
     /**
      * Create a Section object with loading/failed states, with a custom header and a custom footer
@@ -176,17 +164,9 @@ abstract class Section(sectionParameters: SectionParameters) {
                     .loadingResourceId(loadingResourceId)
                     .failedResourceId(failedResourceId)
                     .build()
-    ) {
-    }
+    )
 
     init {
-        this.headerResourceId = sectionParameters.headerResourceId
-        this.footerResourceId = sectionParameters.footerResourceId
-        this.itemResourceId = sectionParameters.itemResourceId
-        this.loadingResourceId = sectionParameters.loadingResourceId
-        this.failedResourceId = sectionParameters.failedResourceId
-        this.emptyResourceId = sectionParameters.emptyResourceId
-
         this.mHasHeader = this.headerResourceId != null
         this.mHasFooter = this.footerResourceId != null
     }
