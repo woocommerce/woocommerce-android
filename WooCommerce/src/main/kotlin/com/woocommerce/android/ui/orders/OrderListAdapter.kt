@@ -34,7 +34,7 @@ class OrderListAdapter @Inject constructor(
 
     private var loadMoreListener: OnLoadMoreListener? = null
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
-    private var orderStatusFilter: String? = null
+    var orderStatusFilter: String? = null
     private var orderStatusOptionsMap: Map<String, WCOrderStatusModel> = emptyMap()
 
     fun setOnLoadMoreListener(listener: OnLoadMoreListener?) {
