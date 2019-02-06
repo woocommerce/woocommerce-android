@@ -24,11 +24,11 @@ class SectionParameters private constructor(builder: Builder) {
      * @param mItemResourceId layout resource for Section's items
      */
     (@param:LayoutRes val mItemResourceId: Int) {
-        @LayoutRes var mHeaderResourceId: Int? = null
-        @LayoutRes var mFooterResourceId: Int? = null
-        @LayoutRes var mLoadingResourceId: Int? = null
-        @LayoutRes var mFailedResourceId: Int? = null
-        @LayoutRes var mEmptyResourceId: Int? = null
+        @LayoutRes var headerResourceId: Int? = null
+        @LayoutRes var footerResourceId: Int? = null
+        @LayoutRes var loadingResourceId: Int? = null
+        @LayoutRes var failedResourceId: Int? = null
+        @LayoutRes var emptyResourceId: Int? = null
 
         /**
          * Set layout resource for Section's header
@@ -36,7 +36,7 @@ class SectionParameters private constructor(builder: Builder) {
          * @return this builder
          */
         fun headerResourceId(@LayoutRes headerResourceId: Int): Builder {
-            this.mHeaderResourceId = headerResourceId
+            this.headerResourceId = headerResourceId
 
             return this
         }
@@ -47,7 +47,7 @@ class SectionParameters private constructor(builder: Builder) {
          * @return this builder
          */
         fun footerResourceId(@LayoutRes footerResourceId: Int): Builder {
-            this.mFooterResourceId = footerResourceId
+            this.footerResourceId = footerResourceId
 
             return this
         }
@@ -58,7 +58,7 @@ class SectionParameters private constructor(builder: Builder) {
          * @return this builder
          */
         fun loadingResourceId(@LayoutRes loadingResourceId: Int): Builder {
-            this.mLoadingResourceId = loadingResourceId
+            this.loadingResourceId = loadingResourceId
 
             return this
         }
@@ -69,7 +69,7 @@ class SectionParameters private constructor(builder: Builder) {
          * @return this builder
          */
         fun failedResourceId(@LayoutRes failedResourceId: Int): Builder {
-            this.mFailedResourceId = failedResourceId
+            this.failedResourceId = failedResourceId
 
             return this
         }
@@ -80,7 +80,7 @@ class SectionParameters private constructor(builder: Builder) {
          * @return this builder
          */
         fun emptyResourceId(@LayoutRes emptyResourceId: Int): Builder {
-            this.mEmptyResourceId = emptyResourceId
+            this.emptyResourceId = emptyResourceId
 
             return this
         }
@@ -95,11 +95,11 @@ class SectionParameters private constructor(builder: Builder) {
     }
 
     init {
-        this.headerResourceId = builder.mHeaderResourceId
-        this.footerResourceId = builder.mFooterResourceId
+        this.headerResourceId = builder.headerResourceId
+        this.footerResourceId = builder.footerResourceId
         this.itemResourceId = builder.mItemResourceId
-        this.loadingResourceId = builder.mLoadingResourceId
-        this.failedResourceId = builder.mFailedResourceId
-        this.emptyResourceId = builder.mEmptyResourceId
+        this.loadingResourceId = builder.loadingResourceId
+        this.failedResourceId = builder.failedResourceId
+        this.emptyResourceId = builder.emptyResourceId
     }
 }
