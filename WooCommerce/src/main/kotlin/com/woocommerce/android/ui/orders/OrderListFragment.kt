@@ -232,7 +232,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
                 }
             })
