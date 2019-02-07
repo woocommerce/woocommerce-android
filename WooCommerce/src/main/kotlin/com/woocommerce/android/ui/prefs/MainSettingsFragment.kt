@@ -2,17 +2,12 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.tooltip.Tooltip
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -23,6 +18,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_B
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.widgets.WCFeatureTooltip
+import com.woocommerce.android.widgets.WCFeatureTooltip.Feature
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
@@ -33,8 +30,6 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         private const val SETTING_NOTIFS_ORDERS = "notifications_orders"
         private const val SETTING_NOTIFS_REVIEWS = "notifications_reviews"
         private const val SETTING_NOTIFS_TONE = "notifications_tone"
-
-        private const val TOOLTIP_DELAY = 2000L
 
         fun newInstance(): MainSettingsFragment {
             return MainSettingsFragment()
@@ -136,7 +131,8 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
                 listener.onRequestShowSitePicker()
             }
 
-            showSitePickerTooltipDelayed()
+            // advertise the site switcher if we haven't already
+            WCFeatureTooltip.showIfNeeded(Feature.SITE_SWITCHER, primaryStoreView)
         }
     }
 
@@ -175,38 +171,5 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
                 AnalyticsTracker.KEY_FROM to !newValue,
                 AnalyticsTracker.KEY_TO to newValue)
         )
-    }
-
-
-    private fun showSitePickerTooltipDelayed() {
-        Handler().postDelayed({
-            if (isAdded) {
-                showSitePickerTooltip()
-            }
-        }, TOOLTIP_DELAY)
-    }
-
-    private fun showSitePickerTooltip() {
-        val anchorView = primaryStoreView
-        val bgColor = ContextCompat.getColor(activity as Context, R.color.wc_purple)
-        val textColor = ContextCompat.getColor(activity as Context, R.color.white)
-        val padding = resources.getDimensionPixelSize(R.dimen.margin_large)
-
-        val tooltip = Tooltip.Builder(anchorView)
-                .setBackgroundColor(bgColor)
-                .setTextColor(textColor)
-                .setPadding(padding)
-                .setGravity(Gravity.BOTTOM)
-                .setText("You can tap to switch sites now!")
-                .show()
-
-        anchorView.isPressed = true
-
-        Handler().postDelayed({
-            if (isAdded) {
-                anchorView.isPressed = false
-                tooltip.dismiss()
-            }
-        }, TOOLTIP_DELAY)
     }
 }

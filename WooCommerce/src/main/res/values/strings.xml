@@ -456,4 +456,7 @@
     <string name="app_rating_rate_now">Rate now</string>
     <string name="app_rating_rate_later">Later</string>
     <string name="app_rating_rate_never">No thanks</string>
+
+    <!-- Feature tooltips -->
+    <string name="tooltip_site_switcher">New! You can now tap to switch sites.</string>
 </resources>
