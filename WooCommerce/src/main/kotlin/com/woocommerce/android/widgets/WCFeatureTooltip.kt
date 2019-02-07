@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference
  * Used to "advertise" a new feature with a single-shot tooltip
  */
 object WCFeatureTooltip {
-    private const val TOOLTIP_DELAY_BEFORE_SHOWING = 2000L
+    private const val TOOLTIP_DELAY_BEFORE_SHOWING = 1000L
     private const val TOOLTIP_DELAY_BEFORE_HIDING = 3500L
     private const val PREF_NAME = "feature_tooltip"
 
@@ -22,21 +22,24 @@ object WCFeatureTooltip {
      * we include the version the tooltip was added both as reference to us and to provide a future means
      * to programmatically disable tooltips after a certain number of versions
      */
-    enum class Feature(val key: String, @StringRes val messageId: Int, val versionCode: Int) {
+    enum class Feature(val prefKeyName: String, @StringRes val messageId: Int, val versionCode: Int) {
         SITE_SWITCHER("key_site_switcher", R.string.tooltip_site_switcher, 32)
     }
 
     fun showIfNeeded(feature: Feature, anchorView: View) {
+        // do nothing if we've already shown this tooltip
         val prefs = anchorView.context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        if (prefs.getBoolean(feature.key, false)) {
-            return
+        if (prefs.getBoolean(feature.prefKeyName, false)) {
+           // return
         }
 
+        // use a weak reference in case the context is no longer valid after the delay
         val weakAnchorView = WeakReference(anchorView)
+
         Handler().postDelayed({
             weakAnchorView.get()?.let {
                 show(feature, it)
-                prefs.edit().putBoolean(feature.key, true).apply()
+                prefs.edit().putBoolean(feature.prefKeyName, true).apply()
             }
         }, TOOLTIP_DELAY_BEFORE_SHOWING)
     }
@@ -60,6 +63,7 @@ object WCFeatureTooltip {
 
         val weakAnchorView = WeakReference(anchorView)
         val weakTooltip = WeakReference(tooltip)
+
         Handler().postDelayed({
             weakAnchorView.get()?.isPressed = false
             weakTooltip.get()?.dismiss()
