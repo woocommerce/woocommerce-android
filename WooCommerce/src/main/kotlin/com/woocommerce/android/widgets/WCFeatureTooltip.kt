@@ -8,23 +8,27 @@ import android.view.Gravity
 import android.view.View
 import com.tooltip.Tooltip
 import com.woocommerce.android.R
-import com.woocommerce.android.widgets.WCFeatureTooltip.Feature.SITE_SWITCHER
 import java.lang.ref.WeakReference
 
 /**
- * Used to "advertise" a new feature with a tooltip
+ * Used to "advertise" a new feature with a single-shot tooltip
  */
 object WCFeatureTooltip {
-    private const val TOOLTIP_DELAY = 2500L
+    private const val TOOLTIP_DELAY_BEFORE_SHOWING = 2000L
+    private const val TOOLTIP_DELAY_BEFORE_HIDING = 3500L
     private const val PREF_NAME = "feature_tooltip"
 
-    enum class Feature {
-        SITE_SWITCHER
+    /*
+     * we include the version the tooltip was added both as reference to us and to provide a future means
+     * to programmatically disable tooltips after a certain number of versions
+     */
+    enum class Feature(val key: String, @StringRes val messageId: Int, val versionCode: Int) {
+        SITE_SWITCHER("key_site_switcher", R.string.tooltip_site_switcher, 32)
     }
 
     fun showIfNeeded(feature: Feature, anchorView: View) {
         val prefs = anchorView.context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        if (prefs.getBoolean(feature.name, false)) {
+        if (prefs.getBoolean(feature.key, false)) {
             return
         }
 
@@ -32,9 +36,9 @@ object WCFeatureTooltip {
         Handler().postDelayed({
             weakAnchorView.get()?.let {
                 show(feature, it)
-                prefs.edit().putBoolean(feature.name, true).apply()
+                prefs.edit().putBoolean(feature.key, true).apply()
             }
-        }, TOOLTIP_DELAY)
+        }, TOOLTIP_DELAY_BEFORE_SHOWING)
     }
 
     private fun show(feature: Feature, anchorView: View) {
@@ -43,19 +47,15 @@ object WCFeatureTooltip {
         val textColor = ContextCompat.getColor(context, R.color.white)
         val padding = context.resources.getDimensionPixelSize(R.dimen.margin_large)
 
-        @StringRes val messageId = when (feature) {
-            SITE_SWITCHER -> R.string.tooltip_site_switcher
-        }
-
         val tooltip = Tooltip.Builder(anchorView)
                 .setBackgroundColor(bgColor)
                 .setTextColor(textColor)
                 .setPadding(padding)
                 .setGravity(Gravity.BOTTOM)
-                .setText(messageId)
+                .setText(feature.messageId)
                 .show()
 
-        // This assumes the anchor view has a background ripple
+        // This assumes the anchor view will show a background ripple when pressed
         anchorView.isPressed = true
 
         val weakAnchorView = WeakReference(anchorView)
@@ -63,6 +63,6 @@ object WCFeatureTooltip {
         Handler().postDelayed({
             weakAnchorView.get()?.isPressed = false
             weakTooltip.get()?.dismiss()
-        }, TOOLTIP_DELAY)
+        }, TOOLTIP_DELAY_BEFORE_HIDING)
     }
 }
