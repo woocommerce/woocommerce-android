@@ -80,7 +80,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
 
     private val bounds = Rect()
 
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         if (parent.layoutManager == null) {
             return
         }
@@ -140,7 +140,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
                         }
                     }
 
-                    parent.layoutManager.getDecoratedBoundsWithMargins(it, bounds)
+                    parent.layoutManager?.getDecoratedBoundsWithMargins(it, bounds)
                     val right = bounds.right + Math.round(it.translationX)
                     val left = right - divider.intrinsicWidth
                     divider.setBounds(left, top, right, bottom)
@@ -148,7 +148,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
                 }
     }
 
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView?, state: RecyclerView.State?) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         if (orientation == VERTICAL) {
             outRect.set(0, 0, 0, divider.intrinsicHeight)
         } else {
