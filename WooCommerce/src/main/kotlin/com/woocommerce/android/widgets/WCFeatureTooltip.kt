@@ -30,8 +30,7 @@ object WCFeatureTooltip {
      * Shows the tooltip for the passed feature if it hasn't already been shown
      */
     fun showIfNeeded(feature: Feature, anchorView: View) {
-        // do nothing if we've already shown this tooltip
-        if (getPrefs(anchorView.context).getBoolean(feature.prefKeyName, false)) {
+        if (isTooltipShown(anchorView.context, feature)) {
             return
         }
 
@@ -49,7 +48,9 @@ object WCFeatureTooltip {
 
     private fun getPrefs(context: Context) = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-    fun setTooltipShown(context: Context, feature: Feature, shown: Boolean) {
+    private fun isTooltipShown(context: Context, feature: Feature) = getPrefs(context).getBoolean(feature.prefKeyName, false)
+
+    private fun setTooltipShown(context: Context, feature: Feature, shown: Boolean) {
         getPrefs(context).edit().putBoolean(feature.prefKeyName, shown).apply()
     }
 
