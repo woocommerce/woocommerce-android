@@ -6,6 +6,10 @@ before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
+before_install:
+- if hash sdkmanager 2>/dev/null; then yes | sdkmanager "platforms;android-27"; fi;
+- if hash sdkmanager 2>/dev/null; then yes | sdkmanager "platforms;android-28"; fi;
+
 cache:
   directories:
     - $HOME/.gradle/caches/
