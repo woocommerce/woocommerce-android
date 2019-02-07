@@ -247,13 +247,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
 
         listState?.let {
-            ordersList.layoutManager.onRestoreInstanceState(listState)
+            ordersList.layoutManager?.onRestoreInstanceState(listState)
             listState = null
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        val listState = ordersList.layoutManager.onSaveInstanceState()
+        val listState = ordersList.layoutManager?.onSaveInstanceState()
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
