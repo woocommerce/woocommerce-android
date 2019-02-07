@@ -57,7 +57,7 @@ object WCFeatureTooltip {
 
     private fun show(feature: Feature, anchorView: View) {
         val context = anchorView.context
-        val bgColor = ContextCompat.getColor(context, R.color.wc_purple)
+        val bgColor = ContextCompat.getColor(context, R.color.grey_dark)
         val textColor = ContextCompat.getColor(context, R.color.white)
         val padding = context.resources.getDimensionPixelSize(R.dimen.margin_large)
 

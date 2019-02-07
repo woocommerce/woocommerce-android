@@ -458,5 +458,5 @@
     <string name="app_rating_rate_never">No thanks</string>
 
     <!-- Feature tooltips -->
-    <string name="tooltip_site_switcher">New! You can now tap to switch sites.</string>
+    <string name="tooltip_site_switcher">You can now tap to switch stores</string>
 </resources>
