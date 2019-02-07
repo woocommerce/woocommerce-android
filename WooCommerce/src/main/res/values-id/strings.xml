@@ -41,7 +41,7 @@ Language: id
     <string name="notification_channel_order_title">Pemberitahuan pesanan baru</string>
     <string name="orderdetail_note_system">Status sistem</string>
     <string name="orderdetail_note_public">Catatan untuk pelanggan</string>
-    <string name="dashboard_no_orders_with_search">Tidak ada pesanan yang sesuai</string>
+    <string name="orders_empty_message_with_search">Tidak ada pesanan yang sesuai</string>
     <string name="login_site_list_update_required">Perbarui ke WooCommerce 3.5 yang diwajibkan</string>
     <string name="login_verifying_sites">Memverifikasi situs…</string>
     <string name="button_update_instructions">Petunjuk pembaruan</string>
@@ -264,9 +264,9 @@ Language: id
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">Tidak Ada Pesanan</string>
-    <string name="dashboard_no_orders_contentdesc">Menunggu gambar pelanggan</string>
-    <string name="dashboard_no_orders_with_filter">Tidak ada pesanan</string>
-    <string name="dashboard_no_orders">Menunggu pelanggan</string>
+    <string name="waiting_for_customers_contentdesc">Menunggu gambar pelanggan</string>
+    <string name="orders_empty_message_with_filter">Tidak ada pesanan</string>
+    <string name="waiting_for_customers">Menunggu pelanggan</string>
     <string name="dashboard_fulfill_orders_title">Anda memiliki %1$d%2$s pesanan untuk dipenuhi</string>
     <string name="dashboard_fulfill_order_title">Anda memiliki 1 pesanan untuk dipenuhi</string>
     <string name="dashboard_action_view_orders">Lihat Pesanan</string>
@@ -319,8 +319,8 @@ Language: id
     <string name="date_timeframe_older_two_days">Lebih dari 2 hari</string>
     <string name="date_timeframe_yesterday">Kemarin</string>
     <string name="date_timeframe_today">Hari Ini</string>
-    <string name="no_orders_share_store_title">Bagikan URL toko Anda</string>
-    <string name="no_orders_share_store">Bagikan toko Anda</string>
+    <string name="share_store_dialog_title">Bagikan URL toko Anda</string>
+    <string name="share_store_button">Bagikan toko Anda</string>
     <string name="notifications">Pemberitahuan</string>
     <string name="products">Produk</string>
     <string name="discard">Batal</string>

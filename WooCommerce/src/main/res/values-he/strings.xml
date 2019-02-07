@@ -41,7 +41,7 @@ Language: he_IL
     <string name="notification_channel_order_title">התראות על הזמנות חדשות</string>
     <string name="orderdetail_note_system">סטטוס מערכת</string>
     <string name="orderdetail_note_public">הערה ללקוח</string>
-    <string name="dashboard_no_orders_with_search">לא נמצאו הזמנות תואמות</string>
+    <string name="orders_empty_message_with_search">לא נמצאו הזמנות תואמות</string>
     <string name="login_site_list_update_required">נדרש עדכון ל-WooCommerce 3.5</string>
     <string name="login_verifying_sites">מאמת אתרים…</string>
     <string name="button_update_instructions">יש לעדכן את ההוראות</string>
@@ -264,9 +264,9 @@ Language: he_IL
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">אין הזמנות</string>
-    <string name="dashboard_no_orders_contentdesc">בהמתנה לתמונות לקוחות</string>
-    <string name="dashboard_no_orders_with_filter">אין הזמנות</string>
-    <string name="dashboard_no_orders">בהמתנה ללקוחות</string>
+    <string name="waiting_for_customers_contentdesc">בהמתנה לתמונות לקוחות</string>
+    <string name="orders_empty_message_with_filter">אין הזמנות</string>
+    <string name="waiting_for_customers">בהמתנה ללקוחות</string>
     <string name="dashboard_fulfill_orders_title">יש לך %1$d%2$s הזמנות להשלמה</string>
     <string name="dashboard_fulfill_order_title">יש לך הזמנה אחת להשלמה</string>
     <string name="dashboard_action_view_orders">הצגת הזמנות</string>
@@ -319,8 +319,8 @@ Language: he_IL
     <string name="date_timeframe_older_two_days">בן יותר מיומיים</string>
     <string name="date_timeframe_yesterday">אתמול</string>
     <string name="date_timeframe_today">היום</string>
-    <string name="no_orders_share_store_title">שיתוף כתובת ה-URL של החנות שלך</string>
-    <string name="no_orders_share_store">שיתוף החנות שלך</string>
+    <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
+    <string name="share_store_button">שיתוף החנות שלך</string>
     <string name="notifications">הודעות</string>
     <string name="products">מוצרים</string>
     <string name="discard">הסתר</string>

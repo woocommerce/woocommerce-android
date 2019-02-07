@@ -25,10 +25,10 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.applyTransform
-import com.woocommerce.android.widgets.Section
-import com.woocommerce.android.widgets.SectionParameters
-import com.woocommerce.android.widgets.SectionedRecyclerViewAdapter
-import com.woocommerce.android.widgets.StatelessSection
+import com.woocommerce.android.widgets.sectionedrecyclerview.Section
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
+import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
 import org.wordpress.android.fluxc.model.notification.NotificationModel
@@ -281,7 +281,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
         sectionsMap.entries.forEach {
             val section = it.value
-            val sectionTotal = section.contentItemsTotal
+            val sectionTotal = section.getContentItemsTotal()
 
             // check if position is in this section
             if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
@@ -306,7 +306,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
         sectionsMap.entries.forEach {
             val section = it.value
-            val sectionTotal = section.contentItemsTotal
+            val sectionTotal = section.getContentItemsTotal()
 
             // check if position is in this section
             if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
@@ -363,7 +363,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
         override fun getHeaderViewHolder(view: View) = HeaderViewHolder(view)
 
-        override fun onBindHeaderViewHolder(holder: ViewHolder?) {
+        override fun onBindHeaderViewHolder(holder: ViewHolder) {
             val headerViewHolder = holder as HeaderViewHolder
 
             when (TimeGroup.valueOf(title)) {

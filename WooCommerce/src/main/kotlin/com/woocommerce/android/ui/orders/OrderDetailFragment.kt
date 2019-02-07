@@ -158,7 +158,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it.number)
 
             // Populate the Order Status Card
-            orderDetail_orderStatus.initView(order)
+            val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
+            orderDetail_orderStatus.initView(order, orderStatus)
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(order, false, currencyFormatter.buildFormatter(order.currency), this)
@@ -214,10 +215,17 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun setOrderStatus(newStatus: String) {
-        orderDetail_orderStatus.updateStatus(newStatus)
+        val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
+        orderDetail_orderStatus.updateStatus(orderStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, false, this)
             orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency))
+        }
+    }
+
+    override fun refreshOrderStatus() {
+        presenter.orderModel?.let {
+            setOrderStatus(it.status)
         }
     }
 
@@ -335,7 +343,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun markOrderStatusChangedFailed() {
         // Set the order status back to the previous status
         previousOrderStatus?.let {
-            orderDetail_orderStatus.updateStatus(it)
+            val orderStatus = presenter.getOrderStatusForStatusKey(it)
+            orderDetail_orderStatus.updateStatus(orderStatus)
             previousOrderStatus = null
         }
     }

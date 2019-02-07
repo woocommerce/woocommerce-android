@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.orders
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
+import android.support.annotation.StringRes
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -31,17 +31,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderListAdapter.OnLoadMoreListener
-import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.OrderStatusUtils
-import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
@@ -122,6 +117,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (orderStatusFilter != null && orderStatusFilter != ordersAdapter.orderStatusFilter) {
+            onFilterSelected(orderStatusFilter)
+        }
+    }
+
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
      * search menu item to collapse
@@ -157,7 +159,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     private fun shouldShowFilterMenuItem(): Boolean {
         return when {
-            (isShowingAllOrders() && noOrdersView.visibility == View.VISIBLE) -> false
+            (isShowingAllOrders() && empty_view.visibility == View.VISIBLE) -> false
             (childFragmentManager.backStackEntryCount > 0) -> false
             else -> true
         }
@@ -207,9 +209,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                         }
                     }
                 }
-
-                no_orders_image.visibility =
-                        if (DisplayUtils.isLandscape(activity)) View.GONE else View.VISIBLE
             }
         }
         return view
@@ -240,6 +239,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
 
         presenter.takeView(this)
+
+        empty_view.setSiteToShare(selectedSite.get(), Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         if (isActive && !deferInit) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
@@ -282,14 +283,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             // will fire with an empty string and the collapse event will fire as we leave this fragment
             disableSearchListeners()
             refreshOptionsMenu()
-        }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration?) {
-        super.onConfigurationChanged(newConfig)
-        newConfig?.let {
-            no_orders_image.visibility =
-                    if (it.orientation == Configuration.ORIENTATION_LANDSCAPE) View.GONE else View.VISIBLE
         }
     }
 
@@ -353,49 +346,43 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     /**
      * shows the view that appears for stores that have have no orders matching the current filter
      */
-    override fun showNoOrdersView(show: Boolean) {
-        if (show && noOrdersView.visibility != View.VISIBLE) {
+    override fun showEmptyView(show: Boolean) {
+        if (show) {
             // if the user is searching we show a simple "No matching orders" TextView, otherwise if
             // there isn't a filter (ie: we're showing All orders and there aren't any), then we want
             // to show the full "customers waiting" view, otherwise we show a simple textView stating
             // there aren't any orders
+            @StringRes val messageId: Int
+            val showImage: Boolean
+            val showShareButton: Boolean
             when {
                 isSearching -> {
-                    no_orders_image.visibility = View.GONE
-                    no_orders_share_button.visibility = View.GONE
-                    no_orders_text.setText(R.string.dashboard_no_orders_with_search)
+                    showImage = false
+                    showShareButton = false
+                    messageId = R.string.orders_empty_message_with_search
                 }
                 isShowingAllOrders() -> {
-                    no_orders_image.visibility = View.VISIBLE
-                    no_orders_share_button.visibility = View.VISIBLE
-                    no_orders_text.setText(R.string.dashboard_no_orders)
+                    showImage = true
+                    showShareButton = true
+                    messageId = R.string.waiting_for_customers
                 }
                 else -> {
-                    no_orders_image.visibility = View.GONE
-                    no_orders_share_button.visibility = View.GONE
-                    no_orders_text.setText(R.string.dashboard_no_orders_with_filter)
+                    showImage = true
+                    showShareButton = true
+                    messageId = R.string.orders_empty_message_with_filter
                 }
             }
-
-            WooAnimUtils.fadeIn(noOrdersView, Duration.LONG)
-            WooAnimUtils.fadeOut(ordersView, Duration.LONG)
-            no_orders_share_button.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-                ActivityUtils.shareStoreUrl(activity!!, selectedSite.get().url)
-            }
+            empty_view.show(messageId, showImage, showShareButton)
             isRefreshPending = false
-        } else if (!show && noOrdersView.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(noOrdersView, Duration.LONG)
-            WooAnimUtils.fadeIn(ordersView, Duration.LONG)
+        } else {
+            empty_view.hide()
         }
     }
 
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
                 .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
-                    val orderStatusLabel = CoreOrderStatus.fromValue(filter)?.let { orderStatus ->
-                        OrderStatusUtils.getLabelForOrderStatus(orderStatus, ::getString)
-                    }
+                    val orderStatusLabel = presenter.getOrderStatusOptions()[filter]?.label
                     getString(R.string.orderlist_filtered, orderStatusLabel)
                 } ?: "")
     }
@@ -421,6 +408,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     override fun showNoConnectionError() {
         uiMessageResolver.getSnack(R.string.error_generic_network).show()
+    }
+
+    override fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
+        ordersAdapter.setOrderStatusOptions(orderStatusOptions)
     }
 
     // region OrderCustomerActionListener
@@ -487,25 +478,27 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
 
     // region Filtering
     private fun showFilterDialog() {
-        val orderStatus = orderStatusFilter?.let {
-            CoreOrderStatus.fromValue(it)
-        }
-        OrderStatusFilterDialog.newInstance(orderStatus, listener = this)
+        val orderStatusOptions = presenter.getOrderStatusOptions()
+        OrderStatusFilterDialog.newInstance(orderStatusOptions, orderStatusFilter, listener = this)
                 .show(fragmentManager, OrderStatusFilterDialog.TAG)
     }
 
     override fun onFilterSelected(orderStatus: String?) {
-        AnalyticsTracker.track(
-                Stat.ORDERS_LIST_FILTER,
-                mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
-
-        clearSearchResults()
         orderStatusFilter = orderStatus
-        ordersAdapter.clearAdapterData()
-        presenter.loadOrders(orderStatusFilter, true)
 
-        activity?.title = getFragmentTitle()
-        searchMenuItem?.isVisible = shouldShowSearchMenuItem()
+        if (isAdded) {
+            AnalyticsTracker.track(
+                    Stat.ORDERS_LIST_FILTER,
+                    mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
+            )
+
+            clearSearchResults()
+            ordersAdapter.clearAdapterData()
+            presenter.loadOrders(orderStatusFilter, true)
+
+            activity?.title = getFragmentTitle()
+            searchMenuItem?.isVisible = shouldShowSearchMenuItem()
+        }
     }
     // endregion
 
@@ -522,7 +515,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         } else {
             ordersAdapter.clearAdapterData()
         }
-        showNoOrdersView(false)
+        showEmptyView(false)
         return true
     }
 
