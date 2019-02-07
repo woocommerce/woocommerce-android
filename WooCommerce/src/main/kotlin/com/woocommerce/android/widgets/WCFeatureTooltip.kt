@@ -26,22 +26,31 @@ object WCFeatureTooltip {
         SITE_SWITCHER("key_site_switcher", R.string.tooltip_site_switcher, 32)
     }
 
+    /**
+     * Shows the tooltip for the passed feature if it hasn't already been shown
+     */
     fun showIfNeeded(feature: Feature, anchorView: View) {
         // do nothing if we've already shown this tooltip
-        val prefs = anchorView.context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        if (prefs.getBoolean(feature.prefKeyName, false)) {
+        if (getPrefs(anchorView.context).getBoolean(feature.prefKeyName, false)) {
             return
         }
 
         // use a weak reference in case the context is no longer valid after the delay
         val weakAnchorView = WeakReference(anchorView)
 
+        // show it after a brief delay so it doesn't appear immediately after user enters the activity
         Handler().postDelayed({
             weakAnchorView.get()?.let {
                 show(feature, it)
-                prefs.edit().putBoolean(feature.prefKeyName, true).apply()
+                setTooltipShown(it.context, feature, true)
             }
         }, TOOLTIP_DELAY_BEFORE_SHOWING)
+    }
+
+    private fun getPrefs(context: Context) = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+    fun setTooltipShown(context: Context, feature: Feature, shown: Boolean) {
+        getPrefs(context).edit().putBoolean(feature.prefKeyName, shown).apply()
     }
 
     private fun show(feature: Feature, anchorView: View) {
