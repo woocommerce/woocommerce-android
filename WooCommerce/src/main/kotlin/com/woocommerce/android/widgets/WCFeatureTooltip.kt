@@ -30,7 +30,7 @@ object WCFeatureTooltip {
         // do nothing if we've already shown this tooltip
         val prefs = anchorView.context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         if (prefs.getBoolean(feature.prefKeyName, false)) {
-           // return
+            return
         }
 
         // use a weak reference in case the context is no longer valid after the delay
