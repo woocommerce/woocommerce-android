@@ -2,14 +2,17 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.florent37.viewtooltip.ViewTooltip
+import com.tooltip.Tooltip
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -30,6 +33,8 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         private const val SETTING_NOTIFS_ORDERS = "notifications_orders"
         private const val SETTING_NOTIFS_REVIEWS = "notifications_reviews"
         private const val SETTING_NOTIFS_TONE = "notifications_tone"
+
+        private const val TOOLTIP_DELAY = 2000L
 
         fun newInstance(): MainSettingsFragment {
             return MainSettingsFragment()
@@ -131,9 +136,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
                 listener.onRequestShowSitePicker()
             }
 
-            Handler().postDelayed({
-                showSitePickerTooltip()
-            }, 2000)
+            showSitePickerTooltipDelayed()
         }
     }
 
@@ -174,13 +177,36 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         )
     }
 
+
+    private fun showSitePickerTooltipDelayed() {
+        Handler().postDelayed({
+            if (isAdded) {
+                showSitePickerTooltip()
+            }
+        }, TOOLTIP_DELAY)
+    }
+
     private fun showSitePickerTooltip() {
-        ViewTooltip
-                .on(activity, primaryStoreView)
-                .autoHide(true, 2000)
-                .corner(30)
-                .position(ViewTooltip.Position.BOTTOM)
-                .text("Look ma, we can switch sites now")
-                .show();
+        val anchorView = primaryStoreView
+        val bgColor = ContextCompat.getColor(activity as Context, R.color.wc_purple)
+        val textColor = ContextCompat.getColor(activity as Context, R.color.white)
+        val padding = resources.getDimensionPixelSize(R.dimen.margin_large)
+
+        val tooltip = Tooltip.Builder(anchorView)
+                .setBackgroundColor(bgColor)
+                .setTextColor(textColor)
+                .setPadding(padding)
+                .setGravity(Gravity.BOTTOM)
+                .setText("You can tap to switch sites now!")
+                .show()
+
+        anchorView.isPressed = true
+
+        Handler().postDelayed({
+            if (isAdded) {
+                anchorView.isPressed = false
+                tooltip.dismiss()
+            }
+        }, TOOLTIP_DELAY)
     }
 }
