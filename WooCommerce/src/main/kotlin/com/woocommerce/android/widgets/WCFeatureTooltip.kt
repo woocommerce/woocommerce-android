@@ -48,7 +48,8 @@ object WCFeatureTooltip {
 
     private fun getPrefs(context: Context) = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-    private fun isTooltipShown(context: Context, feature: Feature) = getPrefs(context).getBoolean(feature.prefKeyName, false)
+    private fun isTooltipShown(context: Context, feature: Feature) =
+            getPrefs(context).getBoolean(feature.prefKeyName, false)
 
     private fun setTooltipShown(context: Context, feature: Feature, shown: Boolean) {
         getPrefs(context).edit().putBoolean(feature.prefKeyName, shown).apply()
