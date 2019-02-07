@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.github.florent37.viewtooltip.ViewTooltip
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -128,6 +130,10 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             primaryStoreView.setOnClickListener {
                 listener.onRequestShowSitePicker()
             }
+
+            Handler().postDelayed({
+                showSitePickerTooltip()
+            }, 2000)
         }
     }
 
@@ -166,5 +172,15 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
                 AnalyticsTracker.KEY_FROM to !newValue,
                 AnalyticsTracker.KEY_TO to newValue)
         )
+    }
+
+    private fun showSitePickerTooltip() {
+        ViewTooltip
+                .on(activity, primaryStoreView)
+                .autoHide(true, 2000)
+                .corner(30)
+                .position(ViewTooltip.Position.BOTTOM)
+                .text("Look ma, we can switch sites now")
+                .show();
     }
 }
