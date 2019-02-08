@@ -1,11 +1,12 @@
-package com.woocommerce.android.ui.login
+package com.woocommerce.android.ui.sitepicker
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.SiteModel
 
-interface LoginEpilogueContract {
+interface SitePickerContract {
     interface Presenter : BasePresenter<View> {
+        fun fetchSites()
         fun getWooCommerceSites(): List<SiteModel>
         fun getSiteBySiteId(siteId: Long): SiteModel?
         fun getUserAvatarUrl(): String?
@@ -22,7 +23,8 @@ interface LoginEpilogueContract {
     interface View : BaseView<Presenter> {
         fun showUserInfo()
         fun showStoreList(wcSites: List<SiteModel>)
-        fun cancel()
+        fun didLogout()
+        fun siteSelected(site: SiteModel)
         fun siteVerificationPassed(site: SiteModel)
         fun siteVerificationFailed(site: SiteModel)
         fun siteVerificationError(site: SiteModel)

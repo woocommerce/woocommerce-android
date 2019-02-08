@@ -7,6 +7,7 @@ interface MainSettingsContract {
     interface Presenter : BasePresenter<View> {
         fun getUserDisplayName(): String
         fun getStoreDomainName(): String
+        fun hasMultipleStores(): Boolean
     }
 
     interface View : BaseView<Presenter> {

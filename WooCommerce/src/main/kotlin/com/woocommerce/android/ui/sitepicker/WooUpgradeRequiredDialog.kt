@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login
+package com.woocommerce.android.ui.sitepicker
 
 import android.os.Bundle
 import android.support.v4.app.DialogFragment

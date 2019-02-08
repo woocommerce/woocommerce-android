@@ -3,10 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login_root"
+    android:id="@+id/site_picker_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/wc_grey_light">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"/>
 
     <Button
         android:id="@+id/button_help"
@@ -15,7 +19,7 @@
         android:layout_height="wrap_content"
         android:text="@string/help"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
     <ImageView
         android:id="@+id/image_avatar"
@@ -25,7 +29,7 @@
         android:contentDescription="@string/login_avatar_content_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
 
     <TextView
