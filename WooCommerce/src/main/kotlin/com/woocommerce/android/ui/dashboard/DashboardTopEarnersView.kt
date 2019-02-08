@@ -169,7 +169,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             holder.totalSpendText.text = total
             holder.divider.visibility = if (position < itemCount - 1) View.VISIBLE else View.GONE
 
-            // strip the image query params and add a width param that matches our desired size
             val imageUrl = PhotonUtils.getPhotonImageUrl(topEarner.image, imageSize, 0)
             GlideApp.with(holder.itemView.context)
                     .load(imageUrl)
