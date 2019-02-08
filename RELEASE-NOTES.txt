@@ -1,5 +1,6 @@
 Features
 - Prices now conform to the WooCommerce store's currency display settings
+
 Bugfixes
 - Issue with order notes not saving properly during activity restore (low memory situations) resolved
 - Fixed bug that caused the support menu to be hidden when the device has no email client
@@ -11,6 +12,7 @@ Bugfixes
 - Fixed crash when a review is opened from the notification list
 - Fixed rare crash in login during two-factor authentication
 - Fixed cases where the sales totals for a time period don't match what Calypso and wp-admin report
+- Fixed rare crash loading product images in top earners 
 
 Improvements
 - Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order
