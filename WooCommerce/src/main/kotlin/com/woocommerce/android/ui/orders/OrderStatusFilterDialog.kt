@@ -72,7 +72,7 @@ class OrderStatusFilterDialog : DialogFragment() {
                         // If 'All' is selected filter, pass null to signal a filterless refresh
                         listener?.onFilterSelected(selectedFilter.takeUnless { it == ALL_FILTER_ID })
                     }
-                    dialog.cancel()
+                    dialog.dismiss()
                 }.create()
     }
 

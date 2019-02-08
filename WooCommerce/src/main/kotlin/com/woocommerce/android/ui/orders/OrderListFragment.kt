@@ -65,6 +65,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var ordersDividerDecoration: DividerItemDecoration
+    private var orderFilterDialog: OrderStatusFilterDialog? = null
 
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
     override var isRefreshing: Boolean
@@ -212,6 +213,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             }
         }
         return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // If the order filter dialog is visible, close it
+        orderFilterDialog?.dismiss()
+        orderFilterDialog = null
     }
 
     override fun onResume() {
@@ -479,8 +488,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // region Filtering
     private fun showFilterDialog() {
         val orderStatusOptions = presenter.getOrderStatusOptions()
-        OrderStatusFilterDialog.newInstance(orderStatusOptions, orderStatusFilter, listener = this)
-                .show(fragmentManager, OrderStatusFilterDialog.TAG)
+        orderFilterDialog = OrderStatusFilterDialog
+                .newInstance(orderStatusOptions, orderStatusFilter, listener = this)
+                .also { it.show(fragmentManager, OrderStatusFilterDialog.TAG) }
     }
 
     override fun onFilterSelected(orderStatus: String?) {
