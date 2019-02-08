@@ -479,8 +479,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // region Filtering
     private fun showFilterDialog() {
         val orderStatusOptions = presenter.getOrderStatusOptions()
-        OrderStatusFilterDialog.newInstance(orderStatusOptions, orderStatusFilter, listener = this)
-                .show(fragmentManager, OrderStatusFilterDialog.TAG)
+        val dialog = OrderStatusFilterDialog.newInstance(orderStatusOptions, orderStatusFilter, listener = this)
+        fragmentManager?.beginTransaction()
+                ?.add(dialog, OrderStatusFilterDialog.TAG)
+                ?.commitAllowingStateLoss()
     }
 
     override fun onFilterSelected(orderStatus: String?) {
