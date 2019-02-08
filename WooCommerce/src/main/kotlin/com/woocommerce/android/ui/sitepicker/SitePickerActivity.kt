@@ -35,8 +35,6 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
-// TODO: tracks events used below will need to be renamed
-
 class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener {
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
@@ -76,7 +74,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
             button_help.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
-                AnalyticsTracker.track(Stat.LOGIN_EPILOGUE_HELP_BUTTON_TAPPED)
+                AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
             }
         } else {
             site_picker_root.setBackgroundColor(
@@ -110,8 +108,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             presenter.fetchSites()
 
             AnalyticsTracker.track(
-                    Stat.LOGIN_EPILOGUE_STORES_SHOWN,
-                    mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size))
+                    Stat.SITE_PICKER_STORES_SHOWN,
+                    mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
+            )
         }
     }
 
@@ -213,7 +212,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         AnalyticsTracker.track(
-                Stat.LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED,
+                Stat.SITE_PICKER_STORE_PICKER_CONTINUE_TAPPED,
                 mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
         )
 
