@@ -89,7 +89,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             button_help.visibility = View.GONE
             site_list_label.visibility = View.GONE
             site_list_container.cardElevation = 0f
-            (site_list_container.layoutParams as MarginLayoutParams).topMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
+            (site_list_container.layoutParams as MarginLayoutParams).topMargin =
+                    resources.getDimensionPixelSize(R.dimen.margin_large)
         }
 
         presenter.takeView(this)
