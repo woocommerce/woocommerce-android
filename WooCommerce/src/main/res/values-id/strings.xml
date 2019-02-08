@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-08 07:54:02+0000
+Translation-Revision-Date: 2019-02-06 07:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="wc_mark_all_read_none">Tidak ada pemberitahuan yang belum dibaca</string>
+    <string name="wc_mark_all_read_success">Semua pemberitahuan ditandai sudah dibaca</string>
+    <string name="login_update_required_desc">Aplikasi ini memerlukan WooCommerce 3.5 di server Anda. Agar dapat terus menggunakan aplikasi ini, harap perbarui toko Anda.</string>
+    <string name="login_update_required_title">Perbarui Toko ke WooCommerce 3.5</string>
+    <string name="login_verifying_site_error">Tidak dapat terhubung ke %s</string>
+    <string name="dismiss">Selesai</string>
     <string name="wc_mark_all_read_error">Terjadi error saat menandai semua pemberitahuan sudah dibaca</string>
     <string name="wc_mark_all_read">Tandai semua sudah dibaca</string>
     <string name="orderdetail_message_customer">Pesan</string>
@@ -42,8 +48,6 @@ Language: id
     <string name="orderdetail_note_system">Status sistem</string>
     <string name="orderdetail_note_public">Catatan untuk pelanggan</string>
     <string name="dashboard_no_orders_with_search">Tidak ada pesanan yang sesuai</string>
-    <string name="login_site_list_update_required">Perbarui ke WooCommerce 3.5 yang diwajibkan</string>
-    <string name="login_verifying_sites">Memverifikasi situs…</string>
     <string name="button_update_instructions">Petunjuk pembaruan</string>
     <string name="search">Cari</string>
     <string name="refresh_button">Segarkan</string>
@@ -262,7 +266,6 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>
@@ -281,8 +284,6 @@ Language: id
     <string name="dashboard_no_orders_contentdesc">Menunggu gambar pelanggan</string>
     <string name="dashboard_no_orders_with_filter">Tidak ada pesanan</string>
     <string name="dashboard_no_orders">Menunggu pelanggan</string>
-    <string name="dashboard_fulfill_orders_title">Anda memiliki %1$d%2$s pesanan untuk dipenuhi</string>
-    <string name="dashboard_fulfill_order_title">Anda memiliki 1 pesanan untuk dipenuhi</string>
     <string name="dashboard_action_view_orders">Lihat Pesanan</string>
     <string name="dashboard_action_view_order">Lihat Pesanan</string>
     <string name="dashboard_top_earners_empty">Tidak ada aktivitas dalam periode ini</string>

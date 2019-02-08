@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-09 09:54:02+0000
+Translation-Revision-Date: 2019-02-01 08:56:23+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="dismiss">關閉</string>
     <string name="wc_mark_all_read_error">將全部通知標示為已讀時發生錯誤</string>
     <string name="wc_mark_all_read">將全部標示為已讀</string>
     <string name="orderdetail_message_customer">訊息</string>
@@ -42,8 +43,6 @@ Language: zh_TW
     <string name="orderdetail_note_system">系統狀態</string>
     <string name="orderdetail_note_public">給顧客的備註</string>
     <string name="dashboard_no_orders_with_search">沒有相符的訂單</string>
-    <string name="login_site_list_update_required">必須更新至 WooCommerce 3.5</string>
-    <string name="login_verifying_sites">正在驗證網站…</string>
     <string name="button_update_instructions">更新指示</string>
     <string name="search">搜尋</string>
     <string name="refresh_button">重新整理</string>
@@ -262,7 +261,6 @@ Language: zh_TW
     <string name="orderdetail_product_image_contentdesc">商品圖片</string>
     <string name="orderdetail_product_lineitem_sku">貨號：</string>
     <string name="orderdetail_product_lineitem_tax">稅金：</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">傳送電子郵件給客戶</string>
     <string name="orderdetail_billing_details">帳單詳細資料</string>
     <string name="orderdetail_shipping_details">運送詳細資料</string>
@@ -281,8 +279,6 @@ Language: zh_TW
     <string name="dashboard_no_orders_contentdesc">等待客戶圖片</string>
     <string name="dashboard_no_orders_with_filter">無訂單</string>
     <string name="dashboard_no_orders">等待客戶</string>
-    <string name="dashboard_fulfill_orders_title">你有 %1$d%2$s 筆訂單尚未履行</string>
-    <string name="dashboard_fulfill_order_title">你有 1 筆訂單尚未履行</string>
     <string name="dashboard_action_view_orders">查看訂單</string>
     <string name="dashboard_action_view_order">查看訂單</string>
     <string name="dashboard_top_earners_empty">此期間沒有任何活動</string>

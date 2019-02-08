@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-09 06:54:04+0000
+Translation-Revision-Date: 2019-02-06 08:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="wc_mark_all_read_none">未読の通知はありません</string>
+    <string name="wc_mark_all_read_success">すべての通知が既読としてマークされました</string>
+    <string name="login_update_required_desc">このアプリではサーバーへの WooCommerce 3.5 のインストールが必要です。引き続きこのアプリを使用するには、ストアを更新してください。</string>
+    <string name="login_update_required_title">ストアを WooCommerce 3.5 に更新</string>
+    <string name="login_verifying_site_error">%s に接続できません</string>
+    <string name="dismiss">非表示にする</string>
     <string name="wc_mark_all_read_error">すべてを既読にする際にエラーが発生</string>
     <string name="wc_mark_all_read">すべてを既読にする</string>
     <string name="orderdetail_message_customer">メッセージ</string>
@@ -42,8 +48,6 @@ Language: ja_JP
     <string name="orderdetail_note_system">システム状況</string>
     <string name="orderdetail_note_public">お客様への通知</string>
     <string name="dashboard_no_orders_with_search">一致する注文はありません</string>
-    <string name="login_site_list_update_required">WooCommerce 3.5への更新が必要です</string>
-    <string name="login_verifying_sites">サイトを認証中です…</string>
     <string name="button_update_instructions">手順を更新</string>
     <string name="search">検索</string>
     <string name="refresh_button">再読み込み</string>
@@ -262,7 +266,6 @@ Language: ja_JP
     <string name="orderdetail_product_image_contentdesc">商品画像</string>
     <string name="orderdetail_product_lineitem_sku">商品コード:</string>
     <string name="orderdetail_product_lineitem_tax">税:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">顧客にメールを送信</string>
     <string name="orderdetail_billing_details">請求詳細</string>
     <string name="orderdetail_shipping_details">配送詳細</string>
@@ -281,8 +284,6 @@ Language: ja_JP
     <string name="dashboard_no_orders_contentdesc">顧客の画像を待機中です</string>
     <string name="dashboard_no_orders_with_filter">注文はありません</string>
     <string name="dashboard_no_orders">顧客待ち</string>
-    <string name="dashboard_fulfill_orders_title">履行する注文が%1$d%2$s件あります</string>
-    <string name="dashboard_fulfill_order_title">履行する注文が1件あります</string>
     <string name="dashboard_action_view_orders">注文を表示</string>
     <string name="dashboard_action_view_order">注文を表示</string>
     <string name="dashboard_top_earners_empty">この期間のアクティビティはありません</string>
