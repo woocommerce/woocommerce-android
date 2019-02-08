@@ -232,7 +232,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
                 }
             })
@@ -247,13 +247,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
         }
 
         listState?.let {
-            ordersList.layoutManager.onRestoreInstanceState(listState)
+            ordersList.layoutManager?.onRestoreInstanceState(listState)
             listState = null
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        val listState = ordersList.layoutManager.onSaveInstanceState()
+        val listState = ordersList.layoutManager?.onSaveInstanceState()
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
