@@ -74,6 +74,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CREATED_ACCOUNT(siteless = true),
         LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED(siteless = true),
         LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
+
+        // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
         SITE_PICKER_STORE_PICKER_CONTINUE_TAPPED(siteless = true),
         SITE_PICKER_HELP_BUTTON_TAPPED(siteless = true),
@@ -143,6 +145,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTING_CHANGE,
         SETTING_CHANGE_FAILED,
         SETTING_CHANGE_SUCCESS,
+        SETTINGS_SELECTED_SITE_TAPPED,
         SETTINGS_LOGOUT_BUTTON_TAPPED,
         SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
         SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED,
@@ -322,7 +325,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
         const val KEY_NUMBER_OF_STORES = "number_of_stores"
-        const val KEY_ORIGIN = "origin"
         const val KEY_PARENT_ID = "parent_id"
         const val KEY_RANGE = "range"
         const val KEY_RESULT = "result"

@@ -39,8 +39,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
-        private const val ORIGIN_LOGIN = "login"
-        private const val ORIGIN_SETTINGS = "settings"
 
         fun showSitePickerFromLogin(context: Context) {
             val intent = Intent(context, SitePickerActivity::class.java)
@@ -76,10 +74,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             ActivityUtils.setStatusBarColor(this, R.color.wc_grey_mid)
             button_help.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
-                AnalyticsTracker.track(
-                        Stat.SITE_PICKER_HELP_BUTTON_TAPPED,
-                        mapOf(AnalyticsTracker.KEY_ORIGIN to getOriginForTracks())
-                )
+                AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
             }
         } else {
             site_picker_root.setBackgroundColor(
@@ -114,10 +109,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             AnalyticsTracker.track(
                     Stat.SITE_PICKER_STORES_SHOWN,
-                    mapOf(
-                            AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size,
-                            AnalyticsTracker.KEY_ORIGIN to getOriginForTracks()
-                    )
+                    mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
             )
         }
     }
@@ -221,10 +213,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_STORE_PICKER_CONTINUE_TAPPED,
-                mapOf(
-                        AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id,
-                        AnalyticsTracker.KEY_ORIGIN to getOriginForTracks()
-                )
+                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
         )
 
         progressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
@@ -301,6 +290,4 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         startActivity(intent)
         finish()
     }
-
-    private fun getOriginForTracks() = if (calledFromLogin) ORIGIN_LOGIN else ORIGIN_SETTINGS
 }

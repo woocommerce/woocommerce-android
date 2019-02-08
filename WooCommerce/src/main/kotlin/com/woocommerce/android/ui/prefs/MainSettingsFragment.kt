@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WO
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
@@ -126,6 +127,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         // TODO: for now, showing the site picker is only enabled for debug builds
         if (BuildConfig.DEBUG && presenter.hasMultipleStores()) {
             primaryStoreView.setOnClickListener {
+                AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
                 listener.onRequestShowSitePicker()
             }
         }
