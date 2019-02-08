@@ -15,6 +15,7 @@ import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -88,6 +89,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             button_help.visibility = View.GONE
             site_list_label.visibility = View.GONE
             site_list_container.cardElevation = 0f
+            (site_list_container.layoutParams as MarginLayoutParams).topMargin =
+                    resources.getDimensionPixelSize(R.dimen.margin_large)
         }
 
         presenter.takeView(this)

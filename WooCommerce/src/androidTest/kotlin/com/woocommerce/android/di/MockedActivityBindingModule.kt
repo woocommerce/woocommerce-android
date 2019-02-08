@@ -2,8 +2,6 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.login.LoginEpilogueActivity
-import com.woocommerce.android.ui.login.LoginEpilogueModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
@@ -13,6 +11,8 @@ import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderListModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule
@@ -36,8 +36,8 @@ abstract class MockedActivityBindingModule {
     abstract fun provideLoginActivityInjector(): LoginActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(LoginEpilogueModule::class))
-    abstract fun provideLoginEpilogueActivityInjector(): LoginEpilogueActivity
+    @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
+    abstract fun provideSitePickerActivityInjector(): SitePickerActivity
 
     @ActivityScope
     @ContributesAndroidInjector
