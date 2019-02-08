@@ -172,7 +172,7 @@ class NotifsListFragment : TopLevelFragment(),
         }
 
         listState?.let {
-            notifsList.layoutManager?.onRestoreInstanceState(it)
+            notifsList.layoutManager?.onRestoreInstanceState(listState)
             listState = null
         }
     }
