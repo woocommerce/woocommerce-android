@@ -26,7 +26,7 @@
                 style="@style/Woo.Settings.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/settings_primary_store"/>
+                android:text="@string/settings_selected_store"/>
 
             <TextView
                 android:id="@+id/textPrimaryStoreDomain"
