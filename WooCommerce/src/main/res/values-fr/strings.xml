@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-09 12:54:02+0000
+Translation-Revision-Date: 2019-02-05 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="wc_mark_all_read_none">Aucune notification non lue</string>
+    <string name="wc_mark_all_read_success">Toutes les notifications sont marquées comme étant lues</string>
+    <string name="login_update_required_desc">Cette application nécessite WooCommerce 3.5 sur votre serveur. Pour continuer d\'utiliser cette application, veuillez mettre à jour votre boutique.</string>
+    <string name="login_update_required_title">Mise à jour de la boutique vers WooCommerce 3.5</string>
+    <string name="login_verifying_site_error">Connexion à %s impossible</string>
+    <string name="dismiss">Fermer</string>
     <string name="wc_mark_all_read_error">Erreur lors du marquage de toutes les notifications comme étant lues</string>
     <string name="wc_mark_all_read">Tout marquer comme lu</string>
     <string name="orderdetail_message_customer">Message</string>
@@ -41,8 +47,6 @@ Language: fr
     <string name="orderdetail_note_system">État du système</string>
     <string name="orderdetail_note_public">Note au client</string>
     <string name="dashboard_no_orders_with_search">Aucune commande correspondante</string>
-    <string name="login_site_list_update_required">Mise à jour vers WooCommerce 3.5 obligatoire</string>
-    <string name="login_verifying_sites">Vérification des sites…</string>
     <string name="button_update_instructions">Mettre à jour les instructions</string>
     <string name="search">Recherche</string>
     <string name="refresh_button">Rafraîchir</string>
@@ -247,7 +251,6 @@ Language: fr
     <string name="orderdetail_product_image_contentdesc">Image produit</string>
     <string name="orderdetail_product_lineitem_sku">UGS :</string>
     <string name="orderdetail_product_lineitem_tax">TVA :</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">envoyer un e-mail au client</string>
     <string name="orderdetail_billing_details">Détails de facturation</string>
     <string name="orderdetail_shipping_details">Détails de livraison</string>
@@ -266,8 +269,6 @@ Language: fr
     <string name="dashboard_no_orders_contentdesc">En attente de l’image des clients</string>
     <string name="dashboard_no_orders_with_filter">Aucune commande</string>
     <string name="dashboard_no_orders">En attente des clients</string>
-    <string name="dashboard_fulfill_orders_title">Vous avez %1$d%2$s commandes à exécuter</string>
-    <string name="dashboard_fulfill_order_title">Vous avez 1 commande à exécuter</string>
     <string name="dashboard_action_view_orders">Voir les commandes</string>
     <string name="dashboard_action_view_order">Voir la commande</string>
     <string name="dashboard_top_earners_empty">Aucune activité sur cette période</string>
