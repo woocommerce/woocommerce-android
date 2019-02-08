@@ -11,6 +11,7 @@ Bugfixes
 - Fixed missing "empty view" in notifications
 - Fixed crash when a review is opened from the notification list
 - Fixed rare crash in login during two-factor authentication
+- Fixed cases where the sales totals for a time period don't match what Calypso and wp-admin report
 
 Improvements
 - Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order
