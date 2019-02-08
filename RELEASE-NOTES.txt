@@ -14,6 +14,7 @@ Bugfixes
 - Fixed rare crash after undoing a review moderation
 - Fixed cases where the sales totals for a time period don't match what Calypso and wp-admin report
 - Fixed rare crash loading product images in top earners 
+- Fixed a rare crash when recreating the order filter during activity restore (low memory situations)
 
 Improvements
 - Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order
