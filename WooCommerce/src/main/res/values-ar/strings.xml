@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-08 12:54:02+0000
+Translation-Revision-Date: 2019-02-05 14:54:01+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="wc_mark_all_read_none">لا توجد تنبيهات غير مقروءة</string>
+    <string name="wc_mark_all_read_success">تم وسم جميع التنبيهات كمقروءة</string>
+    <string name="login_update_required_desc">يتطلب هذا التطبيق WooCommerce 3.5 على خادمك. للاستمرار في استخدام هذا التطبيق، يرجى تحديث متجرك.</string>
+    <string name="login_update_required_title">تحديث المتجر إلى WooCommerce 3.5</string>
+    <string name="login_verifying_site_error">يتعذر الاتصال بـ %s</string>
+    <string name="dismiss">تجاهل</string>
     <string name="wc_mark_all_read_error">حدث خطأ أثناء وسم جميع التنبيهات كمقروءة</string>
     <string name="wc_mark_all_read">وسم الجميع كمقروء</string>
     <string name="orderdetail_message_customer">رسالة</string>
@@ -42,8 +48,6 @@ Language: ar
     <string name="orderdetail_note_system">حالة النظام</string>
     <string name="orderdetail_note_public">ملاحظة إلى العميل</string>
     <string name="dashboard_no_orders_with_search">لا توجد طلبات مطابقة</string>
-    <string name="login_site_list_update_required">يلزم التحديث إلى WooCommerce 3.5</string>
-    <string name="login_verifying_sites">جارٍ التحقق من المواقع…</string>
     <string name="button_update_instructions">إرشادات التحديث</string>
     <string name="search">بحث</string>
     <string name="refresh_button">تجديد</string>
@@ -248,7 +252,6 @@ Language: ar
     <string name="orderdetail_product_image_contentdesc">صورة المنتج</string>
     <string name="orderdetail_product_lineitem_sku">وحدة SKU:</string>
     <string name="orderdetail_product_lineitem_tax">الضريبة:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">إرسال بريد إلكتروني إلى العميل</string>
     <string name="orderdetail_billing_details">تفاصيل الفوترة</string>
     <string name="orderdetail_shipping_details">تفاصيل الشحن</string>
@@ -267,8 +270,6 @@ Language: ar
     <string name="dashboard_no_orders_contentdesc">في انتظار صورة العملاء</string>
     <string name="dashboard_no_orders_with_filter">لا توجد طلبات</string>
     <string name="dashboard_no_orders">في انتظار العملاء</string>
-    <string name="dashboard_fulfill_orders_title">لديك %1$d%2$s من الطلبات لإتمامها</string>
-    <string name="dashboard_fulfill_order_title">لديك طلب واحد لإتمامه</string>
     <string name="dashboard_action_view_orders">عرض الطلبات</string>
     <string name="dashboard_action_view_order">عرض الطلب</string>
     <string name="dashboard_top_earners_empty">لا يوجد أي نشاط في هذه الفترة</string>

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-08 16:54:02+0000
+Translation-Revision-Date: 2019-02-06 08:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="wc_mark_all_read_none">אין הודעות שלא נקראו</string>
+    <string name="wc_mark_all_read_success">כל ההודעות מסומנות כ\'נקרא\'</string>
+    <string name="login_update_required_desc">כדי להשתמש באפליקציה זו, יש להתקין את WooCommerce 3.5 בשרת. כדי להמשיך את השימוש באפליקציה זאת, יש לעדכן את החנות שלך.</string>
+    <string name="login_update_required_title">לעדכן את החנות ל-Woocommerce 3.5</string>
+    <string name="login_verifying_site_error">אין אפשרות להתחבר אל %s</string>
+    <string name="dismiss">סגור</string>
     <string name="wc_mark_all_read_error">שגיאה בעת סימון של התגובות כ\'נקרא\'</string>
     <string name="wc_mark_all_read">סימון כל הפריטים כ\'נקרא\'</string>
     <string name="orderdetail_message_customer">הודעה</string>
@@ -42,8 +48,6 @@ Language: he_IL
     <string name="orderdetail_note_system">סטטוס מערכת</string>
     <string name="orderdetail_note_public">הערה ללקוח</string>
     <string name="dashboard_no_orders_with_search">לא נמצאו הזמנות תואמות</string>
-    <string name="login_site_list_update_required">נדרש עדכון ל-WooCommerce 3.5</string>
-    <string name="login_verifying_sites">מאמת אתרים…</string>
     <string name="button_update_instructions">יש לעדכן את ההוראות</string>
     <string name="search">חיפוש</string>
     <string name="refresh_button">רענון</string>
@@ -248,7 +252,6 @@ Language: he_IL
     <string name="orderdetail_product_image_contentdesc">תמונת מוצר</string>
     <string name="orderdetail_product_lineitem_sku">מק\"ט:</string>
     <string name="orderdetail_product_lineitem_tax">מס:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">שליחת הודעת אימייל ללקוח</string>
     <string name="orderdetail_billing_details">פרטי חיוב</string>
     <string name="orderdetail_shipping_details">פרטי משלוח</string>
@@ -267,8 +270,6 @@ Language: he_IL
     <string name="dashboard_no_orders_contentdesc">בהמתנה לתמונות לקוחות</string>
     <string name="dashboard_no_orders_with_filter">אין הזמנות</string>
     <string name="dashboard_no_orders">בהמתנה ללקוחות</string>
-    <string name="dashboard_fulfill_orders_title">יש לך %1$d%2$s הזמנות להשלמה</string>
-    <string name="dashboard_fulfill_order_title">יש לך הזמנה אחת להשלמה</string>
     <string name="dashboard_action_view_orders">הצגת הזמנות</string>
     <string name="dashboard_action_view_order">הצגת הזמנה</string>
     <string name="dashboard_top_earners_empty">אין פעילות בפרק זמן זה</string>
