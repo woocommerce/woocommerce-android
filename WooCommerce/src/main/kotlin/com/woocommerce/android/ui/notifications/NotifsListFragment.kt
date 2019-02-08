@@ -157,7 +157,7 @@ class NotifsListFragment : TopLevelFragment(),
             addItemDecoration(unreadDecoration)
             adapter = notifsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
                 }
             })
@@ -172,7 +172,7 @@ class NotifsListFragment : TopLevelFragment(),
         }
 
         listState?.let {
-            notifsList.layoutManager.onRestoreInstanceState(listState)
+            notifsList.layoutManager?.onRestoreInstanceState(listState)
             listState = null
         }
     }
@@ -195,7 +195,7 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        val listState = notifsList.layoutManager.onSaveInstanceState()
+        val listState = notifsList.layoutManager?.onSaveInstanceState()
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)

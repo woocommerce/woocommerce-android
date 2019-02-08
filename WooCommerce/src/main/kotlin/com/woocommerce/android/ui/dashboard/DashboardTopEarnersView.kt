@@ -27,7 +27,7 @@ import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.FormatUtils
-import org.wordpress.android.util.UrlUtils
+import org.wordpress.android.util.PhotonUtils
 
 class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
@@ -169,8 +169,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
             holder.totalSpendText.text = total
             holder.divider.visibility = if (position < itemCount - 1) View.VISIBLE else View.GONE
 
-            // strip the image query params and add a width param that matches our desired size
-            val imageUrl = UrlUtils.removeQuery(topEarner.image) + "?w=$imageSize"
+            val imageUrl = PhotonUtils.getPhotonImageUrl(topEarner.image, imageSize, 0)
             GlideApp.with(holder.itemView.context)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)

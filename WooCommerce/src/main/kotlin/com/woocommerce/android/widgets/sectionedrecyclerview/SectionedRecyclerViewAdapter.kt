@@ -386,7 +386,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
         }
 
         WooLog.w(T.NOTIFICATIONS, "Invalid section " + section.toString())
-        throw IllegalArgumentException("Invalid section")
+        return INVALID_POSITION
     }
 
     /**
@@ -412,7 +412,10 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      * @return position of the item in the adapter
      */
     fun getPositionInAdapter(section: Section, position: Int): Int {
-        return getSectionPosition(section) + (if (section.hasHeader) 1 else 0) + position
+        val sectionPos = getSectionPosition(section)
+        return if (sectionPos == INVALID_POSITION) {
+            INVALID_POSITION
+        } else sectionPos + (if (section.hasHeader) 1 else 0) + position
     }
 
     /**
@@ -463,8 +466,10 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
         if (!section.hasFooter) {
             throw IllegalStateException("Section doesn't have a footer")
         }
-
-        return getSectionPosition(section) + section.sectionItemsTotal - 1
+        val sectionPos = getSectionPosition(section)
+        return if (sectionPos == INVALID_POSITION) {
+            INVALID_POSITION
+        } else sectionPos + section.sectionItemsTotal - 1
     }
 
     /**
@@ -955,8 +960,9 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      */
     fun notifyHeaderRemovedFromSection(section: Section) {
         val position = getSectionPosition(section)
-
-        callSuperNotifyItemRemoved(position)
+        if (position != INVALID_POSITION) {
+            callSuperNotifyItemRemoved(position)
+        }
     }
 
     /**
@@ -980,9 +986,11 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      * @param section a mVisible section of this adapter
      */
     fun notifyFooterRemovedFromSection(section: Section) {
-        val position = getSectionPosition(section) + section.sectionItemsTotal
-
-        callSuperNotifyItemRemoved(position)
+        val sectionPos = getSectionPosition(section)
+        if (sectionPos != INVALID_POSITION) {
+            val position = sectionPos + section.sectionItemsTotal
+            callSuperNotifyItemRemoved(position)
+        }
     }
 
     /**
@@ -1008,11 +1016,10 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
             throw IllegalStateException("This section is not mVisible.")
         }
 
-        val sectionPosition = getSectionPosition(section)
-
-        val sectionItemsTotal = section.sectionItemsTotal
-
-        callSuperNotifyItemRangeInserted(sectionPosition, sectionItemsTotal)
+        val sectionPos = getSectionPosition(section)
+        if (sectionPos != INVALID_POSITION) {
+            callSuperNotifyItemRangeInserted(sectionPos, section.sectionItemsTotal)
+        }
     }
 
     /**
@@ -1064,5 +1071,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
         private const val VIEW_TYPE_FAILED = 4
         private const val VIEW_TYPE_EMPTY = 5
         private const val VIEW_TYPE_QTY = 6
+
+        const val INVALID_POSITION = -1
     }
 }
