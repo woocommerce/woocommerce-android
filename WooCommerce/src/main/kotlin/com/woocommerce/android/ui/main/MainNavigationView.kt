@@ -45,6 +45,11 @@ class MainNavigationView @JvmOverloads constructor(
         set(navPos) = updateCurrentPosition(navPos)
 
     fun init(fm: FragmentManager, listener: MainNavigationListener) {
+        // if the adapter is already assigned, reset it so fragments are cleared
+        if (::navAdapter.isInitialized) {
+            navAdapter.reset()
+        }
+
         this.fragmentManager = fm
         this.listener = listener
 
@@ -172,6 +177,10 @@ class MainNavigationView @JvmOverloads constructor(
             val fragment = fragmentManager.findFragment(navPos)
             fragments.put(navPos.position, fragment)
             return fragment
+        }
+
+        internal fun reset() {
+            fragments.clear()
         }
     }
     // endregion

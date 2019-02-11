@@ -256,6 +256,14 @@ class MainActivity : AppCompatActivity(),
         initFragment(null)
     }
 
+    /**
+     * Called when the user switches sites
+     */
+    override fun resetSelectedSite() {
+        bottomNavView.init(supportFragmentManager, this)
+        initFragment(null)
+    }
+
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
