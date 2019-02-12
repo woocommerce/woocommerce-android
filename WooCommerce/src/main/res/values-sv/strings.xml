@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-08 08:54:02+0000
+Translation-Revision-Date: 2019-02-01 08:56:23+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="dismiss">Avfärda</string>
     <string name="wc_mark_all_read_error">Ett fel uppstod när alla notifikationer skulle markeras som lästa</string>
     <string name="wc_mark_all_read">Markera alla som lästa</string>
     <string name="orderdetail_message_customer">Meddelande</string>
@@ -42,8 +43,6 @@ Language: sv_SE
     <string name="orderdetail_note_system">Systemstatus</string>
     <string name="orderdetail_note_public">Kundmeddelande</string>
     <string name="dashboard_no_orders_with_search">Inga matchande ordrar</string>
-    <string name="login_site_list_update_required">Kräver uppdatering till WooCommerce 3.5</string>
-    <string name="login_verifying_sites">Verifierar webbplatser…</string>
     <string name="button_update_instructions">Uppdatera instruktioner</string>
     <string name="search">Sök</string>
     <string name="refresh_button">Uppdatera</string>
@@ -245,7 +244,6 @@ Language: sv_SE
     <string name="orderdetail_product_image_contentdesc">Produktbild</string>
     <string name="orderdetail_product_lineitem_sku">Artikelnr:</string>
     <string name="orderdetail_product_lineitem_tax">Moms:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-posta kund</string>
     <string name="orderdetail_billing_details">Faktureringsinformation</string>
     <string name="orderdetail_shipping_details">Leveransadress</string>
@@ -264,8 +262,6 @@ Language: sv_SE
     <string name="dashboard_no_orders_contentdesc">Väntar på kundbild</string>
     <string name="dashboard_no_orders_with_filter">Inga ordrar</string>
     <string name="dashboard_no_orders">Väntar på kunder</string>
-    <string name="dashboard_fulfill_orders_title">Du har %1$d%2$s ordrar att fullfölja</string>
-    <string name="dashboard_fulfill_order_title">Du har 1 order att fullfölja</string>
     <string name="dashboard_action_view_orders">Visa ordrar</string>
     <string name="dashboard_action_view_order">Visa order</string>
     <string name="dashboard_top_earners_total_orders">Total produktorder: %s</string>

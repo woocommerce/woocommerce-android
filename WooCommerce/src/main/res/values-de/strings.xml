@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-11 11:54:02+0000
+Translation-Revision-Date: 2019-02-05 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="wc_mark_all_read_none">Keine ungelesenen Benachrichtigungen</string>
+    <string name="wc_mark_all_read_success">Alle Benachrichtigungen als gelesen markiert</string>
+    <string name="login_update_required_desc">Für diese App musst du WooCommerce 3.5 auf deinem Server installieren. Um diese App weiterhin nutzen zu können, aktualisiere bitte deinen Shop.</string>
+    <string name="login_update_required_title">Shop auf WooCommerce 3.5 aktualisieren</string>
+    <string name="login_verifying_site_error">Verbindung zu %s kann nicht hergestellt werden</string>
+    <string name="dismiss">Verwerfen</string>
     <string name="wc_mark_all_read_error">Fehler beim Markieren aller Benachrichtigungen als gelesen</string>
     <string name="wc_mark_all_read">Alle als gelesen markieren</string>
     <string name="orderdetail_message_customer">Nachricht</string>
     <string name="orderdetail_call_customer">Telefon</string>
     <string name="orderdetail_call_or_message_contentdesc">Anruf oder Nachricht an Kunden</string>
     <string name="wc_moderate_review_error">Fehler beim Aktualisieren des Produktbewertungsstatus</string>
-    <string name="wc_load_review_error">Fehler beim Laden des Produktbewertungsstatus</string>
+    <string name="wc_load_review_error">Fehler beim Laden des Produktbewertungsdetail</string>
     <string name="wc_trash">Papierkorb</string>
     <string name="wc_spam">Spam</string>
     <string name="wc_approved">Genehmigt</string>
@@ -21,11 +27,11 @@ Language: de
     <string name="support_help">Hilfe und Support</string>
     <string name="settings_notifs_reviews_detail">Benachrichtigungen bei neuen Produktbewertungen</string>
     <string name="settings_notifs_reviews">Produktbewertungen</string>
-    <string name="settings_notifs_tone_detail">Abspielen des Tons Cha-Ching bei Benachrichtigungen</string>
+    <string name="settings_notifs_tone_detail">Bei neuer Bestellung Ka-tsching-Geräusch abspielen </string>
     <string name="settings_notifs_tone">Ton</string>
     <string name="settings_notifs_orders_detail">Benachrichtigungen beim Eingang neuer Bestellungen</string>
     <string name="settings_notifs_orders">Bestellungen</string>
-    <string name="settings_notifs_device_detail">Punkt für Töne, Dringlichkeit und Benachrichtigungen</string>
+    <string name="settings_notifs_device_detail">Töne, Priorität und Benachrichtigungspunkt</string>
     <string name="settings_notifs_device">Verwalten von Benachrichtigungen</string>
     <string name="settings_notifs">Benachrichtigungen</string>
     <string name="settings_confirm_logout">Möchtest du dich wirklich vom Konto %s abmelden?</string>
@@ -42,8 +48,6 @@ Language: de
     <string name="orderdetail_note_system">Systemstatus</string>
     <string name="orderdetail_note_public">Hinweis an Kunden</string>
     <string name="dashboard_no_orders_with_search">Keine übereinstimmenden Bestellungen</string>
-    <string name="login_site_list_update_required">Aktualisierung auf WooCommerce 3.5 erforderlich</string>
-    <string name="login_verifying_sites">Websites werden verifiziert …</string>
     <string name="button_update_instructions">Aktualisierungsanweisungen</string>
     <string name="search">Suche</string>
     <string name="refresh_button">Neu laden</string>
@@ -248,7 +252,6 @@ Language: de
     <string name="orderdetail_product_image_contentdesc">Produktabbildung</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Steuern:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">E-Mail an Kunden senden</string>
     <string name="orderdetail_billing_details">Abrechnungsdetails</string>
     <string name="orderdetail_shipping_details">Versanddetails</string>
@@ -267,8 +270,6 @@ Language: de
     <string name="dashboard_no_orders_contentdesc">Warten auf Kundenbild</string>
     <string name="dashboard_no_orders_with_filter">Keine Bestellungen</string>
     <string name="dashboard_no_orders">Warten auf Kunden</string>
-    <string name="dashboard_fulfill_orders_title">Du musst %1$d%2$s Bestellungen abschließen</string>
-    <string name="dashboard_fulfill_order_title">Du musst 1 Bestellung abschließen</string>
     <string name="dashboard_action_view_orders">Bestellungen anzeigen</string>
     <string name="dashboard_action_view_order">Bestellung anzeigen</string>
     <string name="dashboard_top_earners_empty">Keine Aktivitäten in diesem Zeitraum</string>

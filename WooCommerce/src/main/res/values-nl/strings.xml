@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-08 12:54:02+0000
+Translation-Revision-Date: 2019-02-05 12:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="wc_mark_all_read_none">Geen ongelezen meldingen</string>
+    <string name="wc_mark_all_read_success">Alle meldingen zijn gemarkeerd als gelezen</string>
+    <string name="login_update_required_desc">Voor deze app moet WooCommerce 3.5 op je server zijn geïnstalleerd. Om deze app te blijven gebruiken, moet je je winkel bijwerken.</string>
+    <string name="login_update_required_title">Winkel bijwerken naar WooCommerce 3.5</string>
+    <string name="login_verifying_site_error">Kan geen verbinding maken met %s</string>
+    <string name="dismiss">Afbreken</string>
     <string name="wc_mark_all_read_error">Fout bij alle meldingen als gelezen markeren</string>
     <string name="wc_mark_all_read">Alles als gelezen markeren</string>
     <string name="orderdetail_message_customer">Bericht</string>
@@ -42,8 +48,6 @@ Language: nl
     <string name="orderdetail_note_system">Systeemstatus</string>
     <string name="orderdetail_note_public">Bericht aan klant</string>
     <string name="dashboard_no_orders_with_search">Geen overeenkomende bestellingen</string>
-    <string name="login_site_list_update_required">Site moet worden bijgewerkt naar WooCommerce 3.5</string>
-    <string name="login_verifying_sites">Sites worden geverifieerd …</string>
     <string name="button_update_instructions">Update-instructies</string>
     <string name="search">Zoeken</string>
     <string name="refresh_button">Vernieuwen</string>
@@ -248,7 +252,6 @@ Language: nl
     <string name="orderdetail_product_image_contentdesc">Productafbeelding</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Belasting:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-mail verzenden naar klant</string>
     <string name="orderdetail_billing_details">Factuurgegevens</string>
     <string name="orderdetail_shipping_details">Verzendgegevens</string>
@@ -267,8 +270,6 @@ Language: nl
     <string name="dashboard_no_orders_contentdesc">Wachten op afbeelding klant</string>
     <string name="dashboard_no_orders_with_filter">Geen bestellingen</string>
     <string name="dashboard_no_orders">Wachten op klanten</string>
-    <string name="dashboard_fulfill_orders_title">Je moet nog %1$d%2$s bestellingen voltooien</string>
-    <string name="dashboard_fulfill_order_title">Je moet nog 1 bestelling voltooien</string>
     <string name="dashboard_action_view_orders">Bestellingen weergeven</string>
     <string name="dashboard_action_view_order">Bestelling weergeven</string>
     <string name="dashboard_top_earners_empty">Geen activiteiten deze periode</string>
