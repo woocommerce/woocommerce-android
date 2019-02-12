@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
+import org.wordpress.android.fluxc.model.WCOrderStatsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
@@ -80,7 +81,7 @@ class DashboardPresenter @Inject constructor(
             statsForceRefresh[granularity.ordinal] = false
             dashboardView?.showChartSkeleton(true)
         }
-        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forceRefresh)
+        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
 
         // fetch visitor stats
@@ -118,6 +119,10 @@ class DashboardPresenter @Inject constructor(
     }
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
+
+    override fun getCustomOrderStats(): WCOrderStatsModel? {
+        return wcStatsStore.getCustomStatsForSite(selectedSite.get())
+    }
 
     override fun fetchUnfilledOrderCount(forced: Boolean) {
         if (!networkStatus.isConnected()) {

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard
 
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
+import org.wordpress.android.fluxc.model.WCOrderStatsModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
@@ -11,6 +12,7 @@ interface DashboardContract {
         fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
         fun resetForceRefresh()
         fun getStatsCurrency(): String?
+        fun getCustomOrderStats(): WCOrderStatsModel?
         fun fetchUnfilledOrderCount(forced: Boolean = false)
         fun fetchHasOrders()
         fun checkApiVersion()
