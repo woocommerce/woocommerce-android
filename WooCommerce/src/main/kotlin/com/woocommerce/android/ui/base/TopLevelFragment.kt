@@ -56,7 +56,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-           updateActivityTitle()
+            updateActivityTitle()
         }
     }
 
