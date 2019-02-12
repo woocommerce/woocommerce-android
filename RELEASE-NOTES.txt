@@ -16,6 +16,7 @@ Bugfixes
 - Fixed cases where the sales totals for a time period don't match what Calypso and wp-admin report
 - Fixed rare crash loading product images in top earners 
 - Fixed a rare crash when recreating the order filter during activity restore (low memory situations)
+- Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
 
 Improvements
 - Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order

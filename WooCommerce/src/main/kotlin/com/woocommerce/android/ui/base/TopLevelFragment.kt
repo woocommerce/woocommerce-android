@@ -28,6 +28,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
      * normal initialization until manually requested.
      */
     var deferInit: Boolean = false
+    private var runOnResumeFunc: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +54,15 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
 
         // Set activity title
         activity?.title = getFragmentTitle()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        runOnResumeFunc?.let { frag ->
+            frag.invoke()
+            runOnResumeFunc = null
+        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -81,18 +91,22 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     }
 
     override fun loadChildFragment(fragment: Fragment, tag: String) {
-        // before changing the custom animation, please read this PR:
-        // https://github.com/woocommerce/woocommerce-android/pull/554
-        childFragmentManager.beginTransaction()
-                .setCustomAnimations(
-                        R.anim.activity_fade_in,
-                        R.anim.activity_fade_out,
-                        R.anim.activity_fade_in,
-                        0
-                )
-                .replace(R.id.container, fragment, tag)
-                .addToBackStack(tag)
-                .commitAllowingStateLoss()
+        if (isAdded) {
+            // before changing the custom animation, please read this PR:
+            // https://github.com/woocommerce/woocommerce-android/pull/554
+            childFragmentManager.beginTransaction()
+                    .setCustomAnimations(
+                            R.anim.activity_fade_in,
+                            R.anim.activity_fade_out,
+                            R.anim.activity_fade_in,
+                            0
+                    )
+                    .replace(R.id.container, fragment, tag)
+                    .addToBackStack(tag)
+                    .commitAllowingStateLoss()
+        } else {
+            runOnResumeFunc = { loadChildFragment(fragment, tag) }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
