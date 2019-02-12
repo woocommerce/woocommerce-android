@@ -263,7 +263,10 @@ class MainActivity : AppCompatActivity(),
     override fun resetSelectedSite() {
         bottomNavView.reset()
         val dashboard = bottomNavView.getFragment(DASHBOARD) as DashboardFragment?
-        dashboard?.refreshDashboard(true)
+        dashboard?.let {
+            it.updateActivityTitle()
+            it.refreshDashboard(true)
+        }
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
