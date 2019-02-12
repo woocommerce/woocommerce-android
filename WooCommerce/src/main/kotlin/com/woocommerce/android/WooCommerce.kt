@@ -45,8 +45,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpack
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.PackageUtils
@@ -148,19 +148,15 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     }
 
     override fun onFirstActivityResumed() {
-        // Update the WP.com account details and settings every time the app is completely restarted
+        // Update the WP.com account details, settings, and site list every time the app is completely restarted
         if (networkStatus.isConnected()) {
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
+            dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
 
-            val site = if (selectedSite.exists()) {
-                selectedSite.get()
-            } else {
-                null
-            }
-            site?.let { // Fetch order status options on app launch
-                dispatcher.dispatch(
-                        WCOrderActionBuilder.newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(it)))
+            selectedSite.getIfExists()?.let {
+                val payload = FetchOrderStatusOptionsPayload(it)
+                dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderStatusOptionsAction(payload))
             }
         }
     }
