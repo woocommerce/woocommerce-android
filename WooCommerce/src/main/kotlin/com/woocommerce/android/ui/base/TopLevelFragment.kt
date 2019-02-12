@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.base
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -28,6 +29,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
      * normal initialization until manually requested.
      */
     var deferInit: Boolean = false
+    private var runOnResumeFunc: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +55,15 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
 
         // Set activity title
         activity?.title = getFragmentTitle()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        runOnResumeFunc?.let { frag ->
+            frag.invoke()
+            runOnResumeFunc = null
+        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -94,6 +105,8 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
                     .replace(R.id.container, fragment, tag)
                     .addToBackStack(tag)
                     .commitAllowingStateLoss()
+        } else {
+            runOnResumeFunc = { loadChildFragment(fragment, tag) }
         }
     }
 
