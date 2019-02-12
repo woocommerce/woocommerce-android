@@ -64,13 +64,13 @@ class MainNavigationView @JvmOverloads constructor(
     }
 
     /**
-     * Reset the adapter so fragments are re-created
+     * Reset the adapter so fragments are re-created and make the dashboard the active fragment
      */
     fun reset() {
         if (::navAdapter.isInitialized) {
             navAdapter.reset()
         }
-        active(DASHBOARD.position)
+        updatePositionAndDeferInit(DASHBOARD)
     }
 
     fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
