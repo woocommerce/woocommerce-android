@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
@@ -124,8 +123,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             listener.onRequestShowLicenses()
         }
 
-        // TODO: for now, showing the site picker is only enabled for debug builds
-        if (BuildConfig.DEBUG && presenter.hasMultipleStores()) {
+        if (presenter.hasMultipleStores()) {
             primaryStoreView.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
                 listener.onRequestShowSitePicker()
