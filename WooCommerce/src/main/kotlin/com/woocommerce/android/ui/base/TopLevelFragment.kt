@@ -81,18 +81,20 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     }
 
     override fun loadChildFragment(fragment: Fragment, tag: String) {
-        // before changing the custom animation, please read this PR:
-        // https://github.com/woocommerce/woocommerce-android/pull/554
-        childFragmentManager.beginTransaction()
-                .setCustomAnimations(
-                        R.anim.activity_fade_in,
-                        R.anim.activity_fade_out,
-                        R.anim.activity_fade_in,
-                        0
-                )
-                .replace(R.id.container, fragment, tag)
-                .addToBackStack(tag)
-                .commitAllowingStateLoss()
+        if (isAdded) {
+            // before changing the custom animation, please read this PR:
+            // https://github.com/woocommerce/woocommerce-android/pull/554
+            childFragmentManager.beginTransaction()
+                    .setCustomAnimations(
+                            R.anim.activity_fade_in,
+                            R.anim.activity_fade_out,
+                            R.anim.activity_fade_in,
+                            0
+                    )
+                    .replace(R.id.container, fragment, tag)
+                    .addToBackStack(tag)
+                    .commitAllowingStateLoss()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
