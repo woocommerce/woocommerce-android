@@ -14,7 +14,7 @@ import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(
+@Component(modules = [
         AndroidSupportInjectionModule::class,
         ApplicationModule::class,
         AppConfigModule::class,
@@ -28,7 +28,8 @@ import javax.inject.Singleton
         LoginAnalyticsModule::class,
         LoginServiceModule::class,
         NetworkStatusModule::class,
-        SupportModule::class))
+        CurrencyModule::class,
+        SupportModule::class])
 interface AppComponentTest : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

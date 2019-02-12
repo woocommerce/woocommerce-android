@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -70,6 +72,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     @Inject lateinit var presenter: OrderDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var changeOrderStatusCanceled: Boolean = false
     private var changeOrderStatusSnackbar: Snackbar? = null
@@ -124,6 +127,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
             orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
             presenter.pushOrderNote(noteText, isCustomerNote)
+            AppRatingDialog.incrementInteractions()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -154,10 +158,11 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it.number)
 
             // Populate the Order Status Card
-            orderDetail_orderStatus.initView(order)
+            val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
+            orderDetail_orderStatus.initView(order, orderStatus)
 
             // Populate the Order Product List Card
-            orderDetail_productList.initView(order, false, this)
+            orderDetail_productList.initView(order, false, currencyFormatter.buildFormatter(order.currency), this)
 
             // Populate the Customer Information Card
             if (parentFragment is OrderCustomerActionListener) {
@@ -167,7 +172,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             }
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(order)
+            orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
 
             // Check for customer note, show if available
             if (order.customerNote.isEmpty()) {
@@ -210,10 +215,17 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun setOrderStatus(newStatus: String) {
-        orderDetail_orderStatus.updateStatus(newStatus)
+        val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
+        orderDetail_orderStatus.updateStatus(orderStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, false, this)
-            orderDetail_paymentInfo.initView(it)
+            orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency))
+        }
+    }
+
+    override fun refreshOrderStatus() {
+        presenter.orderModel?.let {
+            setOrderStatus(it.status)
         }
     }
 
@@ -308,10 +320,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun showAddOrderNoteScreen() {
-        val intent = Intent(activity, AddOrderNoteActivity::class.java)
-        intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_IDENTIFIER, presenter.orderModel?.getIdentifier())
-        intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_NUMBER, presenter.orderModel?.number)
-        startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+        presenter.orderModel?.let {
+            val intent = Intent(activity, AddOrderNoteActivity::class.java)
+            intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
+            intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_NUMBER, it.number)
+            startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+        }
     }
 
     override fun showAddOrderNoteSnack() {
@@ -329,7 +343,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun markOrderStatusChangedFailed() {
         // Set the order status back to the previous status
         previousOrderStatus?.let {
-            orderDetail_orderStatus.updateStatus(it)
+            val orderStatus = presenter.getOrderStatusForStatusKey(it)
+            orderDetail_orderStatus.updateStatus(orderStatus)
             previousOrderStatus = null
         }
     }

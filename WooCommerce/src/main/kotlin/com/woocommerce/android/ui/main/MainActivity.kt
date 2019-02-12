@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -27,22 +26,21 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.login.LoginEpilogueActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.notification_badge_view.*
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -113,13 +111,13 @@ class MainActivity : AppCompatActivity(),
         }
 
         initFragment(savedInstanceState)
+
+        AppRatingDialog.init(this)
+        AppRatingDialog.showRateDialogIfNeeded(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_action_bar, menu)
-        if (!ActivityUtils.isEmailClientAvailable(this)) {
-            menu?.removeItem(R.id.menu_support)
-        }
         return true
     }
 
@@ -153,7 +151,7 @@ class MainActivity : AppCompatActivity(),
         // Restore the current navigation position
         savedInstanceState?.also {
             val id = it.getInt(STATE_KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
-            bottomNavView.currentPosition = findNavigationPositionById(id)
+            bottomNavView.restoreSelectedItemState(id)
         }
     }
 
@@ -228,11 +226,10 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * displays the login epilogue activity which enables choosing a site
+     * displays the site picker activity and finishes this activity
      */
-    override fun showLoginEpilogueScreen() {
-        val intent = Intent(this, LoginEpilogueActivity::class.java)
-        startActivity(intent)
+    override fun showSitePickerScreen() {
+        SitePickerActivity.showSitePickerFromLogin(this)
         finish()
     }
 
@@ -249,7 +246,7 @@ class MainActivity : AppCompatActivity(),
         loginProgressDialog?.apply { if (isShowing) { cancel() } }
 
         if (!selectedSite.exists()) {
-            showLoginEpilogueScreen()
+            showSitePickerScreen()
             return
         }
 

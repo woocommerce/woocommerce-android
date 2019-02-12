@@ -4,12 +4,14 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
+import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -18,6 +20,7 @@ import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -28,6 +31,8 @@ class MainPresenter @Inject constructor(
     private val notificationStore: NotificationStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
+
+    private var isHandlingMagicLink: Boolean = false
 
     override fun takeView(view: MainContract.View) {
         mainView = view
@@ -46,6 +51,7 @@ class MainPresenter @Inject constructor(
     }
 
     override fun storeMagicLinkToken(token: String) {
+        isHandlingMagicLink = true
         // Save Token to the AccountStore. This will trigger an OnAuthenticationChanged.
         dispatcher.dispatch(AccountActionBuilder.newUpdateAccessTokenAction(UpdateTokenPayload(token)))
     }
@@ -58,6 +64,7 @@ class MainPresenter @Inject constructor(
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
             // TODO Handle AuthenticationErrorType.INVALID_TOKEN
+            isHandlingMagicLink = false
             return
         }
 
@@ -77,15 +84,18 @@ class MainPresenter @Inject constructor(
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
             // TODO: Notify the user of the problem
+            isHandlingMagicLink = false
             return
         }
 
-        if (event.causeOfChange == AccountAction.FETCH_ACCOUNT) {
-            // The user's account info has been fetched and stored - next, fetch the user's settings
-            dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
-        } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
-            // The user's account settings have also been fetched and stored - now we can fetch the user's sites
-            dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+        if (isHandlingMagicLink) {
+            if (event.causeOfChange == AccountAction.FETCH_ACCOUNT) {
+                // The user's account info has been fetched and stored - next, fetch the user's settings
+                dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
+            } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
+                // The user's account settings have also been fetched and stored - now we can fetch the user's sites
+                dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+            }
         }
     }
 
@@ -94,11 +104,15 @@ class MainPresenter @Inject constructor(
     fun onSiteChanged(event: OnSiteChanged) {
         if (event.isError) {
             // TODO: Notify the user of the problem
+            isHandlingMagicLink = false
             return
         }
 
-        // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
-        mainView?.updateSelectedSite()
+        if (isHandlingMagicLink) {
+            // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
+            mainView?.updateSelectedSite()
+            isHandlingMagicLink = false
+        }
     }
 
     @Suppress("unused")
@@ -111,5 +125,13 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationsUnseenChangeEvent) {
         mainView?.showNotificationBadge(event.hasUnseen)
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: SelectedSiteChangedEvent) {
+        // Fetch a fresh list of order status options
+        dispatcher.dispatch(WCOrderActionBuilder
+                    .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(event.site)))
     }
 }

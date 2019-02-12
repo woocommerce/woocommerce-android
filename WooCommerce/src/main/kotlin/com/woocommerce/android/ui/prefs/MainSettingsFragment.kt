@@ -16,7 +16,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WO
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.widgets.WCFeatureTooltip
+import com.woocommerce.android.widgets.WCFeatureTooltip.Feature
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
@@ -40,6 +43,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
         fun onRequestShowPrivacySettings()
         fun onRequestShowAbout()
         fun onRequestShowLicenses()
+        fun onRequestShowSitePicker()
     }
 
     private lateinit var listener: AppSettingsListener
@@ -66,8 +70,7 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        textPrimaryStoreDomain.text = presenter.getStoreDomainName()
-        textPrimaryStoreUsername.text = presenter.getUserDisplayName()
+        updateStoreViews()
 
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
@@ -121,6 +124,16 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
             listener.onRequestShowLicenses()
         }
+
+        if (presenter.hasMultipleStores()) {
+            primaryStoreView.setOnClickListener {
+                AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
+                listener.onRequestShowSitePicker()
+            }
+
+            // advertise the site switcher if we haven't already
+            WCFeatureTooltip.showIfNeeded(Feature.SITE_SWITCHER, primaryStoreView)
+        }
     }
 
     override fun onResume() {
@@ -141,6 +154,11 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.getPackageName())
             activity?.startActivity(intent)
         }
+    }
+
+    fun updateStoreViews() {
+        textPrimaryStoreDomain.text = presenter.getStoreDomainName()
+        textPrimaryStoreUsername.text = presenter.getUserDisplayName()
     }
 
     /**

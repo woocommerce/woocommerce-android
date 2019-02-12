@@ -36,13 +36,13 @@ androidExtensions {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "1.1"
-        versionCode 33
+        versionName "1.2-rc-1"
+        versionCode 34
 
         minSdkVersion 21
         targetSdkVersion 27
@@ -135,6 +135,7 @@ dependencies {
     }
 
     implementation 'com.facebook.shimmer:shimmer:0.3.0'
+    implementation 'com.github.vihtarb:tooltip:0.2.0'
 
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login
+package com.woocommerce.android.ui.sitepicker
 
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -12,26 +12,31 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import javax.inject.Inject
 
-class LoginEpiloguePresenter @Inject constructor(
+class SitePickerPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore
-) : LoginEpilogueContract.Presenter {
-    private var loginEpilogueView: LoginEpilogueContract.View? = null
+) : SitePickerContract.Presenter {
+    private var view: SitePickerContract.View? = null
 
-    override fun takeView(view: LoginEpilogueContract.View) {
+    override fun takeView(view: SitePickerContract.View) {
         dispatcher.register(this)
-        loginEpilogueView = view
+        this.view = view
     }
 
     override fun dropView() {
         dispatcher.unregister(this)
-        loginEpilogueView = null
+        view = null
+    }
+
+    override fun fetchSites() {
+        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
     }
 
     override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
@@ -55,11 +60,15 @@ class LoginEpiloguePresenter @Inject constructor(
 
     override fun loadSites() {
         val wcSites = wooCommerceStore.getWooCommerceSites()
-        loginEpilogueView?.showStoreList(wcSites)
+        view?.showStoreList(wcSites)
     }
 
     override fun verifySiteApiVersion(site: SiteModel) {
         dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(site))
+    }
+
+    override fun updateWooSiteSettings(site: SiteModel) {
+        dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(site))
     }
 
     override fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel> {
@@ -70,7 +79,15 @@ class LoginEpiloguePresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (!event.isError && !userIsLoggedIn()) {
-            loginEpilogueView?.cancel()
+            view?.didLogout()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSiteChanged(event: OnSiteChanged) {
+        if (!event.isError) {
+            loadSites()
         }
     }
 
@@ -80,21 +97,21 @@ class LoginEpiloguePresenter @Inject constructor(
         if (event.isError) {
             WooLog.e(T.LOGIN, "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
                     "${event.error?.type} - ${event.error?.message}")
-            loginEpilogueView?.siteVerificationError(event.site)
+            view?.siteVerificationError(event.site)
             return
         }
 
         // Check for empty API version as well (which may not result in an error from the api)
         if (event.apiVersion.isBlank()) {
             WooLog.e(T.LOGIN, "Empty apiVersion for site [${event.site.siteId} : ${event.site.name}]!")
-            loginEpilogueView?.siteVerificationError(event.site)
+            view?.siteVerificationError(event.site)
             return
         }
 
         if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
-            loginEpilogueView?.siteVerificationPassed(event.site)
+            view?.siteVerificationPassed(event.site)
         } else {
-            loginEpilogueView?.siteVerificationFailed(event.site)
+            view?.siteVerificationFailed(event.site)
         }
     }
 }

@@ -74,8 +74,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CREATED_ACCOUNT(siteless = true),
         LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED(siteless = true),
         LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
-        LOGIN_EPILOGUE_STORES_SHOWN(siteless = true),
-        LOGIN_EPILOGUE_STORE_PICKER_CONTINUE_TAPPED(siteless = true),
+
+        // -- Site Picker
+        SITE_PICKER_STORES_SHOWN(siteless = true),
+        SITE_PICKER_STORE_PICKER_CONTINUE_TAPPED(siteless = true),
+        SITE_PICKER_HELP_BUTTON_TAPPED(siteless = true),
 
         // -- Dashboard
         DASHBOARD_PULLED_TO_REFRESH,
@@ -142,6 +145,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTING_CHANGE,
         SETTING_CHANGE_FAILED,
         SETTING_CHANGE_SUCCESS,
+        SETTINGS_SELECTED_SITE_TAPPED,
         SETTINGS_LOGOUT_BUTTON_TAPPED,
         SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
         SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED,
@@ -171,6 +175,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         NOTIFICATIONS_LOADED,
         NOTIFICATIONS_LIST_PULLED_TO_REFRESH,
         NOTIFICATIONS_LIST_MENU_MARK_READ_BUTTON_TAPPED,
+        NOTIFICATIONS_SHARE_YOUR_STORE_BUTTON_TAPPED,
 
         // -- Product Review
         REVIEW_ACTION,

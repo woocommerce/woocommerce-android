@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.adapter
+package com.woocommerce.android.ui.sitepicker
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -9,17 +9,19 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.login.adapter.SiteListAdapter.SiteViewHolder
+import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.SiteViewHolder
 import com.woocommerce.android.util.StringUtils
-import kotlinx.android.synthetic.main.site_list_item.view.*
+import kotlinx.android.synthetic.main.site_picker_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 
-class SiteListAdapter(private val context: Context, private val listener: OnSiteClickListener) :
+class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
         RecyclerView.Adapter<SiteViewHolder>() {
     var siteList: List<SiteModel> = ArrayList()
         set(value) {
-            field = value
-            notifyDataSetChanged()
+            if (!isSameSiteList(value)) {
+                field = value
+                notifyDataSetChanged()
+            }
         }
     var selectedSiteId: Long = 0
         set(value) {
@@ -46,7 +48,7 @@ class SiteListAdapter(private val context: Context, private val listener: OnSite
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SiteViewHolder {
-        return SiteViewHolder(LayoutInflater.from(context).inflate(R.layout.site_list_item, parent, false))
+        return SiteViewHolder(LayoutInflater.from(context).inflate(R.layout.site_picker_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: SiteViewHolder, position: Int) {
@@ -65,6 +67,35 @@ class SiteListAdapter(private val context: Context, private val listener: OnSite
         } else {
             holder.itemView.setOnClickListener(null)
         }
+    }
+
+    /**
+     * returns true if the passed list of orders is the same as the current list
+     */
+    private fun isSameSiteList(sites: List<SiteModel>): Boolean {
+        if (sites.size != siteList.size) {
+            return false
+        }
+
+        sites.forEach {
+            if (!containsSite(it)) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    /**
+     * Returns true if the passed order is in the current list of orders
+     */
+    private fun containsSite(site: SiteModel): Boolean {
+        siteList.forEach {
+            if (it.siteId == site.siteId) {
+                return true
+            }
+        }
+        return false
     }
 
     class SiteViewHolder(view: View) : RecyclerView.ViewHolder(view) {

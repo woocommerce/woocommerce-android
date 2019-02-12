@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.util.CurrencyFormatter
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
 import kotlinx.android.synthetic.main.order_detail_product_list.*
@@ -36,6 +37,7 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
     }
 
     @Inject lateinit var presenter: OrderProductListContract.Presenter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -59,7 +61,7 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
 
         productList_products.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
             }
         })
@@ -76,6 +78,6 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
     }
 
     override fun showOrderProducts(order: WCOrderModel) {
-        orderProducts_list.initView(order, true)
+        orderProducts_list.initView(order, true, currencyFormatter.buildFormatter(order.currency))
     }
 }

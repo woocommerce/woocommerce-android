@@ -51,8 +51,8 @@
     <string name="products">Products</string>
     <string name="notifications">Notifications</string>
     <string name="version_with_name_param">Version %s</string>
-    <string name="no_orders_share_store">Share your store</string>
-    <string name="no_orders_share_store_title">Share your store\'s URL</string>
+    <string name="share_store_button">Share your store</string>
+    <string name="share_store_dialog_title">Share your store\'s URL</string>
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
@@ -139,11 +139,6 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
-    <string name="dashboard_no_orders">Waiting for customers</string>
-    <string name="dashboard_no_orders_with_filter">No orders</string>
-    <string name="dashboard_no_orders_with_search">No matching orders</string>
-    <string name="dashboard_no_orders_contentdesc">Waiting for customers image</string>
-
     <string name="dashboard_plugin_notice_title">Update to WooCommerce 3.5 to keep using this app</string>
     <string name="dashboard_plugin_notice_message">This app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
     <!--
@@ -165,8 +160,8 @@
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_created">Created %1$s</string>
-    <string name="orderdetail_shipping_details">Shipping Details</string>
-    <string name="orderdetail_billing_details">Billing Details</string>
+    <string name="orderdetail_shipping_details">Shipping details</string>
+    <string name="orderdetail_billing_details">Billing details</string>
     <string name="orderdetail_email_contentdesc">email customer</string>
     <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
     <string name="orderdetail_call_customer">Call</string>
@@ -234,6 +229,16 @@
     <string name="notifs_fetch_error">Error fetching notifications</string>
     <string name="notifs_review_moderation_undo">Review marked as %1$s</string>
     <string name="notifs_detail_loading_error">Error loading notification detail</string>
+
+    <!--
+        Empty list messages
+    -->
+    <string name="waiting_for_customers">Waiting for customers</string>
+    <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
+    <string name="orders_empty_message_with_filter">No orders</string>
+    <string name="orders_empty_message_with_search">No matching orders</string>
+    <string name="notifs_empty_message">No notifications yet!</string>
+
     <!--
         Settings
     -->
@@ -247,7 +252,7 @@
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic</string>
-    <string name="settings_primary_store">Primary store</string>
+    <string name="settings_selected_store">Selected store</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
@@ -319,7 +324,6 @@
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All notifications marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all notifications as read</string>
-    <string name="wc_mark_all_read_none">No unread notifications</string>
     <!--
         Login Library Imported Strings
     -->
@@ -445,4 +449,14 @@
     <string name="http_authorization_required">Authorization required</string>
     <string name="httpuser">HTTP username</string>
     <string name="httppassword">HTTP password</string>
+
+    <!-- App rating dialog -->
+    <string name="app_rating_title">Enjoying Woo?</string>
+    <string name="app_rating_message">Nice to see you again! If you’re digging the app, we\’d love a rating on the Google Play Store.</string>
+    <string name="app_rating_rate_now">Rate now</string>
+    <string name="app_rating_rate_later">Later</string>
+    <string name="app_rating_rate_never">No thanks</string>
+
+    <!-- Feature tooltips -->
+    <string name="tooltip_site_switcher">You can now tap to switch stores</string>
 </resources>

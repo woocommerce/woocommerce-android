@@ -7,13 +7,10 @@ import android.support.v4.app.DialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.util.OrderStatusUtils
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 /**
  * Dialog displays a list of order statuses and allows for selecting a single order status to filter by.
- *
- * The list of order statuses is pulled from the [CoreOrderStatus] enum with the top "All" option manually added.
  *
  * This fragment should be instantiated using the [OrderStatusFilterDialog.newInstance] method. Calling classes
  * can obtain the results of selection through the [OrderListFilterListener].
@@ -25,12 +22,14 @@ class OrderStatusFilterDialog : DialogFragment() {
         private const val ALL_FILTER_ID: String = "all"
 
         fun newInstance(
-            currentFilter: CoreOrderStatus?,
+            orderStatusOptions: Map<String, WCOrderStatusModel>,
+            currentFilter: String?,
             listener: OrderListFilterListener
         ): OrderStatusFilterDialog {
             val fragment = OrderStatusFilterDialog()
+            fragment.orderStatusOptions = orderStatusOptions
             fragment.listener = listener
-            fragment.selectedFilter = currentFilter?.value ?: ALL_FILTER_ID
+            fragment.selectedFilter = currentFilter ?: ALL_FILTER_ID
             return fragment
         }
     }
@@ -41,14 +40,13 @@ class OrderStatusFilterDialog : DialogFragment() {
 
     private val filterMap: Map<String, String> by lazy {
         mapOf(ALL_FILTER_ID to getString(R.string.all)).plus(
-                CoreOrderStatus.values().associate {
-                    it.value to OrderStatusUtils.getLabelForOrderStatus(it, ::getString)
-                }
+                orderStatusOptions.values.associate { it.statusKey to it.label }
         )
     }
 
     var listener: OrderListFilterListener? = null
     var selectedFilter: String? = null
+    lateinit var orderStatusOptions: Map<String, WCOrderStatusModel>
 
     private fun getCurrentOrderStatusIndex(): Int {
         return filterMap.keys.indexOfFirst { it == selectedFilter }
@@ -74,7 +72,7 @@ class OrderStatusFilterDialog : DialogFragment() {
                         // If 'All' is selected filter, pass null to signal a filterless refresh
                         listener?.onFilterSelected(selectedFilter.takeUnless { it == ALL_FILTER_ID })
                     }
-                    dialog.cancel()
+                    dialog.dismiss()
                 }.create()
     }
 

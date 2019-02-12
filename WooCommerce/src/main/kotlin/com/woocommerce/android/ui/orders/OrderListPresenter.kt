@@ -15,11 +15,16 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrdersSearched
 import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
+import org.wordpress.android.util.DateTimeUtils
+import java.util.Date
 import javax.inject.Inject
 
 class OrderListPresenter @Inject constructor(
@@ -47,6 +52,8 @@ class OrderListPresenter @Inject constructor(
     private var canSearchMore = false
     private var nextSearchOffset = 0
 
+    private var isRefreshingOrderStatusOptions = false
+
     override fun takeView(view: OrderListContract.View) {
         orderView = view
         dispatcher.register(this)
@@ -62,7 +69,7 @@ class OrderListPresenter @Inject constructor(
     override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
         if (networkStatus.isConnected() && forceRefresh) {
             orderListState = OrderListState.LOADING
-            orderView?.showNoOrdersView(false)
+            orderView?.showEmptyView(false)
             orderView?.showSkeleton(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
@@ -115,6 +122,23 @@ class OrderListPresenter @Inject constructor(
         return canLoadMore
     }
 
+    override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
+        val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+        return if (options.isEmpty()) {
+            refreshOrderStatusOptions()
+            emptyMap()
+        } else {
+            options.map { it.statusKey to it }.toMap()
+        }
+    }
+
+    override fun refreshOrderStatusOptions() {
+        // Refresh the order status options from the API
+        isRefreshingOrderStatusOptions = true
+        dispatcher.dispatch(WCOrderActionBuilder
+                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get())))
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -157,6 +181,7 @@ class OrderListPresenter @Inject constructor(
             WooLog.e(T.ORDERS, "$TAG - Error searching orders : ${event.error.message}")
             orderView?.showLoadOrdersError()
         } else {
+            orderView?.showEmptyView(event.searchResults.isEmpty())
             if (event.searchResults.isNotEmpty()) {
                 if (orderListState == OrderListState.SEARCHING_MORE) {
                     orderView?.addSearchResults(event.searchQuery, event.searchResults)
@@ -173,6 +198,21 @@ class OrderListPresenter @Inject constructor(
         }
 
         orderListState = OrderListState.IDLE
+    }
+
+    @Suppress
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
+        isRefreshingOrderStatusOptions = false
+
+        if (event.isError) {
+            WooLog.e(T.ORDERS, "$TAG - Error fetching order status options from the api : ${event.error.message}")
+            return
+        }
+
+        if (event.rowsAffected > 0) {
+            orderView?.setOrderStatusOptions(getOrderStatusOptions())
+        }
     }
 
     override fun openOrderDetail(order: WCOrderModel) {
@@ -197,19 +237,39 @@ class OrderListPresenter @Inject constructor(
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
         orderView?.let { view ->
-            if (orders.count() > 0) {
-                view.showNoOrdersView(false)
-                view.showOrders(orders, orderStatusFilter, isForceRefresh)
+            val currentOrders = removeFutureOrders(orders)
+            if (currentOrders.count() > 0) {
+                view.showEmptyView(false)
+                view.showOrders(currentOrders, orderStatusFilter, isForceRefresh)
             } else {
                 if (!networkStatus.isConnected()) {
-                    // if the device if offline with no cached orders to display, show the loading
+                    // if the device is offline with no cached orders to display, show the loading
                     // indicator until a successful online refresh.
                     view.showSkeleton(true)
                 } else {
-                    view.showNoOrdersView(true)
+                    view.showEmptyView(true)
                 }
             }
         }
+    }
+
+    /**
+     * Removes orders with a future creation date so we don't show them in the order list
+     * https://github.com/woocommerce/woocommerce-android/issues/425
+     */
+    private fun removeFutureOrders(orders: List<WCOrderModel>): List<WCOrderModel> {
+        val now = DateTimeUtils.nowUTC()
+        val currentOrders = ArrayList<WCOrderModel>()
+        orders.forEach {
+            // make sure the creation date is before today, or is today
+            val orderDate = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
+            if (orderDate.time <= now.time || DateTimeUtils.daysBetween(orderDate, now) == 0) {
+                currentOrders.add(it)
+            } else {
+                WooLog.i(T.ORDERS, "Hiding future order ${it.dateCreated}")
+            }
+        }
+        return currentOrders
     }
 
     @Suppress("unused")

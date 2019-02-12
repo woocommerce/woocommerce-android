@@ -4,8 +4,6 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.login.LoginEpilogueActivity
-import com.woocommerce.android.ui.login.LoginEpilogueModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
@@ -21,6 +19,8 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule
@@ -36,16 +36,13 @@ abstract class ActivityBindingModule {
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
             NotifsListModule::class,
-            ReviewDetailModule::class))
+            ReviewDetailModule::class,
+            SitePickerModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(LoginFragmentModule::class))
     abstract fun provideLoginActivityInjector(): LoginActivity
-
-    @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(LoginEpilogueModule::class))
-    abstract fun provideLoginEpilogueActivityInjector(): LoginEpilogueActivity
 
     @ActivityScope
     @ContributesAndroidInjector
@@ -65,4 +62,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(HelpModule::class))
     abstract fun provideHelpActivity(): HelpActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
+    abstract fun provideSitePickerActivityInjector(): SitePickerActivity
 }

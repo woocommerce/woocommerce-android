@@ -69,6 +69,16 @@ class MainNavigationView @JvmOverloads constructor(
         updateCurrentPosition(navPos, true)
     }
 
+    /**
+     * For use when restoring the navigation bar after the host activity
+     * state has been restored.
+     */
+    fun restoreSelectedItemState(itemId: Int) {
+        assignNavigationListeners(false)
+        selectedItemId = itemId
+        assignNavigationListeners(true)
+    }
+
     fun showNotificationBadge(show: Boolean) {
         with(badgeView) {
             if (show && visibility != View.VISIBLE) {
@@ -111,7 +121,10 @@ class MainNavigationView @JvmOverloads constructor(
         // Close any child fragments if open
         clearFragmentBackStack(fragment)
 
-        fragmentManager.beginTransaction().replace(R.id.container, fragment, navPos.getTag()).commitNow()
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.container, fragment, navPos.getTag())
+                .commitAllowingStateLoss()
     }
 
     private fun assignNavigationListeners(assign: Boolean) {

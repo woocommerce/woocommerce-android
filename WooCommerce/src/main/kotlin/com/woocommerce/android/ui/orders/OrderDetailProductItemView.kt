@@ -5,7 +5,6 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
-import com.woocommerce.android.util.CurrencyUtils
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import java.text.NumberFormat
@@ -16,7 +15,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
 
-    fun initView(item: WCOrderModel.LineItem, currencyCode: String, expanded: Boolean) {
+    fun initView(item: WCOrderModel.LineItem, expanded: Boolean, formatCurrencyForDisplay: (String?) -> String) {
         productInfo_name.text = item.name
 
         val numberFormatter = NumberFormat.getNumberInstance().apply {
@@ -44,8 +43,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
         if (expanded) {
             // Populate formatted total and tax values
             val res = context.resources
-            val orderTotal = CurrencyUtils.currencyString(context, item.total, currencyCode)
-            val productPrice = CurrencyUtils.currencyString(context, item.price, currencyCode)
+            val orderTotal = formatCurrencyForDisplay(item.total)
+            val productPrice = formatCurrencyForDisplay(item.price)
 
             item.quantity?.takeIf { it > 1 }?.let {
                 val itemQty = numberFormatter.format(it)
@@ -58,7 +57,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
                 )
             }
 
-            productInfo_totalTax.text = CurrencyUtils.currencyString(context, item.totalTax, currencyCode)
+            productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
 
             // todo Product Image
         }

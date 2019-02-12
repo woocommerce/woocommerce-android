@@ -30,9 +30,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.notifications.NotifsListAdapter.ItemType
+import com.woocommerce.android.ui.notifications.NotifsListAdapter.NotifsListItemDecoration
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
@@ -44,7 +47,10 @@ import org.wordpress.android.fluxc.model.CommentStatus.TRASH
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import javax.inject.Inject
 
-class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsListAdapter.ReviewListListener {
+class NotifsListFragment : TopLevelFragment(),
+        NotifsListContract.View,
+        NotifsListAdapter.ReviewListListener,
+        NotifsListAdapter.ItemDecorationListener {
     companion object {
         val TAG: String = NotifsListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -59,7 +65,6 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
 
-    private lateinit var dividerDecoration: DividerItemDecoration
     private var changeCommentStatusSnackbar: Snackbar? = null
 
     // Holds a reference to the index and notification object pending moderation
@@ -131,24 +136,28 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        updateMarkAllReadMenuItem()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Set the divider decoration for the list
-        dividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        notifsAdapter.setListListener(this)
 
-        notifsAdapter.setListener(this)
+        val unreadDecoration = NotifsListItemDecoration(activity as Context)
+        unreadDecoration.setListener(this)
 
         notifsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
-            addItemDecoration(dividerDecoration)
+            // divider decoration between items
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            // unread item decoration
+            addItemDecoration(unreadDecoration)
             adapter = notifsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
                 }
             })
@@ -156,12 +165,14 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
 
         presenter.takeView(this)
 
+        empty_view.setSiteToShare(selectedSite.get(), Stat.NOTIFICATIONS_SHARE_YOUR_STORE_BUTTON_TAPPED)
+
         if (isActive && !deferInit) {
             presenter.loadNotifs(forceRefresh = this.isRefreshPending)
         }
 
         listState?.let {
-            notifsList.layoutManager.onRestoreInstanceState(listState)
+            notifsList.layoutManager?.onRestoreInstanceState(listState)
             listState = null
         }
     }
@@ -179,17 +190,12 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
-        refreshOptionsMenu()
+        updateMarkAllReadMenuItem()
         super.onPrepareOptionsMenu(menu)
     }
 
-    private fun refreshOptionsMenu() {
-        val showMarkAllRead = isActive
-        menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
-        val listState = notifsList.layoutManager.onSaveInstanceState()
+        val listState = notifsList.layoutManager?.onSaveInstanceState()
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
@@ -208,7 +214,7 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             // moderation so it can be processed immediately.
             changeCommentStatusSnackbar?.dismiss()
         }
-        refreshOptionsMenu()
+        updateMarkAllReadMenuItem()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -278,6 +284,8 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
                 showLoadNotificationDetailError()
             }
         }
+
+        AppRatingDialog.incrementInteractions()
     }
 
     override fun openReviewDetail(notification: NotificationModel) {
@@ -381,6 +389,8 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
             if (newStatus == SPAM || newStatus == TRASH) {
                 removeModeratedNotifFromList(remoteNoteId)
             }
+
+            AppRatingDialog.incrementInteractions()
         } else {
             uiMessageResolver.showOfflineSnack()
         }
@@ -401,17 +411,19 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         uiMessageResolver.showSnack(R.string.wc_mark_all_read_success)
     }
 
-    /*
-     * TODO: this snack is shown when the user taps to mark all notifs as read and there
-     * are no unread notifs - this is temporary, there is a separate issue filed to hide
-     * the mark all read option when there are no unread notifs
-     */
-    override fun showMarkAllNotificationsReadNone() {
-        uiMessageResolver.showSnack(R.string.wc_mark_all_read_none)
-    }
-
     override fun showMarkAllNotificationsReadError() {
         uiMessageResolver.showSnack(R.string.wc_mark_all_read_error)
+    }
+
+    override fun showEmptyView(show: Boolean) {
+        if (show) empty_view.show(R.string.notifs_empty_message) else empty_view.hide()
+    }
+    /**
+     * Only show the "mark all read" menu item when this fragment is active and there are unread notifs
+     */
+    override fun updateMarkAllReadMenuItem() {
+        val showMarkAllRead = isActive && presenter.hasUnreadNotifs()
+        menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
     }
 
     private fun revertPendingModeratedNotifState() {
@@ -430,5 +442,12 @@ class NotifsListFragment : TopLevelFragment(), NotifsListContract.View, NotifsLi
         pendingModerationNewStatus = null
         pendingModerationRemoteNoteId = null
         notifsAdapter.resetPendingModerationState()
+    }
+
+    /**
+     * Determines whether to show the unread indicator item decoration for the passed position
+     */
+    override fun getItemTypeAtPosition(position: Int): ItemType {
+        return notifsAdapter.getItemTypeAtRecyclerPosition(position)
     }
 }

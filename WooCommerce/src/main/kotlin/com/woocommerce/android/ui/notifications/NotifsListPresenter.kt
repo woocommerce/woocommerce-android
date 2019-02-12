@@ -78,14 +78,15 @@ class NotifsListPresenter @Inject constructor(
     }
 
     override fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean) {
-        view?.let { notifView ->
-            val notifs = notificationStore.getNotificationsForSite(
-                    site = selectedSite.get(),
-                    filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
-                    filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
-            notifView.showNotifications(notifs, isFreshData = isForceRefresh)
-
-            // TODO how to handle empty notifications list view?
+        val notifs = notificationStore.getNotificationsForSite(
+                site = selectedSite.get(),
+                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
+                filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
+        if (notifs.size > 0) {
+            view?.showEmptyView(false)
+            view?.showNotifications(notifs, isFreshData = isForceRefresh)
+        } else {
+            view?.showEmptyView(true)
         }
     }
 
@@ -117,10 +118,19 @@ class NotifsListPresenter @Inject constructor(
                     view?.showMarkAllNotificationsReadSuccess()
                 }
             } else {
-                view?.showMarkAllNotificationsReadNone()
                 WooLog.d(NOTIFICATIONS, "Mark all as read: No unread notifications found. Exiting.")
             }
+
+            view?.updateMarkAllReadMenuItem()
         }
+    }
+
+    override fun hasUnreadNotifs(): Boolean {
+        return notificationStore.hasUnreadNotificationsForSite(
+                site = selectedSite.get(),
+                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
+                filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString())
+        )
     }
 
     private fun onCommentModerated(event: OnCommentChanged) {
@@ -197,6 +207,8 @@ class NotifsListPresenter @Inject constructor(
             }
             else -> {}
         }
+
+        view?.updateMarkAllReadMenuItem()
     }
 
     @Suppress("unused")

@@ -13,6 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -38,6 +40,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -78,7 +81,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun showOrderDetail(order: WCOrderModel) {
         // Populate the Order Product List Card
-        orderFulfill_products.initView(order, true, null)
+        orderFulfill_products.initView(order, true, currencyFormatter.buildFormatter(order.currency))
 
         // Check for customer provided note, show if available
         if (order.customerNote.isEmpty()) {
@@ -101,6 +104,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
             presenter.orderModel?.let {
                 presenter.markOrderComplete()
+                AppRatingDialog.incrementInteractions()
             }
         }
     }
