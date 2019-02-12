@@ -64,7 +64,8 @@ class MainNavigationView @JvmOverloads constructor(
     }
 
     /**
-     * Reset the adapter so fragments are re-created and make the dashboard the active fragment
+     * Reset the adapter so fragments are re-created, then make the dashboard the active fragment and
+     * tell it to refresh
      */
     fun reset() {
         if (::navAdapter.isInitialized) {
