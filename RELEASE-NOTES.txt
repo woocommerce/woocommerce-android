@@ -21,3 +21,4 @@ Improvements
 - Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order
 status label will now be fetched from the server and properly displayed.
 - Filtering by custom order status now supported!
+- The name of the active store is now shown at the top of the "My store" tab
