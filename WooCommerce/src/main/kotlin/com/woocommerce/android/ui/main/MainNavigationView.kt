@@ -45,11 +45,6 @@ class MainNavigationView @JvmOverloads constructor(
         set(navPos) = updateCurrentPosition(navPos)
 
     fun init(fm: FragmentManager, listener: MainNavigationListener) {
-        // if the adapter is already assigned, reset it so fragments are cleared
-        if (::navAdapter.isInitialized) {
-            navAdapter.reset()
-        }
-
         this.fragmentManager = fm
         this.listener = listener
 
@@ -65,6 +60,16 @@ class MainNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
 
         // Default to the dashboard position
+        active(DASHBOARD.position)
+    }
+
+    /**
+     * Reset the adapter so fragments are re-created
+     */
+    fun reset() {
+        if (::navAdapter.isInitialized) {
+            navAdapter.reset()
+        }
         active(DASHBOARD.position)
     }
 
