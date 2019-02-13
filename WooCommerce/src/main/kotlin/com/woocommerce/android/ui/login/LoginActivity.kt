@@ -17,6 +17,7 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -219,7 +220,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun forgotPassword(url: String?) {
         loginAnalyticsListener.trackLoginForgotPasswordClicked()
-        ActivityUtils.openUrlExternal(this, url + FORGOT_PASSWORD_URL_SUFFIX)
+        ChromeCustomTabUtils.launchUrl(this, url + FORGOT_PASSWORD_URL_SUFFIX)
     }
 
     override fun needs2fa(email: String?, password: String?) {

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import com.woocommerce.android.R
-import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 
 class WooUpgradeRequiredDialog : DialogFragment() {
     companion object {
@@ -24,7 +24,7 @@ class WooUpgradeRequiredDialog : DialogFragment() {
 
         context?.let { ctx ->
             view.findViewById<Button>(R.id.upgrade_instructions)?.setOnClickListener {
-                ActivityUtils.openUrlExternal(ctx, URL_UPGRADE_WOOCOMMERCE)
+                ChromeCustomTabUtils.launchUrl(ctx, URL_UPGRADE_WOOCOMMERCE)
             }
         }
         view.findViewById<Button>(R.id.upgrade_dismiss)?.setOnClickListener { dialog.dismiss() }
