@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-09 14:54:02+0000
+Translation-Revision-Date: 2019-02-05 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="wc_mark_all_read_none">Okunmayan bildirim yok</string>
+    <string name="wc_mark_all_read_success">Tüm bildirimler okundu olarak işaretlendi</string>
+    <string name="login_update_required_desc">Bu uygulama için sunucunuzda WooCommerce 3.5 olması gerekir. Bu uygulamayı kullanmaya devam etmek için lütfen mağazanızı güncelleyin.</string>
+    <string name="login_update_required_title">Mağazayı WooCommerce 3.5’e Yükseltin</string>
+    <string name="login_verifying_site_error">%s ile bağlantı kurulamıyor</string>
+    <string name="dismiss">Gizle</string>
     <string name="wc_mark_all_read_error">Tüm bildirimler okundu olarak işaretlenirken hata oluştu</string>
     <string name="wc_mark_all_read">Tümünü okundu olarak işaretle</string>
     <string name="orderdetail_message_customer">Mesaj Gönder</string>
@@ -42,8 +48,6 @@ Language: tr
     <string name="orderdetail_note_system">Sistem durumu</string>
     <string name="orderdetail_note_public">Müşteriye not</string>
     <string name="dashboard_no_orders_with_search">Eşleşen sipariş yok</string>
-    <string name="login_site_list_update_required">WooCommerce 3.5 güncellemesi gerekli</string>
-    <string name="login_verifying_sites">Siteler doğrulanıyor…</string>
     <string name="button_update_instructions">Güncelleme yönergeleri</string>
     <string name="search">Ara</string>
     <string name="refresh_button">Yenile</string>
@@ -248,7 +252,6 @@ Language: tr
     <string name="orderdetail_product_image_contentdesc">Ürün Görseli</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Vergi:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">müşteriye e-posta gönderin</string>
     <string name="orderdetail_billing_details">Fatura Ayrıntıları</string>
     <string name="orderdetail_shipping_details">Gönderim Ayrıntıları</string>
@@ -267,8 +270,6 @@ Language: tr
     <string name="dashboard_no_orders_contentdesc">Müşteri görseli bekleniyor</string>
     <string name="dashboard_no_orders_with_filter">Sipariş yok</string>
     <string name="dashboard_no_orders">Müşteriler bekleniyor</string>
-    <string name="dashboard_fulfill_orders_title">%1$d%2$s sipariş yerine getirilmeyi bekliyor</string>
-    <string name="dashboard_fulfill_order_title">1 sipariş yerine getirilmeyi bekliyor</string>
     <string name="dashboard_action_view_orders">Siparişleri Görüntüle</string>
     <string name="dashboard_action_view_order">Siparişi Görüntüle</string>
     <string name="dashboard_top_earners_empty">Bu dönemde hiç etkinlik yok</string>
