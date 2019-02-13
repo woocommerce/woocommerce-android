@@ -22,7 +22,7 @@ object ChromeCustomTabUtils {
                 .setExitAnimations(context, 0, R.anim.activity_slide_out_to_right)
                 .setShowTitle(true)
                 .build()
-
+        intent.intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse("android-app://" + context.getPackageName()))
         intent.launchUrl(context, Uri.parse(url))
     }
 
