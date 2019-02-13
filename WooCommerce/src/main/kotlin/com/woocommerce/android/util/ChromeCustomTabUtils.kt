@@ -4,16 +4,20 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.support.customtabs.CustomTabsCallback
 import android.support.customtabs.CustomTabsClient
 import android.support.customtabs.CustomTabsIntent
 import android.support.customtabs.CustomTabsServiceConnection
 import android.support.customtabs.CustomTabsSession
 import android.support.v4.content.ContextCompat
 import com.woocommerce.android.R
+import java.lang.ref.WeakReference
 
 object ChromeCustomTabUtils {
     private const val CUSTOM_TAB_PACKAGE_NAME_STABLE = "com.android.chrome"
     private var session: CustomTabsSession? = null
+    private var connection: CustomTabsServiceConnection? = null
 
     fun viewUrl(context: Context, url: String) {
         val intent = CustomTabsIntent.Builder(session)
@@ -33,20 +37,35 @@ object ChromeCustomTabUtils {
             return
         }
 
-        val connection = object : CustomTabsServiceConnection() {
+        val weakContext = WeakReference(context)
+        connection = object : CustomTabsServiceConnection() {
             override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
                 client.warmup(0)
-                session = client.newSession(null)
+                val callback = object: CustomTabsCallback() {
+                    override fun onNavigationEvent(navigationEvent: Int, extras: Bundle) {
+                        if (navigationEvent == NAVIGATION_ABORTED || navigationEvent == TAB_HIDDEN) {
+                            disconnect(weakContext.get())
+                        }
+                    }
+                }
+                session = client.newSession(callback)
                 session?.mayLaunchUrl(Uri.parse(url), null, null)
             }
             override fun onServiceDisconnected(name: ComponentName) {
-                session = null
+                connection = null
             }
         }
         CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, connection)
     }
 
-    fun disconnect(context: Context) {
-        session = null
+    private fun disconnect(context: Context?) {
+        if (connection == null) return
+
+        try {
+            session = null
+            context?.unbindService(connection!!)
+        } catch (e: IllegalArgumentException) {
+            WooLog.e(WooLog.T.SUPPORT, e)
+        }
     }
 }
