@@ -11,7 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_help.*
 import org.wordpress.android.fluxc.model.SiteModel
@@ -131,7 +131,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showZendeskFaq() {
         AnalyticsTracker.track(Stat.SUPPORT_FAQ_VIEWED)
-        ActivityUtils.openUrlExternal(this, FAQ_URL)
+        ChromeCustomTabUtils.viewUrl(this, FAQ_URL)
         /* TODO: for now we simply link to the online FAQ, but we should show the Zendesk FAQ once it's ready
         zendeskHelper
                 .showZendeskHelpCenter(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
