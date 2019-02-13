@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-01-09 10:54:02+0000
+Translation-Revision-Date: 2019-02-01 08:56:23+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="dismiss">不再显示</string>
     <string name="wc_mark_all_read_error">将所有通知标记为已读时出错</string>
     <string name="wc_mark_all_read">全部标为已读</string>
     <string name="orderdetail_message_customer">邮件</string>
@@ -42,8 +43,6 @@ Language: zh_CN
     <string name="orderdetail_note_system">系统状态</string>
     <string name="orderdetail_note_public">给客户的备注</string>
     <string name="dashboard_no_orders_with_search">没有匹配的订单</string>
-    <string name="login_site_list_update_required">需要更新至 WooCommerce 3.5</string>
-    <string name="login_verifying_sites">正在验证站点…</string>
     <string name="button_update_instructions">更新说明</string>
     <string name="search">搜索</string>
     <string name="refresh_button">刷新</string>
@@ -248,7 +247,6 @@ Language: zh_CN
     <string name="orderdetail_product_image_contentdesc">产品图片</string>
     <string name="orderdetail_product_lineitem_sku">SKU：</string>
     <string name="orderdetail_product_lineitem_tax">税费：</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">向客户发送电子邮件</string>
     <string name="orderdetail_billing_details">账单详情</string>
     <string name="orderdetail_shipping_details">配送详情</string>
@@ -267,8 +265,6 @@ Language: zh_CN
     <string name="dashboard_no_orders_contentdesc">等待客户图片</string>
     <string name="dashboard_no_orders_with_filter">无订单</string>
     <string name="dashboard_no_orders">等待客户</string>
-    <string name="dashboard_fulfill_orders_title">您有 %1$d%2$s 个订单待处理</string>
-    <string name="dashboard_fulfill_order_title">您有 1 个订单待处理</string>
     <string name="dashboard_action_view_orders">查看订单</string>
     <string name="dashboard_action_view_order">查看订单</string>
     <string name="dashboard_top_earners_empty">这段时间内没有任何活动</string>

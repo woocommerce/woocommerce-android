@@ -18,6 +18,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICA
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.widgets.WCFeatureTooltip
+import com.woocommerce.android.widgets.WCFeatureTooltip.Feature
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
@@ -128,6 +130,9 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
                 listener.onRequestShowSitePicker()
             }
+
+            // advertise the site switcher if we haven't already
+            WCFeatureTooltip.showIfNeeded(Feature.SITE_SWITCHER, primaryStoreView)
         }
     }
 
