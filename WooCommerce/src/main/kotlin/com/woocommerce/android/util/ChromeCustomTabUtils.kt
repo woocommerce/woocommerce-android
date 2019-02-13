@@ -12,11 +12,54 @@ import android.support.customtabs.CustomTabsSession
 import android.support.v4.content.ContextCompat
 import com.woocommerce.android.R
 
+/**
+ * Simplifies using Chrome Custom Tabs
+ *  - Call connect with an optional URL to preload when the activity starts
+ *  - Call launchUrl() to actually display the URL
+ *  - Call disconnect when the activity ends
+ */
 object ChromeCustomTabUtils {
     private const val CUSTOM_TAB_PACKAGE_NAME_STABLE = "com.android.chrome"
 
     private var session: CustomTabsSession? = null
     private var connection: CustomTabsServiceConnection? = null
+    private var canUseCustomTabs: Boolean? = null
+
+    fun connect(context: Context, preloadUrl: String? = null): Boolean {
+        if (!canUseCustomTabs(context)) {
+            return false
+        }
+
+        connection = object : CustomTabsServiceConnection() {
+            override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
+                client.warmup(0)
+                session = client.newSession(null)
+                preloadUrl?.let { url ->
+                    session?.mayLaunchUrl(Uri.parse(url), null, null)
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName) {
+                session = null
+                connection = null
+            }
+        }
+        CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, connection)
+        return true
+    }
+
+    fun disconnect(context: Context) {
+        if (connection != null) {
+            try {
+                context.unbindService(connection!!)
+            } catch (e: IllegalArgumentException) {
+                WooLog.e(WooLog.T.SUPPORT, e)
+            }
+        }
+
+        session = null
+        connection = null
+    }
 
     fun launchUrl(context: Context, url: String) {
         // if there's no connection then the device doesn't support custom tabs (or the caller neglected to connect)
@@ -36,52 +79,12 @@ object ChromeCustomTabUtils {
     }
 
     /**
-     * Call this when the activity/fragment starts to create a custom tab connection and optionally
-     * preload a url
-     */
-    fun connect(context: Context, preloadUrl: String? = null): Boolean {
-        if (!canUseCustomTabs(context)) {
-            return false
-        }
-
-        connection = object : CustomTabsServiceConnection() {
-            override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
-                client.warmup(0)
-                session = client.newSession(null)
-                preloadUrl?.let { url ->
-                    session?.mayLaunchUrl(Uri.parse(url), null, null)
-                }
-            }
-            override fun onServiceDisconnected(name: ComponentName) {
-                session = null
-                connection = null
-            }
-        }
-        CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, connection)
-        return true
-    }
-
-    /**
-     * Call this when the activity/fragment ends to close the connection
-     */
-    fun disconnect(context: Context) {
-        if (connection != null) {
-            try {
-                context.unbindService(connection!!)
-            } catch (e: IllegalArgumentException) {
-                WooLog.e(WooLog.T.SUPPORT, e)
-            }
-        }
-
-        session = null
-        connection = null
-    }
-
-    /**
-     * From https://github.com/GoogleChrome/custom-tabs-client/blob/master/shared/src/main/java/org/chromium/
-     * customtabsclient/shared/CustomTabsHelper.java
+     * Adapted from https://github.com/GoogleChrome/custom-tabs-client/blob/master/shared/src/main/java/org/
+     * chromium/customtabsclient/shared/CustomTabsHelper.java
      */
     private fun canUseCustomTabs(context: Context): Boolean {
+        canUseCustomTabs?.let { return it }
+
         val pm = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
         val resolvedActivityList = pm.queryIntentActivities(activityIntent, 0)
@@ -90,10 +93,12 @@ object ChromeCustomTabUtils {
             serviceIntent.action = ACTION_CUSTOM_TABS_CONNECTION
             serviceIntent.setPackage(info.activityInfo.packageName)
             if (pm.resolveService(serviceIntent, 0) != null) {
+                canUseCustomTabs = true
                 return true
             }
         }
 
+        canUseCustomTabs = false
         return false
     }
 }
