@@ -63,6 +63,8 @@ class HelpActivity : AppCompatActivity() {
         if (savedInstanceState == null && originFromExtras == Origin.ZENDESK_NOTIFICATION) {
             showZendeskTickets()
         }
+
+        ChromeCustomTabUtils.preload(this, FAQ_URL)
     }
 
     override fun onResume() {
