@@ -14,9 +14,17 @@ import com.woocommerce.android.R
 
 /**
  * Simplifies using Chrome Custom Tabs
+ *
  *  - Call connect with an optional URL to preload when the activity starts
  *  - Call launchUrl() to actually display the URL
  *  - Call disconnect when the activity ends
+ *
+ *  OR
+ *
+ *  - Call launchUrl() by itself to avoid connecting and disconnecting
+ *
+ *  The latter is recommended when it's not necessary to pre-load the URL (Google recommends
+ *  preloading only when there's at least a 50% chance users will visit the URL)
  */
 object ChromeCustomTabUtils {
     private const val CUSTOM_TAB_PACKAGE_NAME_STABLE = "com.android.chrome"
@@ -38,7 +46,6 @@ object ChromeCustomTabUtils {
                     session?.mayLaunchUrl(Uri.parse(url), null, null)
                 }
             }
-
             override fun onServiceDisconnected(name: ComponentName) {
                 session = null
                 connection = null
@@ -62,19 +69,25 @@ object ChromeCustomTabUtils {
     }
 
     fun launchUrl(context: Context, url: String) {
-        // if there's no connection then the device doesn't support custom tabs (or the caller neglected to connect)
         if (connection == null) {
-            ActivityUtils.openUrlExternal(context, url)
-            return
+            if (canUseCustomTabs(context)) {
+                createIntent(context).launchUrl(context, Uri.parse(url))
+            } else {
+                ActivityUtils.openUrlExternal(context, url)
+            }
+        } else {
+            createIntent(context, session).launchUrl(context, Uri.parse(url))
         }
+    }
 
-        val intent = CustomTabsIntent.Builder(session)
-                .addDefaultShareMenuItem()
+    private fun createIntent(context: Context, tabSession: CustomTabsSession? = null): CustomTabsIntent {
+        val intent = CustomTabsIntent.Builder(tabSession)
                 .setToolbarColor(ContextCompat.getColor(context, R.color.wc_purple))
+                .addDefaultShareMenuItem()
                 .setShowTitle(true)
                 .build()
         intent.intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse("android-app://" + context.packageName))
-        intent.launchUrl(context, Uri.parse(url))
+        return intent
     }
 
     /**
