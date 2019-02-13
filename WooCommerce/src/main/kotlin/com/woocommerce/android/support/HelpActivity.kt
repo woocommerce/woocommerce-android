@@ -63,14 +63,18 @@ class HelpActivity : AppCompatActivity() {
         if (savedInstanceState == null && originFromExtras == Origin.ZENDESK_NOTIFICATION) {
             showZendeskTickets()
         }
-
-        ChromeCustomTabUtils.preload(this, FAQ_URL)
     }
 
     override fun onResume() {
         super.onResume()
         refreshContactEmailText()
         AnalyticsTracker.trackViewShown(this)
+        ChromeCustomTabUtils.connect(this, FAQ_URL)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ChromeCustomTabUtils.disconnect(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -133,7 +137,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showZendeskFaq() {
         AnalyticsTracker.track(Stat.SUPPORT_FAQ_VIEWED)
-        ChromeCustomTabUtils.viewUrl(this, FAQ_URL)
+        ChromeCustomTabUtils.launchUrl(this, FAQ_URL)
         /* TODO: for now we simply link to the online FAQ, but we should show the Zendesk FAQ once it's ready
         zendeskHelper
                 .showZendeskHelpCenter(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
