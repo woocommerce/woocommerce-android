@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
@@ -19,6 +18,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICA
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.widgets.WCFeatureTooltip
+import com.woocommerce.android.widgets.WCFeatureTooltip.Feature
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
@@ -124,12 +125,14 @@ class MainSettingsFragment : Fragment(), MainSettingsContract.View {
             listener.onRequestShowLicenses()
         }
 
-        // TODO: for now, showing the site picker is only enabled for debug builds
-        if (BuildConfig.DEBUG && presenter.hasMultipleStores()) {
+        if (presenter.hasMultipleStores()) {
             primaryStoreView.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
                 listener.onRequestShowSitePicker()
             }
+
+            // advertise the site switcher if we haven't already
+            WCFeatureTooltip.showIfNeeded(Feature.SITE_SWITCHER, primaryStoreView)
         }
     }
 
