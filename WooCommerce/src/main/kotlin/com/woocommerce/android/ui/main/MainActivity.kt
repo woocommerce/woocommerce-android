@@ -118,16 +118,13 @@ class MainActivity : AppCompatActivity(),
 
         initFragment(savedInstanceState)
 
-        val promoShown: Boolean
-        if (presenter.hasMultipleStores()) {
-            promoShown = WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
-        } else {
-            promoShown = false
-        }
+        // show the site picker promo if it hasn't been shown and the user has multiple stores
+        val promoShown = presenter.hasMultipleStores() && WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
 
+        // show the app rating dialog if it's time and we didn't just show the promo
         AppRatingDialog.init(this)
         if (!promoShown) {
-            AppRatingDialog.showRateDialogIfNeeded(this)
+            AppRatingDialog.showIfNeeded(this)
         }
     }
 
