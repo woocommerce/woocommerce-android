@@ -36,7 +36,10 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.widgets.WCFeatureTooltip
+import com.woocommerce.android.widgets.WCFeatureTooltip.Feature
 import com.woocommerce.android.widgets.WCPromoDialog
+import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoDialog.PromoType
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -52,7 +55,9 @@ class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
         FragmentScrollListener,
-        MainNavigationView.MainNavigationListener {
+        MainNavigationView.MainNavigationListener,
+        WCPromoDialog.PromoDialogListener
+{
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
         private const val REQUEST_CODE_SETTINGS = 200
@@ -418,4 +423,19 @@ class MainActivity : AppCompatActivity(),
             WooAnimUtils.animateBottomBar(bottom_nav, true, Duration.SHORT)
         }
     }
+
+    /**
+     * User tapped a button in WCPromoDialog
+     */
+    override fun onPromoButtonClicked(promoType: PromoType, promoButton: PromoButton) {
+        when (promoType) {
+            PromoType.SITE_PICKER -> {
+                if (promoButton == PromoButton.BUTTON_TRY_IT) {
+                    WCFeatureTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
+                    showSettingsScreen()
+                }
+            }
+        }
+    }
+
 }

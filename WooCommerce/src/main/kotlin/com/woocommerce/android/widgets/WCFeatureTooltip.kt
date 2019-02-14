@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference
  */
 object WCFeatureTooltip {
     private const val TOOLTIP_DELAY_BEFORE_SHOWING = 1000L
-    private const val TOOLTIP_DELAY_BEFORE_HIDING = 3500L
+    private const val TOOLTIP_DELAY_BEFORE_HIDING = 3000L
     private const val PREF_NAME = "feature_tooltip"
 
     /*
@@ -51,7 +51,7 @@ object WCFeatureTooltip {
     private fun isTooltipShown(context: Context, feature: Feature) =
             getPrefs(context).getBoolean(feature.prefKeyName, false)
 
-    private fun setTooltipShown(context: Context, feature: Feature, shown: Boolean) {
+    fun setTooltipShown(context: Context, feature: Feature, shown: Boolean) {
         getPrefs(context).edit().putBoolean(feature.prefKeyName, shown).apply()
     }
 

@@ -1,9 +1,12 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.AppCompatButton
+import android.view.LayoutInflater
 import com.woocommerce.android.R
+import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_GOT_IT
+import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_TRY_IT
 import java.lang.ref.WeakReference
 
 object WCPromoDialog {
@@ -13,7 +16,16 @@ object WCPromoDialog {
         SITE_PICKER("key_site_picker")
     }
 
+    enum class PromoButton {
+        BUTTON_GOT_IT,
+        BUTTON_TRY_IT
+    }
+
     private var dialogRef: WeakReference<AlertDialog>? = null
+
+    interface PromoDialogListener {
+        fun onPromoButtonClicked(promoType: PromoType, promoButton: PromoButton)
+    }
 
     /**
      * Show the desired dialog if the criteria is satisfied.
@@ -38,6 +50,10 @@ object WCPromoDialog {
         return !hasShownDialog
     }
 
+    /**
+     * For now we have only one promo so we don't bother to customize the dialog here, but in the
+     * future we'll need separate strings and actions for each promo type
+     */
     private fun showPromoDialog(context: Context, promoType: PromoType) {
         dialogRef?.get()?.let {
             // Dialog is already present
@@ -47,8 +63,30 @@ object WCPromoDialog {
         val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         // TODO: preferences.edit().putBoolean(promoType.prefKeyName, true).apply()
 
+        val listener: PromoDialogListener? = if (context is PromoDialogListener) {
+            context
+        } else {
+            null
+        }
+
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_promo, null)
+        dialogView.findViewById<AppCompatButton>(R.id.btnGotIt)?.setOnClickListener {
+            dialogRef?.let {
+                it.get()?.dismiss()
+                it.clear()
+                listener?.onPromoButtonClicked(promoType, BUTTON_GOT_IT)
+            }
+        }
+        dialogView.findViewById<AppCompatButton>(R.id.btnTryIt)?.setOnClickListener {
+            dialogRef?.let {
+                it.get()?.dismiss()
+                it.clear()
+                listener?.onPromoButtonClicked(promoType, BUTTON_TRY_IT)
+            }
+        }
+
         val builder = AlertDialog.Builder(context)
-        builder.setView(R.layout.dialog_promo)
+        builder.setView(dialogView)
                 .setCancelable(true)
                 .setOnDismissListener { dialogRef?.clear() }
         dialogRef = WeakReference(builder.show())
