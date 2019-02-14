@@ -459,4 +459,10 @@
 
     <!-- Feature tooltips -->
     <string name="tooltip_site_switcher">You can now tap to switch stores</string>
+
+    <!-- Promo dialogs -->
+    <string name="promo_btn_got_it">Got it</string>
+    <string name="promo_btn_try_it">Try it now</string>
+    <string name="promo_title_site_picker">Running multiple stores?</string>
+    <string name="promo_message_site_picker">You can now switch between stores by tapping the selected store in Settings</string>
 </resources>
