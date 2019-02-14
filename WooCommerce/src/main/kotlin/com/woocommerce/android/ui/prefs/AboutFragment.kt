@@ -70,4 +70,10 @@ class AboutFragment : Fragment() {
             it.supportActionBar?.elevation = 0f
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        val preloadUrlList = mapOf(URL_PRIVACY_POLICY, URL_TOS, URL_AUTOMATTIC)
+        ChromeCustomTabUtils.connect(this, FAQ_URL)
+    }
 }

@@ -4,9 +4,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.support.customtabs.CustomTabsClient
 import android.support.customtabs.CustomTabsIntent
 import android.support.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
+import android.support.customtabs.CustomTabsService.KEY_URL
 import android.support.customtabs.CustomTabsServiceConnection
 import android.support.customtabs.CustomTabsSession
 import android.support.v4.content.ContextCompat
@@ -17,7 +19,7 @@ import com.woocommerce.android.R
  *
  *  - Call connect with an optional URL to preload when the activity starts
  *  - Call launchUrl() to actually display the URL
- *  - Call disconnect when the activity ends
+ *  - Call disconnect when the activity stops
  *
  *  OR
  *
@@ -34,6 +36,14 @@ object ChromeCustomTabUtils {
     private var canUseCustomTabs: Boolean? = null
 
     fun connect(context: Context, preloadUrl: String? = null): Boolean {
+        val preloadUrlList = ArrayList<String>()
+        preloadUrl?.let { url ->
+            preloadUrlList.add(url)
+        }
+        return ChromeCustomTabUtils.connect(context, preloadUrlList)
+    }
+
+    fun connect(context: Context, preloadUrlList: ArrayList<String>): Boolean {
         if (!canUseCustomTabs(context)) {
             return false
         }
@@ -42,8 +52,15 @@ object ChromeCustomTabUtils {
             override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
                 client.warmup(0)
                 session = client.newSession(null)
-                preloadUrl?.let { url ->
-                    session?.mayLaunchUrl(Uri.parse(url), null, null)
+                if (preloadUrlList.size > 0) {
+                    val firstPreloadUrl = preloadUrlList.removeAt(0)
+                    val otherLikelyBundles = ArrayList<Bundle>()
+                    for (url in preloadUrlList) {
+                        val bundle = Bundle()
+                        bundle.putParcelable(KEY_URL, Uri.parse(url))
+                        otherLikelyBundles.add(bundle)
+                    }
+                    session?.mayLaunchUrl(Uri.parse(firstPreloadUrl), null, otherLikelyBundles)
                 }
             }
             override fun onServiceDisconnected(name: ComponentName) {

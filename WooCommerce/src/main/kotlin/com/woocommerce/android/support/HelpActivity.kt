@@ -63,19 +63,22 @@ class HelpActivity : AppCompatActivity() {
         if (savedInstanceState == null && originFromExtras == Origin.ZENDESK_NOTIFICATION) {
             showZendeskTickets()
         }
-
-        ChromeCustomTabUtils.connect(this, FAQ_URL)
-    }
-
-    override fun onDestroy() {
-        ChromeCustomTabUtils.disconnect(this)
-        super.onDestroy()
     }
 
     override fun onResume() {
         super.onResume()
         refreshContactEmailText()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ChromeCustomTabUtils.connect(this, FAQ_URL)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        ChromeCustomTabUtils.disconnect(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
