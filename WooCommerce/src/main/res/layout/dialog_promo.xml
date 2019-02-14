@@ -42,7 +42,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textTitle"/>
 
     <android.support.v7.widget.AppCompatButton
-        android:id="@+id/btnGotIt"
+        android:id="@+id/button1"
         style="@style/Woo.Button.Purple"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textMessage"/>
 
     <android.support.v7.widget.AppCompatButton
-        android:id="@+id/btnTryIt"
+        android:id="@+id/button2"
         style="@style/Woo.Button.Purple"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,6 +64,6 @@
         android:text="@string/promo_btn_try_it"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnGotIt"/>
+        app:layout_constraintTop_toBottomOf="@+id/button1"/>
 
 </android.support.constraint.ConstraintLayout>

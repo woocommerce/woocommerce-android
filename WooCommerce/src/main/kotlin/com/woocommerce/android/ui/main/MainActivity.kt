@@ -56,8 +56,7 @@ class MainActivity : AppCompatActivity(),
         HasSupportFragmentInjector,
         FragmentScrollListener,
         MainNavigationView.MainNavigationListener,
-        WCPromoDialog.PromoDialogListener
-{
+        WCPromoDialog.PromoDialogListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
         private const val REQUEST_CODE_SETTINGS = 200
@@ -122,7 +121,7 @@ class MainActivity : AppCompatActivity(),
         AppRatingDialog.init(this)
         AppRatingDialog.showRateDialogIfNeeded(this)
 
-        WCPromoDialog.showPromoDialogIfNeeded(this, PromoType.SITE_PICKER)
+        WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -425,7 +424,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * User tapped a button in WCPromoDialog
+     * User tapped a button in WCPromoDialogFragment
      */
     override fun onPromoButtonClicked(promoType: PromoType, promoButton: PromoButton) {
         when (promoType) {
@@ -437,5 +436,4 @@ class MainActivity : AppCompatActivity(),
             }
         }
     }
-
 }
