@@ -121,7 +121,9 @@ class MainActivity : AppCompatActivity(),
         AppRatingDialog.init(this)
         AppRatingDialog.showRateDialogIfNeeded(this)
 
-        WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
+        if (presenter.hasMultipleStores()) {
+            WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

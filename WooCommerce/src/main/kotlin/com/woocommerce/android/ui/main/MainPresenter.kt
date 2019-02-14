@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -28,6 +29,7 @@ class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
+    private val wooCommerceStore: WooCommerceStore,
     private val notificationStore: NotificationStore
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
@@ -58,6 +60,8 @@ class MainPresenter @Inject constructor(
 
     override fun getNotificationByRemoteNoteId(remoteNoteId: Long): NotificationModel? =
             notificationStore.getNotificationByRemoteId(remoteNoteId)
+
+    override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 0
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
