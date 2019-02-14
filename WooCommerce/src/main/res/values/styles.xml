@@ -459,4 +459,9 @@
         <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
     </style>
 
+    <style name="Woo.Dialog.Promo">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+
 </resources>

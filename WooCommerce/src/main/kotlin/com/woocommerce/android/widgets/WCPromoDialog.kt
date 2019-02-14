@@ -64,6 +64,11 @@ class WCPromoDialog : DialogFragment() {
     private var promoImage: ImageView? = null
     private lateinit var promoType: PromoType
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Dialog_Promo
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
         checkOrientation()
