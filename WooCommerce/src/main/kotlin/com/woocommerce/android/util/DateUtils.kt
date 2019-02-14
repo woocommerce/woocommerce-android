@@ -152,4 +152,40 @@ object DateUtils {
             throw IllegalArgumentException("Date string argument is not of format YYYY-MM: $iso8601Date")
         }
     }
+
+    /**
+     * returns string of the current date
+     * in the format: YYYY-MM-dd
+     *
+     */
+    fun getCurrentDateString(): String {
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+        val dayOfMonth = calendar.get(Calendar.DATE)
+        val year = calendar.get(Calendar.YEAR)
+        val monthOfYear = calendar.get(Calendar.MONTH)
+        return getFormattedDateString(year, monthOfYear, dayOfMonth)
+    }
+
+    /**
+     * Given a year integer, month integer, date integer,
+     * returns string in the format: YYYY-MM-dd
+     *
+     */
+    fun getFormattedDateString(year: Int, month: Int, dayOfMonth: Int): String {
+        return String.format("%d-%02d-%02d", year, (month + 1), dayOfMonth)
+    }
+
+    /**
+     * Given a date string of format YYYY-MM-dd, returns a [Calendar] instance of the same
+     *
+     */
+    fun getCalendarInstance(value: String): Calendar {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.DATE, value.split("-")[2].toInt())
+        cal.set(Calendar.MONTH, (value.split("-")[1].toInt()))
+        cal.add(Calendar.MONTH, -1)
+        cal.set(Calendar.YEAR, value.split("-")[0].toInt())
+        return cal
+    }
 }
