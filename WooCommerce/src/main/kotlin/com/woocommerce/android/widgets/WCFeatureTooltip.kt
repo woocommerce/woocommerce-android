@@ -22,8 +22,8 @@ object WCFeatureTooltip {
      * we include the version the tooltip was added both as reference to us and to provide a future means
      * to programmatically disable tooltips after a certain number of versions
      */
-    enum class Feature(val prefKeyName: String, @StringRes val messageId: Int, val versionCode: Int) {
-        SITE_SWITCHER("key_site_switcher", R.string.tooltip_site_switcher, 32)
+    enum class Feature(val prefKeyName: String, @StringRes val messageId: Int, val addedInversionCode: Int) {
+        SITE_SWITCHER("key_site_switcher", R.string.tooltip_site_switcher, 34)
     }
 
     /**

@@ -44,9 +44,10 @@ class WCPromoDialog : DialogFragment() {
     enum class PromoType(
         val prefKeyName: String,
         val button1: PromoButton,
-        val button2: PromoButton
+        val button2: PromoButton,
+        val addedInversionCode: Int
     ) {
-        SITE_PICKER("key_site_picker", BUTTON_SITE_PICKER_GOT_IT, BUTTON_SITE_PICKER_TRY_IT)
+        SITE_PICKER("key_site_picker", BUTTON_SITE_PICKER_GOT_IT, BUTTON_SITE_PICKER_TRY_IT, 34)
     }
 
     interface PromoDialogListener {
