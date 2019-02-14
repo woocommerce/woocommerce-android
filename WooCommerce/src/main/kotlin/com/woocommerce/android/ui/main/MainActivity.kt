@@ -36,6 +36,8 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.widgets.WCPromoDialog
+import com.woocommerce.android.widgets.WCPromoDialog.PromoType
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -114,6 +116,8 @@ class MainActivity : AppCompatActivity(),
 
         AppRatingDialog.init(this)
         AppRatingDialog.showRateDialogIfNeeded(this)
+
+        WCPromoDialog.showPromoDialogIfNeeded(this, PromoType.SITE_PICKER)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

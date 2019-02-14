@@ -458,7 +458,7 @@
     <string name="app_rating_rate_never">No thanks</string>
 
     <!-- Feature tooltips -->
-    <string name="tooltip_site_switcher">You can now tap to switch stores</string>
+    <string name="tooltip_site_switcher">Tap to switch stores</string>
 
     <!-- Promo dialogs -->
     <string name="promo_btn_got_it">Got it</string>
