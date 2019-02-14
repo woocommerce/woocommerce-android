@@ -10,9 +10,10 @@
     <ImageView
         android:id="@+id/imagePromo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/promo_dialog_image_height"
         android:background="@color/default_background"
         android:importantForAccessibility="no"
+        android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 

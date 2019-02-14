@@ -15,6 +15,10 @@ import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_GOT
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_TRY_IT
 import org.wordpress.android.util.DisplayUtils
 
+/**
+ * Used to advertise a new feature with a single-shot dialog
+ */
+
 class WCPromoDialog : DialogFragment() {
     companion object {
         const val TAG: String = "WCPromoDialog"
@@ -36,7 +40,7 @@ class WCPromoDialog : DialogFragment() {
             }
             fragment.promoType = promoType
             fragment.show(activity.supportFragmentManager, TAG)
-            // TODO: preferences?.edit().putBoolean(promoType.prefKeyName, true).apply()
+            // TODO: preferences.edit().putBoolean(promoType.prefKeyName, true).apply()
 
             return true
         }

@@ -11,7 +11,7 @@ import com.woocommerce.android.R
 import java.lang.ref.WeakReference
 
 /**
- * Used to "advertise" a new feature with a single-shot tooltip
+ * Used to advertise a new feature with a single-shot tooltip
  */
 object WCPromoTooltip {
     private const val TOOLTIP_DELAY_BEFORE_SHOWING = 1000L
