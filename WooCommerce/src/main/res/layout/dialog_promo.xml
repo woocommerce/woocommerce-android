@@ -24,7 +24,7 @@
         android:layout_marginStart="@dimen/margin_extra_large"
         android:layout_marginTop="@dimen/margin_extra_large"
         android:text="@string/promo_title_site_picker"
-        android:textAppearance="@style/Woo.TextAppearance.Title.Bold"
+        android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imagePromo"/>
 
@@ -36,14 +36,14 @@
         android:layout_marginStart="@dimen/margin_extra_large"
         android:layout_marginTop="@dimen/margin_medium"
         android:text="@string/promo_message_site_picker"
-        android:textAppearance="@style/Woo.TextAppearance.Medium"
+        android:textAppearance="@style/Woo.TextAppearance.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textTitle"/>
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/button1"
-        style="@style/Woo.Button.Purple"
+        style="@style/Woo.Button.Grey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_extra_large"

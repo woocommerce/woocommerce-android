@@ -426,14 +426,12 @@ class MainActivity : AppCompatActivity(),
     /**
      * User tapped a button in WCPromoDialogFragment
      */
-    override fun onPromoButtonClicked(promoType: PromoType, promoButton: PromoButton) {
-        when (promoType) {
-            PromoType.SITE_PICKER -> {
-                if (promoButton == PromoButton.BUTTON_TRY_IT) {
-                    WCFeatureTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
-                    showSettingsScreen()
-                }
-            }
+    override fun onPromoButtonClicked(promoButton: PromoButton) {
+        when (promoButton) {
+            PromoButton.BUTTON_SITE_PICKER_TRY_IT -> {
+                WCFeatureTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
+                showSettingsScreen()
+            } else -> {}
         }
     }
 }

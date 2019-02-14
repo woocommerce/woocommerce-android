@@ -12,8 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import com.woocommerce.android.R
-import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_GOT_IT
-import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_TRY_IT
+import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_SITE_PICKER_GOT_IT
+import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_SITE_PICKER_TRY_IT
 import org.wordpress.android.util.DisplayUtils
 
 class WCPromoDialog : DialogFragment() {
@@ -37,8 +37,8 @@ class WCPromoDialog : DialogFragment() {
     }
 
     enum class PromoButton {
-        BUTTON_GOT_IT,
-        BUTTON_TRY_IT
+        BUTTON_SITE_PICKER_GOT_IT,
+        BUTTON_SITE_PICKER_TRY_IT
     }
 
     enum class PromoType(
@@ -46,11 +46,11 @@ class WCPromoDialog : DialogFragment() {
         val button1: PromoButton,
         val button2: PromoButton
     ) {
-        SITE_PICKER("key_site_picker", BUTTON_GOT_IT, BUTTON_TRY_IT)
+        SITE_PICKER("key_site_picker", BUTTON_SITE_PICKER_GOT_IT, BUTTON_SITE_PICKER_TRY_IT)
     }
 
     interface PromoDialogListener {
-        fun onPromoButtonClicked(promoType: PromoType, promoButton: PromoButton)
+        fun onPromoButtonClicked(promoButton: PromoButton)
     }
 
     private var listener: PromoDialogListener? = null
@@ -84,11 +84,11 @@ class WCPromoDialog : DialogFragment() {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_promo, null)
         dialogView.findViewById<AppCompatButton>(R.id.button1)?.setOnClickListener {
             dialog?.dismiss()
-            listener?.onPromoButtonClicked(promoType, promoType.button1)
+            listener?.onPromoButtonClicked(promoType.button1)
         }
         dialogView.findViewById<AppCompatButton>(R.id.button2)?.setOnClickListener {
             dialog?.dismiss()
-            listener?.onPromoButtonClicked(promoType, promoType.button2)
+            listener?.onPromoButtonClicked(promoType.button2)
         }
 
         return AlertDialog.Builder(activity as Context)
