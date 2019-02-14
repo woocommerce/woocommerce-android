@@ -17,7 +17,7 @@ import com.woocommerce.android.R
 /**
  * Simplifies using Chrome Custom Tabs
  *
- *  - Call connect with an optional URL to preload when the activity starts
+ *  - Call connect with an optional URL or list of URLs to preload when the activity starts
  *  - Call launchUrl() to actually display the URL
  *  - Call disconnect when the activity stops
  *
@@ -26,7 +26,8 @@ import com.woocommerce.android.R
  *  - Call launchUrl() by itself to avoid connecting and disconnecting
  *
  *  The latter is recommended when it's not necessary to pre-load the URL (Google recommends
- *  preloading only when there's at least a 50% chance users will visit the URL)
+ *  preloading only when there's at least a 50% chance users will visit the URL). Note that
+ *  when passing a list of URLs, they should be ordered in descending order of priority
  */
 object ChromeCustomTabUtils {
     private const val CUSTOM_TAB_PACKAGE_NAME_STABLE = "com.android.chrome"
@@ -43,9 +44,6 @@ object ChromeCustomTabUtils {
         return ChromeCustomTabUtils.connect(context, preloadUrlList)
     }
 
-    /**
-     * When passing a list of URLs to preload, put them in descending order of priority
-     */
     fun connect(context: Context, preloadUrlArray: Array<String>): Boolean {
         val preloadUrlList = ArrayList<String>()
         for (url in preloadUrlArray) {
