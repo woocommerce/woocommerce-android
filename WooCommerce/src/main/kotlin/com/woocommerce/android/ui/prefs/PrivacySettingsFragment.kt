@@ -86,6 +86,17 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
         activity?.setTitle(R.string.privacy_settings)
     }
 
+    override fun onStart() {
+        super.onStart()
+        val preloadUrlList = arrayOf(URL_PRIVACY_POLICY, URL_COOKIE_POLICY)
+        ChromeCustomTabUtils.connect(activity as Context, preloadUrlList)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        ChromeCustomTabUtils.disconnect(activity as Context)
+    }
+
     override fun showCookiePolicy() {
         ChromeCustomTabUtils.launchUrl(activity as Context, URL_COOKIE_POLICY)
     }

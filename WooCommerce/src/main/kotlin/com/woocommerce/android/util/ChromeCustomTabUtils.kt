@@ -43,6 +43,17 @@ object ChromeCustomTabUtils {
         return ChromeCustomTabUtils.connect(context, preloadUrlList)
     }
 
+    /**
+     * When passing a list of URLs to preload, put them in descending order of priority
+     */
+    fun connect(context: Context, preloadUrlArray: Array<String>): Boolean {
+        val preloadUrlList = ArrayList<String>()
+        for (url in preloadUrlArray) {
+            preloadUrlList.add(url)
+        }
+        return connect(context, preloadUrlList)
+    }
+
     fun connect(context: Context, preloadUrlList: ArrayList<String>): Boolean {
         if (!canUseCustomTabs(context)) {
             return false
