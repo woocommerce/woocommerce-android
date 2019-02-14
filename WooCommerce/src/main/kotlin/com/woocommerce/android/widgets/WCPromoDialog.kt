@@ -21,7 +21,7 @@ class WCPromoDialog : DialogFragment() {
         private const val PREF_NAME = "woo_promo_dialog"
 
         /**
-         * Displays the desired promo dialog if it hasn't already been shown
+         * Displays the desired promo dialog if it hasn't already been shown, returns True if it gets shown below
          */
         fun showIfNeeded(activity: AppCompatActivity, promoType: PromoType): Boolean {
             val preferences = activity.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

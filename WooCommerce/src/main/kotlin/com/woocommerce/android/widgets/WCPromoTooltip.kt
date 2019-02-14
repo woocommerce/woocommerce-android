@@ -13,10 +13,10 @@ import java.lang.ref.WeakReference
 /**
  * Used to "advertise" a new feature with a single-shot tooltip
  */
-object WCFeatureTooltip {
+object WCPromoTooltip {
     private const val TOOLTIP_DELAY_BEFORE_SHOWING = 1000L
     private const val TOOLTIP_DELAY_BEFORE_HIDING = 3000L
-    private const val PREF_NAME = "feature_tooltip"
+    private const val PREF_NAME = "promo_tooltip"
 
     /*
      * we include the version the tooltip was added both as reference to us and to provide a future means

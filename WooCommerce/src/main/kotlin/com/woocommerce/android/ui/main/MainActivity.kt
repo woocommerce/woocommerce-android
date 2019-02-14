@@ -36,8 +36,8 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
-import com.woocommerce.android.widgets.WCFeatureTooltip
-import com.woocommerce.android.widgets.WCFeatureTooltip.Feature
+import com.woocommerce.android.widgets.WCPromoTooltip
+import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoDialog.PromoType
@@ -433,7 +433,7 @@ class MainActivity : AppCompatActivity(),
     override fun onPromoButtonClicked(promoButton: PromoButton) {
         when (promoButton) {
             PromoButton.SITE_PICKER_TRY_IT -> {
-                WCFeatureTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
+                WCPromoTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
                 showSettingsScreen()
             } else -> {}
         }
