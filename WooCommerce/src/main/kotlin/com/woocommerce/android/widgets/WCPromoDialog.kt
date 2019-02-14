@@ -8,12 +8,11 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatButton
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import com.woocommerce.android.R
-import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_SITE_PICKER_GOT_IT
-import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_SITE_PICKER_TRY_IT
+import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_GOT_IT
+import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_TRY_IT
 import org.wordpress.android.util.DisplayUtils
 
 class WCPromoDialog : DialogFragment() {
@@ -21,33 +20,40 @@ class WCPromoDialog : DialogFragment() {
         const val TAG: String = "WCPromoDialog"
         private const val PREF_NAME = "woo_promo_dialog"
 
-        fun showIfNeeded(activity: AppCompatActivity, promoType: PromoType) {
+        /**
+         * Displays the desired promo dialog if it hasn't already been shown
+         */
+        fun showIfNeeded(activity: AppCompatActivity, promoType: PromoType): Boolean {
             val preferences = activity.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val hasShownDialog = preferences.getBoolean(promoType.prefKeyName, false)
-            if (!hasShownDialog) {
-                val fragment = WCPromoDialog()
-                if (activity is PromoDialogListener) {
-                    fragment.listener = activity
-                }
-                fragment.promoType = promoType
-                fragment.show(activity.supportFragmentManager, TAG)
-                // TODO: preferences?.edit().putBoolean(promoType.prefKeyName, true).apply()
+            if (hasShownDialog) {
+                return false
             }
+
+            val fragment = WCPromoDialog()
+            if (activity is PromoDialogListener) {
+                fragment.listener = activity
+            }
+            fragment.promoType = promoType
+            fragment.show(activity.supportFragmentManager, TAG)
+            // TODO: preferences?.edit().putBoolean(promoType.prefKeyName, true).apply()
+
+            return true
         }
     }
 
     enum class PromoButton {
-        BUTTON_SITE_PICKER_GOT_IT,
-        BUTTON_SITE_PICKER_TRY_IT
+        SITE_PICKER_GOT_IT,
+        SITE_PICKER_TRY_IT
     }
 
     enum class PromoType(
         val prefKeyName: String,
         val button1: PromoButton,
         val button2: PromoButton,
-        val addedInversionCode: Int
+        val addedInVersionCode: Int
     ) {
-        SITE_PICKER("key_site_picker", BUTTON_SITE_PICKER_GOT_IT, BUTTON_SITE_PICKER_TRY_IT, 34)
+        SITE_PICKER("key_site_picker", SITE_PICKER_GOT_IT, SITE_PICKER_TRY_IT, 34)
     }
 
     interface PromoDialogListener {
@@ -56,7 +62,6 @@ class WCPromoDialog : DialogFragment() {
 
     private var listener: PromoDialogListener? = null
     private var promoImage: ImageView? = null
-
     private lateinit var promoType: PromoType
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -77,11 +82,13 @@ class WCPromoDialog : DialogFragment() {
      * future we'll need separate strings and actions for each promo type
      */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_promo, null)
+        val dialogView = View.inflate(activity, R.layout.dialog_promo, null)
+
         dialogView.findViewById<AppCompatButton>(R.id.button1)?.setOnClickListener {
             dialog?.dismiss()
             listener?.onPromoButtonClicked(promoType.button1)
         }
+
         dialogView.findViewById<AppCompatButton>(R.id.button2)?.setOnClickListener {
             dialog?.dismiss()
             listener?.onPromoButtonClicked(promoType.button2)

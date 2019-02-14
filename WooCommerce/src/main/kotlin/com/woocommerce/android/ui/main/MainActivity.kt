@@ -118,11 +118,16 @@ class MainActivity : AppCompatActivity(),
 
         initFragment(savedInstanceState)
 
-        AppRatingDialog.init(this)
-        AppRatingDialog.showRateDialogIfNeeded(this)
-
+        val promoShown: Boolean
         if (presenter.hasMultipleStores()) {
-            WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
+            promoShown = WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
+        } else {
+            promoShown = false
+        }
+
+        AppRatingDialog.init(this)
+        if (!promoShown) {
+            AppRatingDialog.showRateDialogIfNeeded(this)
         }
     }
 
@@ -430,7 +435,7 @@ class MainActivity : AppCompatActivity(),
      */
     override fun onPromoButtonClicked(promoButton: PromoButton) {
         when (promoButton) {
-            PromoButton.BUTTON_SITE_PICKER_TRY_IT -> {
+            PromoButton.SITE_PICKER_TRY_IT -> {
                 WCFeatureTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
                 showSettingsScreen()
             } else -> {}
