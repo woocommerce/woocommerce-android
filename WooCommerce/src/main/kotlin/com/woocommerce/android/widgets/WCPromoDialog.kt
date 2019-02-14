@@ -77,7 +77,6 @@ class WCPromoDialog : DialogFragment() {
      * future we'll need separate strings and actions for each promo type
      */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        // inflate the custom view and set up the button listeners
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_promo, null)
         dialogView.findViewById<AppCompatButton>(R.id.button1)?.setOnClickListener {
             dialog?.dismiss()
