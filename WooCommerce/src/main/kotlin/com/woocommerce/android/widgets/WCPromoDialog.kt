@@ -4,9 +4,12 @@ import android.content.Context
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatButton
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.ImageView
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_GOT_IT
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.BUTTON_TRY_IT
+import org.wordpress.android.util.DisplayUtils
 import java.lang.ref.WeakReference
 
 object WCPromoDialog {
@@ -40,6 +43,15 @@ object WCPromoDialog {
         }
     }
 
+    // hide the image in landscape TODO: handle rotation
+    fun checkOrientation(context: Context) {
+        dialogRef?.get()?.let { dialog ->
+            val isLandsccape = DisplayUtils.isLandscape(context)
+            val image = dialog.findViewById<ImageView>(R.id.imagePromo)
+            image?.visibility = if (isLandsccape) View.GONE else View.VISIBLE
+        }
+    }
+
     /**
      * Check whether the promo dialog should be shown or not.
      * @return true if the dialog should be shown
@@ -69,6 +81,7 @@ object WCPromoDialog {
             null
         }
 
+        // inflate the custom view and set up the button listeners
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_promo, null)
         dialogView.findViewById<AppCompatButton>(R.id.btnGotIt)?.setOnClickListener {
             dialogRef?.let {
@@ -85,10 +98,12 @@ object WCPromoDialog {
             }
         }
 
+
         val builder = AlertDialog.Builder(context)
         builder.setView(dialogView)
                 .setCancelable(true)
                 .setOnDismissListener { dialogRef?.clear() }
         dialogRef = WeakReference(builder.show())
+        checkOrientation(context)
     }
 }
