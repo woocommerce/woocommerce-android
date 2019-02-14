@@ -55,6 +55,8 @@ class WCPromoDialog : DialogFragment() {
     }
 
     private var listener: PromoDialogListener? = null
+    private var promoImage: ImageView? = null
+
     private lateinit var promoType: PromoType
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -62,17 +64,11 @@ class WCPromoDialog : DialogFragment() {
         checkOrientation()
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        checkOrientation()
-    }
-
     // hide the image in landscape
     private fun checkOrientation() {
         if (isAdded) {
             val isLandscape = DisplayUtils.isLandscape(activity)
-            val image = dialog.findViewById<ImageView>(R.id.imagePromo)
-            image?.visibility = if (isLandscape) View.GONE else View.VISIBLE
+            promoImage?.visibility = if (isLandscape) View.GONE else View.VISIBLE
         }
     }
 
@@ -91,6 +87,9 @@ class WCPromoDialog : DialogFragment() {
             dialog?.dismiss()
             listener?.onPromoButtonClicked(promoType.button2)
         }
+
+        promoImage = dialogView.findViewById(R.id.imagePromo)
+        checkOrientation()
 
         return AlertDialog.Builder(activity as Context)
                 .setView(dialogView)
