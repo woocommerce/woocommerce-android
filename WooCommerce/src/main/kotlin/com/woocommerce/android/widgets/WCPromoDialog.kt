@@ -40,7 +40,7 @@ class WCPromoDialog : DialogFragment() {
             }
             fragment.promoType = promoType
             fragment.show(activity.supportFragmentManager, TAG)
-            // TODO: preferences.edit().putBoolean(promoType.prefKeyName, true).apply()
+            preferences.edit().putBoolean(promoType.prefKeyName, true).apply()
 
             return true
         }
