@@ -270,14 +270,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onRequestLoadCustomStats(wcOrderStatsModel: WCOrderStatsModel?) {
-//        wcOrderStatsModel?.let {
-//            dashboard_stats.showErrorView(false)
-//            presenter.loadCustomStats(
-//                    StatsGranularity.fromString(wcOrderStatsModel.unit),
-//                    wcOrderStatsModel.startDate,
-//                    wcOrderStatsModel.endDate)
-//        } ?:
-        showCustomStatsDialog()
+        wcOrderStatsModel?.let {
+            dashboard_stats.showErrorView(false)
+            presenter.loadStats(
+                    granularity = StatsGranularity.fromString(wcOrderStatsModel.unit),
+                    forced = false,
+                    startDate = wcOrderStatsModel.startDate,
+                    endDate = wcOrderStatsModel.endDate)
+        } ?: showCustomStatsDialog()
     }
 
     override fun hideUnfilledOrdersCard() {

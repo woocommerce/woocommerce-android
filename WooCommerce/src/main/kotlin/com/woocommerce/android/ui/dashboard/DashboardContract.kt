@@ -8,7 +8,12 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 interface DashboardContract {
     interface Presenter : BasePresenter<View> {
-        fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
+        fun loadStats(
+            granularity: StatsGranularity,
+            forced: Boolean = false,
+            startDate: String? = null,
+            endDate: String? = null
+        )
         fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
         fun resetForceRefresh()
         fun getStatsCurrency(): String?

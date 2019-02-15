@@ -70,7 +70,7 @@ class DashboardPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
+    override fun loadStats(granularity: StatsGranularity, forced: Boolean, startDate: String?, endDate: String?) {
         if (!networkStatus.isConnected()) {
             dashboardView?.isRefreshPending = true
             return
@@ -81,11 +81,11 @@ class DashboardPresenter @Inject constructor(
             statsForceRefresh[granularity.ordinal] = false
             dashboardView?.showChartSkeleton(true)
         }
-        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
+        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, startDate, endDate, forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
 
         // fetch visitor stats
-        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forceRefresh)
+        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forceRefresh, startDate, endDate)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
     }
 
