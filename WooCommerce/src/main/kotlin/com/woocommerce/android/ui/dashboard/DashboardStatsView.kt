@@ -31,6 +31,7 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
+import org.wordpress.android.fluxc.model.WCOrderStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.utils.SiteUtils
@@ -48,11 +49,27 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
 
+    /**
+     * This variable is used to get the granularity for the currently
+     * selected TAB.
+     *
+     * If the currently selected TAB is a custom tab, then the [StatsGranularity]
+     * from the [WCOrderStatsModel] is returned.
+     *
+     * If the currently selected TAB, is default tab, then the [StatsGranularity]
+     * from the tag of the [TabLayout] is returned.
+     * */
     var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
         get() {
-            return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
-                it.tag as StatsGranularity
-            } ?: DEFAULT_STATS_GRANULARITY
+            return if (isCustomTab()) {
+                wcOrderStatsModel?.let {
+                    wcOrderStatsModel?.unit?.let { StatsGranularity.fromString(it) }
+                } ?: DEFAULT_STATS_GRANULARITY
+            } else {
+                tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
+                    it.tag as StatsGranularity
+                } ?: DEFAULT_STATS_GRANULARITY
+            }
         }
 
     private lateinit var selectedSite: SelectedSite
@@ -61,6 +78,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
+    private var wcOrderStatsModel: WCOrderStatsModel? = null
 
     private var skeletonView = SkeletonView()
 
@@ -89,23 +107,24 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: FormatCurrencyRounded
+        formatCurrencyForDisplay: FormatCurrencyRounded,
+        customOrderStatsModel: WCOrderStatsModel?
     ) {
         this.selectedSite = selectedSite
+        this.wcOrderStatsModel = customOrderStatsModel
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
 
         StatsGranularity.values().forEach { granularity ->
-            val tab = tab_layout.newTab().apply {
-                setText(getStringForGranularity(granularity))
-                tag = granularity
-            }
-            tab_layout.addTab(tab)
+            val tab = addTab(getStringForGranularity(granularity), granularity)
 
             // Start with the given time period selected
             if (granularity == period) {
                 tab.select()
             }
         }
+
+        /* add a new tab called CUSTOM */
+        addTab(R.string.dashboard_custom_stats_tab, customOrderStatsModel)
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
@@ -115,7 +134,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                         mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
 
                 isRequestingStats = true
-                listener.onRequestLoadStats(tab.tag as StatsGranularity)
+                if (isCustomTab()) {
+                    // TODO: add click listener for custom tabs
+                } else {
+                    listener.onRequestLoadStats(tab.tag as StatsGranularity)
+                }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -139,6 +162,47 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         } else {
             lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
         }
+    }
+
+    /**
+     * Returns a Boolean flag after checking if the [StatsGranularity]
+     * passed to the method is from the currently selected tab
+     *
+     * The assumption is, if the current tab is custom tab, OR
+     * if the [StatsGranularity] passed to the method matches the
+     * currently selected Tab's tag, then returns true
+     *
+     */
+    fun isActiveTab(granularity: StatsGranularity): Boolean {
+        return isCustomTab() || (activeGranularity == granularity)
+    }
+
+    /**
+     * Returns a Boolean flag after checking if the currently selected position
+     * is a custom tab.
+     *
+     * The assumption is that the last tab in the [TabLayout]
+     * is for CUSTOM tabs.
+     */
+    private fun isCustomTab(): Boolean {
+        return (tab_layout.selectedTabPosition == tab_layout.tabCount - 1)
+    }
+
+    /**
+     * Adds a new [TabLayout.Tab] to [TabLayout].
+     *
+     * The title text of the tab is [StatsGranularity] for default tabs
+     *
+     * The tag of the tab is also set to [StatsGranularity] for default tabs
+     * and [WCOrderStatsModel] for custom tabs.
+     */
+    private fun addTab(text: Int, tagObject: Any?): TabLayout.Tab {
+        val tab = tab_layout.newTab().apply {
+            setText(text)
+            tag = tagObject
+        }
+        tab_layout.addTab(tab)
+        return tab
     }
 
     fun showSkeleton(show: Boolean) {

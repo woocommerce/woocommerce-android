@@ -94,7 +94,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_stats.initView(
                 listener = this,
                 selectedSite = selectedSite,
-                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
+                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
+                customOrderStatsModel = presenter.getCustomOrderStats())
         dashboard_top_earners.initView(
                 listener = this,
                 selectedSite = selectedSite,
