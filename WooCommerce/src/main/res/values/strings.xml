@@ -112,6 +112,12 @@
     <string name="dashboard_stats_granularity_months">Months</string>
     <string name="dashboard_stats_granularity_years">Years</string>
 
+    <string name="dashboard_custom_stats_tab">Custom</string>
+    <string name="dashboard_custom_stats_dialog_title">Date Range</string>
+    <string name="dashboard_custom_stats_dialog_start_date_label">From</string>
+    <string name="dashboard_custom_stats_dialog_end_date_label">To</string>
+    <string name="dashboard_custom_stats_dialog_granularity_label">Display as:</string>
+
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
     <string name="dashboard_stats_revenue">Revenue</string>

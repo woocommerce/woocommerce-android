@@ -450,4 +450,18 @@
         <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
     </style>
 
+    <style name="RadioButton" parent="@style/AppTheme">
+        <item name="android:textColor">@drawable/radio_granularity_text_color_selector</item>
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:paddingTop">@dimen/radio_button_vertical_padding</item>
+        <item name="android:paddingBottom">@dimen/radio_button_vertical_padding</item>
+        <item name="android:paddingLeft">@dimen/radio_button_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/radio_button_horizontal_padding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/radio_granularity_selector</item>
+        <item name="android:layout_marginRight">@dimen/margin_small</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
 </resources>

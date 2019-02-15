@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="8dp"
+    android:paddingLeft="@dimen/card_padding_start"
+    android:paddingRight="@dimen/card_padding_start"
+    android:paddingTop="@dimen/card_padding_start">
+
+    <TextView
+        android:id="@+id/stats_dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/dashboard_custom_stats_dialog_title"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_medium_extra_large"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/stats_label_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/dashboard_custom_stats_dialog_start_date_label"
+        android:textColor="@color/wc_grey"
+        android:textSize="@dimen/text_large"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stats_dialog_title"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/stats_from_date"
+        style="@style/Widget.AppCompat.Spinner.Underlined"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
+        android:paddingEnd="1dp"
+        android:paddingStart="1dp"
+        app:backgroundTint="@color/wc_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/stats_label_from"
+        app:layout_constraintTop_toBottomOf="@+id/stats_label_from"
+        tools:text="2019-01-01"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/stats_label_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/dashboard_custom_stats_dialog_end_date_label"
+        android:textAppearance="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+        android:textColor="@color/wc_grey"
+        android:textSize="@dimen/text_large"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stats_from_date"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/stats_to_date"
+        style="@style/Widget.AppCompat.Spinner.Underlined"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
+        android:paddingEnd="1dp"
+        android:paddingStart="1dp"
+        app:backgroundTint="@color/wc_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/stats_label_to"
+        app:layout_constraintTop_toBottomOf="@+id/stats_label_to"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/stats_label_granularity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/dashboard_custom_stats_dialog_granularity_label"
+        android:textAppearance="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+        android:textColor="@color/wc_grey"
+        android:textSize="@dimen/text_large"
+        app:layout_constraintStart_toStartOf="@+id/stats_to_date"
+        app:layout_constraintTop_toBottomOf="@+id/stats_to_date"/>
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/stats_label_granularity"
+        app:layout_constraintStart_toStartOf="@+id/stats_label_granularity"
+        app:layout_constraintTop_toBottomOf="@+id/stats_label_granularity">
+
+        <RadioButton
+            android:id="@+id/radio_category_1"
+            style="@style/RadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:checked="true"
+            tools:text="DAYS"/>
+
+        <RadioButton
+            android:id="@+id/radio_category_2"
+            style="@style/RadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="WEEKS"/>
+
+        <RadioButton
+            android:id="@+id/radio_category_3"
+            style="@style/RadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="MONTHS"/>
+
+        <RadioButton
+            android:id="@+id/radio_category_4"
+            style="@style/RadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="YEARS"/>
+
+    </RadioGroup>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/stats_dialog_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="end|center_vertical"
+        android:text="@android:string/ok"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radio_group"/>
+</android.support.constraint.ConstraintLayout>
