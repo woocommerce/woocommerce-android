@@ -18,6 +18,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dashboard.DashboardCustomStatsDialog.CustomStatsFieldListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
@@ -25,12 +26,14 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
+import org.wordpress.android.fluxc.model.WCOrderStatsModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
-class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
+class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
+        CustomStatsFieldListener {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
@@ -47,6 +50,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
+
+    private var customStatsDialog: DashboardCustomStatsDialog? = null
 
     override var isActive: Boolean = false
         get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
@@ -138,6 +143,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive && isRefreshPending) {
             refreshDashboard(forced = false)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // TODO: Should we dismiss dialog if user's screen is switched off?
+        customStatsDialog?.dismiss()
+        customStatsDialog = null
     }
 
     override fun onStop() {
@@ -257,6 +269,17 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         presenter.loadTopEarnerStats(period)
     }
 
+    override fun onRequestLoadCustomStats(wcOrderStatsModel: WCOrderStatsModel?) {
+//        wcOrderStatsModel?.let {
+//            dashboard_stats.showErrorView(false)
+//            presenter.loadCustomStats(
+//                    StatsGranularity.fromString(wcOrderStatsModel.unit),
+//                    wcOrderStatsModel.startDate,
+//                    wcOrderStatsModel.endDate)
+//        } ?:
+        showCustomStatsDialog()
+    }
+
     override fun hideUnfilledOrdersCard() {
         if (dashboard_unfilled_orders.visibility == View.VISIBLE) {
             WooAnimUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)
@@ -282,5 +305,16 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun showEmptyView(show: Boolean) {
         if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
+    }
+
+    override fun onFieldSelected(startDate: String, endDate: String, granularity: StatsGranularity) {
+        // TODO: add functionality to fetch data for custom stats
+    }
+
+    private fun showCustomStatsDialog() {
+        val wcOrderStatsModel = presenter.getCustomOrderStats()
+        customStatsDialog = DashboardCustomStatsDialog
+                .newInstance(wcOrderStatsModel, listener = this)
+                .also { it.show(fragmentManager, DashboardCustomStatsDialog.TAG) }
     }
 }

@@ -135,7 +135,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
                 isRequestingStats = true
                 if (isCustomTab()) {
-                    // TODO: add click listener for custom tabs
+                    listener.onRequestLoadCustomStats(wcOrderStatsModel)
                 } else {
                     listener.onRequestLoadStats(tab.tag as StatsGranularity)
                 }
