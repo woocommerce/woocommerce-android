@@ -73,8 +73,7 @@ class AboutFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        val preloadUrlList = arrayOf(URL_PRIVACY_POLICY, URL_TOS)
-        ChromeCustomTabUtils.connect(activity as Context, preloadUrlList)
+        ChromeCustomTabUtils.connect(activity as Context, URL_PRIVACY_POLICY, arrayOf(URL_TOS, URL_AUTOMATTIC))
     }
 
     override fun onStop() {

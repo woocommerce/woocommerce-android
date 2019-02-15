@@ -17,7 +17,7 @@ import com.woocommerce.android.R
 /**
  * Simplifies using Chrome Custom Tabs
  *
- *  - Call connect with an optional URL or list of URLs to preload when the activity starts
+ *  - Call connect with an optional URL and optional list of other URLs to preload when the activity starts
  *  - Call launchUrl() to actually display the URL
  *  - Call disconnect when the activity stops
  *
@@ -25,9 +25,9 @@ import com.woocommerce.android.R
  *
  *  - Call launchUrl() by itself to avoid connecting and disconnecting
  *
- *  The latter is recommended when it's not necessary to pre-load the URL (Google recommends
+ *  The latter is recommended when it's not necessary to pre-load any URLs (Google recommends
  *  preloading only when there's at least a 50% chance users will visit the URL). Note that
- *  when passing a list of URLs, they should be ordered in descending order of priority
+ *  when passing a list of other likely URLs, they should be ordered in descending priority
  */
 object ChromeCustomTabUtils {
     private const val CUSTOM_TAB_PACKAGE_NAME_STABLE = "com.android.chrome"
@@ -36,23 +36,7 @@ object ChromeCustomTabUtils {
     private var connection: CustomTabsServiceConnection? = null
     private var canUseCustomTabs: Boolean? = null
 
-    fun connect(context: Context, preloadUrl: String? = null): Boolean {
-        val preloadUrlList = ArrayList<String>()
-        preloadUrl?.let { url ->
-            preloadUrlList.add(url)
-        }
-        return ChromeCustomTabUtils.connect(context, preloadUrlList)
-    }
-
-    fun connect(context: Context, preloadUrlArray: Array<String>): Boolean {
-        val preloadUrlList = ArrayList<String>()
-        for (url in preloadUrlArray) {
-            preloadUrlList.add(url)
-        }
-        return connect(context, preloadUrlList)
-    }
-
-    fun connect(context: Context, preloadUrlList: ArrayList<String>): Boolean {
+    fun connect(context: Context, preloadUrl: String? = null, otherLikelyUrls: Array<String>? = null): Boolean {
         if (!canUseCustomTabs(context)) {
             return false
         }
@@ -61,16 +45,18 @@ object ChromeCustomTabUtils {
             override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
                 client.warmup(0)
                 session = client.newSession(null)
-                if (preloadUrlList.size > 0) {
-                    val firstPreloadUrl = preloadUrlList.removeAt(0)
-                    val otherLikelyBundles = ArrayList<Bundle>()
-                    for (url in preloadUrlList) {
+
+                val otherLikelyBundles = ArrayList<Bundle>()
+                otherLikelyUrls?.let { urlList ->
+                    for (url in urlList) {
                         val bundle = Bundle()
                         bundle.putParcelable(KEY_URL, Uri.parse(url))
                         otherLikelyBundles.add(bundle)
                     }
-                    session?.mayLaunchUrl(Uri.parse(firstPreloadUrl), null, otherLikelyBundles)
                 }
+
+                val uriToPreload: Uri? = preloadUrl?.let { Uri.parse(it) }
+                session?.mayLaunchUrl(uriToPreload, null, otherLikelyBundles)
             }
             override fun onServiceDisconnected(name: ComponentName) {
                 session = null
