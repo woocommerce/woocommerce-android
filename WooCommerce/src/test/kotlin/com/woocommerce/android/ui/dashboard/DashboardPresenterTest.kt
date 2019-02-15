@@ -364,4 +364,73 @@ class DashboardPresenterTest {
         })
         verify(dashboardView, times(1)).showTopEarnersSkeleton(false)
     }
+
+    @Test
+    fun `Requests custom order stats data correctly`() {
+        presenter.takeView(dashboardView)
+        presenter.loadStats(StatsGranularity.DAYS, forced = true,
+                startDate = "2019-01-16", endDate = "2019-02-15")
+
+        // note that we expect two dispatches because there's one to get stats and another to get visitors
+        verify(dispatcher, times(2)).dispatch(actionCaptor.capture())
+        assertEquals(FETCH_ORDER_STATS, actionCaptor.firstValue.type)
+
+        val payload = actionCaptor.firstValue.payload as FetchOrderStatsPayload
+        assertEquals(StatsGranularity.DAYS, payload.granularity)
+        assertEquals("2019-01-16", payload.startDate)
+        assertEquals("2019-02-15", payload.endDate)
+        assertEquals(true, payload.forced)
+    }
+
+    @Test
+    fun `Handles custom stats OnChanged result correctly`() {
+        presenter.takeView(dashboardView)
+
+        // Simulate OnChanged event from FluxC
+        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS, quantity = "45",
+                date = "2019-02-15", isCustomField = true)
+        onChanged.causeOfChange = FETCH_ORDER_STATS
+        presenter.onWCStatsChanged(onChanged)
+
+        verify(dashboardView).showStats(any(), any(), eq(StatsGranularity.DAYS))
+    }
+
+    @Test
+    fun `Show and hide custom stats skeleton correctly`() {
+        presenter.takeView(dashboardView)
+        presenter.loadStats(
+                granularity = StatsGranularity.DAYS,
+                forced = true,
+                startDate = "2019-01-16",
+                endDate = "2019-02-15"
+        )
+        verify(dashboardView, times(1)).showChartSkeleton(true)
+
+        val onChanged = OnWCStatsChanged(
+                rowsAffected = 1,
+                granularity = StatsGranularity.DAYS,
+                date = "2019-02-15",
+                quantity = "30",
+                isCustomField = true
+        )
+        onChanged.causeOfChange = FETCH_ORDER_STATS
+        presenter.onWCStatsChanged(onChanged)
+        verify(dashboardView, times(1)).showChartSkeleton(false)
+    }
+
+    @Test
+    fun `Handles FETCH_VISITOR_STATS event for custom stats correctly`() {
+        presenter.takeView(dashboardView)
+
+        val onChanged = OnWCStatsChanged(1,
+                granularity = StatsGranularity.DAYS,
+                date = "2019-02-15",
+                quantity = "30",
+                isCustomField = true
+        )
+        onChanged.causeOfChange = FETCH_VISITOR_STATS
+
+        presenter.onWCStatsChanged(onChanged)
+        verify(dashboardView, times(1)).showVisitorStats(1, StatsGranularity.DAYS)
+    }
 }

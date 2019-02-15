@@ -51,6 +51,7 @@ class DashboardPresenter @Inject constructor(
     }
 
     private var dashboardView: DashboardContract.View? = null
+    private var customStatsForceRefresh = false
     private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
     private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
@@ -76,9 +77,11 @@ class DashboardPresenter @Inject constructor(
             return
         }
 
-        val forceRefresh = forced || statsForceRefresh[granularity.ordinal]
+        // Added a separate boolean flag for custom stats to force refresh data
+        val forceRefresh = forced || customStatsForceRefresh || statsForceRefresh[granularity.ordinal]
         if (forceRefresh) {
-            statsForceRefresh[granularity.ordinal] = false
+            if (customStatsForceRefresh) customStatsForceRefresh = false
+            else statsForceRefresh[granularity.ordinal] = false
             dashboardView?.showChartSkeleton(true)
         }
         val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, startDate, endDate, forceRefresh)
@@ -116,6 +119,7 @@ class DashboardPresenter @Inject constructor(
         for (i in 0 until topEarnersForceRefresh.size) {
             topEarnersForceRefresh[i] = true
         }
+        customStatsForceRefresh = true
     }
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
@@ -179,8 +183,16 @@ class DashboardPresenter @Inject constructor(
                         Stat.DASHBOARD_MAIN_STATS_LOADED,
                         mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
 
-                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField)
-                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField)
+                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(),
+                        event.granularity,
+                        event.quantity,
+                        event.date,
+                        event.isCustomField)
+                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(),
+                        event.granularity,
+                        event.quantity,
+                        event.date,
+                        event.isCustomField)
 
                 dashboardView?.showStats(revenueStats, orderStats, event.granularity)
             }
