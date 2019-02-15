@@ -168,14 +168,19 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (dashboard_stats.isActiveTab(granularity)) {
             dashboard_stats.showErrorView(false)
-            dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
+            dashboard_stats.updateView(
+                    revenueStats,
+                    salesStats,
+                    presenter.getStatsCurrency(),
+                    presenter.getCustomOrderStats()
+            )
         }
     }
 
     override fun showStatsError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (dashboard_stats.isActiveTab(granularity)) {
             showStats(emptyMap(), emptyMap(), granularity)
             dashboard_stats.showErrorView(true)
             showErrorSnack()
@@ -198,13 +203,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (dashboard_stats.isActiveTab(granularity)) {
             dashboard_stats.showVisitorStats(visits)
         }
     }
 
     override fun showVisitorStatsError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (dashboard_stats.isActiveTab(granularity)) {
             dashboard_stats.showVisitorStatsError()
         }
     }
@@ -235,7 +240,17 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             isActive -> {
                 isRefreshPending = false
                 dashboard_stats.clearLabelValues()
-                presenter.loadStats(dashboard_stats.activeGranularity, forced)
+                /**
+                 * Refresh only the currently selected tab.
+                 *
+                 * If custom tab: need to pass startDate, endDate, granularity, forced
+                 * If default tab: pass only granularity and forced
+                 * */
+                if (dashboard_stats.isCustomTab()) {
+                    onRequestLoadCustomStats(dashboard_stats.wcOrderStatsModel)
+                } else {
+                    presenter.loadStats(dashboard_stats.activeGranularity, forced)
+                }
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
@@ -308,7 +323,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onFieldSelected(startDate: String, endDate: String, granularity: StatsGranularity) {
-        // TODO: add functionality to fetch data for custom stats
+        dashboard_stats.showErrorView(false)
+        presenter.loadStats(
+                granularity = granularity,
+                forced = false,
+                startDate = startDate,
+                endDate = endDate)
     }
 
     private fun showCustomStatsDialog() {

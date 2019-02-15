@@ -78,7 +78,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartCurrencyCode: String? = null
-    private var wcOrderStatsModel: WCOrderStatsModel? = null
+    var wcOrderStatsModel: WCOrderStatsModel? = null
 
     private var skeletonView = SkeletonView()
 
@@ -184,7 +184,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * The assumption is that the last tab in the [TabLayout]
      * is for CUSTOM tabs.
      */
-    private fun isCustomTab(): Boolean {
+    fun isCustomTab(): Boolean {
         return (tab_layout.selectedTabPosition == tab_layout.tabCount - 1)
     }
 
@@ -319,8 +319,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         chart.highlightValue(null)
     }
 
-    fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
+    fun updateView(
+        revenueStats: Map<String, Double>,
+        orderStats: Map<String, Int>,
+        currencyCode: String?,
+        wcOrderStatsModel: WCOrderStatsModel?
+    ) {
         chartCurrencyCode = currencyCode
+        this.wcOrderStatsModel = wcOrderStatsModel
 
         val revenue = formatCurrencyForDisplay(revenueStats.values.sum(), currencyCode.orEmpty())
         val orders = orderStats.values.sum().toString()

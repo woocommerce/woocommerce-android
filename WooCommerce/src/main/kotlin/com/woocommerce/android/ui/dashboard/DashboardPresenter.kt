@@ -179,8 +179,8 @@ class DashboardPresenter @Inject constructor(
                         Stat.DASHBOARD_MAIN_STATS_LOADED,
                         mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
 
-                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity)
-                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
+                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField)
+                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField)
 
                 dashboardView?.showStats(revenueStats, orderStats, event.granularity)
             }
