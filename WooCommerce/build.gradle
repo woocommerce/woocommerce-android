@@ -41,8 +41,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "1.2-rc-1"
-        versionCode 34
+        versionName "1.2-rc-2"
+        versionCode 35
 
         minSdkVersion 21
         targetSdkVersion 27
@@ -172,7 +172,7 @@ dependencies {
     androidTestImplementation "com.android.support:support-annotations:$supportLibraryVersion"
     androidTestImplementation "com.google.code.findbugs:jsr305:3.0.1"
 
-    implementation (group: 'com.zendesk', name: 'support', version: '2.0.0') {
+    implementation (group: 'com.zendesk', name: 'support', version: '2.1.1') {
         exclude group: 'com.google.dagger'
     }
 }
