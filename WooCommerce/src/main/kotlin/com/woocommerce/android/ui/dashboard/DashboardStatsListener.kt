@@ -7,4 +7,5 @@ interface DashboardStatsListener {
     fun onRequestLoadStats(period: StatsGranularity)
     fun onRequestLoadTopEarnerStats(period: StatsGranularity)
     fun onRequestLoadCustomStats(wcOrderStatsModel: WCOrderStatsModel?)
+    fun onRequestDateRangeSelector(wcOrderStatsModel: WCOrderStatsModel?)
 }

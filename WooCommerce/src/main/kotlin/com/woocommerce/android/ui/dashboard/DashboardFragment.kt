@@ -292,7 +292,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     forced = false,
                     startDate = wcOrderStatsModel.startDate,
                     endDate = wcOrderStatsModel.endDate)
-        } ?: showCustomStatsDialog()
+        } ?: onRequestDateRangeSelector(wcOrderStatsModel)
+    }
+
+    override fun onRequestDateRangeSelector(wcOrderStatsModel: WCOrderStatsModel?) {
+        customStatsDialog = DashboardCustomStatsDialog
+                .newInstance(wcOrderStatsModel, listener = this)
+                .also { it.show(fragmentManager, DashboardCustomStatsDialog.TAG) }
     }
 
     override fun hideUnfilledOrdersCard() {
@@ -329,12 +335,5 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 forced = false,
                 startDate = startDate,
                 endDate = endDate)
-    }
-
-    private fun showCustomStatsDialog() {
-        val wcOrderStatsModel = presenter.getCustomOrderStats()
-        customStatsDialog = DashboardCustomStatsDialog
-                .newInstance(wcOrderStatsModel, listener = this)
-                .also { it.show(fragmentManager, DashboardCustomStatsDialog.TAG) }
     }
 }

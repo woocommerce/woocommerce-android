@@ -137,6 +137,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
                 isRequestingStats = true
                 if (isCustomTab()) {
+                    button_date_range.setOnClickListener { listener.onRequestDateRangeSelector(wcOrderStatsModel) }
                     listener.onRequestLoadCustomStats(wcOrderStatsModel)
                 } else {
                     listener.onRequestLoadStats(tab.tag as StatsGranularity)
