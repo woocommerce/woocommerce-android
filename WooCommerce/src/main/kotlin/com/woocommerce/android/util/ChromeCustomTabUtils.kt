@@ -46,18 +46,18 @@ object ChromeCustomTabUtils {
                 client.warmup(0)
                 session = client.newSession(null)
 
-                val otherLikelyBundles = ArrayList<Bundle>()
+                val uriToPreload: Uri? = preloadUrl?.let { Uri.parse(it) }
                 otherLikelyUrls?.let { urlList ->
+                    val otherLikelyBundles = ArrayList<Bundle>()
                     for (url in urlList) {
                         val bundle = Bundle()
                         bundle.putParcelable(KEY_URL, Uri.parse(url))
                         otherLikelyBundles.add(bundle)
                     }
-                }
-
-                val uriToPreload: Uri? = preloadUrl?.let { Uri.parse(it) }
-                session?.mayLaunchUrl(uriToPreload, null, otherLikelyBundles)
+                    session?.mayLaunchUrl(uriToPreload, null, otherLikelyBundles)
+                } ?: session?.mayLaunchUrl(uriToPreload, null, null)
             }
+
             override fun onServiceDisconnected(name: ComponentName) {
                 session = null
                 connection = null
