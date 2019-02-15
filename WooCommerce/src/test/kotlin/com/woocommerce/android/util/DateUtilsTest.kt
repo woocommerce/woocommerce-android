@@ -96,4 +96,11 @@ class DateUtilsTest {
             DateUtils.getShortMonthDayString("")
         }
     }
+
+    @Test
+    fun `getShortYearMonthDayString() returns correct values`() {
+        assertEquals("3 Jul, 2018", DateUtils.getShortDisplayDateString("2018-07-03"))
+        assertEquals("28 Jul, 2018", DateUtils.getShortDisplayDateString("2018-07-28"))
+        assertEquals("31 Dec, 2018", DateUtils.getShortDisplayDateString("2018-12-31"))
+    }
 }

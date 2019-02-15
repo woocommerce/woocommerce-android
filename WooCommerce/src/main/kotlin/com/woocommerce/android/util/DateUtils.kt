@@ -188,4 +188,21 @@ object DateUtils {
         cal.set(Calendar.YEAR, value.split("-")[0].toInt())
         return cal
     }
+
+    /**
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in short month ("MMM d, YYYY") format.
+     *
+     * For example, given 2018-07-03 returns "Jul 3, 2018", and given 2018-07-28 returns "Jul 28, 2018".
+     *
+     */
+    fun getShortDisplayDateString(dateString: String?): String? {
+        return dateString?.let {
+            val calendar = getCalendarInstance(dateString)
+            val month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())
+            String.format("%s %s, %s",
+                    calendar.get(Calendar.DATE),
+                    month,
+                    calendar.get(Calendar.YEAR))
+        }
+    }
 }

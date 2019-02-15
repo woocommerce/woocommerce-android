@@ -128,6 +128,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
+                showOrHideDateRangeView()
+
                 // Track range change
                 AnalyticsTracker.track(
                         Stat.DASHBOARD_MAIN_STATS_DATE,
@@ -333,6 +335,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
+        showOrHideDateRangeView()
+
         if (revenueStats.isEmpty()) {
             clearLastUpdated()
             isRequestingStats = false
@@ -392,6 +396,27 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         visitors_value.setText(R.string.emdash)
         revenue_value.setText(R.string.emdash)
         orders_value.setText(R.string.emdash)
+    }
+
+    private fun showOrHideDateRangeView() {
+        /**
+         * Logic to display date range selected by user for custom tabs.
+         *
+         * View will only be displayed for custom stats at the moment,
+         * can modify later to include default stats as well
+         */
+        wcOrderStatsModel?.let {
+            if (isCustomTab()) {
+                button_date_range.visibility = View.VISIBLE
+                tab_layout_divider_bottom.visibility = View.VISIBLE
+                button_date_range.text = String.format("%s  –  %s",
+                        DateUtils.getShortDisplayDateString(wcOrderStatsModel?.startDate),
+                        DateUtils.getShortDisplayDateString(wcOrderStatsModel?.endDate))
+            } else {
+                button_date_range.visibility = View.GONE
+                tab_layout_divider_bottom.visibility = View.GONE
+            }
+        }
     }
 
     private fun fadeInLabelValue(view: TextView, value: String) {
