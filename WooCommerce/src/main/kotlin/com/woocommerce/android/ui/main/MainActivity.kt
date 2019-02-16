@@ -289,6 +289,8 @@ class MainActivity : AppCompatActivity(),
         }
         AnalyticsTracker.track(stat)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         // Update the unseen notifications badge visiblility
         if (navPos == NOTIFICATIONS) {
             NotificationHandler.removeAllNotificationsFromSystemBar(this)
