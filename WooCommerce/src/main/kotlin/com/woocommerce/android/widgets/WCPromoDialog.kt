@@ -31,7 +31,7 @@ class WCPromoDialog : DialogFragment() {
             val preferences = activity.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val hasShownDialog = preferences.getBoolean(promoType.prefKeyName, false)
             if (hasShownDialog) {
-                // return false
+                return false
             }
 
             val fragment = WCPromoDialog()
