@@ -91,6 +91,10 @@ class DashboardCustomStatsDialog : DialogFragment() {
             )
             dismiss()
         }
+
+        stats_dialog_cancel.setOnClickListener {
+            dismiss()
+        }
     }
 
     private fun displayDialog(

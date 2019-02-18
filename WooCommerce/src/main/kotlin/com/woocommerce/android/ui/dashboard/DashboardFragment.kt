@@ -339,9 +339,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
          */
         val wcOrderStatsModel: WCOrderStatsModel? = presenter.getCustomOrderStats()
         val forced = wcOrderStatsModel?.let {
-            !(startDate.equals(it.startDate)
-                            && endDate.equals(it.endDate)
-                            && granularity.equals(StatsGranularity.fromString(it.unit)))
+            !(startDate.equals(it.startDate) &&
+                    endDate.equals(it.endDate) &&
+                    granularity.equals(StatsGranularity.fromString(it.unit)))
         } ?: false
 
         presenter.loadStats(

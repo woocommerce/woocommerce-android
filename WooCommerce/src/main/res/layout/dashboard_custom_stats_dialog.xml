@@ -138,10 +138,22 @@
         </RadioGroup>
 
         <android.support.v7.widget.AppCompatButton
+            android:id="@+id/stats_dialog_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="end|center_vertical"
+            android:text="@android:string/cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/stats_dialog_ok"
+            app:layout_constraintTop_toBottomOf="@+id/radio_group"/>
+
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/stats_dialog_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:minWidth="5dp"
             android:gravity="end|center_vertical"
             android:text="@android:string/ok"
             app:layout_constraintBottom_toBottomOf="parent"
