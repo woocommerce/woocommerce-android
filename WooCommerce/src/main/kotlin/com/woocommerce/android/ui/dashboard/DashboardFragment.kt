@@ -330,9 +330,23 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onFieldSelected(startDate: String, endDate: String, granularity: StatsGranularity) {
         dashboard_stats.showErrorView(false)
+
+        /**
+         * If the incoming startDate, endDate & granularity
+         * is different to the stored startDate, endDate & granularity,
+         * then the assumption is that the data is being fetched from api
+         * so boolean flag is set to true
+         */
+        val wcOrderStatsModel: WCOrderStatsModel? = presenter.getCustomOrderStats()
+        val forced = wcOrderStatsModel?.let {
+            !(startDate.equals(it.startDate)
+                            && endDate.equals(it.endDate)
+                            && granularity.equals(StatsGranularity.fromString(it.unit)))
+        } ?: false
+
         presenter.loadStats(
                 granularity = granularity,
-                forced = false,
+                forced = forced,
                 startDate = startDate,
                 endDate = endDate)
     }
