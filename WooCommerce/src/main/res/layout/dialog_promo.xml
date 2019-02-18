@@ -10,12 +10,14 @@
     <ImageView
         android:id="@+id/imagePromo"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/promo_dialog_image_height"
-        android:background="@color/default_background"
+        android:layout_height="wrap_content"
+        android:background="@color/wc_grey_light"
         android:importantForAccessibility="no"
-        android:scaleType="centerInside"
+        android:padding="@dimen/margin_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_woo_waiting_customers"/>
+        app:srcCompat="@drawable/ic_android_store_switcher"/>
 
     <TextView
         android:id="@+id/textTitle"

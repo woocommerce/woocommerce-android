@@ -441,6 +441,7 @@
     <string name="magic_link_sent_login_title">Magic link sent</string>
     <string name="selfhosted_site_login_title">Login credentials</string>
     <string name="verification_2fa_screen_title">Code verification</string>
+    <string name="site_picker_title">My stores</string>
 
     <string name="signup_email_screen_title">Email signup</string>
     <string name="signup_magic_link_title">Magic link sent</string>
