@@ -307,7 +307,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             retainInstance = true
         }
         fragmentTransaction.add(loginGoogleFragment, LoginGoogleFragment.TAG)
-        fragmentTransaction.commit()
+        fragmentTransaction.commitAllowingStateLoss()
     }
 
     override fun helpMagicLinkRequest(email: String?) {
