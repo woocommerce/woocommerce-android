@@ -150,7 +150,6 @@
     <dimen name="skeleton_order_note_item_height">96dp</dimen>
     <dimen name="skeleton_default_text_height">20sp</dimen>
 
-
     <!--
          Custom Stats Dialog
     -->

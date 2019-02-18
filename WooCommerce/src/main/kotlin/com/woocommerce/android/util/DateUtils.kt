@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
+import org.wordpress.android.fluxc.utils.DateUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
@@ -154,50 +155,13 @@ object DateUtils {
     }
 
     /**
-     * returns string of the current date
-     * in the format: YYYY-MM-dd
-     *
-     */
-    fun getCurrentDateString(): String {
-        val calendar = Calendar.getInstance()
-        calendar.time = Date()
-        val dayOfMonth = calendar.get(Calendar.DATE)
-        val year = calendar.get(Calendar.YEAR)
-        val monthOfYear = calendar.get(Calendar.MONTH)
-        return getFormattedDateString(year, monthOfYear, dayOfMonth)
-    }
-
-    /**
-     * Given a year integer, month integer, date integer,
-     * returns string in the format: YYYY-MM-dd
-     *
-     */
-    fun getFormattedDateString(year: Int, month: Int, dayOfMonth: Int): String {
-        return String.format("%d-%02d-%02d", year, (month + 1), dayOfMonth)
-    }
-
-    /**
-     * Given a date string of format YYYY-MM-dd, returns a [Calendar] instance of the same
-     *
-     */
-    fun getCalendarInstance(value: String): Calendar {
-        val cal = Calendar.getInstance()
-        cal.set(Calendar.DATE, value.split("-")[2].toInt())
-        cal.set(Calendar.MONTH, (value.split("-")[1].toInt()))
-        cal.add(Calendar.MONTH, -1)
-        cal.set(Calendar.YEAR, value.split("-")[0].toInt())
-        return cal
-    }
-
-    /**
      * Given an ISO8601 date of format YYYY-MM-DD, returns the String in short month ("MMM d, YYYY") format.
      *
      * For example, given 2018-07-03 returns "Jul 3, 2018", and given 2018-07-28 returns "Jul 28, 2018".
-     *
      */
     fun getShortDisplayDateString(dateString: String?): String? {
         return dateString?.let {
-            val calendar = getCalendarInstance(dateString)
+            val calendar = DateUtils.getCalendarInstance(dateString)
             val month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())
             String.format("%s %s, %s",
                     calendar.get(Calendar.DATE),

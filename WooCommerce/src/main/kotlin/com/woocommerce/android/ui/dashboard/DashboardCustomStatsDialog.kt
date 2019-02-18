@@ -13,11 +13,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.getCheckValue
 import com.woocommerce.android.ui.dashboard.DashboardCustomStatsDialog.CustomStatsFieldListener
-import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.DateUtils.getCurrentDateString
 import kotlinx.android.synthetic.main.dashboard_custom_stats_dialog.*
 import org.wordpress.android.fluxc.model.WCOrderStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.utils.DateUtils
 import java.util.Calendar
 import java.util.Date
 
@@ -63,10 +62,10 @@ class DashboardCustomStatsDialog : DialogFragment() {
             (radio_group.getChildAt(i) as RadioButton).text = StatsGranularity.values()[i].name
         }
 
-        val startDate = wcOrderStatsModel?.startDate ?: getCurrentDateString()
+        val startDate = wcOrderStatsModel?.startDate ?: DateUtils.getCurrentDateString()
         stats_from_date.text = startDate
 
-        val endDate = wcOrderStatsModel?.endDate ?: getCurrentDateString()
+        val endDate = wcOrderStatsModel?.endDate ?: DateUtils.getCurrentDateString()
         stats_to_date.text = endDate
 
         val granularity = wcOrderStatsModel?.unit?.let {
