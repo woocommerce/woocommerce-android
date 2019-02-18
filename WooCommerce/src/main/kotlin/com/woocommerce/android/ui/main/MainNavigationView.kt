@@ -144,7 +144,7 @@ class MainNavigationView @JvmOverloads constructor(
             with(it.childFragmentManager) {
                 if (backStackEntryCount > 0) {
                     val firstEntry = getBackStackEntryAt(0)
-                    popBackStack(firstEntry.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    popBackStackImmediate(firstEntry.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     return true
                 }
             }
