@@ -154,5 +154,10 @@
          Custom Stats Dialog
     -->
     <dimen name="radio_button_horizontal_padding">12dp</dimen>
-    <dimen name="radio_button_vertical_padding">6sp</dimen>
+    <dimen name="radio_button_vertical_padding">6dp</dimen>
+    <dimen name="radio_group_margin_top">20dp</dimen>
+    <dimen name="stats_dialog_title_margin_top">10dp</dimen>
+    <dimen name="stats_dialog_label_margin_top">4dp</dimen>
+    <dimen name="stats_dialog_label_padding_start">1dp</dimen>
+    <dimen name="stats_dialog_label_padding_end">1dp</dimen>
 </resources>
