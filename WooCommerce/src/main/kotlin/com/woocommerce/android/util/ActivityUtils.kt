@@ -37,6 +37,10 @@ object ActivityUtils {
         context.startActivity(intent)
     }
 
+    /**
+     * Use this only when you want to open the external browser - otherwise use
+     * [ChromeCustomTabUtils.launchUrl] to provide a better in-app experience
+     */
     fun openUrlExternal(context: Context, url: String) {
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
