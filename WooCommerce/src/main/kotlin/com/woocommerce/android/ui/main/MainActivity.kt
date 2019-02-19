@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity(),
      */
     override fun resetSelectedSite() {
         bottomNavView.reset()
-        with (bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
+        with(bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
             updateActivityTitle()
             refreshDashboard(true)
         }
