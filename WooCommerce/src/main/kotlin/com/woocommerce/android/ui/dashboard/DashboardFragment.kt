@@ -51,6 +51,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
 
+    private var shouldCustomStatsDialogDisplay: Boolean = false
     private var customStatsDialog: DashboardCustomStatsDialog? = null
 
     override var isActive: Boolean = false
@@ -147,8 +148,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onPause() {
         super.onPause()
-        customStatsDialog?.dismiss()
-        customStatsDialog = null
+        if (!shouldCustomStatsDialogDisplay) {
+            customStatsDialog?.dismiss()
+            customStatsDialog = null
+        }
     }
 
     override fun onStop() {
@@ -284,6 +287,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onRequestLoadCustomStats(wcOrderStatsModel: WCOrderStatsModel?) {
+        /**
+         * The custom stats dialog should only be retained in onPause
+         * only there is no custom stats available in cache
+         * */
+        shouldCustomStatsDialogDisplay = (wcOrderStatsModel == null)
         wcOrderStatsModel?.let {
             dashboard_stats.showErrorView(false)
             presenter.loadStats(
