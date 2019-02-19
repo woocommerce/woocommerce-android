@@ -176,7 +176,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * if the [StatsGranularity] passed to the method matches the
      * currently selected Tab's tag, then returns true
      */
-    fun isActiveTab(granularity: StatsGranularity) = isCustomTab() || (activeGranularity == granularity)
+    fun isActiveTab(granularity: StatsGranularity) = isCustomTab(granularity) || (activeGranularity == granularity)
+
+    /**
+     * Returns a Boolean flag after checking if the current tab is is a custom tab and
+     * if the currently selected position's granularity == incoming granularity
+     */
+    private fun isCustomTab(granularity: StatsGranularity) = (isCustomTab() &&
+            wcOrderStatsModel?.unit?.let { StatsGranularity.fromString(it) == granularity } ?: true)
 
     /**
      * Returns a Boolean flag after checking if the currently selected position
@@ -337,6 +344,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             isRequestingStats = false
             return
         }
+
+        showOrHideDateRangeView()
 
         val barColors = ArrayList<Int>()
         val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
