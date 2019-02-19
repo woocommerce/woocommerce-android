@@ -175,11 +175,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * The assumption is, if the current tab is custom tab, OR
      * if the [StatsGranularity] passed to the method matches the
      * currently selected Tab's tag, then returns true
-     *
      */
-    fun isActiveTab(granularity: StatsGranularity): Boolean {
-        return isCustomTab() || (activeGranularity == granularity)
-    }
+    fun isActiveTab(granularity: StatsGranularity) = isCustomTab() || (activeGranularity == granularity)
 
     /**
      * Returns a Boolean flag after checking if the currently selected position
@@ -188,9 +185,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * The assumption is that the last tab in the [TabLayout]
      * is for CUSTOM tabs.
      */
-    fun isCustomTab(): Boolean {
-        return (tab_layout.selectedTabPosition == tab_layout.tabCount - 1)
-    }
+    fun isCustomTab() = (tab_layout.selectedTabPosition == tab_layout.tabCount - 1)
 
     /**
      * Adds a new [TabLayout.Tab] to [TabLayout].

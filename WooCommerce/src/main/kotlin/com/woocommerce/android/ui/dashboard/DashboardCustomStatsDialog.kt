@@ -59,7 +59,7 @@ class DashboardCustomStatsDialog : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         for (i in 0 until radio_group.childCount) {
-            (radio_group.getChildAt(i) as RadioButton).text = StatsGranularity.values()[i].name
+            (radio_group.getChildAt(i) as? RadioButton)?.text = StatsGranularity.values()[i].name
         }
 
         val startDate = wcOrderStatsModel?.startDate ?: DateUtils.getCurrentDateString()
@@ -71,7 +71,7 @@ class DashboardCustomStatsDialog : DialogFragment() {
         val granularity = wcOrderStatsModel?.unit?.let {
             StatsGranularity.fromString(it).ordinal
         } ?: 0
-        (radio_group.getChildAt(granularity) as RadioButton).isChecked = true
+        (radio_group.getChildAt(granularity) as? RadioButton)?.isChecked = true
 
         stats_from_date.setOnClickListener {
             startDatePickerDialog = displayDialog(
@@ -122,7 +122,7 @@ class DashboardCustomStatsDialog : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        dialog.window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
         AnalyticsTracker.trackViewShown(this)
     }
 }

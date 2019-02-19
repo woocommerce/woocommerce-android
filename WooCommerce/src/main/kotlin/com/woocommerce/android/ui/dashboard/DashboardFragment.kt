@@ -147,7 +147,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onPause() {
         super.onPause()
-        // TODO: Should we dismiss dialog if user's screen is switched off?
         customStatsDialog?.dismiss()
         customStatsDialog = null
     }

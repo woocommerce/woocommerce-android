@@ -80,8 +80,11 @@ class DashboardPresenter @Inject constructor(
         // Added a separate boolean flag for custom stats to force refresh data
         val forceRefresh = forced || customStatsForceRefresh || statsForceRefresh[granularity.ordinal]
         if (forceRefresh) {
-            if (customStatsForceRefresh) customStatsForceRefresh = false
-            else statsForceRefresh[granularity.ordinal] = false
+            if (customStatsForceRefresh) {
+                customStatsForceRefresh = false
+            } else {
+                statsForceRefresh[granularity.ordinal] = false
+            }
             dashboardView?.showChartSkeleton(true)
         }
         val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, startDate, endDate, forceRefresh)
