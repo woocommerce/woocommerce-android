@@ -262,10 +262,9 @@ class MainActivity : AppCompatActivity(),
      */
     override fun resetSelectedSite() {
         bottomNavView.reset()
-        val dashboard = bottomNavView.getFragment(DASHBOARD) as DashboardFragment?
-        dashboard?.let {
-            it.updateActivityTitle()
-            it.refreshDashboard(true)
+        with (bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
+            updateActivityTitle()
+            refreshDashboard(true)
         }
     }
 
