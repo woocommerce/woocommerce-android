@@ -331,7 +331,7 @@
     <string name="invalid_verification_code">Invalid verification code</string>
     <string name="send_link">Send link</string>
     <string name="enter_your_password_instead">Enter your password instead</string>
-    <string name="username">Username</string>
+    <string name="username">WordPress.com username</string>
     <string name="password">Password</string>
     <string name="log_in">Log In</string>
     <string name="login_promo_text_onthego">Publish from the park. Blog from the bus. Comment from the café. WordPress goes where you go.</string>
