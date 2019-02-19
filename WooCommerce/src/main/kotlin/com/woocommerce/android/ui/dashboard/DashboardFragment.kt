@@ -344,6 +344,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     granularity.equals(StatsGranularity.fromString(it.unit)))
         } ?: false
 
+        dashboard_stats.updateDateRangeView(startDate, endDate, granularity)
         presenter.loadStats(
                 granularity = granularity,
                 forced = forced,

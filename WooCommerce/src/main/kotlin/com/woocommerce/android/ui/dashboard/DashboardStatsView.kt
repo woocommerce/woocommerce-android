@@ -32,6 +32,7 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient.OrderStatsApiUnit
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.utils.SiteUtils
@@ -336,8 +337,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        showOrHideDateRangeView()
-
         if (revenueStats.isEmpty()) {
             clearLastUpdated()
             isRequestingStats = false
@@ -397,6 +396,19 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         visitors_value.setText(R.string.emdash)
         revenue_value.setText(R.string.emdash)
         orders_value.setText(R.string.emdash)
+    }
+
+    fun updateDateRangeView(
+        startDate: String,
+        endDate: String,
+        granularity: StatsGranularity
+    ) {
+        wcOrderStatsModel?.let {
+            it.startDate = startDate
+            it.endDate = endDate
+            it.unit = OrderStatsApiUnit.fromStatsGranularity(granularity).toString()
+            showOrHideDateRangeView()
+        }
     }
 
     private fun showOrHideDateRangeView() {
