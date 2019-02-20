@@ -19,6 +19,7 @@ Bugfixes
 - Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
 - Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
 - Fixed bug that could cause the back arrow to appear in the toolbar when it shouldn't
+- Fixed bug that could cause the bottom navigation tabs to be hidden when switching to the order list
 
 
 Improvements
