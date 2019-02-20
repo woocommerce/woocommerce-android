@@ -349,13 +349,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         val barColors = ArrayList<Int>()
         val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
-        val weekendColor = ContextCompat.getColor(context, R.color.graph_data_color_weekend)
         for (entry in revenueStats) {
-            if (activeGranularity == StatsGranularity.DAYS && DateUtils.isWeekend(entry.key)) {
-                barColors.add(weekendColor)
-            } else {
-                barColors.add(normalColor)
-            }
+            barColors.add(normalColor)
         }
 
         val dataSet = generateBarDataSet(revenueStats).apply {

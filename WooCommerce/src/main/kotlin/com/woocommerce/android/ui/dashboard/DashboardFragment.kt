@@ -18,8 +18,10 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+
 import com.woocommerce.android.ui.dashboard.DashboardCustomStatsDialog.CustomStatsFieldListener
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -122,7 +124,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 title = getString(R.string.dashboard_plugin_notice_title),
                 message = getString(R.string.dashboard_plugin_notice_message),
                 buttonLabel = getString(R.string.button_update_instructions),
-                buttonAction = { ActivityUtils.openUrlExternal(activity as Context, URL_UPGRADE_WOOCOMMERCE) })
+                buttonAction = { ChromeCustomTabUtils.launchUrl(activity as Context, URL_UPGRADE_WOOCOMMERCE) })
 
         if (isActive) {
             refreshDashboard(forced = this.isRefreshPending)

@@ -130,6 +130,8 @@ class MainPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
+        mainView?.resetSelectedSite()
+
         // Fetch a fresh list of order status options
         dispatcher.dispatch(WCOrderActionBuilder
                     .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(event.site)))

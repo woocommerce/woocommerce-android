@@ -9,10 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.fragment_login_prologue.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import kotlinx.android.synthetic.main.fragment_login_prologue.*
 import org.wordpress.android.util.DisplayUtils
 
 class LoginPrologueFragment : Fragment() {
@@ -71,7 +71,7 @@ class LoginPrologueFragment : Fragment() {
 
         text_jetpack.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED)
-            ActivityUtils.openUrlExternal(activity as Context, JETPACK_HELP_URL)
+            ChromeCustomTabUtils.launchUrl(activity as Context, JETPACK_HELP_URL)
         }
     }
 }

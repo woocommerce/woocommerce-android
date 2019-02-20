@@ -13,8 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.AnalyticsUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_privacy.*
 import javax.inject.Inject
@@ -86,11 +86,21 @@ class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
         activity?.setTitle(R.string.privacy_settings)
     }
 
+    override fun onStart() {
+        super.onStart()
+        ChromeCustomTabUtils.connect(activity as Context, URL_PRIVACY_POLICY, arrayOf(URL_COOKIE_POLICY))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        ChromeCustomTabUtils.disconnect(activity as Context)
+    }
+
     override fun showCookiePolicy() {
-        ActivityUtils.openUrlExternal(activity as Context, URL_COOKIE_POLICY)
+        ChromeCustomTabUtils.launchUrl(activity as Context, URL_COOKIE_POLICY)
     }
 
     override fun showPrivacyPolicy() {
-        ActivityUtils.openUrlExternal(activity as Context, URL_PRIVACY_POLICY)
+        ChromeCustomTabUtils.launchUrl(activity as Context, URL_PRIVACY_POLICY)
     }
 }

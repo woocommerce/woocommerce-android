@@ -25,6 +25,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -254,6 +255,15 @@ class MainActivity : AppCompatActivity(),
 
         bottomNavView.init(supportFragmentManager, this)
         initFragment(null)
+    }
+
+    /**
+     * Called when the user switches sites - reset the fragments and tell the dashboard to refresh
+     */
+    override fun resetSelectedSite() {
+        bottomNavView.reset()
+        val dashboard = bottomNavView.getFragment(DASHBOARD) as DashboardFragment?
+        dashboard?.refreshDashboard(true)
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
