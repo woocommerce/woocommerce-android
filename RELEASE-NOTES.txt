@@ -26,3 +26,6 @@ Improvements
 status label will now be fetched from the server and properly displayed.
 - Filtering by custom order status now supported!
 - The name of the active store is now shown at the top of the "My store" tab
+
+New Features
+- Added support for manually changing the status of an order! Click the pencil icon next to the order status in the order detail view to open a list of available order status options for selection. Custom order statuses are also supported.
