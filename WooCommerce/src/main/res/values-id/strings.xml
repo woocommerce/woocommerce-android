@@ -264,7 +264,7 @@ Language: id
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Informasi Pelanggan</string>
     <string name="orderlist_filter">Penyaring</string>
-    <string name="orderlist_filter_apply">Terapkan Penyaring</string>
+    <string name="apply">Terapkan Penyaring</string>
     <string name="orderlist_filter_by">Saring pesanan menurut</string>
     <string name="orderlist_error_fetch_generic">Error saat mengambil pesanan</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>

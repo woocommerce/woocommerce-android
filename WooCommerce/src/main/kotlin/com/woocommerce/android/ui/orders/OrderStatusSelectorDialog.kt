@@ -12,12 +12,12 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 /**
  * Dialog displays a list of order statuses and allows for selecting a single order status to filter by.
  *
- * This fragment should be instantiated using the [OrderStatusFilterDialog.newInstance] method. Calling classes
+ * This fragment should be instantiated using the [OrderStatusSelectorDialog.newInstance] method. Calling classes
  * can obtain the results of selection through the [OrderListFilterListener].
  */
-class OrderStatusFilterDialog : DialogFragment() {
+class OrderStatusSelectorDialog : DialogFragment() {
     companion object {
-        const val TAG: String = "OrderStatusFilterDialog"
+        const val TAG: String = "OrderStatusSelectorDialog"
 
         private const val ALL_FILTER_ID: String = "all"
 
@@ -25,8 +25,8 @@ class OrderStatusFilterDialog : DialogFragment() {
             orderStatusOptions: Map<String, WCOrderStatusModel>,
             currentFilter: String?,
             listener: OrderListFilterListener
-        ): OrderStatusFilterDialog {
-            val fragment = OrderStatusFilterDialog()
+        ): OrderStatusSelectorDialog {
+            val fragment = OrderStatusSelectorDialog()
             fragment.orderStatusOptions = orderStatusOptions
             fragment.listener = listener
             fragment.selectedFilter = currentFilter ?: ALL_FILTER_ID
