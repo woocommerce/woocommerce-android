@@ -114,7 +114,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
 
         scrollView.setOnScrollChangeListener {
-            v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
+            _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
         }
     }
@@ -269,7 +269,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                 when (newStatus) {
                     CoreOrderStatus.COMPLETED.value ->
                         AnalyticsTracker.track(SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED)
-                    else -> {}
+                    else -> {
+                        // TODO add tracks for manual order status change
+                    }
                 }
 
                 // User canceled the action to change the order status
@@ -298,9 +300,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                 }
             }
 
-            // TODO: for now this assumes orders marked complete, this needs to change when we handle other statuses
+            // Select the appropriate snack message based on the new status
+            val snackMsg = when (newStatus) {
+                CoreOrderStatus.COMPLETED.value -> R.string.order_fulfill_marked_complete
+                else -> R.string.order_status_changed_to
+            }
             changeOrderStatusSnackbar = uiMessageResolver
-                    .getUndoSnack(R.string.order_fulfill_marked_complete, actionListener = actionListener)
+                    .getUndoSnack(snackMsg, newStatus, actionListener = actionListener)
                     .also {
                         it.addCallback(callback)
                         it.show()
@@ -384,9 +390,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onFilterSelected(orderStatus: String?) {
-        // TODO update the view
-        // TODO display a snack for UNDO
-        // TODO process the change to the status
+        orderStatus?.let {
+            showChangeOrderStatusSnackbar(it)
+        }
     }
 
     private fun showOrderStatusSelector() {
