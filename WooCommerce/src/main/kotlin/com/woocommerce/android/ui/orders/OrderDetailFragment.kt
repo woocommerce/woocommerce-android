@@ -31,7 +31,8 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener {
+class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
+        OrderStatusFilterDialog.OrderListFilterListener {
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -80,6 +81,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     private var notesSnack: Snackbar? = null
     private var pendingNotesError = false
     private var runOnStartFunc: (() -> Unit)? = null
+
+    private var orderStatusSelector: OrderStatusFilterDialog? = null
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -141,6 +144,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        orderStatusSelector?.let {
+            it.dismiss()
+            orderStatusSelector = null
+        }
+    }
+
     override fun onStop() {
         changeOrderStatusSnackbar?.dismiss()
         notesSnack?.dismiss()
@@ -159,7 +170,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
             // Populate the Order Status Card
             val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
-            orderDetail_orderStatus.initView(order, orderStatus)
+            orderDetail_orderStatus
+                    .initView(order, orderStatus, object : OrderDetailOrderStatusView.OrderStatusListener {
+                override fun openOrderStatusSelector() {
+                    showOrderStatusSelector()
+                }
+            })
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(order, false, currencyFormatter.buildFormatter(order.currency), this)
@@ -365,5 +381,21 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             setOrderStatus(status)
         }
         previousOrderStatus = null
+    }
+
+    override fun onFilterSelected(orderStatus: String?) {
+        // TODO update the view
+        // TODO display a snack for UNDO
+        // TODO process the change to the status
+    }
+
+    private fun showOrderStatusSelector() {
+        presenter.orderModel?.let { order ->
+            val orderStatusOptions = presenter.getOrderStatusOptions()
+            val orderStatus = order.status
+            orderStatusSelector = OrderStatusFilterDialog
+                    .newInstance(orderStatusOptions, orderStatus, listener = this)
+                    .also { it.show(fragmentManager, OrderStatusFilterDialog.TAG) }
+        }
     }
 }

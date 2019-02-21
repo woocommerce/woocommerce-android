@@ -18,7 +18,11 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
         View.inflate(context, R.layout.order_detail_order_status, this)
     }
 
-    fun initView(orderModel: WCOrderModel, orderStatus: WCOrderStatusModel) {
+    interface OrderStatusListener {
+        fun openOrderStatusSelector()
+    }
+
+    fun initView(orderModel: WCOrderModel, orderStatus: WCOrderStatusModel, listener: OrderStatusListener) {
         orderStatus_orderNum.text = context.getString(
                 R.string.orderdetail_orderstatus_heading,
                 orderModel.number, orderModel.billingFirstName, orderModel.billingLastName)
@@ -26,6 +30,10 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
         orderStatus_created.text = context.getString(R.string.orderdetail_orderstatus_created, dateStr)
         orderStatus_orderTags.removeAllViews()
         orderStatus_orderTags.addView(getTagView(orderStatus))
+
+        orderStatus_edit.setOnClickListener {
+            listener.openOrderStatusSelector()
+        }
     }
 
     fun updateStatus(orderStatus: WCOrderStatusModel) {

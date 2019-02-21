@@ -37,6 +37,7 @@ import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsRead
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
@@ -62,6 +63,7 @@ class OrderDetailPresenter @Inject constructor(
 
     private var orderView: OrderDetailContract.View? = null
     private var isNotesInit = false
+    private var isRefreshingOrderStatusOptions = false
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
@@ -164,6 +166,27 @@ class OrderDetailPresenter @Inject constructor(
         return orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel().apply {
             statusKey = key
             label = key
+        }
+    }
+
+    override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
+        val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+        return if (options.isEmpty()) {
+            refreshOrderStatusOptions()
+            emptyMap()
+        } else {
+            options.map { it.statusKey to it }.toMap()
+        }
+    }
+
+    override fun refreshOrderStatusOptions() {
+        // Refresh the order status options from the API
+        if (!isRefreshingOrderStatusOptions) {
+            isRefreshingOrderStatusOptions = true
+            dispatcher.dispatch(
+                    WCOrderActionBuilder
+                            .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get()))
+            )
         }
     }
 
@@ -288,6 +311,8 @@ class OrderDetailPresenter @Inject constructor(
     @Suppress
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
+        isRefreshingOrderStatusOptions = false
+
         if (event.isError) {
             WooLog.e(T.ORDERS, "${OrderDetailPresenter.TAG} " +
                     "- Error fetching order status options from the api : ${event.error.message}")
