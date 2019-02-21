@@ -24,13 +24,13 @@ class OrderStatusSelectorDialog : DialogFragment() {
         fun newInstance(
             orderStatusOptions: Map<String, WCOrderStatusModel>,
             currentFilter: String?,
-            title: String? = null,
+            isFilter: Boolean,
             listener: OrderListFilterListener
         ): OrderStatusSelectorDialog {
             val fragment = OrderStatusSelectorDialog()
             fragment.orderStatusOptions = orderStatusOptions
+            fragment.isFilter = isFilter
             fragment.listener = listener
-            fragment.dialogTitle = title
             fragment.selectedFilter = currentFilter ?: ALL_FILTER_ID
             return fragment
         }
@@ -41,14 +41,18 @@ class OrderStatusSelectorDialog : DialogFragment() {
     }
 
     private val filterMap: Map<String, String> by lazy {
-        mapOf(ALL_FILTER_ID to getString(R.string.all)).plus(
-                orderStatusOptions.values.associate { it.statusKey to it.label }
-        )
+        if (isFilter) {
+            mapOf(ALL_FILTER_ID to getString(R.string.all)).plus(
+                    orderStatusOptions.values.associate { it.statusKey to it.label }
+            )
+        } else {
+            orderStatusOptions.values.associate { it.statusKey to it.label }
+        }
     }
 
     var listener: OrderListFilterListener? = null
-    var dialogTitle: String? = null
     var selectedFilter: String? = null
+    var isFilter: Boolean = false
     lateinit var orderStatusOptions: Map<String, WCOrderStatusModel>
 
     private fun getCurrentOrderStatusIndex(): Int {
@@ -58,7 +62,11 @@ class OrderStatusSelectorDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val selectedIndex = getCurrentOrderStatusIndex()
 
-        val title = dialogTitle ?: resources.getString(R.string.orderlist_filter_by)
+        val title = if (isFilter) {
+            resources.getString(R.string.orderlist_filter_by)
+        } else {
+            resources.getString(R.string.orderstatus_select_status)
+        }
         return AlertDialog.Builder(context)
                 .setTitle(title)
                 .setCancelable(true)
@@ -77,7 +85,11 @@ class OrderStatusSelectorDialog : DialogFragment() {
                         listener?.onFilterSelected(selectedFilter.takeUnless { it == ALL_FILTER_ID })
                     }
                     dialog.dismiss()
-                }.create()
+                }
+                .setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
     }
 
     override fun onResume() {

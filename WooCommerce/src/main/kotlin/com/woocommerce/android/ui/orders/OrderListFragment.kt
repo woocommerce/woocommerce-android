@@ -489,7 +489,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     private fun showFilterDialog() {
         val orderStatusOptions = presenter.getOrderStatusOptions()
         orderFilterDialog = OrderStatusSelectorDialog
-                .newInstance(orderStatusOptions, orderStatusFilter, listener = this)
+                .newInstance(orderStatusOptions, orderStatusFilter, true, listener = this)
                 .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
     }
 

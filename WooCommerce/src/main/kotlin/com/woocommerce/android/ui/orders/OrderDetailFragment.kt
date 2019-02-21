@@ -403,7 +403,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                     .newInstance(
                             orderStatusOptions,
                             orderStatus,
-                            getString(R.string.orderstatus_select_status),
+                            false,
                             listener = this)
                     .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
         }
