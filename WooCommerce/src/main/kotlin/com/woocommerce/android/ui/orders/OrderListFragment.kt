@@ -40,7 +40,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener,
+class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusSelectorDialog.OrderListFilterListener,
         OnQueryTextListener, OnActionExpandListener, OnLoadMoreListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
@@ -65,7 +65,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var ordersDividerDecoration: DividerItemDecoration
-    private var orderFilterDialog: OrderStatusFilterDialog? = null
+    private var orderFilterDialog: OrderStatusSelectorDialog? = null
 
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
     override var isRefreshing: Boolean
@@ -488,9 +488,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // region Filtering
     private fun showFilterDialog() {
         val orderStatusOptions = presenter.getOrderStatusOptions()
-        orderFilterDialog = OrderStatusFilterDialog
+        orderFilterDialog = OrderStatusSelectorDialog
                 .newInstance(orderStatusOptions, orderStatusFilter, listener = this)
-                .also { it.show(fragmentManager, OrderStatusFilterDialog.TAG) }
+                .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
     }
 
     override fun onFilterSelected(orderStatus: String?) {

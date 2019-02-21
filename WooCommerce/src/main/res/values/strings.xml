@@ -212,6 +212,7 @@
     <!--
         Order Status Labels
     -->
+    <string name="orderstatus_select_status">Choose order status</string>
     <string name="orderstatus_processing">Processing</string>
     <string name="orderstatus_pending">Pending Payment</string>
     <string name="orderstatus_failed">Failed</string>

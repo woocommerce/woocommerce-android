@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
-        OrderStatusFilterDialog.OrderListFilterListener {
+        OrderStatusSelectorDialog.OrderListFilterListener {
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -82,7 +82,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     private var pendingNotesError = false
     private var runOnStartFunc: (() -> Unit)? = null
 
-    private var orderStatusSelector: OrderStatusFilterDialog? = null
+    private var orderStatusSelector: OrderStatusSelectorDialog? = null
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -399,9 +399,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         presenter.orderModel?.let { order ->
             val orderStatusOptions = presenter.getOrderStatusOptions()
             val orderStatus = order.status
-            orderStatusSelector = OrderStatusFilterDialog
-                    .newInstance(orderStatusOptions, orderStatus, listener = this)
-                    .also { it.show(fragmentManager, OrderStatusFilterDialog.TAG) }
+            orderStatusSelector = OrderStatusSelectorDialog
+                    .newInstance(
+                            orderStatusOptions,
+                            orderStatus,
+                            getString(R.string.orderstatus_select_status),
+                            listener = this)
+                    .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
         }
     }
 }
