@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
-        OrderStatusSelectorDialog.OrderListFilterListener {
+        OrderStatusSelectorDialog.OrderStatusDialogListener {
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -389,7 +389,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         previousOrderStatus = null
     }
 
-    override fun onFilterSelected(orderStatus: String?) {
+    override fun onOrderStatusSelected(orderStatus: String?) {
         orderStatus?.let {
             showChangeOrderStatusSnackbar(it)
         }

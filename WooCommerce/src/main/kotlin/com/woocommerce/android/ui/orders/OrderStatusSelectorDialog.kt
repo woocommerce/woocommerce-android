@@ -10,10 +10,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 /**
- * Dialog displays a list of order statuses and allows for selecting a single order status to filter by.
+ * Dialog displays a list of order statuses and allows for selecting a single order status for filtering or
+ * manually changing order statuses.
  *
  * This fragment should be instantiated using the [OrderStatusSelectorDialog.newInstance] method. Calling classes
- * can obtain the results of selection through the [OrderListFilterListener].
+ * can obtain the results of selection through the [OrderStatusDialogListener].
  */
 class OrderStatusSelectorDialog : DialogFragment() {
     companion object {
@@ -23,24 +24,24 @@ class OrderStatusSelectorDialog : DialogFragment() {
 
         fun newInstance(
             orderStatusOptions: Map<String, WCOrderStatusModel>,
-            currentFilter: String?,
+            currentStatus: String?,
             isFilter: Boolean,
-            listener: OrderListFilterListener
+            listener: OrderStatusDialogListener
         ): OrderStatusSelectorDialog {
             val fragment = OrderStatusSelectorDialog()
             fragment.orderStatusOptions = orderStatusOptions
             fragment.isFilter = isFilter
             fragment.listener = listener
-            fragment.selectedFilter = currentFilter ?: ALL_FILTER_ID
+            fragment.selectedOrderStatus = currentStatus ?: ALL_FILTER_ID
             return fragment
         }
     }
 
-    interface OrderListFilterListener {
-        fun onFilterSelected(orderStatus: String?)
+    interface OrderStatusDialogListener {
+        fun onOrderStatusSelected(orderStatus: String?)
     }
 
-    private val filterMap: Map<String, String> by lazy {
+    private val orderStatusMap: Map<String, String> by lazy {
         if (isFilter) {
             mapOf(ALL_FILTER_ID to getString(R.string.all)).plus(
                     orderStatusOptions.values.associate { it.statusKey to it.label }
@@ -50,13 +51,13 @@ class OrderStatusSelectorDialog : DialogFragment() {
         }
     }
 
-    var listener: OrderListFilterListener? = null
-    var selectedFilter: String? = null
+    var listener: OrderStatusDialogListener? = null
+    var selectedOrderStatus: String? = null
     var isFilter: Boolean = false
     lateinit var orderStatusOptions: Map<String, WCOrderStatusModel>
 
     private fun getCurrentOrderStatusIndex(): Int {
-        return filterMap.keys.indexOfFirst { it == selectedFilter }
+        return orderStatusMap.keys.indexOfFirst { it == selectedOrderStatus }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -70,19 +71,22 @@ class OrderStatusSelectorDialog : DialogFragment() {
         return AlertDialog.Builder(context)
                 .setTitle(title)
                 .setCancelable(true)
-                .setSingleChoiceItems(filterMap.values.toTypedArray(), selectedIndex) { _, which ->
-                    selectedFilter = filterMap.keys.toTypedArray()[which]
+                .setSingleChoiceItems(orderStatusMap.values.toTypedArray(), selectedIndex) { _, which ->
+                    selectedOrderStatus = orderStatusMap.keys.toTypedArray()[which]
 
                     AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
-                            mapOf("status" to selectedFilter))
+                            mapOf("status" to selectedOrderStatus))
                 }
                 .setPositiveButton(R.string.apply) { dialog, _ ->
+                    val newSelectedIndex = getCurrentOrderStatusIndex()
+
+                    // If in filter mode and 'All' is selected, pass null to signal a filterless refresh
+                    val selectedItem = selectedOrderStatus.takeUnless { it == ALL_FILTER_ID }
+
                     AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED)
 
-                    val newSelectedIndex = getCurrentOrderStatusIndex()
                     if (newSelectedIndex != selectedIndex) {
-                        // If 'All' is selected filter, pass null to signal a filterless refresh
-                        listener?.onFilterSelected(selectedFilter.takeUnless { it == ALL_FILTER_ID })
+                        listener?.onOrderStatusSelected(selectedItem)
                     }
                     dialog.dismiss()
                 }

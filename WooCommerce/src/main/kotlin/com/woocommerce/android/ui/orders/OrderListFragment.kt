@@ -40,7 +40,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusSelectorDialog.OrderListFilterListener,
+class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusSelectorDialog.OrderStatusDialogListener,
         OnQueryTextListener, OnActionExpandListener, OnLoadMoreListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
@@ -121,7 +121,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         if (orderStatusFilter != null && orderStatusFilter != ordersAdapter.orderStatusFilter) {
-            onFilterSelected(orderStatusFilter)
+            onOrderStatusSelected(orderStatusFilter)
         }
     }
 
@@ -493,7 +493,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
                 .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
     }
 
-    override fun onFilterSelected(orderStatus: String?) {
+    override fun onOrderStatusSelected(orderStatus: String?) {
         orderStatusFilter = orderStatus
 
         if (isAdded) {
