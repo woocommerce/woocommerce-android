@@ -83,7 +83,13 @@ class OrderStatusSelectorDialog : DialogFragment() {
                     // If in filter mode and 'All' is selected, pass null to signal a filterless refresh
                     val selectedItem = selectedOrderStatus.takeUnless { it == ALL_FILTER_ID }
 
-                    AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED)
+                    if (isFilter) {
+                        AnalyticsTracker.track(Stat.FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED)
+                    } else {
+                        AnalyticsTracker.track(
+                                Stat.SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
+                                mapOf("status" to selectedItem.orEmpty()))
+                    }
 
                     if (newSelectedIndex != selectedIndex) {
                         listener?.onOrderStatusSelected(selectedItem)

@@ -118,6 +118,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED,
         ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED,
         ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED,
+        ORDER_DETAIL_ORDER_STATUS_EDIT_BUTTON_TAPPED,
         ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
 
         // -- Order Notes
@@ -189,7 +190,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         REVIEW_DETAIL_TRASH_BUTTON_TAPPED,
 
         // -- Errors
-        JETPACK_TUNNEL_TIMEOUT
+        JETPACK_TUNNEL_TIMEOUT,
+
+        // -- Order status changes
+        SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED
     }
     // endregion
 

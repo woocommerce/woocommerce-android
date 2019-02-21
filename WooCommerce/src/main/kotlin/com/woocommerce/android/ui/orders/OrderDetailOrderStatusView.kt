@@ -6,6 +6,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_detail_order_status.view.*
@@ -32,6 +34,8 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(ctx: Context, attrs: 
         orderStatus_orderTags.addView(getTagView(orderStatus))
 
         orderStatus_edit.setOnClickListener {
+            AnalyticsTracker.track(
+                    Stat.ORDER_DETAIL_ORDER_STATUS_EDIT_BUTTON_TAPPED, mapOf("status" to orderModel.status))
             listener.openOrderStatusSelector()
         }
     }
