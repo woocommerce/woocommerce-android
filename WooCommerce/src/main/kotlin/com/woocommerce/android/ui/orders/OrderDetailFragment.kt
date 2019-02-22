@@ -269,9 +269,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                 when (newStatus) {
                     CoreOrderStatus.COMPLETED.value ->
                         AnalyticsTracker.track(SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED)
-                    else -> {
-                        // TODO add tracks for manual order status change
-                    }
+                    else -> {}
                 }
 
                 // User canceled the action to change the order status
