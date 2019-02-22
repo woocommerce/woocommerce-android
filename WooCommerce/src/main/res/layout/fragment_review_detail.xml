@@ -20,7 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_medium"
             android:background="?attr/selectableItemBackground"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/review_product_icon"

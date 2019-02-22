@@ -16,6 +16,7 @@ interface MainContract {
         fun notifyTokenUpdated()
         fun showLoginScreen()
         fun showSitePickerScreen()
+        fun resetSelectedSite()
         fun updateSelectedSite()
         fun showSettingsScreen()
         fun showHelpAndSupport()

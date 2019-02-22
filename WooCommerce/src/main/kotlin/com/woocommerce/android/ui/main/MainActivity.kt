@@ -25,6 +25,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -256,6 +257,17 @@ class MainActivity : AppCompatActivity(),
         initFragment(null)
     }
 
+    /**
+     * Called when the user switches sites - reset the fragments and tell the dashboard to refresh
+     */
+    override fun resetSelectedSite() {
+        bottomNavView.reset()
+        with(bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
+            updateActivityTitle()
+            refreshDashboard(true)
+        }
+    }
+
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
@@ -288,6 +300,8 @@ class MainActivity : AppCompatActivity(),
             NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         // Update the unseen notifications badge visiblility
         if (navPos == NOTIFICATIONS) {
