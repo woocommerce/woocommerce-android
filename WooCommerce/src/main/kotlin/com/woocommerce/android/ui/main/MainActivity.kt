@@ -385,6 +385,7 @@ class MainActivity : AppCompatActivity(),
     // endregion
 
     override fun showOrderList(orderStatusFilter: String?) {
+        showBottomNav()
         bottomNavView.updatePositionAndDeferInit(ORDERS)
 
         val fragment = bottomNavView.getFragment(ORDERS)
@@ -392,6 +393,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
+        showBottomNav()
         bottomNavView.currentPosition = NOTIFICATIONS
 
         val fragment = bottomNavView.getFragment(NOTIFICATIONS)

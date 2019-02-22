@@ -21,6 +21,7 @@ Bugfixes
 - Fixed rare crash when the current tab is reselected
 - Fixed a rare crash when showing the Google login screen
 - Fixed bug that could cause the back arrow to appear in the toolbar when it shouldn't
+- Fixed bug that could cause the bottom navigation tabs to be hidden when switching to the order list
 - Fixed crash when opening app from a notification
 
 Improvements
