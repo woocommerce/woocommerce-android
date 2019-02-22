@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 09:54:03+0000
+Translation-Revision-Date: 2019-02-20 14:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="tooltip_site_switcher">Mağazalar arasında geçiş yapmak için bu simgeye dokunabilirsiniz</string>
+    <string name="app_rating_rate_never">Hayır, teşekkürler</string>
+    <string name="app_rating_rate_later">Daha sonra</string>
+    <string name="app_rating_rate_now">Şimdi değerlendirin</string>
+    <string name="app_rating_message">Sizi yeniden görmek çok güzel! Uygulamayı kullanıyorsanız lütfen Google Play Store üzerinden bizi değerlendirin.</string>
+    <string name="app_rating_title">Woo kullanmaktan keyif aldınız mı?</string>
+    <string name="settings_selected_store">Seçili mağaza</string>
+    <string name="notifs_empty_message">Henüz bildirim yok!</string>
+    <string name="orders_empty_message_with_search">Eşleşen sipariş yok</string>
+    <string name="orders_empty_message_with_filter">Sipariş yok</string>
+    <string name="waiting_for_customers_contentdesc">Müşteri görseli bekleniyor</string>
+    <string name="waiting_for_customers">Müşteriler bekleniyor</string>
+    <string name="share_store_dialog_title">Mağazanızın URL\'sini paylaşın</string>
+    <string name="share_store_button">Mağazanızı paylaşın</string>
     <string name="wc_mark_all_read_success">Tüm bildirimler okundu olarak işaretlendi</string>
     <string name="login_update_required_desc">Bu uygulama için sunucunuzda WooCommerce 3.5 olması gerekir. Bu uygulamayı kullanmaya devam etmek için lütfen mağazanızı güncelleyin.</string>
     <string name="login_update_required_title">Mağazayı WooCommerce 3.5’e Yükseltin</string>

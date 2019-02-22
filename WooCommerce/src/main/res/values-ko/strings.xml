@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-08 07:54:02+0000
+Translation-Revision-Date: 2019-02-20 09:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="tooltip_site_switcher">이제 탭하여 스토어 전환 가능</string>
+    <string name="app_rating_rate_never">안 함</string>
+    <string name="app_rating_rate_later">나중에</string>
+    <string name="app_rating_rate_now">지금 평가</string>
+    <string name="app_rating_message">다시 만나서 반가워요! 앱을 알아보고 있다면 Google Play 스토어에서 평가를 확인하는 것이 좋습니다.</string>
+    <string name="app_rating_title">Woo를 사용하고 계세요?</string>
+    <string name="settings_selected_store">선택한 스토어</string>
+    <string name="notifs_empty_message">알림이 없습니다!</string>
+    <string name="orders_empty_message_with_search">일치하는 주문이 없음</string>
+    <string name="orders_empty_message_with_filter">주문 없음</string>
+    <string name="waiting_for_customers_contentdesc">고객 이미지를 기다리는 중</string>
+    <string name="waiting_for_customers">고객을 기다리는 중</string>
+    <string name="share_store_dialog_title">스토어 URL 공유</string>
+    <string name="share_store_button">스토어 공유</string>
     <string name="wc_mark_all_read_success">모든 알림이 읽음으로 표시됨</string>
     <string name="login_update_required_desc">이 앱을 사용하려면 서버에 WooCommerce 3.5가 있어야 합니다. 이 앱을 계속 사용하려면 스토어를 업데이트하세요.</string>
     <string name="login_update_required_title">스토어를 WooCommerce 3.5로 업데이트</string>

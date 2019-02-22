@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-01 08:56:23+0000
+Translation-Revision-Date: 2019-02-20 09:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="tooltip_site_switcher">现在，您可以点击以切换商店</string>
+    <string name="app_rating_rate_never">不用了，谢谢</string>
+    <string name="app_rating_rate_later">稍后</string>
+    <string name="app_rating_rate_now">立即评分</string>
+    <string name="app_rating_message">欢迎您再次到来！如果您喜欢这款应用，我们希望能够在 Google Play 商店中获得您的评分。</string>
+    <string name="app_rating_title">喜欢 Woo？</string>
+    <string name="settings_selected_store">已选商店</string>
+    <string name="notifs_empty_message">尚无通知！</string>
+    <string name="orders_empty_message_with_search">没有匹配的订单</string>
+    <string name="orders_empty_message_with_filter">无订单</string>
+    <string name="waiting_for_customers_contentdesc">等待客户图片</string>
+    <string name="waiting_for_customers">等待客户</string>
+    <string name="share_store_dialog_title">共享您商店的 URL</string>
+    <string name="share_store_button">共享您的商店</string>
     <string name="dismiss">不再显示</string>
     <string name="wc_mark_all_read_error">将所有通知标记为已读时出错</string>
     <string name="wc_mark_all_read">全部标为已读</string>

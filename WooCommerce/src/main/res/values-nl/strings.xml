@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 12:54:02+0000
+Translation-Revision-Date: 2019-02-19 15:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="tooltip_site_switcher">Je kunt nu klikken om van winkel te wisselen</string>
+    <string name="app_rating_rate_never">Nee, liever niet</string>
+    <string name="app_rating_rate_later">Later</string>
+    <string name="app_rating_rate_now">Nu beoordelen</string>
+    <string name="app_rating_message">Goed je te weer zien! Als je deze app tof vindt, vergeet dan niet een beoordeling te geven in de Google Play Store.</string>
+    <string name="app_rating_title">Wat vind je van Woo?</string>
+    <string name="settings_selected_store">Geselecteerde winkel</string>
+    <string name="notifs_empty_message">Nog geen meldingen!</string>
+    <string name="orders_empty_message_with_search">Geen overeenkomende bestellingen</string>
+    <string name="orders_empty_message_with_filter">Geen bestellingen</string>
+    <string name="waiting_for_customers_contentdesc">Wachten op klantenafbeelding</string>
+    <string name="waiting_for_customers">Wachten op klanten</string>
+    <string name="share_store_dialog_title">Deel de URL van je winkel</string>
+    <string name="share_store_button">Deel je winkel</string>
     <string name="wc_mark_all_read_success">Alle meldingen zijn gemarkeerd als gelezen</string>
     <string name="login_update_required_desc">Voor deze app moet WooCommerce 3.5 op je server zijn geïnstalleerd. Om deze app te blijven gebruiken, moet je je winkel bijwerken.</string>
     <string name="login_update_required_title">Winkel bijwerken naar WooCommerce 3.5</string>

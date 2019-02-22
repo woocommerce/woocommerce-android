@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-13 15:54:01+0000
+Translation-Revision-Date: 2019-02-20 16:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="tooltip_site_switcher">Du kannst jetzt tippen, um zwischen Shops zu wechseln.</string>
+    <string name="app_rating_rate_never">Nein, danke</string>
+    <string name="app_rating_rate_later">Später</string>
+    <string name="app_rating_rate_now">Jetzt bewerten</string>
+    <string name="app_rating_message">Schön, dich wiederzusehen! Wenn dir die App gefällt, würden wir uns sehr über eine Bewertung im Google Play Store freuen.</string>
+    <string name="app_rating_title">Zufrieden mit Woo?</string>
+    <string name="settings_selected_store">Ausgewählter Shop</string>
+    <string name="notifs_empty_message">Noch keine Benachrichtigungen!</string>
+    <string name="orders_empty_message_with_search">Keine übereinstimmenden Bestellungen</string>
+    <string name="orders_empty_message_with_filter">Keine Bestellungen</string>
+    <string name="waiting_for_customers_contentdesc">Warten auf Kundenbild</string>
+    <string name="waiting_for_customers">Warten auf Kunden</string>
+    <string name="share_store_dialog_title">Teile die URL deines Shops</string>
+    <string name="share_store_button">Teile deinen Shop</string>
     <string name="wc_mark_all_read_success">Alle Benachrichtigungen als gelesen markiert</string>
     <string name="login_update_required_desc">Für diese App ist WooCommerce 3.5 auf deinem Server erforderlich. Um diese App weiterhin nutzen zu können, aktualisiere bitte deinen Shop.</string>
     <string name="login_update_required_title">Shop auf WooCommerce 3.5 aktualisieren</string>

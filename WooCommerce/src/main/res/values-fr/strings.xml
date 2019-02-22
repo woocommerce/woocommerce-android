@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 14:54:03+0000
+Translation-Revision-Date: 2019-02-19 15:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="tooltip_site_switcher">Vous pouvez à présent changer de boutique par simple contact</string>
+    <string name="app_rating_rate_never">Non merci</string>
+    <string name="app_rating_rate_later">Ultérieurement</string>
+    <string name="app_rating_rate_now">Évaluer maintenant</string>
+    <string name="app_rating_message">C\'est un plaisir de vous revoir ! Si vous explorez l\'application, nous serions ravis de recevoir une évaluation dans Google Play Store.</string>
+    <string name="app_rating_title">Vous appréciez Woo ?</string>
+    <string name="settings_selected_store">Boutique sélectionnée</string>
+    <string name="notifs_empty_message">Pas encore de notification !</string>
+    <string name="orders_empty_message_with_search">Aucune commande correspondante</string>
+    <string name="orders_empty_message_with_filter">Aucune commande</string>
+    <string name="waiting_for_customers_contentdesc">En attente de l\'image des clients</string>
+    <string name="waiting_for_customers">En attente des clients</string>
+    <string name="share_store_dialog_title">Partager l\'URL de votre boutique</string>
+    <string name="share_store_button">Partager votre boutique</string>
     <string name="wc_mark_all_read_success">Toutes les notifications sont marquées comme étant lues</string>
     <string name="login_update_required_desc">Cette application nécessite WooCommerce 3.5 sur votre serveur. Pour continuer d\'utiliser cette application, veuillez mettre à jour votre boutique.</string>
     <string name="login_update_required_title">Mise à jour de la boutique vers WooCommerce 3.5</string>
