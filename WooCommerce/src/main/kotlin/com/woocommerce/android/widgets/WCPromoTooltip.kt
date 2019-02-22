@@ -11,19 +11,19 @@ import com.woocommerce.android.R
 import java.lang.ref.WeakReference
 
 /**
- * Used to "advertise" a new feature with a single-shot tooltip
+ * Used to advertise a new feature with a single-shot tooltip
  */
-object WCFeatureTooltip {
+object WCPromoTooltip {
     private const val TOOLTIP_DELAY_BEFORE_SHOWING = 1000L
-    private const val TOOLTIP_DELAY_BEFORE_HIDING = 3500L
-    private const val PREF_NAME = "feature_tooltip"
+    private const val TOOLTIP_DELAY_BEFORE_HIDING = 3000L
+    private const val PREF_NAME = "promo_tooltip"
 
     /*
      * we include the version the tooltip was added both as reference to us and to provide a future means
      * to programmatically disable tooltips after a certain number of versions
      */
-    enum class Feature(val prefKeyName: String, @StringRes val messageId: Int, val versionCode: Int) {
-        SITE_SWITCHER("key_site_switcher", R.string.tooltip_site_switcher, 32)
+    enum class Feature(val prefKeyName: String, @StringRes val messageId: Int, val addedInversionCode: Int) {
+        SITE_SWITCHER("key_site_switcher", R.string.tooltip_site_switcher, 34)
     }
 
     /**
@@ -51,7 +51,7 @@ object WCFeatureTooltip {
     private fun isTooltipShown(context: Context, feature: Feature) =
             getPrefs(context).getBoolean(feature.prefKeyName, false)
 
-    private fun setTooltipShown(context: Context, feature: Feature, shown: Boolean) {
+    fun setTooltipShown(context: Context, feature: Feature, shown: Boolean) {
         getPrefs(context).edit().putBoolean(feature.prefKeyName, shown).apply()
     }
 

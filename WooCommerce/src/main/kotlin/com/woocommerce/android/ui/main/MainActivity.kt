@@ -25,6 +25,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -36,6 +37,11 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.widgets.WCPromoTooltip
+import com.woocommerce.android.widgets.WCPromoTooltip.Feature
+import com.woocommerce.android.widgets.WCPromoDialog
+import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
+import com.woocommerce.android.widgets.WCPromoDialog.PromoType
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -50,7 +56,8 @@ class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
         FragmentScrollListener,
-        MainNavigationView.MainNavigationListener {
+        MainNavigationView.MainNavigationListener,
+        WCPromoDialog.PromoDialogListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
         private const val REQUEST_CODE_SETTINGS = 200
@@ -112,8 +119,14 @@ class MainActivity : AppCompatActivity(),
 
         initFragment(savedInstanceState)
 
+        // show the site picker promo if it hasn't been shown and the user has multiple stores
+        val promoShown = presenter.hasMultipleStores() && WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
+
+        // show the app rating dialog if it's time and we didn't just show the promo
         AppRatingDialog.init(this)
-        AppRatingDialog.showRateDialogIfNeeded(this)
+        if (!promoShown) {
+            AppRatingDialog.showIfNeeded(this)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -256,6 +269,17 @@ class MainActivity : AppCompatActivity(),
         initFragment(null)
     }
 
+    /**
+     * Called when the user switches sites - reset the fragments and tell the dashboard to refresh
+     */
+    override fun resetSelectedSite() {
+        bottomNavView.reset()
+        with(bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
+            updateActivityTitle()
+            refreshDashboard(true)
+        }
+    }
+
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
@@ -288,6 +312,8 @@ class MainActivity : AppCompatActivity(),
             NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         // Update the unseen notifications badge visiblility
         if (navPos == NOTIFICATIONS) {
@@ -412,6 +438,18 @@ class MainActivity : AppCompatActivity(),
         if (!isBottomNavShowing) {
             isBottomNavShowing = true
             WooAnimUtils.animateBottomBar(bottom_nav, true, Duration.SHORT)
+        }
+    }
+
+    /**
+     * User tapped a button in WCPromoDialogFragment
+     */
+    override fun onPromoButtonClicked(promoButton: PromoButton) {
+        when (promoButton) {
+            PromoButton.SITE_PICKER_TRY_IT -> {
+                WCPromoTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
+                showSettingsScreen()
+            } else -> {}
         }
     }
 }
