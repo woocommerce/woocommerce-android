@@ -51,9 +51,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Set activity title
-        activity?.title = getFragmentTitle()
+        updateActivityTitle()
     }
 
     override fun onResume() {
@@ -68,8 +66,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-            // Update the activity title
-            activity?.title = getFragmentTitle()
+            updateActivityTitle()
         }
     }
 
@@ -79,7 +76,11 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     }
 
     override fun getFragmentFromBackStack(tag: String): Fragment? {
-        return childFragmentManager.findFragmentByTag(tag)
+        return if (isAdded) {
+            childFragmentManager.findFragmentByTag(tag)
+        } else {
+            null
+        }
     }
 
     override fun popToState(tag: String): Boolean {
@@ -152,5 +153,9 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
             mainActivity?.title = getFragmentTitle()
         }
+    }
+
+    fun updateActivityTitle() {
+        activity?.title = getFragmentTitle()
     }
 }

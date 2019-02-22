@@ -85,7 +85,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             setSupportActionBar(toolbar as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-            title = getString(R.string.login_pick_store)
+            title = getString(R.string.site_picker_title)
             button_help.visibility = View.GONE
             site_list_label.visibility = View.GONE
             site_list_container.cardElevation = 0f
@@ -180,10 +180,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         site_list_container.visibility = View.VISIBLE
-        site_list_label.text = if (wcSites.size == 1)
+        site_list_label.text = if (wcSites.size == 1) {
             getString(R.string.login_connected_store)
-        else
+        } else if (calledFromLogin) {
             getString(R.string.login_pick_store)
+        } else {
+            getString(R.string.site_picker_title)
+        }
 
         siteAdapter.siteList = wcSites
 

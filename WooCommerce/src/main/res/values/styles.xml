@@ -84,6 +84,15 @@
         <item name="android:textSize">@dimen/text_small</item>
     </style>
 
+    <style name="Woo.TextAppearance.Title.Large">
+        <item name="android:textColor">@color/default_text_title</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
+    </style>
+
+    <style name="Woo.TextAppearance.Title.Large.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Woo.TextAppearance.Medium">
         <item name="android:textColor">@color/default_text_title</item>
         <item name="android:textSize">@dimen/text_medium</item>
@@ -448,6 +457,11 @@
         <item name="colorControlActivated">@color/edit_text_color_control_activated</item>
         <item name="colorControlHighlight">@color/edit_text_color_control_highlight</item>
         <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
+    </style>
+
+    <style name="Woo.Dialog.Promo">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
 
 </resources>

@@ -23,11 +23,32 @@
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
         tools:text="Created today at 9:51 AM"/>
 
-    <com.woocommerce.android.widgets.FlowLayout
-        android:id="@+id/orderStatus_orderTags"
-        android:layout_below="@+id/orderStatus_created"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/orderStatus_edit"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/orderstatus_contentDesc"/>
+        android:orientation="horizontal"
+        android:layout_below="@+id/orderStatus_created"
+        android:focusable="true"
+        android:clickable="true"
+        android:padding="4dp"
+        android:contentDescription="@string/orderdetail_change_order_status"
+        android:background="?attr/selectableItemBackground">
+
+        <com.woocommerce.android.widgets.FlowLayout
+            android:id="@+id/orderStatus_orderTags"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/orderstatus_contentDesc"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:clickable="false"
+            android:importantForAccessibility="no"
+            android:background="@drawable/ic_edit_pencil"/>
+    </LinearLayout>
 </merge>
 

@@ -254,7 +254,7 @@ Language: ru
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Информация о клиенте</string>
     <string name="orderlist_filter">Фильтр</string>
-    <string name="orderlist_filter_apply">Применить фильтр</string>
+    <string name="apply">Применить фильтр</string>
     <string name="orderlist_filter_by">Фильтровать заказы по</string>
     <string name="orderlist_error_fetch_generic">Ошибка при загрузке заказов</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>

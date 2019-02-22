@@ -20,6 +20,8 @@ interface OrderDetailContract {
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
         fun markOrderNotificationRead(context: Context, remoteNoteId: Long)
         fun getOrderStatusForStatusKey(key: String): WCOrderStatusModel
+        fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
+        fun refreshOrderStatusOptions()
     }
 
     interface View : BaseView<Presenter>, OrderActionListener {

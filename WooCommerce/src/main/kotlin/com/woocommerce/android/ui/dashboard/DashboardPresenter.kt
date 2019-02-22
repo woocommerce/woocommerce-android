@@ -80,11 +80,11 @@ class DashboardPresenter @Inject constructor(
             statsForceRefresh[granularity.ordinal] = false
             dashboardView?.showChartSkeleton(true)
         }
-        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forceRefresh)
+        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
 
         // fetch visitor stats
-        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forceRefresh)
+        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
     }
 
@@ -100,7 +100,8 @@ class DashboardPresenter @Inject constructor(
             dashboardView?.showTopEarnersSkeleton(true)
         }
 
-        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, forceRefresh)
+        val payload = FetchTopEarnersStatsPayload(
+                selectedSite.get(), granularity, NUM_TOP_EARNERS, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
 

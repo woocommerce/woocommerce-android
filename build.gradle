@@ -6,7 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.automattic.android:fetchstyle:1.1'
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
@@ -73,7 +73,7 @@ task clean(type: Delete) {
 }
 
 ext {
-    fluxCVersion = 'fca18a13a5e2bc81edd10f313a4c4eaa3c004408'
+    fluxCVersion = '8e637e77ab08b93a73586aed4b9f54305204cecb'
     daggerVersion = '2.11'
     supportLibraryVersion = '28.0.0'
     glideVersion = '4.6.1'
