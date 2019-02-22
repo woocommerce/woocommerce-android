@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 14:54:01+0000
+Translation-Revision-Date: 2019-02-18 23:54:02+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="tooltip_site_switcher">يمكنك الآن النقر على تبديل المتاجر</string>
+    <string name="app_rating_rate_never">لا شكرًا</string>
+    <string name="app_rating_rate_later">لاحقًا</string>
+    <string name="app_rating_rate_now">قيِّم الآن</string>
+    <string name="app_rating_message">من الرائع رؤيتك مجددًا! إذا كنت تتعمق في التطبيق، فإننا نرغب في إعطاء تقييم على متجر Google Play.</string>
+    <string name="app_rating_title">هل تستمتع بـ Woo؟</string>
+    <string name="settings_selected_store">المتجر المحدّد</string>
+    <string name="notifs_empty_message">لا توجد تنبيهات حتى الآن!</string>
+    <string name="orders_empty_message_with_search">لا توجد طلبات مطابقة</string>
+    <string name="orders_empty_message_with_filter">لا توجد طلبات</string>
+    <string name="waiting_for_customers_contentdesc">في انتظار صورة العملاء</string>
+    <string name="waiting_for_customers">في انتظار العملاء</string>
+    <string name="share_store_dialog_title">مشاركة عنوان URL الخاص بمتجرك</string>
+    <string name="share_store_button">مشاركة متجرك</string>
     <string name="wc_mark_all_read_success">تم وسم جميع التنبيهات كمقروءة</string>
     <string name="login_update_required_desc">يتطلب هذا التطبيق WooCommerce 3.5 على خادمك. للاستمرار في استخدام هذا التطبيق، يرجى تحديث متجرك.</string>
     <string name="login_update_required_title">تحديث المتجر إلى WooCommerce 3.5</string>

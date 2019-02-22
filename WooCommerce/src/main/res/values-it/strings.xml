@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 14:54:01+0000
+Translation-Revision-Date: 2019-02-19 18:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="tooltip_site_switcher">Ora puoi toccare per cambiare negozio</string>
+    <string name="app_rating_rate_never">No, grazie</string>
+    <string name="app_rating_rate_later">Più tardi</string>
+    <string name="app_rating_rate_now">Valuta ora</string>
+    <string name="app_rating_message">È un piacere rivederti. Se apprezzi l\'app, ci piacerebbe ricevere una valutazione sul Google Play Store.</string>
+    <string name="app_rating_title">Ti piace Woo?</string>
+    <string name="settings_selected_store">Negozio selezionato</string>
+    <string name="notifs_empty_message">Non c\'è ancora nessuna notifica.</string>
+    <string name="orders_empty_message_with_search">Nessun ordine corrispondente</string>
+    <string name="orders_empty_message_with_filter">Nessun ordine</string>
+    <string name="waiting_for_customers_contentdesc">In attesa delle immagini dei clienti</string>
+    <string name="waiting_for_customers">In attesa dei clienti</string>
+    <string name="share_store_dialog_title">Condividi URL del negozio</string>
+    <string name="share_store_button">Condividi il negozio</string>
     <string name="wc_mark_all_read_success">Tutte le notifiche segnalate come lette</string>
     <string name="login_update_required_desc">Questa app richiede WooCommerce 3.5 sul tuo server. Per continuare ad usare questa app, aggiorna il tuo negozio.</string>
     <string name="login_update_required_title">Aggiorna il negozio su WooCommerce 3.5</string>

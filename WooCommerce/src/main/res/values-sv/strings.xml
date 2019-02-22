@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-01 08:56:23+0000
+Translation-Revision-Date: 2019-02-19 16:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="tooltip_site_switcher">Du kan nu trycka för att växla butiker</string>
+    <string name="app_rating_rate_never">Nej tack</string>
+    <string name="app_rating_rate_later">Senare</string>
+    <string name="app_rating_rate_now">Betygsätt nu</string>
+    <string name="app_rating_message">Vad kul att se dig igen! Om du gillar appen så vore det snällt om du kunde betygsätta den på Google Play Store.</string>
+    <string name="app_rating_title">Gillar du Woo?</string>
+    <string name="settings_selected_store">Vald butik</string>
+    <string name="notifs_empty_message">Inga meddelanden än!</string>
+    <string name="orders_empty_message_with_search">Inga matchande ordrar</string>
+    <string name="orders_empty_message_with_filter">Inga ordrar</string>
+    <string name="waiting_for_customers_contentdesc">Väntar på kundbild</string>
+    <string name="waiting_for_customers">Väntar på kunder</string>
+    <string name="share_store_dialog_title">Dela din butiks URL</string>
+    <string name="share_store_button">Dela din butik</string>
     <string name="dismiss">Avfärda</string>
     <string name="wc_mark_all_read_error">Ett fel uppstod när alla notifikationer skulle markeras som lästa</string>
     <string name="wc_mark_all_read">Markera alla som lästa</string>

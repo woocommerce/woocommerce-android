@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-06 07:54:02+0000
+Translation-Revision-Date: 2019-02-20 07:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="tooltip_site_switcher">Sekarang Anda bisa mengetuk untuk berpindah toko</string>
+    <string name="app_rating_rate_never">Tidak, terima kasih</string>
+    <string name="app_rating_rate_later">Nanti</string>
+    <string name="app_rating_rate_now">Beri penilaian sekarang</string>
+    <string name="app_rating_message">Senang bertemu Anda lagi! Jika Anda suka aplikasi ini, kami menantikan penilaian Anda di Google Play Store.</string>
+    <string name="app_rating_title">Puas dengan Woo?</string>
+    <string name="settings_selected_store">Toko pilihan</string>
+    <string name="notifs_empty_message">Belum ada pemberitahuan!</string>
+    <string name="orders_empty_message_with_search">Tidak ada pesanan yang sesuai</string>
+    <string name="orders_empty_message_with_filter">Tidak ada pesanan</string>
+    <string name="waiting_for_customers_contentdesc">Menunggu gambar pelanggan</string>
+    <string name="waiting_for_customers">Menunggu pelanggan</string>
+    <string name="share_store_dialog_title">Bagikan URL toko Anda</string>
+    <string name="share_store_button">Bagikan toko Anda</string>
     <string name="wc_mark_all_read_success">Semua pemberitahuan ditandai sudah dibaca</string>
     <string name="login_update_required_desc">Aplikasi ini memerlukan WooCommerce 3.5 di server Anda. Agar dapat terus menggunakan aplikasi ini, harap perbarui toko Anda.</string>
     <string name="login_update_required_title">Perbarui Toko ke WooCommerce 3.5</string>

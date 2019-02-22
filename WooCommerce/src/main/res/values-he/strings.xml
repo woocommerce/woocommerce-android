@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-06 08:54:02+0000
+Translation-Revision-Date: 2019-02-20 10:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="tooltip_site_switcher">כעת אפשר להקיש כדי להחליף בין חנויות</string>
+    <string name="app_rating_rate_never">לא תודה</string>
+    <string name="app_rating_rate_later">מאוחר יותר</string>
+    <string name="app_rating_rate_now">לדרג כעת</string>
+    <string name="app_rating_message">שמחים לראות אותך שוב! אם אהבת את האפליקציה, נשמח לראות את הדירוג שלך בחנות Google Play.</string>
+    <string name="app_rating_title">מרוצה מ-Woo?</string>
+    <string name="settings_selected_store">חנויות נבחרות</string>
+    <string name="notifs_empty_message">אין עדיין הודעות!</string>
+    <string name="orders_empty_message_with_search">לא נמצאו הזמנות תואמות</string>
+    <string name="orders_empty_message_with_filter">אין הזמנות</string>
+    <string name="waiting_for_customers_contentdesc">בהמתנה לתמונות לקוחות</string>
+    <string name="waiting_for_customers">בהמתנה ללקוחות</string>
+    <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
+    <string name="share_store_button">שיתוף החנות שלך</string>
     <string name="wc_mark_all_read_success">כל ההודעות מסומנות כ\'נקרא\'</string>
     <string name="login_update_required_desc">כדי להשתמש באפליקציה זו, יש להתקין את WooCommerce 3.5 בשרת. כדי להמשיך את השימוש באפליקציה זאת, יש לעדכן את החנות שלך.</string>
     <string name="login_update_required_title">לעדכן את החנות ל-Woocommerce 3.5</string>
