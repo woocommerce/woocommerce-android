@@ -388,7 +388,7 @@ class MainActivity : AppCompatActivity(),
         bottomNavView.updatePositionAndDeferInit(ORDERS)
 
         val fragment = bottomNavView.getFragment(ORDERS)
-        (fragment as OrderListFragment).onFilterSelected(orderStatusFilter)
+        (fragment as OrderListFragment).onOrderStatusSelected(orderStatusFilter)
     }
 
     override fun showNotificationDetail(remoteNoteId: Long) {

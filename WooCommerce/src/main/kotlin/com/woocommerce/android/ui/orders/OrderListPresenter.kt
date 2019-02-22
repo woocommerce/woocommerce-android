@@ -134,9 +134,13 @@ class OrderListPresenter @Inject constructor(
 
     override fun refreshOrderStatusOptions() {
         // Refresh the order status options from the API
-        isRefreshingOrderStatusOptions = true
-        dispatcher.dispatch(WCOrderActionBuilder
-                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get())))
+        if (!isRefreshingOrderStatusOptions) {
+            isRefreshingOrderStatusOptions = true
+            dispatcher.dispatch(
+                    WCOrderActionBuilder
+                            .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get()))
+            )
+        }
     }
 
     @Suppress("unused")

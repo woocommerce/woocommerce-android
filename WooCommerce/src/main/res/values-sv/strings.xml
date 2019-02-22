@@ -253,7 +253,7 @@ Language: sv_SE
     <string name="customer_full_name"> %1$s %2$s</string>
     <string name="customer_information">Kundinformation</string>
     <string name="orderlist_filter">Filtrera</string>
-    <string name="orderlist_filter_apply">Använd filter</string>
+    <string name="apply">Använd filter</string>
     <string name="orderlist_filter_by">Filtrera ordrar efter</string>
     <string name="orderlist_error_fetch_generic">Det gick inte att hämta ordrar</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
