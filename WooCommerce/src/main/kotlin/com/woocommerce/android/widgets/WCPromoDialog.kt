@@ -18,7 +18,6 @@ import org.wordpress.android.util.DisplayUtils
 /**
  * Used to advertise a new feature with a single-shot dialog
  */
-
 class WCPromoDialog : DialogFragment() {
     companion object {
         const val TAG: String = "WCPromoDialog"
