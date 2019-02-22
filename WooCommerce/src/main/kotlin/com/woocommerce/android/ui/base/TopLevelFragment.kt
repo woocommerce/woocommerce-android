@@ -76,7 +76,11 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     }
 
     override fun getFragmentFromBackStack(tag: String): Fragment? {
-        return childFragmentManager.findFragmentByTag(tag)
+        return if (isAdded) {
+            childFragmentManager.findFragmentByTag(tag)
+        } else {
+            null
+        }
     }
 
     override fun popToState(tag: String): Boolean {

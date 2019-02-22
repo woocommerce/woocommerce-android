@@ -260,7 +260,7 @@ Language: fr
     <string name="customer_full_name">%2$s %1$s</string>
     <string name="customer_information">Informations sur le client</string>
     <string name="orderlist_filter">Filtrer</string>
-    <string name="orderlist_filter_apply">Appliquer le filtre</string>
+    <string name="apply">Appliquer le filtre</string>
     <string name="orderlist_filter_by">Filtrer les commandes par</string>
     <string name="orderlist_error_fetch_generic">Erreur lors de l’extraction des commandes</string>
     <string name="orderlist_item_order_name">%2$s %1$s</string>

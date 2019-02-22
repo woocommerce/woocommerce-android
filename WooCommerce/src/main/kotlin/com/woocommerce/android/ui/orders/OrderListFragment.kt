@@ -40,8 +40,9 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatusFilterDialog.OrderListFilterListener,
-        OnQueryTextListener, OnActionExpandListener, OnLoadMoreListener {
+class OrderListFragment : TopLevelFragment(), OrderListContract.View,
+        OrderStatusSelectorDialog.OrderStatusDialogListener, OnQueryTextListener, OnActionExpandListener,
+        OnLoadMoreListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -65,7 +66,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var ordersDividerDecoration: DividerItemDecoration
-    private var orderFilterDialog: OrderStatusFilterDialog? = null
+    private var orderFilterDialog: OrderStatusSelectorDialog? = null
 
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
     override var isRefreshing: Boolean
@@ -121,7 +122,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         if (orderStatusFilter != null && orderStatusFilter != ordersAdapter.orderStatusFilter) {
-            onFilterSelected(orderStatusFilter)
+            onOrderStatusSelected(orderStatusFilter)
         }
     }
 
@@ -488,12 +489,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View, OrderStatu
     // region Filtering
     private fun showFilterDialog() {
         val orderStatusOptions = presenter.getOrderStatusOptions()
-        orderFilterDialog = OrderStatusFilterDialog
-                .newInstance(orderStatusOptions, orderStatusFilter, listener = this)
-                .also { it.show(fragmentManager, OrderStatusFilterDialog.TAG) }
+        orderFilterDialog = OrderStatusSelectorDialog
+                .newInstance(orderStatusOptions, orderStatusFilter, true, listener = this)
+                .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
     }
 
-    override fun onFilterSelected(orderStatus: String?) {
+    override fun onOrderStatusSelected(orderStatus: String?) {
         orderStatusFilter = orderStatus
 
         if (isAdded) {
