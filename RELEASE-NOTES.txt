@@ -17,7 +17,7 @@ Bugfixes
 - Fixed rare crash loading product images in top earners 
 - Fixed a rare crash when recreating the order filter during activity restore (low memory situations)
 - Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
-- Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
+- When adding an order note, sentences are now auto-capitalized
 - Fixed rare crash when the current tab is reselected
 - Fixed a rare crash when showing the Google login screen
 - Fixed bug that could cause the back arrow to appear in the toolbar when it shouldn't
