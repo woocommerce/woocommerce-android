@@ -224,7 +224,16 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         errorSnackbar?.show()
     }
 
-    override fun getFragmentTitle() = getString(R.string.my_store)
+    override fun getFragmentTitle(): String {
+        selectedSite.getIfExists()?.let { site ->
+            if (!site.displayName.isNullOrBlank()) {
+                return site.displayName
+            } else if (!site.name.isNullOrBlank()) {
+                return site.name
+            }
+        }
+        return getString(R.string.my_store)
+    }
 
     override fun scrollToTop() {
         scroll_view.smoothScrollTo(0, 0)

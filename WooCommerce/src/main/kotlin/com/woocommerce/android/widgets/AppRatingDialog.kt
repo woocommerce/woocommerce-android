@@ -70,7 +70,7 @@ object AppRatingDialog {
      * Show the rate dialog if the criteria is satisfied.
      * @return true if shown, false otherwise.
      */
-    fun showRateDialogIfNeeded(context: Context): Boolean {
+    fun showIfNeeded(context: Context): Boolean {
         return if (shouldShowRateDialog()) {
             showRateDialog(context)
             true

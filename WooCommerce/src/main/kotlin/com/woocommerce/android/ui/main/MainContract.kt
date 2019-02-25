@@ -10,6 +10,7 @@ interface MainContract {
         fun userIsLoggedIn(): Boolean
         fun storeMagicLinkToken(token: String)
         fun getNotificationByRemoteNoteId(remoteNoteId: Long): NotificationModel?
+        fun hasMultipleStores(): Boolean
     }
 
     interface View : BaseView<Presenter>, TopLevelFragmentRouter {

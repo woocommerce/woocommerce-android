@@ -20,7 +20,6 @@ import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderStatsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
@@ -51,7 +50,6 @@ class DashboardPresenter @Inject constructor(
     }
 
     private var dashboardView: DashboardContract.View? = null
-    private var customStatsForceRefresh = false
     private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
     private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
@@ -71,27 +69,22 @@ class DashboardPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadStats(granularity: StatsGranularity, forced: Boolean, startDate: String?, endDate: String?) {
+    override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
         if (!networkStatus.isConnected()) {
             dashboardView?.isRefreshPending = true
             return
         }
 
-        // Added a separate boolean flag for custom stats to force refresh data
-        val forceRefresh = forced || customStatsForceRefresh || statsForceRefresh[granularity.ordinal]
+        val forceRefresh = forced || statsForceRefresh[granularity.ordinal]
         if (forceRefresh) {
-            if (customStatsForceRefresh) {
-                customStatsForceRefresh = false
-            } else {
-                statsForceRefresh[granularity.ordinal] = false
-            }
+            statsForceRefresh[granularity.ordinal] = false
             dashboardView?.showChartSkeleton(true)
         }
-        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, startDate, endDate, forceRefresh)
+        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
 
         // fetch visitor stats
-        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forceRefresh, startDate, endDate)
+        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
     }
 
@@ -107,7 +100,8 @@ class DashboardPresenter @Inject constructor(
             dashboardView?.showTopEarnersSkeleton(true)
         }
 
-        val payload = FetchTopEarnersStatsPayload(selectedSite.get(), granularity, NUM_TOP_EARNERS, forceRefresh)
+        val payload = FetchTopEarnersStatsPayload(
+                selectedSite.get(), granularity, NUM_TOP_EARNERS, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
 
@@ -122,14 +116,9 @@ class DashboardPresenter @Inject constructor(
         for (i in 0 until topEarnersForceRefresh.size) {
             topEarnersForceRefresh[i] = true
         }
-        customStatsForceRefresh = true
     }
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
-
-    override fun getCustomOrderStats(): WCOrderStatsModel? {
-        return wcStatsStore.getCustomStatsForSite(selectedSite.get())
-    }
 
     override fun fetchUnfilledOrderCount(forced: Boolean) {
         if (!networkStatus.isConnected()) {
@@ -186,16 +175,8 @@ class DashboardPresenter @Inject constructor(
                         Stat.DASHBOARD_MAIN_STATS_LOADED,
                         mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
 
-                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(),
-                        event.granularity,
-                        event.quantity,
-                        event.date,
-                        event.isCustomField)
-                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(),
-                        event.granularity,
-                        event.quantity,
-                        event.date,
-                        event.isCustomField)
+                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity)
+                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
 
                 dashboardView?.showStats(revenueStats, orderStats, event.granularity)
             }
