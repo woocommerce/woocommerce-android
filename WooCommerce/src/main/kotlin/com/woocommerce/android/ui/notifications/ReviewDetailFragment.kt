@@ -21,7 +21,7 @@ import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SkeletonView
@@ -132,7 +132,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         note.getProductInfo()?.url?.let { url ->
             review_open_product.setOnClickListener {
                 AnalyticsTracker.track(Stat.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
-                ActivityUtils.openUrlExternal(activity as Context, url)
+                ChromeCustomTabUtils.launchUrl(activity as Context, url)
             }
         }
         productUrl = note.getProductInfo()?.url

@@ -268,7 +268,7 @@ Language: zh_CN
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">客户信息</string>
     <string name="orderlist_filter">过滤器</string>
-    <string name="orderlist_filter_apply">应用过滤器</string>
+    <string name="apply">应用过滤器</string>
     <string name="orderlist_filter_by">过滤订单的条件</string>
     <string name="orderlist_error_fetch_generic">抓取订单时出错</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>

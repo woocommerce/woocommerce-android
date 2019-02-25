@@ -1,3 +1,5 @@
+1.3
+-----
 Features
 
 Bugfixes
@@ -15,7 +17,18 @@ Bugfixes
 - Fixed rare crash loading product images in top earners 
 - Fixed a rare crash when recreating the order filter during activity restore (low memory situations)
 - Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
-- Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
-
+- When adding an order note, sentences are now auto-capitalized
+- Fixed rare crash when the current tab is reselected
+- Fixed a rare crash when showing the Google login screen
+- Fixed bug that could cause the back arrow to appear in the toolbar when it shouldn't
+- Fixed bug that could cause the bottom navigation tabs to be hidden when switching to the order list
+- Fixed crash when opening app from a notification
 
 Improvements
+- Custom order status labels are now supported! Instead of just displaying the order status slug, the custom order
+status label will now be fetched from the server and properly displayed.
+- Filtering by custom order status now supported!
+- The name of the active store is now shown at the top of the "My store" tab
+
+New Features
+- Added support for manually changing the status of an order! Click the pencil icon next to the order status in the order detail view to open a list of available order status options for selection. Custom order statuses are also supported.
