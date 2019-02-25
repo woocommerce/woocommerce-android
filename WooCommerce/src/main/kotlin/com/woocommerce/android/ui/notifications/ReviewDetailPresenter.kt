@@ -145,6 +145,7 @@ class ReviewDetailPresenter @Inject constructor(
 
             // TODO add tracks for fetching comment error
             uiMessageResolver.showSnack(R.string.wc_load_review_error)
+            view?.showLoadReviewError()
         } else {
             // Comment has been fetched from the api successfully.
             // TODO add tracks for COMMENTS
