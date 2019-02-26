@@ -2,6 +2,7 @@
 -----
 
 Bugfixes
+* Fixed bug that could cause an empty review detail to appear if the review couldn't be loaded
 
 Improvements
 
