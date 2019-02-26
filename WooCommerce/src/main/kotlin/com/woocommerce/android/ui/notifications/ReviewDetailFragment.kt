@@ -236,6 +236,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     }
 
     override fun showLoadReviewError() {
+        uiMessageResolver.showSnack(R.string.wc_load_review_error)
         if (isStateSaved) {
             runOnStartFunc = { activity?.onBackPressed() }
         } else {
