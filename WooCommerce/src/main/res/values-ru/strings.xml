@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-06 09:54:02+0000
+Translation-Revision-Date: 2019-02-19 13:54:02+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="wc_mark_all_read_none">Нет непрочитанных сообщений</string>
+    <string name="tooltip_site_switcher">Теперь переключаться между магазинами можно одним нажатием</string>
+    <string name="app_rating_rate_never">Нет, спасибо</string>
+    <string name="app_rating_rate_later">Позже</string>
+    <string name="app_rating_rate_now">Оценить сейчас</string>
+    <string name="app_rating_message">С возвращением! Если вы уже успели составить мнение о приложении, будем рады, если вы поставите ему оценку в магазине Google Play.</string>
+    <string name="app_rating_title">Нравится Woo?</string>
+    <string name="settings_selected_store">Выбранный магазин</string>
+    <string name="notifs_empty_message">Новых уведомлений пока нет!</string>
+    <string name="orders_empty_message_with_search">Нет похожих заказов</string>
+    <string name="orders_empty_message_with_filter">Заказов нет</string>
+    <string name="waiting_for_customers_contentdesc">Ожидание изображения от клиента</string>
+    <string name="waiting_for_customers">Ожидание клиентов</string>
+    <string name="share_store_dialog_title">Поделитесь URL-адресом своего магазина</string>
+    <string name="share_store_button">Поделиться адресом магазина</string>
     <string name="wc_mark_all_read_success">Все уведомления помечены как прочитанные.</string>
     <string name="login_update_required_desc">Для использования этого приложения необходимо установить на сервере версию WooCommerce 3.5. Чтобы продолжить использовать это приложение, обновите свой магазин.</string>
     <string name="login_update_required_title">Обновите свой магазин WooCommerce до версии 3.5</string>
@@ -47,7 +60,7 @@ Language: ru
     <string name="notification_channel_order_title">Оповещения о новом заказе</string>
     <string name="orderdetail_note_system">Состояние системы</string>
     <string name="orderdetail_note_public">Примечание для клиента</string>
-    <string name="dashboard_no_orders_with_search">Нет совпадающих заказов</string>
+    <string name="login_verifying_site">Проверка сайта…</string>
     <string name="button_update_instructions">Инструкции по обновлению</string>
     <string name="search">Поиск</string>
     <string name="refresh_button">Обновить</string>
@@ -55,6 +68,7 @@ Language: ru
     <string name="new_notifications">Новых уведомлений: %d</string>
     <string name="dashboard_plugin_notice_message">Для использования этого приложения необходимо установить на сервер WooCommerce 3.5. Чтобы продолжить работу с приложением, как можно скорее установите обновление.</string>
     <string name="dashboard_plugin_notice_title">Чтобы продолжить использовать приложение, обновите WooCommerce до версии 3.5</string>
+    <string name="about_version">Версия %s</string>
     <string name="about_tos">Условия предоставления услуг</string>
     <string name="about_publisher">Автор: Automattic, Inc</string>
     <string name="about_appname">WooCommerce для Android</string>
@@ -85,6 +99,7 @@ Language: ru
     <string name="settings_crash_reporting_detail">Чтобы помочь нам повысить качество работы приложения и устранить возможные ошибки, включите автоматические отчёты об отказах.</string>
     <string name="settings_crash_reporting">Отчёты об отказах</string>
     <string name="share">Поделиться</string>
+    <string name="version_with_name_param">Версия %s</string>
     <string name="httppassword">Пароль для HTTP-авторизации</string>
     <string name="httpuser">Имя для HTTP-авторизации</string>
     <string name="http_authorization_required">Требуется авторизация</string>
@@ -200,7 +215,6 @@ Language: ru
     <string name="settings_third_party_policy_header">Политика сторонней организации</string>
     <string name="settings_cookie_policy_header">Политика использования файлов cookie</string>
     <string name="settings_privacy_policy_header">Политика конфиденциальности</string>
-    <string name="settings_primary_store">Основной магазин</string>
     <string name="settings_footer">Сделано с любовью компанией Automattic</string>
     <string name="settings_tracking">Мы используем и другие средства сбора информации, в том числе средства сторонних разработчиков. Ознакомьтесь с этими средствами и способами управления ими.</string>
     <string name="settings_privacy_policy">Ознакомьтесь с политикой конфиденциальности</string>
@@ -233,6 +247,7 @@ Language: ru
     <string name="orderdetail_hide_billing">Скрыть платёжные сведения</string>
     <string name="orderdetail_show_billing">Показать платёжные сведения</string>
     <string name="orderdetail_payment_cleared">Платёж погашен</string>
+    <string name="orderdetail_order_fulfillment">Выполнить заказ №%s</string>
     <string name="orderdetail_order_notes">Примечания к заказу</string>
     <string name="orderdetail_note_private">Конфиденциальное примечание</string>
     <string name="orderdetail_note_hint">Составить примечание к заказу</string>
@@ -242,15 +257,20 @@ Language: ru
     <string name="orderdetail_payment_refunded">Оплата — возвращено</string>
     <string name="orderdetail_new_total">Новый итог</string>
     <string name="orderdetail_refunded">Средства возвращены</string>
+    <string name="orderdetail_payment_summary_onhold">Ожидание оплаты за %s</string>
     <string name="orderdetail_payment_summary_completed">Платёж в размере %1$s получен через %2$s</string>
     <string name="orderdetail_product_qty">КОЛ-ВО</string>
     <string name="orderdetail_product">Товар</string>
     <string name="orderdetail_product_image_contentdesc">Изображение товара</string>
     <string name="orderdetail_product_lineitem_sku">АРТИКУЛ:</string>
     <string name="orderdetail_product_lineitem_tax">Налог:</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">отправить клиенту эл. письмо</string>
     <string name="orderdetail_billing_details">Платёжные сведения</string>
     <string name="orderdetail_shipping_details">Сведения о доставке</string>
+    <string name="orderdetail_orderstatus_created">Создано %1$s</string>
+    <string name="orderdetail_orderstatus_heading">№%1$s %2$s %3$s</string>
+    <string name="orderdetail_orderstatus_ordernum">Заказ №%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Информация о клиенте</string>
     <string name="orderlist_filter">Фильтр</string>
@@ -260,9 +280,8 @@ Language: ru
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">№%s</string>
     <string name="orderlist_no_orders">Заказов нет</string>
-    <string name="dashboard_no_orders_contentdesc">Ожидание изображения клиентов</string>
-    <string name="dashboard_no_orders_with_filter">Заказов нет</string>
-    <string name="dashboard_no_orders">Ожидание клиентов</string>
+    <string name="dashboard_fulfill_order_title_multiple">У вас есть %1$d невыполненных заказа</string>
+    <string name="dashboard_fulfill_order_title_single">У вас есть 1 невыполненный заказ</string>
     <string name="dashboard_action_view_orders">Просмотреть заказы</string>
     <string name="dashboard_action_view_order">Просмотреть заказ</string>
     <string name="dashboard_top_earners_empty">Активность за этот период отсутствует</string>
@@ -271,6 +290,7 @@ Language: ru
     <string name="dashboard_top_earners_total_spend">Общий объём выручки</string>
     <string name="dashboard_top_earners_description">Получайте информацию об эффективности продаж различных продуктов в вашем магазине</string>
     <string name="dashboard_top_earners_title">Самые продаваемые</string>
+    <string name="dashboard_stats_updated_date_time">Обновлено %s</string>
     <string name="dashboard_stats_updated_one_day">Обновлено 1 день назад</string>
     <string name="dashboard_stats_updated_hours">Обновлено %d ч. назад</string>
     <string name="dashboard_stats_updated_one_hour">Обновлено 1 час назад</string>
@@ -306,13 +326,12 @@ Language: ru
     <string name="error_no_phone_app">Не найдено приложение для звонков</string>
     <string name="error_please_choose_browser">Ошибка при открытии веб-браузера по умолчанию. Выберите другое приложение:</string>
     <string name="error_cant_open_url">Не удаётся открыть ссылку</string>
+    <string name="date_at_time">%1$s в %2$s</string>
     <string name="date_timeframe_older_month">Больше месяца назад</string>
     <string name="date_timeframe_older_week">Больше недели назад</string>
     <string name="date_timeframe_older_two_days">Больше двух дней назад</string>
     <string name="date_timeframe_yesterday">Вчера</string>
     <string name="date_timeframe_today">Сегодня</string>
-    <string name="no_orders_share_store_title">Поделиться URL-адресом своего магазина</string>
-    <string name="no_orders_share_store">Поделитесь адресом своего магазина</string>
     <string name="notifications">Уведомления</string>
     <string name="products">Товары</string>
     <string name="discard">Отменить</string>

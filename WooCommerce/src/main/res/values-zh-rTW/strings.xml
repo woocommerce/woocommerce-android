@@ -42,7 +42,6 @@ Language: zh_TW
     <string name="notification_channel_order_title">新訂單提醒</string>
     <string name="orderdetail_note_system">系統狀態</string>
     <string name="orderdetail_note_public">給顧客的備註</string>
-    <string name="dashboard_no_orders_with_search">沒有相符的訂單</string>
     <string name="button_update_instructions">更新指示</string>
     <string name="search">搜尋</string>
     <string name="refresh_button">重新整理</string>
@@ -197,7 +196,6 @@ Language: zh_TW
     <string name="settings_third_party_policy_header">第三方政策</string>
     <string name="settings_cookie_policy_header">Cookie 政策</string>
     <string name="settings_privacy_policy_header">隱私權政策</string>
-    <string name="settings_primary_store">主要商店</string>
     <string name="settings_footer">由 Automattic 成員深情打造</string>
     <string name="settings_tracking">我們會使用其他的追蹤工具，包括由第三方所提供的追蹤工具。瞭解相關資訊及其控制方式。</string>
     <string name="settings_privacy_policy">閱讀隱私權政策</string>
@@ -262,9 +260,6 @@ Language: zh_TW
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">編號%s</string>
     <string name="orderlist_no_orders">無訂單</string>
-    <string name="dashboard_no_orders_contentdesc">等待客戶圖片</string>
-    <string name="dashboard_no_orders_with_filter">無訂單</string>
-    <string name="dashboard_no_orders">等待客戶</string>
     <string name="dashboard_action_view_orders">查看訂單</string>
     <string name="dashboard_action_view_order">查看訂單</string>
     <string name="dashboard_top_earners_empty">此期間沒有任何活動</string>
@@ -315,8 +310,6 @@ Language: zh_TW
     <string name="date_timeframe_older_two_days">超過 2 天</string>
     <string name="date_timeframe_yesterday">昨天</string>
     <string name="date_timeframe_today">今天</string>
-    <string name="no_orders_share_store_title">分享商店 URL</string>
-    <string name="no_orders_share_store">分享你的商店</string>
     <string name="notifications">通知</string>
     <string name="products">產品</string>
     <string name="discard">放棄</string>

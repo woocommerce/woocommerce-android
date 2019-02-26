@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 14:54:01+0000
+Translation-Revision-Date: 2019-02-19 18:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
-    <string name="wc_mark_all_read_none">Nessuna notifica non letta</string>
+    <string name="tooltip_site_switcher">Ora puoi toccare per cambiare negozio</string>
+    <string name="app_rating_rate_never">No, grazie</string>
+    <string name="app_rating_rate_later">Più tardi</string>
+    <string name="app_rating_rate_now">Valuta ora</string>
+    <string name="app_rating_message">È un piacere rivederti. Se apprezzi l\'app, ci piacerebbe ricevere una valutazione sul Google Play Store.</string>
+    <string name="app_rating_title">Ti piace Woo?</string>
+    <string name="settings_selected_store">Negozio selezionato</string>
+    <string name="notifs_empty_message">Non c\'è ancora nessuna notifica.</string>
+    <string name="orders_empty_message_with_search">Nessun ordine corrispondente</string>
+    <string name="orders_empty_message_with_filter">Nessun ordine</string>
+    <string name="waiting_for_customers_contentdesc">In attesa delle immagini dei clienti</string>
+    <string name="waiting_for_customers">In attesa dei clienti</string>
+    <string name="share_store_dialog_title">Condividi URL del negozio</string>
+    <string name="share_store_button">Condividi il negozio</string>
     <string name="wc_mark_all_read_success">Tutte le notifiche segnalate come lette</string>
     <string name="login_update_required_desc">Questa app richiede WooCommerce 3.5 sul tuo server. Per continuare ad usare questa app, aggiorna il tuo negozio.</string>
     <string name="login_update_required_title">Aggiorna il negozio su WooCommerce 3.5</string>
@@ -47,7 +60,6 @@ Language: it
     <string name="notification_channel_order_title">Avvisi dei nuovi ordini</string>
     <string name="orderdetail_note_system">Stato di sistema</string>
     <string name="orderdetail_note_public">Nota per il cliente</string>
-    <string name="dashboard_no_orders_with_search">Nessun ordine corrispondente</string>
     <string name="button_update_instructions">Aggiorna istruzioni</string>
     <string name="search">Ricerca</string>
     <string name="refresh_button">Aggiorna</string>
@@ -202,7 +214,6 @@ Language: it
     <string name="settings_third_party_policy_header">Politica sulla privacy di terze parti</string>
     <string name="settings_cookie_policy_header">Politica sui cookie</string>
     <string name="settings_privacy_policy_header">Politica sulla privacy</string>
-    <string name="settings_primary_store">Negozio principale</string>
     <string name="settings_footer">Creato con amore da Automattic</string>
     <string name="settings_tracking">Utilizziamo altri strumenti di tracciamento, inclusi alcuni di terze parti. Leggi le informazioni sugli strumenti e come utilizzarli.</string>
     <string name="settings_privacy_policy">Leggi la politica sulla privacy</string>
@@ -267,9 +278,6 @@ Language: it
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">N. %s</string>
     <string name="orderlist_no_orders">Nessun ordine</string>
-    <string name="dashboard_no_orders_contentdesc">In attesa delle immagini dei clienti</string>
-    <string name="dashboard_no_orders_with_filter">Nessun ordine</string>
-    <string name="dashboard_no_orders">In attesa dei clienti</string>
     <string name="dashboard_action_view_orders">Visualizza ordini</string>
     <string name="dashboard_action_view_order">Visualizza ordine</string>
     <string name="dashboard_top_earners_empty">Nessuna attività per questo periodo</string>
@@ -320,8 +328,6 @@ Language: it
     <string name="date_timeframe_older_two_days">Più vecchie di 2 giorni</string>
     <string name="date_timeframe_yesterday">Ieri</string>
     <string name="date_timeframe_today">Oggi</string>
-    <string name="no_orders_share_store_title">Condividi URL del negozio</string>
-    <string name="no_orders_share_store">Condividi il negozio</string>
     <string name="notifications">Notifiche</string>
     <string name="products">Prodotti</string>
     <string name="discard">Rimuovi</string>

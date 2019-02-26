@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-08 07:54:02+0000
+Translation-Revision-Date: 2019-02-20 09:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
-    <string name="wc_mark_all_read_none">읽지 않은 알림 없음</string>
+    <string name="tooltip_site_switcher">이제 탭하여 스토어 전환 가능</string>
+    <string name="app_rating_rate_never">안 함</string>
+    <string name="app_rating_rate_later">나중에</string>
+    <string name="app_rating_rate_now">지금 평가</string>
+    <string name="app_rating_message">다시 만나서 반가워요! 앱을 알아보고 있다면 Google Play 스토어에서 평가를 확인하는 것이 좋습니다.</string>
+    <string name="app_rating_title">Woo를 사용하고 계세요?</string>
+    <string name="settings_selected_store">선택한 스토어</string>
+    <string name="notifs_empty_message">알림이 없습니다!</string>
+    <string name="orders_empty_message_with_search">일치하는 주문이 없음</string>
+    <string name="orders_empty_message_with_filter">주문 없음</string>
+    <string name="waiting_for_customers_contentdesc">고객 이미지를 기다리는 중</string>
+    <string name="waiting_for_customers">고객을 기다리는 중</string>
+    <string name="share_store_dialog_title">스토어 URL 공유</string>
+    <string name="share_store_button">스토어 공유</string>
     <string name="wc_mark_all_read_success">모든 알림이 읽음으로 표시됨</string>
     <string name="login_update_required_desc">이 앱을 사용하려면 서버에 WooCommerce 3.5가 있어야 합니다. 이 앱을 계속 사용하려면 스토어를 업데이트하세요.</string>
     <string name="login_update_required_title">스토어를 WooCommerce 3.5로 업데이트</string>
@@ -47,7 +60,6 @@ Language: ko_KR
     <string name="notification_channel_order_title">새 주문 알림</string>
     <string name="orderdetail_note_system">시스템 상태</string>
     <string name="orderdetail_note_public">고객에게 남길 메모</string>
-    <string name="dashboard_no_orders_with_search">일치하는 주문이 없음</string>
     <string name="button_update_instructions">업데이트 지침</string>
     <string name="search">검색</string>
     <string name="refresh_button">새로 고침</string>
@@ -202,7 +214,6 @@ Language: ko_KR
     <string name="settings_third_party_policy_header">타사 정책</string>
     <string name="settings_cookie_policy_header">쿠키 정책</string>
     <string name="settings_privacy_policy_header">개인정보 보호정책</string>
-    <string name="settings_primary_store">기본 스토어</string>
     <string name="settings_footer">많은 사랑을 받는 Automattic 제품</string>
     <string name="settings_tracking">워드프레스는 타사 제품을 포함한 다른 추적 도구를 사용합니다. 이 도구에 대해 읽고 제어하는 방법에 대해 알아보세요.</string>
     <string name="settings_privacy_policy">개인정보 보호정책 읽기</string>
@@ -267,9 +278,6 @@ Language: ko_KR
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">주문 없음</string>
-    <string name="dashboard_no_orders_contentdesc">고객 이미지를 기다리는 중</string>
-    <string name="dashboard_no_orders_with_filter">주문 없음</string>
-    <string name="dashboard_no_orders">고객을 기다리는 중</string>
     <string name="dashboard_action_view_orders">주문 보기</string>
     <string name="dashboard_action_view_order">주문 보기</string>
     <string name="dashboard_top_earners_empty">이 기간에 활동이 없음</string>
@@ -320,8 +328,6 @@ Language: ko_KR
     <string name="date_timeframe_older_two_days">2일 이상 지남</string>
     <string name="date_timeframe_yesterday">어제</string>
     <string name="date_timeframe_today">오늘</string>
-    <string name="no_orders_share_store_title">스토어 URL 공유</string>
-    <string name="no_orders_share_store">스토어 공유</string>
     <string name="notifications">알림</string>
     <string name="products">상품</string>
     <string name="discard">제거</string>

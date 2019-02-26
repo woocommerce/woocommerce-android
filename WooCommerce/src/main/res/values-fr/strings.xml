@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 14:54:03+0000
+Translation-Revision-Date: 2019-02-19 15:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
-    <string name="wc_mark_all_read_none">Aucune notification non lue</string>
+    <string name="tooltip_site_switcher">Vous pouvez à présent changer de boutique par simple contact</string>
+    <string name="app_rating_rate_never">Non merci</string>
+    <string name="app_rating_rate_later">Ultérieurement</string>
+    <string name="app_rating_rate_now">Évaluer maintenant</string>
+    <string name="app_rating_message">C\'est un plaisir de vous revoir ! Si vous explorez l\'application, nous serions ravis de recevoir une évaluation dans Google Play Store.</string>
+    <string name="app_rating_title">Vous appréciez Woo ?</string>
+    <string name="settings_selected_store">Boutique sélectionnée</string>
+    <string name="notifs_empty_message">Pas encore de notification !</string>
+    <string name="orders_empty_message_with_search">Aucune commande correspondante</string>
+    <string name="orders_empty_message_with_filter">Aucune commande</string>
+    <string name="waiting_for_customers_contentdesc">En attente de l\'image des clients</string>
+    <string name="waiting_for_customers">En attente des clients</string>
+    <string name="share_store_dialog_title">Partager l\'URL de votre boutique</string>
+    <string name="share_store_button">Partager votre boutique</string>
     <string name="wc_mark_all_read_success">Toutes les notifications sont marquées comme étant lues</string>
     <string name="login_update_required_desc">Cette application nécessite WooCommerce 3.5 sur votre serveur. Pour continuer d\'utiliser cette application, veuillez mettre à jour votre boutique.</string>
     <string name="login_update_required_title">Mise à jour de la boutique vers WooCommerce 3.5</string>
@@ -46,7 +59,6 @@ Language: fr
     <string name="notification_channel_order_title">Alertes de nouvelle commande</string>
     <string name="orderdetail_note_system">État du système</string>
     <string name="orderdetail_note_public">Note au client</string>
-    <string name="dashboard_no_orders_with_search">Aucune commande correspondante</string>
     <string name="button_update_instructions">Mettre à jour les instructions</string>
     <string name="search">Recherche</string>
     <string name="refresh_button">Rafraîchir</string>
@@ -201,7 +213,6 @@ Language: fr
     <string name="settings_third_party_policy_header">Politique de tiers</string>
     <string name="settings_cookie_policy_header">Politique relative aux cookies</string>
     <string name="settings_privacy_policy_header">Politique de confidentialité</string>
-    <string name="settings_primary_store">Boutique principale</string>
     <string name="settings_footer">Conçu avec amour par Automattic</string>
     <string name="settings_tracking">Nous utilisons d’autres outils de suivi, notamment des outils provenant de tiers. Découvrez-les et apprenez à les contrôler.</string>
     <string name="settings_privacy_policy">Lire la politique de confidentialité</string>
@@ -266,9 +277,6 @@ Language: fr
     <string name="orderlist_item_order_name">%2$s %1$s</string>
     <string name="orderlist_item_order_num">N° %s</string>
     <string name="orderlist_no_orders">Aucune commande</string>
-    <string name="dashboard_no_orders_contentdesc">En attente de l’image des clients</string>
-    <string name="dashboard_no_orders_with_filter">Aucune commande</string>
-    <string name="dashboard_no_orders">En attente des clients</string>
     <string name="dashboard_action_view_orders">Voir les commandes</string>
     <string name="dashboard_action_view_order">Voir la commande</string>
     <string name="dashboard_top_earners_empty">Aucune activité sur cette période</string>
@@ -319,8 +327,6 @@ Language: fr
     <string name="date_timeframe_older_two_days">Il y a plus de 2 jours</string>
     <string name="date_timeframe_yesterday">Hier</string>
     <string name="date_timeframe_today">Aujourd’hui</string>
-    <string name="no_orders_share_store_title">Partager l’URL de votre boutique</string>
-    <string name="no_orders_share_store">Partager votre boutique</string>
     <string name="notifications">Notifications</string>
     <string name="products">Produits</string>
     <string name="discard">Rejeter</string>
