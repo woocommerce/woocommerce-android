@@ -2,6 +2,7 @@
 -----
 
 Bugfixes
+* Fixed rare crash after moderating a product review
 
 Improvements
 
