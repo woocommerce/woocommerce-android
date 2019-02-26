@@ -90,8 +90,8 @@ class ReviewDetailPresenter @Inject constructor(
     override fun fetchComment() {
         if (networkStatus.isConnected()) {
             // Request comment from the api
-            notification?.getCommentId()?.let {
-                val payload = RemoteCommentPayload(selectedSite.get(), it)
+            notification?.getCommentId()?.let { id ->
+                val payload = RemoteCommentPayload(selectedSite.get(), id)
                 dispatcher.dispatch(CommentActionBuilder.newFetchCommentAction(payload))
             }
         }

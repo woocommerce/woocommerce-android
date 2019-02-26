@@ -43,21 +43,10 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         const val FIELD_COMMENT_STATUS_OVERRIDE = "status-override"
 
         fun newInstance(notification: NotificationModel, tempStatus: String? = null): ReviewDetailFragment {
-            return newInstance() // TODO: remove this
             val args = Bundle()
             args.putLong(FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
             args.putLong(FIELD_REMOTE_COMMENT_ID, notification.getCommentId())
             tempStatus?.let { args.putString(FIELD_COMMENT_STATUS_OVERRIDE, tempStatus) }
-
-            val fragment = ReviewDetailFragment()
-            fragment.arguments = args
-            return fragment
-        }
-
-        fun newInstance(): ReviewDetailFragment {
-            val args = Bundle()
-            args.putLong(FIELD_REMOTE_NOTIF_ID, 12)
-            args.putLong(FIELD_REMOTE_COMMENT_ID, 12)
 
             val fragment = ReviewDetailFragment()
             fragment.arguments = args
