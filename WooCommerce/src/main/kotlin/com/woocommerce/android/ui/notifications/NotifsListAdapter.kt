@@ -269,6 +269,8 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
         setNotifications(newList)
     }
+
+    fun isEmpty() = notifsList.isEmpty()
     // endregion
 
     // region Private methods
