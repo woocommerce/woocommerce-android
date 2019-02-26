@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 16:54:03+0000
+Translation-Revision-Date: 2019-02-20 16:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
-    <string name="wc_mark_all_read_none">Keine ungelesenen Benachrichtigungen</string>
+    <string name="tooltip_site_switcher">Du kannst jetzt tippen, um zwischen Shops zu wechseln.</string>
+    <string name="app_rating_rate_never">Nein, danke</string>
+    <string name="app_rating_rate_later">Später</string>
+    <string name="app_rating_rate_now">Jetzt bewerten</string>
+    <string name="app_rating_message">Schön, dich wiederzusehen! Wenn dir die App gefällt, würden wir uns sehr über eine Bewertung im Google Play Store freuen.</string>
+    <string name="app_rating_title">Zufrieden mit Woo?</string>
+    <string name="settings_selected_store">Ausgewählter Shop</string>
+    <string name="notifs_empty_message">Noch keine Benachrichtigungen!</string>
+    <string name="orders_empty_message_with_search">Keine übereinstimmenden Bestellungen</string>
+    <string name="orders_empty_message_with_filter">Keine Bestellungen</string>
+    <string name="waiting_for_customers_contentdesc">Warten auf Kundenbild</string>
+    <string name="waiting_for_customers">Warten auf Kunden</string>
+    <string name="share_store_dialog_title">Teile die URL deines Shops</string>
+    <string name="share_store_button">Teile deinen Shop</string>
     <string name="wc_mark_all_read_success">Alle Benachrichtigungen als gelesen markiert</string>
-    <string name="login_update_required_desc">Für diese App musst du WooCommerce 3.5 auf deinem Server installieren. Um diese App weiterhin nutzen zu können, aktualisiere bitte deinen Shop.</string>
+    <string name="login_update_required_desc">Für diese App ist WooCommerce 3.5 auf deinem Server erforderlich. Um diese App weiterhin nutzen zu können, aktualisiere bitte deinen Shop.</string>
     <string name="login_update_required_title">Shop auf WooCommerce 3.5 aktualisieren</string>
     <string name="login_verifying_site_error">Verbindung zu %s kann nicht hergestellt werden</string>
     <string name="dismiss">Verwerfen</string>
@@ -47,7 +60,6 @@ Language: de
     <string name="notification_channel_order_title">Benachrichtigungen bei neuer Bestellung</string>
     <string name="orderdetail_note_system">Systemstatus</string>
     <string name="orderdetail_note_public">Hinweis an Kunden</string>
-    <string name="dashboard_no_orders_with_search">Keine übereinstimmenden Bestellungen</string>
     <string name="button_update_instructions">Aktualisierungsanweisungen</string>
     <string name="search">Suche</string>
     <string name="refresh_button">Neu laden</string>
@@ -202,7 +214,6 @@ Language: de
     <string name="settings_third_party_policy_header">Drittanbieter-Erklärung</string>
     <string name="settings_cookie_policy_header">Cookie-Richtlinie</string>
     <string name="settings_privacy_policy_header">Datenschutzerklärung</string>
-    <string name="settings_primary_store">Primärer Shop</string>
     <string name="settings_footer">Von Automattic entwickelt</string>
     <string name="settings_tracking">Wir verwenden andere Tools zum Tracking, darunter auch solche von Drittanbietern. Hier erhältst du weitere Informationen und Tipps, wie du sie kontrollierst.</string>
     <string name="settings_privacy_policy">Datenschutzerklärung lesen</string>
@@ -267,9 +278,6 @@ Language: de
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">Keine Bestellungen</string>
-    <string name="dashboard_no_orders_contentdesc">Warten auf Kundenbild</string>
-    <string name="dashboard_no_orders_with_filter">Keine Bestellungen</string>
-    <string name="dashboard_no_orders">Warten auf Kunden</string>
     <string name="dashboard_action_view_orders">Bestellungen anzeigen</string>
     <string name="dashboard_action_view_order">Bestellung anzeigen</string>
     <string name="dashboard_top_earners_empty">Keine Aktivitäten in diesem Zeitraum</string>
@@ -320,8 +328,6 @@ Language: de
     <string name="date_timeframe_older_two_days">Älter als 2 Tage</string>
     <string name="date_timeframe_yesterday">Gestern</string>
     <string name="date_timeframe_today">Heute</string>
-    <string name="no_orders_share_store_title">Teile die URL deines Shops</string>
-    <string name="no_orders_share_store">Teile deinen Shop</string>
     <string name="notifications">Benachrichtigungen</string>
     <string name="products">Produkte</string>
     <string name="discard">Verwerfen</string>

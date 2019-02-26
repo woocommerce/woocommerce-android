@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-04 20:54:02+0000
+Translation-Revision-Date: 2019-02-18 20:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
-    <string name="wc_mark_all_read_none">Nenhuma notificação não lida</string>
+    <string name="tooltip_site_switcher">A partir de agora, é possível tocar para trocar de loja</string>
+    <string name="app_rating_rate_never">Não, obrigado</string>
+    <string name="app_rating_rate_later">Mais tarde</string>
+    <string name="app_rating_rate_now">Classificar agora</string>
+    <string name="app_rating_message">É um prazer tê-lo aqui de novo! Se você está curtindo o aplicativo, que tal fazer uma avaliação na Google Play Store?</string>
+    <string name="app_rating_title">Está curtindo o Woo?</string>
+    <string name="settings_selected_store">Loja selecionada</string>
+    <string name="notifs_empty_message">Ainda não há notificações!</string>
+    <string name="orders_empty_message_with_search">Não há pedidos correspondentes</string>
+    <string name="orders_empty_message_with_filter">Não há pedidos</string>
+    <string name="waiting_for_customers_contentdesc">Aguardando a imagem dos clientes</string>
+    <string name="waiting_for_customers">Aguardando os clientes</string>
+    <string name="share_store_dialog_title">Compartilhe o URL de sua loja</string>
+    <string name="share_store_button">Compartilhe sua loja</string>
     <string name="wc_mark_all_read_success">Todas as notificações marcadas como lidas</string>
     <string name="login_update_required_desc">Esse aplicativo requer o WooCommerce 3.5 no seu servidor. Para continuar a usá-lo, atualize sua loja.</string>
     <string name="login_update_required_title">Atualizar loja para o WooCommerce 3.5</string>
@@ -47,7 +60,6 @@ Language: pt_BR
     <string name="notification_channel_order_title">Novos alertas de pedidos</string>
     <string name="orderdetail_note_system">Status do sistema</string>
     <string name="orderdetail_note_public">Nota para o cliente</string>
-    <string name="dashboard_no_orders_with_search">Não há pedidos correspondentes</string>
     <string name="button_update_instructions">Instruções de atualização</string>
     <string name="search">Pesquisar</string>
     <string name="refresh_button">Atualizar</string>
@@ -202,7 +214,6 @@ Language: pt_BR
     <string name="settings_third_party_policy_header">Política de terceiros</string>
     <string name="settings_cookie_policy_header">Política de cookies</string>
     <string name="settings_privacy_policy_header">Política de Privacidade</string>
-    <string name="settings_primary_store">Loja principal</string>
     <string name="settings_footer">Feito com amor pela Automattic</string>
     <string name="settings_tracking">Utilizamos outras ferramentas de controle, incluindo algumas de terceiros. Leia sobre elas e sobre como controlá-las.</string>
     <string name="settings_privacy_policy">Leia a política de privacidade</string>
@@ -267,9 +278,6 @@ Language: pt_BR
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">Nº %s</string>
     <string name="orderlist_no_orders">Não há pedidos</string>
-    <string name="dashboard_no_orders_contentdesc">Aguardando a imagem dos clientes</string>
-    <string name="dashboard_no_orders_with_filter">Não há pedidos</string>
-    <string name="dashboard_no_orders">Aguardando os clientes</string>
     <string name="dashboard_action_view_orders">Visualizar pedidos</string>
     <string name="dashboard_action_view_order">Ver pedido</string>
     <string name="dashboard_top_earners_empty">Nenhuma atividade no período</string>
@@ -320,8 +328,6 @@ Language: pt_BR
     <string name="date_timeframe_older_two_days">Há mais de 2 dias</string>
     <string name="date_timeframe_yesterday">Ontem</string>
     <string name="date_timeframe_today">Hoje</string>
-    <string name="no_orders_share_store_title">Compartilhe o URL de sua loja</string>
-    <string name="no_orders_share_store">Compartilhe sua loja</string>
     <string name="notifications">Notificações</string>
     <string name="products">Produtos</string>
     <string name="discard">Descartar</string>

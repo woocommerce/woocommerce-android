@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 12:54:02+0000
+Translation-Revision-Date: 2019-02-19 15:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="wc_mark_all_read_none">Geen ongelezen meldingen</string>
+    <string name="tooltip_site_switcher">Je kunt nu klikken om van winkel te wisselen</string>
+    <string name="app_rating_rate_never">Nee, liever niet</string>
+    <string name="app_rating_rate_later">Later</string>
+    <string name="app_rating_rate_now">Nu beoordelen</string>
+    <string name="app_rating_message">Goed je te weer zien! Als je deze app tof vindt, vergeet dan niet een beoordeling te geven in de Google Play Store.</string>
+    <string name="app_rating_title">Wat vind je van Woo?</string>
+    <string name="settings_selected_store">Geselecteerde winkel</string>
+    <string name="notifs_empty_message">Nog geen meldingen!</string>
+    <string name="orders_empty_message_with_search">Geen overeenkomende bestellingen</string>
+    <string name="orders_empty_message_with_filter">Geen bestellingen</string>
+    <string name="waiting_for_customers_contentdesc">Wachten op klantenafbeelding</string>
+    <string name="waiting_for_customers">Wachten op klanten</string>
+    <string name="share_store_dialog_title">Deel de URL van je winkel</string>
+    <string name="share_store_button">Deel je winkel</string>
     <string name="wc_mark_all_read_success">Alle meldingen zijn gemarkeerd als gelezen</string>
     <string name="login_update_required_desc">Voor deze app moet WooCommerce 3.5 op je server zijn geïnstalleerd. Om deze app te blijven gebruiken, moet je je winkel bijwerken.</string>
     <string name="login_update_required_title">Winkel bijwerken naar WooCommerce 3.5</string>
@@ -47,7 +60,6 @@ Language: nl
     <string name="notification_channel_order_title">Meldingen nieuwe bestelling</string>
     <string name="orderdetail_note_system">Systeemstatus</string>
     <string name="orderdetail_note_public">Bericht aan klant</string>
-    <string name="dashboard_no_orders_with_search">Geen overeenkomende bestellingen</string>
     <string name="button_update_instructions">Update-instructies</string>
     <string name="search">Zoeken</string>
     <string name="refresh_button">Vernieuwen</string>
@@ -202,7 +214,6 @@ Language: nl
     <string name="settings_third_party_policy_header">Beleid van derden</string>
     <string name="settings_cookie_policy_header">Cookiebeleid</string>
     <string name="settings_privacy_policy_header">Privacybeleid</string>
-    <string name="settings_primary_store">Primaire winkel</string>
     <string name="settings_footer">Met liefde gemaakt door Automattic</string>
     <string name="settings_tracking">We gebruiken ook andere tracking-tools, waaronder een aantal van derden. Bekijk meer informatie over deze tools en hoe je ze kunt beheren.</string>
     <string name="settings_privacy_policy">Privacybeleid lezen</string>
@@ -267,9 +278,6 @@ Language: nl
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">Nr. %s</string>
     <string name="orderlist_no_orders">Geen bestellingen</string>
-    <string name="dashboard_no_orders_contentdesc">Wachten op afbeelding klant</string>
-    <string name="dashboard_no_orders_with_filter">Geen bestellingen</string>
-    <string name="dashboard_no_orders">Wachten op klanten</string>
     <string name="dashboard_action_view_orders">Bestellingen weergeven</string>
     <string name="dashboard_action_view_order">Bestelling weergeven</string>
     <string name="dashboard_top_earners_empty">Geen activiteiten deze periode</string>
@@ -320,8 +328,6 @@ Language: nl
     <string name="date_timeframe_older_two_days">Ouder dan 2 dagen</string>
     <string name="date_timeframe_yesterday">Gisteren</string>
     <string name="date_timeframe_today">Vandaag</string>
-    <string name="no_orders_share_store_title">Deel de URL van je winkel</string>
-    <string name="no_orders_share_store">Deel je winkel</string>
     <string name="notifications">Meldingen</string>
     <string name="products">Producten</string>
     <string name="discard">Verwijder</string>

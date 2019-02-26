@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-05 14:54:01+0000
+Translation-Revision-Date: 2019-02-18 23:54:02+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="wc_mark_all_read_none">لا توجد تنبيهات غير مقروءة</string>
+    <string name="tooltip_site_switcher">يمكنك الآن النقر على تبديل المتاجر</string>
+    <string name="app_rating_rate_never">لا شكرًا</string>
+    <string name="app_rating_rate_later">لاحقًا</string>
+    <string name="app_rating_rate_now">قيِّم الآن</string>
+    <string name="app_rating_message">من الرائع رؤيتك مجددًا! إذا كنت تتعمق في التطبيق، فإننا نرغب في إعطاء تقييم على متجر Google Play.</string>
+    <string name="app_rating_title">هل تستمتع بـ Woo؟</string>
+    <string name="settings_selected_store">المتجر المحدّد</string>
+    <string name="notifs_empty_message">لا توجد تنبيهات حتى الآن!</string>
+    <string name="orders_empty_message_with_search">لا توجد طلبات مطابقة</string>
+    <string name="orders_empty_message_with_filter">لا توجد طلبات</string>
+    <string name="waiting_for_customers_contentdesc">في انتظار صورة العملاء</string>
+    <string name="waiting_for_customers">في انتظار العملاء</string>
+    <string name="share_store_dialog_title">مشاركة عنوان URL الخاص بمتجرك</string>
+    <string name="share_store_button">مشاركة متجرك</string>
     <string name="wc_mark_all_read_success">تم وسم جميع التنبيهات كمقروءة</string>
     <string name="login_update_required_desc">يتطلب هذا التطبيق WooCommerce 3.5 على خادمك. للاستمرار في استخدام هذا التطبيق، يرجى تحديث متجرك.</string>
     <string name="login_update_required_title">تحديث المتجر إلى WooCommerce 3.5</string>
@@ -47,7 +60,6 @@ Language: ar
     <string name="notification_channel_order_title">تنبيهات الطلب الجديد</string>
     <string name="orderdetail_note_system">حالة النظام</string>
     <string name="orderdetail_note_public">ملاحظة إلى العميل</string>
-    <string name="dashboard_no_orders_with_search">لا توجد طلبات مطابقة</string>
     <string name="button_update_instructions">إرشادات التحديث</string>
     <string name="search">بحث</string>
     <string name="refresh_button">تجديد</string>
@@ -202,7 +214,6 @@ Language: ar
     <string name="settings_third_party_policy_header">سياسة الطرف الثالث</string>
     <string name="settings_cookie_policy_header">سياسة ملفات تعريف الارتباط</string>
     <string name="settings_privacy_policy_header">سياسة الخصوصية</string>
-    <string name="settings_primary_store">المتجر الأساسي</string>
     <string name="settings_footer">صُنع بحب بواسطة Automattic</string>
     <string name="settings_tracking">نستخدم أدوات تعقب أخرى، بما في ذلك بعض الأدوات التي تنتمي إلى أطراف ثالثة. اقرأ عن هذه الأدوات وكيفية التحكم فيها.</string>
     <string name="settings_privacy_policy">قراءة سياسة الخصوصية</string>
@@ -267,9 +278,6 @@ Language: ar
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">لا توجد طلبات</string>
-    <string name="dashboard_no_orders_contentdesc">في انتظار صورة العملاء</string>
-    <string name="dashboard_no_orders_with_filter">لا توجد طلبات</string>
-    <string name="dashboard_no_orders">في انتظار العملاء</string>
     <string name="dashboard_action_view_orders">عرض الطلبات</string>
     <string name="dashboard_action_view_order">عرض الطلب</string>
     <string name="dashboard_top_earners_empty">لا يوجد أي نشاط في هذه الفترة</string>
@@ -320,8 +328,6 @@ Language: ar
     <string name="date_timeframe_older_two_days">قبل يومين</string>
     <string name="date_timeframe_yesterday">أمس</string>
     <string name="date_timeframe_today">اليوم</string>
-    <string name="no_orders_share_store_title">مشاركة عنوان URL الخاص بمتجرك</string>
-    <string name="no_orders_share_store">مشاركة متجرك</string>
     <string name="notifications">التنبيهات</string>
     <string name="products">المنتجات</string>
     <string name="discard">تجاهل</string>
