@@ -366,7 +366,7 @@ class NotifsListFragment : TopLevelFragment(),
             val callback = object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
-
+                    resetPendingModerationVariables()
                     if (!changeCommentStatusCanceled) {
                         comment.status = newStatus.toString()
                         presenter.pushUpdatedComment(comment)
