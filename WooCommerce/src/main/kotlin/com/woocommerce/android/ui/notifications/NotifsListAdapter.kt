@@ -160,19 +160,21 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         val notif = notifsList[pos]
-        val section = getSectionForListItemPosition(pos) as NotifsListSection
-        val posInSection = getPositionInSectionByListPos(pos)
-        pendingRemovalNotification = Triple(notif, section, posInSection)
+        getSectionForListItemPosition(pos)?.let {
+            val section = it as NotifsListSection
+            val posInSection = getPositionInSectionByListPos(pos)
+            pendingRemovalNotification = Triple(notif, section, posInSection)
 
-        // remove from the list
-        section.list.removeAt(posInSection)
-        notifyItemRemovedFromSection(section, posInSection)
+            // remove from the list
+            section.list.removeAt(posInSection)
+            notifyItemRemovedFromSection(section, posInSection)
 
-        if (section.list.size == 0) {
-            val sectionPos = getSectionPosition(section)
-            section.isVisible = false
-            if (sectionPos != SectionedRecyclerViewAdapter.INVALID_POSITION) {
-                notifySectionChangedToInvisible(section, sectionPos)
+            if (section.list.size == 0) {
+                val sectionPos = getSectionPosition(section)
+                section.isVisible = false
+                if (sectionPos != SectionedRecyclerViewAdapter.INVALID_POSITION) {
+                    notifySectionChangedToInvisible(section, sectionPos)
+                }
             }
         }
     }
@@ -303,9 +305,9 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      * Returns the Section object for a position in the backing list.
      *
      * @param position position in the original list
-     * @return Section object for that position
+     * @return Section object for that position or null if not found
      */
-    private fun getSectionForListItemPosition(position: Int): Section {
+    private fun getSectionForListItemPosition(position: Int): Section? {
         var currentPos = 0
 
         sectionsMap.entries.forEach {
@@ -321,7 +323,8 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         // position not found, fail fast
-        throw IndexOutOfBoundsException("Unable to find matching sectionfor position $position")
+        WooLog.w(T.NOTIFS, "Unable to find matching sectionfor position $position")
+        return null
     }
     // endregion
 
