@@ -45,6 +45,8 @@ import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.CommentStatus.SPAM
 import org.wordpress.android.fluxc.model.CommentStatus.TRASH
 import org.wordpress.android.fluxc.model.notification.NotificationModel
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter.Companion.INVALID_POSITION
 import javax.inject.Inject
 
 class NotifsListFragment : TopLevelFragment(),
@@ -430,7 +432,9 @@ class NotifsListFragment : TopLevelFragment(),
         AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
 
         val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
-        notifsList.smoothScrollToPosition(itemPosition)
+        if (itemPosition != INVALID_POSITION) {
+            notifsList.smoothScrollToPosition(itemPosition)
+        }
         resetPendingModerationVariables()
     }
 
