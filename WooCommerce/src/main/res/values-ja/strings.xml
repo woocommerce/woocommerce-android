@@ -272,7 +272,7 @@ Language: ja_JP
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客情報</string>
     <string name="orderlist_filter">フィルター</string>
-    <string name="orderlist_filter_apply">フィルターを適用</string>
+    <string name="apply">フィルターを適用</string>
     <string name="orderlist_filter_by">注文の絞り込み基準</string>
     <string name="orderlist_error_fetch_generic">注文を取得する際にエラーが発生しました</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>

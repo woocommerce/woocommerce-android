@@ -39,7 +39,7 @@
             android:background="@android:color/transparent"
             android:gravity="top"
             android:hint="@string/orderdetail_note_hint"
-            android:inputType="textAutoComplete|textShortMessage|textMultiLine"/>
+            android:inputType="textAutoComplete|textMultiLine|textCapSentences"/>
     </LinearLayout>
 
     <View
@@ -55,13 +55,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/addNote_switchDivider"
-        android:padding="@dimen/margin_large"
         android:background="@color/white"
-        android:focusable="true"
         android:clickable="true"
+        android:focusable="true"
         android:importantForAccessibility="yes"
-        app:switchTitle="@string/add_order_note_label"
-        app:switchSummary="@string/add_order_note_sublabel"/>
+        android:padding="@dimen/margin_large"
+        app:switchSummary="@string/add_order_note_sublabel"
+        app:switchTitle="@string/add_order_note_label"/>
 
     <View
         android:id="@+id/addNote_switchDivider"

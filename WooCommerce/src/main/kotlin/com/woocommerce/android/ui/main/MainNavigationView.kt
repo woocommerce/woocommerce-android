@@ -63,6 +63,15 @@ class MainNavigationView @JvmOverloads constructor(
         active(DASHBOARD.position)
     }
 
+    /**
+     * Reset the adapter so fragments are re-created
+     */
+    fun reset() {
+        if (::navAdapter.isInitialized) {
+            navAdapter.reset()
+        }
+    }
+
     fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
 
     fun updatePositionAndDeferInit(navPos: BottomNavigationPosition) {
@@ -144,7 +153,7 @@ class MainNavigationView @JvmOverloads constructor(
             with(it.childFragmentManager) {
                 if (backStackEntryCount > 0) {
                     val firstEntry = getBackStackEntryAt(0)
-                    popBackStack(firstEntry.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    popBackStackImmediate(firstEntry.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     return true
                 }
             }
@@ -172,6 +181,11 @@ class MainNavigationView @JvmOverloads constructor(
             val fragment = fragmentManager.findFragment(navPos)
             fragments.put(navPos.position, fragment)
             return fragment
+        }
+
+        internal fun reset() {
+            currentPosition = DASHBOARD
+            fragments.clear()
         }
     }
     // endregion

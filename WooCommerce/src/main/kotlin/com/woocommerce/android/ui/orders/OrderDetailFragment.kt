@@ -31,7 +31,8 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener {
+class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
+        OrderStatusSelectorDialog.OrderStatusDialogListener {
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -81,6 +82,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     private var pendingNotesError = false
     private var runOnStartFunc: (() -> Unit)? = null
 
+    private var orderStatusSelector: OrderStatusSelectorDialog? = null
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -111,7 +114,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
 
         scrollView.setOnScrollChangeListener {
-            v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
+            _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
         }
     }
@@ -141,6 +144,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        orderStatusSelector?.let {
+            it.dismiss()
+            orderStatusSelector = null
+        }
+    }
+
     override fun onStop() {
         changeOrderStatusSnackbar?.dismiss()
         notesSnack?.dismiss()
@@ -159,7 +170,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
             // Populate the Order Status Card
             val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
-            orderDetail_orderStatus.initView(order, orderStatus)
+            orderDetail_orderStatus
+                    .initView(order, orderStatus, object : OrderDetailOrderStatusView.OrderStatusListener {
+                override fun openOrderStatusSelector() {
+                    showOrderStatusSelector()
+                }
+            })
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(order, false, currencyFormatter.buildFormatter(order.currency), this)
@@ -282,9 +298,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                 }
             }
 
-            // TODO: for now this assumes orders marked complete, this needs to change when we handle other statuses
+            // Select the appropriate snack message based on the new status
+            val snackMsg = when (newStatus) {
+                CoreOrderStatus.COMPLETED.value -> R.string.order_fulfill_marked_complete
+                else -> R.string.order_status_changed_to
+            }
             changeOrderStatusSnackbar = uiMessageResolver
-                    .getUndoSnack(R.string.order_fulfill_marked_complete, actionListener = actionListener)
+                    .getUndoSnack(snackMsg, newStatus, actionListener = actionListener)
                     .also {
                         it.addCallback(callback)
                         it.show()
@@ -365,5 +385,25 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             setOrderStatus(status)
         }
         previousOrderStatus = null
+    }
+
+    override fun onOrderStatusSelected(orderStatus: String?) {
+        orderStatus?.let {
+            showChangeOrderStatusSnackbar(it)
+        }
+    }
+
+    private fun showOrderStatusSelector() {
+        presenter.orderModel?.let { order ->
+            val orderStatusOptions = presenter.getOrderStatusOptions()
+            val orderStatus = order.status
+            orderStatusSelector = OrderStatusSelectorDialog
+                    .newInstance(
+                            orderStatusOptions,
+                            orderStatus,
+                            false,
+                            listener = this)
+                    .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
+        }
     }
 }

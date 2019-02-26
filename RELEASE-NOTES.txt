@@ -1,21 +1,8 @@
-Features
+1.4
+-----
 
 Bugfixes
-- Issue with order notes not saving properly during activity restore (low memory situations) resolved
-- Fixed bug that caused the support menu to be hidden when the device has no email client
-- Fixed crash when app is backgrounded during site verification in the login process
-- Fixed bug that caused a crash when switching tabs while an order search was active
-- Scheduled orders with a future creation date are now hidden from the order list
-- Fixed crash in order detail when the "add order note" button is tapped before the order has been downloaded
-- Fixed missing "empty view" in notifications
-- Fixed crash when a review is opened from the notification list
-- Fixed rare crash in login during two-factor authentication
-- Fixed rare crash after undoing a review moderation
-- Fixed cases where the sales totals for a time period don't match what Calypso and wp-admin report
-- Fixed rare crash loading product images in top earners 
-- Fixed a rare crash when recreating the order filter during activity restore (low memory situations)
-- Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
-- Fixed a crash that occasionally happened while attempting to load the app from a woocommerce notification alert
-
 
 Improvements
+
+New Features

@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.android.synthetic.main.fragment_about.*
 import org.wordpress.android.util.DisplayUtils
 import java.util.Calendar
@@ -48,15 +48,15 @@ class AboutFragment : Fragment() {
         about_copyright.text = copyright
 
         about_url.setOnClickListener {
-            ActivityUtils.openUrlExternal(activity as Context, URL_AUTOMATTIC)
+            ChromeCustomTabUtils.launchUrl(activity as Context, URL_AUTOMATTIC)
         }
 
         about_privacy.setOnClickListener {
-            ActivityUtils.openUrlExternal(activity as Context, URL_PRIVACY_POLICY)
+            ChromeCustomTabUtils.launchUrl(activity as Context, URL_PRIVACY_POLICY)
         }
 
         about_tos.setOnClickListener {
-            ActivityUtils.openUrlExternal(activity as Context, URL_TOS)
+            ChromeCustomTabUtils.launchUrl(activity as Context, URL_TOS)
         }
     }
 
@@ -69,5 +69,15 @@ class AboutFragment : Fragment() {
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
             it.supportActionBar?.elevation = 0f
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ChromeCustomTabUtils.connect(activity as Context, URL_PRIVACY_POLICY, arrayOf(URL_TOS, URL_AUTOMATTIC))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        ChromeCustomTabUtils.disconnect(activity as Context)
     }
 }
