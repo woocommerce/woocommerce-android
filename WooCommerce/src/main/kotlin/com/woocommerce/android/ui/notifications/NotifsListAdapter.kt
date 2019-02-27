@@ -249,7 +249,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
             notifyItemInsertedInSection(section, pos)
             getPositionInAdapter(section, pos)
-        }.also { pendingRemovalNotification = null } ?: 0
+        }.also { pendingRemovalNotification = null } ?: INVALID_POSITION
     }
 
     /**
@@ -322,7 +322,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         // position not found, fail fast
-        WooLog.w(T.NOTIFS, "Unable to find matching sectionfor position $position")
+        WooLog.w(T.NOTIFS, "Unable to find matching section for position $position")
         return null
     }
     // endregion
