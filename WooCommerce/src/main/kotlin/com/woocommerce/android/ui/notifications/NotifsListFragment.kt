@@ -289,14 +289,7 @@ class NotifsListFragment : TopLevelFragment(),
         AppRatingDialog.incrementInteractions()
     }
 
-    private fun isModerationSnackShowing() = changeCommentStatusSnackbar?.isShown ?: false
-
     override fun openReviewDetail(notification: NotificationModel) {
-        // don't show detail if the moderation snack is still showing
-        if (isModerationSnackShowing()) {
-            return
-        }
-
         AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                 AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
                 AnalyticsTracker.KEY_ALREADY_READ to notification.read))

@@ -147,7 +147,6 @@ class NotifsListPresenter @Inject constructor(
             fetchAndLoadNotifsFromDb(false)
         } else {
             AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
-
             view?.notificationModerationSuccess()
 
             // Request fresh notification data be fetched from the api to reflect deleted

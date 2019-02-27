@@ -35,6 +35,7 @@ import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
 import java.util.Date
+import java.util.HashSet
 import javax.inject.Inject
 
 class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
@@ -55,8 +56,11 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     private val notifsList = mutableListOf<NotificationModel>()
     private var listListener: ReviewListListener? = null
 
-    // Copy of a notification manually removed from the list so the action may be undone.
+    // Copy of current notification manually removed from the list so the action may be undone.
     private var pendingRemovalNotification: Triple<NotificationModel, NotifsListSection, Int>? = null
+
+    // List of all remote note IDs the user has removed this session
+    private val removedRemoteIds = HashSet<Long>()
 
     // region Public methods
     fun setListListener(listener: ReviewListListener) {
@@ -64,11 +68,17 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     }
 
     fun setNotifications(notifs: List<NotificationModel>) {
-        // If moderation pending review is present, make sure it's removed
-        // before processing the list.
-        val newList = pendingRemovalNotification?.let { (notif, _, _) ->
-            notifs.toMutableList().also { it.remove(notif) }
-        } ?: notifs
+        // make sure to exclude any notifs that we know have been removed
+        val newList = ArrayList<NotificationModel>()
+        if (removedRemoteIds.isNotEmpty()) {
+            notifs.forEach { notif ->
+                if (!removedRemoteIds.contains(notif.remoteNoteId)) {
+                    newList.add(notif)
+                }
+            }
+        } else {
+            newList.addAll(notifs)
+        }
 
         // clear all the current data from the adapter
         removeAllSections()
@@ -156,6 +166,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         if (posInList == -1) {
             WooLog.w(T.NOTIFICATIONS, "Unable to hide notification, position is -1")
             pendingRemovalNotification = null
+            removedRemoteIds.remove(remoteNoteId)
             return
         }
 
@@ -163,6 +174,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             val section = it as NotifsListSection
             val posInSection = getPositionInSectionByListPos(posInList)
             pendingRemovalNotification = Triple(notifsList[posInList], section, posInSection)
+            removedRemoteIds.add(remoteNoteId)
 
             // remove from the section list
             section.list.removeAt(posInSection)
@@ -247,9 +259,12 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
                 }
             }
 
+            removedRemoteIds.remove(notif.remoteNoteId)
+            pendingRemovalNotification = null
+
             notifyItemInsertedInSection(section, pos)
             getPositionInAdapter(section, pos)
-        }.also { pendingRemovalNotification = null } ?: INVALID_POSITION
+        } ?: INVALID_POSITION
     }
 
     /**
