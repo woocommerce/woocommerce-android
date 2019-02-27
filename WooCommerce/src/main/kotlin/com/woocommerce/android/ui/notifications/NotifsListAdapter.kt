@@ -159,13 +159,10 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             return
         }
 
-        // extract this notif and remove it from the list
-        val notif = notifsList.removeAt(posInList)
-
         getSectionForListItemPosition(posInList)?.let {
             val section = it as NotifsListSection
             val posInSection = getPositionInSectionByListPos(posInList)
-            pendingRemovalNotification = Triple(notif, section, posInSection)
+            pendingRemovalNotification = Triple(notifsList[posInList], section, posInSection)
 
             // remove from the section list
             section.list.removeAt(posInSection)
