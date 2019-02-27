@@ -10,11 +10,9 @@
     <ImageView
         android:id="@+id/imagePromo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="172dp"
         android:background="@color/wc_grey_light"
         android:importantForAccessibility="no"
-        android:paddingBottom="@dimen/margin_extra_large"
-        android:paddingTop="@dimen/margin_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
