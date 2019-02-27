@@ -7,16 +7,23 @@
     android:background="@color/white"
     android:paddingBottom="@dimen/margin_extra_large">
 
-    <ImageView
-        android:id="@+id/imagePromo"
+    <FrameLayout
+        android:id="@+id/imagePromoFrame"
         android:layout_width="match_parent"
-        android:layout_height="172dp"
+        android:layout_height="wrap_content"
         android:background="@color/wc_grey_light"
-        android:importantForAccessibility="no"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/promo_store_switcher"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imagePromo"
+            android:layout_width="211dp"
+            android:layout_height="172dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/promo_store_switcher"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/textTitle"
@@ -28,7 +35,7 @@
         android:text="@string/promo_title_site_picker"
         android:textAppearance="@style/Woo.TextAppearance.Title.Large.Bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imagePromo"/>
+        app:layout_constraintTop_toBottomOf="@+id/imagePromoFrame"/>
 
     <TextView
         android:id="@+id/textMessage"
