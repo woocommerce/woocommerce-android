@@ -2,6 +2,8 @@
 -----
 
 Bugfixes
+* Fixed a crash that could occur when undo-ing a review moderation
+* Fixed a UI issue that could show an apparent duplicate review when trashing the last review notification
 
 Improvements
 
