@@ -430,10 +430,16 @@ class NotifsListFragment : TopLevelFragment(),
     private fun revertPendingModeratedNotifState() {
         AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
 
-        val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
-        if (itemPosition != INVALID_POSITION && !notifsAdapter.isEmpty()) {
-            notifsList.smoothScrollToPosition(itemPosition)
+        pendingModerationNewStatus?.let {
+            val status = CommentStatus.fromString(it)
+            if (status == SPAM || status == TRASH) {
+                val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
+                if (itemPosition != INVALID_POSITION && !notifsAdapter.isEmpty()) {
+                    notifsList.smoothScrollToPosition(itemPosition)
+                }
+            }
         }
+
         resetPendingModerationVariables()
     }
 
