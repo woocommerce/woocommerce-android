@@ -234,17 +234,17 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      */
     fun revertHiddenNotificationAndReturnPos(): Int {
         return pendingRemovalNotification?.let { (notif, section, pos) ->
-            with(section) {
-                if (pos < list.size) {
-                    list.add(pos, notif)
-                } else {
-                    list.add(notif)
-                }
-            }
-
             if (!section.isVisible) {
                 section.isVisible = true
                 notifySectionChangedToVisible(section)
+            }
+
+            with(section.list) {
+                if (pos < size) {
+                    add(pos, notif)
+                } else {
+                    add(notif)
+                }
             }
 
             notifyItemInsertedInSection(section, pos)
