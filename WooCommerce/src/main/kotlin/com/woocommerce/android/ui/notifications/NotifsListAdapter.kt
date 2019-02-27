@@ -152,20 +152,22 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      * by reverting the action, or by loading a fresh list of notifications.
      */
     fun hideNotificationWithId(remoteNoteId: Long) {
-        val pos = notifsList.indexOfFirst { it.remoteNoteId == remoteNoteId }
-        if (pos == -1) {
+        val posInList = notifsList.indexOfFirst { it.remoteNoteId == remoteNoteId }
+        if (posInList == -1) {
             WooLog.w(T.NOTIFICATIONS, "Unable to hide notification, position is -1")
             pendingRemovalNotification = null
             return
         }
 
-        val notif = notifsList[pos]
-        getSectionForListItemPosition(pos)?.let {
+        // extract this notif and remove it from the list
+        val notif = notifsList.removeAt(posInList)
+
+        getSectionForListItemPosition(posInList)?.let {
             val section = it as NotifsListSection
-            val posInSection = getPositionInSectionByListPos(pos)
+            val posInSection = getPositionInSectionByListPos(posInList)
             pendingRemovalNotification = Triple(notif, section, posInSection)
 
-            // remove from the list
+            // remove from the section list
             section.list.removeAt(posInSection)
             notifyItemRemovedFromSection(section, posInSection)
 
