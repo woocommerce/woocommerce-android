@@ -1,4 +1,1 @@
-Hooray for consistency: prices will now display using your store’s currency display settings.
-Sort and manage your orders in a way that makes sense for you: use custom order status labels and use them to filter your orders.
-Squashed some bugs that were bedeviling order notes, support, and scheduled orders.
-We’ve fixed a few different crashes that only one or two folks were experiencing. No fix too small!
+
