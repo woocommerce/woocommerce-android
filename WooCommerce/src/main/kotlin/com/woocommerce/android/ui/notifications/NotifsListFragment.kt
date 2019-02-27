@@ -292,7 +292,7 @@ class NotifsListFragment : TopLevelFragment(),
     private fun isModerationSnackShowing() = changeCommentStatusSnackbar?.isShown ?: false
 
     override fun openReviewDetail(notification: NotificationModel) {
-        // don't show detail if the moderation snack is still showing TODO: not sure about this
+        // don't show detail if the moderation snack is still showing
         if (isModerationSnackShowing()) {
             return
         }
