@@ -10,20 +10,21 @@
     <FrameLayout
         android:id="@+id/imagePromoFrame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="172dp"
         android:background="@color/wc_grey_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <ImageView
-            android:id="@+id/imagePromo"
-            android:layout_width="211dp"
-            android:layout_height="172dp"
-            android:layout_gravity="center"
-            android:importantForAccessibility="no"
-            app:srcCompat="@drawable/promo_store_switcher"/>
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/imagePromo"
+        android:layout_width="211dp"
+        android:layout_height="172dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/promo_store_switcher"/>
 
     <TextView
         android:id="@+id/textTitle"

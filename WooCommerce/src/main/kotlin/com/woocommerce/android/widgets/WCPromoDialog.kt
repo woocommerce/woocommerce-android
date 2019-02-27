@@ -63,7 +63,7 @@ class WCPromoDialog : DialogFragment() {
     }
 
     private var listener: PromoDialogListener? = null
-    private var promoImageFrame: View? = null
+    private var promoImage: View? = null
     private lateinit var promoType: PromoType
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -80,7 +80,7 @@ class WCPromoDialog : DialogFragment() {
     private fun checkOrientation() {
         if (isAdded) {
             val isLandscape = DisplayUtils.isLandscape(activity)
-            promoImageFrame?.visibility = if (isLandscape) View.GONE else View.VISIBLE
+            promoImage?.visibility = if (isLandscape) View.GONE else View.VISIBLE
         }
     }
 
@@ -101,7 +101,7 @@ class WCPromoDialog : DialogFragment() {
             listener?.onPromoButtonClicked(promoType.button2)
         }
 
-        promoImageFrame = dialogView.findViewById(R.id.imagePromoFrame)
+        promoImage = dialogView.findViewById(R.id.imagePromo)
         checkOrientation()
 
         return AlertDialog.Builder(activity as Context)
