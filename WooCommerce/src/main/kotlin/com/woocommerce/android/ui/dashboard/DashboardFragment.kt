@@ -8,7 +8,6 @@ import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -18,7 +17,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -36,8 +34,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         fun newInstance() = DashboardFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
-
-        private const val URL_UPGRADE_WOOCOMMERCE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     }
 
     @Inject lateinit var presenter: DashboardContract.Presenter
@@ -110,12 +106,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
             if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
         }
-
-        dashboard_plugin_version_notice.initView(
-                title = getString(R.string.dashboard_plugin_notice_title),
-                message = getString(R.string.dashboard_plugin_notice_message),
-                buttonLabel = getString(R.string.button_update_instructions),
-                buttonAction = { ChromeCustomTabUtils.launchUrl(activity as Context, URL_UPGRADE_WOOCOMMERCE) })
 
         if (isActive) {
             refreshDashboard(forced = this.isRefreshPending)
@@ -235,9 +225,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
-                if (!AppPrefs.isUsingV3Api()) {
-                    presenter.checkApiVersion()
-                }
             }
             else -> isRefreshPending = true
         }
@@ -276,16 +263,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
         }
-    }
-
-    override fun showPluginVersionNoticeCard() {
-        if (dashboard_plugin_version_notice.visibility != View.VISIBLE) {
-            WooAnimUtils.scaleIn(dashboard_plugin_version_notice, Duration.MEDIUM)
-        }
-    }
-
-    override fun hidePluginVersionNoticeCard() {
-        dashboard_plugin_version_notice.visibility = View.GONE
     }
 
     override fun showEmptyView(show: Boolean) {

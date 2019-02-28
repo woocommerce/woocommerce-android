@@ -140,8 +140,6 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
-    <string name="dashboard_plugin_notice_title">Update to WooCommerce 3.5 to keep using this app</string>
-    <string name="dashboard_plugin_notice_message">This app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
     <!--
         Order List View
     -->
