@@ -3,6 +3,7 @@
 
 Bugfixes
 * Fixed bug that could cause review detail not to appear after tapping a review notification
+* Fixed bug that could cause an "Update to WooCommerce 3.5" message to appear in your dashboard
 
 Improvements
 
