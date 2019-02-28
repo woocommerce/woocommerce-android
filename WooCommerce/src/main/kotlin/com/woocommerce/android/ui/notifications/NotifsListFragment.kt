@@ -37,6 +37,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter.Companion.INVALID_POSITION
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
 import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
@@ -430,7 +431,9 @@ class NotifsListFragment : TopLevelFragment(),
         AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
 
         val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
-        notifsList.smoothScrollToPosition(itemPosition)
+        if (itemPosition != INVALID_POSITION) {
+            notifsList.smoothScrollToPosition(itemPosition)
+        }
         resetPendingModerationVariables()
     }
 
