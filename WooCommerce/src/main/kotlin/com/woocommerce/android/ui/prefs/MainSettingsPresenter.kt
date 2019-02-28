@@ -23,7 +23,11 @@ class MainSettingsPresenter @Inject constructor(
 
     override fun getUserDisplayName(): String = accountStore.account.displayName
 
-    override fun getStoreDomainName(): String = StringUtils.getSiteDomainAndPath(selectedSite.get())
+    override fun getStoreDomainName(): String {
+        return selectedSite.getIfExists()?.let { site ->
+            StringUtils.getSiteDomainAndPath(site)
+        } ?: ""
+    }
 
     override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 1
 }
