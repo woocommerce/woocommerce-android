@@ -61,11 +61,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     private var progressDialog: ProgressDialog? = null
     private var calledFromLogin: Boolean = false
+    private var currentSite: SiteModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_site_picker)
+
+        currentSite = selectedSite.getIfExists()
 
         calledFromLogin = savedInstanceState?.getBoolean(KEY_CALLED_FROM_LOGIN)
                 ?: intent.getBooleanExtra(KEY_CALLED_FROM_LOGIN, false)
@@ -209,8 +212,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun siteSelected(site: SiteModel) {
         // finish if user simply selected the current site
-        selectedSite.getIfExists()?.let { currentSite ->
-            if (site.siteId == currentSite.siteId) {
+        currentSite?.let {
+            if (site.siteId == it.siteId) {
                 setResult(Activity.RESULT_CANCELED)
                 finish()
                 return
