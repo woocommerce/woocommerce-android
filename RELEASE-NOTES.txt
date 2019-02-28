@@ -5,5 +5,6 @@ Bugfixes
 * Fixed bug that could cause review detail not to appear after tapping a review notification
 
 Improvements
+* In the notification list, only the first two lines of a review are now shown
 
 New Features
