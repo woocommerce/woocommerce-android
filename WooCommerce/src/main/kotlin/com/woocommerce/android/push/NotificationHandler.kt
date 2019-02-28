@@ -32,6 +32,7 @@ import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
@@ -47,6 +48,8 @@ class NotificationHandler @Inject constructor(
     private val siteStore: SiteStore,
     private val dispatcher: Dispatcher
 ) {
+    @Inject lateinit var notificationStore: NotificationStore
+
     companion object {
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
 

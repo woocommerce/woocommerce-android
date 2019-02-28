@@ -63,6 +63,8 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     private var remoteCommentId: Long = 0L
     private var commentStatusOverride: CommentStatus? = null
     private var productUrl: String? = null
+    private var runOnStartFunc: (() -> Unit)? = null
+
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
         AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
         when (isChecked) {
@@ -97,6 +99,15 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
 
         presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        runOnStartFunc?.let {
+            it.invoke()
+            runOnStartFunc = null
+        }
     }
 
     override fun onDestroyView() {
@@ -221,6 +232,15 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
                 uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
             }
+        }
+    }
+
+    override fun showLoadReviewError() {
+        uiMessageResolver.showSnack(R.string.wc_load_review_error)
+        if (isStateSaved) {
+            runOnStartFunc = { activity?.onBackPressed() }
+        } else {
+            activity?.onBackPressed()
         }
     }
 }
