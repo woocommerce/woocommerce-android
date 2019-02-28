@@ -255,8 +255,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     override fun siteVerificationFailed(site: SiteModel) {
         progressDialog?.dismiss()
 
-        siteAdapter.selectedSiteId = 0
-        button_continue.isEnabled = false
+        // re-select the previous site, if there was one
+        siteAdapter.selectedSiteId = currentSite?.siteId ?: 0L
+        button_continue.isEnabled = siteAdapter.selectedSiteId != 0L
 
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
