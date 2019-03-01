@@ -5,13 +5,21 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.PhotonUtils
 import java.text.NumberFormat
+import javax.inject.Inject
 
 class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
+    @Inject lateinit var productHelper: ProductHelper
+    private var imageSize = 0
+
     init {
+        imageSize = DisplayUtils.dpToPx(context, 40) // TODO: use dimen resource
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
 
@@ -59,7 +67,15 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
             productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
 
-            // todo Product Image
+            item.productId?.let { productId ->
+                productHelper.getProductImage(productId, true)?.let { productImage ->
+                    val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, imageSize, 0)
+                    GlideApp.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_product)
+                            .into(productInfo_icon)
+                }
+            }
         }
 
         // we need to put some space before the product name when the product image is showing
