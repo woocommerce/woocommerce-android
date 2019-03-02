@@ -132,9 +132,7 @@ class MainPresenter @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         if (!event.isError) {
             event.product?.let { product ->
-                product.getFirstImage()?.let { imageUrl ->
-                    ProductImageUrlMap.put(product.remoteProductId, imageUrl)
-                } ?: ProductImageUrlMap.remove(product.remoteProductId)
+                ProductImageUrlMap.put(product.remoteProductId, product.getFirstImage())
             }
         }
     }
