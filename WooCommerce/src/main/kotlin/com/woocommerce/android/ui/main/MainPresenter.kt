@@ -130,8 +130,12 @@ class MainPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: OnProductChanged) {
-        event.product?.getFirstImage()?.let { imageUrl ->
-            ProductImageUrlMap.put(event.product!!.remoteProductId, imageUrl)
+        if (!event.isError) {
+            event.product?.let { product ->
+                product.getFirstImage()?.let { imageUrl ->
+                    ProductImageUrlMap.put(product.remoteProductId, imageUrl)
+                } ?: ProductImageUrlMap.remove(product.remoteProductId)
+            }
         }
     }
 
