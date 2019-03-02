@@ -18,6 +18,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.WCProductStore
 
 class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {

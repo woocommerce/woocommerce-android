@@ -11,11 +11,9 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
 import java.text.NumberFormat
-import javax.inject.Inject
 
 class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
-    @Inject lateinit var productHelper: ProductHelper
     private var imageSize = 0
 
     init {
@@ -23,7 +21,11 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
 
-    fun initView(item: WCOrderModel.LineItem, expanded: Boolean, formatCurrencyForDisplay: (String?) -> String) {
+    fun initView(
+        item: WCOrderModel.LineItem,
+        expanded: Boolean,
+        formatCurrencyForDisplay: (String?) -> String
+    ) {
         productInfo_name.text = item.name
 
         val numberFormatter = NumberFormat.getNumberInstance().apply {
@@ -68,13 +70,13 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
             productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
 
             item.productId?.let { productId ->
-                productHelper.getProductImage(productId, true)?.let { productImage ->
+                ProductImageUrlMap.get(productId)?.let { productImage ->
                     val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, imageSize, 0)
                     GlideApp.with(context)
                             .load(imageUrl)
                             .placeholder(R.drawable.ic_product)
                             .into(productInfo_icon)
-                }
+                } ?: productInfo_icon.setImageResource(R.drawable.ic_product)
             }
         }
 
