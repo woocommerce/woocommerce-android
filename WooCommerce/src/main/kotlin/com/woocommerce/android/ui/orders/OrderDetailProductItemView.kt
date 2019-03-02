@@ -72,7 +72,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
             item.productId?.let { productId ->
                 ProductImageUrlMap.get(productId)?.let { productImage ->
-                    val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, imageSize, 0)
+                    val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, imageSize, imageSize)
                     GlideApp.with(context)
                             .load(imageUrl)
                             .placeholder(R.drawable.ic_product)
