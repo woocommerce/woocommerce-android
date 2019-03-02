@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.util
 
 /**
  * Simple HashMap of product remoteId/imageUrl used for quick lookups when attempting to display prodcut images.

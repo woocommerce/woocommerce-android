@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.util.ProductImageUrlMap
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DisplayUtils

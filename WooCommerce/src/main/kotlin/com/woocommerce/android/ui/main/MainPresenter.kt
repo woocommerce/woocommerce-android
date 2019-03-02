@@ -5,7 +5,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
-import com.woocommerce.android.ui.orders.ProductImageUrlMap
+import com.woocommerce.android.util.ProductImageUrlMap
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
