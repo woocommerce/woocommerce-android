@@ -12,7 +12,7 @@ object ProductImageUrlMap {
     fun get(remoteProductId: Long) = map[remoteProductId]
 
     fun put(remoteProductId: Long, imageUrl: String?) {
-        imageUrl?.let  {
+        imageUrl?.let {
             map.put(remoteProductId, it)
         }
     }
@@ -23,4 +23,3 @@ object ProductImageUrlMap {
 
     fun contains(remoteProductId: Long) = map.containsKey(remoteProductId)
 }
-
