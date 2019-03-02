@@ -31,8 +31,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/margin_medium"
                 android:importantForAccessibility="no"
-                android:src="@drawable/ic_product"
-                android:tint="@color/wc_grey_darker"/>
+                android:src="@drawable/ic_product"/>
 
             <TextView
                 android:id="@+id/review_product_name"
