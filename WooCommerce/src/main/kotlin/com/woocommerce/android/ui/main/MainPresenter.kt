@@ -108,8 +108,6 @@ class MainPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
-        ProductImageUrlMap.clear()
-
         if (event.isError) {
             // TODO: Notify the user of the problem
             isHandlingMagicLink = false
@@ -131,8 +129,8 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (!event.isError) {
-            event.product?.let { product ->
-                ProductImageUrlMap.put(product.remoteProductId, product.getFirstImage())
+            event.product?.getFirstImage()?.let { imageUrl ->
+                ProductImageUrlMap.put(event.product!!.remoteProductId, imageUrl)
             }
         }
     }
@@ -152,6 +150,7 @@ class MainPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
+        ProductImageUrlMap.clear()
         mainView?.resetSelectedSite()
 
         // Fetch a fresh list of order status options
