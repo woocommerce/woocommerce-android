@@ -22,6 +22,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.ProductImageUrlMap
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SkeletonView
@@ -31,7 +32,9 @@ import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
+import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
@@ -64,6 +67,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     private var commentStatusOverride: CommentStatus? = null
     private var productUrl: String? = null
     private var runOnStartFunc: (() -> Unit)? = null
+    private var productIconSize: Int = 0
 
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
         AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
@@ -84,6 +88,8 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        val dimen = activity!!.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+        productIconSize = DisplayUtils.dpToPx(activity, dimen)
         presenter.takeView(this)
     }
 
@@ -160,6 +166,18 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         // Initialize moderation buttons and set comment status
         configureModerationButtons(note)
         updateStatus(CommentStatus.fromString(comment.status))
+
+        note.getProductInfo()?.let { info ->
+            if (info.remoteProductId > 0) {
+                ProductImageUrlMap.get(info.remoteProductId)?.let { productImage ->
+                    val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
+                    GlideApp.with(activity as Context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_product)
+                            .into(review_product_icon)
+                }
+            }
+        }
 
         activity?.let { presenter.markNotificationRead(it, note) }
     }

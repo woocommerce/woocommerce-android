@@ -51,9 +51,10 @@ fun NotificationModel.getProductInfo(): NotificationProductInfo? {
         return null
     }
 
+    val remoteId = NotificationHelper.getProductRemoteId(this)
     val name = NotificationHelper.getProductName(this)
     val url = NotificationHelper.getProductUrl(this)
-    return name?.let { n -> url?.let { u -> NotificationProductInfo(n, u) } }
+    return name?.let { n -> url?.let { u -> NotificationProductInfo(remoteId, n, u) } }
 }
 
 /**
@@ -193,7 +194,7 @@ fun NotificationModel.canTrash() = canModerate()
 // https://youtrack.jetbrains.com/issue/KT-19300
 @SuppressLint("ParcelCreator")
 @Parcelize
-data class NotificationProductInfo(val name: String, val url: String) : Parcelable
+data class NotificationProductInfo(val remoteProductId: Long, val name: String, val url: String) : Parcelable
 
 @SuppressLint("ParcelCreator")
 @Parcelize
