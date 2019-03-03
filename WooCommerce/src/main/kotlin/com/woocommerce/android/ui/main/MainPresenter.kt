@@ -5,7 +5,6 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
-import com.woocommerce.android.util.ProductImageUrlMap
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -22,7 +21,6 @@ import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -121,20 +119,6 @@ class MainPresenter @Inject constructor(
         }
     }
 
-    /**
-     * Whenever a product is fetched we store the product image for quick lookups - this avoids having to
-     * inject ProductStore, etc., every place we want to show a product image
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        if (!event.isError) {
-            event.product?.getFirstImage()?.let { imageUrl ->
-                ProductImageUrlMap.put(event.product!!.remoteProductId, imageUrl)
-            }
-        }
-    }
-
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
@@ -150,7 +134,6 @@ class MainPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
-        ProductImageUrlMap.clear()
         mainView?.resetSelectedSite()
 
         // Fetch a fresh list of order status options

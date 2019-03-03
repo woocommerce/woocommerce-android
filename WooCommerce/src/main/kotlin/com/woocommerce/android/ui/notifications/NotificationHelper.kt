@@ -60,13 +60,13 @@ object NotificationHelper {
      *
      * @return zero if the notification is not a product review
      */
-    fun getProductRemoteId(notif: NotificationModel): Long {
+    fun getProductRemoteId(notif: NotificationModel): Long? {
         if (notif.getWooType() != WooNotificationType.PRODUCT_REVIEW) {
-            return 0
+            return null
         }
 
         // products are posts
-        return notif.meta?.ids?.post ?: 0
+        return notif.meta?.ids?.post
     }
 
     /**

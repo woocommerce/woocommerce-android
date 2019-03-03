@@ -12,7 +12,6 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.util.ProductImageUrlMap
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -285,15 +284,13 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     /**
-     * Fetches all products attached to this order that we don't have images for
+     * Fetches all products attached to this order
      */
     private fun fetchProductsForOrder(order: WCOrderModel) {
         order.getLineItemList().forEach { lineItem ->
             lineItem.productId?.let { productId ->
-                if (!ProductImageUrlMap.contains(productId)) {
-                    val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), productId)
-                    dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
-                }
+                val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), productId)
+                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
             }
         }
     }

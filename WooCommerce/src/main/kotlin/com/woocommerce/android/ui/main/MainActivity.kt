@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.util.ProductImageUrlMap
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -47,6 +48,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -80,6 +82,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var productStore: WCProductStore
     @Inject lateinit var supportHelper: SupportHelper
 
     private var isBottomNavShowing = true
@@ -126,6 +129,10 @@ class MainActivity : AppCompatActivity(),
         AppRatingDialog.init(this)
         if (!promoShown) {
             AppRatingDialog.showIfNeeded(this)
+        }
+
+        if (savedInstanceState == null) {
+            ProductImageUrlMap.init(selectedSite.get(), productStore)
         }
     }
 
@@ -278,6 +285,7 @@ class MainActivity : AppCompatActivity(),
             updateActivityTitle()
             refreshDashboard(true)
         }
+        ProductImageUrlMap.init(selectedSite.get(), productStore)
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {

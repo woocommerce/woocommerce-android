@@ -54,7 +54,7 @@ fun NotificationModel.getProductInfo(): NotificationProductInfo? {
     val remoteId = NotificationHelper.getProductRemoteId(this)
     val name = NotificationHelper.getProductName(this)
     val url = NotificationHelper.getProductUrl(this)
-    return name?.let { n -> url?.let { u -> NotificationProductInfo(remoteId, n, u) } }
+    return remoteId?.let { id -> name?.let { n -> url?.let { u -> NotificationProductInfo(id, n, u) } } }
 }
 
 /**

@@ -19,6 +19,7 @@ import org.wordpress.android.fluxc.action.CommentAction.PUSH_COMMENT
 import org.wordpress.android.fluxc.action.NotificationAction
 import org.wordpress.android.fluxc.generated.CommentActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.CommentStore.OnCommentChanged
@@ -27,6 +28,7 @@ import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
 import javax.inject.Inject
 
 class NotifsListPresenter @Inject constructor(
@@ -88,6 +90,11 @@ class NotifsListPresenter @Inject constructor(
         } else {
             view?.showEmptyView(true)
         }
+    }
+
+    override fun fetchProduct(remoteProductId: Long) {
+        val payload = FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+        dispatcher.dispatch((WCProductActionBuilder.newFetchSingleProductAction(payload)))
     }
 
     override fun pushUpdatedComment(comment: CommentModel) {
