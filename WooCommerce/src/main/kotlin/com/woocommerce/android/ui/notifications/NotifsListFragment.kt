@@ -21,7 +21,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
-import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.onScrollDown
@@ -294,10 +293,6 @@ class NotifsListFragment : TopLevelFragment(),
         AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                 AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
                 AnalyticsTracker.KEY_ALREADY_READ to notification.read))
-
-        notification.getProductInfo()?.remoteProductId?.let { remoteProductId ->
-            presenter.fetchProduct(remoteProductId)
-        }
 
         // If the notification is pending moderation, override the status to display in
         // the detail view.

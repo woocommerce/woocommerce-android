@@ -10,7 +10,6 @@ interface NotifsListContract {
         fun loadNotifs(forceRefresh: Boolean)
         fun reloadNotifs()
         fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean)
-        fun fetchProduct(remoteProductId: Long)
         fun pushUpdatedComment(comment: CommentModel)
         fun markAllNotifsRead()
         fun hasUnreadNotifs(): Boolean

@@ -38,11 +38,11 @@ import com.woocommerce.android.util.ProductImageUrlMap
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
-import com.woocommerce.android.widgets.WCPromoTooltip
-import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoDialog.PromoType
+import com.woocommerce.android.widgets.WCPromoTooltip
+import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -285,7 +285,7 @@ class MainActivity : AppCompatActivity(),
             updateActivityTitle()
             refreshDashboard(true)
         }
-        ProductImageUrlMap.init(selectedSite.get(), productStore)
+        ProductImageUrlMap.reset(selectedSite.get())
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {

@@ -86,7 +86,7 @@ class OrderDetailPresenter @Inject constructor(
         if (orderIdentifier.isNotEmpty()) {
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
             orderModel?.let { order ->
-                fetchProductsForOrder(order)
+                fetchProductsForOrderIfNotExists(order)
                 orderView?.showOrderDetail(order)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
@@ -284,13 +284,15 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     /**
-     * Fetches all products attached to this order
+     * Fetches all products attached to this order if they don't already exist in the db
      */
-    private fun fetchProductsForOrder(order: WCOrderModel) {
+    private fun fetchProductsForOrderIfNotExists(order: WCOrderModel) {
         order.getLineItemList().forEach { lineItem ->
             lineItem.productId?.let { productId ->
-                val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), productId)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+                if (!productStore.geProductExistsByRemoteId(selectedSite.get(), productId)) {
+                    val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), productId)
+                    dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+                }
             }
         }
     }
