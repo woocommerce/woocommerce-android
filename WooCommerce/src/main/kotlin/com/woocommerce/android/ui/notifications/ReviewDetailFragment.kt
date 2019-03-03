@@ -169,7 +169,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
         note.getProductInfo()?.let { info ->
             if (info.remoteProductId > 0) {
-                ProductImageUrlMap.get(info.remoteProductId)?.let { productImage ->
+                ProductImageUrlMap.getInstance().get(info.remoteProductId)?.let { productImage ->
                     val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
                     GlideApp.with(activity as Context)
                             .load(imageUrl)

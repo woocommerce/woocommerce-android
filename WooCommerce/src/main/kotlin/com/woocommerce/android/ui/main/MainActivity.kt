@@ -130,10 +130,6 @@ class MainActivity : AppCompatActivity(),
         if (!promoShown) {
             AppRatingDialog.showIfNeeded(this)
         }
-
-        if (savedInstanceState == null) {
-            ProductImageUrlMap.init(selectedSite.get(), productStore)
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -285,7 +281,7 @@ class MainActivity : AppCompatActivity(),
             updateActivityTitle()
             refreshDashboard(true)
         }
-        ProductImageUrlMap.reset(selectedSite.get())
+        ProductImageUrlMap.reset()
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {

@@ -71,7 +71,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
             productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
 
             item.productId?.let { productId ->
-                ProductImageUrlMap.get(productId)?.let { productImage ->
+                ProductImageUrlMap.getInstance().get(productId)?.let { productImage ->
                     val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, imageSize, imageSize)
                     GlideApp.with(context)
                             .load(imageUrl)
