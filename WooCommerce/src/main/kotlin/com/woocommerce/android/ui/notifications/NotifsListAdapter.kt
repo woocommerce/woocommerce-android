@@ -341,9 +341,11 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             when (notif.getWooType()) {
                 NEW_ORDER -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_cart)
+                    itemHolder.desc.maxLines = Int.MAX_VALUE
                 }
                 PRODUCT_REVIEW -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_comment)
+                    itemHolder.desc.maxLines = 2
 
                     notif.getRating()?.let {
                         itemHolder.rating.rating = it

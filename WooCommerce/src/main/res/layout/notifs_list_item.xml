@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
+        android:ellipsize="end"
         app:layout_constraintBottom_toTopOf="@+id/notif_rating"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/notif_title"
