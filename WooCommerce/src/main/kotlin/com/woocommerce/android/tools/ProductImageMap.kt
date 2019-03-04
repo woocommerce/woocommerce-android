@@ -1,6 +1,5 @@
-package com.woocommerce.android.util
+package com.woocommerce.android.tools
 
-import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -40,7 +39,12 @@ class ProductImageMap @Inject constructor(
             }
 
             // product isn't in our store so fire event to fetch it
-            EventBus.getDefault().post(RequestFetchProductEvent(site, remoteProductId))
+            EventBus.getDefault().post(
+                    RequestFetchProductEvent(
+                            site,
+                            remoteProductId
+                    )
+            )
         }
 
         return null

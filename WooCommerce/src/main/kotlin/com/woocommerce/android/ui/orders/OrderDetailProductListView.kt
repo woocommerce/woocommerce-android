@@ -14,7 +14,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.util.ProductImageMap
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel

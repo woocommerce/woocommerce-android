@@ -11,8 +11,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.ProductImageMap
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
 import kotlinx.android.synthetic.main.order_detail_product_list.*

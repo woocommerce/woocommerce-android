@@ -22,7 +22,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.ProductImageMap
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SkeletonView

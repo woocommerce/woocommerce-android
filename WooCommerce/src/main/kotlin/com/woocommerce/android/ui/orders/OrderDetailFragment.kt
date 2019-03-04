@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.ProductImageMap
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*

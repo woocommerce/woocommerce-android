@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.ProductImageMap
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
