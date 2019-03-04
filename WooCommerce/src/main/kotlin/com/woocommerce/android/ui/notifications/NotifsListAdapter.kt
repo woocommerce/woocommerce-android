@@ -360,9 +360,11 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             when (notif.getWooType()) {
                 NEW_ORDER -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_cart)
+                    itemHolder.desc.maxLines = Int.MAX_VALUE
                 }
                 PRODUCT_REVIEW -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_comment)
+                    itemHolder.desc.maxLines = 2
 
                     notif.getRating()?.let {
                         itemHolder.rating.rating = it
@@ -422,31 +424,32 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-            for (i in 0 until parent.childCount) {
+            for (i in 0 until parent.childCount - 1) {
                 val child = parent.getChildAt(i)
-                val position = parent.getChildAdapterPosition(child)
-                val itemType = decorListener?.getItemTypeAtPosition(position) ?: ItemType.READ_NOTIF
+                val position = child?.let { parent.getChildAdapterPosition(it) } ?: INVALID_POSITION
+                if (position != INVALID_POSITION) {
+                    val itemType = decorListener?.getItemTypeAtPosition(position) ?: ItemType.READ_NOTIF
+                    /*
+                     * note that we have to draw the indicator for all items rather than just unread notifs
+                     * in order to paint over recycled cells that have a previously-drawn indicator
+                     */
+                    val colorId = when (itemType) {
+                        ItemType.HEADER -> R.color.list_header_bg
+                        ItemType.UNREAD_NOTIF -> R.color.wc_green
+                        else -> R.color.list_item_bg
+                    }
 
-                /*
-                 * note that we have to draw the indicator for all items rather than just unread notifs
-                 * in order to paint over recycled cells that have a previously-drawn indicator
-                 */
-                val colorId = when (itemType) {
-                    ItemType.HEADER -> R.color.list_header_bg
-                    ItemType.UNREAD_NOTIF -> R.color.wc_green
-                    else -> R.color.list_item_bg
+                    val paint = Paint()
+                    paint.color = ContextCompat.getColor(parent.context, colorId)
+
+                    parent.getDecoratedBoundsWithMargins(child, bounds)
+                    val top = bounds.top.toFloat()
+                    val bottom = (bounds.bottom + Math.round(child.translationY)).toFloat()
+                    val left = bounds.left.toFloat()
+                    val right = left + dividerWidth
+
+                    canvas.drawRect(left, top, right, bottom, paint)
                 }
-
-                val paint = Paint()
-                paint.color = ContextCompat.getColor(parent.context, colorId)
-
-                parent.getDecoratedBoundsWithMargins(child, bounds)
-                val top = bounds.top.toFloat()
-                val bottom = (bounds.bottom + Math.round(child.translationY)).toFloat()
-                val left = bounds.left.toFloat()
-                val right = left + dividerWidth
-
-                canvas.drawRect(left, top, right, bottom, paint)
             }
         }
     }
