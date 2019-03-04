@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.ProductImageMap
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
@@ -74,6 +75,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var productImageMap: ProductImageMap
 
     private var changeOrderStatusCanceled: Boolean = false
     private var changeOrderStatusSnackbar: Snackbar? = null
@@ -178,7 +180,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             })
 
             // Populate the Order Product List Card
-            orderDetail_productList.initView(order, false, currencyFormatter.buildFormatter(order.currency), this)
+            orderDetail_productList.initView(
+                    order,
+                    productImageMap,
+                    false,
+                    currencyFormatter.buildFormatter(order.currency),
+                    this
+            )
 
             // Populate the Customer Information Card
             if (parentFragment is OrderCustomerActionListener) {
