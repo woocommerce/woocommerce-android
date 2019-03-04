@@ -4,8 +4,11 @@
 Bugfixes
 * Fixed a crash that could occur when undo-ing a review moderation
 * Fixed a UI issue that could show an apparent duplicate review when trashing the last review notification
+* Fixed rare crash after moderating a product review
+* Fixed bug that could cause an empty review detail to appear if the review couldn't be loaded
 * Fixed bug that could cause review detail not to appear after tapping a review notification
 
 Improvements
+* In the notification list, only the first two lines of a review are now shown
 
 New Features

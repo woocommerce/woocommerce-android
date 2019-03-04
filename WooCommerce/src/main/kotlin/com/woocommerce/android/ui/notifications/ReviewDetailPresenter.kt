@@ -1,13 +1,11 @@
 package com.woocommerce.android.ui.notifications
 
 import android.content.Context
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.buildComment
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.notifications.ReviewDetailContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -35,8 +33,7 @@ class ReviewDetailPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val commentStore: CommentStore,
     private val notificationStore: NotificationStore,
-    private val networkStatus: NetworkStatus,
-    private val uiMessageResolver: UIMessageResolver
+    private val networkStatus: NetworkStatus
 ) : ReviewDetailContract.Presenter {
     companion object {
         private val TAG: String = ReviewDetailPresenter::class.java.simpleName
@@ -90,8 +87,8 @@ class ReviewDetailPresenter @Inject constructor(
     override fun fetchComment() {
         if (networkStatus.isConnected()) {
             // Request comment from the api
-            notification?.getCommentId()?.let {
-                val payload = RemoteCommentPayload(selectedSite.get(), it)
+            notification?.getCommentId()?.let { id ->
+                val payload = RemoteCommentPayload(selectedSite.get(), id)
                 dispatcher.dispatch(CommentActionBuilder.newFetchCommentAction(payload))
             }
         }
@@ -144,7 +141,7 @@ class ReviewDetailPresenter @Inject constructor(
                     "${notification?.noteId} and comment_id: ${comment?.id}, ${event.error.message}")
 
             // TODO add tracks for fetching comment error
-            uiMessageResolver.showSnack(R.string.wc_load_review_error)
+            view?.showLoadReviewError()
         } else {
             // Comment has been fetched from the api successfully.
             // TODO add tracks for COMMENTS
