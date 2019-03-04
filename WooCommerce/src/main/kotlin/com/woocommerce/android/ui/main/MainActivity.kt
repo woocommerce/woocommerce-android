@@ -23,7 +23,6 @@ import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
@@ -48,7 +47,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -83,8 +81,6 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var productStore: WCProductStore
-    @Inject lateinit var supportHelper: SupportHelper
 
     private var isBottomNavShowing = true
     private lateinit var bottomNavView: MainNavigationView

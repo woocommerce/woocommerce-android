@@ -17,7 +17,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
     private var imageSize = 0
 
     init {
-        imageSize = DisplayUtils.dpToPx(context, 40) // TODO: use dimen resource
+        val dimen = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+        imageSize = DisplayUtils.dpToPx(context, dimen)
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
 
