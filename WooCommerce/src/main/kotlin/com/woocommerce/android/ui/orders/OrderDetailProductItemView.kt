@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.util.ProductImageUrlMap
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.util.DisplayUtils
@@ -24,6 +23,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
     fun initView(
         item: WCOrderModel.LineItem,
+        productImage: String?,
         expanded: Boolean,
         formatCurrencyForDisplay: (String?) -> String
     ) {
@@ -71,8 +71,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
             productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
 
             item.productId?.let { productId ->
-                ProductImageUrlMap.getInstance().get(productId)?.let { productImage ->
-                    val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, imageSize, imageSize)
+                productImage?.let {
+                    val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                     GlideApp.with(context)
                             .load(imageUrl)
                             .placeholder(R.drawable.ic_product)

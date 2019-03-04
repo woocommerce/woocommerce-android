@@ -1,39 +1,30 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.tools.SelectedSite
-import dagger.android.AndroidInjection
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Maintains a map of product <remoteId, imageUrl> used for quick lookups when attempting to display
  * product images. If the product isn't in our map we load it from the db. If it's not in the db,
  * we fire an event which tells the MainPresenter to fetch it from the backend.
  */
-class ProductImageUrlMap {
+@Singleton
+class ProductImageMap @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val productStore: WCProductStore
+) {
     private val map by lazy {
         HashMap<Long, String>()
     }
 
-    companion object {
-        private val imageUrlMap = ProductImageUrlMap()
-
-        fun getInstance() = imageUrlMap
-
-        fun reset() {
-            getInstance().map.clear()
-        }
-    }
-
     class RequestFetchProductEvent(val site: SiteModel, val remoteProductId: Long)
 
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var productStore: WCProductStore
-
-    init {
-        AndroidInjection.inject(this)
+    fun reset() {
+        map.clear()
     }
 
     fun get(remoteProductId: Long): String? {

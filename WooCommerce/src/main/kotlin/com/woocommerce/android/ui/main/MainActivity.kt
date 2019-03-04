@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.ProductImageUrlMap
+import com.woocommerce.android.util.ProductImageMap
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -82,6 +82,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var productStore: WCProductStore
     @Inject lateinit var supportHelper: SupportHelper
 
@@ -281,7 +282,7 @@ class MainActivity : AppCompatActivity(),
             updateActivityTitle()
             refreshDashboard(true)
         }
-        ProductImageUrlMap.reset()
+        productImageMap.reset()
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
