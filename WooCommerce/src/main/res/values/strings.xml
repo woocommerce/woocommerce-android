@@ -100,7 +100,7 @@
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>
     <string name="login_update_required_title">Update Store to WooCommerce 3.5</string>
-    <string name="login_update_required_desc">This app requires WooCommerce 3.5 on your server. To continue using this app, please update your store.</string>
+    <string name="login_update_required_desc">This store uses an older version of WooCommerce. Please upgrade your store to WooCommerce 3.5 or greater to use it with this app.</string>
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
@@ -140,8 +140,6 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
-    <string name="dashboard_plugin_notice_title">Update to WooCommerce 3.5 to keep using this app</string>
-    <string name="dashboard_plugin_notice_message">This app requires that you install WooCommerce 3.5 on your server. Update as soon as possible to continue using this app.</string>
     <!--
         Order List View
     -->
@@ -444,7 +442,7 @@
     <string name="magic_link_sent_login_title">Magic link sent</string>
     <string name="selfhosted_site_login_title">Login credentials</string>
     <string name="verification_2fa_screen_title">Code verification</string>
-    <string name="site_picker_title">My stores</string>
+    <string name="site_picker_title">Pick store</string>
 
     <string name="signup_email_screen_title">Email signup</string>
     <string name="signup_magic_link_title">Magic link sent</string>

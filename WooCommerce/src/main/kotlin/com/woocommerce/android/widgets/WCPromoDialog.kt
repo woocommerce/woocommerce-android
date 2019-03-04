@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatButton
 import android.view.View
-import android.widget.ImageView
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_GOT_IT
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_TRY_IT
@@ -64,7 +63,8 @@ class WCPromoDialog : DialogFragment() {
     }
 
     private var listener: PromoDialogListener? = null
-    private var promoImage: ImageView? = null
+    private var promoFrame: View? = null
+    private var promoImage: View? = null
     private lateinit var promoType: PromoType
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -81,6 +81,7 @@ class WCPromoDialog : DialogFragment() {
     private fun checkOrientation() {
         if (isAdded) {
             val isLandscape = DisplayUtils.isLandscape(activity)
+            promoFrame?.visibility = if (isLandscape) View.GONE else View.VISIBLE
             promoImage?.visibility = if (isLandscape) View.GONE else View.VISIBLE
         }
     }
@@ -102,6 +103,7 @@ class WCPromoDialog : DialogFragment() {
             listener?.onPromoButtonClicked(promoType.button2)
         }
 
+        promoFrame = dialogView.findViewById(R.id.imagePromoFrame)
         promoImage = dialogView.findViewById(R.id.imagePromo)
         checkOrientation()
 

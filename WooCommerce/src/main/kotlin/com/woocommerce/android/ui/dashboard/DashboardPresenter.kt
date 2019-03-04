@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.dashboard
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -17,7 +16,6 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
-import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
@@ -33,7 +31,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import javax.inject.Inject
 
 class DashboardPresenter @Inject constructor(
@@ -139,23 +136,6 @@ class DashboardPresenter @Inject constructor(
     override fun fetchHasOrders() {
         val payload = FetchHasOrdersPayload(selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchHasOrdersAction(payload))
-    }
-
-    override fun checkApiVersion() {
-        dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(selectedSite.get()))
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onApiVersionFetched(event: OnApiVersionFetched) {
-        if (!event.isError) {
-            if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
-                dashboardView?.hidePluginVersionNoticeCard()
-                AppPrefs.setIsUsingV3Api()
-            } else {
-                dashboardView?.showPluginVersionNoticeCard()
-            }
-        }
     }
 
     @Suppress("unused")
