@@ -7,5 +7,6 @@ Bugfixes
 * Fixed bug that could cause review detail not to appear after tapping a review notification
 
 Improvements
+* Product images are now shown in review detail and order detail
 
 New Features
