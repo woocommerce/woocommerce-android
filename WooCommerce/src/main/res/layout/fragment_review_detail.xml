@@ -24,14 +24,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/review_product_icon"
-                android:layout_width="@dimen/product_icon_sz"
-                android:layout_height="@dimen/product_icon_sz"
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/margin_medium"
-                android:importantForAccessibility="no"
-                android:src="@drawable/ic_product"/>
+                android:background="@drawable/picture_frame"
+                android:padding="2dp">
+
+                <ImageView
+                    android:id="@+id/review_product_icon"
+                    android:layout_width="@dimen/product_icon_sz"
+                    android:layout_height="@dimen/product_icon_sz"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_product"/>
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/review_product_name"
