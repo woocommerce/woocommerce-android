@@ -11,6 +11,6 @@ import javax.inject.Singleton
 class ProductImageMapModule {
     @Provides
     @Singleton
-    fun provideSelectedSite(selectedSite: SelectedSite, productStore: WCProductStore) =
+    fun provideProductImageMap(selectedSite: SelectedSite, productStore: WCProductStore) =
             ProductImageMap(selectedSite, productStore)
 }
