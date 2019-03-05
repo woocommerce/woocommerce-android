@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
@@ -41,6 +42,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var productImageMap: ProductImageMap
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -81,7 +83,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun showOrderDetail(order: WCOrderModel) {
         // Populate the Order Product List Card
-        orderFulfill_products.initView(order, true, currencyFormatter.buildFormatter(order.currency))
+        orderFulfill_products.initView(order, productImageMap, true, currencyFormatter.buildFormatter(order.currency))
 
         // Check for customer provided note, show if available
         if (order.customerNote.isEmpty()) {

@@ -27,11 +27,13 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
+import org.wordpress.android.fluxc.store.WCProductStore
 
 class OrderDetailPresenterTest {
     private val orderDetailView: OrderDetailContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
+    private val productStore: WCProductStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val uiMessageResolver: UIMessageResolver = mock()
     private val networkStatus: NetworkStatus = mock()
@@ -45,8 +47,17 @@ class OrderDetailPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderDetailPresenter(
-                dispatcher, orderStore, selectedSite, uiMessageResolver, networkStatus, notificationStore))
+        presenter = spy(
+                OrderDetailPresenter(
+                        dispatcher,
+                        orderStore,
+                        productStore,
+                        selectedSite,
+                        uiMessageResolver,
+                        networkStatus,
+                        notificationStore
+                )
+        )
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()

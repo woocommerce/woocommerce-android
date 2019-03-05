@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.notifications
 import com.woocommerce.android.extensions.WooNotificationType
 import com.woocommerce.android.extensions.getWooType
 import org.wordpress.android.fluxc.model.notification.NotificationModel
-import org.wordpress.android.fluxc.tools.FormattableRangeType.POST
 import org.wordpress.android.fluxc.tools.FormattableContent
+import org.wordpress.android.fluxc.tools.FormattableRangeType.POST
 
 /**
  * Helper class for parsing values from the various [FormattableContent] blocks contained inside the
@@ -53,6 +53,20 @@ object NotificationHelper {
         return notif.subject?.get(0)?.let { block ->
             block.ranges?.asSequence()?.filter { it.rangeType() == POST }?.firstOrNull()?.url
         }
+    }
+
+    /**
+     * Parses the product id from the list of meta ids
+     *
+     * @return zero if the notification is not a product review
+     */
+    fun getProductRemoteId(notif: NotificationModel): Long? {
+        if (notif.getWooType() != WooNotificationType.PRODUCT_REVIEW) {
+            return null
+        }
+
+        // products are posts
+        return notif.meta?.ids?.post
     }
 
     /**

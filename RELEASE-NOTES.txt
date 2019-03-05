@@ -8,6 +8,7 @@ Bugfixes
 * Fixed bug that could cause an "Update to WooCommerce 3.5" message to appear in your dashboard
 
 Improvements
+* Product images are now shown in review detail and order detail
 * In the notification list, only the first two lines of a review are now shown
 
 New Features

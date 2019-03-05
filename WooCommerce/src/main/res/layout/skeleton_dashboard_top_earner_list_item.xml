@@ -8,14 +8,14 @@
     android:paddingTop="@dimen/margin_large">
 
     <View
-        android:layout_width="@dimen/top_earner_product_image_sz"
-        android:layout_height="@dimen/top_earner_product_image_sz"
+        android:layout_width="@dimen/product_icon_sz"
+        android:layout_height="@dimen/product_icon_sz"
         android:layout_gravity="center_vertical"
         android:background="@drawable/skeleton_background"/>
 
     <View
         android:layout_width="0dp"
-        android:layout_height="@dimen/top_earner_product_image_sz"
+        android:layout_height="@dimen/product_icon_sz"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginStart="@dimen/margin_large"
@@ -24,7 +24,7 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="@dimen/top_earner_product_image_sz"
+        android:layout_height="@dimen/product_icon_sz"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:background="@drawable/skeleton_background"/>
