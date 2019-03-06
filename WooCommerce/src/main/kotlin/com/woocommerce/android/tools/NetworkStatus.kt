@@ -6,5 +6,5 @@ import javax.inject.Singleton
 
 @Singleton
 class NetworkStatus(private var context: Context) {
-    fun isConnected() = NetworkUtils.isNetworkAvailable(context)
+    fun isConnected() = NetworkUtils.isNetworkAvailable(context )
 }
