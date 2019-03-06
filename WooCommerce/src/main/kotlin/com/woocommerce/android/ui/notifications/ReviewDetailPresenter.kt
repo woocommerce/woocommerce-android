@@ -131,7 +131,7 @@ class ReviewDetailPresenter @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         // product was just fetched, show its image
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
-            view?.showProductImage()
+            view?.refreshProductImage()
         }
     }
 

@@ -331,7 +331,7 @@ class OrderDetailPresenter @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         // product was just fetched, show its image
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
-            orderView?.showProductImages()
+            orderView?.refreshProductImages()
         }
     }
 

@@ -32,13 +32,13 @@ class ProductImageMap @Inject constructor(
         }
 
         selectedSite.getIfExists()?.let { site ->
-            // product isn't in our map so get it from the store
+            // product isn't in our map so get it from the database
             productStore.getProductByRemoteId(site, remoteProductId)?.getFirstImage()?.let { imageUrl ->
                 map[remoteProductId] = imageUrl
-                // TODO return imageUrl
+                return imageUrl
             }
 
-            // product isn't in our store so fire event to fetch it
+            // product isn't in our database so fire event to fetch it
             EventBus.getDefault().post(
                     RequestFetchProductEvent(
                             site,
