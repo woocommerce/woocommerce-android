@@ -58,7 +58,7 @@
                 android:layout_height="@dimen/avatar_sz_small"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/wc_view_the_product_external"
-                android:tint="@color/wc_grey_darker"
+                android:tint="@color/wc_purple"
                 app:srcCompat="@drawable/ic_external"/>
         </LinearLayout>
 
