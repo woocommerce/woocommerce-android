@@ -67,6 +67,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     private var remoteCommentId: Long = 0L
     private var commentStatusOverride: CommentStatus? = null
     private var productUrl: String? = null
+    private var remoteProductId: Long = 0L
     private var runOnStartFunc: (() -> Unit)? = null
     private var productIconSize: Int = 0
 
@@ -169,18 +170,26 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         updateStatus(CommentStatus.fromString(comment.status))
 
         note.getProductInfo()?.let { info ->
-            if (info.remoteProductId > 0) {
-                productImageMap.get(info.remoteProductId)?.let { productImage ->
-                    val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
-                    GlideApp.with(activity as Context)
-                            .load(imageUrl)
-                            .placeholder(R.drawable.ic_product)
-                            .into(review_product_icon)
-                }
-            }
+            remoteProductId = info.remoteProductId
+            showProductImage()
         }
 
         activity?.let { presenter.markNotificationRead(it, note) }
+    }
+
+    override fun showProductImage() {
+        if (remoteProductId > 0) {
+            // Note that if productImageMap doesn't already have the image for this product then it will request
+            // it from the backend. When the request completes it will be captured by the presenter, which will
+            // call this method to show the image for the just-downloaded product model
+            productImageMap.get(remoteProductId)?.let { productImage ->
+                val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
+                GlideApp.with(activity as Context)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_product)
+                        .into(review_product_icon)
+            }
+        }
     }
 
     private fun configureModerationButtons(note: NotificationModel) {

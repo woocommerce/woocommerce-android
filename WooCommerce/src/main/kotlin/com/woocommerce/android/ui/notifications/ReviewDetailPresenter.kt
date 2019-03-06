@@ -14,6 +14,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.CommentAction.FETCH_COMMENT
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.CommentActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.CommentModel
@@ -26,6 +27,7 @@ import org.wordpress.android.fluxc.store.CommentStore.RemoteCommentPayload
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
 class ReviewDetailPresenter @Inject constructor(
@@ -121,6 +123,15 @@ class ReviewDetailPresenter @Inject constructor(
     fun onNotificationChanged(event: OnNotificationChanged) {
         when (event.causeOfChange) {
             MARK_NOTIFICATIONS_READ -> onNotificationMarkedRead(event)
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductChanged(event: OnProductChanged) {
+        // product was just fetched, show its image
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
+            view?.showProductImage()
         }
     }
 
