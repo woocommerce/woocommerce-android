@@ -6,16 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/productInfo_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@null"
-        android:contentDescription="@string/orderdetail_product_image_contentdesc"
+    <FrameLayout
+        android:id="@+id/productInfo_iconFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/picture_frame"
+        android:padding="2dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_product"
-        tools:visibility="visible"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/productInfo_icon"
+            android:layout_width="@dimen/product_icon_sz"
+            android:layout_height="@dimen/product_icon_sz"
+            android:contentDescription="@string/orderdetail_product_image_contentdesc"
+            app:srcCompat="@drawable/ic_product"
+            tools:visibility="visible"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/productInfo_name"
@@ -32,7 +40,7 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_qty"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         tools:text="Candle"/>
 
     <TextView
@@ -54,7 +62,7 @@
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
         tools:text="$30.00 ($15.00 x 2)"
         tools:visibility="visible"/>
@@ -69,7 +77,7 @@
         android:paddingStart="0dp"
         android:text="@string/orderdetail_product_lineitem_tax"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_productTotal"
         tools:text="Tax:"
         tools:visibility="visible"/>
@@ -99,7 +107,7 @@
         android:paddingStart="0dp"
         android:text="@string/orderdetail_product_lineitem_sku"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_icon"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_lblTax"
         tools:visibility="visible"/>
 

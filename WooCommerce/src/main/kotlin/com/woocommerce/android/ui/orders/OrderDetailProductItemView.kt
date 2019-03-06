@@ -5,17 +5,29 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
+import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.PhotonUtils
 import java.text.NumberFormat
 
 class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
+    private var imageSize = 0
+
     init {
+        val dimen = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+        imageSize = DisplayUtils.dpToPx(context, dimen)
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
 
-    fun initView(item: WCOrderModel.LineItem, expanded: Boolean, formatCurrencyForDisplay: (String?) -> String) {
+    fun initView(
+        item: WCOrderModel.LineItem,
+        productImage: String?,
+        expanded: Boolean,
+        formatCurrencyForDisplay: (String?) -> String
+    ) {
         productInfo_name.text = item.name
 
         val numberFormatter = NumberFormat.getNumberInstance().apply {
@@ -59,7 +71,15 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
             productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
 
-            // todo Product Image
+            item.productId?.let { productId ->
+                productImage?.let {
+                    val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
+                    GlideApp.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_product)
+                            .into(productInfo_icon)
+                } ?: productInfo_icon.setImageResource(R.drawable.ic_product)
+            }
         }
 
         // we need to put some space before the product name when the product image is showing

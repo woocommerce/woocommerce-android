@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
@@ -38,6 +39,7 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
 
     @Inject lateinit var presenter: OrderProductListContract.Presenter
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var productImageMap: ProductImageMap
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -78,6 +80,6 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
     }
 
     override fun showOrderProducts(order: WCOrderModel) {
-        orderProducts_list.initView(order, true, currencyFormatter.buildFormatter(order.currency))
+        orderProducts_list.initView(order, productImageMap, true, currencyFormatter.buildFormatter(order.currency))
     }
 }

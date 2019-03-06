@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -36,6 +37,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
      */
     fun initView(
         order: WCOrderModel,
+        productImageMap: ProductImageMap,
         expanded: Boolean,
         formatCurrencyForDisplay: (String?) -> String,
         listener: OrderActionListener? = null
@@ -48,7 +50,12 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
 
         val viewManager = LinearLayoutManager(context)
-        val viewAdapter = ProductListAdapter(order.getLineItemList(), formatCurrencyForDisplay, expanded)
+        val viewAdapter = ProductListAdapter(
+                order.getLineItemList(),
+                productImageMap,
+                formatCurrencyForDisplay,
+                expanded
+        )
 
         listener?.let {
             if (order.status == CoreOrderStatus.PROCESSING.value) {
@@ -115,6 +122,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
 
     class ProductListAdapter(
         private val orderItems: List<WCOrderModel.LineItem>,
+        private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (String?) -> String,
         private var isExpanded: Boolean
     ) : RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
@@ -128,7 +136,10 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.view.initView(orderItems[position], isExpanded, formatCurrencyForDisplay)
+            val productImage = orderItems[position].productId?.let {
+                productImageMap.get(it)
+            } ?: null
+            holder.view.initView(orderItems[position], productImage, isExpanded, formatCurrencyForDisplay)
         }
 
         override fun getItemCount() = orderItems.size

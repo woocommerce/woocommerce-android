@@ -142,7 +142,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         init {
             setHasStableIds(true)
             orderString = context.getString(R.string.dashboard_top_earners_total_orders)
-            imageSize = context.resources.getDimensionPixelSize(R.dimen.top_earner_product_image_sz)
+            imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
         }
 
         fun setTopEarnersList(newList: List<WCTopEarnerModel>) {
