@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -41,11 +42,13 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPay
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus,
@@ -82,8 +85,9 @@ class OrderDetailPresenter @Inject constructor(
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
-            orderModel?.let {
-                orderView?.showOrderDetail(it)
+            orderModel?.let { order ->
+                fetchProductsForOrderIfNotExists(order)
+                orderView?.showOrderDetail(order)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId)
@@ -275,6 +279,20 @@ class OrderDetailPresenter @Inject constructor(
             } else {
                 isNotesInit = true
                 orderView?.showOrderNotes(notes)
+            }
+        }
+    }
+
+    /**
+     * Fetches all products attached to this order if they don't already exist in the db
+     */
+    private fun fetchProductsForOrderIfNotExists(order: WCOrderModel) {
+        order.getLineItemList().forEach { lineItem ->
+            lineItem.productId?.let { productId ->
+                if (!productStore.geProductExistsByRemoteId(selectedSite.get(), productId)) {
+                    val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), productId)
+                    dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+                }
             }
         }
     }
