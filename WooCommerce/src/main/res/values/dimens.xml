@@ -153,5 +153,4 @@
         Other
     -->
     <dimen name="product_icon_sz">40dp</dimen>
-    <dimen name="product_icon_sz_small">28dp</dimen>
 </resources>

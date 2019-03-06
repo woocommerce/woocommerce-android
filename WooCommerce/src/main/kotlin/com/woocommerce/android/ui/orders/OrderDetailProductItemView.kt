@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.annotation.DimenRes
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.util.AttributeSet
@@ -69,22 +68,17 @@ class OrderDetailProductItemView @JvmOverloads constructor(
 
             productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
         } else {
-            // vertically center the product name because it's the only text showing
+            // vertically center the product name and quantity since they're the only text showing
             val set = ConstraintSet()
             set.clone(this)
             set.centerVertically(productInfo_name.id, ConstraintSet.PARENT_ID)
+            set.centerVertically(productInfo_qty.id, ConstraintSet.PARENT_ID)
             set.applyTo(this)
-        }
-
-        @DimenRes val dimenRes = if (expanded) R.dimen.product_icon_sz else R.dimen.product_icon_sz_small
-        val imageSize = context.resources.getDimensionPixelSize(dimenRes)
-        with(productInfo_icon.layoutParams) {
-            width = imageSize
-            height = imageSize
         }
 
         item.productId?.let { productId ->
             productImage?.let {
+                val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(context)
                         .load(imageUrl)
