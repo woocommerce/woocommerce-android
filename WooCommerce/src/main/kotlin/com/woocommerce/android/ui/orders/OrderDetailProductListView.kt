@@ -117,12 +117,9 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
     }
 
-    // called when a product is fetched to ensure we show the correct product image - only applies when the
-    // view is expanded since images are hidden otherwise
+    // called when a product is fetched to ensure we show the correct product image
     fun refreshProductImages() {
-        if (isExpanded) {
-            viewAdapter.notifyDataSetChanged()
-        }
+        viewAdapter.notifyDataSetChanged()
     }
 
     private fun hideButtons() {

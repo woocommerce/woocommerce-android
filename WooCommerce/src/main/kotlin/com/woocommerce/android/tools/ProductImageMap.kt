@@ -2,6 +2,7 @@ package com.woocommerce.android.tools
 
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,6 +22,11 @@ class ProductImageMap @Inject constructor(
     }
 
     class RequestFetchProductEvent(val site: SiteModel, val remoteProductId: Long)
+
+    init {
+        // TODO: remove
+        ProductSqlUtils.deleteProductsForSite(selectedSite.get())
+    }
 
     fun reset() {
         map.clear()

@@ -76,15 +76,13 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             set.applyTo(this)
         }
 
-        item.productId?.let { productId ->
-            productImage?.let {
-                val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
-                val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
-                GlideApp.with(context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_product)
-                        .into(productInfo_icon)
-            } ?: productInfo_icon.setImageResource(R.drawable.ic_product)
-        }
+        productImage?.let {
+            val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+            val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
+            GlideApp.with(context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(productInfo_icon)
+        } ?: productInfo_icon.setImageResource(R.drawable.ic_product)
     }
 }
