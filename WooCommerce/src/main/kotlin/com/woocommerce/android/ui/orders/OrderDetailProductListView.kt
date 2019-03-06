@@ -58,7 +58,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 order.getLineItemList(),
                 productImageMap,
                 formatCurrencyForDisplay,
-                expanded
+                isExpanded
         )
 
         listener?.let {
@@ -88,12 +88,12 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
             adapter = viewAdapter
         }
 
-        if (expanded) {
+        if (isExpanded) {
             productList_products.addItemDecoration(divider)
         }
     }
 
-    fun updateView(order: WCOrderModel, expanded: Boolean, listener: OrderActionListener? = null) {
+    fun updateView(order: WCOrderModel, listener: OrderActionListener? = null) {
         listener?.let {
             if (order.status == CoreOrderStatus.PROCESSING.value) {
                 productList_btnFulfill.visibility = View.VISIBLE
@@ -112,7 +112,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
             }
         } ?: hideButtons()
 
-        if (expanded) {
+        if (isExpanded) {
             productList_products.addItemDecoration(divider)
         }
     }

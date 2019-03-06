@@ -242,7 +242,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
         orderDetail_orderStatus.updateStatus(orderStatus)
         presenter.orderModel?.let {
-            orderDetail_productList.updateView(it, false, this)
+            orderDetail_productList.updateView(it, this)
             orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency))
         }
     }
