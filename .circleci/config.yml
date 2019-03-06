@@ -19,10 +19,19 @@ jobs:
       - <<: *copy_gradle_properties
       - run:
           name: Checkstyle & klint
-          command: ./gradlew --stacktrace checkstyle ktlint
+          command: ./gradlew --stacktrace checkstyle ciktlint
       - run:
           name: Lint
           command: ./gradlew --stacktrace lintVanillaRelease
+       - run:
+          name: Violations
+          when: on_fail
+          command: |
+            if [ -n "$GITHUB_API_TOKEN" ]; then
+              $GRADLEW violationCommentsToGitHub -DGITHUB_PULLREQUESTID=${CIRCLE_PULL_REQUEST##*/} -DGITHUB_OAUTH2TOKEN=$GITHUB_API_TOKEN
+            else
+              echo "Not posting lint errors to Github because \$GITHUB_API_TOKEN is not found"
+            fi 
       - android/save-gradle-cache:
           cache-prefix: lint-cache-v1
       - store_artifacts:
