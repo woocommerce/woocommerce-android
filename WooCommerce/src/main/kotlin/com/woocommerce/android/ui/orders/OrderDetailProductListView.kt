@@ -26,6 +26,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         View.inflate(context, R.layout.order_detail_product_list, this)
     }
     private lateinit var divider: AlignedDividerDecoration
+    private lateinit var viewAdapter: ProductListAdapter
 
     /**
      * Initialize and format this view.
@@ -50,7 +51,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
 
         val viewManager = LinearLayoutManager(context)
-        val viewAdapter = ProductListAdapter(
+        viewAdapter = ProductListAdapter(
                 order.getLineItemList(),
                 productImageMap,
                 formatCurrencyForDisplay,
@@ -111,6 +112,10 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         if (expanded) {
             productList_products.addItemDecoration(divider)
         }
+    }
+
+    fun showProductImages() {
+        viewAdapter.notifyDataSetChanged()
     }
 
     private fun hideButtons() {

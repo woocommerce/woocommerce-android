@@ -40,6 +40,7 @@ interface OrderDetailContract {
         fun markOrderStatusChangedFailed()
         fun showLoadOrderProgress(show: Boolean)
         fun showLoadOrderError()
+        fun showProductImages()
         fun refreshOrderStatus()
     }
 }

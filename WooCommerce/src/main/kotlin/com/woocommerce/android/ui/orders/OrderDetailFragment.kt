@@ -320,6 +320,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
+    override fun showProductImages() {
+        orderDetail_productList.showProductImages()
+    }
+
     // TODO: replace progress bar with a skeleton
     override fun showLoadOrderProgress(show: Boolean) {
         loadingProgress.visibility = if (show) View.VISIBLE else View.GONE

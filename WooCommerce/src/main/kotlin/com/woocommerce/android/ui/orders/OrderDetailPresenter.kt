@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
@@ -43,6 +44,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
@@ -338,6 +340,15 @@ class OrderDetailPresenter @Inject constructor(
         }
 
         orderView?.refreshOrderStatus()
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductChanged(event: OnProductChanged) {
+        // product was just fetched, show its image
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
+            orderView?.showProductImages()
+        }
     }
 
     private fun onNotificationMarkedRead(event: OnNotificationChanged) {

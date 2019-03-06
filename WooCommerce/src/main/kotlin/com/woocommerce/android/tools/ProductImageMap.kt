@@ -35,7 +35,7 @@ class ProductImageMap @Inject constructor(
             // product isn't in our map so get it from the store
             productStore.getProductByRemoteId(site, remoteProductId)?.getFirstImage()?.let { imageUrl ->
                 map[remoteProductId] = imageUrl
-                return imageUrl
+                // TODO return imageUrl
             }
 
             // product isn't in our store so fire event to fetch it
