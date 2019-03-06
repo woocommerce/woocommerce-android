@@ -43,7 +43,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         listener: OrderActionListener? = null
     ) {
         divider = AlignedDividerDecoration(context,
-                DividerItemDecoration.VERTICAL, R.id.productInfo_name, clipToMargin = true)
+                DividerItemDecoration.VERTICAL, R.id.productInfo_name, clipToMargin = false)
 
         ContextCompat.getDrawable(context, R.drawable.list_divider)?.let { drawable ->
             divider.setDrawable(drawable)
