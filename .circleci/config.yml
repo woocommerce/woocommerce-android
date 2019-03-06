@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Lint
           command: ./gradlew --stacktrace lintVanillaRelease
-       - run:
+      - run:
           name: Violations
           when: on_fail
           command: |
