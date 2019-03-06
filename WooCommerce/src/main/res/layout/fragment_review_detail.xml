@@ -17,7 +17,9 @@
             android:id="@+id/review_open_product"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
             android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="@dimen/margin_medium"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +28,6 @@
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/margin_medium"
                 android:background="@drawable/picture_frame"
                 android:padding="1dp">
@@ -44,7 +45,6 @@
                 android:id="@+id/review_product_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_extra_large"
                 android:layout_weight="1"
@@ -55,7 +55,6 @@
                 style="@style/Base.Widget.AppCompat.ActionButton"
                 android:layout_width="@dimen/avatar_sz_small"
                 android:layout_height="@dimen/avatar_sz_small"
-                android:layout_gravity="center_vertical"
                 android:contentDescription="@string/wc_view_the_product_external"
                 android:tint="@color/wc_purple"
                 app:srcCompat="@drawable/ic_external"/>
@@ -65,7 +64,8 @@
             android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
             android:background="@color/wc_border_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
