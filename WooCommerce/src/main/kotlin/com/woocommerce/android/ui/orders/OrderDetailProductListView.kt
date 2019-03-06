@@ -27,6 +27,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
     }
     private lateinit var divider: AlignedDividerDecoration
     private lateinit var viewAdapter: ProductListAdapter
+    private var isExpanded = false
 
     /**
      * Initialize and format this view.
@@ -43,6 +44,8 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         formatCurrencyForDisplay: (String?) -> String,
         listener: OrderActionListener? = null
     ) {
+        isExpanded = expanded
+
         divider = AlignedDividerDecoration(context,
                 DividerItemDecoration.VERTICAL, R.id.productInfo_name, clipToMargin = true)
 
@@ -114,8 +117,12 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         }
     }
 
-    fun showProductImages() {
-        viewAdapter.notifyDataSetChanged()
+    // called when a product is fetched to ensure we show the correct product image - only applies when the
+    // view is expanded since images are hidden otherwise
+    fun refreshProductImages() {
+        if (isExpanded) {
+            viewAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun hideButtons() {
@@ -143,7 +150,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val productImage = orderItems[position].productId?.let {
                 productImageMap.get(it)
-            } ?: null
+            }
             holder.view.initView(orderItems[position], productImage, isExpanded, formatCurrencyForDisplay)
         }
 

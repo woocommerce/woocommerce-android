@@ -19,10 +19,10 @@ import com.woocommerce.android.extensions.getConvertedTimestamp
 import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SkeletonView
@@ -171,24 +171,22 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
         note.getProductInfo()?.let { info ->
             remoteProductId = info.remoteProductId
-            showProductImage()
+            refreshProductImage()
         }
 
         activity?.let { presenter.markNotificationRead(it, note) }
     }
 
-    override fun showProductImage() {
-        if (remoteProductId > 0) {
-            // Note that if productImageMap doesn't already have the image for this product then it will request
-            // it from the backend. When the request completes it will be captured by the presenter, which will
-            // call this method to show the image for the just-downloaded product model
-            productImageMap.get(remoteProductId)?.let { productImage ->
-                val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
-                GlideApp.with(activity as Context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_product)
-                        .into(review_product_icon)
-            }
+    override fun refreshProductImage() {
+        // Note that if productImageMap doesn't already have the image for this product then it will request
+        // it from the backend. When the request completes it will be captured by the presenter, which will
+        // call this method to show the image for the just-downloaded product model
+        productImageMap.get(remoteProductId)?.let { productImage ->
+            val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
+            GlideApp.with(activity as Context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(review_product_icon)
         }
     }
 

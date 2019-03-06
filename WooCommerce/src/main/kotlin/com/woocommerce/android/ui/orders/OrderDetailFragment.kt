@@ -320,8 +320,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun showProductImages() {
-        orderDetail_productList.showProductImages()
+    override fun refreshProductImages() {
+        if (isAdded) {
+            orderDetail_productList.refreshProductImages()
+        }
     }
 
     // TODO: replace progress bar with a skeleton
