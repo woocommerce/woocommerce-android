@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.orders
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
@@ -37,7 +34,6 @@ import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
