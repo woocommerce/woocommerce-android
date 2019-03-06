@@ -1,24 +1,23 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.support.annotation.DimenRes
 import android.support.constraint.ConstraintLayout
+import android.support.constraint.ConstraintSet
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
 import java.text.NumberFormat
 
-class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : ConstraintLayout(ctx, attrs) {
-    private var imageSize = 0
-
+class OrderDetailProductItemView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null
+) : ConstraintLayout(ctx, attrs) {
     init {
-        val dimen = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
-        imageSize = DisplayUtils.dpToPx(context, dimen)
         View.inflate(context, R.layout.order_detail_product_item, this)
     }
 
@@ -37,7 +36,6 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
 
         // Modify views for expanded or collapsed mode
         val viewMode = if (expanded) View.VISIBLE else View.GONE
-        productInfo_icon.visibility = viewMode
         productInfo_productTotal.visibility = viewMode
         productInfo_totalTax.visibility = viewMode
         productInfo_lblTax.visibility = viewMode
@@ -70,24 +68,29 @@ class OrderDetailProductItemView @JvmOverloads constructor(ctx: Context, attrs: 
             }
 
             productInfo_totalTax.text = formatCurrencyForDisplay(item.totalTax)
-
-            item.productId?.let { productId ->
-                productImage?.let {
-                    val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
-                    GlideApp.with(context)
-                            .load(imageUrl)
-                            .placeholder(R.drawable.ic_product)
-                            .into(productInfo_icon)
-                } ?: productInfo_icon.setImageResource(R.drawable.ic_product)
-            }
-        }
-
-        // we need to put some space before the product name when the product image is showing
-        val margin: Int = if (expanded) {
-            context.resources.getDimensionPixelSize(R.dimen.margin_large)
         } else {
-            0
+            // vertically center the product name because it's the only text showing
+            val set = ConstraintSet()
+            set.clone(this)
+            set.centerVertically(productInfo_name.id, ConstraintSet.PARENT_ID)
+            set.applyTo(this)
         }
-        (productInfo_name.layoutParams as MarginLayoutParams).marginStart = margin
+
+        @DimenRes val dimenRes = if (expanded) R.dimen.product_icon_sz else R.dimen.product_icon_sz_small
+        val imageSize = context.resources.getDimensionPixelSize(dimenRes)
+        with(productInfo_icon.layoutParams) {
+            width = imageSize
+            height = imageSize
+        }
+
+        item.productId?.let { productId ->
+            productImage?.let {
+                val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
+                GlideApp.with(context)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_product)
+                        .into(productInfo_icon)
+            } ?: productInfo_icon.setImageResource(R.drawable.ic_product)
+        }
     }
 }
