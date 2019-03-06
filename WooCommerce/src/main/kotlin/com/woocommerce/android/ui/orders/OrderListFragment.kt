@@ -424,68 +424,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         ordersAdapter.setOrderStatusOptions(orderStatusOptions)
     }
 
-    // region OrderCustomerActionListener
-    override fun dialPhone(order: WCOrderModel, phone: String) {
-        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION, mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteOrderId,
-                AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to OrderCustomerActionListener.Action.CALL.name.toLowerCase()))
-
-        val intent = Intent(Intent.ACTION_DIAL)
-        intent.data = Uri.parse("tel:$phone")
-        try {
-            startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            AnalyticsTracker.track(
-                    Stat.ORDER_CONTACT_ACTION_FAILED,
-                    this.javaClass.simpleName,
-                    e.javaClass.simpleName, "No phone app was found")
-
-            ToastUtils.showToast(context, R.string.error_no_phone_app)
-        }
-    }
-
-    override fun createEmail(order: WCOrderModel, emailAddr: String) {
-        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION, mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteOrderId,
-                AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to OrderCustomerActionListener.Action.EMAIL.name.toLowerCase()))
-
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
-        try {
-            startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            AnalyticsTracker.track(
-                    Stat.ORDER_CONTACT_ACTION_FAILED,
-                    this.javaClass.simpleName,
-                    e.javaClass.simpleName, "No e-mail app was found")
-
-            ToastUtils.showToast(context, R.string.error_no_email_app)
-        }
-    }
-
-    override fun sendSms(order: WCOrderModel, phone: String) {
-        AnalyticsTracker.track(Stat.ORDER_CONTACT_ACTION, mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteOrderId,
-                AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to OrderCustomerActionListener.Action.SMS.name.toLowerCase()))
-
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("smsto:$phone")
-        try {
-            startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            AnalyticsTracker.track(
-                    Stat.ORDER_CONTACT_ACTION_FAILED,
-                    this.javaClass.simpleName,
-                    e.javaClass.simpleName, "No SMS app was found")
-
-            ToastUtils.showToast(context, R.string.error_no_sms_app)
-        }
-    }
-    // endregion
-
     // region Filtering
     private fun showFilterDialog() {
         val orderStatusOptions = presenter.getOrderStatusOptions()

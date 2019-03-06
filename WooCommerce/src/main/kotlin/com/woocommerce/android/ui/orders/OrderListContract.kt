@@ -19,7 +19,7 @@ interface OrderListContract {
         fun refreshOrderStatusOptions()
     }
 
-    interface View : BaseView<Presenter>, OrdersViewRouter, OrderCustomerActionListener {
+    interface View : BaseView<Presenter>, OrdersViewRouter {
         var isActive: Boolean
         var isRefreshPending: Boolean
         var isSearching: Boolean
