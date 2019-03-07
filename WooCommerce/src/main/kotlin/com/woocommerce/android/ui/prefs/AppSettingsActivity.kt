@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ContextThemeWrapper
@@ -14,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.NONE
 import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_IN
 import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_UP
@@ -38,6 +40,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: AppSettingsContract.Presenter
+    @Inject lateinit var selectedSite: SelectedSite
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
@@ -100,6 +103,16 @@ class AppSettingsActivity : AppCompatActivity(),
         if (requestCode == SITE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             supportFragmentManager.findFragmentByTag(MainSettingsFragment.TAG)?.let {
                 (it as MainSettingsFragment).updateStoreViews()
+            }
+
+            // Display a message to the user advising notifications will only be shown
+            // for the current store.
+            selectedSite.getIfExists()?.let {
+                Snackbar.make(
+                        main_content,
+                        getString(R.string.settings_switch_site_notifs_msg, it.name),
+                        Snackbar.LENGTH_LONG
+                ).show()
             }
         }
     }
