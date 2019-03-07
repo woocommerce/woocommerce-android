@@ -15,7 +15,17 @@
     </style>
 
     <style name="LoginTheme.Button" parent="Widget.AppCompat.Button.Colored">
-        <item name="colorControlHighlight">@color/color_control_highlight</item>
+        <item name="colorButtonNormal">@color/login_base_button_normal_color</item>
+    </style>
+
+    <style name="LoginTheme.Button.Primary" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/login_primary_button_normal_color</item>
+        <item name="android:textColor">@color/login_primary_button_text_color</item>
+    </style>
+
+    <style name="LoginTheme.Button.Secondary" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:textColor">@color/login_secondary_button_text_color</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Caption</item>
     </style>
 
     <style name="LoginTheme.Button.Primary" parent="Widget.AppCompat.Button.Colored">
