@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-20 09:54:02+0000
+Translation-Revision-Date: 2019-03-06 08:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
-    <string name="tooltip_site_switcher">タップしてストアを切り替えることができます</string>
+    <string name="promo_message_site_picker">「設定」で選択したストアをタップすると、ストアの切り替えができます</string>
+    <string name="promo_title_site_picker">複数のストアを実行していますか ?</string>
+    <string name="promo_btn_try_it">今すぐお試しください</string>
+    <string name="promo_btn_got_it">了解</string>
+    <string name="tooltip_site_switcher">タップするとストアの切り替えができます</string>
+    <string name="site_picker_title">自分のストア</string>
+    <string name="username">WordPress.com のユーザー名</string>
+    <string name="settings_signout">ログアウト</string>
+    <string name="orderstatus_select_status">注文ステータスを変更</string>
+    <string name="order_status_changed_to">注文ステータスを %s に変更しました</string>
+    <string name="orderdetail_change_order_status">クリックすると注文ステータスを変更できます</string>
+    <string name="apply">適用</string>
     <string name="app_rating_rate_never">結構です</string>
     <string name="app_rating_rate_later">後で評価する</string>
     <string name="app_rating_rate_now">今すぐ評価する</string>
@@ -202,7 +213,6 @@ Language: ja_JP
     <string name="log_in">ログイン</string>
     <string name="help">ヘルプ</string>
     <string name="password">パスワード</string>
-    <string name="username">ユーザー名</string>
     <string name="enter_your_password_instead">代わりにパスワードを入力</string>
     <string name="send_link">リンクを送信</string>
     <string name="invalid_verification_code">無効な認証コード</string>
@@ -220,7 +230,6 @@ Language: ja_JP
     <string name="settings_privacy_detail">この情報は、製品を改善し、マーケティングをより関連性の高いものとし、WooCommerce の利用をパーソナライズするのに役立ちます。詳しくは、個人情報保護方針をご覧ください</string>
     <string name="settings_send_stats_detail">WordPress アカウントへのログイン中のサービス利用に関する情報を分析ツールと共有します</string>
     <string name="settings_send_stats">情報を収集</string>
-    <string name="settings_signout">アカウントからログアウト</string>
     <string name="privacy_settings">プライバシー設定</string>
     <string name="settings">設定</string>
     <string name="orderstatus_contentDesc">注文ステータス</string>
@@ -272,7 +281,6 @@ Language: ja_JP
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客情報</string>
     <string name="orderlist_filter">フィルター</string>
-    <string name="apply">フィルターを適用</string>
     <string name="orderlist_filter_by">注文の絞り込み基準</string>
     <string name="orderlist_error_fetch_generic">注文を取得する際にエラーが発生しました</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -282,7 +290,7 @@ Language: ja_JP
     <string name="dashboard_action_view_order">注文を表示</string>
     <string name="dashboard_top_earners_empty">この期間のアクティビティはありません</string>
     <string name="dashboard_top_earners_content_description">商品画像</string>
-    <string name="dashboard_top_earners_total_orders">商品注文の合計:%s</string>
+    <string name="dashboard_top_earners_total_orders">注文合計:%s</string>
     <string name="dashboard_top_earners_total_spend">支払い合計額</string>
     <string name="dashboard_top_earners_description">ストアでの商品売り上げ状況に関する統計概要を得られます</string>
     <string name="dashboard_top_earners_title">成績優秀者</string>

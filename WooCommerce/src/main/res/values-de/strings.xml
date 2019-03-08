@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-20 16:54:02+0000
+Translation-Revision-Date: 2019-03-05 14:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
-    <string name="tooltip_site_switcher">Du kannst jetzt tippen, um zwischen Shops zu wechseln.</string>
+    <string name="promo_message_site_picker">Du kannst nun zwischen Shops wechseln, indem du in den Einstellungen auf den ausgewählten Shop tippst</string>
+    <string name="promo_title_site_picker">Du betreibst mehrere Shops?</string>
+    <string name="promo_btn_try_it">Jetzt ausprobieren</string>
+    <string name="promo_btn_got_it">Alles klar</string>
+    <string name="tooltip_site_switcher">Zu Wechseln zwischen Shops hier tippen</string>
+    <string name="site_picker_title">Meine Shops</string>
+    <string name="username">WordPress.com-Benutzername</string>
+    <string name="settings_signout">Abmelden</string>
+    <string name="orderstatus_select_status">Auftragsstatus ändern</string>
+    <string name="order_status_changed_to">Auftragsstatus in %s geändert</string>
+    <string name="orderdetail_change_order_status">Zum Ändern des Auftragsstatus hier klicken</string>
+    <string name="apply">Übernehmen</string>
     <string name="app_rating_rate_never">Nein, danke</string>
     <string name="app_rating_rate_later">Später</string>
     <string name="app_rating_rate_now">Jetzt bewerten</string>
@@ -202,7 +213,6 @@ Language: de
     <string name="log_in">Anmelden</string>
     <string name="help">Hilfe</string>
     <string name="password">Passwort</string>
-    <string name="username">Benutzername</string>
     <string name="enter_your_password_instead">Gib stattdessen dein Passwort ein</string>
     <string name="send_link">Link senden</string>
     <string name="invalid_verification_code">Ungültiger Überprüfungscode</string>
@@ -220,7 +230,6 @@ Language: de
     <string name="settings_privacy_detail">Diese Informationen helfen uns dabei, unsere Produkte zu verbessern, Marketing besser auf dich zuzuschneiden, deine Erfahrung mit WooCommerce zu personalisieren und mehr. All das kannst du auch in unserer Datenschutzerklärung nachlesen.</string>
     <string name="settings_send_stats_detail">Teile Informationen über deine Nutzung von Diensten mit unserem Analysetool, während du in deinem WordPress-Konto angemeldet bist.</string>
     <string name="settings_send_stats">Informationen erfassen</string>
-    <string name="settings_signout">Von Konto abmelden</string>
     <string name="privacy_settings">Datenschutzeinstellungen</string>
     <string name="settings">Einstellungen</string>
     <string name="orderstatus_contentDesc">Bestellstatus</string>
@@ -272,7 +281,6 @@ Language: de
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Kundeninformationen</string>
     <string name="orderlist_filter">Filter</string>
-    <string name="apply">Filter anwenden</string>
     <string name="orderlist_filter_by">Bestellungen filtern nach</string>
     <string name="orderlist_error_fetch_generic">Fehler beim Abrufen der Bestellungen</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -282,7 +290,7 @@ Language: de
     <string name="dashboard_action_view_order">Bestellung anzeigen</string>
     <string name="dashboard_top_earners_empty">Keine Aktivitäten in diesem Zeitraum</string>
     <string name="dashboard_top_earners_content_description">Produktabbildung</string>
-    <string name="dashboard_top_earners_total_orders">Gesamte Produktbestellung: %s</string>
+    <string name="dashboard_top_earners_total_orders">Bestellungen gesamt: %s</string>
     <string name="dashboard_top_earners_total_spend">Gesamtausgaben</string>
     <string name="dashboard_top_earners_description">Erfahre, wie erfolgreich Produkte in deinem Shop sind</string>
     <string name="dashboard_top_earners_title">Topseller</string>
