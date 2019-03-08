@@ -46,10 +46,9 @@ import javax.inject.Singleton
 @Singleton
 class NotificationHandler @Inject constructor(
     private val siteStore: SiteStore,
+    private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
     private val dispatcher: Dispatcher
 ) {
-    @Inject lateinit var notificationStore: NotificationStore
-
     companion object {
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
 
