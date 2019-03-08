@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-18 23:54:02+0000
+Translation-Revision-Date: 2019-03-04 19:54:02+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="tooltip_site_switcher">يمكنك الآن النقر على تبديل المتاجر</string>
+    <string name="promo_message_site_picker">يمكنك التبديل بين المتاجر بالنقر على المتجر المحدد في \"الإعدادات\"</string>
+    <string name="promo_title_site_picker">هل تريد تشغيل متاجر متعددة؟</string>
+    <string name="promo_btn_try_it">جرّبه الآن</string>
+    <string name="promo_btn_got_it">فهمت</string>
+    <string name="tooltip_site_switcher">انقر للتبديل بين المتاجر</string>
+    <string name="site_picker_title">متاجري</string>
+    <string name="username">اسم مستخدم وردبرس.كوم</string>
+    <string name="settings_signout">تسجيل الخروج</string>
+    <string name="orderstatus_select_status">تغير حالة الطلب</string>
+    <string name="order_status_changed_to">تم تغيير حالة الطلب إلى %s</string>
+    <string name="orderdetail_change_order_status">انقر لتغيير حالة الطلب</string>
+    <string name="apply">تطبيق</string>
     <string name="app_rating_rate_never">لا شكرًا</string>
     <string name="app_rating_rate_later">لاحقًا</string>
     <string name="app_rating_rate_now">قيِّم الآن</string>
@@ -202,7 +213,6 @@ Language: ar
     <string name="log_in">تسجيل الدخول</string>
     <string name="help">المساعدة</string>
     <string name="password">كلمة المرور</string>
-    <string name="username">إسم المستخدم</string>
     <string name="enter_your_password_instead">أدخل كلمة مرورك بدلاً من ذلك</string>
     <string name="send_link">إرسال رابط</string>
     <string name="invalid_verification_code">رمز التحقق غير صالح</string>
@@ -220,7 +230,6 @@ Language: ar
     <string name="settings_privacy_detail">تساعدنا هذه المعلومات على تحسين منتجاتنا، وجعل التسويق أكثر ملاءمة لك، وتخصيص تجربة WooCommerce، والمزيد كما يرد بالتفصيل في سياسة الخصوصية لدينا.</string>
     <string name="settings_send_stats_detail">شارك المعلومات باستخدام أداة التحليلات لدينا حول استخدامك للخدمات أثناء تسجيل الدخول إلى حساب وردبرس الخاص بك</string>
     <string name="settings_send_stats">جمع المعلومات</string>
-    <string name="settings_signout">تسجيل الخروج من الحساب</string>
     <string name="privacy_settings">إعدادات الخصوصية</string>
     <string name="settings">الإعدادات</string>
     <string name="orderstatus_contentDesc">حالة الطلب</string>
@@ -272,7 +281,6 @@ Language: ar
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">معلومات العميل</string>
     <string name="orderlist_filter">عامل التصفية</string>
-    <string name="apply">تطبيق عامل التصفية</string>
     <string name="orderlist_filter_by">تصفية الطلبات حسب</string>
     <string name="orderlist_error_fetch_generic">حدث خطأ أثناء إحضار الطلبات</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -282,7 +290,7 @@ Language: ar
     <string name="dashboard_action_view_order">عرض الطلب</string>
     <string name="dashboard_top_earners_empty">لا يوجد أي نشاط في هذه الفترة</string>
     <string name="dashboard_top_earners_content_description">صورة المنتج</string>
-    <string name="dashboard_top_earners_total_orders">إجمالي طلب المنتج: %s</string>
+    <string name="dashboard_top_earners_total_orders">إجمالي الطلبات: %s</string>
     <string name="dashboard_top_earners_total_spend">إجمالي الإنفاق</string>
     <string name="dashboard_top_earners_description">احصل على رؤى دقيقة حول كيفية أداء المنتجات في متجرك</string>
     <string name="dashboard_top_earners_title">أهم المؤدِّين</string>

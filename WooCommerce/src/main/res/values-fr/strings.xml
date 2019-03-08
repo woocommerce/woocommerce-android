@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-19 15:54:02+0000
+Translation-Revision-Date: 2019-03-05 11:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
-    <string name="tooltip_site_switcher">Vous pouvez à présent changer de boutique par simple contact</string>
+    <string name="promo_message_site_picker">Vous pouvez désormais basculer entre les boutiques en appuyant sur la boutique sélectionnée dans Paramètres</string>
+    <string name="promo_title_site_picker">Gestion de plusieurs boutiques ?</string>
+    <string name="promo_btn_try_it">Essayer maintenant</string>
+    <string name="promo_btn_got_it">Compris</string>
+    <string name="tooltip_site_switcher">Appuyer pour passer d\'une boutique à l\'autre</string>
+    <string name="site_picker_title">Mes boutiques</string>
+    <string name="username">Nom d\'utilisateur WordPress.com</string>
+    <string name="settings_signout">Se déconnecter</string>
+    <string name="orderstatus_select_status">Modifier l\'état des commandes</string>
+    <string name="order_status_changed_to">État des commandes basculé sur %s</string>
+    <string name="orderdetail_change_order_status">Cliquer pour modifier l\'état des commandes</string>
+    <string name="apply">Appliquer</string>
     <string name="app_rating_rate_never">Non merci</string>
     <string name="app_rating_rate_later">Ultérieurement</string>
     <string name="app_rating_rate_now">Évaluer maintenant</string>
@@ -201,7 +212,6 @@ Language: fr
     <string name="log_in">Connexion</string>
     <string name="help">Aide</string>
     <string name="password">Mot de passe</string>
-    <string name="username">Identifiant</string>
     <string name="enter_your_password_instead">Saisissez votre mot de passe à la place</string>
     <string name="send_link">Envoyer le lien</string>
     <string name="invalid_verification_code">Code de vérification invalide</string>
@@ -219,7 +229,6 @@ Language: fr
     <string name="settings_privacy_detail">Ces informations nous permettent d’améliorer nos produits, de mieux cibler nos campagnes marketing, de personnaliser votre expérience WooCommerce et plus encore, comme indiqué dans notre politique de confidentialité</string>
     <string name="settings_send_stats_detail">Partager l’information avec notre outil d’analyse sur votre utilisation des services lorsque vous êtes connecté avec votre compte WordPress.</string>
     <string name="settings_send_stats">Collecter des informations</string>
-    <string name="settings_signout">Déconnecter le compte</string>
     <string name="privacy_settings">Paramètres de confidentialité</string>
     <string name="settings">Paramètres</string>
     <string name="orderstatus_contentDesc">État de la commande</string>
@@ -271,7 +280,6 @@ Language: fr
     <string name="customer_full_name">%2$s %1$s</string>
     <string name="customer_information">Informations sur le client</string>
     <string name="orderlist_filter">Filtrer</string>
-    <string name="apply">Appliquer le filtre</string>
     <string name="orderlist_filter_by">Filtrer les commandes par</string>
     <string name="orderlist_error_fetch_generic">Erreur lors de l’extraction des commandes</string>
     <string name="orderlist_item_order_name">%2$s %1$s</string>
@@ -281,7 +289,7 @@ Language: fr
     <string name="dashboard_action_view_order">Voir la commande</string>
     <string name="dashboard_top_earners_empty">Aucune activité sur cette période</string>
     <string name="dashboard_top_earners_content_description">Image produit</string>
-    <string name="dashboard_top_earners_total_orders">Total de la commande de produits : %s</string>
+    <string name="dashboard_top_earners_total_orders">Commandes totales : %s</string>
     <string name="dashboard_top_earners_total_spend">Dépense totale</string>
     <string name="dashboard_top_earners_description">Obtenez des informations sur les performances des produits de votre boutique</string>
     <string name="dashboard_top_earners_title">Produits les plus performants</string>

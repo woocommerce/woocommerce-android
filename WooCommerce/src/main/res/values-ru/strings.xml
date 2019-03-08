@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-19 13:54:02+0000
+Translation-Revision-Date: 2019-03-08 19:26:46+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="tooltip_site_switcher">Теперь переключаться между магазинами можно одним нажатием</string>
+    <string name="promo_message_site_picker">Теперь переключаться между ними можно нажатием одной кнопки в Настройках.</string>
+    <string name="promo_title_site_picker">Управляете несколькими магазинами?</string>
+    <string name="promo_btn_try_it">Попробовать</string>
+    <string name="promo_btn_got_it">Понятно</string>
+    <string name="tooltip_site_switcher">Нажмите, чтобы переключиться между магазинами</string>
+    <string name="site_picker_title">Мои магазины</string>
+    <string name="username">Имя пользователя WordPress.com</string>
+    <string name="settings_signout">Выйти</string>
+    <string name="orderstatus_select_status">Изменить статус заказа</string>
+    <string name="order_status_changed_to">Статус заказа изменен на %s</string>
+    <string name="orderdetail_change_order_status">Нажмите, чтобы изменить статус заказа</string>
+    <string name="apply">Применить</string>
     <string name="app_rating_rate_never">Нет, спасибо</string>
     <string name="app_rating_rate_later">Позже</string>
     <string name="app_rating_rate_now">Оценить сейчас</string>
@@ -203,7 +214,6 @@ Language: ru
     <string name="log_in">Войти</string>
     <string name="help">Помощь</string>
     <string name="password">Пароль</string>
-    <string name="username">Имя</string>
     <string name="enter_your_password_instead">Введите пароль.</string>
     <string name="send_link">Отправить ссылку</string>
     <string name="invalid_verification_code">Неверный код подтверждения</string>
@@ -221,7 +231,6 @@ Language: ru
     <string name="settings_privacy_detail">Эти сведения помогают нам улучшать продукты, предлагать более полезную рекламу, настраивать WooCommerce согласно вашим предпочтениям и решать другие задачи. Дополнительную информацию см. в политике конфиденциальности</string>
     <string name="settings_send_stats_detail">Отправлять информацию об использовании сервисов во время работы в учётной записи WordPress в службу аналитики</string>
     <string name="settings_send_stats">Собирать информацию</string>
-    <string name="settings_signout">Выйти из учётной записи</string>
     <string name="privacy_settings">Настройки конфиденциальности</string>
     <string name="settings">Настройки</string>
     <string name="orderstatus_contentDesc">Статус заказа</string>
@@ -274,7 +283,6 @@ Language: ru
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Информация о клиенте</string>
     <string name="orderlist_filter">Фильтр</string>
-    <string name="apply">Применить фильтр</string>
     <string name="orderlist_filter_by">Фильтровать заказы по</string>
     <string name="orderlist_error_fetch_generic">Ошибка при загрузке заказов</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -286,7 +294,7 @@ Language: ru
     <string name="dashboard_action_view_order">Просмотреть заказ</string>
     <string name="dashboard_top_earners_empty">Активность за этот период отсутствует</string>
     <string name="dashboard_top_earners_content_description">Изображение продукта</string>
-    <string name="dashboard_top_earners_total_orders">Общее число заказов продуктов: %s</string>
+    <string name="dashboard_top_earners_total_orders">Всего заказов: %s</string>
     <string name="dashboard_top_earners_total_spend">Общий объём выручки</string>
     <string name="dashboard_top_earners_description">Получайте информацию об эффективности продаж различных продуктов в вашем магазине</string>
     <string name="dashboard_top_earners_title">Самые продаваемые</string>

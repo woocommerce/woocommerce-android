@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-19 15:54:02+0000
+Translation-Revision-Date: 2019-03-05 15:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="tooltip_site_switcher">Je kunt nu klikken om van winkel te wisselen</string>
+    <string name="promo_message_site_picker">Je kunt nu omschakelen tussen winkels door in Instellingen op de geselecteerde winkel te tikken</string>
+    <string name="promo_title_site_picker">Heb je meerdere winkels onder je beheer?</string>
+    <string name="promo_btn_try_it">Probeer het nu</string>
+    <string name="promo_btn_got_it">Duidelijk</string>
+    <string name="tooltip_site_switcher">Tik om tussen winkels te schakelen</string>
+    <string name="site_picker_title">Mijn winkels</string>
+    <string name="username">Gebruikersnaam voor WordPress.com</string>
+    <string name="settings_signout">Uitloggen</string>
+    <string name="orderstatus_select_status">Bestelstatus wijzigen</string>
+    <string name="order_status_changed_to">Bestelstatus gewijzigd naar %s</string>
+    <string name="orderdetail_change_order_status">Klik om de bestelstatus te wijzigen</string>
+    <string name="apply">Toepassen</string>
     <string name="app_rating_rate_never">Nee, liever niet</string>
     <string name="app_rating_rate_later">Later</string>
     <string name="app_rating_rate_now">Nu beoordelen</string>
@@ -202,7 +213,6 @@ Language: nl
     <string name="log_in">Log In</string>
     <string name="help">Help</string>
     <string name="password">Wachtwoord</string>
-    <string name="username">Gebruikersnaam</string>
     <string name="enter_your_password_instead">Voer je wachtwoord in</string>
     <string name="send_link">Stuur link</string>
     <string name="invalid_verification_code">Ongeldige verificatiecode</string>
@@ -220,7 +230,6 @@ Language: nl
     <string name="settings_privacy_detail">Deze informatie helpt ons onze producten te verbeteren, marketing relevanter te maken en de WooCommerce-ervaring op je af te stemmen. Je vindt hierover meer informatie in ons privacybeleid.</string>
     <string name="settings_send_stats_detail">Deel informatie met onze analysetool over hoe je services gebruikt terwijl je bent ingelogd op je WordPress-account</string>
     <string name="settings_send_stats">Gegevens verzamelen</string>
-    <string name="settings_signout">Account uitloggen</string>
     <string name="privacy_settings">Privacyinstellingen</string>
     <string name="settings">Instellingen</string>
     <string name="orderstatus_contentDesc">Status bestelling</string>
@@ -272,7 +281,6 @@ Language: nl
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Klantgegevens</string>
     <string name="orderlist_filter">Filter</string>
-    <string name="apply">Filter toepassen</string>
     <string name="orderlist_filter_by">Bestellingen filteren op</string>
     <string name="orderlist_error_fetch_generic">Fout bij ophalen bestellingen</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -282,7 +290,7 @@ Language: nl
     <string name="dashboard_action_view_order">Bestelling weergeven</string>
     <string name="dashboard_top_earners_empty">Geen activiteiten deze periode</string>
     <string name="dashboard_top_earners_content_description">Productafbeelding</string>
-    <string name="dashboard_top_earners_total_orders">Totaalaantal productbestellingen: %s</string>
+    <string name="dashboard_top_earners_total_orders">Totaalaantal bestellingen: %s</string>
     <string name="dashboard_top_earners_total_spend">Totaal uitgegeven</string>
     <string name="dashboard_top_earners_description">Krijg inzicht in hoe goed producten op je site presteren</string>
     <string name="dashboard_top_earners_title">Toppresteerders</string>
