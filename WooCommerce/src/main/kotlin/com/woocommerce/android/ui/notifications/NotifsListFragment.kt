@@ -367,7 +367,7 @@ class NotifsListFragment : TopLevelFragment(),
             val callback = object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
-
+                    resetPendingModerationVariables()
                     if (!changeCommentStatusCanceled) {
                         comment.status = newStatus.toString()
                         presenter.pushUpdatedComment(comment)
@@ -430,10 +430,16 @@ class NotifsListFragment : TopLevelFragment(),
     private fun revertPendingModeratedNotifState() {
         AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
 
-        val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
-        if (itemPosition != INVALID_POSITION) {
-            notifsList.smoothScrollToPosition(itemPosition)
+        pendingModerationNewStatus?.let {
+            val status = CommentStatus.fromString(it)
+            if (status == SPAM || status == TRASH) {
+                val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
+                if (itemPosition != INVALID_POSITION && !notifsAdapter.isEmpty()) {
+                    notifsList.smoothScrollToPosition(itemPosition)
+                }
+            }
         }
+
         resetPendingModerationVariables()
     }
 
