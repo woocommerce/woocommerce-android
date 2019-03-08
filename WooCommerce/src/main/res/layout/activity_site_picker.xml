@@ -62,7 +62,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
         app:cardElevation="@dimen/card_elevation"
-        app:layout_constraintBottom_toTopOf="@+id/view6"
+        app:layout_constraintBottom_toBottomOf="@+id/view6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_username"
