@@ -69,16 +69,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
     fun setNotifications(notifs: List<NotificationModel>) {
         // make sure to exclude any notifs that we know have been removed
-        val newList = ArrayList<NotificationModel>()
-        if (removedRemoteIds.isNotEmpty()) {
-            notifs.forEach { notif ->
-                if (!removedRemoteIds.contains(notif.remoteNoteId)) {
-                    newList.add(notif)
-                }
-            }
-        } else {
-            newList.addAll(notifs)
-        }
+        val newList = notifs.filter { !removedRemoteIds.contains(it.remoteNoteId) }
 
         // clear all the current data from the adapter
         removeAllSections()
