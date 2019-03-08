@@ -153,6 +153,10 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
         override fun getItemCount() = topEarnerList.size
 
+        override fun getItemId(position: Int): Long {
+            return topEarnerList[position].id
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopEarnersViewHolder {
             val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.top_earner_list_item, parent, false)
