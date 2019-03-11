@@ -4,12 +4,12 @@ import com.facebook.stetho.okhttp3.StethoInterceptor
 
 import dagger.Module
 import dagger.Provides
+import dagger.multibindings.IntoSet
 import okhttp3.Interceptor
+import javax.inject.Named
 
 @Module
 class InterceptorModule {
-    @Provides
-    fun provideNetworkInterceptor(): Interceptor {
-        return StethoInterceptor()
-    }
+    @Provides @IntoSet @Named("network-interceptors")
+    fun provideNetworkInterceptor(): Interceptor = StethoInterceptor()
 }
