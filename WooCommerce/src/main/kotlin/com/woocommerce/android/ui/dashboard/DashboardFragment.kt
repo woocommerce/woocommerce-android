@@ -104,7 +104,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         scroll_view.setOnScrollChangeListener {
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
-            if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
+            if (scrollY > oldScrollY) {
+                onScrollDown(dashboard_refresh_layout)
+            } else if (scrollY < oldScrollY) {
+                onScrollUp(dashboard_refresh_layout)
+            }
         }
 
         if (isActive) {
