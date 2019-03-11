@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-20 07:54:02+0000
+Translation-Revision-Date: 2019-03-05 11:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
-    <string name="tooltip_site_switcher">Sekarang Anda bisa mengetuk untuk berpindah toko</string>
+    <string name="promo_message_site_picker">Sekarang Anda dapat beralih antartoko dengan mengetuk toko yang dipilih di Pengaturan</string>
+    <string name="promo_title_site_picker">Mengelola beberapa toko?</string>
+    <string name="promo_btn_try_it">Coba sekarang</string>
+    <string name="promo_btn_got_it">Saya mengerti</string>
+    <string name="tooltip_site_switcher">Ketuk untuk beralih toko</string>
+    <string name="site_picker_title">Toko saya</string>
+    <string name="username">Nama pengguna WordPress.com</string>
+    <string name="settings_signout">Logout</string>
+    <string name="orderstatus_select_status">Ubah status pesanan</string>
+    <string name="order_status_changed_to">Status pesanan diubah menjadi %s</string>
+    <string name="orderdetail_change_order_status">Klik untuk mengubah status pesanan</string>
+    <string name="apply">Terapkan</string>
     <string name="app_rating_rate_never">Tidak, terima kasih</string>
     <string name="app_rating_rate_later">Nanti</string>
     <string name="app_rating_rate_now">Beri penilaian sekarang</string>
@@ -202,7 +213,6 @@ Language: id
     <string name="log_in">Login</string>
     <string name="help">Bantuan</string>
     <string name="password">Kata sandi</string>
-    <string name="username">Nama pengguna</string>
     <string name="enter_your_password_instead">Sebaiknya masukkan kata sandi Anda</string>
     <string name="send_link">Kirim tautan</string>
     <string name="invalid_verification_code">Kode verifikasi tidak valid</string>
@@ -220,7 +230,6 @@ Language: id
     <string name="settings_privacy_detail">Informasi ini membantu kami menyempurnakan produk, membuat pemasaran kepada Anda jadi lebih relevan, menyesuaikan pengalaman WooCommerce Anda, dan lainnya seperti yang dijelaskan dalam kebijakan privasi kami</string>
     <string name="settings_send_stats_detail">Berbagi informasi dengan alat analitik kami tentang penggunaan layanan Anda saat sudah login ke akun WordPress Anda</string>
     <string name="settings_send_stats">Kumpulkan informasi</string>
-    <string name="settings_signout">Logout dari akun</string>
     <string name="privacy_settings">Pengaturan privasi</string>
     <string name="settings">Pengaturan</string>
     <string name="orderstatus_contentDesc">Status pesanan</string>
@@ -272,7 +281,6 @@ Language: id
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Informasi Pelanggan</string>
     <string name="orderlist_filter">Penyaring</string>
-    <string name="apply">Terapkan Penyaring</string>
     <string name="orderlist_filter_by">Saring pesanan menurut</string>
     <string name="orderlist_error_fetch_generic">Error saat mengambil pesanan</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -282,7 +290,7 @@ Language: id
     <string name="dashboard_action_view_order">Lihat Pesanan</string>
     <string name="dashboard_top_earners_empty">Tidak ada aktivitas dalam periode ini</string>
     <string name="dashboard_top_earners_content_description">Gambar produk</string>
-    <string name="dashboard_top_earners_total_orders">Total pesanan produk: %s</string>
+    <string name="dashboard_top_earners_total_orders">Total pesanan: %s</string>
     <string name="dashboard_top_earners_total_spend">Total pengeluaran</string>
     <string name="dashboard_top_earners_description">Dapatkan informasi mengenai performa produk di toko Anda</string>
     <string name="dashboard_top_earners_title">Produk dengan performa tertinggi</string>

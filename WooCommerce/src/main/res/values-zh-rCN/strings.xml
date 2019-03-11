@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-20 09:54:02+0000
+Translation-Revision-Date: 2019-03-06 12:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
-    <string name="tooltip_site_switcher">现在，您可以点击以切换商店</string>
+    <string name="promo_message_site_picker">现在，您可以在“设置”中轻点选定的商店来在商店之间切换。</string>
+    <string name="promo_title_site_picker">正在经营多家商店？</string>
+    <string name="promo_btn_try_it">立即试用</string>
+    <string name="promo_btn_got_it">知道了</string>
+    <string name="tooltip_site_switcher">轻点可切换商店</string>
+    <string name="site_picker_title">我的商店</string>
+    <string name="username">WordPress.com 用户名</string>
+    <string name="settings_signout">注销</string>
+    <string name="orderstatus_select_status">更改订单状态</string>
+    <string name="order_status_changed_to">订单状态已更改为%s</string>
+    <string name="orderdetail_change_order_status">点击可更改订单状态</string>
+    <string name="apply">应用</string>
     <string name="app_rating_rate_never">不用了，谢谢</string>
     <string name="app_rating_rate_later">稍后</string>
     <string name="app_rating_rate_now">立即评分</string>
@@ -198,7 +209,6 @@ Language: zh_CN
     <string name="log_in">登录</string>
     <string name="help">帮助</string>
     <string name="password">密码</string>
-    <string name="username">用户名</string>
     <string name="enter_your_password_instead">改为输入密码</string>
     <string name="send_link">发送链接</string>
     <string name="invalid_verification_code">验证码无效</string>
@@ -216,7 +226,6 @@ Language: zh_CN
     <string name="settings_privacy_detail">此信息有助于我们改善产品、开展与您更加相关的营销活动、为您打造 WooCommerce 个性化体验等，请参阅隐私政策了解详情</string>
     <string name="settings_send_stats_detail">登录到您的 WordPress 帐户后，可使用我们的分析工具共享关于您使用服务的信息</string>
     <string name="settings_send_stats">收集信息</string>
-    <string name="settings_signout">注销帐户</string>
     <string name="privacy_settings">隐私设置</string>
     <string name="settings">设置</string>
     <string name="orderstatus_contentDesc">订单状态</string>
@@ -268,7 +277,6 @@ Language: zh_CN
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">客户信息</string>
     <string name="orderlist_filter">过滤器</string>
-    <string name="apply">应用过滤器</string>
     <string name="orderlist_filter_by">过滤订单的条件</string>
     <string name="orderlist_error_fetch_generic">抓取订单时出错</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -278,7 +286,7 @@ Language: zh_CN
     <string name="dashboard_action_view_order">查看订单</string>
     <string name="dashboard_top_earners_empty">这段时间内没有任何活动</string>
     <string name="dashboard_top_earners_content_description">产品图片</string>
-    <string name="dashboard_top_earners_total_orders">产品订单总额：%s</string>
+    <string name="dashboard_top_earners_total_orders">订单总数：%s</string>
     <string name="dashboard_top_earners_total_spend">总花费</string>
     <string name="dashboard_top_earners_description">深入了解商店中产品的销售情况</string>
     <string name="dashboard_top_earners_title">热销产品</string>
