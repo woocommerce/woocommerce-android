@@ -150,7 +150,8 @@
     <dimen name="skeleton_default_text_height">20sp</dimen>
 
     <!--
-        Other
+        Products
     -->
     <dimen name="product_icon_sz">40dp</dimen>
+    <dimen name="product_image_height">160dp</dimen>
 </resources>

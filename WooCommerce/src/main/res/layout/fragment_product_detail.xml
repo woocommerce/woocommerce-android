@@ -1,0 +1,38 @@
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_window_background"
+    tools:context="com.woocommerce.android.ui.products.ProductDetailFragment">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/loadingProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_large"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <LinearLayout
+            android:id="@+id/productDetail_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/productDetail_image"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:contentDescription="@string/orderdetail_product_image_contentdesc"
+                android:scaleType="centerCrop"/>
+
+        </LinearLayout>
+    </FrameLayout>
+</android.support.v4.widget.NestedScrollView>

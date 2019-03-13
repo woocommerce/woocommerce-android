@@ -57,7 +57,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
 
         topEarners_recycler.layoutManager = LinearLayoutManager(context)
-        topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay)
+        topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
         topEarners_recycler.itemAnimator = DefaultItemAnimator()
 
         StatsGranularity.values().forEach { granularity ->
@@ -80,7 +80,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
                         Stat.DASHBOARD_TOP_PERFORMERS_DATE,
                         mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
 
-                topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay)
+                topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
                 showEmptyView(false)
                 showErrorView(false)
                 listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
@@ -133,7 +133,8 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
 
     class TopEarnersAdapter(
         context: Context,
-        val formatCurrencyForDisplay: FormatCurrencyRounded
+        val formatCurrencyForDisplay: FormatCurrencyRounded,
+        val listener: DashboardStatsListener
     ) : RecyclerView.Adapter<TopEarnersViewHolder>() {
         private val orderString: String
         private val imageSize: Int
@@ -178,6 +179,10 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)
                     .into(holder.productImage)
+
+            holder.itemView.setOnClickListener {
+                listener.onTopEarnerClicked(topEarner)
+            }
         }
     }
 }

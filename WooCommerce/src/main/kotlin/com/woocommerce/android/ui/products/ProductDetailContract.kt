@@ -14,5 +14,8 @@ interface ProductDetailContract {
     interface View : BaseView<Presenter> {
         fun showProduct(product: WCProductModel)
         fun showFetchProductError()
+
+        fun hideProgress()
+        fun showProgress()
     }
 }

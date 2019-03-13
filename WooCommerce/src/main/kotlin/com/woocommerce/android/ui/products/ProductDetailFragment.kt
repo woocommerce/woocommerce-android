@@ -8,11 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
 class ProductDetailFragment : Fragment(), ProductDetailContract.View {
@@ -42,12 +46,19 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_order_detail, container, false)
+        return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         presenter.takeView(this)
+
+        val remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
+        presenter.getProduct(remoteProductId)?.let { product ->
+            showProduct(product)
+        } ?: showProgress()
+        presenter.fetchProduct(remoteProductId)
     }
 
     override fun onResume() {
@@ -70,10 +81,21 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     override fun showProduct(product: WCProductModel) {
-        // TODO
+        loadingProgress.visibility = View.GONE
+
+        product.getFirstImage()?.let {
+            val imageWidth = DisplayUtils.getDisplayPixelWidth(activity)
+            val imageHeight = resources.getDimensionPixelSize(R.dimen.product_image_height)
+            val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageWidth, imageHeight)
+            GlideApp.with(activity as Context)
+                    .load(imageUrl)
+                    .error(R.drawable.ic_product)
+                    .into(productDetail_image)
+        }
     }
 
     override fun showFetchProductError() {
+        loadingProgress.visibility = View.GONE
         uiMessageResolver.showSnack(R.string.product_detail_fetch_product_error)
 
         if (isStateSaved) {
@@ -81,5 +103,13 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         } else {
             activity?.onBackPressed()
         }
+    }
+
+    override fun hideProgress() {
+        loadingProgress.visibility = View.GONE
+    }
+
+    override fun showProgress() {
+        loadingProgress.visibility = View.VISIBLE
     }
 }
