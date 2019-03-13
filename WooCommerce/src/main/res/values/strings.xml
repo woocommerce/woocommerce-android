@@ -232,6 +232,11 @@
     <string name="notifs_detail_loading_error">Error loading notification detail</string>
 
     <!--
+        Product detail
+    -->
+    <string name="product_detail_fetch_product_error">Error fetching product</string>
+
+    <!--
         Empty list messages
     -->
     <string name="waiting_for_customers">Waiting for customers</string>
