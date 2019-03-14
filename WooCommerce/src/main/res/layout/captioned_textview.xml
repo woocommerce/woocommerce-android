@@ -4,11 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:orientation="vertical">
-
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Settings.Divider"/>
 
     <TextView
         android:id="@+id/textCaption"
@@ -25,5 +22,9 @@
         android:layout_height="wrap_content"
         android:text="@string/settings_notifs_device_detail"
         android:textColor="@color/wc_grey_medium"/>
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Settings.Divider"/>
 
 </LinearLayout>
