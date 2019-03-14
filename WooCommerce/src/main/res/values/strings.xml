@@ -239,6 +239,9 @@
     <string name="product_description">Description</string>
     <string name="product_short_description">Short description</string>
     <string name="product_purchase_note">Purchase note</string>
+    <string name="product_categories">Categories</string>
+    <string name="product_tags">Tags</string>
+    <string name="product_catalog_visibility">Catalog visibility</string>
 
     <!--
         Empty list messages

@@ -6,9 +6,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Settings.Divider"/>
+
     <TextView
         android:id="@+id/textCaption"
-        style="@style/Woo.Settings.Caption"
+        style="@style/Woo.Settings.LabelWithDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/wc_grey_dark"
@@ -21,9 +25,5 @@
         android:layout_height="wrap_content"
         android:text="@string/settings_notifs_device_detail"
         android:textColor="@color/wc_grey_medium"/>
-
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Settings.Divider"/>
 
 </LinearLayout>

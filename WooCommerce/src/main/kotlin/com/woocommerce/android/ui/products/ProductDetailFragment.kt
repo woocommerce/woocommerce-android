@@ -4,9 +4,11 @@ import android.content.Context
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
+import android.support.v7.widget.CardView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
@@ -26,6 +28,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     companion object {
         const val TAG = "ProductDetailFragment"
         private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
+        private const val CARD_TAG_PRIMARY = "card_primary"
+        private const val CARD_LINEAR_LAYOUT_TAG = "linearlayout"
 
         fun newInstance(remoteProductId: Long): Fragment {
             val args = Bundle()
@@ -86,7 +90,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     override fun showProduct(product: WCProductModel) {
         loadingProgress.visibility = View.GONE
 
-        product.getFirstImage()?.let {
+        product.getFirstImageUrl()?.let {
             val imageWidth = DisplayUtils.getDisplayPixelWidth(activity)
             val imageHeight = resources.getDimensionPixelSize(R.dimen.product_image_height)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageWidth, imageHeight)
@@ -96,10 +100,13 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                     .into(productDetail_image)
         }
 
-        addView(R.string.product_name, product.name)
-        addView(R.string.product_description, product.description)
-        addView(R.string.product_short_description, product.shortDescription)
-        addView(R.string.product_purchase_note, product.purchaseNote)
+        addView(CARD_TAG_PRIMARY, R.string.product_name, product.name)
+        addView(CARD_TAG_PRIMARY, R.string.product_description, product.description)
+        addView(CARD_TAG_PRIMARY, R.string.product_short_description, product.shortDescription)
+        addView(CARD_TAG_PRIMARY, R.string.product_purchase_note, product.purchaseNote)
+        addView(CARD_TAG_PRIMARY, R.string.product_categories, product.getCommaSeparatedCategoryNames())
+        addView(CARD_TAG_PRIMARY, R.string.product_tags, product.getCommaSeparatedTagNames())
+        addView(CARD_TAG_PRIMARY, R.string.product_catalog_visibility, product.catalogVisibility)
     }
 
     override fun showFetchProductError() {
@@ -121,19 +128,44 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         loadingProgress.visibility = View.VISIBLE
     }
 
-    private fun addView(@StringRes captionId: Int, detail: String, showDivider: Boolean = true): WCCaptionedTextView? {
+    /**
+     * Adds a WCCaptionedTextView to the current view if it doesn't already exist and the passed detail isn't empty
+     */
+    private fun addView(cardViewTag: String, @StringRes captionId: Int, detail: String): WCCaptionedTextView? {
         if (detail.isBlank() || view == null) return null
 
-        // find the existing view, if not found then add it
-        var captionedView = view!!.findViewWithTag<WCCaptionedTextView>(captionId.toString())
+        val context = activity as Context
+
+        // find the parent card, add it if not found
+        var cardView = productDetail_container.findViewWithTag<CardView>(cardViewTag)
+        if (cardView == null) {
+            cardView = CardView(context)
+            cardView.elevation = (resources.getDimensionPixelSize(R.dimen.card_elevation)).toFloat()
+            cardView.tag = cardViewTag
+            productDetail_container.addView(cardView)
+        }
+
+        // find the LinearLayout inside the parent card, add it if not found
+        var linearLayout = cardView.findViewWithTag<LinearLayout>(CARD_LINEAR_LAYOUT_TAG)
+        if (linearLayout == null) {
+            linearLayout = LinearLayout(context)
+            linearLayout.setOrientation(LinearLayout.VERTICAL)
+            linearLayout.tag = CARD_LINEAR_LAYOUT_TAG
+            cardView.addView(linearLayout)
+        }
+
+        val showTopDivider = linearLayout.childCount > 0
+
+        // find the existing caption view, if not found then add it
+        var captionedView = linearLayout.findViewWithTag<WCCaptionedTextView>(captionId.toString())
         if (captionedView == null) {
-            captionedView = WCCaptionedTextView(activity as Context)
-            productDetail_container.addView(captionedView)
+            captionedView = WCCaptionedTextView(context)
+            linearLayout.addView(captionedView)
         }
 
         // some details, such as product description, contain html which needs to be stripped here
         val detailPlainText = HtmlUtils.fastStripHtml(detail).trim()
-        captionedView.show(getString(captionId), detailPlainText, showDivider)
+        captionedView.show(getString(captionId), detailPlainText, showTopDivider)
 
         // tag the view so we can use findViewWithTag above
         captionedView.tag = captionId.toString()

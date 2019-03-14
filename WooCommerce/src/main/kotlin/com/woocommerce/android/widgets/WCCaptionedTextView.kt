@@ -14,9 +14,9 @@ class WCCaptionedTextView @JvmOverloads constructor(context: Context, attrs: Att
     : LinearLayout(context, attrs, defStyle) {
     private var view: View = View.inflate(context, R.layout.captioned_textview, this)
 
-    fun show(caption: String, detail: String, showDivider: Boolean) {
+    fun show(caption: String, detail: String, showTopDivider: Boolean) {
         view.findViewById<TextView>(R.id.textCaption)?.text = caption
         view.findViewById<TextView>(R.id.textDetail)?.text = detail
-        view.findViewById<View>(R.id.divider).visibility = if (showDivider) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.divider).visibility = if (showTopDivider) View.VISIBLE else View.GONE
     }
 }
