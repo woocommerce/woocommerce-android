@@ -154,5 +154,5 @@
     -->
     <dimen name="product_icon_sz">40dp</dimen>
     <dimen name="product_detail_image_height">160dp</dimen>
-    <dimen name="product_detail_divider_height">16dp</dimen>
+    <dimen name="product_detail_card_divider_height">16dp</dimen>
 </resources>

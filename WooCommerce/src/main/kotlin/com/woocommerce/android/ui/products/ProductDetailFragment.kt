@@ -41,7 +41,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
     }
 
-    private enum class Card {
+    private enum class DetailCard {
         Primary,
         Pricing,
         Shipping
@@ -107,26 +107,35 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                     .into(productDetail_image)
         }
 
-        addView(Card.Primary, R.string.product_name, product.name)
-        addView(Card.Primary, R.string.product_description, product.description)
-        addView(Card.Primary, R.string.product_short_description, product.shortDescription)
-        addView(Card.Primary, R.string.product_purchase_note, product.purchaseNote)
-        addView(Card.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames())
-        addView(Card.Primary, R.string.product_tags, product.getCommaSeparatedTagNames())
-        addView(Card.Primary, R.string.product_catalog_visibility, product.catalogVisibility)
+        /**
+         * TODO:
+         *  - Need currency for price
+         *  - Need dimension and weight units
+         *  - Zoom product image when tapped
+         *  - Toolbar caption
+         *  - Show product detail from order product list
+         */
 
-        addView(Card.Pricing, R.string.product_price, product.price)
-        addView(Card.Pricing, R.string.product_sale_price, product.salePrice)
-        addView(Card.Pricing, R.string.product_tax_status, product.taxStatus)
-        addView(Card.Pricing, R.string.product_tax_class, product.taxClass)
-        addView(Card.Pricing, R.string.product_sku, product.sku)
-        addView(Card.Pricing, R.string.product_stock_status, product.stockStatus)
+        addView(DetailCard.Primary, R.string.product_name, product.name)
+        addView(DetailCard.Primary, R.string.product_description, product.description)
+        addView(DetailCard.Primary, R.string.product_short_description, product.shortDescription)
+        addView(DetailCard.Primary, R.string.product_purchase_note, product.purchaseNote)
+        addView(DetailCard.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames())
+        addView(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames())
+        addView(DetailCard.Primary, R.string.product_catalog_visibility, product.catalogVisibility)
 
-        addView(Card.Shipping, R.string.product_weight, product.weight)
-        addView(Card.Shipping, R.string.product_length, product.length)
-        addView(Card.Shipping, R.string.product_width, product.width)
-        addView(Card.Shipping, R.string.product_height, product.height)
-        addView(Card.Shipping, R.string.product_shipping_class, product.shippingClass)
+        addView(DetailCard.Pricing, R.string.product_price, product.price)
+        addView(DetailCard.Pricing, R.string.product_sale_price, product.salePrice)
+        addView(DetailCard.Pricing, R.string.product_tax_status, product.taxStatus)
+        addView(DetailCard.Pricing, R.string.product_tax_class, product.taxClass)
+        addView(DetailCard.Pricing, R.string.product_sku, product.sku)
+        addView(DetailCard.Pricing, R.string.product_stock_status, product.stockStatus)
+
+        addView(DetailCard.Shipping, R.string.product_weight, product.weight)
+        addView(DetailCard.Shipping, R.string.product_length, product.length)
+        addView(DetailCard.Shipping, R.string.product_width, product.width)
+        addView(DetailCard.Shipping, R.string.product_height, product.height)
+        addView(DetailCard.Shipping, R.string.product_shipping_class, product.shippingClass)
     }
 
     override fun showFetchProductError() {
@@ -153,24 +162,24 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
      * to the card if it doesn't already exist - this enables us to dynamically build the product detail and
      * more easily move things around
      */
-    private fun addView(card: Card, @StringRes captionId: Int, detail: String) {
+    private fun addView(card: DetailCard, @StringRes captionId: Int, detail: String) {
         // don't do anything if detail is empty
         if (detail.isBlank() || view == null) return
 
         val context = activity as Context
 
         val cardViewCaption: String? = when (card) {
-            Card.Primary -> null
-            Card.Pricing -> getString(R.string.product_pricing_and_inventory)
-            Card.Shipping -> getString(R.string.product_shipping)
+            DetailCard.Primary -> null
+            DetailCard.Pricing -> getString(R.string.product_pricing_and_inventory)
+            DetailCard.Shipping -> getString(R.string.product_shipping)
         }
 
         // find the cardView, add it if not found
-        val cardViewTag = if (cardViewCaption.isNullOrEmpty()) card.name else cardViewCaption
+        val cardViewTag = "${card.name}_tag"
         var cardView = productDetail_container.findViewWithTag<WCCaptionedCardView>(cardViewTag)
         if (cardView == null) {
             // add a divider above the card if this isn't the first card
-            if (card != Card.Primary) {
+            if (card != DetailCard.Primary) {
                 addCardDividerView(context)
             }
             cardView = WCCaptionedCardView(context)
@@ -184,10 +193,11 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
         // find the existing caption view in the card, add it if not found
         val caption = getString(captionId)
-        var captionedView = container.findViewWithTag<WCCaptionedTextView>(caption)
+        val captionTag = "{$caption}_tag"
+        var captionedView = container.findViewWithTag<WCCaptionedTextView>(captionTag)
         if (captionedView == null) {
             captionedView = WCCaptionedTextView(context)
-            captionedView.tag = caption
+            captionedView.tag = captionTag
             container.addView(captionedView)
         }
 
@@ -200,7 +210,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val divider = View(context)
         divider.layoutParams = LayoutParams(
                 MATCH_PARENT,
-                resources.getDimensionPixelSize(R.dimen.product_detail_divider_height)
+                resources.getDimensionPixelSize(R.dimen.product_detail_card_divider_height)
         )
         divider.setBackgroundColor(ContextCompat.getColor(context, R.color.list_divider))
         productDetail_container.addView(divider)

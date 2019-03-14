@@ -149,6 +149,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 productImageMap.get(it)
             }
             holder.view.initView(orderItems[position], productImage, isExpanded, formatCurrencyForDisplay)
+            // TODO: open product detail when clicked
         }
 
         override fun getItemCount() = orderItems.size
