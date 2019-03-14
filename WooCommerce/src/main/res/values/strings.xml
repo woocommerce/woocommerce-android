@@ -235,6 +235,10 @@
         Product detail
     -->
     <string name="product_detail_fetch_product_error">Error fetching product</string>
+    <string name="product_name">Title</string>
+    <string name="product_description">Description</string>
+    <string name="product_short_description">Short description</string>
+    <string name="product_purchase_note">Purchase note</string>
 
     <!--
         Empty list messages

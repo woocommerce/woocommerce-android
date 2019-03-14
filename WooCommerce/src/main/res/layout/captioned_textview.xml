@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textCaption"
+        style="@style/Woo.Settings.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/wc_grey_dark"
+        tools:text="textLabel"/>
+
+    <TextView
+        android:id="@+id/textDetail"
+        style="@style/Woo.Settings.Label.Detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_notifs_device_detail"
+        android:textColor="@color/wc_grey_medium"/>
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Settings.Divider"/>
+
+</LinearLayout>

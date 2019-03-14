@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.UIMessageResolver
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -17,13 +18,12 @@ class ProductDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
+    private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus
 ) : ProductDetailContract.Presenter {
-    companion object {
-        private val TAG: String = ProductDetailPresenter::class.java.simpleName
-    }
-
     override var remoteProductId = 0L
+    override var product: WCProductModel? = null
+
     private var view: ProductDetailContract.View? = null
 
     override fun takeView(view: ProductDetailContract.View) {
@@ -42,9 +42,13 @@ class ProductDetailPresenter @Inject constructor(
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
     override fun fetchProduct(remoteProductId: Long) {
-        this.remoteProductId = remoteProductId
-        val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+        if (networkStatus.isConnected()) {
+            this.remoteProductId = remoteProductId
+            val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+        } else {
+            uiMessageResolver.showOfflineSnack()
+        }
     }
 
     @SuppressWarnings("unused")

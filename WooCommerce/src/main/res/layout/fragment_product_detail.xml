@@ -33,6 +33,9 @@
                 android:contentDescription="@string/orderdetail_product_image_contentdesc"
                 android:scaleType="centerCrop"/>
 
+            <View
+                style="@style/Woo.Settings.Divider"/>
+
         </LinearLayout>
     </FrameLayout>
 </android.support.v4.widget.NestedScrollView>
