@@ -147,8 +147,9 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addProperty(DetailCard.Shipping, R.string.product_shipping_class, product.shippingClass)
 
         addProperty(DetailCard.SalesAndReviews, R.string.product_total_sales, product.totalSales.toString())
-        // TODO: not in response addProperty(DetailCard.SalesAndReviews, R.string.product_total_orders, product.totalOrders.toString())
-        addProperty(DetailCard.SalesAndReviews, R.string.product_average_rating, product.averageRating, true)
+        if (product.ratingCount > 0) {
+            addProperty(DetailCard.SalesAndReviews, R.string.product_average_rating, product.averageRating, true)
+        }
         addProperty(DetailCard.SalesAndReviews, R.string.product_total_ratings, product.ratingCount.toString())
     }
 
