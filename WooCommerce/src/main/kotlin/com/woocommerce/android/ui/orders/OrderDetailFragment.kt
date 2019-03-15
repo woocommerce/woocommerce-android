@@ -189,11 +189,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             )
 
             // Populate the Customer Information Card
-            if (parentFragment is OrderCustomerActionListener) {
-                orderDetail_customerInfo.initView(order, false, parentFragment as OrderCustomerActionListener)
-            } else {
-                orderDetail_customerInfo.initView(order, false)
-            }
+            orderDetail_customerInfo.initView(order, false)
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
