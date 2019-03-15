@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-20 14:54:02+0000
+Translation-Revision-Date: 2019-03-05 12:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
-    <string name="tooltip_site_switcher">Ahora puedes tocar para cambiar de tienda</string>
+    <string name="promo_message_site_picker">Ahora puedes cambiar de tienda con tan solo tocar la tienda seleccionada en Configuración</string>
+    <string name="promo_title_site_picker">¿Gestionas más de una tienda?</string>
+    <string name="promo_btn_try_it">Probar ahora</string>
+    <string name="promo_btn_got_it">De acuerdo</string>
+    <string name="tooltip_site_switcher">Toca para cambiar de tienda</string>
+    <string name="site_picker_title">Mis tiendas</string>
+    <string name="username">Nombre de usuario de WordPress.com</string>
+    <string name="settings_signout">Salir</string>
+    <string name="orderstatus_select_status">Cambiar estado del pedido</string>
+    <string name="order_status_changed_to">Se ha cambiado el estado del pedido a %s</string>
+    <string name="orderdetail_change_order_status">Haz clic para cambiar el estado del pedido</string>
+    <string name="apply">Aplicar</string>
     <string name="app_rating_rate_never">No, gracias</string>
     <string name="app_rating_rate_later">Más tarde</string>
     <string name="app_rating_rate_now">Valorar ahora</string>
@@ -202,7 +213,6 @@ Language: es
     <string name="log_in">Acceder</string>
     <string name="help">Ayuda</string>
     <string name="password">Contraseña</string>
-    <string name="username">Nombre de usuario</string>
     <string name="enter_your_password_instead">Introduce tu contraseña</string>
     <string name="send_link">Enviar enlace</string>
     <string name="invalid_verification_code">Código de verificación no válido</string>
@@ -220,7 +230,6 @@ Language: es
     <string name="settings_privacy_detail">Esta información nos ayuda a mejorar nuestros productos, adaptar el marketing que recibes, personalizar tu experiencia de WooCommerce y mucho más, tal como se detalla en nuestra política de privacidad.</string>
     <string name="settings_send_stats_detail">Comparte información con nuestra herramienta de análisis sobre el uso de servicios mientras tienes conectada tu cuenta de WordPress</string>
     <string name="settings_send_stats">Recoger información</string>
-    <string name="settings_signout">Salir de la cuenta</string>
     <string name="privacy_settings">Configuración de privacidad</string>
     <string name="settings">Ajustes</string>
     <string name="orderstatus_contentDesc">Estado del pedido</string>
@@ -272,7 +281,6 @@ Language: es
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Información del cliente</string>
     <string name="orderlist_filter">Filtro</string>
-    <string name="apply">Aplicar filtro</string>
     <string name="orderlist_filter_by">Filtrar pedidos por</string>
     <string name="orderlist_error_fetch_generic">Se ha producido un error al obtener los pedidos</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -282,7 +290,7 @@ Language: es
     <string name="dashboard_action_view_order">Ver pedido</string>
     <string name="dashboard_top_earners_empty">Sin actividad durante este periodo</string>
     <string name="dashboard_top_earners_content_description">Imagen del producto</string>
-    <string name="dashboard_top_earners_total_orders">Pedido de productos total: %s</string>
+    <string name="dashboard_top_earners_total_orders">Total de pedidos: %s</string>
     <string name="dashboard_top_earners_total_spend">Gasto total</string>
     <string name="dashboard_top_earners_description">Obtén detalles sobre el rendimiento de los productos en tu tienda</string>
     <string name="dashboard_top_earners_title">Mejor rendimiento</string>

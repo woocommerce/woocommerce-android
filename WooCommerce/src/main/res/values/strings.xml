@@ -270,6 +270,7 @@
     <string name="settings_third_party_policy_header">Third Party Policy</string>
     <string name="settings_crash_reporting">Crash reports</string>
     <string name="settings_crash_reporting_detail">To help us improve the app\'s performance and fix the occasional bug, enable automatic crash reports</string>
+    <string name="settings_switch_site_notifs_msg">Switched to %s. You will only receive notifications for this store</string>
     <!--
         WCToggleSingleOptionView
     -->

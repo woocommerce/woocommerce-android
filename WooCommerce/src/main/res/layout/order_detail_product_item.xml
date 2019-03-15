@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:background="@drawable/picture_frame"
-        android:padding="2dp"
+        android:padding="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -21,6 +21,7 @@
             android:layout_width="@dimen/product_icon_sz"
             android:layout_height="@dimen/product_icon_sz"
             android:contentDescription="@string/orderdetail_product_image_contentdesc"
+            android:scaleType="centerCrop"
             app:srcCompat="@drawable/ic_product"
             tools:visibility="visible"/>
     </FrameLayout>
@@ -30,8 +31,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
+        android:layout_marginStart="@dimen/margin_large"
         android:ellipsize="end"
-        android:paddingBottom="@dimen/card_item_padding_intra_v"
         android:paddingEnd="8dp"
         android:paddingStart="0dp"
         android:singleLine="true"
@@ -59,6 +60,7 @@
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_v"
+        android:paddingTop="@dimen/card_item_padding_intra_v"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_qty"
         app:layout_constraintHorizontal_bias="0.0"

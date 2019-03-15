@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-20 09:54:02+0000
+Translation-Revision-Date: 2019-03-06 09:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
-    <string name="tooltip_site_switcher">이제 탭하여 스토어 전환 가능</string>
+    <string name="promo_message_site_picker">이제 설정에서 선택한 스토어를 탭하여 스토어 간에 전환할 수도 있습니다.</string>
+    <string name="promo_title_site_picker">여러 스토어를 운영 중인가요?</string>
+    <string name="promo_btn_try_it">지금 사용해 보기</string>
+    <string name="promo_btn_got_it">이해함</string>
+    <string name="tooltip_site_switcher">탭하여 스토어 전환</string>
+    <string name="site_picker_title">내 스토어</string>
+    <string name="username">WordPress.com 사용자 이름</string>
+    <string name="settings_signout">로그아웃</string>
+    <string name="orderstatus_select_status">주문 상태 변경</string>
+    <string name="order_status_changed_to">주문 상태가 %s(으)로 변경되었습니다.</string>
+    <string name="orderdetail_change_order_status">클릭하여 주문 상태 변경</string>
+    <string name="apply">적용</string>
     <string name="app_rating_rate_never">안 함</string>
     <string name="app_rating_rate_later">나중에</string>
     <string name="app_rating_rate_now">지금 평가</string>
@@ -202,7 +213,6 @@ Language: ko_KR
     <string name="log_in">로그인</string>
     <string name="help">도우미</string>
     <string name="password">암호</string>
-    <string name="username">사용자 이름</string>
     <string name="enter_your_password_instead">비밀번호를 대신 입력하세요.</string>
     <string name="send_link">링크 전송</string>
     <string name="invalid_verification_code">잘못된 확인 코드</string>
@@ -220,7 +230,6 @@ Language: ko_KR
     <string name="settings_privacy_detail">이 정보는 개인정보 보호정책에 명시된 바와 같이 제품을 개선하고, 더 관련성 높은 마케팅을 제공하며, 우커머스 환경을 개인 설정하는 데 도움을 줍니다.</string>
     <string name="settings_send_stats_detail">워드프레스 계정에 로그인되어 있는 동안 이용하는 서비스에 대한 정보를 워드프레스의 분석 도구와 공유합니다.</string>
     <string name="settings_send_stats">정보 수집</string>
-    <string name="settings_signout">로그아웃 계정</string>
     <string name="privacy_settings">프라이버시 설정</string>
     <string name="settings">설정</string>
     <string name="orderstatus_contentDesc">주문 상태</string>
@@ -272,7 +281,6 @@ Language: ko_KR
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">고객 정보</string>
     <string name="orderlist_filter">필터</string>
-    <string name="apply">필터 적용</string>
     <string name="orderlist_filter_by">주문 필터 적용 기준</string>
     <string name="orderlist_error_fetch_generic">주문을 가져오는 중 오류 발생</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -282,7 +290,7 @@ Language: ko_KR
     <string name="dashboard_action_view_order">주문 보기</string>
     <string name="dashboard_top_earners_empty">이 기간에 활동이 없음</string>
     <string name="dashboard_top_earners_content_description">상품 이미지</string>
-    <string name="dashboard_top_earners_total_orders">총 상품 주문: %s</string>
+    <string name="dashboard_top_earners_total_orders">총 주문 수: %s</string>
     <string name="dashboard_top_earners_total_spend">총 지출</string>
     <string name="dashboard_top_earners_description">스토어의 상품 실적에 대한 인사이트 확인</string>
     <string name="dashboard_top_earners_title">최고 인기 상품</string>

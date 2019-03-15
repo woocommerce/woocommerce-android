@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-02-01 08:56:23+0000
+Translation-Revision-Date: 2019-03-08 10:54:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="promo_message_site_picker">現在，在「設定」中點選選取的商店即可切換商店</string>
+    <string name="promo_title_site_picker">經營多家商店嗎？</string>
+    <string name="promo_btn_try_it">立即試試</string>
+    <string name="promo_btn_got_it">知道了</string>
+    <string name="tooltip_site_switcher">點選即可切換商店</string>
+    <string name="site_picker_title">我的商店</string>
+    <string name="username">WordPress.com 使用者名稱</string>
+    <string name="settings_signout">登出</string>
+    <string name="orderstatus_select_status">變更訂單狀態</string>
+    <string name="order_status_changed_to">訂單狀態已變更為「%s」</string>
+    <string name="orderdetail_change_order_status">按一下即可變更訂單狀態</string>
+    <string name="apply">套用</string>
+    <string name="app_rating_rate_never">不用了，謝謝</string>
+    <string name="app_rating_rate_later">稍後再做</string>
+    <string name="app_rating_rate_now">立即評分</string>
+    <string name="app_rating_message">很高興再次與你見面！如果你喜歡我們的應用程式，歡迎前往 Google Play 商店幫忙評分。</string>
+    <string name="app_rating_title">還喜歡 Woo 嗎？</string>
+    <string name="settings_selected_store">選取的商店</string>
+    <string name="notifs_empty_message">尚未有任何通知！</string>
+    <string name="orders_empty_message_with_search">沒有相符的訂單</string>
+    <string name="orders_empty_message_with_filter">無訂單</string>
+    <string name="waiting_for_customers_contentdesc">等待客戶圖片</string>
+    <string name="waiting_for_customers">等待客戶</string>
+    <string name="share_store_dialog_title">分享商店 URL</string>
+    <string name="share_store_button">分享你的商店</string>
     <string name="dismiss">關閉</string>
     <string name="wc_mark_all_read_error">將全部通知標示為已讀時發生錯誤</string>
     <string name="wc_mark_all_read">將全部標示為已讀</string>
@@ -184,7 +209,6 @@ Language: zh_TW
     <string name="log_in">登入</string>
     <string name="help">說明</string>
     <string name="password">密碼</string>
-    <string name="username">使用者帳號</string>
     <string name="enter_your_password_instead">改為輸入你的密碼</string>
     <string name="send_link">傳送連結</string>
     <string name="invalid_verification_code">驗證碼無效</string>
@@ -202,7 +226,6 @@ Language: zh_TW
     <string name="settings_privacy_detail">這類資訊有助我們改善產品、提供與你更加相關的行銷活動、帶來量身打造的 WooCommerce 使用體驗；若要瞭解更多詳細內容，請參閱我們的隱私權政策</string>
     <string name="settings_send_stats_detail">登入你的 WordPress 帳號時，請將你的服務使用情況相關資訊與我們的分析工具分享</string>
     <string name="settings_send_stats">收集資訊</string>
-    <string name="settings_signout">登出帳號</string>
     <string name="privacy_settings">隱私權設定</string>
     <string name="settings">設定</string>
     <string name="orderstatus_contentDesc">訂單狀態</string>
@@ -254,7 +277,6 @@ Language: zh_TW
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客資料</string>
     <string name="orderlist_filter">篩選</string>
-    <string name="apply">套用篩選條件</string>
     <string name="orderlist_filter_by">訂單篩選條件</string>
     <string name="orderlist_error_fetch_generic">擷取訂單時發生錯誤</string>
     <string name="orderlist_item_order_name">%1$s %2$s</string>
@@ -264,7 +286,7 @@ Language: zh_TW
     <string name="dashboard_action_view_order">查看訂單</string>
     <string name="dashboard_top_earners_empty">此期間沒有任何活動</string>
     <string name="dashboard_top_earners_content_description">商品圖片</string>
-    <string name="dashboard_top_earners_total_orders">產品訂單總計：%s</string>
+    <string name="dashboard_top_earners_total_orders">訂單總數：%s</string>
     <string name="dashboard_top_earners_total_spend">消費總額</string>
     <string name="dashboard_top_earners_description">深入瞭解產品在商店上的成效</string>
     <string name="dashboard_top_earners_title">成效最佳者</string>
