@@ -44,7 +44,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     private enum class DetailCard {
         Primary,
         Pricing,
-        Shipping
+        Shipping,
+        Attributes
     }
 
     @Inject lateinit var presenter: ProductDetailContract.Presenter
@@ -136,6 +137,10 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addView(DetailCard.Shipping, R.string.product_width, product.width)
         addView(DetailCard.Shipping, R.string.product_height, product.height)
         addView(DetailCard.Shipping, R.string.product_shipping_class, product.shippingClass)
+
+        product.getAttributes().forEach { attribute ->
+            addView(DetailCard.Attributes, attribute.name, attribute.getCommaSeparatedOptions())
+        }
     }
 
     override fun showFetchProductError() {
@@ -160,19 +165,27 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     /**
      * Adds a WCCaptionedCardView to the current view if it doesn't already exist, then adds a WCCaptionedTextView
      * to the card if it doesn't already exist - this enables us to dynamically build the product detail and
-     * more easily move things around
+     * more easily move things around.
+     *
+     * ex: addView(DetailCard.Pricing, R.string.product_price, product.price) will add the Pricing card if it
+     * doesn't exist, and then add the product price caption and property to the card - but if the property
+     * is empty, nothing gets added.
      */
-    private fun addView(card: DetailCard, @StringRes captionId: Int, detail: String) {
-        // don't do anything if detail is empty
-        if (detail.isBlank() || view == null) return
+    private fun addView(card: DetailCard, @StringRes propertyCaptionId: Int, propertyValue: String) {
+        addView(card, getString(propertyCaptionId), propertyValue)
+    }
 
-        val context = activity as Context
+    private fun addView(card: DetailCard, propertyCaption: String, propertyValue: String) {
+        if (propertyValue.isBlank() || view == null) return
 
         val cardViewCaption: String? = when (card) {
             DetailCard.Primary -> null
             DetailCard.Pricing -> getString(R.string.product_pricing_and_inventory)
             DetailCard.Shipping -> getString(R.string.product_shipping)
+            DetailCard.Attributes -> getString(R.string.product_attributes)
         }
+
+        val context = activity as Context
 
         // find the cardView, add it if not found
         val cardViewTag = "${card.name}_tag"
@@ -189,11 +202,11 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             productDetail_container.addView(cardView)
         }
 
+        // locate the linear layout inside the cardView
         val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
 
-        // find the existing caption view in the card, add it if not found
-        val caption = getString(captionId)
-        val captionTag = "{$caption}_tag"
+        // find the existing caption view in the card's linearLayout, add it if not found
+        val captionTag = "{$propertyCaption}_tag"
         var captionedView = container.findViewWithTag<WCCaptionedTextView>(captionTag)
         if (captionedView == null) {
             captionedView = WCCaptionedTextView(context)
@@ -202,8 +215,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
 
         // some details, such as product description, contain html which needs to be stripped here
-        val detailPlainText = HtmlUtils.fastStripHtml(detail).trim()
-        captionedView.show(caption, detailPlainText)
+        captionedView.show(propertyCaption, HtmlUtils.fastStripHtml(propertyValue).trim())
     }
 
     private fun addCardDividerView(context: Context) {

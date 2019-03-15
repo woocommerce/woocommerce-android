@@ -255,6 +255,7 @@
     <string name="product_height">Height</string>
     <string name="product_width">Width</string>
     <string name="product_shipping_class">Shipping class</string>
+    <string name="product_attributes">Attributes</string>
 
     <!--
         Empty list messages
