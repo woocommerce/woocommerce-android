@@ -13,8 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
-import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
@@ -95,8 +95,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
         // Populate the Customer Information Card
         orderFulfill_customerInfo.initView(order, true)
-
-        orderFulfill_btnComplete.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
