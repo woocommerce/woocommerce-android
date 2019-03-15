@@ -46,6 +46,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         PricingAndInventory,
         Shipping,
         Attributes,
+        Downloads,
         SalesAndReviews;
 
         fun getTag() = "${this.name}_tag"
@@ -73,8 +74,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         presenter.takeView(this)
 
         val remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
-        presenter.getProduct(remoteProductId)?.let { product ->
-            showProduct(product)
+        presenter.getProduct(remoteProductId)?.let {
+            showProduct(it)
         } ?: showProgress()
         presenter.fetchProduct(remoteProductId)
     }
@@ -134,10 +135,31 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addProperty(DetailCard.PricingAndInventory, R.string.product_tax_status, product.taxStatus)
         addProperty(DetailCard.PricingAndInventory, R.string.product_tax_class, product.taxClass)
         addProperty(DetailCard.PricingAndInventory, R.string.product_sku, product.sku)
-        addProperty(DetailCard.PricingAndInventory, R.string.product_stock_status, product.stockStatus)
+        if (product.manageStock) {
+            addProperty(DetailCard.PricingAndInventory, R.string.product_stock_status, product.stockStatus)
+            addProperty(DetailCard.PricingAndInventory, R.string.product_backorders, product.backorders)
+        }
 
         product.getAttributes().forEach { attribute ->
             addProperty(DetailCard.Attributes, attribute.name, attribute.getCommaSeparatedOptions())
+        }
+
+        if (product.downloadable) {
+            addProperty(
+                    DetailCard.Downloads,
+                    R.string.product_downloadable_files,
+                    product.getDownloadableFiles().size.toString()
+            )
+            if (product.downloadLimit > 0) {
+                addProperty(DetailCard.Downloads, R.string.product_download_limit, product.downloadLimit.toString())
+            }
+            if (product.downloadExpiry > 0) {
+                val expiryDays = String.format(
+                        getString(R.string.product_download_expiry_days),
+                        product.downloadExpiry.toString()
+                )
+                addProperty(DetailCard.Downloads, R.string.product_download_expiry, expiryDays)
+            }
         }
 
         addProperty(DetailCard.Shipping, R.string.product_weight, product.weight)
@@ -203,6 +225,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
             DetailCard.Shipping -> getString(R.string.product_shipping)
             DetailCard.Attributes -> getString(R.string.product_attributes)
+            DetailCard.Downloads -> getString(R.string.product_downloads)
             DetailCard.SalesAndReviews -> getString(R.string.product_sales_and_reviews)
         }
 

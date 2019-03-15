@@ -249,6 +249,7 @@
     <string name="product_tax_class">Tax class</string>
     <string name="product_sku">SKU</string>
     <string name="product_stock_status">Stock status</string>
+    <string name="product_backorders">Backorders</string>
     <string name="product_shipping">Shipping</string>
     <string name="product_weight">Weight</string>
     <string name="product_length">Length</string>
@@ -260,6 +261,11 @@
     <string name="product_total_sales">Total sales</string>
     <string name="product_total_ratings">Total ratings</string>
     <string name="product_average_rating">Average rating</string>
+    <string name="product_downloads">Downloads</string>
+    <string name="product_downloadable_files">Downloadable files</string>
+    <string name="product_download_limit">Download limit</string>
+    <string name="product_download_expiry">Download expiry</string>
+    <string name="product_download_expiry_days">%d days</string>
 
     <!--
         Empty list messages
