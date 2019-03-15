@@ -46,7 +46,9 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         PricingAndInventory,
         Shipping,
         Attributes,
-        SalesAndReviews
+        SalesAndReviews;
+
+        fun getTag() = "${this.name}_tag"
     }
 
     @Inject lateinit var presenter: ProductDetailContract.Presenter
@@ -146,7 +148,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
         addProperty(DetailCard.SalesAndReviews, R.string.product_total_sales, product.totalSales.toString())
         // TODO: not in response addProperty(DetailCard.SalesAndReviews, R.string.product_total_orders, product.totalOrders.toString())
-        // TODO: average rating
+        addProperty(DetailCard.SalesAndReviews, R.string.product_average_rating, product.averageRating, true)
         addProperty(DetailCard.SalesAndReviews, R.string.product_total_ratings, product.ratingCount.toString())
     }
 
@@ -178,11 +180,21 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
      * doesn't exist, and then add the product price caption and property to the card - but if the property
      * is empty, nothing gets added.
      */
-    private fun addProperty(card: DetailCard, @StringRes propertyCaptionId: Int, propertyValue: String) {
-        addProperty(card, getString(propertyCaptionId), propertyValue)
+    private fun addProperty(
+        card: DetailCard,
+        @StringRes propertyCaptionId: Int,
+        propertyValue: String,
+        isRating: Boolean = false
+    ) {
+        addProperty(card, getString(propertyCaptionId), propertyValue, isRating)
     }
 
-    private fun addProperty(card: DetailCard, propertyCaption: String, propertyValue: String) {
+    private fun addProperty(
+        card: DetailCard,
+        propertyCaption: String,
+        propertyValue: String,
+        isRating: Boolean = false
+    ) {
         if (propertyValue.isBlank() || view == null) return
 
         val cardViewCaption: String? = when (card) {
@@ -196,8 +208,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val context = activity as Context
 
         // find the cardView, add it if not found
-        val cardViewTag = "${card.name}_tag"
-        var cardView = productDetail_container.findViewWithTag<WCCaptionedCardView>(cardViewTag)
+        var cardView = productDetail_container.findViewWithTag<WCCaptionedCardView>(card.getTag())
         if (cardView == null) {
             // add a divider above the card if this isn't the first card
             if (card != DetailCard.Primary) {
@@ -205,7 +216,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             }
             cardView = WCCaptionedCardView(context)
             cardView.elevation = (resources.getDimensionPixelSize(R.dimen.card_elevation)).toFloat()
-            cardView.tag = cardViewTag
+            cardView.tag = card.getTag()
             cardView.show(cardViewCaption)
             productDetail_container.addView(cardView)
         }
@@ -222,8 +233,12 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             container.addView(captionedView)
         }
 
-        // some details, such as product description, contain html which needs to be stripped here
-        captionedView.show(propertyCaption, HtmlUtils.fastStripHtml(propertyValue).trim())
+        if (isRating) {
+            captionedView.show(propertyCaption, null, propertyValue)
+        } else {
+            // some details, such as product description, contain html which needs to be stripped here
+            captionedView.show(propertyCaption, HtmlUtils.fastStripHtml(propertyValue).trim())
+        }
     }
 
     private fun addCardDividerView(context: Context) {

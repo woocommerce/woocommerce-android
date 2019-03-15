@@ -258,7 +258,8 @@
     <string name="product_attributes">Attributes</string>
     <string name="product_sales_and_reviews">Sales and reviews</string>
     <string name="product_total_sales">Total sales</string>
-    <string name="product_total_ratings">Number of ratings</string>
+    <string name="product_total_ratings">Total ratings</string>
+    <string name="product_average_rating">Average rating</string>
 
     <!--
         Empty list messages

@@ -358,7 +358,7 @@
     </style>
 
     <style name="Woo.Settings.LabelWithButton" parent="Woo.Settings.Label">
-        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingBottom">@dimen/margin_small</item>
     </style>
 
     <style name="Woo.Settings.Button" parent="Woo.Button">

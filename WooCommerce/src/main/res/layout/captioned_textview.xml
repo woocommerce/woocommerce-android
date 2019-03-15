@@ -23,6 +23,23 @@
         android:text="@string/settings_notifs_device_detail"
         android:textColor="@color/wc_grey_medium"/>
 
+    <RatingBar
+        android:id="@+id/ratingBar"
+        style="@style/Base.Widget.AppCompat.RatingBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/settings_padding"
+        android:layout_marginTop="@dimen/settings_padding"
+        android:layout_marginBottom="24dp"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:progressTint="@color/grey_darken_30"
+        android:rating="0"
+        android:stepSize="1"
+        android:visibility="gone"
+        tools:rating="3"
+        tools:visibility="visible"/>
+
     <View
         android:id="@+id/divider"
         style="@style/Woo.Settings.Divider"/>
