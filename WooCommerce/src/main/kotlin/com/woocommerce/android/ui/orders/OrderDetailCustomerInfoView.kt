@@ -20,7 +20,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         View.inflate(context, R.layout.order_detail_customer_info, this)
     }
 
-    fun initView(order: WCOrderModel, shippingOnly: Boolean, listener: OrderCustomerActionListener? = null) {
+    fun initView(order: WCOrderModel, shippingOnly: Boolean) {
         // Populate Shipping & Billing information
         val billingName = context
                 .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
@@ -56,7 +56,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                 customerInfo_phone.visibility = View.VISIBLE
                 customerInfo_callOrMessageBtn.visibility = View.VISIBLE
                 customerInfo_callOrMessageBtn.setOnClickListener {
-                    showCallOrMessagePopup(order, listener)
+                    showCallOrMessagePopup(order)
                 }
             } else {
                 customerInfo_phone.visibility = View.GONE
@@ -77,8 +77,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             // Set action button listeners
             customerInfo_emailBtn.setOnClickListener {
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
-
-                listener?.createEmail(order, order.billingEmail)
+                OrderCustomerHelper.createEmail(context, order, order.billingEmail)
                 AppRatingDialog.incrementInteractions()
             }
         }
@@ -91,20 +90,20 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         return fullAddr
     }
 
-    private fun showCallOrMessagePopup(order: WCOrderModel, listener: OrderCustomerActionListener?) {
+    private fun showCallOrMessagePopup(order: WCOrderModel) {
         val popup = PopupMenu(context, customerInfo_callOrMessageBtn)
         popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
 
         popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
-            listener?.dialPhone(order, order.billingPhone)
+            OrderCustomerHelper.dialPhone(context, order, order.billingPhone)
             AppRatingDialog.incrementInteractions()
             true
         }
 
         popup.menu.findItem(R.id.menu_message)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
-            listener?.sendSms(order, order.billingPhone)
+            OrderCustomerHelper.sendSms(context, order, order.billingPhone)
             AppRatingDialog.incrementInteractions()
             true
         }

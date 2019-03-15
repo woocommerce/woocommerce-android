@@ -11,32 +11,33 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="@dimen/margin_medium">
+        android:background="@color/white">
 
         <LinearLayout
             android:id="@+id/review_open_product"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
             android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:padding="@dimen/margin_medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/margin_medium"
                 android:background="@drawable/picture_frame"
-                android:padding="2dp">
+                android:padding="1dp">
 
                 <ImageView
                     android:id="@+id/review_product_icon"
                     android:layout_width="@dimen/product_icon_sz"
                     android:layout_height="@dimen/product_icon_sz"
                     android:importantForAccessibility="no"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/ic_product"/>
             </FrameLayout>
 
@@ -44,7 +45,6 @@
                 android:id="@+id/review_product_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_extra_large"
                 android:layout_weight="1"
@@ -55,9 +55,8 @@
                 style="@style/Base.Widget.AppCompat.ActionButton"
                 android:layout_width="@dimen/avatar_sz_small"
                 android:layout_height="@dimen/avatar_sz_small"
-                android:layout_gravity="center_vertical"
                 android:contentDescription="@string/wc_view_the_product_external"
-                android:tint="@color/wc_grey_darker"
+                android:tint="@color/wc_purple"
                 app:srcCompat="@drawable/ic_external"/>
         </LinearLayout>
 
@@ -65,8 +64,9 @@
             android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:background="@color/wc_grey_17"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
+            android:background="@color/wc_border_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/review_open_product"/>
@@ -75,7 +75,7 @@
             android:id="@+id/review_gravatar"
             android:layout_width="@dimen/avatar_sz_large"
             android:layout_height="@dimen/avatar_sz_large"
-            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_extra_large"
             android:layout_marginTop="@dimen/margin_extra_large"
             android:importantForAccessibility="no"
             app:layout_constraintStart_toStartOf="parent"
@@ -110,7 +110,7 @@
             style="@style/Widget.AppCompat.RatingBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_extra_large"
             android:layout_marginTop="@dimen/margin_extra_large"
             android:isIndicator="true"
             android:numStars="5"
@@ -127,7 +127,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_medium"
             android:layout_marginEnd="@dimen/margin_medium"
-            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_extra_large"
             android:layout_marginTop="@dimen/margin_extra_large"
             android:textAppearance="@style/Woo.TextAppearance"
             app:layout_constraintBottom_toTopOf="@+id/review_trash"
@@ -140,7 +140,7 @@
             android:id="@+id/review_approve"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_extra_large"
             android:background="@android:color/transparent"
             android:textAppearance="@style/Woo.TextAppearance.Button.Toggle"
             android:textOff="@string/wc_approve"
@@ -152,7 +152,7 @@
             android:id="@+id/review_spam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_extra_large"
             android:text="@string/wc_spam"
             android:textAppearance="@style/Woo.TextAppearance.Button"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -162,7 +162,7 @@
             android:id="@+id/review_trash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_extra_large"
             android:text="@string/wc_trash"
             android:textAppearance="@style/Woo.TextAppearance.Button"
             app:layout_constraintBottom_toBottomOf="parent"
