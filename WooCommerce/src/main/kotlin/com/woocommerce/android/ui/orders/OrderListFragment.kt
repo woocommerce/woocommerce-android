@@ -239,7 +239,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             adapter = ordersAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
+                    if (dy > 0) {
+                        onScrollDown(this@OrderListFragment.orderRefreshLayout)
+                    } else if (dy < 0) {
+                        onScrollUp(this@OrderListFragment.orderRefreshLayout)
+                    }
                 }
             })
         }
