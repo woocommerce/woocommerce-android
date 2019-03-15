@@ -256,6 +256,9 @@
     <string name="product_width">Width</string>
     <string name="product_shipping_class">Shipping class</string>
     <string name="product_attributes">Attributes</string>
+    <string name="product_sales_and_reviews">Sales and reviews</string>
+    <string name="product_total_sales">Total sales</string>
+    <string name="product_total_ratings">Number of ratings</string>
 
     <!--
         Empty list messages

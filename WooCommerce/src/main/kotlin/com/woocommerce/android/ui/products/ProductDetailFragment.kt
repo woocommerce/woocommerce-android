@@ -43,9 +43,10 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
     private enum class DetailCard {
         Primary,
-        Pricing,
+        PricingAndInventory,
         Shipping,
-        Attributes
+        Attributes,
+        SalesAndReviews
     }
 
     @Inject lateinit var presenter: ProductDetailContract.Presenter
@@ -115,32 +116,38 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
          *  - Zoom product image when tapped
          *  - Toolbar caption
          *  - Show product detail from order product list
+         *  - Product reviews
          */
 
-        addView(DetailCard.Primary, R.string.product_name, product.name)
-        addView(DetailCard.Primary, R.string.product_description, product.description)
-        addView(DetailCard.Primary, R.string.product_short_description, product.shortDescription)
-        addView(DetailCard.Primary, R.string.product_purchase_note, product.purchaseNote)
-        addView(DetailCard.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames())
-        addView(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames())
-        addView(DetailCard.Primary, R.string.product_catalog_visibility, product.catalogVisibility)
+        addProperty(DetailCard.Primary, R.string.product_name, product.name)
+        addProperty(DetailCard.Primary, R.string.product_description, product.description)
+        addProperty(DetailCard.Primary, R.string.product_short_description, product.shortDescription)
+        addProperty(DetailCard.Primary, R.string.product_purchase_note, product.purchaseNote)
+        addProperty(DetailCard.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames())
+        addProperty(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames())
+        addProperty(DetailCard.Primary, R.string.product_catalog_visibility, product.catalogVisibility)
 
-        addView(DetailCard.Pricing, R.string.product_price, product.price)
-        addView(DetailCard.Pricing, R.string.product_sale_price, product.salePrice)
-        addView(DetailCard.Pricing, R.string.product_tax_status, product.taxStatus)
-        addView(DetailCard.Pricing, R.string.product_tax_class, product.taxClass)
-        addView(DetailCard.Pricing, R.string.product_sku, product.sku)
-        addView(DetailCard.Pricing, R.string.product_stock_status, product.stockStatus)
-
-        addView(DetailCard.Shipping, R.string.product_weight, product.weight)
-        addView(DetailCard.Shipping, R.string.product_length, product.length)
-        addView(DetailCard.Shipping, R.string.product_width, product.width)
-        addView(DetailCard.Shipping, R.string.product_height, product.height)
-        addView(DetailCard.Shipping, R.string.product_shipping_class, product.shippingClass)
+        addProperty(DetailCard.PricingAndInventory, R.string.product_price, product.price)
+        addProperty(DetailCard.PricingAndInventory, R.string.product_sale_price, product.salePrice)
+        addProperty(DetailCard.PricingAndInventory, R.string.product_tax_status, product.taxStatus)
+        addProperty(DetailCard.PricingAndInventory, R.string.product_tax_class, product.taxClass)
+        addProperty(DetailCard.PricingAndInventory, R.string.product_sku, product.sku)
+        addProperty(DetailCard.PricingAndInventory, R.string.product_stock_status, product.stockStatus)
 
         product.getAttributes().forEach { attribute ->
-            addView(DetailCard.Attributes, attribute.name, attribute.getCommaSeparatedOptions())
+            addProperty(DetailCard.Attributes, attribute.name, attribute.getCommaSeparatedOptions())
         }
+
+        addProperty(DetailCard.Shipping, R.string.product_weight, product.weight)
+        addProperty(DetailCard.Shipping, R.string.product_length, product.length)
+        addProperty(DetailCard.Shipping, R.string.product_width, product.width)
+        addProperty(DetailCard.Shipping, R.string.product_height, product.height)
+        addProperty(DetailCard.Shipping, R.string.product_shipping_class, product.shippingClass)
+
+        addProperty(DetailCard.SalesAndReviews, R.string.product_total_sales, product.totalSales.toString())
+        // TODO: not in response addProperty(DetailCard.SalesAndReviews, R.string.product_total_orders, product.totalOrders.toString())
+        // TODO: average rating
+        addProperty(DetailCard.SalesAndReviews, R.string.product_total_ratings, product.ratingCount.toString())
     }
 
     override fun showFetchProductError() {
@@ -167,22 +174,23 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
      * to the card if it doesn't already exist - this enables us to dynamically build the product detail and
      * more easily move things around.
      *
-     * ex: addView(DetailCard.Pricing, R.string.product_price, product.price) will add the Pricing card if it
+     * ex: addProperty(DetailCard.Pricing, R.string.product_price, product.price) will add the Pricing card if it
      * doesn't exist, and then add the product price caption and property to the card - but if the property
      * is empty, nothing gets added.
      */
-    private fun addView(card: DetailCard, @StringRes propertyCaptionId: Int, propertyValue: String) {
-        addView(card, getString(propertyCaptionId), propertyValue)
+    private fun addProperty(card: DetailCard, @StringRes propertyCaptionId: Int, propertyValue: String) {
+        addProperty(card, getString(propertyCaptionId), propertyValue)
     }
 
-    private fun addView(card: DetailCard, propertyCaption: String, propertyValue: String) {
+    private fun addProperty(card: DetailCard, propertyCaption: String, propertyValue: String) {
         if (propertyValue.isBlank() || view == null) return
 
         val cardViewCaption: String? = when (card) {
             DetailCard.Primary -> null
-            DetailCard.Pricing -> getString(R.string.product_pricing_and_inventory)
+            DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
             DetailCard.Shipping -> getString(R.string.product_shipping)
             DetailCard.Attributes -> getString(R.string.product_attributes)
+            DetailCard.SalesAndReviews -> getString(R.string.product_sales_and_reviews)
         }
 
         val context = activity as Context
