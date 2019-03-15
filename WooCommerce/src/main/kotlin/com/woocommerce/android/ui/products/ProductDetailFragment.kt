@@ -156,7 +156,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             if (product.downloadExpiry > 0) {
                 val expiryDays = String.format(
                         getString(R.string.product_download_expiry_days),
-                        product.downloadExpiry.toString()
+                        product.downloadExpiry
                 )
                 addProperty(DetailCard.Downloads, R.string.product_download_expiry, expiryDays)
             }
