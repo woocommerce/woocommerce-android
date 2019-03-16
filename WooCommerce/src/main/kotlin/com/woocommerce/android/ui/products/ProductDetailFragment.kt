@@ -100,6 +100,11 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     override fun showProduct(product: WCProductModel) {
+        if (!isAdded) return
+
+        if (product.name.isNotEmpty()) {
+            activity?.title = product.name
+        }
         loadingProgress.visibility = View.GONE
 
         product.getFirstImageUrl()?.let {
@@ -120,6 +125,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
          *  - Toolbar caption
          *  - Show product detail from order product list
          *  - Product reviews
+         *  - Linked products
+         *  - Product variations
          */
 
         addProperty(DetailCard.Primary, R.string.product_name, product.name)
