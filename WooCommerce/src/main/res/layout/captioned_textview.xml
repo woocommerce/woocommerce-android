@@ -1,47 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:orientation="vertical">
+    android:background="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/textCaption"
-        style="@style/Woo.Settings.LabelWithDetail"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/settings_padding"
         android:textColor="@color/wc_grey_dark"
-        tools:text="textLabel"/>
+        android:textSize="@dimen/text_large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="textCaption"/>
 
     <TextView
         android:id="@+id/textDetail"
-        style="@style/Woo.Settings.Label.Detail"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/settings_notifs_device_detail"
-        android:textColor="@color/wc_grey_medium"/>
+        android:layout_margin="@dimen/settings_padding"
+        android:textColor="@color/wc_grey_medium"
+        android:textSize="@dimen/text_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="textDetail"/>
 
     <RatingBar
         android:id="@+id/ratingBar"
         style="@style/Base.Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:layout_marginStart="@dimen/settings_padding"
         android:layout_marginTop="@dimen/settings_padding"
-        android:layout_marginBottom="24dp"
         android:isIndicator="true"
         android:numStars="5"
         android:progressTint="@color/grey_darken_30"
         android:rating="0"
         android:stepSize="1"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textCaption"
         tools:rating="3"
         tools:visibility="visible"/>
 
     <View
         android:id="@+id/divider"
-        style="@style/Woo.Settings.Divider"/>
+        style="@style/Woo.Settings.Divider"
+        android:layout_marginTop="@dimen/settings_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
