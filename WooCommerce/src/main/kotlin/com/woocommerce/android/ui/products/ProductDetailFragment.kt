@@ -15,7 +15,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.widgets.WCCaptionedCardView
 import com.woocommerce.android.widgets.WCCaptionedTextView
@@ -55,7 +54,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     @Inject lateinit var presenter: ProductDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
-    @Inject lateinit var productImageMap: ProductImageMap
 
     private var runOnStartFunc: (() -> Unit)? = null
 
@@ -74,10 +72,16 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         presenter.takeView(this)
 
         val remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
-        presenter.getProduct(remoteProductId)?.let {
-            showProduct(it)
-        } ?: showProgress()
-        presenter.fetchProduct(remoteProductId)
+        val product = presenter.getProduct(remoteProductId)
+        if (product == null) {
+            showProgress()
+            presenter.fetchProduct(remoteProductId)
+        } else {
+            showProduct(product)
+            if (savedInstanceState == null) {
+                presenter.fetchProduct(remoteProductId)
+            }
+        }
     }
 
     override fun onResume() {
