@@ -267,17 +267,18 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         if (captionedView == null) {
             captionedView = WCCaptionedTextView(context)
             captionedView.tag = captionTag
-            val orientation = when (card) {
-                DetailCard.Primary,
-                DetailCard.Attributes -> LinearLayout.VERTICAL
-                else ->
-                    LinearLayout.HORIZONTAL
-            }
             container.addView(captionedView)
         }
 
+        val orientation = when (card) {
+            DetailCard.Primary,
+            DetailCard.Attributes -> LinearLayout.VERTICAL
+            else ->
+                LinearLayout.HORIZONTAL
+        }
+
         // some details, such as product description, contain html which needs to be stripped here
-        captionedView.show(propertyCaption, HtmlUtils.fastStripHtml(propertyValue).trim())
+        captionedView.show(orientation, propertyCaption, HtmlUtils.fastStripHtml(propertyValue).trim())
         return captionedView
     }
 
