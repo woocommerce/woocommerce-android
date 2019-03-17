@@ -1,4 +1,4 @@
-package com.woocommerce.android.widgets
+package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.support.v7.widget.CardView
@@ -8,10 +8,13 @@ import android.widget.TextView
 import com.woocommerce.android.R
 
 /**
- * CardView with an optional caption (title), useful for settings-related screens
+ * CardView with an optional caption (title), used for product detail properties
  */
-class WCCaptionedCardView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0)
-    : CardView(context, attrs, defStyle) {
+class WCProductPropertyCardView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : CardView(context, attrs, defStyle) {
     private var view: View = View.inflate(context, R.layout.captioned_cardview, this)
 
     fun show(caption: String?) {

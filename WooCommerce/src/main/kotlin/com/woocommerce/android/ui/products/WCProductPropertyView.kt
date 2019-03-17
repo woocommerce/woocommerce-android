@@ -1,4 +1,4 @@
-package com.woocommerce.android.widgets
+package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
@@ -11,9 +11,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 
 /**
- * TextView with a caption (header), detail, and optional ratingBar
+ * TextView with a caption (header), detail, and optional ratingBar, used by product detail
  */
-class WCCaptionedTextView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
+class WCProductPropertyView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) :
         ConstraintLayout(context, attrs, defStyle) {
     private var view: View? = null
     private var captionText: TextView? = null
@@ -45,10 +49,10 @@ class WCCaptionedTextView @JvmOverloads constructor(context: Context, attrs: Att
 
     private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL) {
         if (view == null) {
-            if (orientation == LinearLayout.VERTICAL) {
-                view = View.inflate(context, R.layout.captioned_textview_vert, this)
+            view = if (orientation == LinearLayout.VERTICAL) {
+                View.inflate(context, R.layout.captioned_textview_vert, this)
             } else {
-                view = View.inflate(context, R.layout.captioned_textview_horz, this)
+                View.inflate(context, R.layout.captioned_textview_horz, this)
             }
             captionText = view?.findViewById(R.id.textCaption)
             detailText = view?.findViewById(R.id.textDetail)

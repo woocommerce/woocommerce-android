@@ -25,6 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/settings_padding"
         android:textColor="@color/wc_grey_medium"
+        android:ellipsize="end"
+        android:maxLines="3"
         android:textSize="@dimen/text_medium"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintStart_toStartOf="parent"

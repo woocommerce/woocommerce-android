@@ -249,6 +249,7 @@
     <string name="product_tax_class">Tax class</string>
     <string name="product_sku">SKU</string>
     <string name="product_stock_status">Stock status</string>
+    <string name="product_stock_quantity">Stock quantity</string>
     <string name="product_backorders">Backorders</string>
     <string name="product_shipping">Shipping</string>
     <string name="product_weight">Weight</string>

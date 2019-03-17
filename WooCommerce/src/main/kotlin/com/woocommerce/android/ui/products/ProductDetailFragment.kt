@@ -16,8 +16,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.widgets.WCCaptionedCardView
-import com.woocommerce.android.widgets.WCCaptionedTextView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -126,7 +124,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
          *  - Need currency for price
          *  - Need dimension and weight units
          *  - Zoom product image when tapped
-         *  - Toolbar caption
          *  - Show product detail from order product list
          *  - Product reviews
          *  - Linked products
@@ -149,6 +146,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         if (product.manageStock) {
             addProperty(DetailCard.PricingAndInventory, R.string.product_stock_status, product.stockStatus)
             addProperty(DetailCard.PricingAndInventory, R.string.product_backorders, product.backorders)
+            addProperty(DetailCard.PricingAndInventory, R.string.product_stock_quantity, product.stockQuantity.toString())
         }
 
         product.getAttributes().forEach { attribute ->
@@ -222,7 +220,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         card: DetailCard,
         @StringRes propertyCaptionId: Int,
         propertyValue: String
-    ): WCCaptionedTextView? {
+    ): WCProductPropertyView? {
         return addProperty(card, getString(propertyCaptionId), propertyValue)
     }
 
@@ -230,7 +228,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         card: DetailCard,
         propertyCaption: String,
         propertyValue: String
-    ): WCCaptionedTextView? {
+    ): WCProductPropertyView? {
         if (propertyValue.isBlank() || view == null) return null
 
         val cardViewCaption: String? = when (card) {
@@ -245,13 +243,13 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val context = activity as Context
 
         // find the cardView, add it if not found
-        var cardView = productDetail_container.findViewWithTag<WCCaptionedCardView>(card.getTag())
+        var cardView = productDetail_container.findViewWithTag<WCProductPropertyCardView>(card.getTag())
         if (cardView == null) {
             // add a divider above the card if this isn't the first card
             if (card != DetailCard.Primary) {
                 addCardDividerView(context)
             }
-            cardView = WCCaptionedCardView(context)
+            cardView = WCProductPropertyCardView(context)
             cardView.elevation = (resources.getDimensionPixelSize(R.dimen.card_elevation)).toFloat()
             cardView.tag = card.getTag()
             cardView.show(cardViewCaption)
@@ -263,9 +261,9 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
         // find the existing caption view in the card's linearLayout, add it if not found
         val captionTag = "{$propertyCaption}_tag"
-        var captionedView = container.findViewWithTag<WCCaptionedTextView>(captionTag)
+        var captionedView = container.findViewWithTag<WCProductPropertyView>(captionTag)
         if (captionedView == null) {
-            captionedView = WCCaptionedTextView(context)
+            captionedView = WCProductPropertyView(context)
             captionedView.tag = captionTag
             container.addView(captionedView)
         }
