@@ -120,6 +120,13 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                     .into(productDetail_image)
         }
 
+        addPrimaryCard(product)
+        addPricingAndInventoryCard(product)
+        addAttributesCard(product)
+        addDownloadCard(product)
+        addShippingCard(product)
+        addSalesAndReviewsCard(product)
+
         /**
          * TODO:
          *  - Need currency for price
@@ -130,7 +137,9 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
          *  - Linked products
          *  - Product variations
          */
+    }
 
+    private fun addPrimaryCard(product: WCProductModel) {
         addProperty(DetailCard.Primary, R.string.product_name, product.name)
         addProperty(DetailCard.Primary, R.string.product_description, product.description)
         addProperty(DetailCard.Primary, R.string.product_short_description, product.shortDescription)
@@ -138,13 +147,15 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addProperty(DetailCard.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames())
         addProperty(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames())
         addProperty(DetailCard.Primary, R.string.product_catalog_visibility, product.catalogVisibility)
+    }
 
+    private fun addPricingAndInventoryCard(product: WCProductModel) {
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        var hasPricingInfo = product.price.isNotEmpty()
+        val hasPricingInfo = product.price.isNotEmpty()
                 || product.salePrice.isNotEmpty()
                 || product.taxClass.isNotEmpty()
                 || product.taxStatus.isNotEmpty()
-        var pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
+        val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
         if (hasPricingInfo) {
             addProperty(pricingCard, R.string.product_price, product.price)
             addProperty(pricingCard, R.string.product_sale_price, product.salePrice)
@@ -157,11 +168,15 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             addProperty(pricingCard, R.string.product_backorders, product.backorders)
             addProperty(pricingCard, R.string.product_stock_quantity, product.stockQuantity.toString())
         }
+    }
 
+    private fun addAttributesCard(product: WCProductModel) {
         product.getAttributes().forEach { attribute ->
             addProperty(DetailCard.Attributes, attribute.name, attribute.getCommaSeparatedOptions())
         }
+    }
 
+    private fun addDownloadCard(product: WCProductModel) {
         if (product.downloadable) {
             addProperty(
                     DetailCard.Downloads,
@@ -179,13 +194,17 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                 addProperty(DetailCard.Downloads, R.string.product_download_expiry, expiryDays)
             }
         }
+    }
 
+    private fun addShippingCard(product: WCProductModel) {
         addProperty(DetailCard.Shipping, R.string.product_weight, product.weight)
         addProperty(DetailCard.Shipping, R.string.product_length, product.length)
         addProperty(DetailCard.Shipping, R.string.product_width, product.width)
         addProperty(DetailCard.Shipping, R.string.product_height, product.height)
         addProperty(DetailCard.Shipping, R.string.product_shipping_class, product.shippingClass)
+    }
 
+    private fun addSalesAndReviewsCard(product: WCProductModel) {
         addProperty(DetailCard.SalesAndReviews, R.string.product_total_sales, product.totalSales.toString())
         if (product.ratingCount > 0) {
             addProperty(
