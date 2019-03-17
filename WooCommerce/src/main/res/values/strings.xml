@@ -243,6 +243,7 @@
     <string name="product_tags">Tags</string>
     <string name="product_catalog_visibility">Catalog visibility</string>
     <string name="product_pricing_and_inventory">Pricing and inventory</string>
+    <string name="product_inventory">Inventory</string>
     <string name="product_price">Price</string>
     <string name="product_sale_price">Sale price</string>
     <string name="product_tax_status">Tax status</string>

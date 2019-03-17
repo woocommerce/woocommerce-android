@@ -41,6 +41,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
+        Inventory,
         Shipping,
         Attributes,
         Downloads,
@@ -138,15 +139,23 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addProperty(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames())
         addProperty(DetailCard.Primary, R.string.product_catalog_visibility, product.catalogVisibility)
 
-        addProperty(DetailCard.PricingAndInventory, R.string.product_price, product.price)
-        addProperty(DetailCard.PricingAndInventory, R.string.product_sale_price, product.salePrice)
-        addProperty(DetailCard.PricingAndInventory, R.string.product_tax_status, product.taxStatus)
-        addProperty(DetailCard.PricingAndInventory, R.string.product_tax_class, product.taxClass)
-        addProperty(DetailCard.PricingAndInventory, R.string.product_sku, product.sku)
+        // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
+        var hasPricingInfo = product.price.isNotEmpty()
+                || product.salePrice.isNotEmpty()
+                || product.taxClass.isNotEmpty()
+                || product.taxStatus.isNotEmpty()
+        var pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
+        if (hasPricingInfo) {
+            addProperty(pricingCard, R.string.product_price, product.price)
+            addProperty(pricingCard, R.string.product_sale_price, product.salePrice)
+            addProperty(pricingCard, R.string.product_tax_status, product.taxStatus)
+            addProperty(pricingCard, R.string.product_tax_class, product.taxClass)
+        }
+        addProperty(pricingCard, R.string.product_sku, product.sku)
         if (product.manageStock) {
-            addProperty(DetailCard.PricingAndInventory, R.string.product_stock_status, product.stockStatus)
-            addProperty(DetailCard.PricingAndInventory, R.string.product_backorders, product.backorders)
-            addProperty(DetailCard.PricingAndInventory, R.string.product_stock_quantity, product.stockQuantity.toString())
+            addProperty(pricingCard, R.string.product_stock_status, product.stockStatus)
+            addProperty(pricingCard, R.string.product_backorders, product.backorders)
+            addProperty(pricingCard, R.string.product_stock_quantity, product.stockQuantity.toString())
         }
 
         product.getAttributes().forEach { attribute ->
@@ -234,6 +243,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val cardViewCaption: String? = when (card) {
             DetailCard.Primary -> null
             DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
+            DetailCard.Inventory -> getString(R.string.product_inventory)
             DetailCard.Shipping -> getString(R.string.product_shipping)
             DetailCard.Attributes -> getString(R.string.product_attributes)
             DetailCard.Downloads -> getString(R.string.product_downloads)
