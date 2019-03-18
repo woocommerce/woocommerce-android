@@ -8,6 +8,7 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.woocommerce.android.tools.ProductImageMap
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -31,6 +32,7 @@ class MainPresenterTest {
     private val siteStore: SiteStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val notificationStore: NotificationStore = mock()
+    private val productImageMap: ProductImageMap = mock()
 
     private lateinit var mainPresenter: MainPresenter
 
@@ -38,7 +40,16 @@ class MainPresenterTest {
 
     @Before
     fun setup() {
-        mainPresenter = spy(MainPresenter(dispatcher, accountStore, siteStore, wooCommerceStore, notificationStore))
+        mainPresenter = spy(
+                MainPresenter(
+                        dispatcher,
+                        accountStore,
+                        siteStore,
+                        wooCommerceStore,
+                        notificationStore,
+                        productImageMap
+                )
+        )
         mainPresenter.takeView(mainContractView)
 
         actionCaptor = argumentCaptor()

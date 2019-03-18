@@ -11,21 +11,19 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_014"
+msgid ""
+"1.4:\n"
+"We now display product images on the review and order screens.\n"
+"We fixed bugs related to moderating reviews, stats, top performers, and rare crashes.\n"
+msgstr ""
+
 msgctxt "release_note_013"
 msgid ""
 "1.3:\n"
 "Better order status tools: manually change the status of an order – click the pencil icon next to the status – or add custom statuses. You can use custom statuses to filter, too.\n"
 "Better multi-store tools: head to Settings and tap a store name to switch stores.\n"
 "Rare bug crashes are even more rare – they’re gone – and lots of small tweaks make the app smoother overall.\n"
-msgstr ""
-
-msgctxt "release_note_012"
-msgid ""
-"1.2:\n"
-"Hooray for consistency: prices will now display using your store’s currency display settings.\n"
-"Sort and manage your orders in a way that makes sense for you: use custom order status labels and use them to filter your orders.\n"
-"Squashed some bugs that were bedeviling order notes, support, and scheduled orders.\n"
-"We’ve fixed a few different crashes that only one or two folks were experiencing. No fix too small!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

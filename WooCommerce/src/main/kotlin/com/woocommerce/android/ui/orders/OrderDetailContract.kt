@@ -41,5 +41,6 @@ interface OrderDetailContract {
         fun showLoadOrderProgress(show: Boolean)
         fun showLoadOrderError()
         fun refreshOrderStatus()
+        fun refreshProductImages()
     }
 }

@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.getConvertedTimestamp
 import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -31,7 +32,9 @@ import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
+import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
@@ -57,12 +60,17 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
     @Inject lateinit var presenter: ReviewDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
+    @Inject lateinit var productImageMap: ProductImageMap
 
     private val skeletonView = SkeletonView()
     private var remoteNoteId: Long = 0L
     private var remoteCommentId: Long = 0L
     private var commentStatusOverride: CommentStatus? = null
     private var productUrl: String? = null
+    private var remoteProductId: Long = 0L
+    private var runOnStartFunc: (() -> Unit)? = null
+    private var productIconSize: Int = 0
+
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
         AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
         when (isChecked) {
@@ -82,6 +90,8 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        val dimen = activity!!.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+        productIconSize = DisplayUtils.dpToPx(activity, dimen)
         presenter.takeView(this)
     }
 
@@ -97,6 +107,15 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         }
 
         presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        runOnStartFunc?.let {
+            it.invoke()
+            runOnStartFunc = null
+        }
     }
 
     override fun onDestroyView() {
@@ -150,7 +169,25 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
         configureModerationButtons(note)
         updateStatus(CommentStatus.fromString(comment.status))
 
+        note.getProductInfo()?.let { info ->
+            remoteProductId = info.remoteProductId
+            refreshProductImage()
+        }
+
         activity?.let { presenter.markNotificationRead(it, note) }
+    }
+
+    override fun refreshProductImage() {
+        // Note that if productImageMap doesn't already have the image for this product then it will request
+        // it from the backend. When the request completes it will be captured by the presenter, which will
+        // call this method to show the image for the just-downloaded product model
+        productImageMap.get(remoteProductId)?.let { productImage ->
+            val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
+            GlideApp.with(activity as Context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(review_product_icon)
+        }
     }
 
     private fun configureModerationButtons(note: NotificationModel) {
@@ -221,6 +258,15 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
                 uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
             }
+        }
+    }
+
+    override fun showLoadReviewError() {
+        uiMessageResolver.showSnack(R.string.wc_load_review_error)
+        if (isStateSaved) {
+            runOnStartFunc = { activity?.onBackPressed() }
+        } else {
+            activity?.onBackPressed()
         }
     }
 }

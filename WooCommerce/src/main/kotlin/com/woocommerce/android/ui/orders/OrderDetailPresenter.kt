@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -41,11 +42,14 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPay
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
+import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus,
@@ -82,8 +86,8 @@ class OrderDetailPresenter @Inject constructor(
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
-            orderModel?.let {
-                orderView?.showOrderDetail(it)
+            orderModel?.let { order ->
+                orderView?.showOrderDetail(order)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId)
@@ -320,6 +324,15 @@ class OrderDetailPresenter @Inject constructor(
         }
 
         orderView?.refreshOrderStatus()
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductChanged(event: OnProductChanged) {
+        // product was just fetched, show its image
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
+            orderView?.refreshProductImages()
+        }
     }
 
     private fun onNotificationMarkedRead(event: OnNotificationChanged) {

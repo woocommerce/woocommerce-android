@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.support.multidex.MultiDexApplication
+import com.android.volley.VolleyLog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -97,6 +98,12 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     override fun onCreate() {
         super.onCreate()
+
+        // Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
+        // https://github.com/woocommerce/woocommerce-android/issues/817
+        if (!BuildConfig.DEBUG) {
+            VolleyLog.DEBUG = false
+        }
 
         val wellSqlConfig = WellSqlConfig(applicationContext, WellSqlConfig.ADDON_WOOCOMMERCE)
         WellSql.init(wellSqlConfig)

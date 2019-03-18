@@ -23,5 +23,7 @@ interface ReviewDetailContract {
         fun showSkeleton(show: Boolean)
         fun setNotification(note: NotificationModel, comment: CommentModel)
         fun updateStatus(status: CommentStatus)
+        fun showLoadReviewError()
+        fun refreshProductImage()
     }
 }

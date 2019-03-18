@@ -5,7 +5,6 @@ copy_gradle_properties: &copy_gradle_properties
 
 orbs:
   android: wordpress-mobile/android@0.0.20
-  danger: wordpress-mobile/danger@0.0.20
 
 version: 2.1
 jobs:
@@ -20,10 +19,19 @@ jobs:
       - <<: *copy_gradle_properties
       - run:
           name: Checkstyle & klint
-          command: ./gradlew --stacktrace checkstyle ktlint
+          command: ./gradlew --stacktrace checkstyle ciktlint
       - run:
           name: Lint
           command: ./gradlew --stacktrace lintVanillaRelease
+      - run:
+          name: Violations
+          when: on_fail
+          command: |
+            if [ -n "$GITHUB_API_TOKEN" ]; then
+              ./gradlew violationCommentsToGitHub -DGITHUB_PULLREQUESTID=${CIRCLE_PULL_REQUEST##*/} -DGITHUB_OAUTH2TOKEN=$GITHUB_API_TOKEN
+            else
+              echo "Not posting lint errors to Github because \$GITHUB_API_TOKEN is not found"
+            fi 
       - android/save-gradle-cache:
           cache-prefix: lint-cache-v1
       - store_artifacts:
@@ -50,5 +58,3 @@ workflows:
     jobs:
       - Lint
       - Test
-      - danger/danger-ruby:
-          name: Danger

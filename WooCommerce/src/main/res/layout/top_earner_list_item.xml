@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/image_product"
-            android:layout_width="@dimen/top_earner_product_image_sz"
-            android:layout_height="@dimen/top_earner_product_image_sz"
+            android:layout_width="@dimen/product_icon_sz"
+            android:layout_height="@dimen/product_icon_sz"
             android:contentDescription="@string/dashboard_top_earners_content_description"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_stats_grey_min_24dp"/>

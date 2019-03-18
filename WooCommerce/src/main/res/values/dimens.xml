@@ -120,7 +120,6 @@
         Stats and Top earners
     -->
     <dimen name="top_earner_min_height">224dp</dimen>
-    <dimen name="top_earner_product_image_sz">40dp</dimen>
 
     <!--
          Notifications
@@ -149,4 +148,9 @@
     <dimen name="skeleton_bar_chart_bar_spacing">@dimen/margin_medium</dimen>
     <dimen name="skeleton_order_note_item_height">96dp</dimen>
     <dimen name="skeleton_default_text_height">20sp</dimen>
+
+    <!--
+        Other
+    -->
+    <dimen name="product_icon_sz">40dp</dimen>
 </resources>

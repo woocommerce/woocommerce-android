@@ -23,7 +23,6 @@ import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
@@ -37,11 +36,11 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
-import com.woocommerce.android.widgets.WCPromoTooltip
-import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoDialog.PromoType
+import com.woocommerce.android.widgets.WCPromoTooltip
+import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -80,7 +79,6 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var supportHelper: SupportHelper
 
     private var isBottomNavShowing = true
     private lateinit var bottomNavView: MainNavigationView

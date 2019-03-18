@@ -37,6 +37,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter.Companion.INVALID_POSITION
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_notifs_list.*
 import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
@@ -366,7 +367,7 @@ class NotifsListFragment : TopLevelFragment(),
             val callback = object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
-
+                    resetPendingModerationVariables()
                     if (!changeCommentStatusCanceled) {
                         comment.status = newStatus.toString()
                         presenter.pushUpdatedComment(comment)
@@ -429,8 +430,16 @@ class NotifsListFragment : TopLevelFragment(),
     private fun revertPendingModeratedNotifState() {
         AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
 
-        val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
-        notifsList.smoothScrollToPosition(itemPosition)
+        pendingModerationNewStatus?.let {
+            val status = CommentStatus.fromString(it)
+            if (status == SPAM || status == TRASH) {
+                val itemPosition = notifsAdapter.revertHiddenNotificationAndReturnPos()
+                if (itemPosition != INVALID_POSITION && !notifsAdapter.isEmpty()) {
+                    notifsList.smoothScrollToPosition(itemPosition)
+                }
+            }
+        }
+
         resetPendingModerationVariables()
     }
 

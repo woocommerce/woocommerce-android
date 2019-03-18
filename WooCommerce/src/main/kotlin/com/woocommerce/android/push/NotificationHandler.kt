@@ -32,6 +32,7 @@ import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
@@ -45,6 +46,7 @@ import javax.inject.Singleton
 @Singleton
 class NotificationHandler @Inject constructor(
     private val siteStore: SiteStore,
+    private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
     private val dispatcher: Dispatcher
 ) {
     companion object {

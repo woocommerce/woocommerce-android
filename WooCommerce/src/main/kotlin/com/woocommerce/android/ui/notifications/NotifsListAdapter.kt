@@ -35,6 +35,7 @@ import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
 import java.util.Date
+import java.util.HashSet
 import javax.inject.Inject
 
 class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
@@ -55,8 +56,11 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     private val notifsList = mutableListOf<NotificationModel>()
     private var listListener: ReviewListListener? = null
 
-    // Copy of a notification manually removed from the list so the action may be undone.
+    // Copy of current notification manually removed from the list so the action may be undone.
     private var pendingRemovalNotification: Triple<NotificationModel, NotifsListSection, Int>? = null
+
+    // List of all remote note IDs the user has removed this session
+    private val removedRemoteIds = HashSet<Long>()
 
     // region Public methods
     fun setListListener(listener: ReviewListListener) {
@@ -64,11 +68,8 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     }
 
     fun setNotifications(notifs: List<NotificationModel>) {
-        // If moderation pending review is present, make sure it's removed
-        // before processing the list.
-        val newList = pendingRemovalNotification?.let { (notif, _, _) ->
-            notifs.toMutableList().also { it.remove(notif) }
-        } ?: notifs
+        // make sure to exclude any notifs that we know have been removed
+        val newList = notifs.filter { !removedRemoteIds.contains(it.remoteNoteId) }
 
         // clear all the current data from the adapter
         removeAllSections()
@@ -152,27 +153,30 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      * by reverting the action, or by loading a fresh list of notifications.
      */
     fun hideNotificationWithId(remoteNoteId: Long) {
-        val pos = notifsList.indexOfFirst { it.remoteNoteId == remoteNoteId }
-        if (pos == -1) {
+        val posInList = notifsList.indexOfFirst { it.remoteNoteId == remoteNoteId }
+        if (posInList == -1) {
             WooLog.w(T.NOTIFICATIONS, "Unable to hide notification, position is -1")
             pendingRemovalNotification = null
+            removedRemoteIds.remove(remoteNoteId)
             return
         }
 
-        val notif = notifsList[pos]
-        val section = getSectionForListItemPosition(pos) as NotifsListSection
-        val posInSection = getPositionInSectionByListPos(pos)
-        pendingRemovalNotification = Triple(notif, section, posInSection)
+        getSectionForListItemPosition(posInList)?.let {
+            val section = it as NotifsListSection
+            val posInSection = getPositionInSectionByListPos(posInList)
+            pendingRemovalNotification = Triple(notifsList[posInList], section, posInSection)
+            removedRemoteIds.add(remoteNoteId)
 
-        // remove from the list
-        section.list.removeAt(posInSection)
-        notifyItemRemovedFromSection(section, posInSection)
+            // remove from the section list
+            section.list.removeAt(posInSection)
+            notifyItemRemovedFromSection(section, posInSection)
 
-        if (section.list.size == 0) {
-            val sectionPos = getSectionPosition(section)
-            section.isVisible = false
-            if (sectionPos != SectionedRecyclerViewAdapter.INVALID_POSITION) {
-                notifySectionChangedToInvisible(section, sectionPos)
+            if (section.list.size == 0) {
+                val sectionPos = getSectionPosition(section)
+                section.isVisible = false
+                if (sectionPos != SectionedRecyclerViewAdapter.INVALID_POSITION) {
+                    notifySectionChangedToInvisible(section, sectionPos)
+                }
             }
         }
     }
@@ -233,22 +237,25 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      */
     fun revertHiddenNotificationAndReturnPos(): Int {
         return pendingRemovalNotification?.let { (notif, section, pos) ->
-            with(section) {
-                if (pos < list.size) {
-                    list.add(pos, notif)
-                } else {
-                    list.add(notif)
-                }
-            }
-
             if (!section.isVisible) {
                 section.isVisible = true
                 notifySectionChangedToVisible(section)
             }
 
+            with(section.list) {
+                if (pos < size) {
+                    add(pos, notif)
+                } else {
+                    add(notif)
+                }
+            }
+
+            removedRemoteIds.remove(notif.remoteNoteId)
+            pendingRemovalNotification = null
+
             notifyItemInsertedInSection(section, pos)
             getPositionInAdapter(section, pos)
-        }.also { pendingRemovalNotification = null } ?: 0
+        } ?: INVALID_POSITION
     }
 
     /**
@@ -269,6 +276,8 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
 
         setNotifications(newList)
     }
+
+    fun isEmpty() = notifsList.isEmpty()
     // endregion
 
     // region Private methods
@@ -301,9 +310,9 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      * Returns the Section object for a position in the backing list.
      *
      * @param position position in the original list
-     * @return Section object for that position
+     * @return Section object for that position or null if not found
      */
-    private fun getSectionForListItemPosition(position: Int): Section {
+    private fun getSectionForListItemPosition(position: Int): Section? {
         var currentPos = 0
 
         sectionsMap.entries.forEach {
@@ -319,7 +328,8 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         // position not found, fail fast
-        throw IndexOutOfBoundsException("Unable to find matching sectionfor position $position")
+        WooLog.w(T.NOTIFS, "Unable to find matching section for position $position")
+        return null
     }
     // endregion
 
@@ -341,9 +351,11 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
             when (notif.getWooType()) {
                 NEW_ORDER -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_cart)
+                    itemHolder.desc.maxLines = Int.MAX_VALUE
                 }
                 PRODUCT_REVIEW -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_comment)
+                    itemHolder.desc.maxLines = 2
 
                     notif.getRating()?.let {
                         itemHolder.rating.rating = it
@@ -403,31 +415,32 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-            for (i in 0 until parent.childCount) {
+            for (i in 0 until parent.childCount - 1) {
                 val child = parent.getChildAt(i)
-                val position = parent.getChildAdapterPosition(child)
-                val itemType = decorListener?.getItemTypeAtPosition(position) ?: ItemType.READ_NOTIF
+                val position = child?.let { parent.getChildAdapterPosition(it) } ?: INVALID_POSITION
+                if (position != INVALID_POSITION) {
+                    val itemType = decorListener?.getItemTypeAtPosition(position) ?: ItemType.READ_NOTIF
+                    /*
+                     * note that we have to draw the indicator for all items rather than just unread notifs
+                     * in order to paint over recycled cells that have a previously-drawn indicator
+                     */
+                    val colorId = when (itemType) {
+                        ItemType.HEADER -> R.color.list_header_bg
+                        ItemType.UNREAD_NOTIF -> R.color.wc_green
+                        else -> R.color.list_item_bg
+                    }
 
-                /*
-                 * note that we have to draw the indicator for all items rather than just unread notifs
-                 * in order to paint over recycled cells that have a previously-drawn indicator
-                 */
-                val colorId = when (itemType) {
-                    ItemType.HEADER -> R.color.list_header_bg
-                    ItemType.UNREAD_NOTIF -> R.color.wc_green
-                    else -> R.color.list_item_bg
+                    val paint = Paint()
+                    paint.color = ContextCompat.getColor(parent.context, colorId)
+
+                    parent.getDecoratedBoundsWithMargins(child, bounds)
+                    val top = bounds.top.toFloat()
+                    val bottom = (bounds.bottom + Math.round(child.translationY)).toFloat()
+                    val left = bounds.left.toFloat()
+                    val right = left + dividerWidth
+
+                    canvas.drawRect(left, top, right, bottom, paint)
                 }
-
-                val paint = Paint()
-                paint.color = ContextCompat.getColor(parent.context, colorId)
-
-                parent.getDecoratedBoundsWithMargins(child, bounds)
-                val top = bounds.top.toFloat()
-                val bottom = (bounds.bottom + Math.round(child.translationY)).toFloat()
-                val left = bounds.left.toFloat()
-                val right = left + dividerWidth
-
-                canvas.drawRect(left, top, right, bottom, paint)
             }
         }
     }

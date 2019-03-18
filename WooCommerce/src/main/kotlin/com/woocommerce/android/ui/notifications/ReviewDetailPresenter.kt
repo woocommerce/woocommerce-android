@@ -1,13 +1,11 @@
 package com.woocommerce.android.ui.notifications
 
 import android.content.Context
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.buildComment
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.notifications.ReviewDetailContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -16,6 +14,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.CommentAction.FETCH_COMMENT
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.CommentActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.CommentModel
@@ -28,6 +27,7 @@ import org.wordpress.android.fluxc.store.CommentStore.RemoteCommentPayload
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
 class ReviewDetailPresenter @Inject constructor(
@@ -35,8 +35,7 @@ class ReviewDetailPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val commentStore: CommentStore,
     private val notificationStore: NotificationStore,
-    private val networkStatus: NetworkStatus,
-    private val uiMessageResolver: UIMessageResolver
+    private val networkStatus: NetworkStatus
 ) : ReviewDetailContract.Presenter {
     companion object {
         private val TAG: String = ReviewDetailPresenter::class.java.simpleName
@@ -90,8 +89,8 @@ class ReviewDetailPresenter @Inject constructor(
     override fun fetchComment() {
         if (networkStatus.isConnected()) {
             // Request comment from the api
-            notification?.getCommentId()?.let {
-                val payload = RemoteCommentPayload(selectedSite.get(), it)
+            notification?.getCommentId()?.let { id ->
+                val payload = RemoteCommentPayload(selectedSite.get(), id)
                 dispatcher.dispatch(CommentActionBuilder.newFetchCommentAction(payload))
             }
         }
@@ -127,6 +126,15 @@ class ReviewDetailPresenter @Inject constructor(
         }
     }
 
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductChanged(event: OnProductChanged) {
+        // product was just fetched, show its image
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
+            view?.refreshProductImage()
+        }
+    }
+
     private fun onNotificationMarkedRead(event: OnNotificationChanged) {
         notification?.let {
             // We only care about logging an error
@@ -144,7 +152,7 @@ class ReviewDetailPresenter @Inject constructor(
                     "${notification?.noteId} and comment_id: ${comment?.id}, ${event.error.message}")
 
             // TODO add tracks for fetching comment error
-            uiMessageResolver.showSnack(R.string.wc_load_review_error)
+            view?.showLoadReviewError()
         } else {
             // Comment has been fetched from the api successfully.
             // TODO add tracks for COMMENTS

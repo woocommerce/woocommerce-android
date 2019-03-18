@@ -61,11 +61,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     private var progressDialog: ProgressDialog? = null
     private var calledFromLogin: Boolean = false
+    private var currentSite: SiteModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_site_picker)
+
+        currentSite = selectedSite.getIfExists()
 
         calledFromLogin = savedInstanceState?.getBoolean(KEY_CALLED_FROM_LOGIN)
                 ?: intent.getBooleanExtra(KEY_CALLED_FROM_LOGIN, false)
@@ -89,8 +92,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             button_help.visibility = View.GONE
             site_list_label.visibility = View.GONE
             site_list_container.cardElevation = 0f
-            (site_list_container.layoutParams as MarginLayoutParams).topMargin =
-                    resources.getDimensionPixelSize(R.dimen.margin_large)
+            (site_list_container.layoutParams as MarginLayoutParams).topMargin = 0
+            (site_list_container.layoutParams as MarginLayoutParams).bottomMargin = 0
+            sites_recycler.setPadding(
+                    resources.getDimensionPixelSize(R.dimen.margin_extra_large),
+                    resources.getDimensionPixelSize(R.dimen.margin_large),
+                    resources.getDimensionPixelSize(R.dimen.margin_extra_large),
+                    resources.getDimensionPixelSize(R.dimen.margin_large))
         }
 
         presenter.takeView(this)
@@ -209,8 +217,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun siteSelected(site: SiteModel) {
         // finish if user simply selected the current site
-        selectedSite.getIfExists()?.let { currentSite ->
-            if (site.siteId == currentSite.siteId) {
+        currentSite?.let {
+            if (site.siteId == it.siteId) {
                 setResult(Activity.RESULT_CANCELED)
                 finish()
                 return
@@ -252,8 +260,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     override fun siteVerificationFailed(site: SiteModel) {
         progressDialog?.dismiss()
 
-        siteAdapter.selectedSiteId = 0
-        button_continue.isEnabled = false
+        // re-select the previous site, if there was one
+        siteAdapter.selectedSiteId = currentSite?.siteId ?: 0L
+        button_continue.isEnabled = siteAdapter.selectedSiteId != 0L
 
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
