@@ -201,7 +201,9 @@ task copyGoogleServicesExampleFile(type: Copy) {
 
 // Add generateCrashlyticsConfig to all generateBuildConfig tasks (all variants)
 android.applicationVariants.all { variant ->
-    variant.generateBuildConfig.dependsOn(generateCrashlyticsConfig)
+    variant.generateBuildConfigProvider.configure {
+        dependsOn(generateCrashlyticsConfig)
+    }
 }
 
 // Add properties named "wc.xxx" to our BuildConfig
