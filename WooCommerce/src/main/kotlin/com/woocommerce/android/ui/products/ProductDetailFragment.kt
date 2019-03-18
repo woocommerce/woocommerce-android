@@ -11,11 +11,13 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.WooAnimUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -45,9 +47,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         Shipping,
         Attributes,
         Downloads,
-        SalesAndReviews;
-
-        fun getTag() = "${this.name}_tag"
+        SalesAndReviews
     }
 
     @Inject lateinit var presenter: ProductDetailContract.Presenter
@@ -73,7 +73,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
         val product = presenter.getProduct(remoteProductId)
         if (product == null) {
-            showProgress()
             presenter.fetchProduct(remoteProductId)
         } else {
             showProduct(product)
@@ -102,13 +101,36 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         super.onDestroyView()
     }
 
+    override fun showFetchProductError() {
+        uiMessageResolver.showSnack(R.string.product_detail_fetch_product_error)
+
+        if (isStateSaved) {
+            runOnStartFunc = { activity?.onBackPressed() }
+        } else {
+            activity?.onBackPressed()
+        }
+    }
+
+    override fun hideProgress() {
+        if (loadingProgress.visibility != View.GONE) {
+            loadingProgress.visibility = View.GONE
+            WooAnimUtils.fadeIn(productDetail_container)
+        }
+    }
+
+    override fun showProgress() {
+        if (loadingProgress.visibility != View.VISIBLE) {
+            loadingProgress.visibility = View.VISIBLE
+            productDetail_container.visibility = View.GONE
+        }
+    }
+
     override fun showProduct(product: WCProductModel) {
         if (!isAdded) return
 
         if (product.name.isNotEmpty()) {
             activity?.title = product.name
         }
-        loadingProgress.visibility = View.GONE
 
         product.getFirstImageUrl()?.let {
             val imageWidth = DisplayUtils.getDisplayPixelWidth(activity)
@@ -117,6 +139,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             GlideApp.with(activity as Context)
                     .load(imageUrl)
                     .error(R.drawable.ic_product)
+                    .placeholder(R.drawable.picture_frame)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(productDetail_image)
         }
 
@@ -136,6 +160,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
          *  - Product reviews
          *  - Linked products
          *  - Product variations
+         *  - Skeletons
          */
     }
 
@@ -151,10 +176,10 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
     private fun addPricingAndInventoryCard(product: WCProductModel) {
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.price.isNotEmpty()
-                || product.salePrice.isNotEmpty()
-                || product.taxClass.isNotEmpty()
-                || product.taxStatus.isNotEmpty()
+        val hasPricingInfo = product.price.isNotEmpty() ||
+                product.salePrice.isNotEmpty() ||
+                product.taxClass.isNotEmpty() ||
+                product.taxStatus.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
         if (hasPricingInfo) {
             addProperty(pricingCard, R.string.product_price, product.price)
@@ -216,25 +241,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addProperty(DetailCard.SalesAndReviews, R.string.product_total_ratings, product.ratingCount.toString())
     }
 
-    override fun showFetchProductError() {
-        loadingProgress.visibility = View.GONE
-        uiMessageResolver.showSnack(R.string.product_detail_fetch_product_error)
-
-        if (isStateSaved) {
-            runOnStartFunc = { activity?.onBackPressed() }
-        } else {
-            activity?.onBackPressed()
-        }
-    }
-
-    override fun hideProgress() {
-        loadingProgress.visibility = View.GONE
-    }
-
-    override fun showProgress() {
-        loadingProgress.visibility = View.VISIBLE
-    }
-
     /**
      * Adds a WCCaptionedCardView to the current view if it doesn't already exist, then adds a WCCaptionedTextView
      * to the card if it doesn't already exist - this enables us to dynamically build the product detail and
@@ -272,7 +278,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val context = activity as Context
 
         // find the cardView, add it if not found
-        var cardView = productDetail_container.findViewWithTag<WCProductPropertyCardView>(card.getTag())
+        val cardTag = "${card.name}_tag"
+        var cardView = productDetail_container.findViewWithTag<WCProductPropertyCardView>(cardTag)
         if (cardView == null) {
             // add a divider above the card if this isn't the first card
             if (card != DetailCard.Primary) {
@@ -280,7 +287,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             }
             cardView = WCProductPropertyCardView(context)
             cardView.elevation = (resources.getDimensionPixelSize(R.dimen.card_elevation)).toFloat()
-            cardView.tag = card.getTag()
+            cardView.tag = cardTag
             cardView.show(cardViewCaption)
             productDetail_container.addView(cardView)
         }

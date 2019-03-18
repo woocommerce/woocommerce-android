@@ -44,6 +44,9 @@ class ProductDetailPresenter @Inject constructor(
     override fun fetchProduct(remoteProductId: Long) {
         if (networkStatus.isConnected()) {
             this.remoteProductId = remoteProductId
+            if (getProduct(remoteProductId) == null) {
+                view?.showProgress()
+            }
             val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
             dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
         } else {
@@ -63,6 +66,7 @@ class ProductDetailPresenter @Inject constructor(
                     view?.showProduct(it)
                 } ?: view?.showFetchProductError()
             }
+            view?.hideProgress()
         }
     }
 }
