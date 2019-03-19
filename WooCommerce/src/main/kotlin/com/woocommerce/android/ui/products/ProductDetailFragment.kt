@@ -149,18 +149,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addDownloadCard(product)
         addShippingCard(product)
         addSalesAndReviewsCard(product)
-
-        /**
-         * TODO:
-         *  - Need currency for price
-         *  - Need dimension and weight units
-         *  - Zoom product image when tapped
-         *  - Show product detail from order product list
-         *  - Product reviews
-         *  - Linked products
-         *  - Product variations
-         *  - Skeletons
-         */
     }
 
     private fun addPrimaryCard(product: WCProductModel) {
