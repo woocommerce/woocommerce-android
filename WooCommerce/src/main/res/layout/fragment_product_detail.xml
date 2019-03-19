@@ -20,7 +20,7 @@
             <ImageView
                 android:id="@+id/productDetail_image"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="@dimen/product_detail_image_height"
                 android:background="@drawable/picture_frame"
                 android:contentDescription="@string/orderdetail_product_image_contentdesc"
                 android:scaleType="centerCrop"/>
