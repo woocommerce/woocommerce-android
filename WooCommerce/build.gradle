@@ -4,7 +4,7 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.25.4'
+        classpath 'io.fabric.tools:gradle:1.28.0'
         classpath 'com.google.gms:google-services:3.2.0'
     }
 }
@@ -201,7 +201,9 @@ task copyGoogleServicesExampleFile(type: Copy) {
 
 // Add generateCrashlyticsConfig to all generateBuildConfig tasks (all variants)
 android.applicationVariants.all { variant ->
-    variant.generateBuildConfig.dependsOn(generateCrashlyticsConfig)
+    variant.generateBuildConfigProvider.configure {
+        dependsOn(generateCrashlyticsConfig)
+    }
 }
 
 // Add properties named "wc.xxx" to our BuildConfig
