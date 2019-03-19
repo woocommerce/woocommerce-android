@@ -24,6 +24,7 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
@@ -32,6 +33,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -409,6 +411,13 @@ class MainActivity : AppCompatActivity(),
                 else -> { /* do nothing */ }
             }
         }
+    }
+
+    override fun showProductDetail(remoteProductId: Long) {
+        showBottomNav()
+        // TODO analytics
+        val fragment = bottomNavView.getFragment(bottomNavView.currentPosition)
+        fragment.loadChildFragment(ProductDetailFragment.newInstance(remoteProductId), ProductDetailFragment.TAG)
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {

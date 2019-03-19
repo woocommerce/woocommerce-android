@@ -58,6 +58,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 order.getLineItemList(),
                 productImageMap,
                 formatCurrencyForDisplay,
+                listener,
                 isExpanded
         )
 
@@ -133,6 +134,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         private val orderItems: List<WCOrderModel.LineItem>,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (String?) -> String,
+        private val listener: OrderActionListener? = null,
         private var isExpanded: Boolean
     ) : RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
@@ -149,7 +151,11 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 productImageMap.get(it)
             }
             holder.view.initView(orderItems[position], productImage, isExpanded, formatCurrencyForDisplay)
-            // TODO: open product detail when clicked
+            holder.view.setOnClickListener {
+                orderItems[position].productId?.let {
+                    listener?.openOrderProductDetail(it)
+                }
+            }
         }
 
         override fun getItemCount() = orderItems.size
