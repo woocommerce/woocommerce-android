@@ -56,7 +56,6 @@ class ProductDetailPresenter @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
-        // product was just fetched, show its image
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
             if (event.isError) {
                 view?.showFetchProductError()
