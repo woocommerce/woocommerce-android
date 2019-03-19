@@ -17,12 +17,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKE
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
@@ -185,6 +186,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                     productImageMap,
                     false,
                     currencyFormatter.buildFormatter(order.currency),
+                    this,
                     this
             )
 
@@ -230,6 +232,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
                 router.openOrderProductList(order)
+            }
+        }
+    }
+
+    override fun openOrderProductDetail(remoteProductId: Long) {
+        activity?.let { router ->
+            if (router is TopLevelFragmentRouter) {
+                router.showProductDetail(remoteProductId)
             }
         }
     }
