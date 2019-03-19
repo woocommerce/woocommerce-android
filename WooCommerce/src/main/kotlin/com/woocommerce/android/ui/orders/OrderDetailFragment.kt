@@ -186,6 +186,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                     productImageMap,
                     false,
                     currencyFormatter.buildFormatter(order.currency),
+                    this,
                     this
             )
 

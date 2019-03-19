@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
@@ -83,7 +84,14 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun showOrderDetail(order: WCOrderModel) {
         // Populate the Order Product List Card
-        orderFulfill_products.initView(order, productImageMap, true, currencyFormatter.buildFormatter(order.currency))
+        orderFulfill_products.initView(
+                order,
+                productImageMap,
+                true,
+                currencyFormatter.buildFormatter(order.currency),
+                this,
+                this
+        )
 
         // Check for customer provided note, show if available
         if (order.customerNote.isEmpty()) {
@@ -119,6 +127,22 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                 presenter.orderModel?.let {
                     router.openOrderDetail(it, true)
                 }
+            }
+        }
+    }
+
+    override fun openOrderFulfillment(order: WCOrderModel) {
+        TODO("not implemented")
+    }
+
+    override fun openOrderProductList(order: WCOrderModel) {
+        TODO("not implemented")
+    }
+
+    override fun openOrderProductDetail(remoteProductId: Long) {
+        activity?.let { router ->
+            if (router is TopLevelFragmentRouter) {
+                router.showProductDetail(remoteProductId)
             }
         }
     }

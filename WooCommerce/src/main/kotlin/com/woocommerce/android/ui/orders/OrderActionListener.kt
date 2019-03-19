@@ -8,5 +8,4 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 interface OrderActionListener {
     fun openOrderFulfillment(order: WCOrderModel)
     fun openOrderProductList(order: WCOrderModel)
-    fun openOrderProductDetail(remoteProductId: Long)
 }

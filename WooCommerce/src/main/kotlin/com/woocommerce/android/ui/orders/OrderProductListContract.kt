@@ -10,7 +10,7 @@ interface OrderProductListContract {
         fun loadOrderDetail(orderIdentifier: OrderIdentifier)
     }
 
-    interface View : BaseView<Presenter> {
+    interface View : BaseView<Presenter>, OrderProductActionListener {
         fun showOrderProducts(order: WCOrderModel)
     }
 }
