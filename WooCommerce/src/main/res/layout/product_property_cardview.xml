@@ -19,9 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            tools:text="textLabel"
+            tools:text="cardCaptionText"
             tools:visibility="visible"/>
-
 
     </LinearLayout>
 </android.support.v7.widget.CardView>

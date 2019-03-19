@@ -11,7 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 
 /**
- * Used by product detail to show product name & value, with an optional ratingBar,
+ * Used by product detail to show product property name & value, with an optional ratingBar
  */
 class WCProductPropertyView @JvmOverloads constructor(
     context: Context,
