@@ -44,7 +44,7 @@ class ProductDetailPresenter @Inject constructor(
         if (networkStatus.isConnected()) {
             this.remoteProductId = remoteProductId
             if (getProduct(remoteProductId) == null) {
-                view?.showProgress()
+                view?.showSkeleton(true)
             }
             val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
             dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
@@ -65,7 +65,7 @@ class ProductDetailPresenter @Inject constructor(
                     view?.showProduct(it)
                 } ?: view?.showFetchProductError()
             }
-            view?.hideProgress()
+            view?.showSkeleton(false)
         }
     }
 }

@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -54,6 +55,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var runOnStartFunc: (() -> Unit)? = null
+    private val skeletonView = SkeletonView()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -110,17 +112,11 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
     }
 
-    override fun hideProgress() {
-        if (isAdded && loadingProgress.visibility != View.GONE) {
-            loadingProgress.visibility = View.GONE
-            productDetail_container.visibility = View.VISIBLE
-        }
-    }
-
-    override fun showProgress() {
-        if (isAdded && loadingProgress.visibility != View.VISIBLE) {
-            loadingProgress.visibility = View.VISIBLE
-            productDetail_container.visibility = View.GONE
+    override fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(productDetail_container, R.layout.skeleton_product_detail, delayed = true)
+        } else {
+            skeletonView.hide()
         }
     }
 

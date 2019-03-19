@@ -11,15 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ProgressBar
-            android:id="@+id/loadingProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/margin_large"
-            android:visibility="gone"
-            tools:visibility="visible"/>
-
         <LinearLayout
             android:id="@+id/productDetail_container"
             android:layout_width="match_parent"
