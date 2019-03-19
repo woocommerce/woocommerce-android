@@ -22,7 +22,6 @@ class ProductDetailPresenter @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : ProductDetailContract.Presenter {
     override var remoteProductId = 0L
-    override var product: WCProductModel? = null
 
     private var view: ProductDetailContract.View? = null
 

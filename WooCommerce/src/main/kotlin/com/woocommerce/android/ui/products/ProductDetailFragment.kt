@@ -111,14 +111,14 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     override fun hideProgress() {
-        if (loadingProgress.visibility != View.GONE) {
+        if (isAdded && loadingProgress.visibility != View.GONE) {
             loadingProgress.visibility = View.GONE
             productDetail_container.visibility = View.VISIBLE
         }
     }
 
     override fun showProgress() {
-        if (loadingProgress.visibility != View.VISIBLE) {
+        if (isAdded && loadingProgress.visibility != View.VISIBLE) {
             loadingProgress.visibility = View.VISIBLE
             productDetail_container.visibility = View.GONE
         }
@@ -189,22 +189,19 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     private fun addDownloadCard(product: WCProductModel) {
-        if (product.downloadable) {
-            addProperty(
-                    DetailCard.Downloads,
-                    R.string.product_downloadable_files,
-                    product.getDownloadableFiles().size.toString()
-            )
-            if (product.downloadLimit > 0) {
-                addProperty(DetailCard.Downloads, R.string.product_download_limit, product.downloadLimit.toString())
-            }
-            if (product.downloadExpiry > 0) {
-                val expiryDays = String.format(
-                        getString(R.string.product_download_expiry_days),
-                        product.downloadExpiry
-                )
-                addProperty(DetailCard.Downloads, R.string.product_download_expiry, expiryDays)
-            }
+        if (!product.downloadable) return
+
+        addProperty(
+                DetailCard.Downloads,
+                R.string.product_downloadable_files,
+                product.getDownloadableFiles().size.toString()
+        )
+        if (product.downloadLimit > 0) {
+            addProperty(DetailCard.Downloads, R.string.product_download_limit, product.downloadLimit.toString())
+        }
+        if (product.downloadExpiry > 0) {
+            val expiryDays = String.format(getString(R.string.product_download_expiry_days), product.downloadExpiry)
+            addProperty(DetailCard.Downloads, R.string.product_download_expiry, expiryDays)
         }
     }
 
@@ -229,8 +226,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     /**
-     * Adds a WCCaptionedCardView to the current view if it doesn't already exist, then adds a WCCaptionedTextView
-     * to the card if it doesn't already exist - this enables us to dynamically build the product detail and
+     * Adds a property card to the current view if it doesn't already exist, then adds the property & value
+     * to the card if they don't already exist - this enables us to dynamically build the product detail and
      * more easily move things around.
      *
      * ex: addProperty(DetailCard.Pricing, R.string.product_price, product.price) will add the Pricing card if it
@@ -239,15 +236,15 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
      */
     private fun addProperty(
         card: DetailCard,
-        @StringRes propertyCaptionId: Int,
+        @StringRes propertyNameId: Int,
         propertyValue: String
     ): WCProductPropertyView? {
-        return addProperty(card, getString(propertyCaptionId), propertyValue)
+        return addProperty(card, getString(propertyNameId), propertyValue)
     }
 
     private fun addProperty(
         card: DetailCard,
-        propertyCaption: String,
+        propertyName: String,
         propertyValue: String
     ): WCProductPropertyView? {
         if (propertyValue.isBlank() || view == null) return null
@@ -264,7 +261,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
         val context = activity as Context
 
-        // find the cardView, add it if not found
+        // find the card, add it if not found
         val cardTag = "${card.name}_tag"
         var cardView = productDetail_container.findViewWithTag<WCProductPropertyCardView>(cardTag)
         if (cardView == null) {
@@ -279,16 +276,16 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             productDetail_container.addView(cardView)
         }
 
-        // locate the linear layout inside the cardView
+        // locate the linear layout container inside the card
         val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
 
-        // find the existing caption view in the card's linearLayout, add it if not found
-        val captionTag = "{$propertyCaption}_tag"
-        var captionedView = container.findViewWithTag<WCProductPropertyView>(captionTag)
-        if (captionedView == null) {
-            captionedView = WCProductPropertyView(context)
-            captionedView.tag = captionTag
-            container.addView(captionedView)
+        // find the existing property view in the container, add it if not found
+        val propertyTag = "{$propertyName}_tag"
+        var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
+        if (propertyView == null) {
+            propertyView = WCProductPropertyView(context)
+            propertyView.tag = propertyTag
+            container.addView(propertyView)
         }
 
         val orientation = when (card) {
@@ -299,10 +296,13 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
 
         // some details, such as product description, contain html which needs to be stripped here
-        captionedView.show(orientation, propertyCaption, HtmlUtils.fastStripHtml(propertyValue).trim())
-        return captionedView
+        propertyView.show(orientation, propertyName, HtmlUtils.fastStripHtml(propertyValue).trim())
+        return propertyView
     }
 
+    /**
+     * Adds a divider between cards
+     */
     private fun addCardDividerView(context: Context) {
         val divider = View(context)
         divider.layoutParams = LayoutParams(

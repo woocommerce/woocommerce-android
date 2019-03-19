@@ -11,27 +11,26 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 
 /**
- * TextView with a caption (header), detail, and optional ratingBar, used by product detail
+ * Used by product detail to show product name & value, with an optional ratingBar,
  */
 class WCProductPropertyView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) :
-        ConstraintLayout(context, attrs, defStyle) {
+) : ConstraintLayout(context, attrs, defStyle) {
     private var view: View? = null
-    private var captionText: TextView? = null
-    private var detailText: TextView? = null
+    private var propertyNameText: TextView? = null
+    private var propertyValueText: TextView? = null
     private var ratingBar: RatingBar? = null
 
     fun show(orientation: Int, caption: String, detail: String?) {
         ensureViewCreated(orientation)
 
-        captionText?.text = caption
+        propertyNameText?.text = caption
         if (detail.isNullOrEmpty()) {
-            detailText?.visibility = View.GONE
+            propertyValueText?.visibility = View.GONE
         } else {
-            detailText?.text = detail
+            propertyValueText?.text = detail
         }
     }
 
@@ -40,7 +39,7 @@ class WCProductPropertyView @JvmOverloads constructor(
 
         try {
             ratingBar?.rating = ratingStr.toFloat()
-            detailText?.visibility = View.GONE
+            propertyValueText?.visibility = View.GONE
             ratingBar?.visibility = View.VISIBLE
         } catch (e: NumberFormatException) {
             WooLog.e(WooLog.T.UTILS, e)
@@ -50,12 +49,12 @@ class WCProductPropertyView @JvmOverloads constructor(
     private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL) {
         if (view == null) {
             view = if (orientation == LinearLayout.VERTICAL) {
-                View.inflate(context, R.layout.captioned_textview_vert, this)
+                View.inflate(context, R.layout.product_property_view_vert, this)
             } else {
-                View.inflate(context, R.layout.captioned_textview_horz, this)
+                View.inflate(context, R.layout.product_property_view_horz, this)
             }
-            captionText = view?.findViewById(R.id.textCaption)
-            detailText = view?.findViewById(R.id.textDetail)
+            propertyNameText = view?.findViewById(R.id.textPropertyName)
+            propertyValueText = view?.findViewById(R.id.textPropertyValue)
             ratingBar = view?.findViewById(R.id.ratingBar)
         }
     }

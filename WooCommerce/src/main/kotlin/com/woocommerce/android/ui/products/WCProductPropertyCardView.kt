@@ -15,7 +15,7 @@ class WCProductPropertyCardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : CardView(context, attrs, defStyle) {
-    private var view: View = View.inflate(context, R.layout.captioned_cardview, this)
+    private var view: View = View.inflate(context, R.layout.product_property_cardview, this)
 
     fun show(caption: String?) {
         with(view.findViewById<TextView>(R.id.cardCaptionText)) {
