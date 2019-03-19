@@ -17,7 +17,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.util.WooAnimUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -114,7 +113,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     override fun hideProgress() {
         if (loadingProgress.visibility != View.GONE) {
             loadingProgress.visibility = View.GONE
-            WooAnimUtils.fadeIn(productDetail_container)
+            productDetail_container.visibility = View.VISIBLE
         }
     }
 
