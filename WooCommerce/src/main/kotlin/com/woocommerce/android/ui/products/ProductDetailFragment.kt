@@ -222,11 +222,22 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     private fun addPurchaseDetailsCard(product: WCProductModel) {
+        // l x w x h
+        val propertySize: String
+        val hasLength = product.length.isNotEmpty()
+        val hasWidth = product.width.isNotEmpty()
+        val hasHeight = product.height.isNotEmpty()
+        if (hasLength && hasWidth && hasHeight) {
+            propertySize = "${product.length} x ${product.width} x ${product.height}"
+        } else if (hasWidth && hasHeight) {
+            propertySize = "${product.width} x ${product.height}"
+        } else {
+            propertySize = ""
+        }
+
         val group = mapOf(
                 Pair(getString(R.string.product_weight), product.weight),
-                Pair(getString(R.string.product_length), product.length),
-                Pair(getString(R.string.product_width), product.width),
-                Pair(getString(R.string.product_height), product.height),
+                Pair(getString(R.string.product_size), propertySize),
                 Pair(getString(R.string.product_shipping_class), product.shippingClass)
         )
         addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, group)
