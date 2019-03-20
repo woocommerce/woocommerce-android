@@ -158,5 +158,5 @@
     <dimen name="product_icon_sz">40dp</dimen>
     <dimen name="product_detail_image_height">220dp</dimen>
     <dimen name="product_detail_card_divider_height">16dp</dimen>
-    <dimen name="product_detail_property_margin">12dp</dimen>
+    <dimen name="product_detail_property_margin">@dimen/settings_padding</dimen>
 </resources>
