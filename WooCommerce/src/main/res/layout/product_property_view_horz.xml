@@ -29,7 +29,7 @@
         android:textColor="@color/wc_grey_medium"
         android:textSize="@dimen/text_medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ratingBar"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="textDetail"/>
 

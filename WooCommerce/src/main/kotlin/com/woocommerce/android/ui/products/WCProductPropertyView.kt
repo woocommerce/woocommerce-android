@@ -39,7 +39,6 @@ class WCProductPropertyView @JvmOverloads constructor(
 
         try {
             ratingBar?.rating = ratingStr.toFloat()
-            propertyValueText?.visibility = View.GONE
             ratingBar?.visibility = View.VISIBLE
         } catch (e: NumberFormatException) {
             WooLog.e(WooLog.T.UTILS, e)

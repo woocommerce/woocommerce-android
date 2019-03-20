@@ -148,10 +148,16 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     private fun addPrimaryCard(product: WCProductModel) {
+        addProperty(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
+        if (product.ratingCount > 0) {
+            addProperty(
+                    DetailCard.Primary,
+                    R.string.product_reviews,
+                    product.ratingCount.toString()
+            )?.setRating(product.averageRating)
+        }
+
         val orientation = LinearLayout.VERTICAL
-        addProperty(DetailCard.Primary, R.string.product_name, product.name, orientation)
-        addProperty(DetailCard.Primary, R.string.product_description, product.description, orientation)
-        addProperty(DetailCard.Primary, R.string.product_short_description, product.shortDescription, orientation)
         addProperty(DetailCard.Primary, R.string.product_purchase_note, product.purchaseNote)
         addProperty(DetailCard.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames(), orientation)
         addProperty(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames(), orientation)
@@ -226,14 +232,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
     private fun addSalesAndReviewsCard(product: WCProductModel) {
         addProperty(DetailCard.SalesAndReviews, R.string.product_total_sales, product.totalSales.toString())
-        if (product.ratingCount > 0) {
-            addProperty(
-                    DetailCard.SalesAndReviews,
-                    R.string.product_average_rating,
-                    product.averageRating
-            )?.setRating(product.averageRating)
-        }
-        addProperty(DetailCard.SalesAndReviews, R.string.product_total_ratings, product.ratingCount.toString())
     }
 
     /**

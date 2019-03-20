@@ -261,7 +261,7 @@
     <string name="product_sales_and_reviews">Sales and reviews</string>
     <string name="product_total_sales">Total sales</string>
     <string name="product_total_ratings">Total ratings</string>
-    <string name="product_average_rating">Average rating</string>
+    <string name="product_reviews">Reviews</string>
     <string name="product_downloads">Downloads</string>
     <string name="product_downloadable_files">Downloadable files</string>
     <string name="product_download_limit">Download limit</string>
