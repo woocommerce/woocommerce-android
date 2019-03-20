@@ -245,9 +245,8 @@
     <string name="product_pricing_and_inventory">Pricing and inventory</string>
     <string name="product_inventory">Inventory</string>
     <string name="product_price">Price</string>
+    <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
-    <string name="product_tax_status">Tax status</string>
-    <string name="product_tax_class">Tax class</string>
     <string name="product_sku">SKU</string>
     <string name="product_stock_status">Stock status</string>
     <string name="product_stock_quantity">Stock quantity</string>

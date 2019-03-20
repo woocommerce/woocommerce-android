@@ -50,8 +50,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         SalesAndReviews
     }
 
-    private class ProductProperty(var propertyName: String, var propertyValue: String)
-
     @Inject lateinit var presenter: ProductDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
@@ -167,11 +165,18 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                 product.taxClass.isNotEmpty() ||
                 product.taxStatus.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
+
         if (hasPricingInfo) {
-            addProperty(pricingCard, R.string.product_price, product.regularPrice)
-            addProperty(pricingCard, R.string.product_sale_price, product.salePrice)
-            addProperty(pricingCard, R.string.product_tax_status, product.taxStatus)
-            addProperty(pricingCard, R.string.product_tax_class, product.taxClass)
+            // when there's a sale price, show price & sales price as a group
+            if (product.salePrice.isNotEmpty()) {
+                val group = mapOf(
+                        Pair(getString(R.string.product_regular_price), product.regularPrice),
+                        Pair(getString(R.string.product_sale_price), product.salePrice)
+                )
+                addPropertyGroup(pricingCard, R.string.product_price, group)
+            } else {
+                addProperty(pricingCard, R.string.product_price, product.price)
+            }
         }
 
         if (product.manageStock) {
