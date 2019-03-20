@@ -50,6 +50,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         SalesAndReviews
     }
 
+    private class ProductProperty(var propertyName: String, var propertyValue: String)
+
     @Inject lateinit var presenter: ProductDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
@@ -148,39 +150,47 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     private fun addPrimaryCard(product: WCProductModel) {
-        addProperty(DetailCard.Primary, R.string.product_name, product.name)
-        addProperty(DetailCard.Primary, R.string.product_description, product.description)
-        addProperty(DetailCard.Primary, R.string.product_short_description, product.shortDescription)
+        val orientation = LinearLayout.VERTICAL
+        addProperty(DetailCard.Primary, R.string.product_name, product.name, orientation)
+        addProperty(DetailCard.Primary, R.string.product_description, product.description, orientation)
+        addProperty(DetailCard.Primary, R.string.product_short_description, product.shortDescription, orientation)
         addProperty(DetailCard.Primary, R.string.product_purchase_note, product.purchaseNote)
-        addProperty(DetailCard.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames())
-        addProperty(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames())
-        addProperty(DetailCard.Primary, R.string.product_catalog_visibility, product.catalogVisibility)
+        addProperty(DetailCard.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames(), orientation)
+        addProperty(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames(), orientation)
+        addProperty(DetailCard.Primary, R.string.product_catalog_visibility, product.catalogVisibility, orientation)
     }
 
     private fun addPricingAndInventoryCard(product: WCProductModel) {
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.price.isNotEmpty() ||
+        val hasPricingInfo = product.regularPrice.isNotEmpty() ||
                 product.salePrice.isNotEmpty() ||
                 product.taxClass.isNotEmpty() ||
                 product.taxStatus.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
         if (hasPricingInfo) {
-            addProperty(pricingCard, R.string.product_price, product.price)
+            addProperty(pricingCard, R.string.product_price, product.regularPrice)
             addProperty(pricingCard, R.string.product_sale_price, product.salePrice)
             addProperty(pricingCard, R.string.product_tax_status, product.taxStatus)
             addProperty(pricingCard, R.string.product_tax_class, product.taxClass)
         }
-        addProperty(pricingCard, R.string.product_sku, product.sku)
+
         if (product.manageStock) {
-            addProperty(pricingCard, R.string.product_stock_status, product.stockStatus)
-            addProperty(pricingCard, R.string.product_backorders, product.backorders)
-            addProperty(pricingCard, R.string.product_stock_quantity, product.stockQuantity.toString())
+            val group = mapOf(
+                    Pair(getString(R.string.product_stock_status), product.stockStatus),
+                    Pair(getString(R.string.product_backorders), product.backorders),
+                    Pair(getString(R.string.product_stock_quantity), product.stockQuantity.toString()),
+                    Pair(getString(R.string.product_sku), product.sku)
+            )
+            addPropertyGroup(pricingCard, R.string.product_inventory, group)
+        } else {
+            addProperty(pricingCard, R.string.product_sku, product.sku)
         }
     }
 
     private fun addAttributesCard(product: WCProductModel) {
+        val orientation = LinearLayout.VERTICAL
         product.getAttributes().forEach { attribute ->
-            addProperty(DetailCard.Attributes, attribute.name, attribute.getCommaSeparatedOptions())
+            addProperty(DetailCard.Attributes, attribute.name, attribute.getCommaSeparatedOptions(), orientation)
         }
     }
 
@@ -233,15 +243,17 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     private fun addProperty(
         card: DetailCard,
         @StringRes propertyNameId: Int,
-        propertyValue: String
+        propertyValue: String,
+        orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
-        return addProperty(card, getString(propertyNameId), propertyValue)
+        return addProperty(card, getString(propertyNameId), propertyValue, orientation)
     }
 
     private fun addProperty(
         card: DetailCard,
         propertyName: String,
-        propertyValue: String
+        propertyValue: String,
+        orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
         if (propertyValue.isBlank() || view == null) return null
 
@@ -284,16 +296,29 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             container.addView(propertyView)
         }
 
-        val orientation = when (card) {
-            DetailCard.Primary,
-            DetailCard.Attributes -> LinearLayout.VERTICAL
-            else ->
-                LinearLayout.HORIZONTAL
-        }
-
         // some details, such as product description, contain html which needs to be stripped here
         propertyView.show(orientation, propertyName, HtmlUtils.fastStripHtml(propertyValue).trim())
         return propertyView
+    }
+
+    /**
+     * Adds a group of related properties as a single property view
+     */
+    private fun addPropertyGroup(
+        card: DetailCard,
+        @StringRes groupNameId: Int,
+        properties: Map<String, String>
+    ): WCProductPropertyView? {
+        var str = ""
+        properties.forEach { property ->
+            if (property.value.isNotEmpty()) {
+                if (str.isNotEmpty()) {
+                    str += "\n"
+                }
+                str += "${property.key}: ${property.value}"
+            }
+        }
+        return addProperty(card, groupNameId, str, LinearLayout.VERTICAL)
     }
 
     /**
