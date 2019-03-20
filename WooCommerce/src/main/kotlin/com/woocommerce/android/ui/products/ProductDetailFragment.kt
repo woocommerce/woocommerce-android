@@ -46,8 +46,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         Inventory,
         Shipping,
         Attributes,
-        Downloads,
-        SalesAndReviews
+        Downloads
     }
 
     @Inject lateinit var presenter: ProductDetailContract.Presenter
@@ -144,11 +143,12 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addAttributesCard(product)
         addDownloadCard(product)
         addShippingCard(product)
-        addSalesAndReviewsCard(product)
     }
 
     private fun addPrimaryCard(product: WCProductModel) {
         addProperty(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
+        addProperty(DetailCard.Primary, R.string.product_total_orders, product.totalSales.toString())
+
         if (product.ratingCount > 0) {
             addProperty(
                     DetailCard.Primary,
@@ -157,11 +157,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             )?.setRating(product.averageRating)
         }
 
-        val orientation = LinearLayout.VERTICAL
-        addProperty(DetailCard.Primary, R.string.product_purchase_note, product.purchaseNote)
-        addProperty(DetailCard.Primary, R.string.product_categories, product.getCommaSeparatedCategoryNames(), orientation)
-        addProperty(DetailCard.Primary, R.string.product_tags, product.getCommaSeparatedTagNames(), orientation)
-        addProperty(DetailCard.Primary, R.string.product_catalog_visibility, product.catalogVisibility, orientation)
+        addProperty(DetailCard.Primary, R.string.product_purchase_note, product.purchaseNote, LinearLayout.VERTICAL)
     }
 
     private fun addPricingAndInventoryCard(product: WCProductModel) {
@@ -173,7 +169,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
 
         if (hasPricingInfo) {
-            // when there's a sale price, show price & sales price as a group
+            // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice.isNotEmpty()) {
                 val group = mapOf(
                         Pair(getString(R.string.product_regular_price), product.regularPrice),
@@ -185,6 +181,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             }
         }
 
+        // show stock properties as a group if stock management is enabled, otherwise show sku separately
         if (product.manageStock) {
             val group = mapOf(
                     Pair(getString(R.string.product_stock_status), product.stockStatus),
@@ -199,9 +196,13 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     private fun addAttributesCard(product: WCProductModel) {
-        val orientation = LinearLayout.VERTICAL
         product.getAttributes().forEach { attribute ->
-            addProperty(DetailCard.Attributes, attribute.name, attribute.getCommaSeparatedOptions(), orientation)
+            addProperty(
+                    DetailCard.Attributes,
+                    attribute.name,
+                    attribute.getCommaSeparatedOptions(),
+                    LinearLayout.VERTICAL
+            )
         }
     }
 
@@ -228,10 +229,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addProperty(DetailCard.Shipping, R.string.product_width, product.width)
         addProperty(DetailCard.Shipping, R.string.product_height, product.height)
         addProperty(DetailCard.Shipping, R.string.product_shipping_class, product.shippingClass)
-    }
-
-    private fun addSalesAndReviewsCard(product: WCProductModel) {
-        addProperty(DetailCard.SalesAndReviews, R.string.product_total_sales, product.totalSales.toString())
     }
 
     /**
@@ -267,7 +264,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             DetailCard.Shipping -> getString(R.string.product_shipping)
             DetailCard.Attributes -> getString(R.string.product_attributes)
             DetailCard.Downloads -> getString(R.string.product_downloads)
-            DetailCard.SalesAndReviews -> getString(R.string.product_sales_and_reviews)
         }
 
         val context = activity as Context

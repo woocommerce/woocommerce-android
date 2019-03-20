@@ -239,9 +239,6 @@
     <string name="product_description">Description</string>
     <string name="product_short_description">Short description</string>
     <string name="product_purchase_note">Purchase note</string>
-    <string name="product_categories">Categories</string>
-    <string name="product_tags">Tags</string>
-    <string name="product_catalog_visibility">Catalog visibility</string>
     <string name="product_pricing_and_inventory">Pricing and inventory</string>
     <string name="product_inventory">Inventory</string>
     <string name="product_price">Price</string>
@@ -258,8 +255,7 @@
     <string name="product_width">Width</string>
     <string name="product_shipping_class">Shipping class</string>
     <string name="product_attributes">Attributes</string>
-    <string name="product_sales_and_reviews">Sales and reviews</string>
-    <string name="product_total_sales">Total sales</string>
+    <string name="product_total_orders">Total orders</string>
     <string name="product_total_ratings">Total ratings</string>
     <string name="product_reviews">Reviews</string>
     <string name="product_downloads">Downloads</string>
