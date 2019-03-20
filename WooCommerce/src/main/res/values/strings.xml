@@ -263,6 +263,7 @@
     <string name="product_download_limit">Download limit</string>
     <string name="product_download_expiry">Download expiry</string>
     <string name="product_download_expiry_days">%d days</string>
+    <string name="product_purchase_details">Purchase details</string>
 
     <!--
         Empty list messages

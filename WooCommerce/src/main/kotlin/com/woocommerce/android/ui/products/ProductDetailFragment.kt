@@ -44,9 +44,9 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         Primary,
         PricingAndInventory,
         Inventory,
-        Shipping,
         Attributes,
-        Downloads
+        Downloads,
+        PurchaseDetails
     }
 
     @Inject lateinit var presenter: ProductDetailContract.Presenter
@@ -142,7 +142,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addPricingAndInventoryCard(product)
         addAttributesCard(product)
         addDownloadCard(product)
-        addShippingCard(product)
+        addPurchaseDetailsCard(product)
     }
 
     private fun addPrimaryCard(product: WCProductModel) {
@@ -156,8 +156,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                     product.ratingCount.toString()
             )?.setRating(product.averageRating)
         }
-
-        addProperty(DetailCard.Primary, R.string.product_purchase_note, product.purchaseNote, LinearLayout.VERTICAL)
     }
 
     private fun addPricingAndInventoryCard(product: WCProductModel) {
@@ -223,12 +221,17 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
     }
 
-    private fun addShippingCard(product: WCProductModel) {
-        addProperty(DetailCard.Shipping, R.string.product_weight, product.weight)
-        addProperty(DetailCard.Shipping, R.string.product_length, product.length)
-        addProperty(DetailCard.Shipping, R.string.product_width, product.width)
-        addProperty(DetailCard.Shipping, R.string.product_height, product.height)
-        addProperty(DetailCard.Shipping, R.string.product_shipping_class, product.shippingClass)
+    private fun addPurchaseDetailsCard(product: WCProductModel) {
+        val group = mapOf(
+                Pair(getString(R.string.product_weight), product.weight),
+                Pair(getString(R.string.product_length), product.length),
+                Pair(getString(R.string.product_width), product.width),
+                Pair(getString(R.string.product_height), product.height),
+                Pair(getString(R.string.product_shipping_class), product.shippingClass)
+        )
+        addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, group)
+
+        addProperty(DetailCard.PurchaseDetails, R.string.product_purchase_note, product.purchaseNote, LinearLayout.VERTICAL)
     }
 
     /**
@@ -261,9 +264,9 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             DetailCard.Primary -> null
             DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
             DetailCard.Inventory -> getString(R.string.product_inventory)
-            DetailCard.Shipping -> getString(R.string.product_shipping)
             DetailCard.Attributes -> getString(R.string.product_attributes)
             DetailCard.Downloads -> getString(R.string.product_downloads)
+            DetailCard.PurchaseDetails -> getString(R.string.product_purchase_details)
         }
 
         val context = activity as Context
