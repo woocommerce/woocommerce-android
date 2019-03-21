@@ -169,11 +169,11 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     private fun addPrimaryCard(product: WCProductModel) {
-        addProperty(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
-        addProperty(DetailCard.Primary, R.string.product_total_orders, product.totalSales.toString())
+        addPropertyView(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
+        addPropertyView(DetailCard.Primary, R.string.product_total_orders, product.totalSales.toString())
 
         if (product.ratingCount > 0) {
-            addProperty(
+            addPropertyView(
                     DetailCard.Primary,
                     R.string.product_reviews,
                     product.ratingCount.toString()
@@ -198,7 +198,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
-                addProperty(pricingCard, R.string.product_price, product.price)
+                addPropertyView(pricingCard, R.string.product_price, product.price)
             }
         }
 
@@ -212,13 +212,13 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             )
             addPropertyGroup(pricingCard, R.string.product_inventory, group)
         } else {
-            addProperty(pricingCard, R.string.product_sku, product.sku)
+            addPropertyView(pricingCard, R.string.product_sku, product.sku)
         }
     }
 
     private fun addAttributesCard(product: WCProductModel) {
         product.getAttributes().forEach { attribute ->
-            addProperty(
+            addPropertyView(
                     DetailCard.Attributes,
                     attribute.name,
                     attribute.getCommaSeparatedOptions(),
@@ -230,17 +230,17 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     private fun addDownloadCard(product: WCProductModel) {
         if (!product.downloadable) return
 
-        addProperty(
+        addPropertyView(
                 DetailCard.Downloads,
                 R.string.product_downloadable_files,
                 product.getDownloadableFiles().size.toString()
         )
         if (product.downloadLimit > 0) {
-            addProperty(DetailCard.Downloads, R.string.product_download_limit, product.downloadLimit.toString())
+            addPropertyView(DetailCard.Downloads, R.string.product_download_limit, product.downloadLimit.toString())
         }
         if (product.downloadExpiry > 0) {
             val expiryDays = String.format(getString(R.string.product_download_expiry_days), product.downloadExpiry)
-            addProperty(DetailCard.Downloads, R.string.product_download_expiry, expiryDays)
+            addPropertyView(DetailCard.Downloads, R.string.product_download_expiry, expiryDays)
         }
     }
 
@@ -265,7 +265,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         )
         addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, group)
 
-        addProperty(
+        addPropertyView(
                 DetailCard.PurchaseDetails,
                 R.string.product_purchase_note,
                 product.purchaseNote,
@@ -278,20 +278,20 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
      * to the card if they don't already exist - this enables us to dynamically build the product detail and
      * more easily move things around.
      *
-     * ex: addProperty(DetailCard.Pricing, R.string.product_price, product.price) will add the Pricing card if it
+     * ex: addPropertyView(DetailCard.Pricing, R.string.product_price, product.price) will add the Pricing card if it
      * doesn't exist, and then add the product price caption and property to the card - but if the property
      * is empty, nothing gets added.
      */
-    private fun addProperty(
+    private fun addPropertyView(
         card: DetailCard,
         @StringRes propertyNameId: Int,
         propertyValue: String,
         orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
-        return addProperty(card, getString(propertyNameId), propertyValue, orientation)
+        return addPropertyView(card, getString(propertyNameId), propertyValue, orientation)
     }
 
-    private fun addProperty(
+    private fun addPropertyView(
         card: DetailCard,
         propertyName: String,
         propertyValue: String,
@@ -299,40 +299,17 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     ): WCProductPropertyView? {
         if (propertyValue.isBlank() || view == null) return null
 
-        val cardViewCaption: String? = when (card) {
-            DetailCard.Primary -> null
-            DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
-            DetailCard.Inventory -> getString(R.string.product_inventory)
-            DetailCard.Attributes -> getString(R.string.product_attributes)
-            DetailCard.Downloads -> getString(R.string.product_downloads)
-            DetailCard.PurchaseDetails -> getString(R.string.product_purchase_details)
-        }
-
-        val context = activity as Context
-
-        // find the card, add it if not found
-        val cardTag = "${card.name}_tag"
-        var cardView = productDetail_container.findViewWithTag<WCProductPropertyCardView>(cardTag)
-        if (cardView == null) {
-            // add a divider above the card if this isn't the first card
-            if (card != DetailCard.Primary) {
-                addCardDividerView(context)
-            }
-            cardView = WCProductPropertyCardView(context)
-            cardView.elevation = (resources.getDimensionPixelSize(R.dimen.card_elevation)).toFloat()
-            cardView.tag = cardTag
-            cardView.show(cardViewCaption)
-            productDetail_container.addView(cardView)
-        }
+        // locate the card, add it if it doesn't exist yet
+        val cardView = findOrAddCardView(card)
 
         // locate the linear layout container inside the card
         val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
 
-        // find the existing property view in the container, add it if not found
+        // locate the existing property view in the container, add it if not found
         val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
-            propertyView = WCProductPropertyView(context)
+            propertyView = WCProductPropertyView(activity as Context)
             propertyView.tag = propertyTag
             container.addView(propertyView)
         }
@@ -359,7 +336,41 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                 propertyValue += "${property.key}: ${property.value}"
             }
         }
-        return addProperty(card, groupNameId, propertyValue, LinearLayout.VERTICAL)
+        return addPropertyView(card, groupNameId, propertyValue, LinearLayout.VERTICAL)
+    }
+
+    /**
+     * Returns the card view for the passed DetailCard - card will be added if it doesn't already exist
+     */
+    private fun findOrAddCardView(card: DetailCard): WCProductPropertyCardView {
+        val cardTag = "${card.name}_tag"
+        productDetail_container.findViewWithTag<WCProductPropertyCardView>(cardTag)?.let {
+            return it
+        }
+
+        // add a divider above the card if this isn't the first card
+        val context = activity as Context
+        if (card != DetailCard.Primary) {
+            addCardDividerView(context)
+        }
+
+        val cardView = WCProductPropertyCardView(context)
+        cardView.elevation = (resources.getDimensionPixelSize(R.dimen.card_elevation)).toFloat()
+        cardView.tag = cardTag
+
+        val cardViewCaption: String? = when (card) {
+            DetailCard.Primary -> null
+            DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
+            DetailCard.Inventory -> getString(R.string.product_inventory)
+            DetailCard.Attributes -> getString(R.string.product_attributes)
+            DetailCard.Downloads -> getString(R.string.product_downloads)
+            DetailCard.PurchaseDetails -> getString(R.string.product_purchase_details)
+        }
+
+        cardView.show(cardViewCaption)
+        productDetail_container.addView(cardView)
+
+        return cardView
     }
 
     /**
