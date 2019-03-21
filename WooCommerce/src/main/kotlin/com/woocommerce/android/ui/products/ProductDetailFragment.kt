@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
@@ -53,8 +57,14 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
 
+    private var remoteProductId = 0L
     private var runOnStartFunc: (() -> Unit)? = null
     private val skeletonView = SkeletonView()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -70,7 +80,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
         presenter.takeView(this)
 
-        val remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
+        remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
         val product = presenter.getProduct(remoteProductId)
         if (product == null) {
             presenter.fetchProduct(remoteProductId)
@@ -99,6 +109,19 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     override fun onDestroyView() {
         presenter.dropView()
         super.onDestroyView()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_share, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return if (item?.itemId == R.id.menu_share) {
+            shareProduct()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
     }
 
     override fun showFetchProductError() {
@@ -350,5 +373,18 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         )
         divider.setBackgroundColor(ContextCompat.getColor(context, R.color.list_divider))
         productDetail_container.addView(divider)
+    }
+
+    private fun shareProduct() {
+        presenter.getProduct(remoteProductId)?.let { product ->
+            val shareIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_SUBJECT, product.name)
+                putExtra(Intent.EXTRA_TEXT, product.permalink)
+                type = "text/plain"
+            }
+            val title = resources.getText(R.string.product_share_dialog_title)
+            activity?.startActivity(Intent.createChooser(shareIntent, title))
+        }
     }
 }
