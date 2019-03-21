@@ -262,6 +262,7 @@
     <string name="product_download_expiry">Download expiry</string>
     <string name="product_download_expiry_days">%d days</string>
     <string name="product_purchase_details">Purchase details</string>
+    <string name="product_share_dialog_title">Share your product</string>
 
     <!--
         Empty list messages
