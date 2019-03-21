@@ -49,6 +49,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         PricingAndInventory,
         Inventory,
         Attributes,
+        Downloads,
         PurchaseDetails
     }
 
@@ -163,6 +164,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         addPrimaryCard(product)
         addPricingAndInventoryCard(product)
         addAttributesCard(product)
+        addDownloadCard(product)
         addPurchaseDetailsCard(product)
     }
 
@@ -213,7 +215,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             )
             addPropertyGroup(pricingCard, R.string.product_inventory, group)
         } else {
-            addPropertyView(pricingCard, getString(R.string.product_sku), product.sku)
+            addPropertyView(pricingCard, R.string.product_sku, product.sku)
         }
     }
 
@@ -228,42 +230,46 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
     }
 
+    private fun addDownloadCard(product: WCProductModel) {
+        if (!product.downloadable) return
+
+        addPropertyView(
+                DetailCard.Downloads,
+                R.string.product_downloadable_files,
+                product.getDownloadableFiles().size.toString()
+        )
+        if (product.downloadLimit > 0) {
+            addPropertyView(DetailCard.Downloads, R.string.product_download_limit, product.downloadLimit.toString())
+        }
+        if (product.downloadExpiry > 0) {
+            val expiryDays = String.format(getString(R.string.product_download_expiry_days), product.downloadExpiry)
+            addPropertyView(DetailCard.Downloads, R.string.product_download_expiry, expiryDays)
+        }
+    }
+
     private fun addPurchaseDetailsCard(product: WCProductModel) {
         val hasLength = product.length.isNotEmpty()
         val hasWidth = product.width.isNotEmpty()
         val hasHeight = product.height.isNotEmpty()
 
-        // l x w x h
+        val dimensionUnit = presenter.getDimensionUnit()
         val propertySize = if (hasLength && hasWidth && hasHeight) {
-            "${product.length} x ${product.width} x ${product.height}"
+            "${product.length} x ${product.width} x ${product.height} $dimensionUnit"
         } else if (hasWidth && hasHeight) {
-            "${product.width} x ${product.height}"
+            "${product.width} x ${product.height} $dimensionUnit"
         } else {
             ""
         }
 
-        val shippingGroup = mapOf(
-                Pair(getString(R.string.product_weight), product.weight),
+        val weightUnit = presenter.getWeightUnit()
+        val weight = if (product.weight.isNotEmpty()) "${product.weight} $weightUnit" else ""
+
+        val group = mapOf(
+                Pair(getString(R.string.product_weight), weight),
                 Pair(getString(R.string.product_size), propertySize),
                 Pair(getString(R.string.product_shipping_class), product.shippingClass)
         )
-        addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
-
-        if (product.downloadable) {
-            val count = product.getDownloadableFiles().size.toString()
-            val limit = if (product.downloadLimit > 0) product.downloadLimit.toString() else ""
-            val expiry = if (product.downloadExpiry > 0) String.format(
-                    getString(R.string.product_download_expiry_days),
-                    product.downloadExpiry
-            ) else ""
-
-            val downloadGroup = mapOf(
-                    Pair(getString(R.string.product_downloadable_files), count),
-                    Pair(getString(R.string.product_download_limit), limit),
-                    Pair(getString(R.string.product_download_expiry), expiry)
-            )
-            addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_downloads, downloadGroup)
-        }
+        addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, group)
 
         addPropertyView(
                 DetailCard.PurchaseDetails,
@@ -324,7 +330,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
      */
     private fun addPropertyGroup(
         card: DetailCard,
-        @StringRes groupTitleId: Int,
+        @StringRes groupNameId: Int,
         properties: Map<String, String>
     ): WCProductPropertyView? {
         var propertyValue = ""
@@ -336,7 +342,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                 propertyValue += "${property.key}: ${property.value}"
             }
         }
-        return addPropertyView(card, getString(groupTitleId), propertyValue, LinearLayout.VERTICAL)
+        return addPropertyView(card, groupNameId, propertyValue, LinearLayout.VERTICAL)
     }
 
     /**
@@ -386,6 +392,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
             DetailCard.Inventory -> getString(R.string.product_inventory)
             DetailCard.Attributes -> getString(R.string.product_attributes)
+            DetailCard.Downloads -> getString(R.string.product_downloads)
             DetailCard.PurchaseDetails -> getString(R.string.product_purchase_details)
         }
 

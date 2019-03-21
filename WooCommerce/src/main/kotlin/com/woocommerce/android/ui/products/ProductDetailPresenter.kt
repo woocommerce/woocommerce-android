@@ -27,10 +27,16 @@ class ProductDetailPresenter @Inject constructor(
 ) : ProductDetailContract.Presenter {
     private var remoteProductId = 0L
     private var currencyCode: String? = null
+    private var weightUnit: String? = null
+    private var dimensionUnit: String? = null
 
     init {
         wooCommerceStore.getSiteSettings(selectedSite.get())?.let { settings ->
             currencyCode = settings.currencyCode
+        }
+        wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
+            weightUnit = settings.weightUnit
+            dimensionUnit = settings.dimensionUnit
         }
     }
 
@@ -71,6 +77,9 @@ class ProductDetailPresenter @Inject constructor(
             currencyFormatter.formatCurrency(rawValue, it)
         } ?: rawValue
     }
+
+    override fun getWeightUnit() = weightUnit ?: ""
+    override fun getDimensionUnit() = dimensionUnit ?: ""
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
