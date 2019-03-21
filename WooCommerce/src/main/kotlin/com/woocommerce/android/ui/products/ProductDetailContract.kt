@@ -10,7 +10,7 @@ interface ProductDetailContract {
         fun fetchProduct(remoteProductId: Long)
         fun formatCurrency(rawValue: String): String
         fun getWeightUnit(): String
-        fun getDimensionUnit() : String
+        fun getDimensionUnit(): String
     }
 
     interface View : BaseView<Presenter> {
