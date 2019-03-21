@@ -222,17 +222,17 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     private fun addPurchaseDetailsCard(product: WCProductModel) {
-        // l x w x h
-        val propertySize: String
         val hasLength = product.length.isNotEmpty()
         val hasWidth = product.width.isNotEmpty()
         val hasHeight = product.height.isNotEmpty()
-        if (hasLength && hasWidth && hasHeight) {
-            propertySize = "${product.length} x ${product.width} x ${product.height}"
+
+        // l x w x h
+        val propertySize = if (hasLength && hasWidth && hasHeight) {
+            "${product.length} x ${product.width} x ${product.height}"
         } else if (hasWidth && hasHeight) {
-            propertySize = "${product.width} x ${product.height}"
+            "${product.width} x ${product.height}"
         } else {
-            propertySize = ""
+            ""
         }
 
         val group = mapOf(
@@ -322,16 +322,16 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         @StringRes groupNameId: Int,
         properties: Map<String, String>
     ): WCProductPropertyView? {
-        var str = ""
+        var propertyValue = ""
         properties.forEach { property ->
             if (property.value.isNotEmpty()) {
-                if (str.isNotEmpty()) {
-                    str += "\n"
+                if (propertyValue.isNotEmpty()) {
+                    propertyValue += "\n"
                 }
-                str += "${property.key}: ${property.value}"
+                propertyValue += "${property.key}: ${property.value}"
             }
         }
-        return addProperty(card, groupNameId, str, LinearLayout.VERTICAL)
+        return addProperty(card, groupNameId, propertyValue, LinearLayout.VERTICAL)
     }
 
     /**
