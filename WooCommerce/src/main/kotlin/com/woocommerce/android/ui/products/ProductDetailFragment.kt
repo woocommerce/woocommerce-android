@@ -242,7 +242,12 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         )
         addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, group)
 
-        addProperty(DetailCard.PurchaseDetails, R.string.product_purchase_note, product.purchaseNote, LinearLayout.VERTICAL)
+        addProperty(
+                DetailCard.PurchaseDetails,
+                R.string.product_purchase_note,
+                product.purchaseNote,
+                LinearLayout.VERTICAL
+        )
     }
 
     /**
