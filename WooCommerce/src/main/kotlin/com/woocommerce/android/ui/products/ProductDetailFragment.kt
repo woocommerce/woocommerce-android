@@ -179,6 +179,9 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                     product.ratingCount.toString()
             )?.setRating(product.averageRating)
         }
+
+        addLinkView(DetailCard.Primary, R.string.product_view_in_store, product.permalink)
+        addLinkView(DetailCard.Primary, R.string.product_view_affiliate, product.externalUrl)
     }
 
     private fun addPricingAndInventoryCard(product: WCProductModel) {
@@ -337,6 +340,29 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             }
         }
         return addPropertyView(card, groupNameId, propertyValue, LinearLayout.VERTICAL)
+    }
+
+    /**
+     * Adds a property link to the passed card
+     */
+    private fun addLinkView(card: DetailCard, @StringRes captionId: Int, url: String): WCProductPropertyLinkView? {
+        if (url.isEmpty()) return null
+
+        val caption = getString(captionId)
+        val linkViewTag = "${caption}_tag"
+
+        val cardView = findOrAddCardView(card)
+        val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
+        var linkView = container.findViewWithTag<WCProductPropertyLinkView>(linkViewTag)
+
+        if (linkView == null) {
+            linkView = WCProductPropertyLinkView(activity as Context)
+            linkView.tag = linkViewTag
+            container.addView(linkView)
+        }
+
+        linkView.show(caption, url)
+        return linkView
     }
 
     /**
