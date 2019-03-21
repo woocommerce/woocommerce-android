@@ -4,6 +4,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.CurrencyFormatter
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -12,16 +13,26 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class ProductDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
+    wooCommerceStore: WooCommerceStore,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val currencyFormatter: CurrencyFormatter
 ) : ProductDetailContract.Presenter {
-    override var remoteProductId = 0L
+    private var remoteProductId = 0L
+    private var currencyCode: String? = null
+
+    init {
+        wooCommerceStore.getSiteSettings(selectedSite.get())?.let { settings ->
+            currencyCode = settings.currencyCode
+        }
+    }
 
     private var view: ProductDetailContract.View? = null
 
@@ -51,6 +62,14 @@ class ProductDetailPresenter @Inject constructor(
         } else {
             uiMessageResolver.showOfflineSnack()
         }
+    }
+
+    override fun formatCurrency(rawValue: String): String {
+        if (rawValue.isEmpty()) return rawValue
+
+        return currencyCode?.let {
+            currencyFormatter.formatCurrency(rawValue, it)
+        } ?: rawValue
     }
 
     @SuppressWarnings("unused")

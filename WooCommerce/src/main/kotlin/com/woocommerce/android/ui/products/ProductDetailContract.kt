@@ -6,10 +6,9 @@ import org.wordpress.android.fluxc.model.WCProductModel
 
 interface ProductDetailContract {
     interface Presenter : BasePresenter<View> {
-        var remoteProductId: Long
-
         fun getProduct(remoteProductId: Long): WCProductModel?
         fun fetchProduct(remoteProductId: Long)
+        fun formatCurrency(rawValue: String): String
     }
 
     interface View : BaseView<Presenter> {

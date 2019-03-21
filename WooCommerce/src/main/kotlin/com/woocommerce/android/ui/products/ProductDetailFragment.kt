@@ -186,7 +186,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
     private fun addPricingAndInventoryCard(product: WCProductModel) {
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.regularPrice.isNotEmpty() ||
+        val hasPricingInfo = product.price.isNotEmpty() ||
                 product.salePrice.isNotEmpty() ||
                 product.taxClass.isNotEmpty() ||
                 product.taxStatus.isNotEmpty()
@@ -196,12 +196,12 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice.isNotEmpty()) {
                 val group = mapOf(
-                        Pair(getString(R.string.product_regular_price), product.regularPrice),
-                        Pair(getString(R.string.product_sale_price), product.salePrice)
+                        Pair(getString(R.string.product_regular_price), presenter.formatCurrency(product.regularPrice)),
+                        Pair(getString(R.string.product_sale_price), presenter.formatCurrency(product.salePrice))
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
-                addPropertyView(pricingCard, R.string.product_price, product.price)
+                addPropertyView(pricingCard, R.string.product_price, presenter.formatCurrency(product.price))
             }
         }
 
