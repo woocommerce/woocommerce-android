@@ -252,17 +252,20 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val hasWidth = product.width.isNotEmpty()
         val hasHeight = product.height.isNotEmpty()
 
-        // l x w x h
+        val dimensionUnit = presenter.getDimensionUnit()
         val propertySize = if (hasLength && hasWidth && hasHeight) {
-            "${product.length} x ${product.width} x ${product.height}"
+            "${product.length} x ${product.width} x ${product.height} $dimensionUnit"
         } else if (hasWidth && hasHeight) {
-            "${product.width} x ${product.height}"
+            "${product.width} x ${product.height} $dimensionUnit"
         } else {
             ""
         }
 
+        val weightUnit = presenter.getWeightUnit()
+        val weight = if (product.weight.isNotEmpty()) "${product.weight} $weightUnit" else ""
+
         val group = mapOf(
-                Pair(getString(R.string.product_weight), product.weight),
+                Pair(getString(R.string.product_weight), weight),
                 Pair(getString(R.string.product_size), propertySize),
                 Pair(getString(R.string.product_shipping_class), product.shippingClass)
         )
