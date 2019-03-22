@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -78,6 +79,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
+        (activity as? AppCompatActivity)?.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
         remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
         val product = presenter.getProduct(remoteProductId)
@@ -106,6 +108,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     }
 
     override fun onDestroyView() {
+        (activity as? AppCompatActivity)?.supportActionBar?.setHomeAsUpIndicator(null)
         presenter.dropView()
         super.onDestroyView()
     }
