@@ -257,7 +257,10 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
         if (product.downloadable) {
             val count = product.getDownloadableFiles().size.toString()
-            val limit = if (product.downloadLimit > 0) product.downloadLimit.toString() else ""
+            val limit = if (product.downloadLimit > 0) String.format(
+                    getString(R.string.product_download_limit_count),
+                    product.downloadLimit
+            ) else ""
             val expiry = if (product.downloadExpiry > 0) String.format(
                     getString(R.string.product_download_expiry_days),
                     product.downloadExpiry

@@ -21,13 +21,14 @@
 
     <TextView
         android:id="@+id/textPropertyValue"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/product_detail_property_margin"
         android:layout_marginEnd="@dimen/product_detail_property_margin"
         android:layout_marginStart="@dimen/product_detail_property_margin"
+        android:layout_marginTop="@dimen/margin_small"
         android:ellipsize="end"
+        android:lineSpacingExtra="2dp"
         android:textColor="@color/wc_grey_medium"
         android:textSize="@dimen/text_medium"
         app:layout_constraintBottom_toTopOf="@id/divider"
