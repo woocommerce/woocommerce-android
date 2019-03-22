@@ -27,6 +27,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
@@ -79,7 +80,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        (activity as? AppCompatActivity)?.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+        (activity as? AppCompatActivity)
+                ?.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
         remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
         val product = presenter.getProduct(remoteProductId)
@@ -171,13 +173,12 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
     private fun addPrimaryCard(product: WCProductModel) {
         addPropertyView(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
-        addPropertyView(DetailCard.Primary, R.string.product_total_orders, product.totalSales.toString())
-
+        addPropertyView(DetailCard.Primary, R.string.product_total_orders, FormatUtils.formatInt(product.totalSales))
         if (product.ratingCount > 0) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_reviews,
-                    product.ratingCount.toString()
+                    FormatUtils.formatInt(product.ratingCount)
             )?.setRating(product.averageRating)
         }
 
@@ -211,7 +212,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             val group = mapOf(
                     Pair(getString(R.string.product_stock_status), product.stockStatus),
                     Pair(getString(R.string.product_backorders), product.backorders),
-                    Pair(getString(R.string.product_stock_quantity), product.stockQuantity.toString()),
+                    Pair(getString(R.string.product_stock_quantity), FormatUtils.formatInt(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
             addPropertyGroup(pricingCard, R.string.product_inventory, group)
