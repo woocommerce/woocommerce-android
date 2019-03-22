@@ -50,7 +50,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         Primary,
         PricingAndInventory,
         Inventory,
-        Attributes,
         PurchaseDetails
     }
 
@@ -167,7 +166,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
         addPrimaryCard(product)
         addPricingAndInventoryCard(product)
-        addAttributesCard(product)
         addPurchaseDetailsCard(product)
     }
 
@@ -218,17 +216,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             addPropertyGroup(pricingCard, R.string.product_inventory, group)
         } else {
             addPropertyView(pricingCard, getString(R.string.product_sku), product.sku)
-        }
-    }
-
-    private fun addAttributesCard(product: WCProductModel) {
-        product.getAttributes().forEach { attribute ->
-            addPropertyView(
-                    DetailCard.Attributes,
-                    attribute.name,
-                    attribute.getCommaSeparatedOptions(),
-                    LinearLayout.VERTICAL
-            )
         }
     }
 
@@ -395,7 +382,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             DetailCard.Primary -> null
             DetailCard.PricingAndInventory -> getString(R.string.product_pricing_and_inventory)
             DetailCard.Inventory -> getString(R.string.product_inventory)
-            DetailCard.Attributes -> getString(R.string.product_attributes)
             DetailCard.PurchaseDetails -> getString(R.string.product_purchase_details)
         }
 
