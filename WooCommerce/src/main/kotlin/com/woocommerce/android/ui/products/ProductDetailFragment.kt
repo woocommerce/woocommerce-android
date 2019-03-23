@@ -375,7 +375,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
 
         val cardView = WCProductPropertyCardView(context)
-        cardView.elevation = (resources.getDimensionPixelSize(R.dimen.card_elevation)).toFloat()
         cardView.tag = cardTag
 
         val cardViewCaption: String? = when (card) {
