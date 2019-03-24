@@ -28,7 +28,6 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DisplayUtils
-import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
@@ -211,7 +210,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
             val group = mapOf(
                     Pair(getString(R.string.product_stock_status), product.stockStatus),
                     Pair(getString(R.string.product_backorders), product.backorders),
-                    Pair(getString(R.string.product_stock_quantity), FormatUtils.formatInt(product.stockQuantity)),
+                    Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
             addPropertyGroup(pricingCard, R.string.product_inventory, group)
@@ -235,7 +234,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
 
         val weightUnit = presenter.getWeightUnit()
-        val weight = if (product.weight.isNotEmpty()) "${product.weight} $weightUnit" else ""
+        val weight = if (product.weight.isNotEmpty()) "${product.weight}$weightUnit" else ""
 
         val shippingGroup = mapOf(
                 Pair(getString(R.string.product_weight), weight),
