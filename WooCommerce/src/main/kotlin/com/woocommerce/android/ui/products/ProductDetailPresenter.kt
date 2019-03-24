@@ -66,6 +66,7 @@ class ProductDetailPresenter @Inject constructor(
             val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
             dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
         } else {
+            view?.showSkeleton(false)
             uiMessageResolver.showOfflineSnack()
         }
     }

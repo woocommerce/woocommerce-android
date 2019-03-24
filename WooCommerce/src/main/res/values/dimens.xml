@@ -149,8 +149,6 @@
     <dimen name="skeleton_order_note_item_height">96dp</dimen>
     <dimen name="skeleton_default_text_height">20sp</dimen>
     <dimen name="skeleton_default_text_height_two_lines">40sp</dimen>
-    <dimen name="skeleton_default_text_height_three_lines">60sp</dimen>
-    <dimen name="skeleton_default_text_height_four_lines">80sp</dimen>
 
     <!--
         Products
