@@ -9,6 +9,6 @@ import javax.inject.Inject
 @ActivityScope
 class ProductDetailUIMessageResolver @Inject constructor(val activity: ProductDetailActivity) : UIMessageResolver {
     override val snackbarRoot: ViewGroup by lazy {
-        activity.findViewById(R.id.snack_root) as ViewGroup
+        activity.findViewById(R.id.productDetail_root) as ViewGroup
     }
 }

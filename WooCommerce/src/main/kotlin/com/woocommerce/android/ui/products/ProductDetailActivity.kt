@@ -86,11 +86,12 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
                 0L
         )
 
-        val product = null // TODO presenter.getProduct(remoteProductId)
+        val product = presenter.getProduct(remoteProductId)
         if (product == null) {
+            showSkeleton(true)
             presenter.fetchProduct(remoteProductId)
         } else {
-            showProduct(product!!)
+            showProduct(product)
             if (savedInstanceState == null) {
                 presenter.fetchProduct(remoteProductId)
             }
@@ -154,7 +155,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
 
     override fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(productDetail_container, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
             skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageHeight
         } else {
             skeletonView.hide()
