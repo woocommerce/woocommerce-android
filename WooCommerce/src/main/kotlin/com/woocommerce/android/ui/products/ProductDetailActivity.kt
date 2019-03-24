@@ -55,6 +55,8 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var remoteProductId = 0L
+    private var productName = ""
+    private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,20 +69,28 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+        adjustToolbar()
+
+        // make image 40% of screen height
+        val displayHeight = DisplayUtils.getDisplayPixelHeight(this)
+        imageHeight = (displayHeight * 0.4).toInt()
+        productDetail_image.layoutParams.height = imageHeight
+
+        // set the height of the gradient scrim that appears atop the image
+        image_gradient_scrim.layoutParams.height = imageHeight / 3
 
         presenter.takeView(this)
 
-        if (savedInstanceState == null) {
-            remoteProductId = intent.getLongExtra(ARG_REMOTE_PRODUCT_ID, 0L)
-        } else {
-            remoteProductId = savedInstanceState.getLong(ARG_REMOTE_PRODUCT_ID)
-        }
+        remoteProductId = savedInstanceState?.getLong(ARG_REMOTE_PRODUCT_ID) ?: intent.getLongExtra(
+                ARG_REMOTE_PRODUCT_ID,
+                0L
+        )
 
-        val product = presenter.getProduct(remoteProductId)
+        val product = null // TODO presenter.getProduct(remoteProductId)
         if (product == null) {
             presenter.fetchProduct(remoteProductId)
         } else {
-            showProduct(product)
+            showProduct(product!!)
             if (savedInstanceState == null) {
                 presenter.fetchProduct(remoteProductId)
             }
@@ -88,16 +98,16 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
 
         // only show title when toolbar is collapsed
         app_bar_layout.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
-            internal var scrollRange = -1
+            var scrollRange = -1
 
             override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
                 if (scrollRange == -1) {
                     scrollRange = appBarLayout.totalScrollRange
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    collapsing_toolbar.setTitle(presenter.getTitle())
+                    collapsing_toolbar.title = productName
                 } else {
-                    collapsing_toolbar.setTitle(" ") // space between double quotes is on purpose
+                    collapsing_toolbar.title = " " // space between double quotes is on purpose
                 }
             }
         })
@@ -124,14 +134,16 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return if (item?.itemId == R.id.menu_share) {
-            shareProduct()
-            true
-        } else if (item?.itemId == android.R.id.home) {
-            onBackPressed()
-            true
-        } else {
-            super.onOptionsItemSelected(item)
+        return when {
+            item?.itemId == R.id.menu_share -> {
+                shareProduct()
+                true
+            }
+            item?.itemId == android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -143,6 +155,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
     override fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(productDetail_container, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageHeight
         } else {
             skeletonView.hide()
         }
@@ -151,18 +164,15 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
     override fun showProduct(product: WCProductModel) {
         if (isFinishing) return
 
-        if (product.name.isNotEmpty()) {
-            title = product.name
-        }
+        productName = product.name
 
         product.getFirstImageUrl()?.let {
             val imageWidth = DisplayUtils.getDisplayPixelWidth(this)
-            val imageHeight = resources.getDimensionPixelSize(R.dimen.product_detail_image_height)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageWidth, imageHeight)
             GlideApp.with(this)
                     .load(imageUrl)
                     .error(R.drawable.ic_product)
-                    .placeholder(R.drawable.picture_frame)
+                    .placeholder(R.drawable.product_detail_image_background)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(productDetail_image)
         }
@@ -415,6 +425,18 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
             }
             val title = resources.getText(R.string.product_share_dialog_title)
             startActivity(Intent.createChooser(shareIntent, title))
+        }
+    }
+
+    /*
+     * adjust the toolbar so it doesn't overlap the status bar
+     */
+    private fun adjustToolbar() {
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            val statusHeight = resources.getDimensionPixelSize(resourceId)
+            toolbar.layoutParams.height += statusHeight
+            toolbar.setPadding(0, statusHeight, 0, 0)
         }
     }
 }

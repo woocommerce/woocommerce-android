@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.os.Handler
+import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
@@ -96,4 +97,6 @@ class SkeletonView {
 
         isShowing = false
     }
+
+    fun findViewById(@IdRes id: Int): View? = parentView.findViewById(id)
 }

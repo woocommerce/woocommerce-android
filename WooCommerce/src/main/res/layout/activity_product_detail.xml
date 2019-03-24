@@ -13,7 +13,8 @@
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="false">
+        android:fitsSystemWindows="false"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -21,6 +22,8 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="false"
             app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <FrameLayout
@@ -31,11 +34,20 @@
                 <ImageView
                     android:id="@+id/productDetail_image"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/product_detail_image_height"
-                    android:background="@drawable/picture_frame"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/product_detail_image_background"
                     android:contentDescription="@string/orderdetail_product_image_contentdesc"
                     android:scaleType="centerCrop"
-                    tools:src="@drawable/ic_woo_waiting_customers"/>
+                    tools:height="224dp"/>
+
+                <ImageView
+                    android:id="@+id/image_gradient_scrim"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:background="@drawable/product_detail_gradient_scrim"
+                    android:importantForAccessibility="no"
+                    tools:layout_height="74dp"/>
 
                 <View
                     style="@style/Woo.Settings.Divider"
@@ -45,12 +57,11 @@
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
-                style="@style/ToolbarTheme"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
                 android:elevation="@dimen/appbar_elevation"
-                app:layout_collapseMode="pin"/>
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
