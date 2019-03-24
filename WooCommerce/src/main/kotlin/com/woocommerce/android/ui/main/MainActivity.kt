@@ -126,6 +126,8 @@ class MainActivity : AppCompatActivity(),
         if (!promoShown) {
             AppRatingDialog.showIfNeeded(this)
         }
+
+        showProductDetail(152) // TODO remove
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

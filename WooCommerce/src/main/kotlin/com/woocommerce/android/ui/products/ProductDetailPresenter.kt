@@ -81,6 +81,8 @@ class ProductDetailPresenter @Inject constructor(
     override fun getWeightUnit() = weightUnit ?: ""
     override fun getDimensionUnit() = dimensionUnit ?: ""
 
+    override fun getTitle(): String = getProduct(remoteProductId)?.name ?: ""
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {

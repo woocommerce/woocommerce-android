@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.StringRes
+import android.support.design.widget.AppBarLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -60,6 +62,10 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_product_detail)
+
+        setSupportActionBar(toolbar as Toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
         presenter.takeView(this)
@@ -79,6 +85,22 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
                 presenter.fetchProduct(remoteProductId)
             }
         }
+
+        // only show title when toolbar is collapsed
+        app_bar_layout.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
+            internal var scrollRange = -1
+
+            override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.totalScrollRange
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsing_toolbar.setTitle(presenter.getTitle())
+                } else {
+                    collapsing_toolbar.setTitle(" ") // space between double quotes is on purpose
+                }
+            }
+        })
     }
 
     override fun onDestroy() {

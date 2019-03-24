@@ -11,6 +11,7 @@ interface ProductDetailContract {
         fun formatCurrency(rawValue: String): String
         fun getWeightUnit(): String
         fun getDimensionUnit(): String
+        fun getTitle(): String
     }
 
     interface View : BaseView<Presenter> {
