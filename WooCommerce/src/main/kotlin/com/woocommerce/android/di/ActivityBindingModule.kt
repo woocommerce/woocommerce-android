@@ -37,7 +37,6 @@ abstract class ActivityBindingModule {
             OrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
-            ProductDetailModule::class,
             NotifsListModule::class,
             ReviewDetailModule::class,
             SitePickerModule::class))

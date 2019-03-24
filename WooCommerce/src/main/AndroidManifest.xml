@@ -67,8 +67,7 @@
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".ui.products.ProductDetailActivity">
-        </activity>
+            android:name=".ui.products.ProductDetailActivity" />
 
         <!-- Services -->
         <service

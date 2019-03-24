@@ -21,7 +21,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.fragment_product_detail.*
+import kotlinx.android.synthetic.main.activity_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.FormatUtils
@@ -59,7 +59,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.fragment_product_detail)
+        setContentView(R.layout.activity_product_detail)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
         presenter.takeView(this)
