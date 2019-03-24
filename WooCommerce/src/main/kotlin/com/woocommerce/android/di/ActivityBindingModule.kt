@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
+import com.woocommerce.android.ui.products.ProductDetailActivity
 import com.woocommerce.android.ui.products.ProductDetailModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
@@ -68,4 +69,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
     abstract fun provideSitePickerActivityInjector(): SitePickerActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = arrayOf(ProductDetailModule::class))
+    abstract fun provideProductDetailActivityInjector(): ProductDetailActivity
 }
