@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
@@ -171,12 +172,12 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
 
     private fun addPrimaryCard(product: WCProductModel) {
         addPropertyView(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
-        addPropertyView(DetailCard.Primary, R.string.product_total_orders, FormatUtils.formatInt(product.totalSales))
+        addPropertyView(DetailCard.Primary, R.string.product_total_orders, StringUtils.formatCount(product.totalSales))
         if (product.ratingCount > 0) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_reviews,
-                    FormatUtils.formatInt(product.ratingCount)
+                    StringUtils.formatCount(product.ratingCount)
             )?.setRating(product.averageRating)
         }
 

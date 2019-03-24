@@ -7,6 +7,9 @@ import android.util.Patterns
 import org.wordpress.android.fluxc.model.SiteModel
 
 object StringUtils {
+    private const val ONE_MILLION = 1000000
+    private const val ONE_THOUSAND = 1000
+
     /**
      * Borrowed and modified from WordPress-Android :)
      *
@@ -55,5 +58,22 @@ object StringUtils {
         return email?.let {
             return Patterns.EMAIL_ADDRESS.matcher(it).matches()
         } ?: false
+    }
+
+    /**
+     * Returns the passed number formatted as a count
+     * ex:
+     *  formatCount(200) -> 200
+     *  formatCount(2000) -> 2k
+     *  formatCount(20000) -> 20k
+     *  formatCount(2000000) - > 2m
+     */
+    fun formatCount(number: Int): String {
+        val absNumber = Math.abs(number)
+        return when {
+            absNumber >= ONE_MILLION -> (number / ONE_MILLION).toString() + "m"
+            absNumber >= ONE_THOUSAND -> (number / ONE_THOUSAND).toString() + "k"
+            else -> number.toString()
+        }
     }
 }
