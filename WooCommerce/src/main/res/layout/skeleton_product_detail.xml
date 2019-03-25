@@ -82,7 +82,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/skeleton_default_text_height"
-        android:layout_marginBottom="@dimen/settings_padding"
         android:layout_marginEnd="@dimen/settings_padding"
         android:layout_marginStart="@dimen/settings_padding"
         android:layout_marginTop="@dimen/settings_padding"
