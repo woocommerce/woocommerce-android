@@ -11,7 +11,6 @@ Language: pt_BR
     <string name="promo_btn_try_it">Experimente já</string>
     <string name="promo_btn_got_it">Entendi</string>
     <string name="tooltip_site_switcher">Toque para trocar de loja</string>
-    <string name="site_picker_title">Minhas lojas</string>
     <string name="username">Nome de usuário do WordPress.com</string>
     <string name="settings_signout">Fazer logout</string>
     <string name="orderstatus_select_status">Alterar status do pedido</string>
@@ -32,7 +31,6 @@ Language: pt_BR
     <string name="share_store_dialog_title">Compartilhe o URL de sua loja</string>
     <string name="share_store_button">Compartilhe sua loja</string>
     <string name="wc_mark_all_read_success">Todas as notificações marcadas como lidas</string>
-    <string name="login_update_required_desc">Esse aplicativo requer o WooCommerce 3.5 no seu servidor. Para continuar a usá-lo, atualize sua loja.</string>
     <string name="login_update_required_title">Atualizar loja para o WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Não foi possível conectar-se a %s</string>
     <string name="dismiss">Dispensar</string>
@@ -76,8 +74,6 @@ Language: pt_BR
     <string name="refresh_button">Atualizar</string>
     <string name="more_notifications">e %d muito mais.</string>
     <string name="new_notifications">%d novas notificações</string>
-    <string name="dashboard_plugin_notice_message">Esse aplicativo requer a instalação do WooCommerce 3.5 no seu servidor. Atualize o quanto antes para continuar a usar esse aplicativo.</string>
-    <string name="dashboard_plugin_notice_title">Atualize para o WooCommerce 3.5 para continuar a usar esse aplicativo</string>
     <string name="about_version">Versão %s</string>
     <string name="about_tos">Termos de serviço</string>
     <string name="about_publisher">Editor: Automattic, Inc</string>

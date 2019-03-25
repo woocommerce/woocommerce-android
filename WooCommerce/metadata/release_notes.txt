@@ -1,3 +1,2 @@
-Better order status tools: manually change the status of an order – click the pencil icon next to the status – or add custom statuses. You can use custom statuses to filter, too.
-Better multi-store tools: head to Settings and tap a store name to switch stores.
-Rare bug crashes are even more rare – they’re gone – and lots of small tweaks make the app smoother overall.
+We now display product images on the review and order screens.
+We fixed bugs related to moderating reviews, stats, top performers, and rare crashes.

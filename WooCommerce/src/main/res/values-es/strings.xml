@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-05 12:54:02+0000
+Translation-Revision-Date: 2019-03-15 16:01:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
@@ -11,7 +11,6 @@ Language: es
     <string name="promo_btn_try_it">Probar ahora</string>
     <string name="promo_btn_got_it">De acuerdo</string>
     <string name="tooltip_site_switcher">Toca para cambiar de tienda</string>
-    <string name="site_picker_title">Mis tiendas</string>
     <string name="username">Nombre de usuario de WordPress.com</string>
     <string name="settings_signout">Salir</string>
     <string name="orderstatus_select_status">Cambiar estado del pedido</string>
@@ -32,7 +31,6 @@ Language: es
     <string name="share_store_dialog_title">Comparte la URL de tu tienda</string>
     <string name="share_store_button">Compartir tienda</string>
     <string name="wc_mark_all_read_success">Se han marcado todas las notificaciones como leídas</string>
-    <string name="login_update_required_desc">Para usar esta aplicación es necesario tener WooCommerce 3.5 en el servidor. Actualiza tu tienda cuanto antes para poder seguir usando esta aplicación.</string>
     <string name="login_update_required_title">Actualizar tienda a WooCommerce 3.5</string>
     <string name="login_verifying_site_error">No se puede conectar a %s</string>
     <string name="dismiss">Descartar </string>
@@ -76,14 +74,12 @@ Language: es
     <string name="refresh_button">Actualizar</string>
     <string name="more_notifications">y %d más.</string>
     <string name="new_notifications">%d notificaciones nuevas</string>
-    <string name="dashboard_plugin_notice_message">Para usar esta aplicación, debes instalar WooCommerce 3.5 en el servidor. Actualízala cuanto antes para poder seguir usando esta aplicación.</string>
-    <string name="dashboard_plugin_notice_title">Actualiza a WooCommerce 3.5 para seguir usando esta aplicación</string>
     <string name="about_version">Versión %s</string>
     <string name="about_tos">Condiciones del servicio</string>
     <string name="about_publisher">Editor: Automattic, Inc</string>
     <string name="about_appname">WooCommerce para Android</string>
     <string name="support_identity_input_dialog_name_label">Nombre</string>
-    <string name="settings_licenses">Abrir licencias de origen</string>
+    <string name="settings_licenses">Licencias de código abierto</string>
     <string name="settings_about">Acerca de la aplicación</string>
     <string name="logviewer_share_error">No se ha podido compartir el registro</string>
     <string name="logviewer_error_copy_to_clipboard">Se ha producido un error al copiar en el portapapeles</string>

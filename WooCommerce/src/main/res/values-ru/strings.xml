@@ -11,7 +11,6 @@ Language: ru
     <string name="promo_btn_try_it">Попробовать</string>
     <string name="promo_btn_got_it">Понятно</string>
     <string name="tooltip_site_switcher">Нажмите, чтобы переключиться между магазинами</string>
-    <string name="site_picker_title">Мои магазины</string>
     <string name="username">Имя пользователя WordPress.com</string>
     <string name="settings_signout">Выйти</string>
     <string name="orderstatus_select_status">Изменить статус заказа</string>
@@ -32,7 +31,6 @@ Language: ru
     <string name="share_store_dialog_title">Поделитесь URL-адресом своего магазина</string>
     <string name="share_store_button">Поделиться адресом магазина</string>
     <string name="wc_mark_all_read_success">Все уведомления помечены как прочитанные.</string>
-    <string name="login_update_required_desc">Для использования этого приложения необходимо установить на сервере версию WooCommerce 3.5. Чтобы продолжить использовать это приложение, обновите свой магазин.</string>
     <string name="login_update_required_title">Обновите свой магазин WooCommerce до версии 3.5</string>
     <string name="login_verifying_site_error">Не удалось подключиться к %s</string>
     <string name="dismiss">Закрыть</string>
@@ -77,8 +75,6 @@ Language: ru
     <string name="refresh_button">Обновить</string>
     <string name="more_notifications">и еще %d.</string>
     <string name="new_notifications">Новых уведомлений: %d</string>
-    <string name="dashboard_plugin_notice_message">Для использования этого приложения необходимо установить на сервер WooCommerce 3.5. Чтобы продолжить работу с приложением, как можно скорее установите обновление.</string>
-    <string name="dashboard_plugin_notice_title">Чтобы продолжить использовать приложение, обновите WooCommerce до версии 3.5</string>
     <string name="about_version">Версия %s</string>
     <string name="about_tos">Условия предоставления услуг</string>
     <string name="about_publisher">Автор: Automattic, Inc</string>

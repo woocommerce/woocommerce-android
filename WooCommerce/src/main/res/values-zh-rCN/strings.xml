@@ -11,7 +11,6 @@ Language: zh_CN
     <string name="promo_btn_try_it">立即试用</string>
     <string name="promo_btn_got_it">知道了</string>
     <string name="tooltip_site_switcher">轻点可切换商店</string>
-    <string name="site_picker_title">我的商店</string>
     <string name="username">WordPress.com 用户名</string>
     <string name="settings_signout">注销</string>
     <string name="orderstatus_select_status">更改订单状态</string>
@@ -72,8 +71,6 @@ Language: zh_CN
     <string name="refresh_button">刷新</string>
     <string name="more_notifications">和另外 %d 个。</string>
     <string name="new_notifications">%d 条新通知</string>
-    <string name="dashboard_plugin_notice_message">此应用程序需要您在服务器上安装 WooCommerce 3.5。请尽快更新以便继续使用此应用程序。</string>
-    <string name="dashboard_plugin_notice_title">更新至 WooCommerce 3.5，继续使用此应用程序</string>
     <string name="about_version">版本 %s</string>
     <string name="about_tos">服务条款</string>
     <string name="about_publisher">发布者：Automattic, Inc</string>
