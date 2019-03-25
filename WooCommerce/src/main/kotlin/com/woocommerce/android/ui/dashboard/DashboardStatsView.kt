@@ -193,8 +193,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
                 setLabelCount(3, true)
 
-                axisMinimum = 0F
-
                 valueFormatter = IAxisValueFormatter { value, _ ->
                     // Only use non-zero values for the axis
                     value.toDouble().takeIf { it > 0 }?.let {
@@ -285,6 +283,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
 
         with(chart) {
+            axisLeft.axisMinimum = 0f
+            axisRight.axisMinimum = 0f
             data = BarData(dataSet)
             animateY(duration)
         }
