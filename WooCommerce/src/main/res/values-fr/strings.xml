@@ -11,7 +11,6 @@ Language: fr
     <string name="promo_btn_try_it">Essayer maintenant</string>
     <string name="promo_btn_got_it">Compris</string>
     <string name="tooltip_site_switcher">Appuyer pour passer d\'une boutique à l\'autre</string>
-    <string name="site_picker_title">Mes boutiques</string>
     <string name="username">Nom d\'utilisateur WordPress.com</string>
     <string name="settings_signout">Se déconnecter</string>
     <string name="orderstatus_select_status">Modifier l\'état des commandes</string>
@@ -32,7 +31,6 @@ Language: fr
     <string name="share_store_dialog_title">Partager l\'URL de votre boutique</string>
     <string name="share_store_button">Partager votre boutique</string>
     <string name="wc_mark_all_read_success">Toutes les notifications sont marquées comme étant lues</string>
-    <string name="login_update_required_desc">Cette application nécessite WooCommerce 3.5 sur votre serveur. Pour continuer d\'utiliser cette application, veuillez mettre à jour votre boutique.</string>
     <string name="login_update_required_title">Mise à jour de la boutique vers WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Connexion à %s impossible</string>
     <string name="dismiss">Fermer</string>
@@ -75,8 +73,6 @@ Language: fr
     <string name="refresh_button">Rafraîchir</string>
     <string name="more_notifications">et %d de plus.</string>
     <string name="new_notifications">%d nouvelles notifications</string>
-    <string name="dashboard_plugin_notice_message">Cette application nécessite l\'installation de WooCommerce 3.5 sur votre serveur. Exécutez la mise à jour dès que possible pour continuer d\'utiliser cette application.</string>
-    <string name="dashboard_plugin_notice_title">Exécutez la mise à jour vers WooCommerce 3.5 pour continuer d\'utiliser cette application</string>
     <string name="about_version">Version %s</string>
     <string name="about_tos">Conditions d\'utilisation</string>
     <string name="about_publisher">Éditeur : Automattic, Inc</string>

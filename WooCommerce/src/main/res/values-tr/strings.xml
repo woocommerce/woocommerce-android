@@ -11,7 +11,6 @@ Language: tr
     <string name="promo_btn_try_it">Şimdi deneyin</string>
     <string name="promo_btn_got_it">Anladım</string>
     <string name="tooltip_site_switcher">Mağazalar arasında geçiş yapmak için dokunun</string>
-    <string name="site_picker_title">Mağazalarım</string>
     <string name="username">WordPress.com kullanıcı adı</string>
     <string name="settings_signout">Oturumu kapat</string>
     <string name="orderstatus_select_status">Sipariş durumunu değiştir</string>
@@ -32,7 +31,6 @@ Language: tr
     <string name="share_store_dialog_title">Mağazanızın URL\'sini paylaşın</string>
     <string name="share_store_button">Mağazanızı paylaşın</string>
     <string name="wc_mark_all_read_success">Tüm bildirimler okundu olarak işaretlendi</string>
-    <string name="login_update_required_desc">Bu uygulama için sunucunuzda WooCommerce 3.5 olması gerekir. Bu uygulamayı kullanmaya devam etmek için lütfen mağazanızı güncelleyin.</string>
     <string name="login_update_required_title">Mağazayı WooCommerce 3.5’e Yükseltin</string>
     <string name="login_verifying_site_error">%s ile bağlantı kurulamıyor</string>
     <string name="dismiss">Gizle</string>
@@ -76,8 +74,6 @@ Language: tr
     <string name="refresh_button">Yenile</string>
     <string name="more_notifications">ve %d tane daha.</string>
     <string name="new_notifications">%d yeni bildirim</string>
-    <string name="dashboard_plugin_notice_message">Bu uygulama için sunucunuza WooCommerce 3.5\'i yüklemeniz gerekir. Bu uygulamayı kullanmaya devam etmek için mümkün olan en kısa süre içinde güncelleyin.</string>
-    <string name="dashboard_plugin_notice_title">Bu uygulamayı kullanmaya devam etmek için WooCommerce 3.5\'e güncelleyin</string>
     <string name="about_version">Sürüm %s</string>
     <string name="about_tos">Hizmet koşulları</string>
     <string name="about_publisher">Yayımlayan: Automattic, Inc</string>
