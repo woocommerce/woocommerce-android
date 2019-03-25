@@ -11,7 +11,6 @@ Language: id
     <string name="promo_btn_try_it">Coba sekarang</string>
     <string name="promo_btn_got_it">Saya mengerti</string>
     <string name="tooltip_site_switcher">Ketuk untuk beralih toko</string>
-    <string name="site_picker_title">Toko saya</string>
     <string name="username">Nama pengguna WordPress.com</string>
     <string name="settings_signout">Logout</string>
     <string name="orderstatus_select_status">Ubah status pesanan</string>
@@ -32,7 +31,6 @@ Language: id
     <string name="share_store_dialog_title">Bagikan URL toko Anda</string>
     <string name="share_store_button">Bagikan toko Anda</string>
     <string name="wc_mark_all_read_success">Semua pemberitahuan ditandai sudah dibaca</string>
-    <string name="login_update_required_desc">Aplikasi ini memerlukan WooCommerce 3.5 di server Anda. Agar dapat terus menggunakan aplikasi ini, harap perbarui toko Anda.</string>
     <string name="login_update_required_title">Perbarui Toko ke WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Tidak dapat terhubung ke %s</string>
     <string name="dismiss">Selesai</string>
@@ -76,8 +74,6 @@ Language: id
     <string name="refresh_button">Segarkan</string>
     <string name="more_notifications">dan %d lainnya.</string>
     <string name="new_notifications">%d pemberitahuan baru</string>
-    <string name="dashboard_plugin_notice_message">Aplikasi ini mewajibkan Anda menginstal WooCommerce 3.5 di server Anda. Perbarui sesegera mungkin untuk terus menggunakan aplikasi ini.</string>
-    <string name="dashboard_plugin_notice_title">Perbarui ke WooCommerce 3.5 untuk terus menggunakan aplikasi ini</string>
     <string name="about_version">Versi %s</string>
     <string name="about_tos">Ketentuan layanan</string>
     <string name="about_publisher">Penerbit: Automattic, Inc</string>
