@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        with (bottomNavView.activeFragment) {
+        with(bottomNavView.activeFragment) {
             if (isAdded && childFragmentManager.backStackEntryCount > 0) {
                 childFragmentManager.popBackStack()
                 return
