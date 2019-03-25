@@ -175,14 +175,14 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        val fragment = bottomNavView.activeFragment
-        with(fragment.childFragmentManager) {
-            if (backStackEntryCount > 0) {
-                popBackStack()
-            } else {
-                super.onBackPressed()
+        with (bottomNavView.activeFragment) {
+            if (isAdded && childFragmentManager.backStackEntryCount > 0) {
+                childFragmentManager.popBackStack()
+                return
             }
         }
+
+        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
