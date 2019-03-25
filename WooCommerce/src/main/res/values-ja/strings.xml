@@ -11,7 +11,6 @@ Language: ja_JP
     <string name="promo_btn_try_it">今すぐお試しください</string>
     <string name="promo_btn_got_it">了解</string>
     <string name="tooltip_site_switcher">タップするとストアの切り替えができます</string>
-    <string name="site_picker_title">自分のストア</string>
     <string name="username">WordPress.com のユーザー名</string>
     <string name="settings_signout">ログアウト</string>
     <string name="orderstatus_select_status">注文ステータスを変更</string>
@@ -32,7 +31,6 @@ Language: ja_JP
     <string name="share_store_dialog_title">ストアの URL を共有します</string>
     <string name="share_store_button">ストアを共有</string>
     <string name="wc_mark_all_read_success">すべての通知が既読としてマークされました</string>
-    <string name="login_update_required_desc">このアプリではサーバーへの WooCommerce 3.5 のインストールが必要です。引き続きこのアプリを使用するには、ストアを更新してください。</string>
     <string name="login_update_required_title">ストアを WooCommerce 3.5 に更新</string>
     <string name="login_verifying_site_error">%s に接続できません</string>
     <string name="dismiss">非表示にする</string>
@@ -76,8 +74,6 @@ Language: ja_JP
     <string name="refresh_button">再読み込み</string>
     <string name="more_notifications">さらに%d件表示。</string>
     <string name="new_notifications">%d件の新しい通知</string>
-    <string name="dashboard_plugin_notice_message">このアプリではサーバーへの WooCommerce 3.5のインストールが必要です。引き続きアプリを使用するには、すぐにアップデートする必要があります。</string>
-    <string name="dashboard_plugin_notice_title">WooCommerce 3.5に更新して引き続きアプリを使用</string>
     <string name="about_version">バージョン%s</string>
     <string name="about_tos">利用規約</string>
     <string name="about_publisher">投稿者:Automattic, Inc</string>

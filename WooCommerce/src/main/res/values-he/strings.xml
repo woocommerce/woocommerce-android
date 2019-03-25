@@ -11,7 +11,6 @@ Language: he_IL
     <string name="promo_btn_try_it">כדאי לנסות עכשיו</string>
     <string name="promo_btn_got_it">הבנתי</string>
     <string name="tooltip_site_switcher">להקיש להחלפה בין חנויות</string>
-    <string name="site_picker_title">החנויות שלי</string>
     <string name="username">שם משתמש של WordPress.com</string>
     <string name="settings_signout">התנתקות</string>
     <string name="orderstatus_select_status">שינוי מצב ההזמנה</string>
@@ -32,7 +31,6 @@ Language: he_IL
     <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
     <string name="share_store_button">שיתוף החנות שלך</string>
     <string name="wc_mark_all_read_success">כל ההודעות מסומנות כ\'נקרא\'</string>
-    <string name="login_update_required_desc">כדי להשתמש באפליקציה זו, יש להתקין את WooCommerce 3.5 בשרת. כדי להמשיך את השימוש באפליקציה זאת, יש לעדכן את החנות שלך.</string>
     <string name="login_update_required_title">לעדכן את החנות ל-Woocommerce 3.5</string>
     <string name="login_verifying_site_error">אין אפשרות להתחבר אל %s</string>
     <string name="dismiss">סגור</string>
@@ -76,8 +74,6 @@ Language: he_IL
     <string name="refresh_button">רענון</string>
     <string name="more_notifications">ו-%d נוספים.</string>
     <string name="new_notifications">%d הודעות חדשות</string>
-    <string name="dashboard_plugin_notice_message">כדי להשתמש באפליקציה זו, יש להתקין את WooCommerce 3.5 בשרת. כדאי לבצע עדכון בהקדם האפשרי כדי להמשיך להשתמש באפליקציה זו.</string>
-    <string name="dashboard_plugin_notice_title">יש לעדכן ל-WooCommerce 3.5 כדי להמשיך להשתמש באפליקציה זו</string>
     <string name="about_version">גרסה %s</string>
     <string name="about_tos">תנאי שימוש</string>
     <string name="about_publisher">פורסם על ידי: Automattic, Inc‎</string>
