@@ -1,2 +1,3 @@
-We now display product images on the review and order screens.
-We fixed bugs related to moderating reviews, stats, top performers, and rare crashes.
+A bug that stopped you from sending email from your order notifications is no more, so you can Send All The Things. We also fixed a few less-than-ideal visuals, including:
+– Cut-off button shadows in dialogs
+– Missing overscroll indicators and color/alignment wonkiness in lists

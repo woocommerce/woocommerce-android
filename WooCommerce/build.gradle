@@ -44,8 +44,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "1.4"
-        versionCode 44
+        versionName "1.5-rc-1"
+        versionCode 45
 
         minSdkVersion 21
         targetSdkVersion 27
