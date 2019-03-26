@@ -273,6 +273,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             barColors.add(normalColor)
         }
 
+        // determine the min revenue so we can determine the min value for the x-axis, which should be zero
+        // unless the stats contain any negative revenue
+        var minRevenue = 0f
+        for (entry in revenueStats) {
+            val value = entry.value.toFloat()
+            if (value < minRevenue) minRevenue = value
+        }
+
         val dataSet = generateBarDataSet(revenueStats).apply {
             colors = barColors
             setDrawValues(false)
@@ -281,10 +289,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
-
         with(chart) {
-            axisLeft.axisMinimum = 0f
-            axisRight.axisMinimum = 0f
+            axisLeft.axisMinimum = minRevenue
             data = BarData(dataSet)
             animateY(duration)
         }
