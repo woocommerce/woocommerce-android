@@ -7,8 +7,9 @@
     android:orientation="vertical">
 
     <View
+        android:id="@+id/productImage_Skeleton"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/product_detail_image_height"
+        android:layout_height="224dp"
         android:background="@drawable/skeleton_background"/>
 
     <View
