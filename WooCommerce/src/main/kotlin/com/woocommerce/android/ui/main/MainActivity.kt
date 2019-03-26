@@ -271,10 +271,13 @@ class MainActivity : AppCompatActivity(),
      * Called when the user switches sites - reset the fragments and tell the dashboard to refresh
      */
     override fun resetSelectedSite() {
-        bottomNavView.reset()
-        with(bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
-            updateActivityTitle()
-            refreshDashboard(true)
+        if (::bottomNavView.isInitialized) {
+            bottomNavView.reset()
+
+            with(bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
+                updateActivityTitle()
+                refreshDashboard(true)
+            }
         }
     }
 
