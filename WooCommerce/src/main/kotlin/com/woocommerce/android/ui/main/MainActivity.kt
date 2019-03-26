@@ -83,6 +83,8 @@ class MainActivity : AppCompatActivity(),
     private var isBottomNavShowing = true
     private lateinit var bottomNavView: MainNavigationView
 
+    private var runOnResumeFunc: (() -> Unit)? = null
+
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
 
@@ -138,6 +140,11 @@ class MainActivity : AppCompatActivity(),
         updateNotificationBadge()
 
         checkConnection()
+
+        runOnResumeFunc?.let {
+            it.invoke()
+            runOnResumeFunc = null
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -278,6 +285,8 @@ class MainActivity : AppCompatActivity(),
                 updateActivityTitle()
                 refreshDashboard(true)
             }
+        } else {
+            runOnResumeFunc = { bottomNavView.reset() }
         }
     }
 
