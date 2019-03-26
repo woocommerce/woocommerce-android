@@ -2,6 +2,7 @@
 -----
 
 Bugfixes
+* Fixed bug that led to incorrect stats bar heights
 
 Improvements
 
