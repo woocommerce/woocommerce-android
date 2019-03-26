@@ -197,12 +197,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         siteAdapter.siteList = wcSites
-
-        if (selectedSite.exists()) {
-            siteAdapter.selectedSiteId = selectedSite.get().siteId
-        } else {
-            siteAdapter.selectedSiteId = wcSites[0].siteId
-        }
+        siteAdapter.selectedSiteId = selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
 
         button_continue.text = getString(R.string.continue_button)
         button_continue.isEnabled = true
