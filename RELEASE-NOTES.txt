@@ -1,8 +1,7 @@
-1.5
+1.6
 -----
 
 Bugfixes
-* Fixed a bug that prevented contacting a customer when an order was shown from a notification
 
 Improvements
 
