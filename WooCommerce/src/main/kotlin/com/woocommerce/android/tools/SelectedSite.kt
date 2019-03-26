@@ -44,7 +44,7 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
         AnalyticsTracker.refreshSiteMetadata(siteModel)
 
         // Notify listeners
-        getEventBus().post(SelectedSiteChangedEvent(siteModel))
+        getEventBus().postSticky(SelectedSiteChangedEvent(siteModel))
     }
 
     fun exists(): Boolean {

@@ -7,6 +7,7 @@ import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChang
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -137,8 +138,10 @@ class MainPresenter @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
+        EventBus.getDefault().removeStickyEvent(event)
+
         mainView?.resetSelectedSite()
         productImageMap.reset()
 
