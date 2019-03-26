@@ -6,8 +6,6 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
-import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -16,6 +14,7 @@ import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -68,6 +67,14 @@ class MainPresenter @Inject constructor(
             notificationStore.getNotificationByRemoteId(remoteNoteId)
 
     override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 0
+
+    override fun selectedSiteChanged(site: SiteModel) {
+        productImageMap.reset()
+
+        // Fetch a fresh list of order status options
+        dispatcher.dispatch(WCOrderActionBuilder
+                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site)))
+    }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -135,19 +142,6 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationsUnseenChangeEvent) {
         mainView?.showNotificationBadge(event.hasUnseen)
-    }
-
-    @Suppress("unused")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: SelectedSiteChangedEvent) {
-        EventBus.getDefault().removeStickyEvent(event)
-
-        mainView?.restart()
-        productImageMap.reset()
-
-        // Fetch a fresh list of order status options
-        dispatcher.dispatch(WCOrderActionBuilder
-                    .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(event.site)))
     }
 
     /**

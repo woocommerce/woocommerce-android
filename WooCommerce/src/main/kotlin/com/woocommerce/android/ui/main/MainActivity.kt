@@ -217,6 +217,13 @@ class MainActivity : AppCompatActivity(),
                 }
                 return
             }
+            REQUEST_CODE_SETTINGS -> {
+                // restart the activity if the user returned from settings and they switched sites
+                if (resultCode == AppSettingsActivity.RESULT_CODE_SITE_CHANGED) {
+                    presenter.selectedSiteChanged(selectedSite.get())
+                    restart()
+                }
+            }
         }
     }
 
@@ -267,9 +274,9 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * Called when the user switches sites - recreates the activity to all fragments are reset
+     * Called when the user switches sites - restarts the activity so all fragments and child fragments are reset
      */
-    override fun restart() {
+    private fun restart() {
         val intent = intent
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
         finish()
