@@ -223,6 +223,7 @@ class MainActivity : AppCompatActivity(),
                     presenter.selectedSiteChanged(selectedSite.get())
                     restart()
                 }
+                return
             }
         }
     }
