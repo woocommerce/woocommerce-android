@@ -41,13 +41,27 @@
                     tools:height="224dp"/>
 
                 <ImageView
-                    android:id="@+id/image_gradient_scrim"
+                    android:id="@+id/imageScrim"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:background="@drawable/product_detail_gradient_scrim"
                     android:importantForAccessibility="no"
                     tools:layout_height="74dp"/>
+
+                <TextView
+                    android:id="@+id/textStatusBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|bottom"
+                    android:layout_marginBottom="@dimen/margin_large"
+                    android:layout_marginStart="@dimen/margin_large"
+                    android:background="@drawable/rounded_rect"
+                    android:padding="@dimen/margin_medium"
+                    android:textColor="@color/wc_grey_light"
+                    android:visibility="gone"
+                    tools:text="Private"
+                    tools:visibility="visible"/>
 
                 <View
                     style="@style/Woo.Settings.Divider"
