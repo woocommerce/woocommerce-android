@@ -28,6 +28,7 @@ import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.widgets.AppRatingDialog
 import com.yarolegovich.wellsql.WellSql
 import dagger.MembersInjector
 import dagger.android.AndroidInjector
@@ -112,6 +113,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         dispatcher.register(this)
 
         AppPrefs.init(this)
+        AppRatingDialog.init(this)
 
         initAnalytics()
 
