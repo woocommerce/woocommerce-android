@@ -91,16 +91,6 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         childFragmentManager.popBackStackImmediate()
     }
 
-    override fun closeAllChildFragments() {
-        if (isAdded) {
-            with(childFragmentManager) {
-                while (backStackEntryCount > 0) popBackStackImmediate()
-            }
-        } else {
-            runOnResumeFunc = { closeAllChildFragments() }
-        }
-    }
-
     override fun loadChildFragment(fragment: Fragment, tag: String) {
         if (isAdded) {
             // before changing the custom animation, please read this PR:

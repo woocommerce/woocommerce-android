@@ -24,7 +24,6 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -83,8 +82,6 @@ class MainActivity : AppCompatActivity(),
     private var isBottomNavShowing = true
     private lateinit var bottomNavView: MainNavigationView
 
-    private var runOnResumeFunc: (() -> Unit)? = null
-
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
 
@@ -140,11 +137,6 @@ class MainActivity : AppCompatActivity(),
         updateNotificationBadge()
 
         checkConnection()
-
-        runOnResumeFunc?.let {
-            it.invoke()
-            runOnResumeFunc = null
-        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -275,19 +267,13 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * Called when the user switches sites - reset the fragments and tell the dashboard to refresh
+     * Called when the user switches sites - recreates the activity to all fragments are reset
      */
-    override fun resetSelectedSite() {
-        if (::bottomNavView.isInitialized) {
-            bottomNavView.reset()
-
-            with(bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
-                updateActivityTitle()
-                refreshDashboard(true)
-            }
-        } else {
-            runOnResumeFunc = { bottomNavView.reset() }
-        }
+    override fun restart() {
+        val intent = intent
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        finish()
+        startActivity(intent)
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {

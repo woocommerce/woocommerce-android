@@ -63,15 +63,6 @@ class MainNavigationView @JvmOverloads constructor(
         active(DASHBOARD.position)
     }
 
-    /**
-     * Reset the adapter so fragments are re-created
-     */
-    fun reset() {
-        if (::navAdapter.isInitialized) {
-            navAdapter.reset()
-        }
-    }
-
     fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
 
     fun updatePositionAndDeferInit(navPos: BottomNavigationPosition) {
@@ -181,15 +172,6 @@ class MainNavigationView @JvmOverloads constructor(
             val fragment = fragmentManager.findFragment(navPos)
             fragments.put(navPos.position, fragment)
             return fragment
-        }
-
-        internal fun reset() {
-            BottomNavigationPosition.values().forEach { navPos ->
-                fragments[navPos.position]?.closeAllChildFragments()
-            }
-
-            currentPosition = DASHBOARD
-            fragments.clear()
         }
     }
     // endregion

@@ -142,7 +142,7 @@ class MainPresenter @Inject constructor(
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
         EventBus.getDefault().removeStickyEvent(event)
 
-        mainView?.resetSelectedSite()
+        mainView?.restart()
         productImageMap.reset()
 
         // Fetch a fresh list of order status options
