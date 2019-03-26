@@ -68,6 +68,11 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
     fun closeCurrentChildFragment()
 
     /**
+     * Closes all child fragments
+     */
+    fun closeAllChildFragments()
+
+    /**
      * Locate a fragment on the back stack using the back stack tag provided.
      *
      * @return The fragment matching the provided tag, or null if not found.

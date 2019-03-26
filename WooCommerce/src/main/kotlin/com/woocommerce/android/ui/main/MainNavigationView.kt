@@ -184,18 +184,8 @@ class MainNavigationView @JvmOverloads constructor(
         }
 
         internal fun reset() {
-            fun clearChildBackstack(fragment: Fragment) {
-                if (fragment.isAdded) {
-                    with(fragment.childFragmentManager) {
-                        while (backStackEntryCount > 0) popBackStackImmediate()
-                    }
-                }
-            }
-
             BottomNavigationPosition.values().forEach { navPos ->
-                fragments[navPos.position]?.let { fragment ->
-                    clearChildBackstack(fragment)
-                }
+                fragments[navPos.position]?.closeAllChildFragments()
             }
 
             currentPosition = DASHBOARD
