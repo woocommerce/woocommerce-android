@@ -193,8 +193,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
                 setLabelCount(3, true)
 
-                axisMinimum = 0F
-
                 valueFormatter = IAxisValueFormatter { value, _ ->
                     // Only use non-zero values for the axis
                     value.toDouble().takeIf { it > 0 }?.let {
@@ -282,9 +280,17 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             highLightColor = ContextCompat.getColor(context, R.color.graph_highlight_color)
         }
 
-        val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
+        // determine the min revenue so we can set the min value for the left axis, which should be zero unless
+        // the stats contain any negative revenue
+        var minRevenue = 0f
+        for (value in dataSet.values) {
+            if (value.y < minRevenue) minRevenue = value.y
+        }
 
+        val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(chart) {
+            axisLeft.axisMinimum = minRevenue
+            axisRight.axisMinimum = 0f
             data = BarData(dataSet)
             animateY(duration)
         }
