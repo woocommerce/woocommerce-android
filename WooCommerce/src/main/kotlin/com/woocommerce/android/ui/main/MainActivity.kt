@@ -122,7 +122,6 @@ class MainActivity : AppCompatActivity(),
         val promoShown = presenter.hasMultipleStores() && WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
 
         // show the app rating dialog if it's time and we didn't just show the promo
-        AppRatingDialog.init(this)
         if (!promoShown) {
             AppRatingDialog.showIfNeeded(this)
         }
@@ -176,14 +175,14 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        val fragment = bottomNavView.activeFragment
-        with(fragment.childFragmentManager) {
-            if (backStackEntryCount > 0) {
-                popBackStack()
-            } else {
-                super.onBackPressed()
+        with(bottomNavView.activeFragment) {
+            if (isAdded && childFragmentManager.backStackEntryCount > 0) {
+                childFragmentManager.popBackStack()
+                return
             }
         }
+
+        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
