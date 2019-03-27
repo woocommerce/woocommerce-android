@@ -501,12 +501,9 @@
     <string name="promo_title_site_picker">Running multiple stores?</string>
     <string name="promo_message_site_picker">You can now switch between stores by tapping the selected store in Settings</string>
 
-    <!-- Post (product) stats -->
-    <string name="post_status_published">Published</string>
-    <string name="post_status_pending">Pending</string>
-    <string name="post_status_private">Private</string>
-    <string name="post_status_trashed">Trashed</string>
-    <string name="post_status_draft">Draft</string>
-    <string name="post_status_scheduled">Scheduled</string>
-    <string name="post_status_unknown">Unknown</string>
+    <!-- Product status -->
+    <string name="product_status_published">Published</string>
+    <string name="product_status_private">Private</string>
+    <string name="product_status_pending">Pending</string>
+    <string name="product_status_draft">Draft</string>
 </resources>

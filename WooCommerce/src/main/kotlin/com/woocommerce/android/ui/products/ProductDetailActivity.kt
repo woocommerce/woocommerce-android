@@ -18,7 +18,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.extensions.toLocalizedString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.StringUtils
@@ -26,8 +25,6 @@ import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.post.PostStatus
-import org.wordpress.android.fluxc.model.post.PostStatus.UNKNOWN
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
@@ -181,17 +178,11 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
         }
 
         // show status badge for unpublished products
-        fun statusFromString(status: String): PostStatus {
-            val statusLC = status.toLowerCase()
-            PostStatus.values().forEach { value ->
-                if (value.toString().toLowerCase() == statusLC) return value
+        ProductStatus.fromString(product.status)?.let { status ->
+            if (status != ProductStatus.PUBLISH) {
+                textStatusBadge.visibility = View.VISIBLE
+                textStatusBadge.text = status.toString(this)
             }
-            return UNKNOWN
-        }
-        val status = statusFromString(product.status)
-        if (status != PostStatus.PUBLISHED && status != PostStatus.UNKNOWN) {
-            textStatusBadge.visibility = View.VISIBLE
-            textStatusBadge.text = status.toLocalizedString(this)
         }
 
         addPrimaryCard(product)
