@@ -59,6 +59,7 @@
                     android:background="@drawable/rounded_rect"
                     android:padding="@dimen/margin_medium"
                     android:textColor="@color/wc_grey_light"
+                    android:textSize="@dimen/text_medium"
                     android:visibility="gone"
                     tools:text="Private"
                     tools:visibility="visible"/>
