@@ -1,8 +1,8 @@
-1.5
+1.6
 -----
 
 Bugfixes
-* Fixed a bug that prevented contacting a customer when an order was shown from a notification
+* Fixed bug that led to incorrect stats bar heights
 
 Improvements
 
