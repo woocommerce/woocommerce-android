@@ -72,7 +72,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SIGNUP_SOCIAL_TO_LOGIN(siteless = true),
         ADDED_SELF_HOSTED_SITE(siteless = true),
         CREATED_ACCOUNT(siteless = true),
-        LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED(siteless = true),
+        LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED(siteless = true),
         LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
 
         // -- Site Picker
