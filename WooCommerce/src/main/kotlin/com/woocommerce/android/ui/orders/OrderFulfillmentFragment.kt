@@ -95,6 +95,8 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
         // Populate the Customer Information Card
         orderFulfill_customerInfo.initView(order, true)
+
+        orderFulfill_btnComplete.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
