@@ -24,7 +24,7 @@ class FCMMessageService : FirebaseMessagingService() {
         if (!accountStore.hasAccessToken()) return
 
         message?.data?.let {
-            notificationHandler.buildAndShowNotificationFromNoteData(this, convertMapToBundle(it), accountStore.account)
+            notificationHandler.buildAndShowNotificationFromNoteData(this.applicationContext, convertMapToBundle(it), accountStore.account)
         } ?: WooLog.d(T.NOTIFS, "No notification message content received. Aborting.")
     }
 
