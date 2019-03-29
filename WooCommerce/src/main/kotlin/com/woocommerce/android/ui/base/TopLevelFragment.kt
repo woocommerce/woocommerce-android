@@ -35,7 +35,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     private var runOnResumeFunc: (() -> Unit)? = null
 
     override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
+        get() = host != null && childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
