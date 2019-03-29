@@ -72,9 +72,6 @@ class NotifsListFragment : TopLevelFragment(),
     private var pendingModerationNewStatus: String? = null
     private var pendingModerationRemoteNoteId: Long? = null
 
-    override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
-
     override var isRefreshPending = true
     private var listState: Parcelable? = null // Save the state of the recycler view
 

@@ -123,6 +123,8 @@ class MainNavigationView @JvmOverloads constructor(
         // Close any child fragments if open
         clearFragmentBackStack(fragment)
 
+        // add the fregment if it hasn't been added yet, otherwise hide the previously active
+        // fragment and show the incoming one
         val tag = navPos.getTag()
         if (fragmentManager.findFragmentByTag(tag) == null) {
             fragmentManager
@@ -143,6 +145,11 @@ class MainNavigationView @JvmOverloads constructor(
                         .beginTransaction()
                         .show(fragment)
                         .commitAllowingStateLoss()
+            }
+
+            // refresh the incoming fragment's data if it's due
+            if (fragment.isTimeToAutoRefresh()) {
+                fragment.refreshFragmentState()
             }
         }
 

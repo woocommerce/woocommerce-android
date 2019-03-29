@@ -81,9 +81,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     private val skeletonView = SkeletonView()
 
-    override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)

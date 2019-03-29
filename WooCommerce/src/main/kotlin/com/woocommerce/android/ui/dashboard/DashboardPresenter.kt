@@ -48,7 +48,7 @@ class DashboardPresenter @Inject constructor(
         private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
         init {
-             resetForceRefresh()
+            resetForceRefresh()
         }
 
         /**

@@ -15,7 +15,6 @@ interface DashboardContract {
     }
 
     interface View : BaseView<Presenter> {
-        var isActive: Boolean
         var isRefreshPending: Boolean
 
         fun refreshDashboard(forced: Boolean = false)
