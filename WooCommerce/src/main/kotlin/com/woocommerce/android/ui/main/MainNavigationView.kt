@@ -146,11 +146,6 @@ class MainNavigationView @JvmOverloads constructor(
                         .show(fragment)
                         .commitAllowingStateLoss()
             }
-
-            // refresh the incoming fragment's data if it's due
-            if (fragment.isTimeToAutoRefresh()) {
-                fragment.refreshFragmentState()
-            }
         }
 
         previousNavPos = navPos

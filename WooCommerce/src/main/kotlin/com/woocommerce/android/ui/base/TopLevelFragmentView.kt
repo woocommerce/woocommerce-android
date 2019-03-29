@@ -77,11 +77,6 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
     fun getFragmentFromBackStack(tag: String): Fragment?
 
     /**
-     * Determines whether it's time to auto-refresh the fragments data
-     */
-    fun isTimeToAutoRefresh(): Boolean
-
-    /**
      * Only open the order detail if the list is not actively being refreshed.
      */
     override fun openOrderDetail(order: WCOrderModel, markOrderComplete: Boolean) {

@@ -21,10 +21,6 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         // If the value associated with this label is true, then this
         // fragment is currently hosting a child fragment (drilled in).
         const val CHILD_FRAGMENT_ACTIVE = "child-fragment-active"
-
-        // auto-refresh after five minutes
-        const val AUTO_REFRESH_MS = 5 // * 1000
-        var lastRefreshTimestamp = 0L
     }
 
     /**
@@ -80,16 +76,6 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     override fun onDestroyView() {
         container.removeAllViews()
         super.onDestroyView()
-    }
-
-    override fun isTimeToAutoRefresh(): Boolean {
-        val currentTimestamp = System.currentTimeMillis()
-        if (currentTimestamp - lastRefreshTimestamp >= AUTO_REFRESH_MS) {
-            lastRefreshTimestamp = currentTimestamp
-            return true
-        } else {
-            return false
-        }
     }
 
     override fun getFragmentFromBackStack(tag: String): Fragment? {
