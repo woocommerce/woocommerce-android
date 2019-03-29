@@ -4,6 +4,7 @@
 Bugfixes
 * Fixed bug that led to incorrect stats bar heights
 * Fixed rare crash opening order detail when it's already showing
+* Fixed rare crash in order detail while loading product images
 
 Improvements
 

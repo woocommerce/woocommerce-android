@@ -36,6 +36,8 @@ class AppSettingsActivity : AppCompatActivity(),
         HasSupportFragmentInjector {
     companion object {
         private const val SITE_PICKER_REQUEST_CODE = 1000
+        private const val KEY_SITE_CHANGED = "key_site_changed"
+        const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -43,6 +45,7 @@ class AppSettingsActivity : AppCompatActivity(),
     @Inject lateinit var selectedSite: SelectedSite
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
+    private var siteChanged = false
 
     enum class FragmentAnim {
         SLIDE_IN,
@@ -62,6 +65,11 @@ class AppSettingsActivity : AppCompatActivity(),
 
         if (savedInstanceState == null) {
             showAppSettingsFragment()
+        } else {
+            siteChanged = savedInstanceState.getBoolean(KEY_SITE_CHANGED)
+            if (siteChanged) {
+                setResult(RESULT_CODE_SITE_CHANGED)
+            }
         }
     }
 
@@ -73,6 +81,11 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun onDestroy() {
         presenter.dropView()
         super.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(KEY_SITE_CHANGED, siteChanged)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -101,6 +114,9 @@ class AppSettingsActivity : AppCompatActivity(),
 
         // if we're returning from the site picker, update the main fragment so the new store is shown
         if (requestCode == SITE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            siteChanged = true
+            setResult(RESULT_CODE_SITE_CHANGED)
+
             supportFragmentManager.findFragmentByTag(MainSettingsFragment.TAG)?.let {
                 (it as MainSettingsFragment).updateStoreViews()
             }

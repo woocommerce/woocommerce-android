@@ -24,7 +24,6 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -217,6 +216,14 @@ class MainActivity : AppCompatActivity(),
                 }
                 return
             }
+            REQUEST_CODE_SETTINGS -> {
+                // restart the activity if the user returned from settings and they switched sites
+                if (resultCode == AppSettingsActivity.RESULT_CODE_SITE_CHANGED) {
+                    presenter.selectedSiteChanged(selectedSite.get())
+                    restart()
+                }
+                return
+            }
         }
     }
 
@@ -267,14 +274,17 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * Called when the user switches sites - reset the fragments and tell the dashboard to refresh
+     * Called when the user switches sites - restarts the activity so all fragments and child fragments are reset
      */
-    override fun resetSelectedSite() {
-        bottomNavView.reset()
-        with(bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
-            updateActivityTitle()
-            refreshDashboard(true)
-        }
+    private fun restart() {
+        val intent = intent
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_NO_ANIMATION
+        )
+        finish()
+        startActivity(intent)
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
