@@ -57,7 +57,7 @@ class LoginPrologueFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         button_login_jetpack.setOnClickListener {
             prologueFinishedListener?.onPrologueFinished()
-            AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED)
+            AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED)
         }
 
         val separator = if (DisplayUtils.isLandscape(activity)) " " else "<br>"
