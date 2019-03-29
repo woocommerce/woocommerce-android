@@ -31,7 +31,9 @@ class MainNavigationView @JvmOverloads constructor(
     private lateinit var listener: MainNavigationListener
     private lateinit var badgeView: View
 
-    private var previousNavPos: BottomNavigationPosition? = null
+    companion object {
+        private var previousNavPos: BottomNavigationPosition? = null
+    }
 
     interface MainNavigationListener {
         fun onNavItemSelected(navPos: BottomNavigationPosition)
@@ -123,7 +125,7 @@ class MainNavigationView @JvmOverloads constructor(
         // Close any child fragments if open
         clearFragmentBackStack(fragment)
 
-        // add the fregment if it hasn't been added yet, otherwise hide the previously active
+        // add the fragment if it hasn't been added yet, otherwise hide the previously active
         // fragment and show the incoming one
         val tag = navPos.getTag()
         if (fragmentManager.findFragmentByTag(tag) == null) {
@@ -132,7 +134,9 @@ class MainNavigationView @JvmOverloads constructor(
                     .add(R.id.container, fragment, tag)
                     .commitAllowingStateLoss()
         } else {
-            var shouldHidePrev = previousNavPos?.position != navPos.position ?: false
+            val shouldHidePrev = previousNavPos?.let {
+                it.position != navPos.position
+            } ?: false
             if (shouldHidePrev) {
                 val prevFragment = navAdapter.getFragment(previousNavPos!!)
                 fragmentManager
