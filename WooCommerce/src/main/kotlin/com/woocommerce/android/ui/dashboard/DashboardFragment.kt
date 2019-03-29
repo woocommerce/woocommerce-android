@@ -71,7 +71,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
-                    presenter.resetForceRefresh()
+                    DashboardPresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
                     refreshDashboard(forced = true)
                 }
@@ -214,7 +214,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun refreshFragmentState() {
-        presenter.resetForceRefresh()
+        DashboardPresenter.resetForceRefresh()
         refreshDashboard(forced = false)
     }
 
