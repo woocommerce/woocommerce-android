@@ -122,7 +122,9 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
 
     // called when a product is fetched to ensure we show the correct product image
     fun refreshProductImages() {
-        viewAdapter.notifyDataSetChanged()
+        if (::viewAdapter.isInitialized) {
+            viewAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun hideButtons() {
