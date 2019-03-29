@@ -111,10 +111,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             }
         }
 
-        if (isActive) {
+        if (isActive && !deferInit) {
             refreshDashboard(forced = this.isRefreshPending)
-        } else {
-            isRefreshPending = true
         }
     }
 
