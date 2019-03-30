@@ -89,7 +89,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                 productImageMap = productImageMap,
                 expanded = true,
                 formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
-                orderListener = this,
+                orderListener = null,
                 productListener = this
         )
 
@@ -131,14 +131,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                 }
             }
         }
-    }
-
-    override fun openOrderFulfillment(order: WCOrderModel) {
-        TODO("not implemented")
-    }
-
-    override fun openOrderProductList(order: WCOrderModel) {
-        TODO("not implemented")
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
