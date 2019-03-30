@@ -85,12 +85,12 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun showOrderDetail(order: WCOrderModel) {
         // Populate the Order Product List Card
         orderFulfill_products.initView(
-                order,
-                productImageMap,
-                true,
-                currencyFormatter.buildFormatter(order.currency),
-                this,
-                this
+                order = order,
+                productImageMap = productImageMap,
+                expanded = true,
+                formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
+                orderListener = this,
+                productListener = this
         )
 
         // Check for customer provided note, show if available
