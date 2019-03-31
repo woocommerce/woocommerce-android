@@ -82,12 +82,12 @@ class OrderProductListFragment : Fragment(), OrderProductListContract.View {
 
     override fun showOrderProducts(order: WCOrderModel) {
         orderProducts_list.initView(
-                order,
-                productImageMap,
-                true,
-                currencyFormatter.buildFormatter(order.currency),
-                null,
-                this
+                order = order,
+                productImageMap = productImageMap,
+                expanded = true,
+                formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
+                orderListener = null,
+                productListener = this
         )
     }
 
