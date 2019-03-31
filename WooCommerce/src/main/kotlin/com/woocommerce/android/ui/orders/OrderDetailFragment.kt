@@ -182,12 +182,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(
-                    order,
-                    productImageMap,
-                    false,
-                    currencyFormatter.buildFormatter(order.currency),
-                    this,
-                    this
+                    order = order,
+                    productImageMap = productImageMap,
+                    expanded = false,
+                    formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
+                    orderListener = this,
+                    productListener = this
             )
 
             // Populate the Customer Information Card
