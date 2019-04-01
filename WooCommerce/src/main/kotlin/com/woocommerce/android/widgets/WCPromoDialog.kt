@@ -15,7 +15,8 @@ import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_TRY
 import org.wordpress.android.util.DisplayUtils
 
 /**
- * Used to advertise a new feature with a single-shot dialog
+ * Used to advertise a new feature with a single-shot dialog. This was initially added to promote the ability to
+ * switch sites but is no longer used. Code is being left here for possible future use.
  */
 class WCPromoDialog : DialogFragment() {
     companion object {
