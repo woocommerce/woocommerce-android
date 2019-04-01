@@ -95,7 +95,9 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
 
     override fun openOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNotificationId: Long?) {
         val tag = OrderDetailFragment.TAG
-        loadChildFragment(OrderDetailFragment.newInstance(localSiteId, remoteOrderId, remoteNotificationId), tag)
+        if (!popToState(tag)) {
+            loadChildFragment(OrderDetailFragment.newInstance(localSiteId, remoteOrderId, remoteNotificationId), tag)
+        }
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
