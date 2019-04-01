@@ -72,7 +72,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
 
         // make image height a percentage of screen height, adjusting for landscape
         val displayHeight = DisplayUtils.getDisplayPixelHeight(this)
-        val multiplier = if (DisplayUtils.isLandscape(this)) 0.5f else 0.4f
+        val multiplier = if (DisplayUtils.isLandscape(this)) 0.6f else 0.4f
         imageHeight = (displayHeight * multiplier).toInt()
         productDetail_image.layoutParams.height = imageHeight
 
