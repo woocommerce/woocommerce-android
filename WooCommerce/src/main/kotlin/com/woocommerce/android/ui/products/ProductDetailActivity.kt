@@ -4,15 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.StringRes
-import android.support.v4.app.Fragment
+import android.support.design.widget.AppBarLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.LayoutInflater
+import android.support.v7.widget.Toolbar
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
@@ -24,25 +22,23 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
-import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_product_detail.*
+import dagger.android.AndroidInjection
+import kotlinx.android.synthetic.main.activity_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
-class ProductDetailFragment : Fragment(), ProductDetailContract.View {
+class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
     companion object {
         const val TAG = "ProductDetailFragment"
         private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
 
-        fun newInstance(remoteProductId: Long): Fragment {
-            val args = Bundle()
-            args.putLong(ARG_REMOTE_PRODUCT_ID, remoteProductId)
-            val fragment = ProductDetailFragment()
-            fragment.arguments = args
-            return fragment
+        fun show(context: Context, remoteProductId: Long) {
+            val intent = Intent(context, ProductDetailActivity::class.java)
+            intent.putExtra(ARG_REMOTE_PRODUCT_ID, remoteProductId)
+            context.startActivity(intent)
         }
     }
 
@@ -58,33 +54,41 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var remoteProductId = 0L
-    private var runOnStartFunc: (() -> Unit)? = null
+    private var productName = ""
+    private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
 
-    override fun onAttach(context: Context?) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
+        setContentView(R.layout.activity_product_detail)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_detail, container, false)
-    }
+        setSupportActionBar(toolbar as Toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+        adjustToolbar()
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        // make image height a percentage of screen height, adjusting for landscape
+        val displayHeight = DisplayUtils.getDisplayPixelHeight(this)
+        val multiplier = if (DisplayUtils.isLandscape(this)) 0.6f else 0.4f
+        imageHeight = (displayHeight * multiplier).toInt()
+        productDetail_image.layoutParams.height = imageHeight
+
+        // set the height of the gradient scrim that appears atop the image
+        image_gradient_scrim.layoutParams.height = imageHeight / 3
 
         presenter.takeView(this)
-        (activity as? AppCompatActivity)
-                ?.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
-        remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
+        remoteProductId = savedInstanceState?.getLong(ARG_REMOTE_PRODUCT_ID) ?: intent.getLongExtra(
+                ARG_REMOTE_PRODUCT_ID,
+                0L
+        )
+
         val product = presenter.getProduct(remoteProductId)
         if (product == null) {
+            showSkeleton(true)
             presenter.fetchProduct(remoteProductId)
         } else {
             showProduct(product)
@@ -92,6 +96,27 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                 presenter.fetchProduct(remoteProductId)
             }
         }
+
+        // only show title when toolbar is collapsed
+        app_bar_layout.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
+            var scrollRange = -1
+
+            override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.totalScrollRange
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsing_toolbar.title = productName
+                } else {
+                    collapsing_toolbar.title = " " // space between double quotes is on purpose
+                }
+            }
+        })
+    }
+
+    override fun onDestroy() {
+        presenter.dropView()
+        super.onDestroy()
     }
 
     override fun onResume() {
@@ -99,67 +124,56 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        runOnStartFunc?.let {
-            it.invoke()
-            runOnStartFunc = null
-        }
+    public override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(ARG_REMOTE_PRODUCT_ID, remoteProductId)
     }
 
-    override fun onDestroyView() {
-        (activity as? AppCompatActivity)?.supportActionBar?.setHomeAsUpIndicator(null)
-        presenter.dropView()
-        super.onDestroyView()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_share, menu)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_share, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return if (item?.itemId == R.id.menu_share) {
-            shareProduct()
-            true
-        } else {
-            super.onOptionsItemSelected(item)
+        return when {
+            item?.itemId == R.id.menu_share -> {
+                shareProduct()
+                true
+            }
+            item?.itemId == android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun showFetchProductError() {
         uiMessageResolver.showSnack(R.string.product_detail_fetch_product_error)
-
-        if (isStateSaved) {
-            runOnStartFunc = { activity?.onBackPressed() }
-        } else {
-            activity?.onBackPressed()
-        }
+        onBackPressed()
     }
 
     override fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(productDetail_container, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageHeight
         } else {
             skeletonView.hide()
         }
     }
 
     override fun showProduct(product: WCProductModel) {
-        if (!isAdded) return
+        if (isFinishing) return
 
-        if (product.name.isNotEmpty()) {
-            activity?.title = product.name
-        }
+        productName = product.name
 
         product.getFirstImageUrl()?.let {
-            val imageWidth = DisplayUtils.getDisplayPixelWidth(activity)
-            val imageHeight = resources.getDimensionPixelSize(R.dimen.product_detail_image_height)
+            val imageWidth = DisplayUtils.getDisplayPixelWidth(this)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageWidth, imageHeight)
-            GlideApp.with(activity as Context)
+            GlideApp.with(this)
                     .load(imageUrl)
                     .error(R.drawable.ic_product)
-                    .placeholder(R.drawable.picture_frame)
+                    .placeholder(R.drawable.product_detail_image_background)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(productDetail_image)
         }
@@ -294,7 +308,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         propertyValue: String,
         orientation: Int = LinearLayout.HORIZONTAL
     ): WCProductPropertyView? {
-        if (propertyValue.isBlank() || view == null) return null
+        if (propertyValue.isBlank()) return null
 
         // locate the card, add it if it doesn't exist yet
         val cardView = findOrAddCardView(card)
@@ -306,7 +320,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
-            propertyView = WCProductPropertyView(activity as Context)
+            propertyView = WCProductPropertyView(this)
             propertyView.tag = propertyTag
             container.addView(propertyView)
         }
@@ -350,7 +364,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         var linkView = container.findViewWithTag<WCProductPropertyLinkView>(linkViewTag)
 
         if (linkView == null) {
-            linkView = WCProductPropertyLinkView(activity as Context)
+            linkView = WCProductPropertyLinkView(this)
             linkView.tag = linkViewTag
             container.addView(linkView)
         }
@@ -369,12 +383,11 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
         }
 
         // add a divider above the card if this isn't the first card
-        val context = activity as Context
         if (card != DetailCard.Primary) {
-            addCardDividerView(context)
+            addCardDividerView(this)
         }
 
-        val cardView = WCProductPropertyCardView(context)
+        val cardView = WCProductPropertyCardView(this)
         cardView.tag = cardTag
 
         val cardViewCaption: String? = when (card) {
@@ -412,7 +425,19 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View {
                 type = "text/plain"
             }
             val title = resources.getText(R.string.product_share_dialog_title)
-            activity?.startActivity(Intent.createChooser(shareIntent, title))
+            startActivity(Intent.createChooser(shareIntent, title))
+        }
+    }
+
+    /*
+     * adjust the toolbar so it doesn't overlap the status bar
+     */
+    private fun adjustToolbar() {
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            val statusHeight = resources.getDimensionPixelSize(resourceId)
+            toolbar.layoutParams.height += statusHeight
+            toolbar.setPadding(0, statusHeight, 0, 0)
         }
     }
 }

@@ -435,6 +435,16 @@
     </style>
 
     <!--
+        Product detail
+    -->
+    <style name="ProductDetail" />
+    <style name="ProductDetail.Activity" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!--
         Other
     -->
     <style name="Woo.Dialog" parent="@style/Theme.AppCompat.Light.Dialog.Alert">
