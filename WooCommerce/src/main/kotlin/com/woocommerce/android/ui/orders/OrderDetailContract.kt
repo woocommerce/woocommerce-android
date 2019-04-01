@@ -24,7 +24,7 @@ interface OrderDetailContract {
         fun refreshOrderStatusOptions()
     }
 
-    interface View : BaseView<Presenter>, OrderActionListener {
+    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)

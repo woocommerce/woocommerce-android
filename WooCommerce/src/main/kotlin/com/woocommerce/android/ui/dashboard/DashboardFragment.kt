@@ -256,6 +256,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         presenter.loadTopEarnerStats(period)
     }
 
+    override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
+        (activity as? TopLevelFragmentRouter)?.showProductDetail(topEarner.id)
+    }
+
     override fun hideUnfilledOrdersCard() {
         if (dashboard_unfilled_orders.visibility == View.VISIBLE) {
             WooAnimUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)

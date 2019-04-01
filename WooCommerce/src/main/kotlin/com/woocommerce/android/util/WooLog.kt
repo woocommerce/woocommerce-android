@@ -24,6 +24,7 @@ object WooLog {
     enum class T {
         DASHBOARD,
         ORDERS,
+        PRODUCTS,
         NOTIFS,
         UTILS,
         DEVICE,

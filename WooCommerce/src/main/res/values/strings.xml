@@ -232,6 +232,38 @@
     <string name="notifs_detail_loading_error">Error loading notification detail</string>
 
     <!--
+        Product detail
+    -->
+    <string name="product_detail_fetch_product_error">Error fetching product</string>
+    <string name="product_name">Title</string>
+    <string name="product_purchase_note">Purchase note</string>
+    <string name="product_pricing_and_inventory">Pricing and inventory</string>
+    <string name="product_inventory">Inventory</string>
+    <string name="product_price">Price</string>
+    <string name="product_regular_price">Regular price</string>
+    <string name="product_sale_price">Sale price</string>
+    <string name="product_sku">SKU</string>
+    <string name="product_stock_status">Stock status</string>
+    <string name="product_stock_quantity">Stock quantity</string>
+    <string name="product_backorders">Backorders</string>
+    <string name="product_shipping">Shipping</string>
+    <string name="product_weight">Weight</string>
+    <string name="product_size">Size</string>
+    <string name="product_shipping_class">Shipping class</string>
+    <string name="product_total_orders">Total orders</string>
+    <string name="product_reviews">Reviews</string>
+    <string name="product_downloads">Downloads</string>
+    <string name="product_downloadable_files">Downloadable files</string>
+    <string name="product_download_limit">Limit</string>
+    <string name="product_download_limit_count">%d downloads</string>
+    <string name="product_download_expiry">Expiry</string>
+    <string name="product_download_expiry_days">%d days</string>
+    <string name="product_purchase_details">Purchase details</string>
+    <string name="product_share_dialog_title">Share your product</string>
+    <string name="product_view_in_store">View product on store</string>
+    <string name="product_view_affiliate">View affiliate product</string>
+
+    <!--
         Empty list messages
     -->
     <string name="waiting_for_customers">Waiting for customers</string>
