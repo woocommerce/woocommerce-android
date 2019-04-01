@@ -500,4 +500,10 @@
     <string name="promo_btn_try_it">Try it now</string>
     <string name="promo_title_site_picker">Running multiple stores?</string>
     <string name="promo_message_site_picker">You can now switch between stores by tapping the selected store in Settings</string>
+
+    <!-- Product status -->
+    <string name="product_status_published">Published</string>
+    <string name="product_status_private">Private</string>
+    <string name="product_status_pending">Pending</string>
+    <string name="product_status_draft">Draft</string>
 </resources>

@@ -77,7 +77,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
         productDetail_image.layoutParams.height = imageHeight
 
         // set the height of the gradient scrim that appears atop the image
-        image_gradient_scrim.layoutParams.height = imageHeight / 3
+        imageScrim.layoutParams.height = imageHeight / 3
 
         presenter.takeView(this)
 
@@ -176,6 +176,14 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
                     .placeholder(R.drawable.product_detail_image_background)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(productDetail_image)
+        }
+
+        // show status badge for unpublished products
+        ProductStatus.fromString(product.status)?.let { status ->
+            if (status != ProductStatus.PUBLISH) {
+                textStatusBadge.visibility = View.VISIBLE
+                textStatusBadge.text = status.toString(this)
+            }
         }
 
         addPrimaryCard(product)
