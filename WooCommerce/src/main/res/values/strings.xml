@@ -198,6 +198,9 @@
     <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
+    <string name="order_shipment_tracking">Tracking</string>
+    <string name="order_shipment_tracking_button">Track package</string>
+    <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
     <!--
         Add Order Note
     -->

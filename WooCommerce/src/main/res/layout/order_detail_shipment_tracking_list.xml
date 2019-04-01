@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/shipmentTrack_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/order_shipment_tracking"
+        style="@style/Woo.TextView.Title.Purple"
+        android:paddingBottom="@dimen/card_section_padding_h"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- List: Order Shipment Trackings -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/shipmentTrack_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        android:paddingTop="@dimen/card_section_padding_h"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_label"
+        tools:itemCount="3"
+        tools:listitem="@layout/order_detail_shipment_tracking_list_item"
+        tools:targetApi="lollipop">
+
+    </android.support.v7.widget.RecyclerView>
+</merge>
