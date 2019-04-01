@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
@@ -185,11 +186,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(
-                    order,
-                    productImageMap,
-                    false,
-                    currencyFormatter.buildFormatter(order.currency),
-                    this
+                    order = order,
+                    productImageMap = productImageMap,
+                    expanded = false,
+                    formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
+                    orderListener = this,
+                    productListener = this
             )
 
             // Populate the Customer Information Card
@@ -234,6 +236,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
                 router.openOrderProductList(order)
+            }
+        }
+    }
+
+    override fun openOrderProductDetail(remoteProductId: Long) {
+        activity?.let { router ->
+            if (router is TopLevelFragmentRouter) {
+                router.showProductDetail(remoteProductId)
             }
         }
     }
