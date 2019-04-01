@@ -207,6 +207,7 @@
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_confirm_discard">Discard this note?</string>
+    <string name="add_order_note_invalid_order">Invalid order</string>
     <!--
         Order Status Labels
     -->
