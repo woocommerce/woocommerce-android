@@ -17,12 +17,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKE
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
@@ -127,12 +127,16 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK && data != null) {
-            val noteText = data.getStringExtra(FIELD_NOTE_TEXT)
-            val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
-            orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
-            presenter.pushOrderNote(noteText, isCustomerNote)
-            AppRatingDialog.incrementInteractions()
+        if (requestCode == REQUEST_CODE_ADD_NOTE) {
+            if (resultCode == RESULT_OK && data != null) {
+                val noteText = data.getStringExtra(FIELD_NOTE_TEXT)
+                val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
+                orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
+                presenter.pushOrderNote(noteText, isCustomerNote)
+                AppRatingDialog.incrementInteractions()
+            } else if (resultCode == AddOrderNoteActivity.RESULT_INVALID_ORDER) {
+                uiMessageResolver.showSnack(R.string.add_order_note_invalid_order)
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

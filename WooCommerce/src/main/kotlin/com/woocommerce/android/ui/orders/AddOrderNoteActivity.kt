@@ -29,6 +29,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         const val FIELD_NOTE_TEXT = "note_text"
         const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
         const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
+        const val RESULT_INVALID_ORDER = Activity.RESULT_FIRST_USER
     }
 
     @Inject lateinit var presenter: AddOrderNoteContract.Presenter
@@ -49,15 +50,21 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
         if (savedInstanceState == null) {
-            orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER)
-            orderNumber = intent.getStringExtra(FIELD_ORDER_NUMBER)
+            orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER) ?: ""
+            orderNumber = intent.getStringExtra(FIELD_ORDER_NUMBER) ?: ""
         } else {
-            orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER)
-            orderNumber = savedInstanceState.getString(FIELD_ORDER_NUMBER)
+            orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER) ?: ""
+            orderNumber = savedInstanceState.getString(FIELD_ORDER_NUMBER) ?: ""
             addNote_switch.isChecked = savedInstanceState.getBoolean(FIELD_IS_CUSTOMER_NOTE)
             if (savedInstanceState.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
                 confirmDiscard()
             }
+        }
+
+        if (orderId.isEmpty() || orderNumber.isEmpty()) {
+            setResult(RESULT_INVALID_ORDER)
+            finish()
+            return
         }
 
         if (presenter.hasBillingEmail(orderId)) {
