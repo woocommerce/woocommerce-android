@@ -7,5 +7,6 @@ Bugfixes
 * Fixed rare crash in order detail while loading product images
 
 Improvements
+* Dashboard no longer reloads every time you return to it
 
 New Features
