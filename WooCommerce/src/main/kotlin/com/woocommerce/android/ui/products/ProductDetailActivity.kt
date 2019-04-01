@@ -70,9 +70,10 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
         adjustToolbar()
 
-        // make image 40% of screen height
+        // make image height a percentage of screen height, adjusting for landscape
         val displayHeight = DisplayUtils.getDisplayPixelHeight(this)
-        imageHeight = (displayHeight * 0.4).toInt()
+        val multiplier = if (DisplayUtils.isLandscape(this)) 0.5f else 0.4f
+        imageHeight = (displayHeight * multiplier).toInt()
         productDetail_image.layoutParams.height = imageHeight
 
         // set the height of the gradient scrim that appears atop the image
