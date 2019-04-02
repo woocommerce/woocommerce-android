@@ -28,11 +28,13 @@ import uk.co.senab.photoview.PhotoViewAttacher
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
+        private const val KEY_IMAGE_TITLE = "image_title"
         private const val FADE_DELAY_MS = 3000L
 
-        fun show(context: Context, imageUrl: String) {
+        fun show(context: Context, imageUrl: String, title: String = "") {
             val intent = Intent(context, ImageViewerActivity::class.java)
             intent.putExtra(KEY_IMAGE_URL, imageUrl)
+            intent.putExtra(KEY_IMAGE_TITLE, title)
             val options = ActivityOptionsCompat.makeCustomAnimation(
                     context,
                     R.anim.activity_fade_in,
@@ -43,6 +45,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     }
 
     private lateinit var imageUrl: String
+    private lateinit var imageTitle: String
 
     private val fadeOutToolbarHandler = Handler()
 
@@ -51,18 +54,25 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
         setContentView(R.layout.activity_image_viewer)
 
-        val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
-        toolbar.background = ColorDrawable(toolbarColor)
-        setSupportActionBar(toolbar)
-        supportActionBar?.let {
-            it.setDisplayShowTitleEnabled(false)
-            it.setDisplayHomeAsUpEnabled(true)
-        }
-
         imageUrl = if (savedInstanceState == null) {
             intent.getStringExtra(KEY_IMAGE_URL) ?: ""
         } else {
             savedInstanceState.getString(KEY_IMAGE_URL) ?: ""
+        }
+
+        imageTitle = if (savedInstanceState == null) {
+            intent.getStringExtra(KEY_IMAGE_TITLE) ?: ""
+        } else {
+            savedInstanceState.getString(KEY_IMAGE_TITLE) ?: ""
+        }
+
+        val toolbarColor = ContextCompat.getColor(this, R.color.black_translucent_40)
+        toolbar.background = ColorDrawable(toolbarColor)
+        setSupportActionBar(toolbar)
+        supportActionBar?.let {
+            it.title = imageTitle
+            it.setDisplayShowTitleEnabled(imageTitle.isNotEmpty())
+            it.setDisplayHomeAsUpEnabled(true)
         }
 
         loadImage()
@@ -71,6 +81,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         outState?.putString(KEY_IMAGE_URL, imageUrl)
+        outState?.putString(KEY_IMAGE_TITLE, imageTitle)
         super.onSaveInstanceState(outState)
     }
 
