@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -27,6 +29,8 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         shipmentTrack_items.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
+            itemAnimator = DefaultItemAnimator()
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             adapter = viewAdapter
         }
     }
@@ -43,12 +47,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
             return ViewHolder(view)
         }
 
-        override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
-            // TODO why is this required?
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.view.initView(trackings[position])
         }
 

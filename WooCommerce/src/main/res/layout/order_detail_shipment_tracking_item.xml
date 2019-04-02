@@ -8,9 +8,10 @@
 
     <TextView
         android:id="@+id/tracking_type"
-        style="@style/Woo.TextView.Title"
+        android:textAppearance="@style/Woo.TextAppearance.ListItem.Title.Bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:paddingTop="@dimen/list_item_padding_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -18,7 +19,7 @@
 
     <TextView
         android:id="@+id/tracking_number"
-        style="@style/Woo.TextView.Title"
+        android:textAppearance="@style/Woo.TextAppearance.ListItem"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,13 +27,11 @@
         app:layout_constraintTop_toBottomOf="@+id/tracking_type"
         tools:text="111222 3334 4444Z"/>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/tracking_btnTrack"
         style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
         android:text="@string/order_shipment_tracking_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

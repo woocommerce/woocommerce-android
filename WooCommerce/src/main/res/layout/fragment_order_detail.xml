@@ -47,6 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
+                android:paddingBottom="0dp"
                 android:contentDescription="@string/order_shipment_tracking_section_cd"
                 android:visibility="gone"/>
 

@@ -260,6 +260,10 @@
     <style name="Woo.TextAppearance.ListItem.Title">
         <item name="android:textColor">@color/list_item_text_title</item>
     </style>
+
+    <style name="Woo.TextAppearance.ListItem.Title.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
     <!--
         Default List Item Header Styles
     -->
