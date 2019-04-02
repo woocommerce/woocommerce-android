@@ -18,18 +18,14 @@ import android.view.animation.AnimationUtils
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.activity_image_viewer.*
 import org.wordpress.android.util.ToastUtils
-import uk.co.senab.photoview.PhotoViewAttacher
 
 /**
- * Full-screen image view with pinch-and-zoom - note that in the manifest this activity uses
- * android:configChanges="orientation|screenSize to address the bug described here:
- *
- * https://github.com/chrisbanes/PhotoView/issues/229
- *
+ * Full-screen image view with pinch-and-zoom
  */
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
@@ -100,8 +96,12 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     }
 
     override fun onBackPressed() {
-        supportFinishAfterTransition()
+        // supportFinishAfterTransition()
         super.onBackPressed()
+    }
+
+    override fun finishAfterTransition() {
+        finish()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

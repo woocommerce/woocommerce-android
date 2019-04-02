@@ -139,7 +139,7 @@ dependencies {
 
     implementation 'com.facebook.shimmer:shimmer:0.3.0'
     implementation 'com.github.vihtarb:tooltip:0.2.0'
-    implementation 'com.github.chrisbanes.photoview:library:1.2.4'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
 
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
