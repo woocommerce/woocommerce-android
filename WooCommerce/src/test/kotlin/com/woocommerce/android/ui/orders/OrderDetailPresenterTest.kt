@@ -249,4 +249,46 @@ class OrderDetailPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(10).apply { causeOfChange = FETCH_ORDER_NOTES })
         verify(orderDetailView).showOrderNotesSkeleton(false)
     }
+
+    @Test
+    fun `Request order shipment trackings from api and load cached from db`() {
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(true).whenever(networkStatus).isConnected()
+        presenter.takeView(orderDetailView)
+
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(presenter, times(1)).fetchAndLoadShipmentTrackingsFromDb()
+        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+    }
+
+    @Test
+    fun `Do not request order shipment trackings from api when not connected`() {
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(false).whenever(networkStatus).isConnected()
+        presenter.takeView(orderDetailView)
+
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(presenter, times(1)).fetchAndLoadShipmentTrackingsFromDb()
+        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+    }
+
+    @Test
+    fun `Request fresh shipment tracking from api on network connected event if using non-updated cached data`() {
+        doReturn(true).whenever(presenter).isUsingCachedShipmentTrackings
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+    }
+
+    @Test
+    fun `Do not refresh shipment trackings on network connected event if cached data already refreshed`() {
+        doReturn(false).whenever(presenter).isUsingCachedShipmentTrackings
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+    }
 }
