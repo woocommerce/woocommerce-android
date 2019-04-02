@@ -477,7 +477,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     ): Boolean {
         productImageUrl?.let { imageUrl ->
             productDetail_image.setOnClickListener {
-                ImageViewerActivity.show(this, imageUrl, productName)
+                ImageViewerActivity.show(this, imageUrl, productName, productDetail_image)
             }
         }
         return false

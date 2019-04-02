@@ -507,4 +507,7 @@
     <string name="product_status_private">Private</string>
     <string name="product_status_pending">Pending</string>
     <string name="product_status_draft">Draft</string>
+
+    <!-- Other -->
+    <string name="shared_element_transition" translatable="false">shared_element</string>
 </resources>

@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.imageviewer
 
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -31,16 +31,23 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         private const val KEY_IMAGE_TITLE = "image_title"
         private const val FADE_DELAY_MS = 3000L
 
-        fun show(context: Context, imageUrl: String, title: String = "") {
-            val intent = Intent(context, ImageViewerActivity::class.java)
+        fun show(activity: Activity, imageUrl: String, title: String = "", sharedElement: View? = null) {
+            val intent = Intent(activity, ImageViewerActivity::class.java)
             intent.putExtra(KEY_IMAGE_URL, imageUrl)
             intent.putExtra(KEY_IMAGE_TITLE, title)
-            val options = ActivityOptionsCompat.makeCustomAnimation(
-                    context,
-                    R.anim.activity_fade_in,
-                    R.anim.activity_fade_out
-            )
-            ActivityCompat.startActivity(context, intent, options.toBundle())
+
+            val transitionName = activity.getString(R.string.shared_element_transition)
+
+            val options = if (sharedElement != null) {
+                ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement, transitionName)
+            } else {
+                ActivityOptionsCompat.makeCustomAnimation(
+                        activity,
+                        R.anim.activity_fade_in,
+                        R.anim.activity_fade_out
+                )
+            }
+            ActivityCompat.startActivity(activity, intent, options.toBundle())
         }
     }
 
@@ -85,17 +92,17 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         super.onSaveInstanceState(outState)
     }
 
+    override fun onBackPressed() {
+        supportFinishAfterTransition()
+        super.onBackPressed()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun finish() {
-        super.finish()
-        overridePendingTransition(R.anim.activity_fade_in, R.anim.activity_fade_out)
     }
 
     private fun loadImage() {

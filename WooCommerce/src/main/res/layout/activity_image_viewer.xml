@@ -26,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:importantForAccessibility="no"
+        android:transitionName="@string/shared_element_transition"
         tools:src="@drawable/ic_woo_waiting_customers"/>
 
     <ProgressBar
