@@ -72,6 +72,7 @@
 
         <activity
             android:name=".ui.imageviewer.ImageViewerActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/ImageViewer.Activity"/>
 
         <!-- Services -->

@@ -25,7 +25,11 @@ import org.wordpress.android.util.ToastUtils
 import uk.co.senab.photoview.PhotoViewAttacher
 
 /**
- * Full-screen image view with pinch-and-zoom
+ * Full-screen image view with pinch-and-zoom - note that in the manifest this activity uses
+ * android:configChanges="orientation|screenSize to address the bug described here:
+ *
+ * https://github.com/chrisbanes/PhotoView/issues/229
+ *
  */
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
@@ -187,10 +191,12 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
+
         val attacher = PhotoViewAttacher(image)
         attacher.setOnPhotoTapListener { view, x, y ->
             showToolbar(true)
         }
+
         return false
     }
 }
