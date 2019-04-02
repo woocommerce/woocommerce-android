@@ -18,7 +18,6 @@ import android.view.animation.AnimationUtils
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
-import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.activity_image_viewer.*
@@ -86,8 +85,8 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             it.setDisplayHomeAsUpEnabled(true)
         }
 
-        // PhotoViewAttacher doesn't play nice with shared element transitions if we rotate before exiting, so
-        // we use this variable to skip the transition if the activity is re-created
+        // PhotoView doesn't play nice with shared element transitions if we rotate before exiting, so we
+        // use this variable to skip the transition if the activity is re-created
         canTransitionOnFinish = savedInstanceState == null
 
         loadImage()
@@ -122,7 +121,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         GlideApp.with(this)
                 .load(imageUrl)
                 .listener(this)
-                .into(image)
+                .into(photoView)
     }
 
     private fun showProgress(show: Boolean) {
@@ -196,8 +195,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     ): Boolean {
         showProgress(false)
 
-        val attacher = PhotoViewAttacher(image)
-        attacher.setOnPhotoTapListener { view, x, y ->
+        photoView.setOnPhotoTapListener { view, x, y ->
             showToolbar(true)
         }
 
