@@ -39,7 +39,6 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
-import com.woocommerce.android.widgets.WCPromoDialog.PromoType
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.android.AndroidInjection
@@ -118,13 +117,8 @@ class MainActivity : AppCompatActivity(),
 
         initFragment(savedInstanceState)
 
-        // show the site picker promo if it hasn't been shown and the user has multiple stores
-        val promoShown = presenter.hasMultipleStores() && WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
-
-        // show the app rating dialog if it's time and we didn't just show the promo
-        if (!promoShown) {
-            AppRatingDialog.showIfNeeded(this)
-        }
+        // show the app rating dialog if it's time
+        AppRatingDialog.showIfNeeded(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
