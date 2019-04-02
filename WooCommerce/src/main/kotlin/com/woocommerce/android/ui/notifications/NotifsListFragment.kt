@@ -157,9 +157,9 @@ class NotifsListFragment : TopLevelFragment(),
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) {
-                        onScrollDown(this@NotifsListFragment.notifsRefreshLayout)
+                        onScrollDown()
                     } else if (dy < 0) {
-                        onScrollUp(this@NotifsListFragment.notifsRefreshLayout)
+                        onScrollUp()
                     }
                 }
             })
