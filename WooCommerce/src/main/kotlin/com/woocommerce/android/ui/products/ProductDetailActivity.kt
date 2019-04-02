@@ -458,7 +458,9 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         }
     }
 
-    // Glide failed to load the image
+    /**
+     * Glide failed to load the product image, do nothing so Glide will show the error drawable
+     */
     override fun onLoadFailed(
         e: GlideException?,
         model: Any?,
@@ -468,7 +470,9 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         return false
     }
 
-    // Glide loaded the product image, add click listener to show image full screen
+    /**
+     * Glide loaded the product image, add click listener to show image full screen
+     */
     override fun onResourceReady(
         resource: Drawable?,
         model: Any?,

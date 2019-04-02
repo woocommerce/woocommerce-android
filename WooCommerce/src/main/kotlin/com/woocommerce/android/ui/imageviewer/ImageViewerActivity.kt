@@ -21,6 +21,7 @@ import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.activity_image_viewer.*
+import org.wordpress.android.util.ToastUtils
 import uk.co.senab.photoview.PhotoViewAttacher
 
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
@@ -118,8 +119,11 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
     private fun showToolbar(show: Boolean) {
         if (!isFinishing) {
+            // remove the current fade-out runnable and start a new one to hide the toolbar shortly after we show it
             fadeOutToolbarHandler.removeCallbacks(fadeOutToolbarRunnable)
-            fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
+            if (show) {
+                fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
+            }
 
             if ((show && toolbar.visibility == View.VISIBLE) || (!show && toolbar.visibility != View.VISIBLE)) {
                 return
@@ -160,6 +164,8 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
+        ToastUtils.showToast(this, R.string.error_loading_image)
+        finish()
         return false
     }
 
