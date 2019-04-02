@@ -172,13 +172,14 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         if (isFinishing) return
 
         productName = product.name
-        productImageUrl = product.getFirstImageUrl()
 
-        productImageUrl?.let {
-            val imageWidth = DisplayUtils.getDisplayPixelWidth(this)
-            val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageWidth, imageHeight)
+        product.getFirstImageUrl()?.let {
+            val width = DisplayUtils.getDisplayPixelWidth(this)
+            val height = DisplayUtils.getDisplayPixelHeight(this)
+            val imageSize = Math.max(width, height)
+            productImageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, 0)
             GlideApp.with(this)
-                    .load(imageUrl)
+                    .load(productImageUrl)
                     .error(R.drawable.ic_product)
                     .placeholder(R.drawable.product_detail_image_background)
                     .transition(DrawableTransitionOptions.withCrossFade())

@@ -21,15 +21,13 @@ import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.activity_image_viewer.*
-import org.wordpress.android.util.DisplayUtils
-import org.wordpress.android.util.PhotonUtils
 import uk.co.senab.photoview.PhotoViewAttacher
 
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
         private const val KEY_IMAGE_TITLE = "image_title"
-        private const val FADE_DELAY_MS = 3000L
+        private const val TOOLBAR_FADE_DELAY_MS = 3000L
 
         fun show(activity: Activity, imageUrl: String, title: String = "", sharedElement: View? = null) {
             val intent = Intent(activity, ImageViewerActivity::class.java)
@@ -108,11 +106,6 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     private fun loadImage() {
         showProgress(true)
 
-        val imageWidth = DisplayUtils.getDisplayPixelWidth(this)
-        val imageHeight = DisplayUtils.getDisplayPixelWidth(this)
-        val imageSize = Math.max(imageWidth, imageHeight)
-        val imageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
-
         GlideApp.with(this)
                 .load(imageUrl)
                 .listener(this)
@@ -126,7 +119,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     private fun showToolbar(show: Boolean) {
         if (!isFinishing) {
             fadeOutToolbarHandler.removeCallbacks(fadeOutToolbarRunnable)
-            fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, FADE_DELAY_MS)
+            fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
 
             if ((show && toolbar.visibility == View.VISIBLE) || (!show && toolbar.visibility != View.VISIBLE)) {
                 return
