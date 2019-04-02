@@ -475,7 +475,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         dataSource: DataSource?,
         isFirstResource: Boolean
     ): Boolean {
-        productImageUrl?.let {imageUrl ->
+        productImageUrl?.let { imageUrl ->
             productDetail_image.setOnClickListener {
                 ImageViewerActivity.show(this, imageUrl)
             }
