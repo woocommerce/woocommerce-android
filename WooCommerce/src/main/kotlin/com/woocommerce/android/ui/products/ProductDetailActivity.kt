@@ -41,6 +41,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
 
         fun show(context: Context, remoteProductId: Long) {
+            // TODO analytics
             val intent = Intent(context, ProductDetailActivity::class.java)
             intent.putExtra(ARG_REMOTE_PRODUCT_ID, remoteProductId)
             context.startActivity(intent)

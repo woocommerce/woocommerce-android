@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -38,7 +39,6 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
-import com.woocommerce.android.widgets.WCPromoDialog.PromoType
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.android.AndroidInjection
@@ -117,13 +117,8 @@ class MainActivity : AppCompatActivity(),
 
         initFragment(savedInstanceState)
 
-        // show the site picker promo if it hasn't been shown and the user has multiple stores
-        val promoShown = presenter.hasMultipleStores() && WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
-
-        // show the app rating dialog if it's time and we didn't just show the promo
-        if (!promoShown) {
-            AppRatingDialog.showIfNeeded(this)
-        }
+        // show the app rating dialog if it's time
+        AppRatingDialog.showIfNeeded(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -422,9 +417,12 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showProductDetail(remoteProductId: Long) {
-        showBottomNav()
-        // TODO analytics
-        ProductDetailActivity.show(this, remoteProductId)
+        // TODO: for now product detail is only supported in debug builds, we'll roll it out to all users after design
+        // iterations are done
+        if (BuildConfig.DEBUG) {
+            showBottomNav()
+            ProductDetailActivity.show(this, remoteProductId)
+        }
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
