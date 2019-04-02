@@ -58,6 +58,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     private lateinit var imageTitle: String
 
     private val fadeOutToolbarHandler = Handler()
+    private var canTransitionOnFinish = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +86,10 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
             it.setDisplayHomeAsUpEnabled(true)
         }
 
+        // PhotoViewAttacher doesn't play nice with shared element transitions if we rotate before exiting, so
+        // we use this variable to skip the transition if the activity is re-created
+        canTransitionOnFinish = savedInstanceState == null
+
         loadImage()
         showToolbar(true)
     }
@@ -95,13 +100,12 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onBackPressed() {
-        // supportFinishAfterTransition()
-        super.onBackPressed()
-    }
-
     override fun finishAfterTransition() {
-        finish()
+        if (canTransitionOnFinish) {
+            super.finishAfterTransition()
+        } else {
+            finish()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
