@@ -248,7 +248,9 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order shipment tracking info: ${event.error.message}")
             } else {
                 orderModel?.let { order ->
-                    // TODO track success
+                    AnalyticsTracker.track(
+                            Stat.ORDER_TRACKING_LOADED,
+                            mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
 
                     isUsingCachedShipmentTrackings = false
                     val trackings = orderStore.getShipmentTrackingsForOrder(order)

@@ -120,6 +120,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED,
         ORDER_DETAIL_ORDER_STATUS_EDIT_BUTTON_TAPPED,
         ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
+        ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED,
+        ORDER_TRACKING_LOADED,
 
         // -- Order Notes
         ADD_ORDER_NOTE_ADD_BUTTON_TAPPED,
