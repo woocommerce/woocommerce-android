@@ -91,6 +91,10 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
         loadImage()
         showToolbar(true)
+
+        photoView.setOnPhotoTapListener { view, x, y ->
+            showToolbar(true)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -194,11 +198,6 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
-
-        photoView.setOnPhotoTapListener { view, x, y ->
-            showToolbar(true)
-        }
-
         return false
     }
 }
