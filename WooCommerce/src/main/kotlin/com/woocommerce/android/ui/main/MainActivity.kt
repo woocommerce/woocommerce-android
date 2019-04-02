@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -422,9 +423,12 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showProductDetail(remoteProductId: Long) {
-        showBottomNav()
-        // TODO analytics
-        ProductDetailActivity.show(this, remoteProductId)
+        // TODO: for now product detail is only supported in debug builds, we'll roll it out to all users after design
+        // iterations are done
+        if (BuildConfig.DEBUG) {
+            showBottomNav()
+            ProductDetailActivity.show(this, remoteProductId)
+        }
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
