@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.AppBarLayout
@@ -14,12 +15,16 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.AndroidInjection
@@ -30,7 +35,7 @@ import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
-class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
+class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, RequestListener<Drawable> {
     companion object {
         const val TAG = "ProductDetailFragment"
         private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
@@ -55,6 +60,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
 
     private var remoteProductId = 0L
     private var productName = ""
+    private var productImageUrl: String? = null
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
@@ -166,8 +172,9 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
         if (isFinishing) return
 
         productName = product.name
+        productImageUrl = product.getFirstImageUrl()
 
-        product.getFirstImageUrl()?.let {
+        productImageUrl?.let {
             val imageWidth = DisplayUtils.getDisplayPixelWidth(this)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageWidth, imageHeight)
             GlideApp.with(this)
@@ -175,6 +182,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
                     .error(R.drawable.ic_product)
                     .placeholder(R.drawable.product_detail_image_background)
                     .transition(DrawableTransitionOptions.withCrossFade())
+                    .listener(this)
                     .into(productDetail_image)
         }
 
@@ -447,5 +455,31 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
             toolbar.layoutParams.height += statusHeight
             toolbar.setPadding(0, statusHeight, 0, 0)
         }
+    }
+
+    // Glide failed to load the image
+    override fun onLoadFailed(
+        e: GlideException?,
+        model: Any?,
+        target: com.bumptech.glide.request.target.Target<Drawable>?,
+        isFirstResource: Boolean
+    ): Boolean {
+        return false
+    }
+
+    // Glide loaded the product image, add click listener to show image full screen
+    override fun onResourceReady(
+        resource: Drawable?,
+        model: Any?,
+        target: com.bumptech.glide.request.target.Target<Drawable>?,
+        dataSource: DataSource?,
+        isFirstResource: Boolean
+    ): Boolean {
+        productImageUrl?.let {imageUrl ->
+            productDetail_image.setOnClickListener {
+                ImageViewerActivity.show(this, imageUrl)
+            }
+        }
+        return false
     }
 }
