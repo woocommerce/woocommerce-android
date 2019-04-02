@@ -24,11 +24,14 @@ import kotlinx.android.synthetic.main.activity_image_viewer.*
 import org.wordpress.android.util.ToastUtils
 import uk.co.senab.photoview.PhotoViewAttacher
 
+/**
+ * Full-screen image view with pinch-and-zoom
+ */
 class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
         private const val KEY_IMAGE_TITLE = "image_title"
-        private const val TOOLBAR_FADE_DELAY_MS = 3000L
+        private const val TOOLBAR_FADE_DELAY_MS = 2500L
 
         fun show(activity: Activity, imageUrl: String, title: String = "", sharedElement: View? = null) {
             val intent = Intent(activity, ImageViewerActivity::class.java)
@@ -37,6 +40,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
 
             val transitionName = activity.getString(R.string.shared_element_transition)
 
+            // use a shared element transition if a shared element view was passed, otherwise default to fade-in
             val options = if (sharedElement != null) {
                 ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement, transitionName)
             } else {
@@ -157,6 +161,9 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         showToolbar(false)
     }
 
+    /**
+     * Glide failed to load the image
+     */
     override fun onLoadFailed(
         e: GlideException?,
         model: Any?,
@@ -170,7 +177,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     }
 
     /**
-     * Image has been loaded, hide the progress bar and add our photo attacher which enables pinch/zoom
+     * Glide has loaded the image, hide the progress bar and add our photo attacher which enables pinch/zoom
      */
     override fun onResourceReady(
         resource: Drawable?,
