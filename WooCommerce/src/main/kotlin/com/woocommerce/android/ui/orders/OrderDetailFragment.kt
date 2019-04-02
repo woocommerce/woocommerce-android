@@ -28,6 +28,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
@@ -211,6 +212,15 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
         // Populate order notes card
         orderDetail_noteList.initView(notes, this)
+    }
+
+    override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
+        if (trackings.isNotEmpty()) {
+            orderDetail_shipmentList.visibility = View.VISIBLE
+            orderDetail_shipmentList.initView(trackings)
+        } else {
+            orderDetail_shipmentList.visibility = View.GONE
+        }
     }
 
     override fun showOrderNotesSkeleton(show: Boolean) {

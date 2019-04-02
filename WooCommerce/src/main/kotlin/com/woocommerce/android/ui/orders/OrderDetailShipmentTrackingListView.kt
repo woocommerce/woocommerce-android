@@ -38,7 +38,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view: OrderDetailShipmentTrackingItemView = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.order_detail_product_list_item, parent, false)
+                    .inflate(R.layout.order_detail_shipment_tracking_list_item, parent, false)
                     as OrderDetailShipmentTrackingItemView
             return ViewHolder(view)
         }
