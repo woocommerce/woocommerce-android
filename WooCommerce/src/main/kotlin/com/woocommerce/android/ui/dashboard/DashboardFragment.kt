@@ -123,7 +123,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         // If this fragment is now visible and we've deferred loading data due to it not
         // being visible - go ahead and load the data.
-        if (isActive && isRefreshPending) {
+        if (!isHidden) {
             refreshDashboard(forced = false)
         }
     }
@@ -219,7 +219,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         when {
             isActive -> {
                 isRefreshPending = false
-                dashboard_stats.clearLabelValues()
+                if (forced) {
+                    dashboard_stats.clearLabelValues()
+                    dashboard_stats.clearChartData()
+                }
                 presenter.loadStats(dashboard_stats.activeGranularity, forced)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
