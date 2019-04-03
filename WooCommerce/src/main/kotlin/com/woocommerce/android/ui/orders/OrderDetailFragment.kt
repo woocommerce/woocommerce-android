@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
@@ -216,10 +217,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
         if (trackings.isNotEmpty()) {
-            orderDetail_shipmentList.visibility = View.VISIBLE
             orderDetail_shipmentList.initView(trackings, uiMessageResolver)
+            if (orderDetail_shipmentList.visibility != View.VISIBLE) {
+                WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
+            }
         } else {
-            orderDetail_shipmentList.visibility = View.GONE
+            if (orderDetail_shipmentList.visibility == View.VISIBLE) {
+                WooAnimUtils.scaleOut(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
+            }
         }
     }
 
