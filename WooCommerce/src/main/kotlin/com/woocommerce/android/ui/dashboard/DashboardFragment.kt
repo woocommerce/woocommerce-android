@@ -121,8 +121,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        // If this fragment is now visible and we've deferred loading data due to it not
-        // being visible - go ahead and load the data.
+        // silently refresh if this fragment is no longer hidden
         if (!isHidden) {
             refreshDashboard(forced = false)
         }

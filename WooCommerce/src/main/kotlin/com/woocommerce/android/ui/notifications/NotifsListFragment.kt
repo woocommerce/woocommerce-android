@@ -222,9 +222,13 @@ class NotifsListFragment : TopLevelFragment(),
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        // If this fragment is no longer visible, dismiss the pending notification
-        // moderation so it can be processed immediately.
-        changeCommentStatusSnackbar?.dismiss()
+        // If this fragment is no longer visible dismiss the pending notification moderation
+        // so it can be processed immediately, otherwise silently refresh
+        if (hidden) {
+            changeCommentStatusSnackbar?.dismiss()
+        } else {
+            presenter.fetchAndLoadNotifsFromDb(false)
+        }
     }
 
     override fun onStop() {

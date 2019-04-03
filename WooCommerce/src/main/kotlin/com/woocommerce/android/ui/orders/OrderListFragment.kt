@@ -301,6 +301,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         super.onDestroyView()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        // silently refresh if this fragment is no longer hidden
+        if (!hidden) {
+            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+        }
+    }
+
     override fun setLoadingMoreIndicator(active: Boolean) {
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
     }
