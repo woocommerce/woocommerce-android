@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.base.UIMessageResolver
 import kotlinx.android.synthetic.main.order_detail_shipment_tracking_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 
@@ -22,9 +23,9 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         View.inflate(context, R.layout.order_detail_shipment_tracking_list, this)
     }
 
-    fun initView(trackings: List<WCOrderShipmentTrackingModel>) {
+    fun initView(trackings: List<WCOrderShipmentTrackingModel>, uiMessageResolver: UIMessageResolver) {
         val viewManager = LinearLayoutManager(context)
-        val viewAdapter = ShipmentTrackingListAdapter(trackings)
+        val viewAdapter = ShipmentTrackingListAdapter(trackings, uiMessageResolver)
 
         shipmentTrack_items.apply {
             setHasFixedSize(true)
@@ -36,7 +37,8 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     }
 
     class ShipmentTrackingListAdapter(
-        private val trackings: List<WCOrderShipmentTrackingModel>
+        private val trackings: List<WCOrderShipmentTrackingModel>,
+        private val uiMessageResolver: UIMessageResolver
     ) : RecyclerView.Adapter<ShipmentTrackingListAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailShipmentTrackingItemView) : RecyclerView.ViewHolder(view)
 
@@ -48,7 +50,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.view.initView(trackings[position])
+            holder.view.initView(trackings[position], uiMessageResolver)
         }
 
         override fun getItemCount() = trackings.size

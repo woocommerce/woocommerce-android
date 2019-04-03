@@ -217,7 +217,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
         if (trackings.isNotEmpty()) {
             orderDetail_shipmentList.visibility = View.VISIBLE
-            orderDetail_shipmentList.initView(trackings)
+            orderDetail_shipmentList.initView(trackings, uiMessageResolver)
         } else {
             orderDetail_shipmentList.visibility = View.GONE
         }
