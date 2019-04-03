@@ -197,7 +197,7 @@ class OrderDetailPresenterTest {
         // we also want to verify that notes are loaded even on error because the UI adds
         // a transient note while the note is pushed and it won't be removed from the
         // note list until notes are loaded
-        verify(presenter, times(1)).fetchAndLoadNotesFromDb()
+        verify(presenter, times(1)).loadNotesFromDb()
     }
 
     @Test
@@ -207,7 +207,7 @@ class OrderDetailPresenterTest {
 
         presenter.doChangeOrderStatus(CoreOrderStatus.COMPLETED.value)
         verify(uiMessageResolver, times(1)).showOfflineSnack()
-        verify(presenter, times(0)).fetchAndLoadNotesFromDb()
+        verify(presenter, times(0)).loadNotesFromDb()
     }
 
     @Test
@@ -217,7 +217,7 @@ class OrderDetailPresenterTest {
         doReturn(false).whenever(networkStatus).isConnected()
 
         presenter.loadOrderNotes()
-        verify(presenter, times(1)).fetchAndLoadNotesFromDb()
+        verify(presenter, times(1)).loadNotesFromDb()
         verify(presenter, times(0)).requestOrderNotesFromApi(any())
     }
 
@@ -261,7 +261,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
 
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(presenter, times(1)).fetchAndLoadShipmentTrackingsFromDb()
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
         verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
     }
 
@@ -272,7 +272,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
 
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(presenter, times(1)).fetchAndLoadShipmentTrackingsFromDb()
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
         verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
     }
 

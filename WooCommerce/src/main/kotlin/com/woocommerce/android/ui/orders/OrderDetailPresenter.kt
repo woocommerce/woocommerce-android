@@ -101,7 +101,7 @@ class OrderDetailPresenter @Inject constructor(
         orderView?.showOrderNotesSkeleton(true)
         orderModel?.let { order ->
             // Preload order notes from database if available
-            fetchAndLoadNotesFromDb()
+            loadNotesFromDb()
 
             if (networkStatus.isConnected()) {
                 // Attempt to refresh notes from api in the background
@@ -116,7 +116,7 @@ class OrderDetailPresenter @Inject constructor(
     override fun loadOrderShipmentTrackings() {
         orderModel?.let { order ->
             // Preload trackings from the db is available
-            fetchAndLoadShipmentTrackingsFromDb()
+            loadShipmentTrackingsFromDb()
 
             if (networkStatus.isConnected()) {
                 // Attempt to refresh trackings from api in the background
@@ -296,14 +296,14 @@ class OrderDetailPresenter @Inject constructor(
 
             // note that we refresh even on error to make sure the transient note is removed
             // from the note list
-            fetchAndLoadNotesFromDb()
+            loadNotesFromDb()
         }
     }
 
     /**
      * Fetch the order notes from the device database.
      */
-    fun fetchAndLoadNotesFromDb() {
+    fun loadNotesFromDb() {
         orderModel?.let { order ->
             val notes = orderStore.getOrderNotesForOrder(order)
             if (isNotesInit) {
@@ -318,7 +318,7 @@ class OrderDetailPresenter @Inject constructor(
     /**
      * Fetch the order shipment tracking records from the device db.
      */
-    fun fetchAndLoadShipmentTrackingsFromDb() {
+    fun loadShipmentTrackingsFromDb() {
         orderModel?.let { order ->
             val trackings = orderStore.getShipmentTrackingsForOrder(order)
             orderView?.showOrderShipmentTrackings(trackings)
