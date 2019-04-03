@@ -253,8 +253,7 @@ class OrderDetailPresenter @Inject constructor(
                             mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
 
                     isUsingCachedShipmentTrackings = false
-                    val trackings = orderStore.getShipmentTrackingsForOrder(order)
-                    orderView?.showOrderShipmentTrackings(trackings)
+                    loadShipmentTrackingsFromDb()
                 }
             }
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
