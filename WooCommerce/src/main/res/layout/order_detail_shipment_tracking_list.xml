@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:text="@string/order_shipment_tracking"
         style="@style/Woo.TextView.Title.Purple"
-        android:paddingBottom="@dimen/card_section_padding_h"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -22,7 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false"
-        android:paddingTop="@dimen/card_section_padding_h"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_label"

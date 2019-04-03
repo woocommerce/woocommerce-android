@@ -1,40 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tracking_type"
-        android:textAppearance="@style/Woo.TextAppearance.ListItem.Title.Bold"
+    <LinearLayout
+        android:id="@+id/tracking_copyNumber"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/list_item_padding_top"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintEnd_toStartOf="@+id/guideline6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="USPS"/>
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tracking_number"
-        android:textAppearance="@style/Woo.TextAppearance.ListItem"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tracking_type"
-        tools:text="111222 3334 4444Z"/>
+        <TextView
+            android:id="@+id/tracking_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/list_item_padding_top"
+            android:textAppearance="@style/Woo.TextAppearance.ListItem.Title.Bold"
+            tools:text="USPS"/>
 
-    <android.support.v7.widget.AppCompatButton
+        <TextView
+            android:id="@+id/tracking_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Woo.TextAppearance.ListItem"
+            tools:text="111222 3334 4444Z"/>
+    </LinearLayout>
+
+    <FrameLayout
         android:id="@+id/tracking_btnTrack"
-        style="@style/Woo.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/order_shipment_tracking_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/order_shipment_tracking_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tracking_number"/>
+        app:layout_constraintStart_toStartOf="@+id/guideline6"
+        app:layout_constraintTop_toTopOf="parent">
 
-</merge>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="center"
+            android:tint="@color/wc_purple"
+            app:srcCompat="@drawable/ic_external"/>
+    </FrameLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="54dp"/>
+
+</android.support.constraint.ConstraintLayout>

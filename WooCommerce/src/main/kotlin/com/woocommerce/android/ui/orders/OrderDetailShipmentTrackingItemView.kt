@@ -23,6 +23,10 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         tracking_type.text = item.trackingProvider
         tracking_number.text = item.trackingNumber
 
+        tracking_copyNumber.setOnClickListener {
+            // TODO copy number
+        }
+
         if (item.trackingLink.isNotEmpty()) {
             tracking_btnTrack.setOnClickListener {
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED)
