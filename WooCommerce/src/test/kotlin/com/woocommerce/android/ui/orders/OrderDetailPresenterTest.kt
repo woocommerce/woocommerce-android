@@ -78,7 +78,9 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
+
+        // Fetch notes and fetch order shipment trackings
+        verify(dispatcher, times(2)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orderNotes).whenever(orderStore).getOrderNotesForOrder(any())
@@ -91,7 +93,9 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
+
+        // Fetch notes and fetch order shipment trackings
+        verify(dispatcher, times(2)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
         presenter.onOrderChanged(OnOrderChanged(0).apply {
