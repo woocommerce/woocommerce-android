@@ -2,8 +2,4 @@
 <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingEnd="0dp"
-    android:paddingStart="@dimen/list_item_padding_start"
-    android:paddingTop="@dimen/list_item_padding_top"
-    android:paddingBottom="@dimen/list_item_padding_bottom"/>
+    android:layout_height="wrap_content"/>

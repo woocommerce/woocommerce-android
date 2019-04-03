@@ -14,7 +14,12 @@
         android:clickable="true"
         android:focusable="true"
         android:background="?android:attr/selectableItemBackground"
-        app:layout_constraintEnd_toStartOf="@+id/guideline6"
+        android:contentDescription="@string/order_shipment_tracking_copy_to_clipboard"
+        android:paddingStart="@dimen/list_item_padding_start"
+        android:paddingEnd="@dimen/list_item_padding_end"
+        android:paddingTop="@dimen/list_divider_padding_top"
+        android:paddingBottom="@dimen/list_divider_padding_bottom"
+        app:layout_constraintEnd_toStartOf="@+id/tracking_btnTrack"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,28 +28,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/list_item_padding_top"
-            android:textAppearance="@style/Woo.TextAppearance.ListItem.Title.Bold"
+            android:textAppearance="@style/Woo.TextAppearance.Medium"
             tools:text="USPS"/>
 
         <TextView
             android:id="@+id/tracking_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/Woo.TextAppearance.ListItem"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
             tools:text="111222 3334 4444Z"/>
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/tracking_btnTrack"
-        android:layout_width="0dp"
+        android:layout_width="40dp"
         android:layout_height="0dp"
-        android:clickable="true"
-        android:focusable="true"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/order_shipment_tracking_button"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline6"
+        app:layout_constraintStart_toEndOf="@+id/tracking_copyNumber"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -55,12 +60,4 @@
             android:tint="@color/wc_purple"
             app:srcCompat="@drawable/ic_external"/>
     </FrameLayout>
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="54dp"/>
-
 </android.support.constraint.ConstraintLayout>
