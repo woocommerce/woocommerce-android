@@ -14,6 +14,7 @@ import java.util.Locale
 
 object DateUtils {
     val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
+    val friendlyFullDateFormat by lazy { SimpleDateFormat("MMMM d, YYYY", Locale.getDefault()) }
     private val weekOfYearStartingMondayFormat by lazy {
         SimpleDateFormat("yyyy-'W'ww", Locale.getDefault()).apply {
             calendar = Calendar.getInstance().apply {
@@ -96,6 +97,24 @@ object DateUtils {
             val (year, month, day) = iso8601Date.split("-")
             val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
             friendlyMonthDayFormat.format(date)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format YYYY-MM-DD: $iso8601Date")
+        }
+    }
+
+    /**
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the stirng in the full format of ("MMM d, YYYY".
+     *
+     * For example, given 2018-07-03 returns "July 3, 2018".
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getFullDateString(iso8601Date: String): String {
+        return try {
+            val (year, month, day) = iso8601Date.split("-")
+            val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+            friendlyFullDateFormat.format(date)
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format YYYY-MM-DD: $iso8601Date")
         }

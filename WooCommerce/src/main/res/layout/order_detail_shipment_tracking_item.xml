@@ -27,7 +27,7 @@
             android:id="@+id/tracking_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/list_item_padding_top"
+            android:paddingTop="@dimen/card_item_padding_intra_v"
             android:textAppearance="@style/Woo.TextAppearance.Medium"
             tools:text="USPS"/>
 
@@ -35,13 +35,23 @@
             android:id="@+id/tracking_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
+            android:paddingTop="@dimen/card_item_padding_intra_v"
+            android:paddingBottom="@dimen/card_item_padding_intra_v"
+            android:textAppearance="@style/Woo.TextAppearance.Medium.Bold"
             tools:text="111222 3334 4444Z"/>
+
+        <TextView
+            android:id="@+id/tracking_dateShipped"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/card_item_padding_intra_v"
+            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
+            tools:text="Shipped February 27, 2019"/>
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/tracking_btnTrack"
-        android:layout_width="40dp"
+        android:layout_width="50dp"
         android:layout_height="0dp"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/order_shipment_tracking_button"
