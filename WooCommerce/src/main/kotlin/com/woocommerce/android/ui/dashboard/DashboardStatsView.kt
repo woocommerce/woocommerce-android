@@ -334,6 +334,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun fadeInLabelValue(view: TextView, value: String) {
+        // do nothing if value hasn't changed
+        if (view.text.toString().equals(value)) {
+            return
+        }
+
         // fade out the current value
         val duration = Duration.SHORT
         WooAnimUtils.fadeOut(view, duration, View.INVISIBLE)

@@ -306,7 +306,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         // silently refresh if this fragment is no longer hidden
         if (!hidden) {
-            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+            if (isSearching) {
+                presenter.searchOrders(searchQuery)
+            } else {
+                presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+            }
         }
     }
 
