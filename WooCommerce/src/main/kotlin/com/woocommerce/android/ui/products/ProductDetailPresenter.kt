@@ -54,13 +54,24 @@ class ProductDetailPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
+    override fun loadProductDetail(remoteProductId: Long) {
+        val shouldFetch = remoteProductId != this.remoteProductId
+        this.remoteProductId = remoteProductId
+        getProduct(remoteProductId)?.let { product ->
+            view?.showProduct(product)
+            if (shouldFetch) {
+                fetchProduct(remoteProductId, false)
+            }
+        } ?: fetchProduct(remoteProductId, true)
+    }
+
     override fun getProduct(remoteProductId: Long): WCProductModel? =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
-    override fun fetchProduct(remoteProductId: Long) {
+    override fun fetchProduct(remoteProductId: Long, forced: Boolean) {
         if (networkStatus.isConnected()) {
             this.remoteProductId = remoteProductId
-            if (getProduct(remoteProductId) == null) {
+            if (forced) {
                 view?.showSkeleton(true)
             }
             val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)

@@ -87,16 +87,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View {
                 0L
         )
 
-        val product = presenter.getProduct(remoteProductId)
-        if (product == null) {
-            showSkeleton(true)
-            presenter.fetchProduct(remoteProductId)
-        } else {
-            showProduct(product)
-            if (savedInstanceState == null) {
-                presenter.fetchProduct(remoteProductId)
-            }
-        }
+        presenter.loadProductDetail(remoteProductId)
 
         // only show title when toolbar is collapsed
         app_bar_layout.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
