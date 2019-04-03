@@ -81,9 +81,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     private val skeletonView = SkeletonView()
 
-    override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -240,9 +237,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) {
-                        onScrollDown(this@OrderListFragment.orderRefreshLayout)
+                        onScrollDown()
                     } else if (dy < 0) {
-                        onScrollUp(this@OrderListFragment.orderRefreshLayout)
+                        onScrollUp()
                     }
                 }
             })
@@ -302,6 +299,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         filterMenuItem = null
         searchView = null
         super.onDestroyView()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        // silently refresh if this fragment is no longer hidden
+        if (!hidden) {
+            if (isSearching) {
+                presenter.searchOrders(searchQuery)
+            } else {
+                presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+            }
+        }
     }
 
     override fun setLoadingMoreIndicator(active: Boolean) {

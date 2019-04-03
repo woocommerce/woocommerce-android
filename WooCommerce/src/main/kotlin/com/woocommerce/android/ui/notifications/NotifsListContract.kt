@@ -16,7 +16,6 @@ interface NotifsListContract {
     }
 
     interface View : BaseView<Presenter>, ReviewActionListener {
-        var isActive: Boolean
         var isRefreshPending: Boolean
 
         fun showNotifications(notifsList: List<NotificationModel>, isFreshData: Boolean)

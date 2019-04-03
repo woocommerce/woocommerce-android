@@ -8,5 +8,6 @@ Bugfixes
 * Fixed rare crash when showing order note
 
 Improvements
+* Dashboard no longer reloads every time you return to it
 
 New Features
