@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.AnimRes
+import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
@@ -21,7 +22,6 @@ import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.activity_image_viewer.*
-import org.wordpress.android.util.ToastUtils
 
 /**
  * Full-screen image view with pinch-and-zoom
@@ -174,7 +174,7 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
     }
 
     /**
-     * Glide failed to load the image
+     * Glide failed to load the image, show a snackbar alerting user to the error and finish after it's dismissed
      */
     override fun onLoadFailed(
         e: GlideException?,
@@ -183,8 +183,15 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
-        ToastUtils.showToast(this, R.string.error_loading_image)
-        finish()
+        val snack = Snackbar.make(snack_root, R.string.error_loading_image, Snackbar.LENGTH_SHORT)
+        val callback = object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                finish()
+            }
+        }
+        snack.addCallback(callback)
+        snack.show()
         return false
     }
 
