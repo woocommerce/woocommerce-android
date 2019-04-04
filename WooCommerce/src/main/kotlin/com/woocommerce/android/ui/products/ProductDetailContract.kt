@@ -7,7 +7,8 @@ import org.wordpress.android.fluxc.model.WCProductModel
 interface ProductDetailContract {
     interface Presenter : BasePresenter<View> {
         fun getProduct(remoteProductId: Long): WCProductModel?
-        fun fetchProduct(remoteProductId: Long)
+        fun fetchProduct(remoteProductId: Long, forced: Boolean)
+        fun loadProductDetail(remoteProductId: Long)
         fun formatCurrency(rawValue: String): String
         fun getWeightUnit(): String
         fun getDimensionUnit(): String
