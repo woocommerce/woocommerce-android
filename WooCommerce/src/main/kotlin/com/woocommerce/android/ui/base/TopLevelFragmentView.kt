@@ -18,6 +18,8 @@ import org.wordpress.android.fluxc.model.WCOrderModel
  * fragments and their associated back stack.
  */
 interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, OrdersViewRouter {
+    var isActive: Boolean
+
     /**
      * Load the provided fragment into the current view and disable the main
      * underlying fragment view.

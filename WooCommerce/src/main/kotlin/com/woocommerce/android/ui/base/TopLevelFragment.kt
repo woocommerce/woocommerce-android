@@ -30,6 +30,9 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     var deferInit: Boolean = false
     private var runOnResumeFunc: (() -> Unit)? = null
 
+    override var isActive: Boolean = false
+        get() = host != null && childFragmentManager.backStackEntryCount == 0 && !isHidden
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         childFragmentManager.addOnBackStackChangedListener(this)
