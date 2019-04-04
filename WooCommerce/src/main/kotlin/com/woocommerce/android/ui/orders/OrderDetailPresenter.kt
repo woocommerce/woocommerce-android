@@ -38,6 +38,7 @@ import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsRead
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
@@ -62,6 +63,7 @@ class OrderDetailPresenter @Inject constructor(
     override var orderModel: WCOrderModel? = null
     override var orderIdentifier: OrderIdentifier? = null
     override var isUsingCachedNotes = false
+    override var isUsingCachedShipmentTrackings = false
     private var pendingRemoteOrderId: Long? = null
     private var pendingMarkReadNotification: NotificationModel? = null
 
@@ -90,6 +92,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderView?.showOrderDetail(order)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
+                loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId)
         }
     }
@@ -98,7 +101,7 @@ class OrderDetailPresenter @Inject constructor(
         orderView?.showOrderNotesSkeleton(true)
         orderModel?.let { order ->
             // Preload order notes from database if available
-            fetchAndLoadNotesFromDb()
+            loadNotesFromDb()
 
             if (networkStatus.isConnected()) {
                 // Attempt to refresh notes from api in the background
@@ -106,6 +109,21 @@ class OrderDetailPresenter @Inject constructor(
             } else {
                 // Track so when the device is connected notes can be refreshed
                 isUsingCachedNotes = true
+            }
+        }
+    }
+
+    override fun loadOrderShipmentTrackings() {
+        orderModel?.let { order ->
+            // Preload trackings from the db is available
+            loadShipmentTrackingsFromDb()
+
+            if (networkStatus.isConnected()) {
+                // Attempt to refresh trackings from api in the background
+                requestShipmentTrackingsFromApi(order)
+            } else {
+                // Track so when the device is connected shipment trackings can be refreshed
+                isUsingCachedShipmentTrackings = true
             }
         }
     }
@@ -225,6 +243,19 @@ class OrderDetailPresenter @Inject constructor(
                     orderView?.updateOrderNotes(notes)
                 }
             }
+        } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS) {
+            if (event.isError) {
+                WooLog.e(T.ORDERS, "$TAG - Error fetching order shipment tracking info: ${event.error.message}")
+            } else {
+                orderModel?.let { order ->
+                    AnalyticsTracker.track(
+                            Stat.ORDER_TRACKING_LOADED,
+                            mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
+
+                    isUsingCachedShipmentTrackings = false
+                    loadShipmentTrackingsFromDb()
+                }
+            }
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error updating order status : ${event.error.message}")
@@ -264,14 +295,14 @@ class OrderDetailPresenter @Inject constructor(
 
             // note that we refresh even on error to make sure the transient note is removed
             // from the note list
-            fetchAndLoadNotesFromDb()
+            loadNotesFromDb()
         }
     }
 
     /**
      * Fetch the order notes from the device database.
      */
-    fun fetchAndLoadNotesFromDb() {
+    fun loadNotesFromDb() {
         orderModel?.let { order ->
             val notes = orderStore.getOrderNotesForOrder(order)
             if (isNotesInit) {
@@ -284,11 +315,29 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     /**
+     * Fetch the order shipment tracking records from the device db.
+     */
+    fun loadShipmentTrackingsFromDb() {
+        orderModel?.let { order ->
+            val trackings = orderStore.getShipmentTrackingsForOrder(order)
+            orderView?.showOrderShipmentTrackings(trackings)
+        }
+    }
+
+    /**
      * Request a fresh copy of order notes from the api.
      */
     fun requestOrderNotesFromApi(order: WCOrderModel) {
         val payload = FetchOrderNotesPayload(order, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
+    }
+
+    /**
+     * Request a fresh copy of order shipment tracking records from the api.
+     */
+    fun requestShipmentTrackingsFromApi(order: WCOrderModel) {
+        val payload = FetchOrderShipmentTrackingsPayload(selectedSite.get(), order)
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
     }
 
     @Suppress("unused")
@@ -299,6 +348,10 @@ class OrderDetailPresenter @Inject constructor(
             orderModel?.let { order ->
                 if (isUsingCachedNotes) {
                     requestOrderNotesFromApi(order)
+                }
+
+                if (isUsingCachedShipmentTrackings) {
+                    requestShipmentTrackingsFromApi(order)
                 }
             }
         }
