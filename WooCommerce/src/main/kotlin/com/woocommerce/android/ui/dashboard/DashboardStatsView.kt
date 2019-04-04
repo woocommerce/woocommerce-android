@@ -256,6 +256,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
 
+        val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
+
         val revenue = formatCurrencyForDisplay(revenueStats.values.sum(), currencyCode.orEmpty())
         val orders = orderStats.values.sum().toString()
         fadeInLabelValue(revenue_value, revenue)
@@ -292,7 +294,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             axisLeft.axisMinimum = minRevenue
             axisRight.axisMinimum = 0f
             data = BarData(dataSet)
-            animateY(duration)
+            if (wasEmpty) {
+                animateY(duration)
+            }
         }
 
         hideMarker()
@@ -325,7 +329,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         orders_value.setText(R.string.emdash)
     }
 
+    fun clearChartData() {
+        chart.data.clearValues()
+    }
+
     private fun fadeInLabelValue(view: TextView, value: String) {
+        // do nothing if value hasn't changed
+        if (view.text.toString().equals(value)) {
+            return
+        }
+
         // fade out the current value
         val duration = Duration.SHORT
         WooAnimUtils.fadeOut(view, duration, View.INVISIBLE)
