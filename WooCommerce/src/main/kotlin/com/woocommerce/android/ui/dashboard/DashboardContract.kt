@@ -9,14 +9,12 @@ interface DashboardContract {
     interface Presenter : BasePresenter<View> {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
-        fun resetForceRefresh()
         fun getStatsCurrency(): String?
         fun fetchUnfilledOrderCount(forced: Boolean = false)
         fun fetchHasOrders()
     }
 
     interface View : BaseView<Presenter> {
-        var isActive: Boolean
         var isRefreshPending: Boolean
 
         fun refreshDashboard(forced: Boolean = false)

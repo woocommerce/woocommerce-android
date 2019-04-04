@@ -44,15 +44,28 @@ class DashboardPresenter @Inject constructor(
     companion object {
         private val TAG = DashboardPresenter::class.java
         private const val NUM_TOP_EARNERS = 3
+        private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
+        private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
+
+        init {
+            resetForceRefresh()
+        }
+
+        /**
+         * this tells the presenter to force a refresh for all granularities on the next request - this is
+         * used after a swipe-to-refresh on the dashboard to ensure we don't get cached data
+         */
+        fun resetForceRefresh() {
+            for (i in 0 until statsForceRefresh.size) {
+                statsForceRefresh[i] = true
+            }
+            for (i in 0 until topEarnersForceRefresh.size) {
+                topEarnersForceRefresh[i] = true
+            }
+        }
     }
 
     private var dashboardView: DashboardContract.View? = null
-    private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
-    private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
-
-    init {
-        resetForceRefresh()
-    }
 
     override fun takeView(view: DashboardContract.View) {
         dashboardView = view
@@ -100,19 +113,6 @@ class DashboardPresenter @Inject constructor(
         val payload = FetchTopEarnersStatsPayload(
                 selectedSite.get(), granularity, NUM_TOP_EARNERS, forced = forceRefresh)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
-    }
-
-    /**
-     * this tells the presenter to force a refresh for all granularities on the next request - this is
-     * used after a swipe-to-refresh on the dashboard to ensure we don't get cached data
-     */
-    override fun resetForceRefresh() {
-        for (i in 0 until statsForceRefresh.size) {
-            statsForceRefresh[i] = true
-        }
-        for (i in 0 until topEarnersForceRefresh.size) {
-            topEarnersForceRefresh[i] = true
-        }
     }
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())

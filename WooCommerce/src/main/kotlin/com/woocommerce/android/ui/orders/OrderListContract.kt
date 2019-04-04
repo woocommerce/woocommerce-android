@@ -20,7 +20,6 @@ interface OrderListContract {
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter {
-        var isActive: Boolean
         var isRefreshPending: Boolean
         var isSearching: Boolean
         var isRefreshing: Boolean
