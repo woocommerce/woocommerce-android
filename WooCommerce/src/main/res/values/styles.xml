@@ -14,6 +14,8 @@
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowContentTransitions">true</item>
+
         <!--
             Default text
         -->
@@ -439,6 +441,16 @@
     -->
     <style name="ProductDetail" />
     <style name="ProductDetail.Activity" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!--
+        Image viewer
+    -->
+    <style name="ImageViewer" />
+    <style name="ImageViewer.Activity" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
