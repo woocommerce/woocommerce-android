@@ -144,10 +144,11 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
                 return
             }
 
-            @AnimRes val animRes = if (show)
+            @AnimRes val animRes = if (show) {
                 R.anim.toolbar_fade_in_and_down
-            else
+            } else {
                 R.anim.toolbar_fade_out_and_up
+            }
 
             val listener = object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation) {
