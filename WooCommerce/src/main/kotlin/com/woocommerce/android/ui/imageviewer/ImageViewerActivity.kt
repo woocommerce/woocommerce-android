@@ -183,15 +183,15 @@ class ImageViewerActivity : AppCompatActivity(), RequestListener<Drawable> {
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
-        val snack = Snackbar.make(snack_root, R.string.error_loading_image, Snackbar.LENGTH_SHORT)
         val callback = object : Snackbar.Callback() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                 super.onDismissed(transientBottomBar, event)
                 finish()
             }
         }
-        snack.addCallback(callback)
-        snack.show()
+        Snackbar.make(snack_root, R.string.error_loading_image, Snackbar.LENGTH_SHORT)
+                .addCallback(callback)
+                .show()
         return false
     }
 
