@@ -105,6 +105,10 @@
         <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
+    <style name="Woo.TextAppearance.Medium.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Woo.TextAppearance.Large">
         <item name="android:textColor">@color/default_text_title_color</item>
         <item name="android:textSize">@dimen/text_large</item>
@@ -261,6 +265,10 @@
 
     <style name="Woo.TextAppearance.ListItem.Title">
         <item name="android:textColor">@color/list_item_text_title</item>
+    </style>
+
+    <style name="Woo.TextAppearance.ListItem.Title.Bold">
+        <item name="android:textStyle">bold</item>
     </style>
     <!--
         Default List Item Header Styles

@@ -78,7 +78,9 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
+
+        // Fetch notes and fetch order shipment trackings
+        verify(dispatcher, times(2)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(orderNotes).whenever(orderStore).getOrderNotesForOrder(any())
@@ -91,7 +93,9 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderNotesPayload>>())
+
+        // Fetch notes and fetch order shipment trackings
+        verify(dispatcher, times(2)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
         presenter.onOrderChanged(OnOrderChanged(0).apply {
@@ -193,7 +197,7 @@ class OrderDetailPresenterTest {
         // we also want to verify that notes are loaded even on error because the UI adds
         // a transient note while the note is pushed and it won't be removed from the
         // note list until notes are loaded
-        verify(presenter, times(1)).fetchAndLoadNotesFromDb()
+        verify(presenter, times(1)).loadNotesFromDb()
     }
 
     @Test
@@ -203,7 +207,7 @@ class OrderDetailPresenterTest {
 
         presenter.doChangeOrderStatus(CoreOrderStatus.COMPLETED.value)
         verify(uiMessageResolver, times(1)).showOfflineSnack()
-        verify(presenter, times(0)).fetchAndLoadNotesFromDb()
+        verify(presenter, times(0)).loadNotesFromDb()
     }
 
     @Test
@@ -213,7 +217,7 @@ class OrderDetailPresenterTest {
         doReturn(false).whenever(networkStatus).isConnected()
 
         presenter.loadOrderNotes()
-        verify(presenter, times(1)).fetchAndLoadNotesFromDb()
+        verify(presenter, times(1)).loadNotesFromDb()
         verify(presenter, times(0)).requestOrderNotesFromApi(any())
     }
 
@@ -248,5 +252,47 @@ class OrderDetailPresenterTest {
 
         presenter.onOrderChanged(OnOrderChanged(10).apply { causeOfChange = FETCH_ORDER_NOTES })
         verify(orderDetailView).showOrderNotesSkeleton(false)
+    }
+
+    @Test
+    fun `Request order shipment trackings from api and load cached from db`() {
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(true).whenever(networkStatus).isConnected()
+        presenter.takeView(orderDetailView)
+
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
+        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+    }
+
+    @Test
+    fun `Do not request order shipment trackings from api when not connected`() {
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(false).whenever(networkStatus).isConnected()
+        presenter.takeView(orderDetailView)
+
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
+        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+    }
+
+    @Test
+    fun `Request fresh shipment tracking from api on network connected event if using non-updated cached data`() {
+        doReturn(true).whenever(presenter).isUsingCachedShipmentTrackings
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+    }
+
+    @Test
+    fun `Do not refresh shipment trackings on network connected event if cached data already refreshed`() {
+        doReturn(false).whenever(presenter).isUsingCachedShipmentTrackings
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        presenter.onEventMainThread(ConnectionChangeEvent(true))
+        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
     }
 }

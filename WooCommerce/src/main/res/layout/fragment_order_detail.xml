@@ -63,6 +63,18 @@
                 android:animateLayoutChanges="true"
                 android:focusable="true"/>
 
+            <!-- Shipment Tracking -->
+            <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
+                android:id="@+id/orderDetail_shipmentList"
+                style="@style/Woo.Card.List"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="0dp"
+                android:contentDescription="@string/order_shipment_tracking_section_cd"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
             <!-- Order Notes -->
             <com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView
                 android:id="@+id/orderDetail_noteList"

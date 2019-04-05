@@ -24,11 +24,13 @@ import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
@@ -213,6 +215,19 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
         // Populate order notes card
         orderDetail_noteList.initView(notes, this)
+    }
+
+    override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
+        if (trackings.isNotEmpty()) {
+            orderDetail_shipmentList.initView(trackings, uiMessageResolver)
+            if (orderDetail_shipmentList.visibility != View.VISIBLE) {
+                WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
+            }
+        } else {
+            if (orderDetail_shipmentList.visibility == View.VISIBLE) {
+                WooAnimUtils.scaleOut(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
+            }
+        }
     }
 
     override fun showOrderNotesSkeleton(show: Boolean) {
