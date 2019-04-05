@@ -85,13 +85,14 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     }
 
     /**
-     * Update WP.com and WooCommerce site settings in a background task.
+     * Update WP.com and WooCommerce settings in a background task.
      */
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let {
                 dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(it))
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
+                dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
             }
             return true
         }

@@ -14,6 +14,8 @@
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowContentTransitions">true</item>
+
         <!--
             Default text
         -->
@@ -359,14 +361,8 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
-    <style name="Woo.Settings.Label.Small" parent="Woo.Settings.Label">
-        <item name="android:textSize">@dimen/text_medium</item>
-        <item name="android:paddingBottom">@dimen/margin_small</item>
-        <item name="android:paddingTop">@dimen/margin_small</item>
-    </style>
-
     <style name="Woo.Settings.LabelWithButton" parent="Woo.Settings.Label">
-        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingBottom">@dimen/margin_small</item>
     </style>
 
     <style name="Woo.Settings.Button" parent="Woo.Button">
@@ -446,6 +442,26 @@
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:background">@drawable/about_button_selector</item>
 
+    </style>
+
+    <!--
+        Product detail
+    -->
+    <style name="ProductDetail" />
+    <style name="ProductDetail.Activity" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!--
+        Image viewer
+    -->
+    <style name="ImageViewer" />
+    <style name="ImageViewer.Activity" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <!--

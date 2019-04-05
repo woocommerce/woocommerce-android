@@ -66,6 +66,14 @@
             android:label="@string/support_help"
             android:theme="@style/AppTheme" />
 
+        <activity
+            android:name=".ui.products.ProductDetailActivity"
+            android:theme="@style/ProductDetail.Activity"/>
+
+        <activity
+            android:name=".ui.imageviewer.ImageViewerActivity"
+            android:theme="@style/ImageViewer.Activity"/>
+
         <!-- Services -->
         <service
             android:name=".push.FCMRegistrationIntentService"

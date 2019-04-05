@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.products.ProductDetailActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -411,6 +413,15 @@ class MainActivity : AppCompatActivity(),
                 PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
                 else -> { /* do nothing */ }
             }
+        }
+    }
+
+    override fun showProductDetail(remoteProductId: Long) {
+        // TODO: for now product detail is only supported in debug builds, we'll roll it out to all users after design
+        // iterations are done
+        if (BuildConfig.DEBUG) {
+            showBottomNav()
+            ProductDetailActivity.show(this, remoteProductId)
         }
     }
 
