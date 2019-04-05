@@ -154,6 +154,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     private fun shouldShowFilterMenuItem(): Boolean {
         return when {
+            !isAdded -> false
             (isShowingAllOrders() && empty_view.visibility == View.VISIBLE) -> false
             (childFragmentManager.backStackEntryCount > 0) -> false
             else -> true
