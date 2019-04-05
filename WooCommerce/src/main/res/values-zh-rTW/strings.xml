@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-08 10:54:02+0000
+Translation-Revision-Date: 2019-03-28 02:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="settings_switch_site_notifs_msg">切換為 %s。你只會收到此商店的通知</string>
+    <string name="login_update_required_desc">此商店使用舊版的 WooCommerce。請將你的商店升級為 WooCommerce 3.5 或更新版本，以搭配此應用程式使用。</string>
     <string name="promo_message_site_picker">現在，在「設定」中點選選取的商店即可切換商店</string>
     <string name="promo_title_site_picker">經營多家商店嗎？</string>
     <string name="promo_btn_try_it">立即試試</string>
     <string name="promo_btn_got_it">知道了</string>
     <string name="tooltip_site_switcher">點選即可切換商店</string>
+    <string name="site_picker_title">挑選商店</string>
     <string name="username">WordPress.com 使用者名稱</string>
     <string name="settings_signout">登出</string>
     <string name="orderstatus_select_status">變更訂單狀態</string>

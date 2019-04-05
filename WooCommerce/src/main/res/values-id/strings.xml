@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-05 11:54:02+0000
+Translation-Revision-Date: 2019-03-26 10:54:16+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="settings_switch_site_notifs_msg">Beralih ke %s. Anda hanya akan menerima pemberitahuan untuk toko ini</string>
+    <string name="login_update_required_desc">Toko ini menggunakan WooCommerce versi lama. Upgrade toko Anda ke WooCommerce 3.5 atau yang lebih baru agar dapat menggunakannya dengan aplikasi ini.</string>
     <string name="promo_message_site_picker">Sekarang Anda dapat beralih antartoko dengan mengetuk toko yang dipilih di Pengaturan</string>
     <string name="promo_title_site_picker">Mengelola beberapa toko?</string>
     <string name="promo_btn_try_it">Coba sekarang</string>
     <string name="promo_btn_got_it">Saya mengerti</string>
     <string name="tooltip_site_switcher">Ketuk untuk beralih toko</string>
+    <string name="site_picker_title">Pilih toko</string>
     <string name="username">Nama pengguna WordPress.com</string>
     <string name="settings_signout">Logout</string>
     <string name="orderstatus_select_status">Ubah status pesanan</string>
