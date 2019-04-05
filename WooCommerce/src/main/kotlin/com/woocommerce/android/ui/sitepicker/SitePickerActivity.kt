@@ -221,7 +221,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         AnalyticsTracker.track(
-                Stat.SITE_PICKER_STORE_PICKER_CONTINUE_TAPPED,
+                Stat.SITE_PICKER_CONTINUE_TAPPED,
                 mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
         )
 
