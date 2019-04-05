@@ -77,7 +77,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
-        SITE_PICKER_STORE_PICKER_CONTINUE_TAPPED(siteless = true),
+        SITE_PICKER_CONTINUE_TAPPED(siteless = true),
         SITE_PICKER_HELP_BUTTON_TAPPED(siteless = true),
 
         // -- Dashboard
