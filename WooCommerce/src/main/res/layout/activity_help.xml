@@ -43,7 +43,7 @@
                         style="@style/Woo.Settings.LabelWithDetail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/support_faq"/>
+                        android:text="@string/support_help_center"/>
 
                     <TextView
                         style="@style/Woo.Settings.Label.Detail"
