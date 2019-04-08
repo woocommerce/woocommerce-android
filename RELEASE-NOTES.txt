@@ -1,5 +1,8 @@
 1.7
 -----
+
+Improvements
+* Changed FAQ button in help section to "Help Center". The button now routes to WooCommerce mobile documentation.
  
 1.6
 -----
