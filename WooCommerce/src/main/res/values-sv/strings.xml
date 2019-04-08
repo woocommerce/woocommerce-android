@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-05 09:54:02+0000
+Translation-Revision-Date: 2019-03-27 07:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="settings_switch_site_notifs_msg">Växlade till %s. Du kommer bara att få meddelanden för den här affären</string>
+    <string name="login_update_required_desc">Den här affären använder en äldre version av WooCommerce. Uppgradera din affär till WooCommerce 3.5 eller senare för att använda den med den här appen.</string>
     <string name="promo_message_site_picker">Du kan nu byta mellan butiker genom att trycka på den valda butiken i Inställningar</string>
     <string name="promo_title_site_picker">Kör du flera butiker?</string>
     <string name="promo_btn_try_it">Prova nu</string>
@@ -17,6 +19,7 @@ Language: sv_SE
     <string name="order_status_changed_to">Orderstatus ändrad till %s</string>
     <string name="orderdetail_change_order_status">Klicka för att ändra orderstatus</string>
     <string name="apply">Tillämpa</string>
+    <string name="site_picker_title">Välj affär</string>
     <string name="app_rating_rate_never">Nej tack</string>
     <string name="app_rating_rate_later">Senare</string>
     <string name="app_rating_rate_now">Betygsätt nu</string>

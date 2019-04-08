@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-07 20:54:02+0000
+Translation-Revision-Date: 2019-03-25 20:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="settings_switch_site_notifs_msg">Alterado para %s. Você receberá apenas notificações desta loja</string>
+    <string name="login_update_required_desc">Esta loja usa uma versão antiga do WooCommerce. Faça o upgrade da sua loja para o WooCommerce 3.5 ou superior para usá-la com este aplicativo.</string>
     <string name="promo_message_site_picker">Agora você pode trocar de loja, clicando na loja selecionada em Configurações</string>
     <string name="promo_title_site_picker">Você está à frente de várias lojas?</string>
     <string name="promo_btn_try_it">Experimente já</string>
     <string name="promo_btn_got_it">Entendi</string>
     <string name="tooltip_site_switcher">Toque para trocar de loja</string>
+    <string name="site_picker_title">Escolher loja</string>
     <string name="username">Nome de usuário do WordPress.com</string>
     <string name="settings_signout">Fazer logout</string>
     <string name="orderstatus_select_status">Alterar status do pedido</string>
