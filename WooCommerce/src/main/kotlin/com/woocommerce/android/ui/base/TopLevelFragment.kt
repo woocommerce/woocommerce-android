@@ -31,7 +31,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     private var runOnResumeFunc: (() -> Unit)? = null
 
     override var isActive: Boolean = false
-        get() = host != null && childFragmentManager.backStackEntryCount == 0 && !isHidden
+        get() = isAdded && childFragmentManager.backStackEntryCount == 0 && !isHidden
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,11 +87,15 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     }
 
     override fun popToState(tag: String): Boolean {
-        return childFragmentManager.popBackStackImmediate(tag, 0)
+        return if (isAdded) {
+            childFragmentManager.popBackStackImmediate(tag, 0)
+        } else {
+            false
+        }
     }
 
     override fun closeCurrentChildFragment() {
-        childFragmentManager.popBackStackImmediate()
+        if (isActive) childFragmentManager.popBackStackImmediate()
     }
 
     override fun loadChildFragment(fragment: Fragment, tag: String) {
