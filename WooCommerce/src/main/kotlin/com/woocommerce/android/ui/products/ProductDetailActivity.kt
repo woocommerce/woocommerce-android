@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.ProductType.VARIATION
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.AndroidInjection
