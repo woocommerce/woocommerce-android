@@ -25,6 +25,10 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.products.ProductType.EXTERNAL
+import com.woocommerce.android.ui.products.ProductType.GROUPED
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIATION
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.AndroidInjection
@@ -60,7 +64,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var remoteProductId = 0L
-    private var productName = ""
+    private var productTitle = ""
     private var productImageUrl: String? = null
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
@@ -104,7 +108,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                     scrollRange = appBarLayout.totalScrollRange
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    collapsing_toolbar.title = productName
+                    collapsing_toolbar.title = productTitle
                 } else {
                     collapsing_toolbar.title = " " // space between double quotes is on purpose
                 }
@@ -163,7 +167,18 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     override fun showProduct(product: WCProductModel) {
         if (isFinishing) return
 
-        productName = product.name
+        productTitle = when (ProductType.fromString(product.type)) {
+            EXTERNAL -> getString(R.string.product_name_external, product.name)
+            GROUPED -> getString(R.string.product_name_grouped, product.name)
+            VARIABLE, VARIATION -> getString(R.string.product_name_variable, product.name)
+            else -> {
+                if (product.virtual) {
+                    getString(R.string.product_name_virtual, product.name)
+                } else {
+                    product.name
+                }
+            }
+        }
 
         product.getFirstImageUrl()?.let {
             val width = DisplayUtils.getDisplayPixelWidth(this)
@@ -193,7 +208,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     }
 
     private fun addPrimaryCard(product: WCProductModel) {
-        addPropertyView(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
+        addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
         addPropertyView(DetailCard.Primary, R.string.product_total_orders, StringUtils.formatCount(product.totalSales))
         if (product.ratingCount > 0) {
             addPropertyView(
@@ -474,7 +489,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     ): Boolean {
         productImageUrl?.let { imageUrl ->
             productDetail_image.setOnClickListener {
-                ImageViewerActivity.show(this, imageUrl, title = productName, sharedElement = productDetail_image)
+                ImageViewerActivity.show(this, imageUrl, title = productTitle, sharedElement = productDetail_image)
             }
         }
         return false
