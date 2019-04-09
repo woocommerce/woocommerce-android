@@ -3,6 +3,7 @@
 
 Improvements
 * Changed FAQ button in help section to "Help Center". The button now routes to WooCommerce mobile documentation.
+* Hide the external link button on shipment tracking views if no external link available
  
 1.6
 -----
