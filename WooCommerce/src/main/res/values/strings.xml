@@ -327,7 +327,7 @@
     <string name="support_identity_input_dialog_email_label">Email</string>
     <string name="support_identity_input_dialog_name_label">Name</string>
     <string name="support_subtitle">How can we help?</string>
-    <string name="support_faq">Browse our FAQ</string>
+    <string name="support_help_center">Help Center</string>
     <string name="support_faq_detail">Get answers to questions you have</string>
     <string name="support_contact">Contact support</string>
     <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
