@@ -12,7 +12,7 @@ object ProductHelper {
             if (it != 0L) {
                 return it
             }
-         }
+        }
         productId?.let {
             return it
         }
