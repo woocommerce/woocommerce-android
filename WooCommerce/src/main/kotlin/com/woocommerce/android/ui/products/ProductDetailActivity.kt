@@ -170,7 +170,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         productTitle = when (ProductType.fromString(product.type)) {
             EXTERNAL -> getString(R.string.product_name_external, product.name)
             GROUPED -> getString(R.string.product_name_grouped, product.name)
-            VARIABLE, VARIATION -> getString(R.string.product_name_variable, product.name)
+            VARIABLE -> getString(R.string.product_name_variable, product.name)
             else -> {
                 if (product.virtual) {
                     getString(R.string.product_name_virtual, product.name)
