@@ -165,11 +165,12 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
 
         productName = product.name
 
-        product.getFirstImageUrl()?.let {
+        val imageUrl = product.getFirstImageUrl()
+        if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(this)
             val height = DisplayUtils.getDisplayPixelHeight(this)
             val imageSize = Math.max(width, height)
-            productImageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, 0)
+            productImageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
             GlideApp.with(this)
                     .load(productImageUrl)
                     .error(R.drawable.ic_product)
@@ -177,6 +178,8 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .listener(this)
                     .into(productDetail_image)
+        } else {
+            productDetail_image.visibility = View.GONE
         }
 
         // show status badge for unpublished products
