@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_LOADED
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -100,6 +102,7 @@ class ProductDetailPresenter @Inject constructor(
             if (event.isError) {
                 view?.showFetchProductError()
             } else {
+                AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
                 getProduct(remoteProductId)?.let {
                     view?.showProduct(it)
                 } ?: view?.showFetchProductError()

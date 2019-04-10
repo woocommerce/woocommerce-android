@@ -16,6 +16,7 @@ import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardFragment.Companion.DEFAULT_STATS_GRANULARITY
@@ -181,6 +182,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
                     .into(holder.productImage)
 
             holder.itemView.setOnClickListener {
+                AnalyticsTracker.track(TOP_EARNER_PRODUCT_TAPPED)
                 listener.onTopEarnerClicked(topEarner)
             }
         }
