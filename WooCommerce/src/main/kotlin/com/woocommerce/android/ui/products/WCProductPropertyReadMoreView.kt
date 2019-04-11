@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
+import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.widget.Button
 import android.widget.TextView
 import com.woocommerce.android.R
 
@@ -45,10 +45,23 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
                 if (textContent.lineCount > maxLines) {
                     textContent.maxLines = maxLines
                     textReadMore.visibility = View.VISIBLE
+                    textReadMore.setOnClickListener { showFullContent(caption, content) }
                 } else {
                     textReadMore.visibility = View.GONE
                 }
             }
         })
+    }
+
+    private fun showFullContent(caption: String, content: String) {
+        AlertDialog.Builder(context)
+                .setTitle(caption)
+                .setMessage(content)
+                .setCancelable(true)
+                .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
     }
 }
