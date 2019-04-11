@@ -322,12 +322,14 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_downloads, downloadGroup)
         }
 
-        addPropertyView(
-                DetailCard.PurchaseDetails,
-                R.string.product_purchase_note,
-                product.purchaseNote,
-                LinearLayout.VERTICAL
-        )
+        if (product.purchaseNote.isNotBlank()) {
+            addReadMoreView(
+                    DetailCard.PurchaseDetails,
+                    R.string.product_purchase_note,
+                    product.purchaseNote,
+                    2
+            )
+        }
     }
 
     /**
@@ -417,6 +419,27 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
 
         linkView.show(caption, url)
         return linkView
+    }
+
+    /**
+     * Adds a "read more" view which limits content to a certain number of lines, and if it goes over
+     * a "Read more" button appears
+     */
+    private fun addReadMoreView(card: DetailCard, @StringRes captionId: Int, content: String, maxLines: Int) {
+        val caption = getString(captionId)
+        val readMoreTag = "${caption}_read_more_tag"
+
+        val cardView = findOrAddCardView(card)
+        val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
+        var readMoreView = container.findViewWithTag<WCProductPropertyReadMoreView>(readMoreTag)
+
+        if (readMoreView == null) {
+            readMoreView = WCProductPropertyReadMoreView(this)
+            readMoreView.tag = readMoreTag
+            container.addView(readMoreView)
+        }
+
+        readMoreView.show(caption, HtmlUtils.fastStripHtml(content), maxLines)
     }
 
     /**
