@@ -257,7 +257,12 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 product.salePrice.isEmpty() &&
                 product.taxClass.isEmpty() &&
                 !product.manageStock) {
-            addPropertyView(pricingCard, R.string.product_price, presenter.formatCurrency(product.price), LinearLayout.VERTICAL)
+            addPropertyView(
+                    pricingCard,
+                    R.string.product_price,
+                    presenter.formatCurrency(product.price),
+                    LinearLayout.VERTICAL
+            )
             addPropertyView(pricingCard, R.string.product_sku, product.sku, LinearLayout.VERTICAL)
             return
         }
