@@ -481,7 +481,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 MATCH_PARENT,
                 resources.getDimensionPixelSize(R.dimen.product_detail_card_divider_height)
         )
-        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.list_divider))
+        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.default_window_background))
         productDetail_container.addView(divider)
     }
 
