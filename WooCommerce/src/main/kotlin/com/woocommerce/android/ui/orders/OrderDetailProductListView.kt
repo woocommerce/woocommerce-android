@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -157,6 +158,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
             val productImage = productImageMap.get(productId)
             holder.view.initView(orderItems[position], productImage, isExpanded, formatCurrencyForDisplay)
             holder.view.setOnClickListener {
+                AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
                 productListener?.openOrderProductDetail(productId)
             }
         }
