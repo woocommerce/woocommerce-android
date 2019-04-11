@@ -14,6 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.LinearLayout
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -180,6 +181,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                     .into(productDetail_image)
         } else {
             productDetail_image.visibility = View.GONE
+            imageScrim.visibility = View.GONE
         }
 
         // show status badge for unpublished products
@@ -187,6 +189,12 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             if (status != ProductStatus.PUBLISH) {
                 textStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toString(this)
+                // edge case: if we're showing a status but there's no product image, we need to add a top margin
+                // to the status badge to prevent the toolbar from overlapping it
+                if (imageUrl == null) {
+                    (textStatusBadge.layoutParams as MarginLayoutParams).topMargin =
+                            DisplayUtils.dpToPx(this, 72)
+                }
             }
         }
 
