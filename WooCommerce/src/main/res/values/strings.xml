@@ -276,6 +276,10 @@
     <string name="product_backorders_no">Do not allow</string>
     <string name="product_backorders_yes">Allow</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
+    <string name="product_name_variable">Variable %s</string>
+    <string name="product_name_external">Affiliate %s</string>
+    <string name="product_name_grouped">Grouped %s</string>
+    <string name="product_name_virtual">Virtual %s</string>
 
     <!--
         Empty list messages
