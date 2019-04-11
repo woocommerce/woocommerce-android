@@ -204,7 +204,13 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
 
     private fun addPrimaryCard(product: WCProductModel) {
         addPropertyView(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
-        addPropertyView(DetailCard.Primary, R.string.product_total_orders, StringUtils.formatCount(product.totalSales))
+        if (product.totalSales > 0) {
+            addPropertyView(
+                    DetailCard.Primary,
+                    R.string.product_total_orders,
+                    StringUtils.formatCount(product.totalSales)
+            )
+        }
         if (product.reviewsAllowed) {
             addPropertyView(
                     DetailCard.Primary,
