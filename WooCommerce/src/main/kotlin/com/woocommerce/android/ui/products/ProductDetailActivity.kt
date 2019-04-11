@@ -248,7 +248,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         if (product.manageStock) {
             val group = mapOf(
                     Pair(getString(R.string.product_stock_status), stockStatusToDisplayString(product.stockStatus)),
-                    Pair(getString(R.string.product_backorders), product.backorders),
+                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorders)),
                     Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
@@ -471,11 +471,22 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
      */
     private fun stockStatusToDisplayString(stockStatus: String?): String {
         return stockStatus?.let {
-            when (stockStatus) {
+            when (it) {
                 "instock" -> getString(R.string.product_stock_status_instock)
                 "outofstock" -> getString(R.string.product_stock_status_out_of_stock)
                 "onbackorder" -> getString(R.string.product_stock_status_on_backorder)
                 else -> stockStatus
+            }
+        } ?: ""
+    }
+
+    private fun backordersToDisplayString(backorders: String?): String {
+        return backorders?.let {
+            when (it) {
+                "no" -> getString(R.string.product_backorders_no)
+                "yes" -> getString(R.string.product_backorders_yes)
+                "notify" -> getString(R.string.product_backorders_notify)
+                else -> backorders
             }
         } ?: ""
     }
