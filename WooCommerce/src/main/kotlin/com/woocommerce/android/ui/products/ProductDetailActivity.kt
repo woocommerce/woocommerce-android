@@ -65,6 +65,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     private var remoteProductId = 0L
     private var productTitle = ""
     private var productImageUrl: String? = null
+    private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
@@ -179,6 +180,8 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             }
         }
 
+        isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
+
         val imageUrl = product.getFirstImageUrl()
         if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(this)
@@ -218,8 +221,18 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
 
     private fun addPrimaryCard(product: WCProductModel) {
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
-        addPropertyView(DetailCard.Primary, R.string.product_total_orders, StringUtils.formatCount(product.totalSales))
-        if (product.reviewsAllowed) {
+
+        // we don't show total sales for variations because they're always zero
+        if (!isVariation) {
+            addPropertyView(
+                    DetailCard.Primary,
+                    R.string.product_total_orders,
+                    StringUtils.formatCount(product.totalSales)
+            )
+        }
+
+        // we don't show reviews for variations because they're always empty
+        if (!isVariation && product.reviewsAllowed) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_reviews,
