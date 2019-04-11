@@ -10,7 +10,7 @@ import android.widget.TextView
 import com.woocommerce.android.R
 
 /**
- * Used by product detail to show product purchase note. If message is more than a certain number of lines it gets
+ * Used by product detail to show product purchase note. If content is more than a certain number of lines it gets
  * cut off, and a "Read More" button appears below it.
  */
 class WCProductPropertyReadMoreView @JvmOverloads constructor(
@@ -20,17 +20,22 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyle) {
     private var textCaption: TextView
     private var textContent: TextView
-    private var buttonReadMore: Button
+    private var textReadMore: TextView
 
     init {
         with(View.inflate(context, R.layout.product_property_read_more_view, this)) {
             textCaption = findViewById(R.id.textCaption)
             textContent = findViewById(R.id.textContent)
-            buttonReadMore = findViewById(R.id.buttonReadMore)
+            textReadMore = findViewById(R.id.textReadMore)
         }
     }
 
     fun show(caption: String, content: String, maxLines: Int) {
+        // go no further if nothing has changed
+        if (textContent.text.toString().equals(content) && textContent.maxLines == maxLines) {
+            return
+        }
+
         textCaption.text = caption
         textContent.text = content
 
@@ -39,9 +44,9 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
                 textContent.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 if (textContent.lineCount > maxLines) {
                     textContent.maxLines = maxLines
-                    buttonReadMore.visibility = View.VISIBLE
+                    textReadMore.visibility = View.VISIBLE
                 } else {
-                    buttonReadMore.visibility = View.GONE
+                    textReadMore.visibility = View.GONE
                 }
             }
         })
