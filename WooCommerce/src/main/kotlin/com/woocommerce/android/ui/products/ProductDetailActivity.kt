@@ -24,8 +24,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_ON_STORE_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -213,13 +213,13 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 DetailCard.Primary,
                 R.string.product_view_in_store,
                 product.permalink,
-                PRODUCT_DETAIL_VIEW_ON_STORE_TAPPED
+                PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
         )
         addLinkView(
                 DetailCard.Primary,
                 R.string.product_view_affiliate,
                 product.externalUrl,
-                PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+                PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
         )
     }
 

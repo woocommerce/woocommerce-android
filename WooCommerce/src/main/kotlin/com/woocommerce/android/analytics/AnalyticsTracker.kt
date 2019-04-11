@@ -166,8 +166,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_LOADED,
         PRODUCT_DETAIL_IMAGE_TAPPED,
         PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
-        PRODUCT_DETAIL_VIEW_ON_STORE_TAPPED,
         PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED,
+        PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED,
 
         // -- Help & Support
         SUPPORT_HELP_CENTER_VIEWED(siteless = true),
