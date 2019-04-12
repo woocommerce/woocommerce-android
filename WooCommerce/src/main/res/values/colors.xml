@@ -141,7 +141,7 @@
     <color name="color_primary_dark">@color/colorPrimaryDark</color>
     <color name="color_accent">@color/colorAccent</color>
 
-    <color name="status_bar_tint">@color/colorPrimaryDark</color>
+    <color name="status_bar">@color/colorPrimaryDark</color>
     <color name="login_theme_accent_color">@color/colorAccent</color>
     <color name="login_background_color">@color/wc_grey_light</color>
 
