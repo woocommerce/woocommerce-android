@@ -330,7 +330,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun clearChartData() {
-        chart.data.clearValues()
+        chart.data?.clearValues()
     }
 
     private fun fadeInLabelValue(view: TextView, value: String) {

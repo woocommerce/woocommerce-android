@@ -49,6 +49,8 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(context, item.trackingLink)
             }
+        } else {
+            tracking_btnTrack.visibility = View.GONE
         }
     }
 }
