@@ -119,6 +119,8 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
+
+        showProductDetail(202) // TODO remove
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

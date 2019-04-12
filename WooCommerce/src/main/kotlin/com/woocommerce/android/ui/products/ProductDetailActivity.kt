@@ -182,7 +182,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
 
         isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
 
-        val imageUrl = product.getFirstImageUrl()
+        val imageUrl = null // TODO product.getFirstImageUrl()
         if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(this)
             val height = DisplayUtils.getDisplayPixelHeight(this)
@@ -251,22 +251,6 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 product.taxClass.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
 
-        // if we only have price and SKU, add them as horizontal views and be done
-        if (product.price.isNotEmpty() &&
-                product.sku.isNotEmpty() &&
-                product.salePrice.isEmpty() &&
-                product.taxClass.isEmpty() &&
-                !product.manageStock) {
-            addPropertyView(
-                    pricingCard,
-                    R.string.product_price,
-                    presenter.formatCurrency(product.price),
-                    LinearLayout.VERTICAL
-            )
-            addPropertyView(pricingCard, R.string.product_sku, product.sku, LinearLayout.VERTICAL)
-            return
-        }
-
         if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice.isNotEmpty()) {
@@ -276,7 +260,12 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
-                addPropertyView(pricingCard, R.string.product_price, presenter.formatCurrency(product.price))
+                addPropertyView(
+                        pricingCard,
+                        R.string.product_price,
+                        presenter.formatCurrency(product.price),
+                        LinearLayout.VERTICAL
+                )
             }
         }
 
@@ -290,7 +279,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             )
             addPropertyGroup(pricingCard, R.string.product_inventory, group)
         } else {
-            addPropertyView(pricingCard, R.string.product_sku, product.sku)
+            addPropertyView(pricingCard, R.string.product_sku, product.sku, LinearLayout.VERTICAL)
         }
     }
 
