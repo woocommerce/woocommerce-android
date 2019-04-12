@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.annotation.StringRes
@@ -14,7 +15,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.LinearLayout
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -67,6 +67,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
+    private var collapsingToolbarEnabled = true
     private val skeletonView = SkeletonView()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,13 +105,15 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             var scrollRange = -1
 
             override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.totalScrollRange
-                }
-                if (scrollRange + verticalOffset == 0) {
-                    collapsing_toolbar.title = productTitle
-                } else {
-                    collapsing_toolbar.title = " " // space between double quotes is on purpose
+                if (collapsingToolbarEnabled) {
+                    if (scrollRange == -1) {
+                        scrollRange = appBarLayout.totalScrollRange
+                    }
+                    if (scrollRange + verticalOffset == 0) {
+                        collapsing_toolbar.title = productTitle
+                    } else {
+                        collapsing_toolbar.title = " " // space between double quotes is on purpose
+                    }
                 }
             }
         })
@@ -182,7 +185,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
 
         isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
 
-        val imageUrl = null // TODO product.getFirstImageUrl()
+        val imageUrl = product.getFirstImageUrl()
         if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(this)
             val height = DisplayUtils.getDisplayPixelHeight(this)
@@ -203,13 +206,20 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         // show status badge for unpublished products
         ProductStatus.fromString(product.status)?.let { status ->
             if (status != ProductStatus.PUBLISH) {
-                textStatusBadge.visibility = View.VISIBLE
+                frameStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toString(this)
-                // edge case: if we're showing a status but there's no product image, we need to add a top margin
-                // to the status badge to prevent the toolbar from overlapping it
-                if (imageUrl == null) {
-                    (textStatusBadge.layoutParams as MarginLayoutParams).topMargin =
-                            DisplayUtils.dpToPx(this, 72)
+                // edge case: if we're showing a status but there's no product image, adjust the status frame to
+                // differentiate it from the toolbar and disable the collapsing toolbar
+                if (imageUrl == null && collapsingToolbarEnabled) {
+                    collapsingToolbarEnabled = false
+                    val params = collapsing_toolbar.getLayoutParams() as AppBarLayout.LayoutParams
+                    params.scrollFlags = 0
+                    collapsing_toolbar.setLayoutParams(params)
+                    collapsing_toolbar.title = " "
+
+                    frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(this, R.color.light_gray))
+                    supportActionBar?.setDisplayShowTitleEnabled(true)
+                    supportActionBar?.title = productTitle
                 }
             }
         }
