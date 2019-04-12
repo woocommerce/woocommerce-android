@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
@@ -13,9 +14,11 @@ interface OrderDetailContract {
         var orderModel: WCOrderModel?
         var orderIdentifier: OrderIdentifier?
         var isUsingCachedNotes: Boolean
+        var isUsingCachedShipmentTrackings: Boolean
         fun fetchOrder(remoteOrderId: Long)
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
+        fun loadOrderShipmentTrackings()
         fun doChangeOrderStatus(newStatus: String)
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
         fun markOrderNotificationRead(context: Context, remoteNoteId: Long)
@@ -24,12 +27,13 @@ interface OrderDetailContract {
         fun refreshOrderStatusOptions()
     }
 
-    interface View : BaseView<Presenter>, OrderActionListener {
+    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)
         fun showAddOrderNoteScreen()
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
+        fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>)
         fun setOrderStatus(newStatus: String)
         fun showChangeOrderStatusSnackbar(newStatus: String)
         fun showNotesErrorSnack()

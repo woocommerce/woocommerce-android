@@ -44,9 +44,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
 
-    override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
-
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -71,7 +68,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
-                    presenter.resetForceRefresh()
+                    DashboardPresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
                     refreshDashboard(forced = true)
                 }
@@ -105,16 +102,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         scroll_view.setOnScrollChangeListener {
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
             if (scrollY > oldScrollY) {
-                onScrollDown(dashboard_refresh_layout)
+                onScrollDown()
             } else if (scrollY < oldScrollY) {
-                onScrollUp(dashboard_refresh_layout)
+                onScrollUp()
             }
         }
 
-        if (isActive) {
+        if (isActive && !deferInit) {
             refreshDashboard(forced = this.isRefreshPending)
-        } else {
-            isRefreshPending = true
         }
     }
 
@@ -126,9 +121,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        // If this fragment is now visible and we've deferred loading data due to it not
-        // being visible - go ahead and load the data.
-        if (isActive && isRefreshPending) {
+        // silently refresh if this fragment is no longer hidden
+        if (!isHidden) {
             refreshDashboard(forced = false)
         }
     }
@@ -214,7 +208,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun refreshFragmentState() {
-        presenter.resetForceRefresh()
+        DashboardPresenter.resetForceRefresh()
         refreshDashboard(forced = false)
     }
 
@@ -224,7 +218,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         when {
             isActive -> {
                 isRefreshPending = false
-                dashboard_stats.clearLabelValues()
+                if (forced) {
+                    dashboard_stats.clearLabelValues()
+                    dashboard_stats.clearChartData()
+                }
                 presenter.loadStats(dashboard_stats.activeGranularity, forced)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
@@ -254,6 +251,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
         dashboard_top_earners.showErrorView(false)
         presenter.loadTopEarnerStats(period)
+    }
+
+    override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
+        (activity as? TopLevelFragmentRouter)?.showProductDetail(topEarner.id)
     }
 
     override fun hideUnfilledOrdersCard() {

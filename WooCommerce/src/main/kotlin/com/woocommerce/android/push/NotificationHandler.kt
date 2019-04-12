@@ -12,6 +12,7 @@ import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.RemoteException
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
@@ -527,10 +528,17 @@ class NotificationHandler @Inject constructor(
 
         builder.setCategory(NotificationCompat.CATEGORY_SOCIAL)
 
-        val pendingIntent = PendingIntent.getActivity(context, pushId, resultIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT)
-        builder.setContentIntent(pendingIntent)
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.notify(pushId, builder.build())
+        try {
+            val pendingIntent = PendingIntent.getActivity(
+                    context, pushId, resultIntent,
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.setContentIntent(pendingIntent)
+            val notificationManager = NotificationManagerCompat.from(context)
+            notificationManager.notify(pushId, builder.build())
+        } catch (e: RemoteException) {
+            // see https://github.com/woocommerce/woocommerce-android/issues/920
+            WooLog.e(T.NOTIFS, e)
+        }
     }
 }

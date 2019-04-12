@@ -18,6 +18,8 @@ import org.wordpress.android.fluxc.model.WCOrderModel
  * fragments and their associated back stack.
  */
 interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, OrdersViewRouter {
+    var isActive: Boolean
+
     /**
      * Load the provided fragment into the current view and disable the main
      * underlying fragment view.
@@ -95,7 +97,9 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
 
     override fun openOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNotificationId: Long?) {
         val tag = OrderDetailFragment.TAG
-        loadChildFragment(OrderDetailFragment.newInstance(localSiteId, remoteOrderId, remoteNotificationId), tag)
+        if (!popToState(tag)) {
+            loadChildFragment(OrderDetailFragment.newInstance(localSiteId, remoteOrderId, remoteNotificationId), tag)
+        }
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {

@@ -31,6 +31,10 @@ class MainNavigationView @JvmOverloads constructor(
     private lateinit var listener: MainNavigationListener
     private lateinit var badgeView: View
 
+    companion object {
+        private var previousNavPos: BottomNavigationPosition? = null
+    }
+
     interface MainNavigationListener {
         fun onNavItemSelected(navPos: BottomNavigationPosition)
 
@@ -61,15 +65,6 @@ class MainNavigationView @JvmOverloads constructor(
 
         // Default to the dashboard position
         active(DASHBOARD.position)
-    }
-
-    /**
-     * Reset the adapter so fragments are re-created
-     */
-    fun reset() {
-        if (::navAdapter.isInitialized) {
-            navAdapter.reset()
-        }
     }
 
     fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
@@ -130,10 +125,34 @@ class MainNavigationView @JvmOverloads constructor(
         // Close any child fragments if open
         clearFragmentBackStack(fragment)
 
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.container, fragment, navPos.getTag())
-                .commitAllowingStateLoss()
+        // add the fragment if it hasn't been added yet, otherwise hide the previously active
+        // fragment and show the incoming one
+        val tag = navPos.getTag()
+        if (fragmentManager.findFragmentByTag(tag) == null) {
+            fragmentManager
+                    .beginTransaction()
+                    .add(R.id.container, fragment, tag)
+                    .commitAllowingStateLoss()
+        } else {
+            val shouldHidePrev = previousNavPos?.let {
+                it.position != navPos.position
+            } ?: false
+            if (shouldHidePrev) {
+                val prevFragment = navAdapter.getFragment(previousNavPos!!)
+                fragmentManager
+                        .beginTransaction()
+                        .hide(prevFragment)
+                        .show(fragment)
+                        .commitAllowingStateLoss()
+            } else {
+                fragmentManager
+                        .beginTransaction()
+                        .show(fragment)
+                        .commitAllowingStateLoss()
+            }
+        }
+
+        previousNavPos = navPos
     }
 
     private fun assignNavigationListeners(assign: Boolean) {
@@ -181,11 +200,6 @@ class MainNavigationView @JvmOverloads constructor(
             val fragment = fragmentManager.findFragment(navPos)
             fragments.put(navPos.position, fragment)
             return fragment
-        }
-
-        internal fun reset() {
-            currentPosition = DASHBOARD
-            fragments.clear()
         }
     }
     // endregion

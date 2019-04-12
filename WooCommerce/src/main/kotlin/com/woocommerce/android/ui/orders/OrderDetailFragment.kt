@@ -17,17 +17,20 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKE
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
@@ -127,12 +130,16 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK && data != null) {
-            val noteText = data.getStringExtra(FIELD_NOTE_TEXT)
-            val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
-            orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
-            presenter.pushOrderNote(noteText, isCustomerNote)
-            AppRatingDialog.incrementInteractions()
+        if (requestCode == REQUEST_CODE_ADD_NOTE) {
+            if (resultCode == RESULT_OK && data != null) {
+                val noteText = data.getStringExtra(FIELD_NOTE_TEXT)
+                val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
+                orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
+                presenter.pushOrderNote(noteText, isCustomerNote)
+                AppRatingDialog.incrementInteractions()
+            } else if (resultCode == AddOrderNoteActivity.RESULT_INVALID_ORDER) {
+                uiMessageResolver.showSnack(R.string.add_order_note_invalid_order)
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -181,11 +188,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(
-                    order,
-                    productImageMap,
-                    false,
-                    currencyFormatter.buildFormatter(order.currency),
-                    this
+                    order = order,
+                    productImageMap = productImageMap,
+                    expanded = false,
+                    formatCurrencyForDisplay = currencyFormatter.buildFormatter(order.currency),
+                    orderListener = this,
+                    productListener = this
             )
 
             // Populate the Customer Information Card
@@ -209,6 +217,19 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         orderDetail_noteList.initView(notes, this)
     }
 
+    override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
+        if (trackings.isNotEmpty()) {
+            orderDetail_shipmentList.initView(trackings, uiMessageResolver)
+            if (orderDetail_shipmentList.visibility != View.VISIBLE) {
+                WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
+            }
+        } else {
+            if (orderDetail_shipmentList.visibility == View.VISIBLE) {
+                WooAnimUtils.scaleOut(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
+            }
+        }
+    }
+
     override fun showOrderNotesSkeleton(show: Boolean) {
         orderDetail_noteList.showSkeleton(show)
     }
@@ -230,6 +251,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
                 router.openOrderProductList(order)
+            }
+        }
+    }
+
+    override fun openOrderProductDetail(remoteProductId: Long) {
+        activity?.let { router ->
+            if (router is TopLevelFragmentRouter) {
+                router.showProductDetail(remoteProductId)
             }
         }
     }

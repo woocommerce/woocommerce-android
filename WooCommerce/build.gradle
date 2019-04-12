@@ -44,8 +44,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "1.5"
-        versionCode 47
+        versionName "1.6-rc-1"
+        versionCode 48
 
         minSdkVersion 21
         targetSdkVersion 27
@@ -139,6 +139,7 @@ dependencies {
 
     implementation 'com.facebook.shimmer:shimmer:0.3.0'
     implementation 'com.github.vihtarb:tooltip:0.2.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
 
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"

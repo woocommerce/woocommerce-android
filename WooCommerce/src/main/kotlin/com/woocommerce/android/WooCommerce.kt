@@ -28,6 +28,7 @@ import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.widgets.AppRatingDialog
 import com.yarolegovich.wellsql.WellSql
 import dagger.MembersInjector
 import dagger.android.AndroidInjector
@@ -84,13 +85,14 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     }
 
     /**
-     * Update WP.com and WooCommerce site settings in a background task.
+     * Update WP.com and WooCommerce settings in a background task.
      */
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let {
                 dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(it))
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
+                dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
             }
             return true
         }
@@ -112,6 +114,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         dispatcher.register(this)
 
         AppPrefs.init(this)
+        AppRatingDialog.init(this)
 
         initAnalytics()
 

@@ -35,14 +35,16 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
      * @param [order] The order containing the product list to display.
      * @param [expanded] If true, expanded view will be shown, else collapsed view.
      * @param [formatCurrencyForDisplay] Function to use for formatting currencies for display.
-     * @param [listener] Listener for routing click actions. If null, the buttons will be hidden.
+     * @param [orderListener] Listener for routing order click actions. If null, the buttons will be hidden.
+     * @param [productListener] Listener for routing product click actions.
      */
     fun initView(
         order: WCOrderModel,
         productImageMap: ProductImageMap,
         expanded: Boolean,
         formatCurrencyForDisplay: (String?) -> String,
-        listener: OrderActionListener? = null
+        orderListener: OrderActionListener? = null,
+        productListener: OrderProductActionListener? = null
     ) {
         isExpanded = expanded
 
@@ -58,24 +60,25 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 order.getLineItemList(),
                 productImageMap,
                 formatCurrencyForDisplay,
-                isExpanded
+                isExpanded,
+                productListener
         )
 
-        listener?.let {
+        orderListener?.let {
             if (order.status == CoreOrderStatus.PROCESSING.value) {
                 productList_btnFulfill.visibility = View.VISIBLE
                 productList_btnDetails.visibility = View.GONE
                 productList_btnDetails.setOnClickListener(null)
                 productList_btnFulfill.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-                    listener.openOrderFulfillment(order)
+                    orderListener.openOrderFulfillment(order)
                 }
             } else {
                 productList_btnFulfill.visibility = View.GONE
                 productList_btnDetails.visibility = View.VISIBLE
                 productList_btnDetails.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED)
-                    listener.openOrderProductList(order)
+                    orderListener.openOrderProductList(order)
                 }
                 productList_btnFulfill.setOnClickListener(null)
             }
@@ -119,7 +122,9 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
 
     // called when a product is fetched to ensure we show the correct product image
     fun refreshProductImages() {
-        viewAdapter.notifyDataSetChanged()
+        if (::viewAdapter.isInitialized) {
+            viewAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun hideButtons() {
@@ -133,7 +138,8 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         private val orderItems: List<WCOrderModel.LineItem>,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (String?) -> String,
-        private var isExpanded: Boolean
+        private var isExpanded: Boolean,
+        private val productListener: OrderProductActionListener?
     ) : RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
 
@@ -149,6 +155,11 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
                 productImageMap.get(it)
             }
             holder.view.initView(orderItems[position], productImage, isExpanded, formatCurrencyForDisplay)
+            holder.view.setOnClickListener {
+                orderItems[position].productId?.let {
+                    productListener?.openOrderProductDetail(it)
+                }
+            }
         }
 
         override fun getItemCount() = orderItems.size

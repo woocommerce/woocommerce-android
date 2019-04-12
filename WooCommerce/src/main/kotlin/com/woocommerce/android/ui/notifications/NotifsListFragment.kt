@@ -72,9 +72,6 @@ class NotifsListFragment : TopLevelFragment(),
     private var pendingModerationNewStatus: String? = null
     private var pendingModerationRemoteNoteId: Long? = null
 
-    override var isActive: Boolean = false
-        get() = childFragmentManager.backStackEntryCount == 0 && !isHidden
-
     override var isRefreshPending = true
     private var listState: Parcelable? = null // Save the state of the recycler view
 
@@ -160,9 +157,9 @@ class NotifsListFragment : TopLevelFragment(),
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) {
-                        onScrollDown(this@NotifsListFragment.notifsRefreshLayout)
+                        onScrollDown()
                     } else if (dy < 0) {
-                        onScrollUp(this@NotifsListFragment.notifsRefreshLayout)
+                        onScrollUp()
                     }
                 }
             })
@@ -225,9 +222,13 @@ class NotifsListFragment : TopLevelFragment(),
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        // If this fragment is no longer visible, dismiss the pending notification
-        // moderation so it can be processed immediately.
-        changeCommentStatusSnackbar?.dismiss()
+        // If this fragment is no longer visible dismiss the pending notification moderation
+        // so it can be processed immediately, otherwise silently refresh
+        if (hidden) {
+            changeCommentStatusSnackbar?.dismiss()
+        } else {
+            presenter.fetchAndLoadNotifsFromDb(false)
+        }
     }
 
     override fun onStop() {

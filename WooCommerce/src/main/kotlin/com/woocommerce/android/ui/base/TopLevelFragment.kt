@@ -30,6 +30,9 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     var deferInit: Boolean = false
     private var runOnResumeFunc: (() -> Unit)? = null
 
+    override var isActive: Boolean = false
+        get() = isAdded && childFragmentManager.backStackEntryCount == 0 && !isHidden
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         childFragmentManager.addOnBackStackChangedListener(this)
@@ -84,11 +87,15 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     }
 
     override fun popToState(tag: String): Boolean {
-        return childFragmentManager.popBackStackImmediate(tag, 0)
+        return if (isAdded) {
+            childFragmentManager.popBackStackImmediate(tag, 0)
+        } else {
+            false
+        }
     }
 
     override fun closeCurrentChildFragment() {
-        childFragmentManager.popBackStackImmediate()
+        if (isAdded) childFragmentManager.popBackStackImmediate()
     }
 
     override fun loadChildFragment(fragment: Fragment, tag: String) {

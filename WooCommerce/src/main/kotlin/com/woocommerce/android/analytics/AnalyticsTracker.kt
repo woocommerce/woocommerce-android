@@ -72,12 +72,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SIGNUP_SOCIAL_TO_LOGIN(siteless = true),
         ADDED_SELF_HOSTED_SITE(siteless = true),
         CREATED_ACCOUNT(siteless = true),
-        LOGIN_PROLOGUE_JETPACK_BUTTON_TAPPED(siteless = true),
+        LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED(siteless = true),
         LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
-        SITE_PICKER_STORE_PICKER_CONTINUE_TAPPED(siteless = true),
+        SITE_PICKER_CONTINUE_TAPPED(siteless = true),
         SITE_PICKER_HELP_BUTTON_TAPPED(siteless = true),
 
         // -- Dashboard
@@ -120,6 +120,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED,
         ORDER_DETAIL_ORDER_STATUS_EDIT_BUTTON_TAPPED,
         ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
+        ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED,
+        ORDER_TRACKING_LOADED,
 
         // -- Order Notes
         ADD_ORDER_NOTE_ADD_BUTTON_TAPPED,

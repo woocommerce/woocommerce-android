@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -24,7 +25,6 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -32,13 +32,13 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.products.ProductDetailActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
-import com.woocommerce.android.widgets.WCPromoDialog.PromoType
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.android.AndroidInjection
@@ -117,14 +117,8 @@ class MainActivity : AppCompatActivity(),
 
         initFragment(savedInstanceState)
 
-        // show the site picker promo if it hasn't been shown and the user has multiple stores
-        val promoShown = presenter.hasMultipleStores() && WCPromoDialog.showIfNeeded(this, PromoType.SITE_PICKER)
-
-        // show the app rating dialog if it's time and we didn't just show the promo
-        AppRatingDialog.init(this)
-        if (!promoShown) {
-            AppRatingDialog.showIfNeeded(this)
-        }
+        // show the app rating dialog if it's time
+        AppRatingDialog.showIfNeeded(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -175,14 +169,14 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        val fragment = bottomNavView.activeFragment
-        with(fragment.childFragmentManager) {
-            if (backStackEntryCount > 0) {
-                popBackStack()
-            } else {
-                super.onBackPressed()
+        with(bottomNavView.activeFragment) {
+            if (isAdded && childFragmentManager.backStackEntryCount > 0) {
+                childFragmentManager.popBackStack()
+                return
             }
         }
+
+        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -215,6 +209,14 @@ class MainActivity : AppCompatActivity(),
             REQUEST_CODE_ADD_ACCOUNT -> {
                 if (resultCode == Activity.RESULT_OK) {
                     // TODO Launch next screen
+                }
+                return
+            }
+            REQUEST_CODE_SETTINGS -> {
+                // restart the activity if the user returned from settings and they switched sites
+                if (resultCode == AppSettingsActivity.RESULT_CODE_SITE_CHANGED) {
+                    presenter.selectedSiteChanged(selectedSite.get())
+                    restart()
                 }
                 return
             }
@@ -268,14 +270,17 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * Called when the user switches sites - reset the fragments and tell the dashboard to refresh
+     * Called when the user switches sites - restarts the activity so all fragments and child fragments are reset
      */
-    override fun resetSelectedSite() {
-        bottomNavView.reset()
-        with(bottomNavView.getFragment(DASHBOARD) as DashboardFragment) {
-            updateActivityTitle()
-            refreshDashboard(true)
-        }
+    private fun restart() {
+        val intent = intent
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_NO_ANIMATION
+        )
+        finish()
+        startActivity(intent)
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -408,6 +413,15 @@ class MainActivity : AppCompatActivity(),
                 PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
                 else -> { /* do nothing */ }
             }
+        }
+    }
+
+    override fun showProductDetail(remoteProductId: Long) {
+        // TODO: for now product detail is only supported in debug builds, we'll roll it out to all users after design
+        // iterations are done
+        if (BuildConfig.DEBUG) {
+            showBottomNav()
+            ProductDetailActivity.show(this, remoteProductId)
         }
     }
 

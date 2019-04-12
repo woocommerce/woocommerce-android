@@ -193,8 +193,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 gridColor = ContextCompat.getColor(context, R.color.wc_border_color)
                 setLabelCount(3, true)
 
-                axisMinimum = 0F
-
                 valueFormatter = IAxisValueFormatter { value, _ ->
                     // Only use non-zero values for the axis
                     value.toDouble().takeIf { it > 0 }?.let {
@@ -258,6 +256,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
 
+        val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
+
         val revenue = formatCurrencyForDisplay(revenueStats.values.sum(), currencyCode.orEmpty())
         val orders = orderStats.values.sum().toString()
         fadeInLabelValue(revenue_value, revenue)
@@ -282,11 +282,21 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             highLightColor = ContextCompat.getColor(context, R.color.graph_highlight_color)
         }
 
-        val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
+        // determine the min revenue so we can set the min value for the left axis, which should be zero unless
+        // the stats contain any negative revenue
+        var minRevenue = 0f
+        for (value in dataSet.values) {
+            if (value.y < minRevenue) minRevenue = value.y
+        }
 
+        val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(chart) {
+            axisLeft.axisMinimum = minRevenue
+            axisRight.axisMinimum = 0f
             data = BarData(dataSet)
-            animateY(duration)
+            if (wasEmpty) {
+                animateY(duration)
+            }
         }
 
         hideMarker()
@@ -319,7 +329,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         orders_value.setText(R.string.emdash)
     }
 
+    fun clearChartData() {
+        chart.data?.clearValues()
+    }
+
     private fun fadeInLabelValue(view: TextView, value: String) {
+        // do nothing if value hasn't changed
+        if (view.text.toString().equals(value)) {
+            return
+        }
+
         // fade out the current value
         val duration = Duration.SHORT
         WooAnimUtils.fadeOut(view, duration, View.INVISIBLE)

@@ -197,12 +197,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         siteAdapter.siteList = wcSites
-
-        if (selectedSite.exists()) {
-            siteAdapter.selectedSiteId = selectedSite.get().siteId
-        } else {
-            siteAdapter.selectedSiteId = wcSites[0].siteId
-        }
+        siteAdapter.selectedSiteId = selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
 
         button_continue.text = getString(R.string.continue_button)
         button_continue.isEnabled = true
@@ -226,7 +221,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         AnalyticsTracker.track(
-                Stat.SITE_PICKER_STORE_PICKER_CONTINUE_TAPPED,
+                Stat.SITE_PICKER_CONTINUE_TAPPED,
                 mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
         )
 
