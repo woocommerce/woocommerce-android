@@ -211,15 +211,13 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 // edge case: if we're showing a status but there's no product image, adjust the status frame to
                 // differentiate it from the toolbar and disable the collapsing toolbar
                 if (imageUrl == null && collapsingToolbarEnabled) {
+                    frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(this, R.color.light_gray))
                     collapsingToolbarEnabled = false
                     val params = collapsing_toolbar.getLayoutParams() as AppBarLayout.LayoutParams
-                    params.scrollFlags = 0
+                    params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
                     collapsing_toolbar.setLayoutParams(params)
-                    collapsing_toolbar.title = " "
-
-                    frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(this, R.color.light_gray))
-                    supportActionBar?.setDisplayShowTitleEnabled(true)
-                    supportActionBar?.title = productTitle
+                    collapsing_toolbar.isTitleEnabled = false
+                    toolbar.title = productTitle
                 }
             }
         }
