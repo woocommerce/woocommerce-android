@@ -208,18 +208,19 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             if (status != ProductStatus.PUBLISH) {
                 frameStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toString(this)
-                // edge case: if we're showing a status but there's no product image, adjust the status frame to
-                // differentiate it from the toolbar and disable the collapsing toolbar
-                if (imageUrl == null && collapsingToolbarEnabled) {
-                    frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(this, R.color.wc_grey_light))
-                    collapsingToolbarEnabled = false
-                    val params = collapsing_toolbar.getLayoutParams() as AppBarLayout.LayoutParams
-                    params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
-                    collapsing_toolbar.setLayoutParams(params)
-                    collapsing_toolbar.isTitleEnabled = false
-                    toolbar.title = productTitle
-                }
             }
+        }
+
+        // if there's no product image we should disable the collapsible toolbar and adjust the status badge's parent
+        // frame to differentiate it from the toolbar
+        if (imageUrl == null && collapsingToolbarEnabled) {
+            collapsingToolbarEnabled = false
+            val params = collapsing_toolbar.getLayoutParams() as AppBarLayout.LayoutParams
+            params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+            collapsing_toolbar.setLayoutParams(params)
+            collapsing_toolbar.isTitleEnabled = false
+            toolbar.title = productTitle
+            frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(this, R.color.wc_grey_light))
         }
 
         addPrimaryCard(product)
