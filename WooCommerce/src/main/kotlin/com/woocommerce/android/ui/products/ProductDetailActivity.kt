@@ -21,6 +21,11 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -44,7 +49,6 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
 
         fun show(context: Context, remoteProductId: Long) {
-            // TODO analytics
             val intent = Intent(context, ProductDetailActivity::class.java)
             intent.putExtra(ARG_REMOTE_PRODUCT_ID, remoteProductId)
             context.startActivity(intent)
@@ -138,6 +142,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when {
             item?.itemId == R.id.menu_share -> {
+                AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 shareProduct()
                 true
             }
@@ -217,8 +222,18 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             )?.setRating(product.averageRating)
         }
 
-        addLinkView(DetailCard.Primary, R.string.product_view_in_store, product.permalink)
-        addLinkView(DetailCard.Primary, R.string.product_view_affiliate, product.externalUrl)
+        addLinkView(
+                DetailCard.Primary,
+                R.string.product_view_in_store,
+                product.permalink,
+                PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+        )
+        addLinkView(
+                DetailCard.Primary,
+                R.string.product_view_affiliate,
+                product.externalUrl,
+                PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+        )
     }
 
     private fun addPricingAndInventoryCard(product: WCProductModel) {
@@ -376,7 +391,12 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     /**
      * Adds a property link to the passed card
      */
-    private fun addLinkView(card: DetailCard, @StringRes captionId: Int, url: String): WCProductPropertyLinkView? {
+    private fun addLinkView(
+        card: DetailCard,
+        @StringRes captionId: Int,
+        url: String,
+        tracksEvent: Stat
+    ): WCProductPropertyLinkView? {
         if (url.isEmpty()) return null
 
         val caption = getString(captionId)
@@ -392,7 +412,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             container.addView(linkView)
         }
 
-        linkView.show(caption, url)
+        linkView.show(caption, url, tracksEvent)
         return linkView
     }
 
@@ -488,6 +508,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     ): Boolean {
         productImageUrl?.let { imageUrl ->
             productDetail_image.setOnClickListener {
+                AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
                 ImageViewerActivity.show(this, imageUrl, title = productTitle, sharedElement = productDetail_image)
             }
         }
