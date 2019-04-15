@@ -119,6 +119,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED,
         ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED,
         ORDER_DETAIL_ORDER_STATUS_EDIT_BUTTON_TAPPED,
+        ORDER_DETAIL_PRODUCT_TAPPED,
         ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
         ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED,
         ORDER_TRACKING_LOADED,
@@ -161,6 +162,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
         PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
 
+        // -- Product detail
+        PRODUCT_DETAIL_LOADED,
+        PRODUCT_DETAIL_IMAGE_TAPPED,
+        PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
+        PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED,
+        PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED,
+
         // -- Help & Support
         SUPPORT_HELP_CENTER_VIEWED(siteless = true),
         SUPPORT_IDENTITY_SET(siteless = true),
@@ -195,7 +203,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         JETPACK_TUNNEL_TIMEOUT,
 
         // -- Order status changes
-        SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED
+        SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
+
+        // -- Other
+        TOP_EARNER_PRODUCT_TAPPED
     }
     // endregion
 
