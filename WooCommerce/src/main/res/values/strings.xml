@@ -270,6 +270,10 @@
     <string name="product_share_dialog_title">Share your product</string>
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
+    <string name="product_name_variable">Variable %s</string>
+    <string name="product_name_external">Affiliate %s</string>
+    <string name="product_name_grouped">Grouped %s</string>
+    <string name="product_name_virtual">Virtual %s</string>
 
     <!--
         Empty list messages

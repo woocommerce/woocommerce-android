@@ -4,6 +4,7 @@
 Improvements
 * Changed FAQ button in help section to "Help Center". The button now routes to WooCommerce mobile documentation.
 * Hide the external link button on shipment tracking views if no external link available
+* Redirect to username/password login when WordPress.com reports email login not allowed
  
 1.6
 -----
