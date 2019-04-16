@@ -61,6 +61,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="apply">Apply</string>
     <string name="error_copy_to_clipboard">Error copying to clipboard</string>
+    <string name="read_more">Read more</string>
     <!--
         Date/Time Labels
     -->
@@ -270,6 +271,12 @@
     <string name="product_share_dialog_title">Share your product</string>
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
+    <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_out_of_stock">Out of stock</string>
+    <string name="product_stock_status_on_backorder">On backorder</string>
+    <string name="product_backorders_no">Do not allow</string>
+    <string name="product_backorders_yes">Allow</string>
+    <string name="product_backorders_notify">Allow, but notify customer</string>
     <string name="product_name_variable">Variable %s</string>
     <string name="product_name_external">Affiliate %s</string>
     <string name="product_name_grouped">Grouped %s</string>
