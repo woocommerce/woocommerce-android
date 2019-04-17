@@ -6,6 +6,9 @@ Improvements
 * Hide the external link button on shipment tracking views if no external link available
 * Redirect to username/password login when WordPress.com reports email login not allowed
  
+New Features
+* You can now tap a product to view a read-only detail view
+
 1.6
 -----
 
