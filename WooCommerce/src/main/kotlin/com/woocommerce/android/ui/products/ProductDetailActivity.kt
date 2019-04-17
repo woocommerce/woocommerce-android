@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
@@ -217,8 +218,8 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             }
         }
 
-        // if there's no product image we should disable the collapsible toolbar and adjust the status badge's parent
-        // frame to differentiate it from the toolbar
+        // if there's no product image we should disable the collapsible toolbar and move the badge's parent frame
+        // to the scrolling container
         if (imageUrl == null && collapsingToolbarEnabled) {
             collapsingToolbarEnabled = false
             val params = collapsing_toolbar.getLayoutParams() as AppBarLayout.LayoutParams
@@ -227,6 +228,8 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             collapsing_toolbar.isTitleEnabled = false
             toolbar.title = productTitle
             frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(this, R.color.wc_grey_light))
+            (frameStatusBadge.parent as ViewGroup).removeView(frameStatusBadge)
+            productDetail_container.addView(frameStatusBadge)
         }
 
         addPrimaryCard(product)
