@@ -102,14 +102,12 @@ object DateUtils {
     }
 
     /**
-     * Given a date of format YYYY-MM-DD, returns the string in the full format of ("MMM d, YYYY".
+     * Given a date of format YYYY-MM-DD, returns the string in a localized full long date format.
      *
-     * For example, given 2018-07-03 returns "July 3, 2018".
-     *
-     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
+     * @throws IllegalArgumentException if the argument is not a valid YYYY-MM-DD date string.
      */
     @Throws(IllegalArgumentException::class)
-    fun getFullDateString(context: Context, dateString: String): String {
+    fun getLocalizedLongDateString(context: Context, dateString: String): String {
         return try {
             val (year, month, day) = dateString.split("-")
             val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
