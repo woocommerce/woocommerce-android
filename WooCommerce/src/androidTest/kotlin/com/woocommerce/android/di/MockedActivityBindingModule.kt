@@ -7,9 +7,9 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
+import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
-import com.woocommerce.android.ui.orders.OrderListModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
@@ -23,7 +23,7 @@ abstract class MockedActivityBindingModule {
     @ContributesAndroidInjector(modules = arrayOf(
             MockedMainModule::class,
             DashboardModule::class,
-            OrderListModule::class,
+            MockedOrderListModule::class,
             OrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
