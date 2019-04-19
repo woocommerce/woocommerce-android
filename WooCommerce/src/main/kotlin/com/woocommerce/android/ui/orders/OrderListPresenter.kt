@@ -236,10 +236,20 @@ class OrderListPresenter @Inject constructor(
      * @param orderStatusFilter If not null, only pull orders whose status matches this filter. Default null.
      * @param isForceRefresh True if orders were refreshed from the API, else false.
      */
-    override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean) {
-        val orders = orderStatusFilter?.let {
+    override fun fetchOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean) : List<WCOrderModel> {
+        return orderStatusFilter?.let {
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
+    }
+
+    /**
+     * Fetch orders from the local database.
+     *
+     * @param orderStatusFilter If not null, only pull orders whose status matches this filter. Default null.
+     * @param isForceRefresh True if orders were refreshed from the API, else false.
+     */
+    override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean) {
+        val orders = fetchOrdersFromDb(orderStatusFilter, isForceRefresh)
         orderView?.let { view ->
             val currentOrders = removeFutureOrders(orders)
             if (currentOrders.count() > 0) {

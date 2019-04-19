@@ -12,6 +12,7 @@ interface OrderListContract {
         fun canLoadMoreOrders(): Boolean
         fun isLoadingOrders(): Boolean
         fun openOrderDetail(order: WCOrderModel)
+        fun fetchOrdersFromDb(orderStatusFilter: String? = null, isForceRefresh: Boolean) : List<WCOrderModel>
         fun fetchAndLoadOrdersFromDb(orderStatusFilter: String? = null, isForceRefresh: Boolean)
         fun searchOrders(searchQuery: String)
         fun searchMoreOrders(searchQuery: String)
