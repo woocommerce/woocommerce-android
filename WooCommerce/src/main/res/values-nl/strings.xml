@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-25 12:54:02+0000
+Translation-Revision-Date: 2019-04-15 12:54:33+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="error_loading_image">Kan afbeelding niet laden</string>
+    <string name="product_status_draft">Concept</string>
+    <string name="product_status_pending">In behandeling</string>
+    <string name="product_status_private">Privé</string>
+    <string name="product_status_published">Gepubliceerd</string>
+    <string name="product_view_affiliate">Verwant product weergeven</string>
+    <string name="product_view_in_store">Product in winkel weergeven</string>
+    <string name="product_share_dialog_title">Je product delen</string>
+    <string name="product_purchase_details">Aankoopgegevens</string>
+    <string name="product_download_expiry_days">%d dagen</string>
+    <string name="product_download_expiry">Verloop</string>
+    <string name="product_download_limit_count">%d downloads</string>
+    <string name="product_download_limit">Limiet</string>
+    <string name="product_downloadable_files">Downloadbare bestanden</string>
+    <string name="product_downloads">Downloads</string>
+    <string name="product_reviews">Beoordelingen</string>
+    <string name="product_total_orders">Totaalaantal bestellingen</string>
+    <string name="product_shipping_class">Verzendingsklasse</string>
+    <string name="product_size">Afmetingen</string>
+    <string name="product_weight">Gewicht</string>
+    <string name="product_shipping">Verzending</string>
+    <string name="product_backorders">Nabestellingen</string>
+    <string name="product_stock_quantity">Aantal op voorraad</string>
+    <string name="product_stock_status">Voorraadstatus</string>
+    <string name="product_sku">SKU</string>
+    <string name="product_sale_price">Verkoopprijs</string>
+    <string name="product_regular_price">Reguliere prijs</string>
+    <string name="product_price">Prijs</string>
+    <string name="product_inventory">Inventaris</string>
+    <string name="product_pricing_and_inventory">Prijzen en inventaris</string>
+    <string name="product_purchase_note">Aankoopnotitie</string>
+    <string name="product_name">Titel</string>
+    <string name="product_detail_fetch_product_error">Fout bij ophalen product</string>
+    <string name="add_order_note_invalid_order">Ongeldige bestelling</string>
+    <string name="order_shipment_tracking_shipped_date">Verzonden op %s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">Volgnummer kopiëren naar klembord</string>
+    <string name="order_shipment_tracking_section_cd">Verzending bijhouden</string>
+    <string name="order_shipment_tracking_button">Pakket volgen</string>
+    <string name="order_shipment_tracking_number_clipboard">Volgnummer gekopieerd naar klembord</string>
+    <string name="order_shipment_tracking_number">Volgnummer</string>
+    <string name="order_shipment_tracking">Volgen</string>
+    <string name="error_copy_to_clipboard">Fout bij kopiëren naar klembord</string>
     <string name="settings_switch_site_notifs_msg">Omgezet naar %s Je ontvangt alleen meldingen voor deze winkel</string>
     <string name="login_update_required_desc">Deze winkel maakt gebruik van een oudere versie van WooCommerce. Upgrade je winkel naar WooCommerce 3.5 of hoger om deze app te kunnen gebruiken.</string>
     <string name="promo_message_site_picker">Je kunt nu omschakelen tussen winkels door in Instellingen op de geselecteerde winkel te tikken</string>

@@ -1,11 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-26 12:54:17+0000
+Translation-Revision-Date: 2019-04-16 13:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="error_loading_image">Görsel yüklenemiyor</string>
+    <string name="product_status_draft">Taslak</string>
+    <string name="product_status_pending">Bekliyor</string>
+    <string name="product_status_private">Özel</string>
+    <string name="product_status_published">Yayımlandı</string>
+    <string name="product_view_affiliate">Satış ortağı ürününü görüntüleyin</string>
+    <string name="product_view_in_store">Ürünü mağazada görüntüleyin</string>
+    <string name="product_share_dialog_title">Ürününüzü paylaşın</string>
+    <string name="product_purchase_details">Satın alma bilgileri</string>
+    <string name="product_download_expiry_days">%d gün</string>
+    <string name="product_download_expiry">Son tarih:</string>
+    <string name="product_download_limit_count">%d indirme</string>
+    <string name="product_download_limit">Sınır</string>
+    <string name="product_downloadable_files">İndirilebilir dosyalar</string>
+    <string name="product_downloads">İndirmeler</string>
+    <string name="product_reviews">İncelemeler</string>
+    <string name="product_total_orders">Toplam sipariş</string>
+    <string name="product_shipping_class">Gönderim sınıfı</string>
+    <string name="product_size">Boyut</string>
+    <string name="product_weight">Ağırlık</string>
+    <string name="product_shipping">Gönderim</string>
+    <string name="product_backorders">Geri dönen siparişler</string>
+    <string name="product_stock_quantity">Stok miktarı</string>
+    <string name="product_stock_status">Stok durumu</string>
+    <string name="product_sale_price">İndirimli satış fiyatı</string>
+    <string name="product_regular_price">Normal fiyat</string>
+    <string name="product_price">Fiyat</string>
+    <string name="product_inventory">Stok</string>
+    <string name="product_pricing_and_inventory">Fiyat ve stok</string>
+    <string name="product_purchase_note">Satın alma notu</string>
+    <string name="product_name">Başlık</string>
+    <string name="product_detail_fetch_product_error">Ürün alınırken hata</string>
+    <string name="add_order_note_invalid_order">Geçersiz sipariş</string>
+    <string name="order_shipment_tracking_shipped_date">Gönderim tarihi: %s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">İzleme numarasını panoya kopyala</string>
+    <string name="order_shipment_tracking_section_cd">Gönderim takibi</string>
+    <string name="order_shipment_tracking_button">Paketi izle</string>
+    <string name="order_shipment_tracking_number_clipboard">İzleme numarası panoya kopyalandı</string>
+    <string name="order_shipment_tracking_number">İzleme Numarası</string>
+    <string name="order_shipment_tracking">İzleme</string>
+    <string name="error_copy_to_clipboard">Panoya kopyalamada hata</string>
     <string name="settings_switch_site_notifs_msg">%s mağazasına geçildi. Sadece bu mağaza için bildirim alacaksınız</string>
     <string name="login_update_required_desc">Bu mağazada WooCommerce\'in eski bir sürümü kullanılıyor. Lütfen bu uygulamayla kullanmak için mağazanızı WooCommerce 3.5 veya üstü bir sürüme yükseltin.</string>
     <string name="promo_message_site_picker">Şimdi Ayarlar\'da seçilen mağazaya dokunarak mağazalar arasında geçiş yapabilirsiniz</string>
