@@ -23,6 +23,7 @@ interface SitePickerContract {
     interface View : BaseView<Presenter> {
         fun showUserInfo()
         fun showStoreList(wcSites: List<SiteModel>)
+        fun showNoStoresView()
         fun didLogout()
         fun siteSelected(site: SiteModel)
         fun siteVerificationPassed(site: SiteModel)

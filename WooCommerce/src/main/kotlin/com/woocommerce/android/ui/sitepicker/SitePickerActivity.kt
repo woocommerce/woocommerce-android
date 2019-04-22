@@ -186,11 +186,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     override fun showStoreList(wcSites: List<SiteModel>) {
         progressDialog?.takeIf { it.isShowing }?.dismiss()
 
-        if (wcSites.isEmpty()) {
-            showNoStoresView()
-            return
-        }
-
         no_stores_view.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
 
@@ -279,7 +274,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         ).show()
     }
 
-    private fun showNoStoresView() {
+    override fun showNoStoresView() {
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
