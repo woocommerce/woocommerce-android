@@ -115,6 +115,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         } ?: run {
             site_list_container.visibility = View.GONE
 
+            // if we have cached sites load them then fetch them silently, otherwise show a progress bar to
+            // signify that we're fetching sites (this should rarely be necessary because unless the database
+            // has been reset, sites will already have been fetched before we get to this screen)
             if (presenter.hasSites()) {
                 presenter.loadSites()
             } else {
