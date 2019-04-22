@@ -187,6 +187,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
+        no_stores_view.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
         site_list_label.text = if (wcSites.size == 1) {
             getString(R.string.login_connected_store)
