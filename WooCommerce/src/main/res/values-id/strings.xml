@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-26 10:54:16+0000
+Translation-Revision-Date: 2019-04-16 07:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="error_loading_image">Tidak dapat memuat gambar</string>
+    <string name="product_status_draft">Konsep</string>
+    <string name="product_status_pending">Menunggu Persetujuan</string>
+    <string name="product_status_private">Privat</string>
+    <string name="product_status_published">Dipublikasikan</string>
+    <string name="product_view_affiliate">Lihat produk afiliasi</string>
+    <string name="product_view_in_store">Lihat produk di toko</string>
+    <string name="product_share_dialog_title">Bagikan produk Anda</string>
+    <string name="product_purchase_details">Detail pembelian</string>
+    <string name="product_download_expiry_days">%d hari</string>
+    <string name="product_download_expiry">Tanggal Kedaluwarsa</string>
+    <string name="product_download_limit_count">%d unduhan</string>
+    <string name="product_download_limit">Batas</string>
+    <string name="product_downloadable_files">File yang dapat diunduh</string>
+    <string name="product_downloads">Unduhan</string>
+    <string name="product_reviews">Ulasan</string>
+    <string name="product_total_orders">Total pesanan</string>
+    <string name="product_shipping_class">Kelas pengiriman</string>
+    <string name="product_size">Ukuran</string>
+    <string name="product_weight">Berat</string>
+    <string name="product_shipping">Pengiriman</string>
+    <string name="product_backorders">Pesanan tunda</string>
+    <string name="product_stock_quantity">Jumlah stok</string>
+    <string name="product_stock_status">Status stok</string>
+    <string name="product_sku">SKU</string>
+    <string name="product_sale_price">Harga obral</string>
+    <string name="product_regular_price">Harga normal</string>
+    <string name="product_price">Harga</string>
+    <string name="product_inventory">Persediaan</string>
+    <string name="product_pricing_and_inventory">Harga dan persediaan</string>
+    <string name="product_purchase_note">Catatan pembelian</string>
+    <string name="product_name">Judul</string>
+    <string name="product_detail_fetch_product_error">Terjadi error saat mengambil produk</string>
+    <string name="add_order_note_invalid_order">Pesanan tidak valid</string>
+    <string name="order_shipment_tracking_shipped_date">Dikirimkan %s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">Salin nomor pelacakan ke clipboard</string>
+    <string name="order_shipment_tracking_section_cd">Pelacakan pengiriman</string>
+    <string name="order_shipment_tracking_button">Lacak paket</string>
+    <string name="order_shipment_tracking_number_clipboard">Nomor pelacakan disalin ke clipboard</string>
+    <string name="order_shipment_tracking_number">Nomor Pelacakan</string>
+    <string name="order_shipment_tracking">Pelacakan</string>
+    <string name="error_copy_to_clipboard">Terjadi error saat menyalin ke clipboard</string>
     <string name="settings_switch_site_notifs_msg">Beralih ke %s. Anda hanya akan menerima pemberitahuan untuk toko ini</string>
     <string name="login_update_required_desc">Toko ini menggunakan WooCommerce versi lama. Upgrade toko Anda ke WooCommerce 3.5 atau yang lebih baru agar dapat menggunakannya dengan aplikasi ini.</string>
     <string name="promo_message_site_picker">Sekarang Anda dapat beralih antartoko dengan mengetuk toko yang dipilih di Pengaturan</string>

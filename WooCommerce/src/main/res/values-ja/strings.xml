@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-26 08:54:02+0000
+Translation-Revision-Date: 2019-04-17 01:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="error_loading_image">画像を読み込めませんでした</string>
+    <string name="product_status_draft">下書き</string>
+    <string name="product_status_pending">保留中</string>
+    <string name="product_status_private">非公開</string>
+    <string name="product_status_published">公開済み</string>
+    <string name="product_view_affiliate">アフィリエイト向け商品を表示</string>
+    <string name="product_view_in_store">ストア内の商品を表示</string>
+    <string name="product_share_dialog_title">商品を共有</string>
+    <string name="product_purchase_details">購入情報</string>
+    <string name="product_download_expiry_days">%d日</string>
+    <string name="product_download_expiry">有効期限</string>
+    <string name="product_download_limit_count">%d件のダウンロード</string>
+    <string name="product_download_limit">上限</string>
+    <string name="product_downloadable_files">ダウンロード可能なファイル</string>
+    <string name="product_downloads">ダウンロード</string>
+    <string name="product_reviews">レビュー</string>
+    <string name="product_total_orders">注文合計</string>
+    <string name="product_shipping_class">送料区分</string>
+    <string name="product_size">サイズ</string>
+    <string name="product_weight">重さ</string>
+    <string name="product_shipping">配送</string>
+    <string name="product_backorders">入荷待ち</string>
+    <string name="product_stock_quantity">在庫数</string>
+    <string name="product_stock_status">在庫状況</string>
+    <string name="product_sku">SKU</string>
+    <string name="product_sale_price">セール価格</string>
+    <string name="product_regular_price">標準価格</string>
+    <string name="product_price">価格</string>
+    <string name="product_inventory">在庫</string>
+    <string name="product_pricing_and_inventory">価格設定と在庫</string>
+    <string name="product_purchase_note">注意事項</string>
+    <string name="product_name">タイトル</string>
+    <string name="product_detail_fetch_product_error">商品の取得中にエラーが発生しました</string>
+    <string name="add_order_note_invalid_order">無効な注文</string>
+    <string name="order_shipment_tracking_shipped_date">出荷日: %s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">追跡番号をクリップボードにコピー</string>
+    <string name="order_shipment_tracking_section_cd">配送状況の追跡</string>
+    <string name="order_shipment_tracking_button">荷物を追跡</string>
+    <string name="order_shipment_tracking_number_clipboard">追跡番号をクリップボードにコピーしました</string>
+    <string name="order_shipment_tracking_number">追跡番号</string>
+    <string name="order_shipment_tracking">追跡</string>
+    <string name="error_copy_to_clipboard">クリップボードへのコピー中にエラーが発生しました</string>
     <string name="settings_switch_site_notifs_msg">%s に切り替えました。このストアの通知のみ受信します。</string>
     <string name="login_update_required_desc">このストアは古いバージョンの WooCommerce を使用しています。このアプリで使用するには、ストアの WooCommerce を 3.5以上にアップグレードしてください。</string>
     <string name="promo_message_site_picker">「設定」で選択したストアをタップすると、ストアの切り替えができます</string>

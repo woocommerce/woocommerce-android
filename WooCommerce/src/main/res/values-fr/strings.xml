@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-26 10:54:18+0000
+Translation-Revision-Date: 2019-04-16 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="error_loading_image">Échec du chargement de l\'image</string>
+    <string name="product_status_draft">Brouillon</string>
+    <string name="product_status_pending">En attente</string>
+    <string name="product_status_private">Privé</string>
+    <string name="product_status_published">Publié</string>
+    <string name="product_view_affiliate">Voir les produits affiliés</string>
+    <string name="product_view_in_store">Voir les produits dans la boutique</string>
+    <string name="product_share_dialog_title">Partager votre produit</string>
+    <string name="product_purchase_details">Détails de l\'achat</string>
+    <string name="product_download_expiry_days">%d jours</string>
+    <string name="product_download_expiry">Expiration</string>
+    <string name="product_download_limit_count">%d téléchargements</string>
+    <string name="product_download_limit">Limite</string>
+    <string name="product_downloadable_files">Fichiers téléchargeables</string>
+    <string name="product_downloads">Téléchargements</string>
+    <string name="product_reviews">Avis</string>
+    <string name="product_total_orders">Commandes totales</string>
+    <string name="product_shipping_class">Classe de livraison</string>
+    <string name="product_size">Taille</string>
+    <string name="product_weight">Poids</string>
+    <string name="product_shipping">Expédition</string>
+    <string name="product_backorders">Commandes en réapprovisionnement</string>
+    <string name="product_stock_quantity">Quantité en stock</string>
+    <string name="product_stock_status">État du stock</string>
+    <string name="product_sku">UGS</string>
+    <string name="product_sale_price">Tarif promo</string>
+    <string name="product_regular_price">Tarif régulier</string>
+    <string name="product_price">Prix</string>
+    <string name="product_inventory">Stock</string>
+    <string name="product_pricing_and_inventory">Prix et stock</string>
+    <string name="product_purchase_note">Note de l\'achat</string>
+    <string name="product_name">Titre</string>
+    <string name="product_detail_fetch_product_error">Erreur lors de l\'extraction du produit</string>
+    <string name="add_order_note_invalid_order">Commande non valide</string>
+    <string name="order_shipment_tracking_shipped_date">Expédié le %s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">Copier le numéro de suivi dans le presse-papier</string>
+    <string name="order_shipment_tracking_section_cd">Suivi de l\'expédition</string>
+    <string name="order_shipment_tracking_button">Suivre le colis</string>
+    <string name="order_shipment_tracking_number_clipboard">Numéro de suivi copié dans le presse-papier</string>
+    <string name="order_shipment_tracking_number">Numéro de suivi</string>
+    <string name="order_shipment_tracking">Suivi</string>
+    <string name="error_copy_to_clipboard">Erreur lors de la copie dans le presse-papier</string>
     <string name="settings_switch_site_notifs_msg">Basculé vers %s. Vous recevrez uniquement des notifications pour cette boutique</string>
     <string name="login_update_required_desc">Cette boutique utilise une ancienne version de WooCommerce. Veuillez mettre votre boutique à niveau en installant la version 3.5 ou ultérieure de WooCommerce afin de l\'utiliser avec l\'application.</string>
     <string name="promo_message_site_picker">Vous pouvez désormais basculer entre les boutiques en appuyant sur la boutique sélectionnée dans Paramètres</string>
