@@ -6,7 +6,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 interface SitePickerContract {
     interface Presenter : BasePresenter<View> {
-        fun fetchSites()
+        fun loadAndFetchSites()
+        fun loadSites()
         fun getWooCommerceSites(): List<SiteModel>
         fun getSiteBySiteId(siteId: Long): SiteModel?
         fun getUserAvatarUrl(): String?
@@ -14,8 +15,6 @@ interface SitePickerContract {
         fun getUserDisplayName(): String?
         fun logout()
         fun userIsLoggedIn(): Boolean
-        fun loadSites()
-        fun hasSites(): Boolean
         fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel>
         fun verifySiteApiVersion(site: SiteModel)
         fun updateWooSiteSettings(site: SiteModel)
@@ -29,5 +28,6 @@ interface SitePickerContract {
         fun siteVerificationPassed(site: SiteModel)
         fun siteVerificationFailed(site: SiteModel)
         fun siteVerificationError(site: SiteModel)
+        fun showSkeleton(show: Boolean)
     }
 }

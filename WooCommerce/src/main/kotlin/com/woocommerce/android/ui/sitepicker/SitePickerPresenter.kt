@@ -35,10 +35,6 @@ class SitePickerPresenter @Inject constructor(
         view = null
     }
 
-    override fun fetchSites() {
-        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
-    }
-
     override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
 
     override fun getSiteBySiteId(siteId: Long): SiteModel? = siteStore.getSiteBySiteId(siteId)
@@ -58,7 +54,15 @@ class SitePickerPresenter @Inject constructor(
         return accountStore.hasAccessToken()
     }
 
-    override fun hasSites(): Boolean = wooCommerceStore.getWooCommerceSites().size > 0
+    override fun loadAndFetchSites() {
+        val wcSites = wooCommerceStore.getWooCommerceSites()
+        if (wcSites.size > 0) {
+            view?.showStoreList(wcSites)
+        } else {
+            view?.showSkeleton(true)
+        }
+        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+    }
 
     override fun loadSites() {
         val wcSites = wooCommerceStore.getWooCommerceSites()
@@ -88,6 +92,7 @@ class SitePickerPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
+        view?.showSkeleton(false)
         if (!event.isError) {
             loadSites()
         }
