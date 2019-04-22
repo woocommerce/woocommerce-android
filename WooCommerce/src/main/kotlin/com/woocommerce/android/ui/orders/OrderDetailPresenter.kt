@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -47,6 +48,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
+@OpenClassOnDebug
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
@@ -84,10 +86,20 @@ class OrderDetailPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
+    /**
+     * Loading order detail from local database
+     */
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? {
+        return orderStore.getOrderByIdentifier(orderIdentifier)
+    }
+
+    /**
+     * displaying the loaded order detail data in UI
+     */
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
-            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 orderView?.showOrderDetail(order)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
