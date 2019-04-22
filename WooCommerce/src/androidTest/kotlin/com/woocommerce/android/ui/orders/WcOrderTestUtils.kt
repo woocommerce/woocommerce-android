@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 object WcOrderTestUtils {
     /**
@@ -87,16 +88,27 @@ object WcOrderTestUtils {
     /**
      * Generates a single [WCOrderModel] object for Order detail screen.
      */
-    fun generateOrderDetail(): WCOrderModel {
+    fun generateOrderDetail(dateCreatedString: String = "", note: String = ""): WCOrderModel {
         return WCOrderModel(2).apply {
             billingFirstName = "Jane"
             billingLastName = "Masterson"
-            currency = "CAD"
-            dateCreated = "2017-12-08T16:11:13Z"
+            currency = "USD"
+            dateCreated = dateCreatedString
             localSiteId = 1
             number = "1"
             status = "pending"
             total = "106.00"
+            customerNote = note
+        }
+    }
+
+    /**
+     * Generates a single [WCOrderModel] object for Order detail screen.
+     */
+    fun generateOrderStatusDetail(status: String = "Pending"): WCOrderStatusModel {
+        return WCOrderStatusModel(1).apply {
+            label = status
+            statusKey = status
         }
     }
 }

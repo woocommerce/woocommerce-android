@@ -31,7 +31,16 @@ import org.wordpress.android.fluxc.tools.FormattableContentMapper
 abstract class MockedOrderDetailModule {
     @Module
     companion object {
-        private var order: WCOrderModel = WcOrderTestUtils.generateOrderDetail()
+        private var order: WCOrderModel? = null
+        private var orderStatus: WCOrderStatusModel? = null
+
+        fun setOrderInfo(order: WCOrderModel) {
+            this.order = order
+        }
+
+        fun setOrderStatus(orderStatus: WCOrderStatusModel) {
+            this.orderStatus = orderStatus
+        }
 
         @JvmStatic
         @ActivityScope
@@ -67,7 +76,7 @@ abstract class MockedOrderDetailModule {
              * These are the methods that invoke [WCOrderModel], [WCOrderStatusModel] methods from FluxC.
              */
             doReturn(order).whenever(mockedOrderDetailPresenter).loadOrderDetailFromDb(any())
-            doReturn(WCOrderStatusModel()).whenever(mockedOrderDetailPresenter).getOrderStatusForStatusKey(any())
+            doReturn(orderStatus).whenever(mockedOrderDetailPresenter).getOrderStatusForStatusKey(any())
             return mockedOrderDetailPresenter
         }
     }

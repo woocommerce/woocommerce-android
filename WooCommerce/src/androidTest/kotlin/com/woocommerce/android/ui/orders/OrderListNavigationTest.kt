@@ -52,6 +52,9 @@ class OrderListNavigationTest : TestBase() {
         val recyclerView = activityTestRule.activity.findViewById(R.id.ordersList) as RecyclerView
         assertNotSame(0, recyclerView.adapter?.itemCount)
 
+        // add mock data to order detail screen
+        activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail())
+
         // click on the first order in the list and check if redirected to order detail
         Espresso.onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
