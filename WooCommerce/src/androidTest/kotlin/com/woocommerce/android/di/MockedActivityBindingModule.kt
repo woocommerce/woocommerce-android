@@ -7,8 +7,8 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
+import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
-import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
@@ -24,7 +24,7 @@ abstract class MockedActivityBindingModule {
             MockedMainModule::class,
             DashboardModule::class,
             MockedOrderListModule::class,
-            OrderDetailModule::class,
+            MockedOrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
             NotifsListModule::class,
