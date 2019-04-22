@@ -55,6 +55,19 @@
         app:layout_constraintTop_toBottomOf="@+id/text_displayname"
         tools:text="\@droidtester2018"/>
 
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"/>
+
     <android.support.v7.widget.CardView
         android:id="@+id/site_list_container"
         android:layout_width="match_parent"

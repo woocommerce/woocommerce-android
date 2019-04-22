@@ -58,6 +58,8 @@ class SitePickerPresenter @Inject constructor(
         return accountStore.hasAccessToken()
     }
 
+    override fun hasSites(): Boolean = wooCommerceStore.getWooCommerceSites().size > 0
+
     override fun loadSites() {
         val wcSites = wooCommerceStore.getWooCommerceSites()
         view?.showStoreList(wcSites)

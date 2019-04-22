@@ -26,7 +26,7 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig
 
     // TODO: remove this
     override fun getDbVersion(): Int {
-        return 997
+        return 996
     }
 
     private fun recreateTables(helper: WellTableManager?) {

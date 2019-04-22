@@ -15,6 +15,7 @@ interface SitePickerContract {
         fun logout()
         fun userIsLoggedIn(): Boolean
         fun loadSites()
+        fun hasSites(): Boolean
         fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel>
         fun verifySiteApiVersion(site: SiteModel)
         fun updateWooSiteSettings(site: SiteModel)

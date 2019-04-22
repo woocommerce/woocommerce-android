@@ -115,7 +115,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         } ?: run {
             site_list_container.visibility = View.GONE
 
-            presenter.loadSites()
+            if (presenter.hasSites()) {
+                presenter.loadSites()
+            } else {
+                progress.visibility = View.VISIBLE
+            }
             presenter.fetchSites()
 
             AnalyticsTracker.track(
@@ -181,6 +185,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun showStoreList(wcSites: List<SiteModel>) {
         progressDialog?.takeIf { it.isShowing }?.dismiss()
+        progress.visibility = View.GONE
 
         if (wcSites.isEmpty()) {
             showNoStoresView()
