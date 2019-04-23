@@ -29,7 +29,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         tracking_number.text = item.trackingNumber
         tracking_dateShipped.text = context.getString(
                 R.string.order_shipment_tracking_shipped_date,
-                DateUtils.getFullDateString(item.dateShipped))
+                DateUtils.getLocalizedLongDateString(context, item.dateShipped))
 
         tracking_copyNumber.setOnClickListener {
             try {
@@ -49,6 +49,8 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(context, item.trackingLink)
             }
+        } else {
+            tracking_btnTrack.visibility = View.GONE
         }
     }
 }

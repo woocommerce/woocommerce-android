@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.annotation.StringRes
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
@@ -21,10 +23,18 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.products.ProductType.EXTERNAL
+import com.woocommerce.android.ui.products.ProductType.GROUPED
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.AndroidInjection
@@ -41,7 +51,6 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
 
         fun show(context: Context, remoteProductId: Long) {
-            // TODO analytics
             val intent = Intent(context, ProductDetailActivity::class.java)
             intent.putExtra(ARG_REMOTE_PRODUCT_ID, remoteProductId)
             context.startActivity(intent)
@@ -60,9 +69,11 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var remoteProductId = 0L
-    private var productName = ""
+    private var productTitle = ""
     private var productImageUrl: String? = null
+    private var isVariation = false
     private var imageHeight = 0
+    private var collapsingToolbarEnabled = true
     private val skeletonView = SkeletonView()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,13 +111,15 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             var scrollRange = -1
 
             override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.totalScrollRange
-                }
-                if (scrollRange + verticalOffset == 0) {
-                    collapsing_toolbar.title = productName
-                } else {
-                    collapsing_toolbar.title = " " // space between double quotes is on purpose
+                if (collapsingToolbarEnabled) {
+                    if (scrollRange == -1) {
+                        scrollRange = appBarLayout.totalScrollRange
+                    }
+                    if (scrollRange + verticalOffset == 0) {
+                        collapsing_toolbar.title = productTitle
+                    } else {
+                        collapsing_toolbar.title = " " // space between double quotes is on purpose
+                    }
                 }
             }
         })
@@ -135,6 +148,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when {
             item?.itemId == R.id.menu_share -> {
+                AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 shareProduct()
                 true
             }
@@ -163,13 +177,27 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     override fun showProduct(product: WCProductModel) {
         if (isFinishing) return
 
-        productName = product.name
+        productTitle = when (ProductType.fromString(product.type)) {
+            EXTERNAL -> getString(R.string.product_name_external, product.name)
+            GROUPED -> getString(R.string.product_name_grouped, product.name)
+            VARIABLE -> getString(R.string.product_name_variable, product.name)
+            else -> {
+                if (product.virtual) {
+                    getString(R.string.product_name_virtual, product.name)
+                } else {
+                    product.name
+                }
+            }
+        }
 
-        product.getFirstImageUrl()?.let {
+        isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
+
+        val imageUrl = product.getFirstImageUrl()
+        if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(this)
             val height = DisplayUtils.getDisplayPixelHeight(this)
             val imageSize = Math.max(width, height)
-            productImageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, 0)
+            productImageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
             GlideApp.with(this)
                     .load(productImageUrl)
                     .error(R.drawable.ic_product)
@@ -177,14 +205,31 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .listener(this)
                     .into(productDetail_image)
+        } else {
+            productDetail_image.visibility = View.GONE
+            imageScrim.visibility = View.GONE
         }
 
         // show status badge for unpublished products
         ProductStatus.fromString(product.status)?.let { status ->
             if (status != ProductStatus.PUBLISH) {
-                textStatusBadge.visibility = View.VISIBLE
+                frameStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toString(this)
             }
+        }
+
+        // if there's no product image we should disable the collapsible toolbar and move the badge's parent frame
+        // to the scrolling container
+        if (imageUrl == null && collapsingToolbarEnabled) {
+            collapsingToolbarEnabled = false
+            val params = collapsing_toolbar.getLayoutParams() as AppBarLayout.LayoutParams
+            params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+            collapsing_toolbar.setLayoutParams(params)
+            collapsing_toolbar.isTitleEnabled = false
+            toolbar.title = productTitle
+            frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(this, R.color.wc_grey_light))
+            (frameStatusBadge.parent as ViewGroup).removeView(frameStatusBadge)
+            productDetail_container.addView(frameStatusBadge)
         }
 
         addPrimaryCard(product)
@@ -193,9 +238,19 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     }
 
     private fun addPrimaryCard(product: WCProductModel) {
-        addPropertyView(DetailCard.Primary, R.string.product_name, product.name, LinearLayout.VERTICAL)
-        addPropertyView(DetailCard.Primary, R.string.product_total_orders, StringUtils.formatCount(product.totalSales))
-        if (product.ratingCount > 0) {
+        addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
+
+        // we don't show total sales for variations because they're always zero
+        if (!isVariation) {
+            addPropertyView(
+                    DetailCard.Primary,
+                    R.string.product_total_orders,
+                    StringUtils.formatCount(product.totalSales)
+            )
+        }
+
+        // we don't show reviews for variations because they're always empty
+        if (!isVariation && product.reviewsAllowed) {
             addPropertyView(
                     DetailCard.Primary,
                     R.string.product_reviews,
@@ -203,16 +258,25 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             )?.setRating(product.averageRating)
         }
 
-        addLinkView(DetailCard.Primary, R.string.product_view_in_store, product.permalink)
-        addLinkView(DetailCard.Primary, R.string.product_view_affiliate, product.externalUrl)
+        addLinkView(
+                DetailCard.Primary,
+                R.string.product_view_in_store,
+                product.permalink,
+                PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+        )
+        addLinkView(
+                DetailCard.Primary,
+                R.string.product_view_affiliate,
+                product.externalUrl,
+                PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+        )
     }
 
     private fun addPricingAndInventoryCard(product: WCProductModel) {
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
         val hasPricingInfo = product.price.isNotEmpty() ||
                 product.salePrice.isNotEmpty() ||
-                product.taxClass.isNotEmpty() ||
-                product.taxStatus.isNotEmpty()
+                product.taxClass.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
 
         if (hasPricingInfo) {
@@ -224,21 +288,26 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
-                addPropertyView(pricingCard, R.string.product_price, presenter.formatCurrency(product.price))
+                addPropertyView(
+                        pricingCard,
+                        R.string.product_price,
+                        presenter.formatCurrency(product.price),
+                        LinearLayout.VERTICAL
+                )
             }
         }
 
         // show stock properties as a group if stock management is enabled, otherwise show sku separately
         if (product.manageStock) {
             val group = mapOf(
-                    Pair(getString(R.string.product_stock_status), product.stockStatus),
-                    Pair(getString(R.string.product_backorders), product.backorders),
+                    Pair(getString(R.string.product_stock_status), stockStatusToDisplayString(product.stockStatus)),
+                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorders)),
                     Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
             addPropertyGroup(pricingCard, R.string.product_inventory, group)
         } else {
-            addPropertyView(pricingCard, getString(R.string.product_sku), product.sku)
+            addPropertyView(pricingCard, R.string.product_sku, product.sku, LinearLayout.VERTICAL)
         }
     }
 
@@ -285,12 +354,14 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_downloads, downloadGroup)
         }
 
-        addPropertyView(
-                DetailCard.PurchaseDetails,
-                R.string.product_purchase_note,
-                product.purchaseNote,
-                LinearLayout.VERTICAL
-        )
+        if (product.purchaseNote.isNotBlank()) {
+            addReadMoreView(
+                    DetailCard.PurchaseDetails,
+                    R.string.product_purchase_note,
+                    product.purchaseNote,
+                    2
+            )
+        }
     }
 
     /**
@@ -362,7 +433,12 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     /**
      * Adds a property link to the passed card
      */
-    private fun addLinkView(card: DetailCard, @StringRes captionId: Int, url: String): WCProductPropertyLinkView? {
+    private fun addLinkView(
+        card: DetailCard,
+        @StringRes captionId: Int,
+        url: String,
+        tracksEvent: Stat
+    ): WCProductPropertyLinkView? {
         if (url.isEmpty()) return null
 
         val caption = getString(captionId)
@@ -378,8 +454,29 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             container.addView(linkView)
         }
 
-        linkView.show(caption, url)
+        linkView.show(caption, url, tracksEvent)
         return linkView
+    }
+
+    /**
+     * Adds a "read more" view which limits content to a certain number of lines, and if it goes over
+     * a "Read more" button appears
+     */
+    private fun addReadMoreView(card: DetailCard, @StringRes captionId: Int, content: String, maxLines: Int) {
+        val caption = getString(captionId)
+        val readMoreTag = "${caption}_read_more_tag"
+
+        val cardView = findOrAddCardView(card)
+        val container = cardView.findViewById<LinearLayout>(R.id.cardContainerView)
+        var readMoreView = container.findViewWithTag<WCProductPropertyReadMoreView>(readMoreTag)
+
+        if (readMoreView == null) {
+            readMoreView = WCProductPropertyReadMoreView(this)
+            readMoreView.tag = readMoreTag
+            container.addView(readMoreView)
+        }
+
+        readMoreView.show(caption, HtmlUtils.fastStripHtml(content), maxLines)
     }
 
     /**
@@ -421,7 +518,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 MATCH_PARENT,
                 resources.getDimensionPixelSize(R.dimen.product_detail_card_divider_height)
         )
-        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.list_divider))
+        divider.setBackgroundColor(ContextCompat.getColor(context, R.color.default_window_background))
         productDetail_container.addView(divider)
     }
 
@@ -451,6 +548,31 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     }
 
     /**
+     * returns the product's stock status formatted for display
+     */
+    private fun stockStatusToDisplayString(stockStatus: String?): String {
+        return stockStatus?.let {
+            when (it) {
+                "instock" -> getString(R.string.product_stock_status_instock)
+                "outofstock" -> getString(R.string.product_stock_status_out_of_stock)
+                "onbackorder" -> getString(R.string.product_stock_status_on_backorder)
+                else -> stockStatus
+            }
+        } ?: ""
+    }
+
+    private fun backordersToDisplayString(backorders: String?): String {
+        return backorders?.let {
+            when (it) {
+                "no" -> getString(R.string.product_backorders_no)
+                "yes" -> getString(R.string.product_backorders_yes)
+                "notify" -> getString(R.string.product_backorders_notify)
+                else -> backorders
+            }
+        } ?: ""
+    }
+
+    /**
      * Glide failed to load the product image, do nothing so Glide will show the error drawable
      */
     override fun onLoadFailed(
@@ -474,7 +596,8 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     ): Boolean {
         productImageUrl?.let { imageUrl ->
             productDetail_image.setOnClickListener {
-                ImageViewerActivity.show(this, imageUrl, title = productName, sharedElement = productDetail_image)
+                AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+                ImageViewerActivity.show(this, imageUrl, title = productTitle, sharedElement = productDetail_image)
             }
         }
         return false

@@ -19,37 +19,41 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="textCaption"/>
 
-    <TextView
-        android:id="@+id/textPropertyValue"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/product_detail_property_margin"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textColor="@color/wc_grey_medium"
-        android:textSize="@dimen/text_medium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ratingBar"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="textDetail"/>
-
-    <RatingBar
-        android:id="@+id/ratingBar"
-        style="@style/Base.Widget.AppCompat.RatingBar.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/product_detail_property_margin"
-        android:isIndicator="true"
-        android:numStars="5"
-        android:progressTint="@color/grey_darken_30"
-        android:rating="0"
-        android:stepSize="1"
-        android:visibility="gone"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:rating="3"
-        tools:visibility="visible"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textPropertyValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/wc_grey_medium"
+            android:textSize="@dimen/text_medium"
+            tools:text="textDetail"/>
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            style="@style/Base.Widget.AppCompat.RatingBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:isIndicator="true"
+            android:numStars="5"
+            android:progressTint="@color/grey_darken_30"
+            android:rating="0"
+            android:stepSize="1"
+            android:visibility="gone"
+            tools:rating="3"
+            tools:visibility="visible"/>
+    </LinearLayout>
 
     <View
         android:id="@+id/divider"

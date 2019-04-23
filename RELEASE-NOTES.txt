@@ -1,6 +1,18 @@
+1.8
+-----
+
 1.7
 -----
+
+Improvements
+* Changed FAQ button in help section to "Help Center". The button now routes to WooCommerce mobile documentation.
+* Hide the external link button on shipment tracking views if no external link available
+* Redirect to username/password login when WordPress.com reports email login not allowed
+* Shipment Tracking date formatting is now localized
  
+New Features
+* You can now tap a product to view a read-only detail view
+
 1.6
 -----
 

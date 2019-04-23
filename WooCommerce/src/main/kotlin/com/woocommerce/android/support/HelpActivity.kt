@@ -73,7 +73,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        ChromeCustomTabUtils.connect(this, FAQ_URL)
+        ChromeCustomTabUtils.connect(this, HELP_CENTER_URL)
     }
 
     override fun onStop() {
@@ -140,9 +140,10 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showZendeskFaq() {
-        AnalyticsTracker.track(Stat.SUPPORT_FAQ_VIEWED)
-        ChromeCustomTabUtils.launchUrl(this, FAQ_URL)
-        /* TODO: for now we simply link to the online FAQ, but we should show the Zendesk FAQ once it's ready
+        AnalyticsTracker.track(Stat.SUPPORT_HELP_CENTER_VIEWED)
+        ChromeCustomTabUtils.launchUrl(this, HELP_CENTER_URL)
+        /* TODO: for now we simply link to the online woo mobile support documentation, but we should show the
+        Zendesk FAQ once it's ready
         zendeskHelper
                 .showZendeskHelpCenter(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
         */
@@ -176,7 +177,7 @@ class HelpActivity : AppCompatActivity() {
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
-        private const val FAQ_URL = "https://docs.woocommerce.com/document/frequently-asked-questions/"
+        private const val HELP_CENTER_URL = "https://docs.woocommerce.com/document/android/"
 
         @JvmStatic
         fun createIntent(
