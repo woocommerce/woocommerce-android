@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-26 08:54:02+0000
+Translation-Revision-Date: 2019-04-16 11:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="error_loading_image">Не удалось загрузить изображение</string>
+    <string name="product_status_draft">Черновик</string>
+    <string name="product_status_pending">На рассмотрении</string>
+    <string name="product_status_private">Личный</string>
+    <string name="product_status_published">Опубликовано</string>
+    <string name="product_view_affiliate">Показать партнерский продукт</string>
+    <string name="product_view_in_store">Показать продукт в магазине</string>
+    <string name="product_share_dialog_title">Поделиться продуктом</string>
+    <string name="product_purchase_details">Сведения о покупке</string>
+    <string name="product_download_expiry_days">%d дн.</string>
+    <string name="product_download_expiry">Дата окончания срока действия</string>
+    <string name="product_download_limit_count">Загрузок: %d</string>
+    <string name="product_download_limit">Предел</string>
+    <string name="product_downloadable_files">Загружаемые файлы</string>
+    <string name="product_downloads">Загрузки</string>
+    <string name="product_reviews">Обзоры</string>
+    <string name="product_total_orders">Общее число заказов</string>
+    <string name="product_shipping_class">Класс доставки</string>
+    <string name="product_size">Размер</string>
+    <string name="product_weight">Вес</string>
+    <string name="product_shipping">Доставка</string>
+    <string name="product_backorders">Задержанные заказы</string>
+    <string name="product_stock_quantity">Количество в наличии</string>
+    <string name="product_stock_status">Статус на складе</string>
+    <string name="product_sku">Артикул</string>
+    <string name="product_sale_price">Продажная цена</string>
+    <string name="product_regular_price">Обычная цена</string>
+    <string name="product_price">Цена</string>
+    <string name="product_inventory">Запасы</string>
+    <string name="product_pricing_and_inventory">Цены и запасы</string>
+    <string name="product_purchase_note">Уведомление о приобретении</string>
+    <string name="product_name">Заголовок</string>
+    <string name="product_detail_fetch_product_error">Не удалось загрузить продукт</string>
+    <string name="add_order_note_invalid_order">Неверный заказ</string>
+    <string name="order_shipment_tracking_shipped_date">Отправлено %s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">Скопировать номер отслеживания в буфер обмена</string>
+    <string name="order_shipment_tracking_section_cd">Отслеживание доставки</string>
+    <string name="order_shipment_tracking_button">Отслеживание посылки</string>
+    <string name="order_shipment_tracking_number_clipboard">Номер отслеживания скопирован в буфер обмена</string>
+    <string name="order_shipment_tracking_number">Номер отслеживания</string>
+    <string name="order_shipment_tracking">Отслеживание</string>
+    <string name="error_copy_to_clipboard">Ошибка при копировании в буфер обмена</string>
     <string name="settings_switch_site_notifs_msg">Переход в %s. Вы будете получать уведомления только для этого сайта</string>
     <string name="login_update_required_desc">В этом магазине используется старая версия плагина WooCommerce. Чтобы использовать его с этим приложением, обновите WooCommerce до версии 3.5 или более поздней.</string>
     <string name="promo_message_site_picker">Теперь переключаться между ними можно нажатием одной кнопки в Настройках.</string>

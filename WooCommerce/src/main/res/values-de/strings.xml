@@ -1,13 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-27 15:54:03+0000
+Translation-Revision-Date: 2019-04-16 07:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="error_loading_image">Bild konnte nicht geladen werden</string>
+    <string name="product_status_draft">Entwurf</string>
+    <string name="product_status_pending">Ausstehend</string>
+    <string name="product_status_private">Privat</string>
+    <string name="product_status_published">Veröffentlicht</string>
+    <string name="product_view_affiliate">Affiliate-Produkt anzeigen</string>
+    <string name="product_view_in_store">Produkt im Shop anzeigen</string>
+    <string name="product_share_dialog_title">Dein Produkt teilen</string>
+    <string name="product_purchase_details">Kaufdetails</string>
+    <string name="product_download_expiry_days">%d Tage</string>
+    <string name="product_download_expiry">Ablaufdatum</string>
+    <string name="product_download_limit_count">%d Downloads</string>
+    <string name="product_download_limit">Limit</string>
+    <string name="product_downloadable_files">Dateien zum Download</string>
+    <string name="product_downloads">Downloads</string>
+    <string name="product_reviews">Rezensionen</string>
+    <string name="product_total_orders">Bestellungen gesamt</string>
+    <string name="product_shipping_class">Versandklasse</string>
+    <string name="product_size">Größe</string>
+    <string name="product_weight">Gewicht</string>
+    <string name="product_shipping">Versand</string>
+    <string name="product_backorders">Lieferrückstände</string>
+    <string name="product_stock_quantity">Menge auf Lager</string>
+    <string name="product_stock_status">Lagerstatus</string>
+    <string name="product_sku">SKU</string>
+    <string name="product_sale_price">Verkaufspreis</string>
+    <string name="product_regular_price">Regulärer Preis</string>
+    <string name="product_price">Preis</string>
+    <string name="product_inventory">Bestand</string>
+    <string name="product_pricing_and_inventory">Preis und Bestand</string>
+    <string name="product_purchase_note">Kaufbestätigung</string>
+    <string name="product_name">Titel</string>
+    <string name="product_detail_fetch_product_error">Fehler beim Abrufen des Produkts</string>
+    <string name="add_order_note_invalid_order">Ungültige Bestellung</string>
+    <string name="order_shipment_tracking_shipped_date">Versendet am %s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">Sendungsverfolgungsnummer in Zwischenablage kopieren</string>
+    <string name="order_shipment_tracking_section_cd">Sendungsverfolgung</string>
+    <string name="order_shipment_tracking_button">Paket verfolgen</string>
+    <string name="order_shipment_tracking_number_clipboard">Sendungsverfolgungsnummer in Zwischenablage kopiert</string>
+    <string name="order_shipment_tracking_number">Sendungsverfolgungsnummer</string>
+    <string name="order_shipment_tracking">Sendungsverfolgung</string>
+    <string name="error_copy_to_clipboard">Fehler beim Kopieren in Zwischenablage</string>
     <string name="settings_switch_site_notifs_msg">Zu %s gewechselt. Du bekommst nur von diesem Shop Benachrichtigungen</string>
-    <string name="login_update_required_desc">Für diesen Shop wird eine ältere Version von WooCommerce verwendet. Um deinen Shop mit dieser App zu nutzen, musst du ihn zu WooCommerce 3.5 oder höher upgraden.</string>
+    <string name="login_update_required_desc">Für diesen Shop wird eine ältere Version von WooCommerce verwendet. Um deinen Shop mit dieser App zu nutzen, musst du ihn auf WooCommerce 3.5 oder höher upgraden.</string>
     <string name="promo_message_site_picker">Du kannst nun zwischen Shops wechseln, indem du in den Einstellungen auf den ausgewählten Shop tippst</string>
     <string name="promo_title_site_picker">Du betreibst mehrere Shops?</string>
     <string name="promo_btn_try_it">Jetzt ausprobieren</string>

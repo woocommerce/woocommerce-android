@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-26 06:54:02+0000
+Translation-Revision-Date: 2019-04-16 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="error_loading_image">无法加载图片</string>
+    <string name="product_status_draft">草稿</string>
+    <string name="product_status_pending">待处理</string>
+    <string name="product_status_private">非公开</string>
+    <string name="product_status_published">已发布</string>
+    <string name="product_view_affiliate">查看关联产品</string>
+    <string name="product_view_in_store">查看商店中的产品</string>
+    <string name="product_share_dialog_title">分享产品</string>
+    <string name="product_purchase_details">购买详情</string>
+    <string name="product_download_expiry_days">%d 天</string>
+    <string name="product_download_expiry">到期</string>
+    <string name="product_download_limit_count">%d 次下载</string>
+    <string name="product_download_limit">限制</string>
+    <string name="product_downloadable_files">可下载的文件</string>
+    <string name="product_downloads">下载</string>
+    <string name="product_reviews">评论</string>
+    <string name="product_total_orders">订单总数</string>
+    <string name="product_shipping_class">运费类</string>
+    <string name="product_size">尺寸</string>
+    <string name="product_weight">重量</string>
+    <string name="product_shipping">配送</string>
+    <string name="product_backorders">缺货</string>
+    <string name="product_stock_quantity">库存数量</string>
+    <string name="product_stock_status">库存状态</string>
+    <string name="product_sku">SKU</string>
+    <string name="product_sale_price">促销价格</string>
+    <string name="product_regular_price">正常价格</string>
+    <string name="product_price">价格</string>
+    <string name="product_inventory">库存</string>
+    <string name="product_pricing_and_inventory">定价和库存</string>
+    <string name="product_purchase_note">购买备注</string>
+    <string name="product_name">标题</string>
+    <string name="product_detail_fetch_product_error">抓取产品时出错</string>
+    <string name="add_order_note_invalid_order">订单无效</string>
+    <string name="order_shipment_tracking_shipped_date">配送日期：%s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">将跟踪编号复制到剪贴板</string>
+    <string name="order_shipment_tracking_section_cd">配送跟踪</string>
+    <string name="order_shipment_tracking_button">跟踪包裹</string>
+    <string name="order_shipment_tracking_number_clipboard">跟踪编号已复制到剪贴板</string>
+    <string name="order_shipment_tracking_number">跟踪编号</string>
+    <string name="order_shipment_tracking">跟踪</string>
+    <string name="error_copy_to_clipboard">复制到剪贴板时出错</string>
     <string name="settings_switch_site_notifs_msg">已切换到 %s。您将只接收此商店的通知</string>
     <string name="login_update_required_desc">此商店使用的 WooCommerce 版本较旧。请将您的商店升级至 WooCommerce 3.5 或更高版本，以结合使用商店和此应用程序。</string>
     <string name="promo_message_site_picker">现在，您可以在“设置”中轻点选定的商店来在商店之间切换。</string>
