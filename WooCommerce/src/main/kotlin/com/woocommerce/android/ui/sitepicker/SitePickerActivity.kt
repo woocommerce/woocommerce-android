@@ -165,7 +165,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         if (calledFromLogin) {
             text_displayname.text = presenter.getUserDisplayName()
 
-            presenter.getUserName()?.let {userName ->
+            presenter.getUserName()?.let { userName ->
                 if (userName.isNotEmpty()) {
                     text_username.text = String.format(getString(R.string.at_username), userName)
                 }
