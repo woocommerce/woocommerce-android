@@ -16,7 +16,7 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig
      * branches and having to clear storage and login again due to a version downgrade.
      */
     override fun onDowngrade(db: SQLiteDatabase?, helper: WellTableManager?, oldVersion: Int, newVersion: Int) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && helper != null) {
             // note: don't call super() here because it throws an exception
             AppLog.w(T.DB, "Resetting database due to downgrade from version $oldVersion to $newVersion")
             ToastUtils.showToast(
@@ -24,7 +24,7 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig
                     "Database downgraded, recreating tables and loading stores",
                     Duration.LONG
             )
-            recreateTables(helper)
+            reset(helper)
         } else {
             super.onDowngrade(db, helper, oldVersion, newVersion)
         }
@@ -32,14 +32,6 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig
 
     // TODO: remove this
     override fun getDbVersion(): Int {
-        return 983
-    }
-
-    private fun recreateTables(helper: WellTableManager?) {
-        for (table in mTables) {
-            AppLog.w(T.DB, "recreating table ${table.simpleName}")
-            helper?.dropTable(table)
-            helper?.createTable(table)
-        }
+        return 998
     }
 }
