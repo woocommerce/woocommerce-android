@@ -29,9 +29,4 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig
             super.onDowngrade(db, helper, oldVersion, newVersion)
         }
     }
-
-    // TODO: remove this
-    override fun getDbVersion(): Int {
-        return 998
-    }
 }
