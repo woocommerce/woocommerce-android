@@ -293,10 +293,10 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         mUIThreadId = Thread.currentThread().id
         Thread.setDefaultUncaughtExceptionHandler(Thread.UncaughtExceptionHandler { t, e ->
-            if (e != null && t.id != mUIThreadId && e.stackTrace != null && e.stackTrace.size > 0
-                    && e.stackTrace[0].toString().contains("com.google.android.gms")
-                    && e.message != null && e.message!!.contains("Results have already been set")) {
-                return@UncaughtExceptionHandler  // non-UI thread
+            if (e != null && t.id != mUIThreadId && e.stackTrace != null && e.stackTrace.size > 0 &&
+                    e.stackTrace[0].toString().contains("com.google.android.gms") &&
+                    e.message != null && e.message!!.contains("Results have already been set")) {
+                return@UncaughtExceptionHandler // non-UI thread
             }
             if (mDefaultExceptionHandler != null)
                 mDefaultExceptionHandler!!.uncaughtException(t, e)
