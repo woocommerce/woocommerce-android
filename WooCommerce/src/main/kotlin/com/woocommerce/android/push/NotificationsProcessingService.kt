@@ -41,7 +41,7 @@ class NotificationsProcessingService : Service() {
         super.onDestroy()
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Offload to a separate thread.
         actionProcessor = ActionProcessor(this, intent, startId)
         Thread(Runnable { actionProcessor.process() }).start()
@@ -51,11 +51,11 @@ class NotificationsProcessingService : Service() {
 
     private inner class ActionProcessor internal constructor(
         private val context: Context,
-        private val intent: Intent,
+        private val intent: Intent?,
         private val taskId: Int
     ) {
         fun process() {
-            intent.getStringExtra(ARG_ACTION_TYPE)?.let { actionType ->
+            intent?.getStringExtra(ARG_ACTION_TYPE)?.let { actionType ->
                 // Check notification dismissed pending intent
                 if (actionType == ARG_ACTION_NOTIFICATION_DISMISS) {
                     val notificationId = intent.getIntExtra(ARG_PUSH_ID, 0)
