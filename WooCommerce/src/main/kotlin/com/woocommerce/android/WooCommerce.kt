@@ -125,6 +125,12 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         }
         CrashlyticsUtils.initCrashlytics(this, accountStore.account, site)
 
+        /**
+         * Dirty hack for gms bug https://issuetracker.google.com/issues/70416429
+         * https://stackoverflow.com/questions/47726111/gms-illegalstateexception-results-have-already-been-set
+         */
+        handleGMSException()
+
         notificationHandler.createNotificationChannels(this)
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
@@ -276,4 +282,24 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector
 
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
+
+    /**
+     * Dirty hack for gms bug: just catching the exception and return
+     */
+    private var mDefaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
+    private var mUIThreadId: Long = 0
+
+    private fun handleGMSException() {
+        mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+        mUIThreadId = Thread.currentThread().id
+        Thread.setDefaultUncaughtExceptionHandler(Thread.UncaughtExceptionHandler { t, e ->
+            if (e != null && t.id != mUIThreadId && e.stackTrace != null && e.stackTrace.size > 0
+                    && e.stackTrace[0].toString().contains("com.google.android.gms")
+                    && e.message != null && e.message!!.contains("Results have already been set")) {
+                return@UncaughtExceptionHandler  // non-UI thread
+            }
+            if (mDefaultExceptionHandler != null)
+                mDefaultExceptionHandler!!.uncaughtException(t, e)
+        })
+    }
 }
