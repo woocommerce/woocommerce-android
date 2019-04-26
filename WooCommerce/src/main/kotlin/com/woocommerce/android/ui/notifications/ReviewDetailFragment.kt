@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.notifications
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -164,11 +165,13 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
             review_rating_bar.rating = rating
             review_rating_bar.visibility = View.VISIBLE
 
-            val stars = review_rating_bar.progressDrawable as? LayerDrawable
-            stars?.getDrawable(2)?.setColorFilter(
-                    ContextCompat.getColor(requireContext(), R.color.alert_yellow),
-                    PorterDuff.Mode.SRC_ATOP
-            )
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                val stars = review_rating_bar.progressDrawable as? LayerDrawable
+                stars?.getDrawable(2)?.setColorFilter(
+                        ContextCompat.getColor(requireContext(), R.color.alert_yellow),
+                        PorterDuff.Mode.SRC_ATOP
+                )
+            }
         }
 
         // Set the review text
