@@ -51,7 +51,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     var tabStateStats: Serializable? = null // Save the current position of stats tab view
 
-    var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
+    val activeGranularity: StatsGranularity
         get() {
             return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
                 it.tag as StatsGranularity
