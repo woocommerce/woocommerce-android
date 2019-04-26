@@ -1,3 +1,4 @@
 * Tap on a product to reveal a read-only detail view.
 * Shipment Tracking date formatting is now localized.
+* Fixed a bug that displayed the rating star colors as purple on Lollipop devices.
 * In the help section, the FAQ button is now "Help Center" and routes to WooCommerce mobile documentation.
