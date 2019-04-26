@@ -244,7 +244,7 @@ class NotifsListFragment : TopLevelFragment(),
 
     override fun showNotifications(notifsList: List<NotificationModel>, isFreshData: Boolean) {
         if (!notifsAdapter.isSameList(notifsList)) {
-            notifsAdapter.setNotifications(notifsList)
+            notifsAdapter.setNotifications(context, notifsList)
         }
         if (isFreshData) {
             isRefreshPending = false
@@ -410,7 +410,7 @@ class NotifsListFragment : TopLevelFragment(),
         // Remove all active notifications from the system bar
         context?.let { NotificationHandler.removeAllNotificationsFromSystemBar(it) }
 
-        notifsAdapter.markAllNotifsAsRead()
+        notifsAdapter.markAllNotifsAsRead(context)
     }
 
     override fun showMarkAllNotificationsReadSuccess() {

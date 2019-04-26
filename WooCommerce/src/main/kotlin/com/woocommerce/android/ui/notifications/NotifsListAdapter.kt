@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.notifications
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.PorterDuff
 import android.graphics.Rect
+import android.graphics.drawable.LayerDrawable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.RecyclerView
@@ -67,7 +69,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         listListener = listener
     }
 
-    fun setNotifications(notifs: List<NotificationModel>) {
+    fun setNotifications(context: Context?, notifs: List<NotificationModel>) {
         // make sure to exclude any notifs that we know have been removed
         val newList = notifs.filter { !removedRemoteIds.contains(it.remoteNoteId) }
 
@@ -95,23 +97,23 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         if (listToday.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_TODAY.name, listToday))
+            addSection(NotifsListSection(context, TimeGroup.GROUP_TODAY.name, listToday))
         }
 
         if (listYesterday.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_YESTERDAY.name, listYesterday))
+            addSection(NotifsListSection(context, TimeGroup.GROUP_YESTERDAY.name, listYesterday))
         }
 
         if (listTwoDays.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays))
+            addSection(NotifsListSection(context, TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays))
         }
 
         if (listWeek.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_WEEK.name, listWeek))
+            addSection(NotifsListSection(context, TimeGroup.GROUP_OLDER_WEEK.name, listWeek))
         }
 
         if (listMonth.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
+            addSection(NotifsListSection(context, TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
 
         notifyDataSetChanged()
@@ -270,11 +272,11 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      * copy of the existing list, then setting the [NotificationModel#read] property to true and
      * feeding the updated list back into the adapter.
      */
-    fun markAllNotifsAsRead() {
+    fun markAllNotifsAsRead(context: Context?) {
         val newList = mutableListOf<NotificationModel>()
                 .apply { addAll(notifsList) }.applyTransform { it.apply { read = true } }
 
-        setNotifications(newList)
+        setNotifications(context, newList)
     }
 
     fun isEmpty() = notifsList.isEmpty()
@@ -334,6 +336,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     // endregion
 
     private inner class NotifsListSection(
+        val context: Context?,
         val title: String,
         val list: MutableList<NotificationModel>
     ) : StatelessSection(
@@ -360,6 +363,12 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
                     notif.getRating()?.let {
                         itemHolder.rating.rating = it
                         itemHolder.rating.visibility = View.VISIBLE
+                        context?.let {
+                            val stars = itemHolder.rating.progressDrawable as? LayerDrawable
+                            stars?.getDrawable(2)?.setColorFilter(
+                                    ContextCompat.getColor(it, R.color.grey_darken_30),
+                                    PorterDuff.Mode.SRC_ATOP)
+                        }
                     }
                 }
                 UNKNOWN -> WooLog.e(
