@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.RecyclerView
@@ -40,7 +41,12 @@ import java.util.Date
 import java.util.HashSet
 import javax.inject.Inject
 
-class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
+class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecyclerViewAdapter() {
+    private var starTintColor: Int = 0
+    init {
+        starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
+    }
+
     enum class ItemType {
         HEADER,
         UNREAD_NOTIF,
@@ -69,7 +75,7 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         listListener = listener
     }
 
-    fun setNotifications(context: Context?, notifs: List<NotificationModel>) {
+    fun setNotifications(notifs: List<NotificationModel>) {
         // make sure to exclude any notifs that we know have been removed
         val newList = notifs.filter { !removedRemoteIds.contains(it.remoteNoteId) }
 
@@ -97,23 +103,23 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
         }
 
         if (listToday.size > 0) {
-            addSection(NotifsListSection(context, TimeGroup.GROUP_TODAY.name, listToday))
+            addSection(NotifsListSection(TimeGroup.GROUP_TODAY.name, listToday))
         }
 
         if (listYesterday.size > 0) {
-            addSection(NotifsListSection(context, TimeGroup.GROUP_YESTERDAY.name, listYesterday))
+            addSection(NotifsListSection(TimeGroup.GROUP_YESTERDAY.name, listYesterday))
         }
 
         if (listTwoDays.size > 0) {
-            addSection(NotifsListSection(context, TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays))
+            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays))
         }
 
         if (listWeek.size > 0) {
-            addSection(NotifsListSection(context, TimeGroup.GROUP_OLDER_WEEK.name, listWeek))
+            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_WEEK.name, listWeek))
         }
 
         if (listMonth.size > 0) {
-            addSection(NotifsListSection(context, TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
+            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
 
         notifyDataSetChanged()
@@ -272,11 +278,11 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
      * copy of the existing list, then setting the [NotificationModel#read] property to true and
      * feeding the updated list back into the adapter.
      */
-    fun markAllNotifsAsRead(context: Context?) {
+    fun markAllNotifsAsRead() {
         val newList = mutableListOf<NotificationModel>()
                 .apply { addAll(notifsList) }.applyTransform { it.apply { read = true } }
 
-        setNotifications(context, newList)
+        setNotifications(newList)
     }
 
     fun isEmpty() = notifsList.isEmpty()
@@ -336,7 +342,6 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
     // endregion
 
     private inner class NotifsListSection(
-        val context: Context?,
         val title: String,
         val list: MutableList<NotificationModel>
     ) : StatelessSection(
@@ -363,11 +368,9 @@ class NotifsListAdapter @Inject constructor() : SectionedRecyclerViewAdapter() {
                     notif.getRating()?.let {
                         itemHolder.rating.rating = it
                         itemHolder.rating.visibility = View.VISIBLE
-                        context?.let {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                             val stars = itemHolder.rating.progressDrawable as? LayerDrawable
-                            stars?.getDrawable(2)?.setColorFilter(
-                                    ContextCompat.getColor(it, R.color.grey_darken_30),
-                                    PorterDuff.Mode.SRC_ATOP)
+                            stars?.getDrawable(2)?.setColorFilter(starTintColor, PorterDuff.Mode.SRC_ATOP)
                         }
                     }
                 }
