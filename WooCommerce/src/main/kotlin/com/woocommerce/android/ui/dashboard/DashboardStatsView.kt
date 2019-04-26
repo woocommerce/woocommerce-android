@@ -35,6 +35,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
+import java.io.Serializable
 import java.util.ArrayList
 import java.util.Date
 
@@ -48,11 +49,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
 
-    var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
+    var tabStateStats: Serializable? = null // Save the current position of stats tab view
+
+    val activeGranularity: StatsGranularity
         get() {
             return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
                 it.tag as StatsGranularity
-            } ?: DEFAULT_STATS_GRANULARITY
+            } ?: tabStateStats?.let { it as StatsGranularity } ?: DEFAULT_STATS_GRANULARITY
         }
 
     private lateinit var selectedSite: SelectedSite

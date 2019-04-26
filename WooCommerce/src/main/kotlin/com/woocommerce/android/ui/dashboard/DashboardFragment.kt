@@ -31,6 +31,9 @@ import javax.inject.Inject
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
+        const val STATE_KEY_TAB_STATS = "tab-stats-state"
+        const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
+        const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         fun newInstance() = DashboardFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
@@ -80,15 +83,23 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        savedInstanceState?.let { bundle ->
+            isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
+            dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
+            dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
+        }
+
         presenter.takeView(this)
 
         empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         dashboard_stats.initView(
+                dashboard_stats.activeGranularity,
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
         dashboard_top_earners.initView(
+                dashboard_top_earners.activeGranularity,
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
@@ -135,6 +146,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onDestroyView() {
         presenter.dropView()
         super.onDestroyView()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
+        outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
+        outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
     }
 
     override fun showStats(
