@@ -10,6 +10,19 @@ import android.widget.TextView
 import com.woocommerce.android.widgets.FlowLayout
 import org.hamcrest.Description
 import org.hamcrest.Matcher
+import android.support.test.espresso.action.ScrollToAction
+import android.support.test.espresso.UiController
+import android.support.v4.widget.NestedScrollView
+import android.widget.HorizontalScrollView
+import android.widget.ScrollView
+import android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA
+import android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
+import android.support.test.espresso.ViewAction
+import android.support.test.espresso.matcher.ViewMatchers
+import android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import android.widget.ListView
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.core.AnyOf.anyOf
 
 object WCMatchers {
     /**
@@ -70,6 +83,42 @@ object WCMatchers {
 
             override fun describeTo(description: Description) {
                 description.appendText("with child text: ")
+            }
+        }
+    }
+
+    fun scrollTo(): ViewAction {
+        return object : ViewAction {
+            override fun getConstraints(): Matcher<View> {
+                return allOf(
+                        withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE), isDescendantOfA(
+                        anyOf(
+                                isAssignableFrom(ScrollView::class.java),
+                                isAssignableFrom(HorizontalScrollView::class.java),
+                                isAssignableFrom(NestedScrollView::class.java)
+                        )
+                ))
+            }
+
+            override fun getDescription(): String? {
+                return null
+            }
+
+            override fun perform(uiController: UiController, view: View) {
+                ScrollToAction().perform(uiController, view)
+            }
+        }
+    }
+
+    fun correctNumberOfItems(itemsCount: Int): Matcher<View> {
+        return object : BoundedMatcher<View, ListView>(ListView::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("with number of items: $itemsCount")
+            }
+
+            override fun matchesSafely(listView: ListView): Boolean {
+                val adapter = listView.getAdapter()
+                return adapter.count == itemsCount
             }
         }
     }
