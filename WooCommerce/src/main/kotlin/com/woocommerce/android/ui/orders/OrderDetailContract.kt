@@ -16,6 +16,7 @@ interface OrderDetailContract {
         var isUsingCachedNotes: Boolean
         var isUsingCachedShipmentTrackings: Boolean
         fun fetchOrder(remoteOrderId: Long)
+        fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
         fun loadOrderShipmentTrackings()
