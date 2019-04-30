@@ -137,13 +137,14 @@ class MainNavigationTest : TestBase() {
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.settings)))))
         onView(withContentDescription(R.string.abc_action_bar_up_description)).check(matches(isDisplayed()))
 
-
         // click back button and verify that the toolbar title is changed
         // up button is no longer visible
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
         onView(withId(R.id.toolbar)).check(matches(
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.my_store)))))
-        onView(withContentDescription(appContext.getString(R.string.abc_action_bar_up_description))).check(doesNotExist())
+        onView(withContentDescription(
+                appContext.getString(R.string.abc_action_bar_up_description))
+        ).check(doesNotExist())
     }
 
     @Test
@@ -167,13 +168,14 @@ class MainNavigationTest : TestBase() {
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.support_help)))))
         onView(withContentDescription(R.string.abc_action_bar_up_description)).check(matches(isDisplayed()))
 
-
         // click back button and verify that the toolbar title is changed
         // up button is no longer visible
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
         onView(withId(R.id.toolbar)).check(matches(
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.my_store)))))
-        onView(withContentDescription(appContext.getString(R.string.abc_action_bar_up_description))).check(doesNotExist())
+        onView(withContentDescription(
+                appContext.getString(R.string.abc_action_bar_up_description))
+        ).check(doesNotExist())
     }
 
     private fun assertPressingBackExitsApp() {
