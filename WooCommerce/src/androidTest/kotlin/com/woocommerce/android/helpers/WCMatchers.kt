@@ -25,7 +25,11 @@ object WCMatchers {
         }
     }
 
-    fun correctNumberOfItems(itemsCount: Int): Matcher<View> {
+    /**
+     * Matcher to check if the listView count matches
+     * the incoming count value
+     */
+    fun withItemCount(itemsCount: Int): Matcher<View> {
         return object : BoundedMatcher<View, ListView>(ListView::class.java) {
             override fun describeTo(description: Description) {
                 description.appendText("with number of items: $itemsCount")
