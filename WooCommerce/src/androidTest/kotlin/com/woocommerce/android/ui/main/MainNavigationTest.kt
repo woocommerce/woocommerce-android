@@ -124,7 +124,7 @@ class MainNavigationTest : TestBase() {
 
         // verify that there are 2 items in the menu list
         onView(isAssignableFrom(ListView::class.java))
-                .check(matches(WCMatchers.correctNumberOfItems(2)))
+                .check(matches(WCMatchers.withItemCount(2)))
 
         // verify that the menu is displayed & the first item in the list is Settings
         onView(withText(appContext.getString(R.string.settings))).check(matches(isDisplayed()))
@@ -155,7 +155,7 @@ class MainNavigationTest : TestBase() {
 
         // verify that there are 2 items in the menu list
         onView(isAssignableFrom(ListView::class.java))
-                .check(matches(WCMatchers.correctNumberOfItems(2)))
+                .check(matches(WCMatchers.withItemCount(2)))
 
         // verify that the menu is displayed & the second item in the list is Help
         onView(withText(appContext.getString(R.string.support_help))).check(matches(isDisplayed()))
