@@ -106,13 +106,18 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             VolleyLog.DEBUG = false
         }
 
+        // We init Crashlytics further down using the selected site and account, but we also want to init it here
+        // to catch crashes that may occur before we can access the site and account (most notably crashes with
+        // initializing WellSql). In order to do this, we must first init AppPrefs since Crashlytics uses it.
+        AppPrefs.init(this)
+        CrashlyticsUtils.initCrashlytics(this, null, null)
+
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
 
         component.inject(this)
         dispatcher.register(this)
 
-        AppPrefs.init(this)
         AppRatingDialog.init(this)
 
         initAnalytics()
