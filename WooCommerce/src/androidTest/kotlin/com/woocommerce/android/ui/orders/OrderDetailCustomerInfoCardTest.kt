@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.app.Activity
-import android.app.Instrumentation
 import android.content.Intent
 import android.net.Uri
 import android.support.test.espresso.Espresso.onView
@@ -10,10 +8,8 @@ import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.contrib.RecyclerViewActions
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intended
-import android.support.test.espresso.intent.Intents.intending
 import android.support.test.espresso.intent.matcher.IntentMatchers.hasAction
 import android.support.test.espresso.intent.matcher.IntentMatchers.hasData
-import android.support.test.espresso.intent.matcher.IntentMatchers.isInternal
 import android.support.test.espresso.matcher.RootMatchers.isPlatformPopup
 import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.espresso.matcher.ViewMatchers.Visibility.GONE
@@ -36,7 +32,6 @@ import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.PhoneUtils
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -310,8 +305,20 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         ))
     }
 
+    /**
+     * For the next 3 tests written below, we need to open a popup and click on one
+     * or two of the options in the popup. (Either simulate a dial or sms intent)
+     * PopupMenu doesn't have an API to check whether it is showing.
+     * So we use a custom matcher to check the visibility of the drop down list view instead.
+     * But when running the entire test suite, these test cases were failing because when moving from
+     * [DashboardFragment] -> [OrderListFragment] -> [OrderDetailFragment], a snackbar is displayed
+     * (Error fetching data - because the Dashboard stats are not mocked). This Snackbar removes
+     * the focus from the Popup menu and Espresso was unable to find the Popup menu and open it
+     * and remained in a waiting state. To solve this, created a [MockedDashboardModule]
+     * which mocks the [DashboardPresenter] and prevent the snackbar from being displayed
+     */
     @Test
-    fun testDisplayPopupForCorrectPhoneNumber() {
+    fun verifyDisplayPopupForCorrectPhoneNumber() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
                 billingPhone = "9962789422"
@@ -325,25 +332,24 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // click on Show Billing button
         onView(withId(R.id.customerInfo_viewMore)).perform(click())
 
-        // since the customer info phone is NOT empty, the view should be displayed & clickable
+        // click on the call or message button
         onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(WCMatchers.scrollTo(), click())
 
-        // The Android System Popups and Alerts are displayed in a different window.
-        // So, you have to try to find the view in that particular window rather than the main activity window
-        // by checking if the menu text with "Call" menu item is displayed
+        // verify that the popup menu is displayed & the first item in the list is call
         onView(withText(appContext.getString(R.string.orderdetail_call_customer)))
                 .inRoot(isPlatformPopup()).check(matches(isDisplayed()))
 
-        // by checking if the menu text with "Message" menu item is displayed
+        // verify that the popup menu is displayed & the second item in the list is message
         onView(withText(appContext.getString(R.string.orderdetail_message_customer)))
                 .inRoot(isPlatformPopup()).check(matches(isDisplayed()))
 
+        // verify that there are only 2 items in the popup list
         onView(isAssignableFrom(ListView::class.java))
                 .check(matches(WCMatchers.correctNumberOfItems(2)))
     }
 
     @Test
-    fun testDisplayPopupAndCallForCorrectPhoneNumber() {
+    fun verifyDisplayPopupAndCallForCorrectPhoneNumber() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
                 billingPhone = "9962789422"
@@ -357,10 +363,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // click on Show Billing button
         onView(withId(R.id.customerInfo_viewMore)).perform(click())
 
-        // since the customer info phone is NOT empty, the view should be displayed & clickable
-//        onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(WCMatchers.scrollTo(), click())
-        onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(click())
+        // click on the call or message button
+        onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(WCMatchers.scrollTo(), click())
 
+        // click on the item in the popup menu with text "Call"
         onView(withText(appContext.getString(R.string.orderdetail_call_customer)))
                 .inRoot(isPlatformPopup()).perform(click())
 
@@ -371,7 +377,36 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     }
 
     @Test
-    fun testEmailCustomerWithCorrectEmail() {
+    fun verifyDisplayPopupAndMessageForCorrectPhoneNumber() {
+        // add mock data to order detail screen
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingPhone = "9962789422"
+        )
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Show Billing button
+        onView(withId(R.id.customerInfo_viewMore)).perform(click())
+
+        // click on the call or message button. Since the view might not be visible, scrollTo()
+        // is used to this ensures that the view is displayed before proceeding to the click() action
+        onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(WCMatchers.scrollTo(), click())
+
+        // click on the item in the popup menu with text "Message"
+        onView(withText(appContext.getString(R.string.orderdetail_message_customer)))
+                .inRoot(isPlatformPopup()).perform(click())
+
+        // check if sms intent is opened for the given phone number
+        intended(allOf(hasAction(Intent.ACTION_SENDTO), hasData(
+                Uri.parse("smsto:${mockWCOrderModel.billingPhone}")
+        )))
+    }
+
+    @Test
+    fun verifyEmailCustomerWithCorrectEmail() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
@@ -383,9 +418,7 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // click on Show Billing button
         onView(withId(R.id.customerInfo_viewMore)).perform(click())
 
-        intending(not(isInternal())).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
-
-        // since the customer info phone is NOT empty, the view should be displayed
+        // click on the Email icon
         onView(withId(R.id.customerInfo_emailBtn)).perform(click())
 
         // check if email intent is opened for the given email address
