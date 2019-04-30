@@ -129,8 +129,9 @@ class MainNavigationView @JvmOverloads constructor(
         // fragment and show the incoming one
         val tag = navPos.getTag()
         if (fragmentManager.findFragmentByTag(tag) == null) {
-            fragmentManager
-                    .beginTransaction()
+            val fragmentTransaction = fragmentManager.beginTransaction()
+            previousNavPos?.let { fragmentTransaction.hide(navAdapter.getFragment(it)) }
+            fragmentTransaction
                     .add(R.id.container, fragment, tag)
                     .commitAllowingStateLoss()
         } else {
