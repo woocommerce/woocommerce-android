@@ -125,33 +125,19 @@ class MainNavigationView @JvmOverloads constructor(
         // Close any child fragments if open
         clearFragmentBackStack(fragment)
 
-        // add the fragment if it hasn't been added yet, otherwise hide the previously active
-        // fragment and show the incoming one
+        // hide previous fragment if it exists
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        previousNavPos?.let { fragmentTransaction.hide(navAdapter.getFragment(it)) }
+
+        // add the fragment if it hasn't been added yet, otherwise show the new fragment
         val tag = navPos.getTag()
         if (fragmentManager.findFragmentByTag(tag) == null) {
-            val fragmentTransaction = fragmentManager.beginTransaction()
-            previousNavPos?.let { fragmentTransaction.hide(navAdapter.getFragment(it)) }
-            fragmentTransaction
-                    .add(R.id.container, fragment, tag)
-                    .commitAllowingStateLoss()
+            fragmentTransaction.add(R.id.container, fragment, tag)
         } else {
-            val shouldHidePrev = previousNavPos?.let {
-                it.position != navPos.position
-            } ?: false
-            if (shouldHidePrev) {
-                val prevFragment = navAdapter.getFragment(previousNavPos!!)
-                fragmentManager
-                        .beginTransaction()
-                        .hide(prevFragment)
-                        .show(fragment)
-                        .commitAllowingStateLoss()
-            } else {
-                fragmentManager
-                        .beginTransaction()
-                        .show(fragment)
-                        .commitAllowingStateLoss()
-            }
+            fragmentTransaction.show(fragment)
         }
+
+        fragmentTransaction.commitAllowingStateLoss()
 
         previousNavPos = navPos
     }
