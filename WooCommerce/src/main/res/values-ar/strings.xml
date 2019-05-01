@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-25 16:54:02+0000
+Translation-Revision-Date: 2019-04-16 13:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="error_loading_image">Unable to load image</string>
+    <string name="product_status_draft">مسودة</string>
+    <string name="product_status_pending">معلّق</string>
+    <string name="product_status_private">خاص</string>
+    <string name="product_status_published">منشور</string>
+    <string name="product_view_affiliate">View affiliate product</string>
+    <string name="product_view_in_store">View product on store</string>
+    <string name="product_share_dialog_title">Share your product</string>
+    <string name="product_purchase_details">Purchase details</string>
+    <string name="product_download_expiry_days">%d أيام</string>
+    <string name="product_download_expiry">Expiry</string>
+    <string name="product_download_limit_count">%d downloads</string>
+    <string name="product_download_limit">Limit</string>
+    <string name="product_downloadable_files">Downloadable files</string>
+    <string name="product_downloads">عمليات التنزيل</string>
+    <string name="product_reviews">مراجعات</string>
+    <string name="product_total_orders">Total orders</string>
+    <string name="product_shipping_class">Shipping class</string>
+    <string name="product_size">الحجم</string>
+    <string name="product_weight">الوزن</string>
+    <string name="product_shipping">الشحن</string>
+    <string name="product_backorders">Backorders</string>
+    <string name="product_stock_quantity">Stock quantity</string>
+    <string name="product_stock_status">Stock status</string>
+    <string name="product_sku">SKU</string>
+    <string name="product_sale_price">Sale price</string>
+    <string name="product_regular_price">Regular price</string>
+    <string name="product_price">Price</string>
+    <string name="product_inventory">Inventory</string>
+    <string name="product_pricing_and_inventory">Pricing and inventory</string>
+    <string name="product_purchase_note">Purchase note</string>
+    <string name="product_name">العنوان</string>
+    <string name="product_detail_fetch_product_error">Error fetching product</string>
+    <string name="add_order_note_invalid_order">طب غير صالح</string>
+    <string name="order_shipment_tracking_shipped_date">Shipped %s</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">Copy tracking number to clipboard</string>
+    <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
+    <string name="order_shipment_tracking_button">تعقب الحزمة</string>
+    <string name="order_shipment_tracking_number_clipboard">Tracking number copied to the clipboard</string>
+    <string name="order_shipment_tracking_number">Tracking Number</string>
+    <string name="order_shipment_tracking">التعقب</string>
+    <string name="error_copy_to_clipboard">حدث خطأ أثناء النسخ إلى الحافظة</string>
     <string name="settings_switch_site_notifs_msg">تم التبديل إلى %s. لن تتلقى إلا تنبيهات لهذا المتجر</string>
     <string name="login_update_required_desc">يستخدم هذا المتجر إصدارًا أقدم من WooCommerce. يرجى ترقية متجرك إلى WooCommerce 3.5 أو الإصدار الأعلى لاستخدامه مع هذا التطبيق.</string>
     <string name="promo_message_site_picker">يمكنك التبديل بين المتاجر بالنقر على المتجر المحدد في \"الإعدادات\"</string>

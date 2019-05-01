@@ -1,1 +1,4 @@
-We now support the Shipment Tracking plugin! See read-only Shipment tracking information on completed orders, and track packages right from the order detail screen. This release also takes care of some visual and functional hiccups.
+* Tap on a product to reveal a read-only detail view.
+* Shipment Tracking date formatting is now localized.
+* Fixed a bug that displayed the rating star colors as purple on Lollipop devices.
+* In the help section, the FAQ button is now "Help Center" and routes to WooCommerce mobile documentation.
