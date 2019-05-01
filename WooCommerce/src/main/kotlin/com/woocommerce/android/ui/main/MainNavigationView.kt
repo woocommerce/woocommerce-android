@@ -129,14 +129,14 @@ class MainNavigationView @JvmOverloads constructor(
         val fragmentTransaction = fragmentManager.beginTransaction()
         previousNavPos?.let { fragmentTransaction.hide(navAdapter.getFragment(it)) }
 
-        // add the fragment if it hasn't been added yet, otherwise show the new fragment
+        // add the fragment if it hasn't been added yet
         val tag = navPos.getTag()
         if (fragmentManager.findFragmentByTag(tag) == null) {
             fragmentTransaction.add(R.id.container, fragment, tag)
-        } else {
-            fragmentTransaction.show(fragment)
         }
 
+        // show the new fragment
+        fragmentTransaction.show(fragment)
         fragmentTransaction.commitAllowingStateLoss()
 
         previousNavPos = navPos
