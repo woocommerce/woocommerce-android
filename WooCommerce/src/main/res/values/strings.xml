@@ -463,8 +463,7 @@
     <string name="email_invalid">Enter a valid email address</string>
     <string name="forgot_password">Lost your password?</string>
     <string name="error_generic">An error occurred</string>
-    <string name="no_site_error">Couldn\'t connect to the WordPress site. There is no valid WordPress site at this
-        address. Check the site address (URL) you entered.</string>
+    <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="invalid_site_url_message">Check that the site URL entered is valid</string>
     <string name="xmlrpc_missing_method_error">Couldn\'t connect. Required XML-RPC methods are missing on the server.</string>
     <string name="xmlrpc_post_blocked_error">Couldn\'t connect. Your host is blocking POST requests, and the app needs
@@ -529,4 +528,7 @@
     <!-- Other -->
     <string name="shared_element_transition" translatable="false">shared_element</string>
     <string name="error_loading_image">Unable to load image</string>
+    <string name="login_invalid_site_url">The site address you entered is invalid. Please re-enter it.</string>
+    <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
+    <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 </resources>

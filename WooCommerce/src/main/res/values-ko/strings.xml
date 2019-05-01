@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-26 06:54:02+0000
+Translation-Revision-Date: 2019-04-16 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="error_loading_image">이미지를 로드할 수 없음</string>
+    <string name="product_status_draft">임시글</string>
+    <string name="product_status_pending">대기 중</string>
+    <string name="product_status_private">비공개</string>
+    <string name="product_status_published">게시됨</string>
+    <string name="product_view_affiliate">제휴사 제품 보기</string>
+    <string name="product_view_in_store">스토어에서 제품 보기</string>
+    <string name="product_share_dialog_title">제품 공유</string>
+    <string name="product_purchase_details">구매 세부 정보</string>
+    <string name="product_download_expiry_days">%d일</string>
+    <string name="product_download_expiry">만료</string>
+    <string name="product_download_limit_count">%d 다운로드</string>
+    <string name="product_download_limit">제한</string>
+    <string name="product_downloadable_files">다운로드 가능 파일</string>
+    <string name="product_downloads">다운로드</string>
+    <string name="product_reviews">검토</string>
+    <string name="product_total_orders">총 주문 수</string>
+    <string name="product_shipping_class">배송 클래스</string>
+    <string name="product_size">크기</string>
+    <string name="product_weight">가중치</string>
+    <string name="product_shipping">배송</string>
+    <string name="product_backorders">이월 주문</string>
+    <string name="product_stock_quantity">재고 수량</string>
+    <string name="product_stock_status">재고 상태</string>
+    <string name="product_sku">SKU</string>
+    <string name="product_sale_price">할인 가격</string>
+    <string name="product_regular_price">정상 가격</string>
+    <string name="product_price">가격</string>
+    <string name="product_inventory">재고</string>
+    <string name="product_pricing_and_inventory">가격 및 재고</string>
+    <string name="product_purchase_note">구매 메모</string>
+    <string name="product_name">제목</string>
+    <string name="product_detail_fetch_product_error">제품을 가져오는 중 오류 발생</string>
+    <string name="add_order_note_invalid_order">잘못된 주문</string>
+    <string name="order_shipment_tracking_shipped_date">%s에 배송됨</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">추적 번호를 클립보드로 복사</string>
+    <string name="order_shipment_tracking_section_cd">배송 추적</string>
+    <string name="order_shipment_tracking_button">패키지 추적</string>
+    <string name="order_shipment_tracking_number_clipboard">추적 번호가 클립보드에 복사됨</string>
+    <string name="order_shipment_tracking_number">추적 번호</string>
+    <string name="order_shipment_tracking">추적</string>
+    <string name="error_copy_to_clipboard">클립보드에 복사하는 중 오류 발생</string>
     <string name="settings_switch_site_notifs_msg">%s(으)로 전환되었습니다. 이 저장소에 해당하는 알림만 받게 됩니다.</string>
     <string name="login_update_required_desc">이 저장소는 이전 버전의 WooCommerce를 사용합니다. 이 앱과 함께 사용하려면 저장소를 WooCommerce 3.5 이상으로 업그레이드하세요.</string>
     <string name="promo_message_site_picker">이제 설정에서 선택한 스토어를 탭하여 스토어 간에 전환할 수도 있습니다.</string>

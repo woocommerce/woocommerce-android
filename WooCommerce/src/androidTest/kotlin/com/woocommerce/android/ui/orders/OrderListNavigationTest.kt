@@ -43,7 +43,7 @@ class OrderListNavigationTest : TestBase() {
         activityTestRule.activity.showBottomNav()
 
         // Click on Orders tab in the bottom bar
-        Espresso.onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())
     }
 
     @Test
@@ -78,10 +78,6 @@ class OrderListNavigationTest : TestBase() {
 
     @Test
     fun switchBackToDashboardViewFromOrderDetailView() {
-        // ensure that the recyclerView order list count > 0
-        val recyclerView = activityTestRule.activity.findViewById(R.id.ordersList) as RecyclerView
-        assertNotSame(0, recyclerView.adapter?.itemCount)
-
         // click on the first order in the list and check if redirected to order detail
         Espresso.onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, ViewActions.click()))
@@ -96,10 +92,6 @@ class OrderListNavigationTest : TestBase() {
 
     @Test
     fun switchBackToOrderListViewFromOrderDetailView() {
-        // ensure that the recyclerView order list count > 0
-        val recyclerView = activityTestRule.activity.findViewById(R.id.ordersList) as RecyclerView
-        assertNotSame(0, recyclerView.adapter?.itemCount)
-
         // click on the first order in the list and check if redirected to order detail
         Espresso.onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, ViewActions.click()))

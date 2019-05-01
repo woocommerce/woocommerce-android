@@ -24,13 +24,13 @@ import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.PackageUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
+import zendesk.commonui.UiConfig
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
 import zendesk.core.PushRegistrationProvider
 import zendesk.core.Zendesk
 import zendesk.support.CustomField
 import zendesk.support.Support
-import zendesk.support.UiConfig
 import zendesk.support.guide.HelpCenterActivity
 import zendesk.support.request.RequestActivity
 import zendesk.support.requestlist.RequestListActivity

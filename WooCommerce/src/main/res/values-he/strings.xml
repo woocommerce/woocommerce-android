@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-03-26 07:54:02+0000
+Translation-Revision-Date: 2019-04-16 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="error_loading_image">אין אפשרות לטעון את התמונה</string>
+    <string name="product_status_draft">טיוטה</string>
+    <string name="product_status_pending">ממתין לאישור</string>
+    <string name="product_status_private">פרטי</string>
+    <string name="product_status_published">פורסם</string>
+    <string name="product_view_affiliate">צפייה במוצר הממומן</string>
+    <string name="product_view_in_store">צפייה במוצר בחנות</string>
+    <string name="product_share_dialog_title">שיתוף המוצר שלך</string>
+    <string name="product_purchase_details">פרטי הרכישה</string>
+    <string name="product_download_expiry_days">%d ימים</string>
+    <string name="product_download_expiry">תאריך תפוגה</string>
+    <string name="product_download_limit_count">%d הורדות</string>
+    <string name="product_download_limit">מגבלה</string>
+    <string name="product_downloadable_files">קבצים שניתנים להורדה</string>
+    <string name="product_downloads">הורדות</string>
+    <string name="product_reviews">חוות דעת</string>
+    <string name="product_total_orders">סך כל ההזמנות</string>
+    <string name="product_shipping_class">סיווג משלוח</string>
+    <string name="product_size">גודל</string>
+    <string name="product_weight">משקל</string>
+    <string name="product_shipping">משלוח</string>
+    <string name="product_backorders">הזמנות שבוצעו</string>
+    <string name="product_stock_quantity">כמות במלאי</string>
+    <string name="product_stock_status">מצב המלאי</string>
+    <string name="product_sku">מק\"ט</string>
+    <string name="product_sale_price">מחיר המבצע</string>
+    <string name="product_regular_price">מחיר רגיל</string>
+    <string name="product_price">מחיר</string>
+    <string name="product_inventory">מלאי</string>
+    <string name="product_pricing_and_inventory">תמחור ומלאי</string>
+    <string name="product_purchase_note">הערת רכישה</string>
+    <string name="product_name">כותרת</string>
+    <string name="product_detail_fetch_product_error">שגיאה בהבאת המוצר</string>
+    <string name="add_order_note_invalid_order">הזמנה לא תקפה</string>
+    <string name="order_shipment_tracking_shipped_date">הפריט %s נשלח</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">להעתיק את מספר המעקב ללוח</string>
+    <string name="order_shipment_tracking_section_cd">מעקב משלוח</string>
+    <string name="order_shipment_tracking_button">לבצע מעקב אחר החבילה</string>
+    <string name="order_shipment_tracking_number_clipboard">מספר המעקב הועתק ללוח</string>
+    <string name="order_shipment_tracking_number">מספר מעקב</string>
+    <string name="order_shipment_tracking">מבצע מעקב</string>
+    <string name="error_copy_to_clipboard">שגיאה בעת העתקה ללוח</string>
     <string name="settings_switch_site_notifs_msg">הוחלף אל %s. ההודעות שיתקבלו יהיו עבור החנות הזו בלבד</string>
     <string name="login_update_required_desc">החנות הזאת משתמשת בגרסה ישנה של WooCommerce. עליך לעדכן את החנות שלך ל-WooCommerce 3.5 או לגרסה מאוחרת יותר כדי להשתמש באפליקציה זאת.</string>
     <string name="promo_message_site_picker">אפשר להחליף בין חנויות על ידי הקשה על החנות הנבחרת ב\'הגדרות\'</string>
