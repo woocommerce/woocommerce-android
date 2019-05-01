@@ -1,5 +1,7 @@
 package com.woocommerce.android.di
 
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
@@ -11,6 +13,10 @@ import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
+import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.prefs.AppSettingsModule
+import com.woocommerce.android.ui.prefs.MainSettingsModule
+import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
@@ -42,4 +48,16 @@ abstract class MockedActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector
     abstract fun provideMagicLinkInterceptActivityInjector(): MagicLinkInterceptActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = [
+        AppSettingsModule::class,
+        MainSettingsModule::class,
+        PrivacySettingsModule::class
+    ])
+    abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = [HelpModule::class])
+    abstract fun provideHelpActivity(): HelpActivity
 }
