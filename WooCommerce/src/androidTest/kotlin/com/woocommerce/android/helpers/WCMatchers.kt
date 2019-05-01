@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.widgets.FlowLayout
+import android.widget.ListView
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 
@@ -70,6 +71,23 @@ object WCMatchers {
 
             override fun describeTo(description: Description) {
                 description.appendText("with child text: ")
+            }
+        }
+    }
+
+    /**
+     * Matcher to check if the listView count matches
+     * the incoming count value
+     */
+    fun withItemCount(itemsCount: Int): Matcher<View> {
+        return object : BoundedMatcher<View, ListView>(ListView::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("with number of items: $itemsCount")
+            }
+
+            override fun matchesSafely(listView: ListView): Boolean {
+                val adapter = listView.adapter
+                return adapter.count == itemsCount
             }
         }
     }
