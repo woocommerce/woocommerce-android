@@ -9,9 +9,9 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
-import com.woocommerce.android.ui.orders.OrderDetailModule
+import com.woocommerce.android.ui.orders.MockedOrderDetailModule
+import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
-import com.woocommerce.android.ui.orders.OrderListModule
 import com.woocommerce.android.ui.orders.OrderProductListModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
@@ -26,24 +26,23 @@ import org.wordpress.android.login.di.LoginFragmentModule
 @Module
 abstract class MockedActivityBindingModule {
     @ActivityScope
-    @ContributesAndroidInjector(modules = [
-        MockedMainModule::class,
-        DashboardModule::class,
-        OrderListModule::class,
-        OrderDetailModule::class,
-        OrderProductListModule::class,
-        OrderFulfillmentModule::class,
-        NotifsListModule::class,
-        ReviewDetailModule::class
-    ])
+    @ContributesAndroidInjector(modules = arrayOf(
+            MockedMainModule::class,
+            DashboardModule::class,
+            MockedOrderListModule::class,
+            MockedOrderDetailModule::class,
+            OrderProductListModule::class,
+            OrderFulfillmentModule::class,
+            NotifsListModule::class,
+            ReviewDetailModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = [LoginFragmentModule::class])
+    @ContributesAndroidInjector(modules = arrayOf(LoginFragmentModule::class))
     abstract fun provideLoginActivityInjector(): LoginActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = [SitePickerModule::class])
+    @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
     abstract fun provideSitePickerActivityInjector(): SitePickerActivity
 
     @ActivityScope
