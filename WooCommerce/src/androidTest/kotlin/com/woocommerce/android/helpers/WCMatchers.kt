@@ -2,15 +2,27 @@ package com.woocommerce.android.helpers
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import android.support.test.espresso.UiController
+import android.support.test.espresso.ViewAction
+import android.support.test.espresso.action.ScrollToAction
 import android.support.test.espresso.matcher.BoundedMatcher
+import android.support.test.espresso.matcher.ViewMatchers
+import android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA
+import android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.Toolbar
 import android.view.View
+import android.widget.HorizontalScrollView
+import android.widget.ListView
+import android.widget.ScrollView
 import android.widget.TextView
 import com.woocommerce.android.widgets.FlowLayout
-import android.widget.ListView
+import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
 import org.hamcrest.Matcher
+import org.hamcrest.core.AnyOf.anyOf
 
 object WCMatchers {
     /**
@@ -75,6 +87,29 @@ object WCMatchers {
         }
     }
 
+    fun scrollTo(): ViewAction {
+        return object : ViewAction {
+            override fun getConstraints(): Matcher<View> {
+                return allOf(
+                        withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE), isDescendantOfA(
+                        anyOf(
+                                isAssignableFrom(ScrollView::class.java),
+                                isAssignableFrom(HorizontalScrollView::class.java),
+                                isAssignableFrom(NestedScrollView::class.java)
+                        )
+                ))
+            }
+
+            override fun getDescription(): String? {
+                return null
+            }
+
+            override fun perform(uiController: UiController, view: View) {
+                ScrollToAction().perform(uiController, view)
+            }
+        }
+    }
+
     /**
      * Matcher to check if the listView count matches
      * the incoming count value
@@ -92,3 +127,4 @@ object WCMatchers {
         }
     }
 }
+

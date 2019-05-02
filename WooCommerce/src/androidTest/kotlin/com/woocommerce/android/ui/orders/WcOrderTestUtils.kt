@@ -88,13 +88,33 @@ object WcOrderTestUtils {
     /**
      * Generates a single [WCOrderModel] object for Order detail screen.
      */
-    fun generateOrderDetail(dateCreatedString: String = "", note: String = ""): WCOrderModel {
+    fun generateOrderDetail(
+        dateCreatedString: String = "",
+        note: String = "",
+        billingAddress1: String = "",
+        billingCountry: String = "",
+        billingPostalCode: String = "",
+        shippingFirstName: String = "",
+        shippingLastName: String = "",
+        shippingAddress1: String = "",
+        shippingCountry: String = "",
+        billingPhone: String = ""
+    ): WCOrderModel {
         return WCOrderModel(2).apply {
             billingFirstName = "Jane"
             billingLastName = "Masterson"
+            this.billingAddress1 = billingAddress1
+            this.billingCountry = billingCountry
             currency = "USD"
             dateCreated = dateCreatedString
             localSiteId = 1
+            this.shippingFirstName = shippingFirstName
+            this.shippingLastName = shippingLastName
+            this.shippingAddress1 = shippingAddress1
+            this.shippingCountry = shippingCountry
+            this.billingPostcode = billingPostalCode
+            billingEmail = "test@testing.com"
+            this.billingPhone = billingPhone
             number = "1"
             status = "pending"
             total = "106.00"
