@@ -123,6 +123,19 @@ object WcOrderTestUtils {
     }
 
     /**
+     * Generates a single [WCOrderModel] object with list of [WCOrderModel.LineItem]
+     */
+    fun generateOrderDetail(
+        products: String,
+        orderStatus: String = "completed"
+    ): WCOrderModel {
+        return generateOrderDetail().apply {
+            lineItems = products
+            status = orderStatus
+        }
+    }
+
+    /**
      * Generates a single [WCOrderModel] object for Order detail screen.
      */
     fun generateOrderStatusDetail(status: String = "Pending"): WCOrderStatusModel {

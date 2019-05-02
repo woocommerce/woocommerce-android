@@ -126,5 +126,9 @@ object WCMatchers {
             }
         }
     }
+
+    fun withRecyclerView(recyclerViewId: Int): RecyclerViewMatcher {
+        return RecyclerViewMatcher(recyclerViewId)
+    }
 }
 
