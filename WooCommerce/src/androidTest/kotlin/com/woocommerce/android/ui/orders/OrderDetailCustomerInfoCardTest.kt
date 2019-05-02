@@ -121,7 +121,7 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // click on Show Billing button
-        onView(withId(R.id.customerInfo_viewMore)).perform(click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
 
         // verify that the billing view is expanded and load more button is visible
         onView(withId(R.id.customerInfo_morePanel)).check(matches(withEffectiveVisibility(VISIBLE)))
@@ -134,8 +134,8 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(isDisplayed()))
 
         // verify that the customer email is displayed
-        onView(withId(R.id.customerInfo_emailAddr)).check(matches(isDisplayed()))
-        onView(withId(R.id.customerInfo_emailBtn)).check(matches(isDisplayed()))
+        onView(withId(R.id.customerInfo_emailAddr)).perform(WCMatchers.scrollTo()).check(matches(isDisplayed()))
+        onView(withId(R.id.customerInfo_emailBtn)).perform(WCMatchers.scrollTo()).check(matches(isDisplayed()))
 
         // since the customer info phone is empty, the view should not be displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
@@ -419,7 +419,7 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(withId(R.id.customerInfo_viewMore)).perform(click())
 
         // click on the Email icon
-        onView(withId(R.id.customerInfo_emailBtn)).perform(click())
+        onView(withId(R.id.customerInfo_emailBtn)).perform(WCMatchers.scrollTo(), click())
 
         // check if email intent is opened for the given email address
         intended(allOf(hasAction(Intent.ACTION_SENDTO), hasData(

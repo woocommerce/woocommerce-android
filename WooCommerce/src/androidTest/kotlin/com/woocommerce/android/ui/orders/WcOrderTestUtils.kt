@@ -1,9 +1,32 @@
 package com.woocommerce.android.ui.orders
 
+import com.google.gson.Gson
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 object WcOrderTestUtils {
+    /**
+     * [WCOrderModel.LineItem] values cannot be modified so adding as string here
+     */
+    private val MULTIPLE_PRODUCTS = Gson().toJson(
+            listOf(
+                    mapOf(
+                            "productId" to "290",
+                            "variationId" to "0",
+                            "name" to "Black T-shirt",
+                            "quantity" to 1,
+                            "subtotal" to 10
+                    ),
+                    mapOf(
+                            "productId" to "291",
+                            "variationId" to "2",
+                            "name" to "White Pants",
+                            "quantity" to 2,
+                            "subtotal" to 12
+                    )
+            )
+    )
+
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
      */
@@ -98,14 +121,24 @@ object WcOrderTestUtils {
         shippingLastName: String = "",
         shippingAddress1: String = "",
         shippingCountry: String = "",
-        billingPhone: String = ""
+        billingPhone: String = "",
+        products: String = MULTIPLE_PRODUCTS,
+        orderStatus: String = "completed",
+        shippingTotal: String = "12",
+        totalTax: String = "2",
+        total: String = "44",
+        discountTotal: String = "",
+        discountCodes: String = "",
+        paymentMethodTitle: String = "",
+        currency: String = "USD",
+        refundTotal: Double = 0.00
     ): WCOrderModel {
         return WCOrderModel(2).apply {
             billingFirstName = "Jane"
             billingLastName = "Masterson"
             this.billingAddress1 = billingAddress1
             this.billingCountry = billingCountry
-            currency = "USD"
+            this.currency = currency
             dateCreated = dateCreatedString
             localSiteId = 1
             this.shippingFirstName = shippingFirstName
@@ -117,21 +150,16 @@ object WcOrderTestUtils {
             this.billingPhone = billingPhone
             number = "1"
             status = "pending"
-            total = "106.00"
             customerNote = note
-        }
-    }
-
-    /**
-     * Generates a single [WCOrderModel] object with list of [WCOrderModel.LineItem]
-     */
-    fun generateOrderDetail(
-        products: String,
-        orderStatus: String = "completed"
-    ): WCOrderModel {
-        return generateOrderDetail().apply {
             lineItems = products
             status = orderStatus
+            this.shippingTotal = shippingTotal
+            this.totalTax = totalTax
+            this.total = total
+            this.discountCodes = discountCodes
+            this.discountTotal = discountTotal
+            this.paymentMethodTitle = paymentMethodTitle
+            this.refundTotal = refundTotal
         }
     }
 

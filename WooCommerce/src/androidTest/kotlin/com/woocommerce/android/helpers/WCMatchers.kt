@@ -42,6 +42,11 @@ object WCMatchers {
         }
     }
 
+    /**
+     * Custom matcher to check if the [FlowLayout] has a child view
+     * which is a [TextView] and matches the [TextView] text color
+     * with the incoming color value
+     */
     fun withTagTextColor(context: Context, color: Int): Matcher<View> {
         return object : BoundedMatcher<View, FlowLayout>(FlowLayout::class.java) {
             public override fun matchesSafely(view: FlowLayout): Boolean {
@@ -57,6 +62,11 @@ object WCMatchers {
         }
     }
 
+    /**
+     * Custom matcher to check if the [FlowLayout] has a child view
+     * which is a [TextView] and matches the [TextView] background color
+     * with the incoming color value
+     */
     fun withTagBackgroundColor(context: Context, color: Int): Matcher<View> {
         return object : BoundedMatcher<View, FlowLayout>(FlowLayout::class.java) {
             public override fun matchesSafely(view: FlowLayout): Boolean {
@@ -72,6 +82,11 @@ object WCMatchers {
         }
     }
 
+    /**
+     * Custom matcher to check if the [FlowLayout] has a child view
+     * which is a [TextView] and matches the [TextView] text
+     * with the incoming String value
+     */
     fun withTagText(string: String): Matcher<View> {
         return object : BoundedMatcher<View, FlowLayout>(FlowLayout::class.java) {
             public override fun matchesSafely(view: FlowLayout): Boolean {
@@ -87,6 +102,13 @@ object WCMatchers {
         }
     }
 
+    /**
+     * Custom matcher to scroll to the bottom of the
+     * view specified before performing an action on the view
+     * Since the view might not be visible, scrollTo()
+     * is used to this ensures that the view is displayed before
+     * proceeding to the click() action
+     */
     fun scrollTo(): ViewAction {
         return object : ViewAction {
             override fun getConstraints(): Matcher<View> {
@@ -127,8 +149,29 @@ object WCMatchers {
         }
     }
 
+    /**
+     * Returns a custom recyclerview matcher class for RecyclerView to
+     * perform actions and matches on list items by position.
+     */
     fun withRecyclerView(recyclerViewId: Int): RecyclerViewMatcher {
         return RecyclerViewMatcher(recyclerViewId)
     }
-}
 
+    /**
+     * Matcher to check if the textView text color matches
+     * the incoming color
+     */
+    fun withTextColor(expectedId: Int): Matcher<View> {
+        return object : BoundedMatcher<View, TextView>(TextView::class.java) {
+            override fun matchesSafely(textView: TextView): Boolean {
+                val colorId = ContextCompat.getColor(textView.context, expectedId)
+                return textView.currentTextColor == colorId
+            }
+
+            override fun describeTo(description: Description) {
+                description.appendText("with text color: ")
+                description.appendValue(expectedId)
+            }
+        }
+    }
+}

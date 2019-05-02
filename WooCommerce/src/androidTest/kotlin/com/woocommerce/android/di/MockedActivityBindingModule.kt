@@ -1,6 +1,5 @@
 package com.woocommerce.android.di
 
-
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.login.LoginActivity

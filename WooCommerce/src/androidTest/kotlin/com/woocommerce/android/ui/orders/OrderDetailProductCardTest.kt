@@ -12,6 +12,7 @@ import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.filters.LargeTest
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
+import com.google.gson.Gson
 import com.woocommerce.android.R
 import com.woocommerce.android.helpers.WCMatchers.withRecyclerView
 import com.woocommerce.android.ui.TestBase
@@ -22,26 +23,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class OrderDetailProductCardTest : TestBase() {
-    /**
-     * [WCOrderModel.LineItem] values cannot be modified so adding as string here
-     */
-    private val SINGLE_PRODUCT = "[{" +
-            "\"productId\": \"290\", " +
-            "\"variationId\": \"0\", " +
-            "\"name\": \"Black T-shirt (H&M)\", " +
-            "\"quantity\": 1, " +
-            "\"sku\": \"111-111-111\"" +
-            "}]"
-
-    private val MULTIPLE_PRODUCTS = "[" +
-            "{\"productId\": \"290\", \"variationId\": \"0\", \"name\": \"Black T-shirt\", \"quantity\": 1}," +
-            "{\"productId\": \"291\", \"variationId\": \"2\", \"name\": \"White Pants\", \"quantity\": 2}" + "]"
-
     @Rule
     @JvmField var activityTestRule = MainActivityTestRule()
 
@@ -60,8 +45,18 @@ class OrderDetailProductCardTest : TestBase() {
 
     @Test
     fun verifyProductCardViewPopulatedSuccessfullyForSingleProduct() {
-        val lineItems = SINGLE_PRODUCT
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(lineItems)
+        val lineItems = Gson().toJson(
+                listOf(
+                        mapOf(
+                                "productId" to "290",
+                                "variationId" to "0",
+                                "name" to "Black T-shirt",
+                                "quantity" to 1,
+                                "subtotal" to 10
+                        )
+                )
+        )
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(products = lineItems)
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
@@ -87,7 +82,7 @@ class OrderDetailProductCardTest : TestBase() {
 
     @Test
     fun verifyProductCardViewPopulatedSuccessfullyForMultipleProducts() {
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(MULTIPLE_PRODUCTS)
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
@@ -102,8 +97,7 @@ class OrderDetailProductCardTest : TestBase() {
     @Test
     fun verifyProductCardDetailsButtonVisibleForOrderStatusNotMarkedAsProcessing() {
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                SINGLE_PRODUCT,
-                "Completed"
+                orderStatus = "Completed"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -121,8 +115,7 @@ class OrderDetailProductCardTest : TestBase() {
     @Test
     fun verifyProductCardFulfillButtonVisibleForOrderStatusMarkedAsProcessing() {
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                MULTIPLE_PRODUCTS,
-                "Processing"
+                orderStatus = "Processing"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -139,7 +132,7 @@ class OrderDetailProductCardTest : TestBase() {
 
     @Test
     fun verifyProductCardViewDetailsPopulatedSuccessfully() {
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(MULTIPLE_PRODUCTS)
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail

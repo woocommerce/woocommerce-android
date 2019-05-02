@@ -9,7 +9,8 @@ import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 
 /**
- * Matcher class for RecyclerView
+ * Matcher class for RecyclerView to
+ * perform actions and matches on list items by position.
  */
 class RecyclerViewMatcher(private val recyclerViewId: Int) {
     fun atPosition(position: Int): Matcher<View> {
