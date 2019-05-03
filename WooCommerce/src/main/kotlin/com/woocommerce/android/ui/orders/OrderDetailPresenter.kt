@@ -113,14 +113,39 @@ class OrderDetailPresenter @Inject constructor(
         orderView?.showOrderNotesSkeleton(true)
         orderModel?.let { order ->
             // Preload order notes from database if available
-            loadNotesFromDb()
+            fetchAndLoadOrderNotesFromDb()
 
             if (networkStatus.isConnected()) {
                 // Attempt to refresh notes from api in the background
                 requestOrderNotesFromApi(order)
             } else {
                 // Track so when the device is connected notes can be refreshed
+                orderView?.showOrderNotesSkeleton(false)
                 isUsingCachedNotes = true
+            }
+        }
+    }
+
+    /**
+     * Fetch the order notes from the device database
+     * Segregating the fetching from db and displaying to UI into two separate methods
+     * for better ui testing
+     */
+    override fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel> {
+        return orderStore.getOrderNotesForOrder(order)
+    }
+
+    /**
+     * Fetch and display the order notes from the device database
+     */
+    override fun fetchAndLoadOrderNotesFromDb() {
+        orderModel?.let { order ->
+            val notes = fetchOrderNotesFromDb(order)
+            if (isNotesInit) {
+                orderView?.updateOrderNotes(notes)
+            } else {
+                isNotesInit = true
+                orderView?.showOrderNotes(notes)
             }
         }
     }
@@ -307,22 +332,7 @@ class OrderDetailPresenter @Inject constructor(
 
             // note that we refresh even on error to make sure the transient note is removed
             // from the note list
-            loadNotesFromDb()
-        }
-    }
-
-    /**
-     * Fetch the order notes from the device database.
-     */
-    fun loadNotesFromDb() {
-        orderModel?.let { order ->
-            val notes = orderStore.getOrderNotesForOrder(order)
-            if (isNotesInit) {
-                orderView?.updateOrderNotes(notes)
-            } else {
-                isNotesInit = true
-                orderView?.showOrderNotes(notes)
-            }
+            fetchAndLoadOrderNotesFromDb()
         }
     }
 

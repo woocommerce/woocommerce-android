@@ -19,6 +19,8 @@ interface OrderDetailContract {
         fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
+        fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel>
+        fun fetchAndLoadOrderNotesFromDb()
         fun loadOrderShipmentTrackings()
         fun doChangeOrderStatus(newStatus: String)
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
