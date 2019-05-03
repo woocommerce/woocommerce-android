@@ -174,4 +174,12 @@ object WCMatchers {
             }
         }
     }
+
+    /**
+     * Matcher to check if the ImageView drawable matches
+     * the incoming drawable resource Id
+     */
+    fun withDrawable(resourceId: Int): Matcher<View> {
+        return DrawableMatcher(resourceId)
+    }
 }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import com.google.gson.Gson
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 object WcOrderTestUtils {
@@ -171,5 +172,50 @@ object WcOrderTestUtils {
             label = status
             statusKey = status
         }
+    }
+
+    /**
+     * Generates an array containing multiple [WCOrderNoteModel] objects.
+     */
+    fun generateSampleNotes(): List<WCOrderNoteModel> {
+        val siteId = 1
+        val orderId = 1
+        val remoteId: Long = 1
+        val result = ArrayList<WCOrderNoteModel>()
+        val om1 = WCOrderNoteModel().apply {
+            localSiteId = siteId
+            localOrderId = orderId
+            remoteNoteId = remoteId
+            dateCreated = "2019-04-05T17:12:00Z"
+            note = "This should be displayed first"
+            isCustomerNote = true
+            isSystemNote = false
+        }
+
+        val om2 = WCOrderNoteModel().apply {
+            localSiteId = siteId
+            localOrderId = orderId
+            remoteNoteId = remoteId
+            dateCreated = "2018-11-05T14:15:00Z"
+            note = "This should be displayed second"
+            isCustomerNote = false
+            isSystemNote = true
+        }
+
+        val om3 = WCOrderNoteModel().apply {
+            localSiteId = siteId
+            localOrderId = orderId
+            remoteNoteId = remoteId
+            dateCreated = "2016-12-04T12:15:00Z"
+            note = "This should be displayed third"
+            isSystemNote = false
+            isCustomerNote = false
+        }
+
+        result.add(om1)
+        result.add(om2)
+        result.add(om3)
+
+        return result
     }
 }

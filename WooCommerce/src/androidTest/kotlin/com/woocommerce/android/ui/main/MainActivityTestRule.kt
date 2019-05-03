@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.java, false, false) {
@@ -32,9 +33,11 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
      */
     fun setOrderDetailWithMockData(
         order: WCOrderModel,
-        orderStatus: WCOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail()
+        orderStatus: WCOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail(),
+        orderNotes: List<WCOrderNoteModel> = WcOrderTestUtils.generateSampleNotes()
     ) {
         MockedOrderDetailModule.setOrderInfo(order)
         MockedOrderDetailModule.setOrderStatus(orderStatus)
+        MockedOrderDetailModule.setOrderNotes(orderNotes)
     }
 }
