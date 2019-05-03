@@ -1,7 +1,7 @@
 #!/bin/sh
 
-LANG_FILE=../tools/exported-language-codes.csv
-RESDIR=../WooCommerce/src/main/res/
+LANG_FILE=./tools/exported-language-codes.csv
+RESDIR=./WooCommerce/src/main/res/
 
 # Language definitions resource file
 HEADER=\<?xml\ version=\"1.0\"\ encoding=\"UTF-8\"?\>\\n\<!--Warning:\ Auto-generated\ file,\ don\'t\ edit\ it.--\>\\n\<resources\>\\n\<string-array\ name=\"available_languages\"\ translatable=\"false\"\>
