@@ -142,7 +142,6 @@ Language: ru
     <string name="support_contact_detail">Обратитесь к нашим инженерам поддержки за помощью при решении сложных вопросов</string>
     <string name="support_contact">Обратитесь в службу поддержки</string>
     <string name="support_faq_detail">Получите ответы на возникшие вопросы</string>
-    <string name="support_faq">Поиск в списке часто задаваемых вопросов</string>
     <string name="support_subtitle">Чем вам помочь?</string>
     <string name="support_identity_input_dialog_email_label">Электронная почта</string>
     <string name="support_identity_input_dialog_enter_email">Введите адрес электронной почты</string>
@@ -177,7 +176,6 @@ Language: ru
     <string name="xmlrpc_post_blocked_error">Не удалось подключиться. Ваш хостинг-провайдер блокирует запросы POST, которые нужны приложению\n для обмена данными с вашим сайтом. Свяжитесь с хостинг-провайдером, чтобы решить эту проблему.</string>
     <string name="xmlrpc_missing_method_error">Не удалось подключиться. На сервере отсутствуют необходимые методы XML-RPC.</string>
     <string name="invalid_site_url_message">Убедитесь, что введен допустимый URL-адрес сайта</string>
-    <string name="no_site_error">Не удалось подключиться к сайту WordPress. По указанному адресу нет действующего сайта WordPress\n . Проверьте адрес сайта (URL-адрес).</string>
     <string name="error_generic">Произошла ошибка</string>
     <string name="forgot_password">Забыли пароль?</string>
     <string name="email_invalid">Введите правильный email адрес</string>

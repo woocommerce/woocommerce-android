@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-17 09:54:03+0000
+Translation-Revision-Date: 2019-05-03 07:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">請透過你的使用者名稱和密碼登入。</string>
+    <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>
+    <string name="login_invalid_site_url">你輸入的網站地址無效。請重新輸入。</string>
+    <string name="no_site_error">此地址的網站不是 WordPress 網站。若需要我們連接網站，網站必須使用 WordPress。</string>
+    <string name="support_help_center">說明中心</string>
+    <string name="product_name_virtual">虛擬 %s</string>
+    <string name="product_name_grouped">組合 %s</string>
+    <string name="product_name_external">附屬機構 %s</string>
+    <string name="product_name_variable">可變的 %s</string>
+    <string name="product_backorders_notify">允許，但通知顧客</string>
+    <string name="product_backorders_yes">允許</string>
+    <string name="product_backorders_no">不允許</string>
+    <string name="product_stock_status_on_backorder">延期交貨</string>
+    <string name="product_stock_status_out_of_stock">沒有存貨</string>
+    <string name="product_stock_status_instock">尚有庫存</string>
+    <string name="read_more">閱讀更多</string>
     <string name="error_loading_image">無法載入圖片</string>
     <string name="product_status_draft">草稿</string>
     <string name="product_status_pending">待確認</string>
@@ -138,7 +154,6 @@ Language: zh_TW
     <string name="support_contact_detail">聯絡我們的 happiness engineer，他們很樂於協助解決疑難問題。</string>
     <string name="support_contact">聯絡支援團隊</string>
     <string name="support_faq_detail">取得問題的解答</string>
-    <string name="support_faq">瀏覽常見問題集</string>
     <string name="support_subtitle">需要哪方面的協助呢？</string>
     <string name="support_identity_input_dialog_email_label">電子郵件</string>
     <string name="support_identity_input_dialog_enter_email">請輸入你的電子郵件地址</string>
@@ -173,7 +188,6 @@ Language: zh_TW
     <string name="xmlrpc_post_blocked_error">無法連結。你的主機服務提供者封鎖了 POST 請求，但此應用程式需要\n需要使用 POST 請求才能與你的網站通訊。請聯絡你的主機服務提供者，以解決此問題。</string>
     <string name="xmlrpc_missing_method_error">無法連結。伺服器缺少必要的 XML-RPC 方式。</string>
     <string name="invalid_site_url_message">檢查輸入的網站 URL 是否有效</string>
-    <string name="no_site_error">無法連線至 WordPress 網站。此地址沒有有效的\nWordPress 網站。請檢查你輸入的網站地址 (URL)。</string>
     <string name="error_generic">發生錯誤</string>
     <string name="forgot_password">忘記密碼？</string>
     <string name="email_invalid">輸入有效的電子郵件地址</string>

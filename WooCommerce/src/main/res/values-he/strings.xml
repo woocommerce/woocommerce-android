@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-16 09:54:03+0000
+Translation-Revision-Date: 2019-05-01 08:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">עליך להיכנס באמצעות שם המשתמש והסיסמה שלך.</string>
+    <string name="error_user_username_instead_of_email">יש להיכנס באמצעות שם המשתמש ב-WordPress.com במקום כתובת המייל.</string>
+    <string name="login_invalid_site_url">כתובת האתר שהזנת לא תקפה. יש להזין את הכתובת שוב.</string>
+    <string name="no_site_error">כתובת האתר שהזנת אינה עבור אתר ב-WordPress. כדי שנוכל להתחבר לאתר, האתר חייב להשתמש בפלטפורמה של WordPress.</string>
+    <string name="support_help_center">מרכז העזרה</string>
+    <string name="product_name_virtual">%s ויזואלי</string>
+    <string name="product_name_grouped">%s מקובץ</string>
+    <string name="product_name_external">%s מקושר</string>
+    <string name="product_name_variable">%s משתנה</string>
+    <string name="product_backorders_notify">להרשות אך להודיע ללקוח</string>
+    <string name="product_backorders_yes">להרשות</string>
+    <string name="product_backorders_no">לא להרשות</string>
+    <string name="product_stock_status_on_backorder">בהזמנה משלימה</string>
+    <string name="product_stock_status_out_of_stock">לא במלאי</string>
+    <string name="product_stock_status_instock">במלאי</string>
+    <string name="read_more">לקרוא עוד</string>
     <string name="error_loading_image">אין אפשרות לטעון את התמונה</string>
     <string name="product_status_draft">טיוטה</string>
     <string name="product_status_pending">ממתין לאישור</string>
@@ -141,7 +157,6 @@ Language: he_IL
     <string name="support_contact_detail">יצירת קשר עם נציגי התמיכה שלנו שיכולים לענות על שאלות קשות</string>
     <string name="support_contact">יצירת קשר עם התמיכה</string>
     <string name="support_faq_detail">קבלת מענה לשאלותיך</string>
-    <string name="support_faq">לעיון בשאלות הנפוצות שלנו</string>
     <string name="support_subtitle">כיצד נוכל לעזור?</string>
     <string name="support_identity_input_dialog_email_label">אימייל</string>
     <string name="support_identity_input_dialog_enter_email">יש להזין את כתובת האימייל שלך</string>
@@ -176,7 +191,6 @@ Language: he_IL
     <string name="xmlrpc_post_blocked_error">לא ניתן להתחבר. חברת האחסון שלך חוסמת בקשות POST, והאפליקציה דורשת את\n הפעלת האפשרות הזו כדי לבצע התקשרות עם האתר שלך. יש ליצור קשר עם חברת האחסון שלך כדי לפתור בעיה זו.</string>
     <string name="xmlrpc_missing_method_error">לא ניתן להתחבר. שיטות XML-RPC נדרשות חסרות בשרת.</string>
     <string name="invalid_site_url_message">יש לוודא שכתובת ה-URL של האתר שהוזנה תקפה</string>
-    <string name="no_site_error">לא ניתן היה להתחבר לאתר WordPress. אין אתר WordPress תקף ב-\n כתובת זו. בדוק את כתובת האתר (URL) שהזנת.</string>
     <string name="error_generic">אירעה שגיאה</string>
     <string name="forgot_password">איבדת את הסיסמה שלך?</string>
     <string name="email_invalid">הקלד כתובת אימייל חוקית</string>

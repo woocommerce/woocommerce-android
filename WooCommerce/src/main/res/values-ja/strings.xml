@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-17 01:54:03+0000
+Translation-Revision-Date: 2019-05-03 03:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">ユーザー名とパスワードでログインしてください。</string>
+    <string name="error_user_username_instead_of_email">メールアドレスではなく WordPress.com ユーザー名を使用してログインしてください。</string>
+    <string name="login_invalid_site_url">入力されたサイトアドレスが無効です。もう一度入力してください。</string>
+    <string name="no_site_error">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトが WordPress を使用している必要があります。</string>
+    <string name="support_help_center">ヘルプセンター</string>
+    <string name="product_name_virtual">仮想 %s</string>
+    <string name="product_name_grouped">グループ %s</string>
+    <string name="product_name_external">アフィリエイト %s</string>
+    <string name="product_name_variable">オプション %s</string>
+    <string name="product_backorders_notify">許可し、顧客に通知する</string>
+    <string name="product_backorders_yes">許可する</string>
+    <string name="product_backorders_no">許可しない</string>
+    <string name="product_stock_status_on_backorder">取り寄せ中</string>
+    <string name="product_stock_status_out_of_stock">在庫なし</string>
+    <string name="product_stock_status_instock">在庫あり</string>
+    <string name="read_more">続きを読む</string>
     <string name="error_loading_image">画像を読み込めませんでした</string>
     <string name="product_status_draft">下書き</string>
     <string name="product_status_pending">保留中</string>
@@ -141,7 +157,6 @@ Language: ja_JP
     <string name="support_contact_detail">サポートスタッフにお問い合わせください。難しい質問にもお答えします</string>
     <string name="support_contact">サポートへ問い合わせる</string>
     <string name="support_faq_detail">不明な点について問い合わせます</string>
-    <string name="support_faq">よく聞かれる質問を表示</string>
     <string name="support_subtitle">どのようなサポートをお求めですか ?</string>
     <string name="support_identity_input_dialog_email_label">メール</string>
     <string name="support_identity_input_dialog_enter_email">メールアドレスを入力してください</string>
@@ -176,7 +191,6 @@ Language: ja_JP
     <string name="xmlrpc_post_blocked_error">接続できませんでした。ご使用のホストは POST リクエストをブロックしていますが、サイトと通信するためにアプリはこのリクエストを必要とします。ホストに連絡して、この問題を解決してください。</string>
     <string name="xmlrpc_missing_method_error">接続できませんでした。必要な XML-RPC メソッドがサーバーにありません。</string>
     <string name="invalid_site_url_message">入力したサイト URL が正しいか確認してください</string>
-    <string name="no_site_error">WordPress サイトに接続できませんでした。有効な WordPress サイトはこの\nアドレスにはありません。入力したサイトアドレス (URL) を確認してください。</string>
     <string name="error_generic">エラーが発生しました</string>
     <string name="forgot_password">パスワードを忘れた場合</string>
     <string name="email_invalid">有効なメールアドレスを入力してください</string>

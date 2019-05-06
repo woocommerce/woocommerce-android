@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-16 09:54:03+0000
+Translation-Revision-Date: 2019-04-30 12:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">Logga in med ditt användarnamn och lösenord.</string>
+    <string name="error_user_username_instead_of_email">Logga in med ditt WordPress.com användarnamn istället för din e-postadress.</string>
+    <string name="login_invalid_site_url">Den webbplatsadress som du har angett är ogiltig. Ange igen.</string>
+    <string name="no_site_error">Webbplatsen på denna adress är inte en WordPress-webbplats. För att vi ska kunna ansluta till den måste webbplatsen använda WordPress.</string>
+    <string name="support_help_center">Hjälpcenter</string>
+    <string name="product_name_virtual">Virtuell %s</string>
+    <string name="product_name_grouped">Grupperad %s</string>
+    <string name="product_name_external">Dotterbolag %s</string>
+    <string name="product_name_variable">Variabel %s</string>
+    <string name="product_backorders_notify">Tillåt, men meddela kunden</string>
+    <string name="product_backorders_yes">Tillåt</string>
+    <string name="product_backorders_no">Tillåt inte</string>
+    <string name="product_stock_status_on_backorder">Restnoterad</string>
+    <string name="product_stock_status_out_of_stock">Slut i lager</string>
+    <string name="product_stock_status_instock">I lager</string>
+    <string name="read_more">Läs mer</string>
     <string name="error_loading_image">Bilden kunde inte laddas</string>
     <string name="product_status_draft">Utkast</string>
     <string name="product_status_pending">Väntar</string>
@@ -142,7 +158,6 @@ Language: sv_SE
     <string name="support_contact_detail">Kontakta våra supporttekniker för att få svar på svåra frågor</string>
     <string name="support_contact">Kontakta supporten</string>
     <string name="support_faq_detail">Få svar på frågor som du har</string>
-    <string name="support_faq">Bläddra bland vanliga frågor</string>
     <string name="support_subtitle">Hur kan vi hjälpa till?</string>
     <string name="support_identity_input_dialog_email_label">E-post</string>
     <string name="support_identity_input_dialog_enter_email">Ange din e-postadress</string>
@@ -177,7 +192,6 @@ Language: sv_SE
     <string name="xmlrpc_post_blocked_error">Det gick inte att ansluta. Din webbserver blockerar POST-anrop, som appen behöver för att kommunicera med din webbplats. Kontakta ditt webbhotell för att lösa detta problem.</string>
     <string name="xmlrpc_missing_method_error">Kunde inte ansluta. Obligatoriska XML-RPC-metoder saknas på servern.</string>
     <string name="invalid_site_url_message">Kontrollera att webbplatsens URL är giltig</string>
-    <string name="no_site_error">Det gick inte att ansluta till WordPress-webbplatsen. På den angivna adressen finns det ingen giltig WordPress-webbplats. Kontrollera adressen (URL) du matat in.</string>
     <string name="error_generic">Ett fel uppstod</string>
     <string name="forgot_password">Glömt ditt lösenord?</string>
     <string name="email_invalid">Ange en giltig epostadress</string>
