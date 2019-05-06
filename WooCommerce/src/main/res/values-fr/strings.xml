@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-16 10:54:03+0000
+Translation-Revision-Date: 2019-05-02 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">Veuillez vous connecter avec votre nom d\'utilisateur et votre mot de passe.</string>
+    <string name="error_user_username_instead_of_email">Veuillez vous connecter avec votre nom d\'utilisateur WordPress.com plutôt que votre adresse e-mail.</string>
+    <string name="login_invalid_site_url">L\'adresse du site spécifiée est non valide. Veuillez la saisir à nouveau.</string>
+    <string name="no_site_error">Le site à cette adresse n\'est pas un site WordPress. Le site doit utiliser WordPress pour que nous puissions nous y connecter.</string>
+    <string name="support_help_center">Centre d\'aide</string>
+    <string name="product_name_virtual">%s virtuel</string>
+    <string name="product_name_grouped">%s groupé</string>
+    <string name="product_name_external">%s affilié</string>
+    <string name="product_name_variable">%s variable</string>
+    <string name="product_backorders_notify">Autoriser, mais avec notification client</string>
+    <string name="product_backorders_yes">Autoriser</string>
+    <string name="product_backorders_no">Ne pas autoriser</string>
+    <string name="product_stock_status_on_backorder">En cours de réapprovisionnement</string>
+    <string name="product_stock_status_out_of_stock">Rupture de stock</string>
+    <string name="product_stock_status_instock">En stock</string>
+    <string name="read_more">Lire plus</string>
     <string name="error_loading_image">Échec du chargement de l\'image</string>
     <string name="product_status_draft">Brouillon</string>
     <string name="product_status_pending">En attente</string>
@@ -140,7 +156,6 @@ Language: fr
     <string name="support_contact_detail">Contactez nos Happiness Engineers pour toute question complexe</string>
     <string name="support_contact">Contacter l’assistance</string>
     <string name="support_faq_detail">Obtenez les réponses à vos questions</string>
-    <string name="support_faq">Parcourir notre FAQ</string>
     <string name="support_subtitle">En quoi pouvons-nous vous aider ?</string>
     <string name="support_identity_input_dialog_email_label">E-mail</string>
     <string name="support_identity_input_dialog_enter_email">Veuillez entrer votre adresse e-mail.</string>
@@ -175,7 +190,6 @@ Language: fr
     <string name="xmlrpc_post_blocked_error">Connexion impossible. Votre hébergeur bloque les requêtes POST\ndont votre application a besoin pour communiquer avec votre site. \nContactez-le pour résoudre ce problème.</string>
     <string name="xmlrpc_missing_method_error">Impossible de se connecter. Le serveur ne dispose pas des méthodes XML-RPC requises.</string>
     <string name="invalid_site_url_message">Vérifiez que l\'URL saisie est valide</string>
-    <string name="no_site_error">Impossible de se connecter au site WordPress. Aucun site WordPress valide \nn’est présent à cette adresse. Vérifier l’adresse du site (URL) saisie.</string>
     <string name="error_generic">Une erreur s\'est produite</string>
     <string name="forgot_password">Mot de passe perdu ?</string>
     <string name="email_invalid">Entrez une adresse e-mail valide</string>
