@@ -33,7 +33,7 @@ class OrderDetailNavigationTest : TestBase() {
     @Rule
     @JvmField var activityTestRule = MainActivityTestRule()
 
-    val dateFormat by lazy { DateTimeFormatter.ofPattern("YYYY-mm-dd'T'hh:mm:ss", Locale.getDefault()) }
+    val dateFormat by lazy { DateTimeFormatter.ofPattern("YYYY-MM-dd'T'hh:mm:ss'Z'", Locale.getDefault()) }
 
     @Before
     override fun setup() {
@@ -43,6 +43,9 @@ class OrderDetailNavigationTest : TestBase() {
 
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
+
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
 
         // Click on Orders tab in the bottom bar
         Espresso.onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())

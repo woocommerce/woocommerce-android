@@ -158,6 +158,34 @@ class OrderListAdapter @Inject constructor(
         }
     }
 
+    /**
+     * returns true if the
+     * @param title matches the title of one of the sections in the list
+     */
+    fun isSectionAvailable(title: String): Boolean {
+        for (entry in sectionsMap) {
+            val section = entry.value as? OrderListSection
+            if (title == section?.title) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * returns the total section item count give the
+     * @param title
+     */
+    fun getSectionItemsTotal(title: String): Int {
+        for (entry in sectionsMap) {
+            val section = entry.value as? OrderListSection
+            if (title == section?.title) {
+                return section.list.size
+            }
+        }
+        return 0
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         if (position == itemCount - 1) {

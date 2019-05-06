@@ -15,7 +15,7 @@ import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.util.DateUtils
-import junit.framework.Assert.assertSame
+import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,6 +36,9 @@ class OrderDetailNotesCardTest : TestBase() {
 
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
+
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
 
         // Click on Orders tab in the bottom bar
         onView(withId(R.id.orders)).perform(click())

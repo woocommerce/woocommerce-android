@@ -56,6 +56,9 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
 
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
+
         // Click on Orders tab in the bottom bar
         onView(withId(R.id.orders)).perform(click())
     }

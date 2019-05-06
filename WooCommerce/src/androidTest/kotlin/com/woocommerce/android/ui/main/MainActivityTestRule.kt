@@ -4,6 +4,7 @@ import android.content.Intent
 import android.support.test.rule.ActivityTestRule
 import com.woocommerce.android.di.MockedSelectedSiteModule
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
+import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -26,6 +27,17 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         // The reason for doing this here is the same as for the MockedMainModule
         MockedSelectedSiteModule.setSiteModel(siteModel)
         return super.launchActivity(startIntent)
+    }
+
+    /**
+     * Setting mock data for order list screen
+     */
+    fun setOrderListWithMockData(
+        orders: List<WCOrderModel> = WcOrderTestUtils.generateOrders(),
+        orderStatusList: Map<String, WCOrderStatusModel> = WcOrderTestUtils.generateOrderStatusOptions()
+    ) {
+        MockedOrderListModule.setOrders(orders)
+        MockedOrderListModule.setOrderStatusList(orderStatusList)
     }
 
     /**

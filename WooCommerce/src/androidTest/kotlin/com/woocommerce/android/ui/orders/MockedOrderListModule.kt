@@ -14,6 +14,7 @@ import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.store.WCOrderStore
 
@@ -21,7 +22,16 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 abstract class MockedOrderListModule {
     @Module
     companion object {
-        private val orders: List<WCOrderModel> = WcOrderTestUtils.generateOrders()
+        private var orders: List<WCOrderModel>? = null
+        private var orderStatusList: Map<String, WCOrderStatusModel>? = null
+
+        fun setOrders(orders: List<WCOrderModel>) {
+            this.orders = orders
+        }
+
+        fun setOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {
+            this.orderStatusList = orderStatusList
+        }
 
         @JvmStatic
         @ActivityScope
@@ -47,7 +57,7 @@ abstract class MockedOrderListModule {
              * These are the methods that invoke [WCOrderStore] methods from FluxC
              */
             doReturn(true).whenever(mockedOrderListPresenter).isOrderStatusOptionsRefreshing()
-            doReturn(emptyMap<String, WCOrderModel>()).whenever(mockedOrderListPresenter).getOrderStatusOptions()
+            doReturn(orderStatusList).whenever(mockedOrderListPresenter).getOrderStatusOptions()
             doReturn(orders).whenever(mockedOrderListPresenter).fetchOrdersFromDb(null, false)
             return mockedOrderListPresenter
         }

@@ -4,8 +4,15 @@ import com.google.gson.Gson
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 object WcOrderTestUtils {
+    private val dateFormat by lazy {
+        DateTimeFormatter.ofPattern("YYYY-MM-dd'T'hh:mm:ss'Z'", Locale.ROOT)
+    }
+
     /**
      * [WCOrderModel.LineItem] values cannot be modified so adding as string here
      */
@@ -34,69 +41,98 @@ object WcOrderTestUtils {
     fun generateOrders(): List<WCOrderModel> {
         val result = ArrayList<WCOrderModel>()
         val om1 = WCOrderModel(1).apply {
-            billingFirstName = "John"
-            billingLastName = "Peters"
+            // Empty first/last name
+            billingFirstName = ""
+            billingLastName = ""
+            // Currency : USD
             currency = "USD"
-            dateCreated = "2018-01-05T05:14:30Z"
+            // today
+            dateCreated = LocalDateTime.now().format(dateFormat)
             localSiteId = 1
             number = "1"
-            status = "processing"
+            // Processing
+            status = "Processing"
             total = "14.53"
         }
 
         val om2 = WCOrderModel(2).apply {
-            billingFirstName = "Jane"
-            billingLastName = "Masterson"
+            // really long first & last name
+            billingFirstName = "Itsareallylongnametoseehowitishandled"
+            billingLastName = "andcontinuingwiththelongname"
+            // Currency : CAD
             currency = "CAD"
-            dateCreated = "2017-12-08T16:11:13Z"
+            // Yesterday
+            dateCreated = LocalDateTime.now().minusDays(1).format(dateFormat)
             localSiteId = 1
             number = "63"
-            status = "pending"
-            total = "106.00"
+            // Pending payment
+            status = "Pending"
+            total = "14.53"
         }
 
-        val om3 = WCOrderModel(2).apply {
+        val om3 = WCOrderModel(3).apply {
             billingFirstName = "Mandy"
             billingLastName = "Sykes"
-            currency = "USD"
-            dateCreated = "2018-02-05T16:11:13Z"
+            // Currency : EURO
+            currency = "euro"
+            // 2 days ago
+            dateCreated = LocalDateTime.now().minusDays(3).format(dateFormat)
             localSiteId = 1
             number = "14"
-            status = "processing"
-            total = "25.73"
+            // On Hold
+            status = "On Hold"
+            total = "14.53"
         }
 
-        val om4 = WCOrderModel(2).apply {
+        val om4 = WCOrderModel(4).apply {
             billingFirstName = "Jennifer"
             billingLastName = "Johnson"
-            currency = "CAD"
-            dateCreated = "2018-02-06T09:11:13Z"
+            // Currency : INR
+            currency = "INR"
+            // More than a week
+            dateCreated = LocalDateTime.now().minusWeeks(2).format(dateFormat)
             localSiteId = 1
             number = "15"
-            status = "pending, on-hold, complete"
-            total = "106.00"
+            // Completed
+            status = "Completed"
+            total = "14.53"
         }
 
-        val om5 = WCOrderModel(2).apply {
+        val om5 = WCOrderModel(5).apply {
             billingFirstName = "Christopher"
             billingLastName = "Jones"
-            currency = "USD"
-            dateCreated = "2018-02-05T16:11:13Z"
+            currency = "AUD"
+            // Older than a month
+            dateCreated = LocalDateTime.now().minusMonths(2).format(dateFormat)
             localSiteId = 1
             number = "3"
-            status = "pending"
-            total = "106.00"
+            // Cancelled
+            status = "Cancelled"
+            total = "14.53"
         }
 
-        val om6 = WCOrderModel(2).apply {
+        val om6 = WCOrderModel(6).apply {
             billingFirstName = "Carissa"
             billingLastName = "King"
             currency = "USD"
             dateCreated = "2018-02-02T16:11:13Z"
             localSiteId = 1
             number = "55"
-            status = "pending, Custom 1,Custom 2,Custom 3"
-            total = "106.00"
+            // Refunded
+            status = "Refunded"
+            total = "14.53"
+        }
+
+        val om7 = WCOrderModel(7).apply {
+            billingFirstName = "Carissa"
+            billingLastName = "King"
+            currency = "USD"
+            dateCreated = "2018-02-02T16:11:13Z"
+            localSiteId = 1
+            number = "55"
+            // Failed
+            status = "Failed"
+            total = "14.53"
         }
 
         result.add(om1)
@@ -105,6 +141,7 @@ object WcOrderTestUtils {
         result.add(om4)
         result.add(om5)
         result.add(om6)
+        result.add(om7)
 
         return result
     }
@@ -217,5 +254,42 @@ object WcOrderTestUtils {
         result.add(om3)
 
         return result
+    }
+
+    /**
+     * Generates an map containing multiple [WCOrderStatusModel] objects.
+     */
+    fun generateOrderStatusOptions(): Map<String, WCOrderStatusModel> {
+        val options = listOf(
+                WCOrderStatusModel(id = 1).apply {
+                    label = "Pending Payment"
+                    statusKey = "pending"
+                },
+                WCOrderStatusModel(id = 2).apply {
+                    label = "Processing"
+                    statusKey = "processing"
+                },
+                WCOrderStatusModel(id = 3).apply {
+                    label = "On Hold"
+                    statusKey = "on-hold"
+                },
+                WCOrderStatusModel(id = 4).apply {
+                    label = "Completed"
+                    statusKey = "completed"
+                },
+                WCOrderStatusModel(id = 5).apply {
+                    label = "Cancelled"
+                    statusKey = "cancelled"
+                },
+                WCOrderStatusModel(id = 6).apply {
+                    label = "Refunded"
+                    statusKey = "refunded"
+                },
+                WCOrderStatusModel(id = 7).apply {
+                    label = "Failed"
+                    statusKey = "failed"
+                }
+        )
+        return options.map { it.statusKey to it }.toMap()
     }
 }
