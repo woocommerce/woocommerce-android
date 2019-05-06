@@ -1,4 +1,30 @@
-* Tap on a product to reveal a read-only detail view.
-* Shipment Tracking date formatting is now localized.
-* Fixed a bug that displayed the rating star colors as purple on Lollipop devices.
-* In the help section, the FAQ button is now "Help Center" and routes to WooCommerce mobile documentation.
+1.8
+-----
+
+1.7
+-----
+
+Improvements
+* Changed FAQ button in help section to "Help Center". The button now routes to WooCommerce mobile documentation.
+* Hide the external link button on shipment tracking views if no external link available
+* Redirect to username/password login when WordPress.com reports email login not allowed
+* Shipment Tracking date formatting is now localized
+ 
+New Features
+* You can now tap a product to view a read-only detail view
+
+1.6
+-----
+
+Bugfixes
+* Fixed bug that led to incorrect stats bar heights
+* Fixed rare crash opening order detail when it's already showing
+* Fixed rare crash in order detail while loading product images
+* Fixed rare crash when showing order note
+* Fixed a very rare crash when showing the filter menu options button
+
+Improvements
+* Dashboard no longer reloads every time you return to it
+
+New Features
+* New support for the Shipment Tracking plugin. Read-only Shipment tracking information will now be displayed on a completed order and packages may be tracked directly from the order detail screen. Support for adding shipment tracking information is coming in a future release, so stay tuned!
