@@ -19,6 +19,8 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -40,7 +42,7 @@ import java.util.ArrayList
 import java.util.Date
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener {
+    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener, OnChartValueSelectedListener {
     init {
         View.inflate(context, R.layout.dashboard_stats, this)
     }
@@ -214,7 +216,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             isScaleXEnabled = false
             isScaleYEnabled = false
             isDragEnabled = false
-
+            setOnChartValueSelectedListener(this@DashboardStatsView)
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
         }
 
@@ -223,6 +225,19 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         markerView.captionListener = this
         chart.marker = markerView
     }
+
+    /**
+     * Called when a value has been selected inside the chart.
+     *
+     * @param e The selected Entry
+     * @param h The corresponding highlight object that contains information
+     *          about the highlighted position such as dataSetIndex
+     */
+    override fun onValueSelected(e: Entry?, h: Highlight?) {
+        chart.setDrawMarkers(true)
+    }
+
+    override fun onNothingSelected() {}
 
     /**
      * the chart MarkerView relies on this to know what to display when the user taps a chart bar
