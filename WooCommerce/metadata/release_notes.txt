@@ -1,1 +1,1 @@
-This release is all about behind the scenes changes: bug fixes, UI refinements and performance improvements.
+This release is all about behind the scenes changes: bug fixes, UI refinements, and performance improvements.
