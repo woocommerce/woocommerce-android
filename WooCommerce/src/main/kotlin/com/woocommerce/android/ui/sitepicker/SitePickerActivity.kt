@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CrashlyticsUtils
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import org.wordpress.android.fluxc.model.SiteModel
@@ -62,6 +63,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     private var progressDialog: ProgressDialog? = null
     private var calledFromLogin: Boolean = false
     private var currentSite: SiteModel? = null
+    private var skeletonView = SkeletonView()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -113,10 +115,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
             showStoreList(sites)
         } ?: run {
-            site_list_container.visibility = View.GONE
-
-            presenter.loadSites()
-            presenter.fetchSites()
+            presenter.loadAndFetchSites()
 
             AnalyticsTracker.track(
                     Stat.SITE_PICKER_STORES_SHOWN,
@@ -165,7 +164,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     override fun showUserInfo() {
         if (calledFromLogin) {
             text_displayname.text = presenter.getUserDisplayName()
-            text_username.text = String.format(getString(R.string.at_username), presenter.getUserName())
+
+            presenter.getUserName()?.let { userName ->
+                if (userName.isNotEmpty()) {
+                    text_username.text = String.format(getString(R.string.at_username), userName)
+                }
+            }
 
             GlideApp.with(this)
                     .load(presenter.getUserAvatarUrl())
@@ -182,12 +186,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     override fun showStoreList(wcSites: List<SiteModel>) {
         progressDialog?.takeIf { it.isShowing }?.dismiss()
 
-        if (wcSites.isEmpty()) {
-            showNoStoresView()
-            return
-        }
-
+        no_stores_view.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
+
         site_list_label.text = if (wcSites.size == 1) {
             getString(R.string.login_connected_store)
         } else if (calledFromLogin) {
@@ -273,7 +274,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         ).show()
     }
 
-    private fun showNoStoresView() {
+    override fun showNoStoresView() {
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
@@ -289,6 +290,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
     }
 
+    override fun showSkeleton(show: Boolean) {
+        when (show) {
+            true -> skeletonView.show(sites_recycler, R.layout.skeleton_site_picker, delayed = true)
+            false -> skeletonView.hide()
+        }
+    }
     /**
      * called by the presenter after logout completes - this would occur if the user was logged out
      * as a result of having no stores, which would only happen during the login flow

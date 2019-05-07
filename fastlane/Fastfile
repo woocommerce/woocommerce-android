@@ -7,10 +7,37 @@ platform :android do
 ########################################################################
 Dotenv.load('~/.wcandroid-env.default')
 ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
+ENV["PROJECT_NAME"]="WooCommerce"
+ENV["PROJECT_ROOT_FOLDER"]="./"
+ENV["validate_translations"]="buildVanillaRelease"
 
 ########################################################################
 # Release Lanes
 ########################################################################  
+  #####################################################################################
+  # code_freeze
+  # -----------------------------------------------------------------------------------
+  # This lane executes the steps planned on code freeze
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane code_freeze codefreeze_version:<version> [update_release_branch_version:<update flag>] [skip_confirm:<skip confirm>]
+  #
+  # Example:
+  # bundle exec fastlane code_freeze codefreeze_version:11.2
+  # bundle exec fastlane code_freeze codefreeze_version:11.2 skip_confirm:true
+  #####################################################################################
+  desc "Creates a new release branch from the current develop"
+  lane :code_freeze do | options |
+    options.merge!(update_release_branch_version: false)
+    old_version = android_codefreeze(options)
+   
+    localize_libs()
+    setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{options[:codefreeze_version]}")
+    setfrozentag(repository:GHHELPER_REPO, milestone: options[:codefreeze_version])
+
+    get_prs_list(repository:GHHELPER_REPO, start_tag:"#{old_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{options[:codefreeze_version]}.txt")
+  end
+
 #####################################################################################
 # update_appstore_strings 
 # -----------------------------------------------------------------------------------
@@ -48,6 +75,24 @@ lane :update_appstore_strings do |options|
     release_version: options[:version])
 end 
 
+  #####################################################################################
+  # finalize_release
+  # -----------------------------------------------------------------------------------
+  # This lane finalize a release: updates store metadata and runs the release checks
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane finalize_release [skip_confirm:<skip confirm>] 
+  #
+  # Example:
+  # bundle exec fastlane finalize_release 
+  # bundle exec fastlane finalize_release skip_confirm:true 
+  #####################################################################################
+  desc "Updates store metadata and runs the release checks"
+  lane :finalize_release do | options |
+    android_finalize_prechecks(options)
+    android_update_metadata(options) unless android_current_branch_is_hotfix
+  end
+  
 #####################################################################################
 # localize_libs 
 # -----------------------------------------------------------------------------------
