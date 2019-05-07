@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-16 07:54:03+0000
+Translation-Revision-Date: 2019-04-30 09:54:31+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>
+    <string name="error_user_username_instead_of_email">Silakan login menggunakan nama pengguna WordPress.com sebagai ganti alamat email Anda.</string>
+    <string name="login_invalid_site_url">Alamat situs yang Anda masukkan tidak valid. Harap masukkan lagi.</string>
+    <string name="no_site_error">Situs di alamat ini bukan situs WordPress. Agar kami dapat menghubungkannya, situs harus menggunakan WordPress.</string>
+    <string name="support_help_center">Pusat Bantuan</string>
+    <string name="product_name_virtual">%s Virtual</string>
+    <string name="product_name_grouped">%s Terkelompok</string>
+    <string name="product_name_external">%s Afiliasi</string>
+    <string name="product_name_variable">%s Variabel</string>
+    <string name="product_backorders_notify">Izinkan, tetapi beri tahu pelanggan</string>
+    <string name="product_backorders_yes">Izinkan</string>
+    <string name="product_backorders_no">Jangan izinkan</string>
+    <string name="product_stock_status_on_backorder">Dalam order tunda</string>
+    <string name="product_stock_status_out_of_stock">Tidak ada stok</string>
+    <string name="product_stock_status_instock">Tersedia</string>
+    <string name="read_more">Baca selengkapnya</string>
     <string name="error_loading_image">Tidak dapat memuat gambar</string>
     <string name="product_status_draft">Konsep</string>
     <string name="product_status_pending">Menunggu Persetujuan</string>
@@ -141,7 +157,6 @@ Language: id
     <string name="support_contact_detail">Hubungi Happiness Engineer kami yang dapat membantu menjawab pertanyaan sulit</string>
     <string name="support_contact">Hubungi dukungan</string>
     <string name="support_faq_detail">Dapatkan jawaban atas pertanyaan Anda</string>
-    <string name="support_faq">Telusuri Tanya Jawab Umum kami</string>
     <string name="support_subtitle">Apa yang dapat kami bantu?</string>
     <string name="support_identity_input_dialog_email_label">Email</string>
     <string name="support_identity_input_dialog_enter_email">Masukkan alamat email Anda</string>
@@ -176,7 +191,6 @@ Language: id
     <string name="xmlrpc_post_blocked_error">Tidak dapat terhubung. Host Anda memblokir permintaan POST yang dibutuhkan aplikasi\n agar dapat berkomunikasi dengan situs Anda. Hubungi host Anda untuk mengatasi masalah ini.</string>
     <string name="xmlrpc_missing_method_error">Tidak dapat terhubung. Metode XML-RPC yang diperlukan tidak ditemukan di server.</string>
     <string name="invalid_site_url_message">Pastikan URL situs yang dimasukkan sudah valid</string>
-    <string name="no_site_error">Tidak dapat terhubung ke situs WordPress. Tidak ada situs WordPress yang valid di\n alamat ini. Periksa alamat situs (URL) yang Anda masukkan.</string>
     <string name="error_generic">Terjadi galat</string>
     <string name="forgot_password">Lupa password Anda?</string>
     <string name="email_invalid">Masukkan alamat email yang sah</string>

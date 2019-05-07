@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-16 13:54:03+0000
+Translation-Revision-Date: 2019-05-02 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">Lütfen kullanıcı adınız ve şifrenizle oturum açın.</string>
+    <string name="error_user_username_instead_of_email">E-posta adresiniz yerine lütfen WordPress.com kullanıcı adınızla oturum açın.</string>
+    <string name="login_invalid_site_url">Girdiğiniz site adresi geçersiz. Lütfen tekrar girin.</string>
+    <string name="no_site_error">Bu adresteki site bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress kullanılmalıdır.</string>
+    <string name="support_help_center">Yardım Merkezi</string>
+    <string name="product_backorders_notify">İzin ver fakat müşteriyi bilgilendir</string>
+    <string name="product_backorders_yes">İzin ver</string>
+    <string name="product_backorders_no">İzin verme</string>
+    <string name="product_stock_status_on_backorder">Yok satıldı</string>
+    <string name="product_stock_status_out_of_stock">Stokta kalmadı</string>
+    <string name="product_stock_status_instock">Stokta</string>
+    <string name="read_more">Devamını oku</string>
     <string name="error_loading_image">Görsel yüklenemiyor</string>
     <string name="product_status_draft">Taslak</string>
     <string name="product_status_pending">Bekliyor</string>
@@ -140,7 +152,6 @@ Language: tr
     <string name="support_contact_detail">Zor sorulara yanıt verilmesine yardımcı olabilecek mutluluk mühendislerimize ulaşın</string>
     <string name="support_contact">Destek birimine başvurun</string>
     <string name="support_faq_detail">Sorularınıza yanıt alın</string>
-    <string name="support_faq">SSS sayfamıza göz atın</string>
     <string name="support_subtitle">Nasıl yardımcı olabiliriz?</string>
     <string name="support_identity_input_dialog_email_label">E-posta</string>
     <string name="support_identity_input_dialog_enter_email">Lütfen e-posta adresinizi girin</string>
@@ -175,7 +186,6 @@ Language: tr
     <string name="xmlrpc_post_blocked_error">Bağlanılamıyor. Sunucunuz POST isteklerini engelliyor ve uygulama sitenizle\n    iletişim kurmak için buna ihtiyaç duyuyor. Bu problemi gidermek için servis sağlayıcınızla iletişime geçin.</string>
     <string name="xmlrpc_missing_method_error">Bağlanılamadı. Sunucuda gerekli XML-RPC işlevleri eksik.</string>
     <string name="invalid_site_url_message">Girdiğiniz site URL\'sinin geçerli olduğunu kontrol edin</string>
-    <string name="no_site_error">WordPress sitesine bağlanılamıyor. Bu adreste geçerli bir WordPress sitesi\n     bulunmuyor. Lütfen site adresini kontrol edin.</string>
     <string name="error_generic">Bir hata oluştu</string>
     <string name="forgot_password">Parolanızı mı kaybettiniz?</string>
     <string name="email_invalid">Geçerli bir Email adresi girin</string>
