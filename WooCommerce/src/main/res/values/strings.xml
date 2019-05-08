@@ -206,6 +206,8 @@
     <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copy tracking number to clipboard</string>
     <string name="order_shipment_tracking_shipped_date">Shipped %s</string>
+    <string name="order_shipment_tracking_add_label">Optional tracking information</string>
+    <string name="order_shipment_tracking_add_button">Add tracking</string>
     <!--
         Add Order Note
     -->

@@ -15,11 +15,14 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import javax.inject.Inject
 
 class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
@@ -42,6 +45,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var productImageMap: ProductImageMap
 
@@ -105,6 +109,19 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         orderFulfill_customerInfo.initView(order, true)
 
         orderFulfill_btnComplete.setOnClickListener(this)
+    }
+
+    override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
+        if (trackings.isNotEmpty()) {
+            orderFulfill_addShipmentTracking.initView(trackings, uiMessageResolver, true)
+            if (orderFulfill_addShipmentTracking.visibility != View.VISIBLE) {
+                WooAnimUtils.scaleIn(orderFulfill_addShipmentTracking, WooAnimUtils.Duration.MEDIUM)
+            }
+        } else {
+            if (orderFulfill_addShipmentTracking.visibility == View.VISIBLE) {
+                WooAnimUtils.scaleOut(orderFulfill_addShipmentTracking, WooAnimUtils.Duration.MEDIUM)
+            }
+        }
     }
 
     override fun onClick(v: View?) {

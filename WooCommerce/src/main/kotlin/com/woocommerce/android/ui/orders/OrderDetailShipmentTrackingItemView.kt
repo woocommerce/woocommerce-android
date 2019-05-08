@@ -24,7 +24,11 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         View.inflate(context, R.layout.order_detail_shipment_tracking_item, this)
     }
 
-    fun initView(item: WCOrderShipmentTrackingModel, uiMessageResolver: UIMessageResolver) {
+    fun initView(
+        item: WCOrderShipmentTrackingModel,
+        uiMessageResolver: UIMessageResolver,
+        allowAddTrackingOption: Boolean
+    ) {
         tracking_type.text = item.trackingProvider
         tracking_number.text = item.trackingNumber
         tracking_dateShipped.text = context.getString(
@@ -44,7 +48,8 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             }
         }
 
-        if (item.trackingLink.isNotEmpty()) {
+        // TODO: modify logic to display delete button if allowAddTrackingOption is true
+        if (!allowAddTrackingOption && item.trackingLink.isNotEmpty()) {
             tracking_btnTrack.setOnClickListener {
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(context, item.trackingLink)

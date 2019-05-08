@@ -28,8 +28,19 @@ class OrderFulfillmentPresenter @Inject constructor(
         orderView?.let { view ->
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)?.also {
                 view.showOrderDetail(it)
+                loadOrderShipmentTrackings(it)
             }
         }
+    }
+
+    /**
+     * Since shipment tracking info, if available would already be displayed
+     * in order detail page, under Tracking section, the data is assumed to be current.
+     * So when fetching data here, it is from the db and not from api
+     */
+    override fun loadOrderShipmentTrackings(order: WCOrderModel) {
+        val trackings = orderStore.getShipmentTrackingsForOrder(order)
+        orderView?.showOrderShipmentTrackings(trackings)
     }
 
     override fun markOrderComplete() {
