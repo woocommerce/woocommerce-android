@@ -14,7 +14,7 @@ interface OrderFulfillmentContract {
         fun markOrderComplete()
     }
 
-    interface View : BaseView<Presenter>, OrderProductActionListener {
+    interface View : BaseView<Presenter>, OrderProductActionListener, OrderShipmentTrackingActionListener {
         fun showOrderDetail(order: WCOrderModel)
         fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>)
         fun toggleCompleteButton(isEnabled: Boolean)

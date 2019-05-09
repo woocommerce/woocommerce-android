@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.widget.NestedScrollView
@@ -30,6 +31,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
+        const val REQUEST_CODE_ADD_TRACKING = 101
 
         fun newInstance(order: WCOrderModel): Fragment {
             val args = Bundle()
@@ -113,7 +115,12 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
         if (trackings.isNotEmpty()) {
-            orderFulfill_addShipmentTracking.initView(trackings, uiMessageResolver, true)
+            orderFulfill_addShipmentTracking.initView(
+                    trackings = trackings,
+                    uiMessageResolver = uiMessageResolver,
+                    allowAddTrackingOption = true,
+                    shipmentTrackingActionListener = this
+            )
             if (orderFulfill_addShipmentTracking.visibility != View.VISIBLE) {
                 WooAnimUtils.scaleIn(orderFulfill_addShipmentTracking, WooAnimUtils.Duration.MEDIUM)
             }
@@ -155,6 +162,14 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
             if (router is TopLevelFragmentRouter) {
                 router.showProductDetail(remoteProductId)
             }
+        }
+    }
+
+    override fun openAddOrderShipmentTrackingScreen() {
+        presenter.orderModel?.let {
+            val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
+            intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_NUMBER, it.number)
+            startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
         }
     }
 }

@@ -26,7 +26,8 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     fun initView(
         trackings: List<WCOrderShipmentTrackingModel>,
         uiMessageResolver: UIMessageResolver,
-        allowAddTrackingOption: Boolean = false
+        allowAddTrackingOption: Boolean = false,
+        shipmentTrackingActionListener: OrderShipmentTrackingActionListener? = null
     ) {
         val viewManager = LinearLayoutManager(context)
         val viewAdapter = ShipmentTrackingListAdapter(trackings, uiMessageResolver, allowAddTrackingOption)
@@ -43,7 +44,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
             shipmentTrack_label.text = context.getString(R.string.order_shipment_tracking_add_label)
             shipmentTrack_btnAddTracking.visibility = View.VISIBLE
             shipmentTrack_btnAddTracking.setOnClickListener {
-                // TODO: open activity to add tracking provider
+                shipmentTrackingActionListener?.openAddOrderShipmentTrackingScreen()
             }
         }
     }
