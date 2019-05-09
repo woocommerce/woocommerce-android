@@ -1,0 +1,110 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/snack_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_window_background"
+    android:orientation="vertical"
+    tools:context="com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"/>
+
+    <LinearLayout
+        android:id="@+id/addTracking_editContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_large">
+
+        <TextView
+            android:id="@+id/addTracking_carrier_label"
+            style="@style/Woo.TextAppearance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/order_shipment_tracking_carrier_label"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/addTracking_editCarrier"
+            style="@style/EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_arrow_right_grey"
+            android:gravity="top"
+            android:minHeight="0dp"
+            android:paddingLeft="0dp"
+            android:paddingStart="0dp"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp"
+            tools:text="Fedex"/>
+
+        <View
+            android:id="@+id/addTracking_editCarrierDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:background="@color/list_divider"/>
+
+        <TextView
+            android:id="@+id/addTracking_number_label"
+            style="@style/Woo.TextAppearance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:text="@string/order_shipment_tracking_number_label"/>
+
+        <EditText
+            android:id="@+id/addTracking_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:background="@android:color/transparent"
+            android:gravity="top"
+            android:hint="@string/order_shipment_tracking_number_hint"
+            android:inputType="text"
+            android:maxLength="@integer/max_length_tracking_number"/>
+
+        <View
+            android:id="@+id/addTracking_editNumberDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:background="@color/list_divider"/>
+
+        <TextView
+            android:id="@+id/addTracking_date_label"
+            style="@style/Woo.TextAppearance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:text="@string/order_shipment_tracking_date_label"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/addTracking_date"
+            style="@style/Widget.AppCompat.Spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingStart="0dp"
+            android:textColor="@color/edit_text_text_color"
+            tools:text="May 8, 2019"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        tools:visibility="gone"/>
+
+</RelativeLayout>

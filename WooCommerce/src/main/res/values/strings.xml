@@ -231,6 +231,14 @@
     <string name="orderstatus_refunded">Refunded</string>
     <string name="orderstatus_contentDesc">Order status</string>
     <!--
+        Add Shipment Tracking Labels
+    -->
+    <string name="order_shipment_tracking_toolbar_title">Add Tracking</string>
+    <string name="order_shipment_tracking_carrier_label">Carrier</string>
+    <string name="order_shipment_tracking_number_label">Tracking number</string>
+    <string name="order_shipment_tracking_number_hint">Enter Tracking number</string>
+    <string name="order_shipment_tracking_date_label">Date shipped</string>
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
