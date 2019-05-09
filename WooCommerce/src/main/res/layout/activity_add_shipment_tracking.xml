@@ -94,6 +94,7 @@
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
             android:paddingStart="0dp"
+            android:inputType="date"
             android:textColor="@color/edit_text_text_color"
             tools:text="May 8, 2019"/>
     </LinearLayout>

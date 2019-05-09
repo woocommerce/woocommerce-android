@@ -168,7 +168,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun openAddOrderShipmentTrackingScreen() {
         presenter.orderModel?.let {
             val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
-            intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_NUMBER, it.number)
             startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
         }
     }
