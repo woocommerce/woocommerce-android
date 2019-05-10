@@ -83,7 +83,6 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
             providerListPickerDialog = AddOrderTrackingProviderListFragment
                     .newInstance(
                             selectedProviderText = getProviderText(),
-                            uiMessageResolver = uiMessageResolver,
                             presenter = presenter,
                             listener = this)
                     .also { it.show(supportFragmentManager, AddOrderTrackingProviderListFragment.TAG) }

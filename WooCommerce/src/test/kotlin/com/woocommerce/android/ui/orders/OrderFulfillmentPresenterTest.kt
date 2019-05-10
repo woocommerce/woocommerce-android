@@ -12,11 +12,13 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
+import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 
 class OrderFulfillmentPresenterTest {
     private val view: OrderFulfillmentContract.View = mock()
+    private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val uiMessageResolver: UIMessageResolver = mock()
@@ -27,7 +29,9 @@ class OrderFulfillmentPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(OrderFulfillmentPresenter(orderStore, uiMessageResolver, networkStatus))
+        presenter = spy(OrderFulfillmentPresenter(
+                dispatcher, orderStore, selectedSite, uiMessageResolver, networkStatus
+        ))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()

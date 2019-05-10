@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
@@ -24,28 +25,23 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), Toolbar.OnMenuIte
 
         /**
          * @param selectedProviderText = to update the currently selected provider item (if already selected)
-         * @param uiMessageResolver = to display snackbar error if provider list could not fetched
          * @param presenter = to load the list of providers from api
          * @param listener = to pass the selected provider back to the [AddOrderShipmentTrackingActivity]
          */
         fun newInstance(
             selectedProviderText: String?,
-            uiMessageResolver: UIMessageResolver,
             presenter: AddOrderShipmentTrackingContract.Presenter,
             listener: AddOrderTrackingProviderActionListener
         ): AddOrderTrackingProviderListFragment {
             val fragment = AddOrderTrackingProviderListFragment()
             fragment.listener = listener
             fragment.presenter = presenter
-            fragment.uiMessageResolver = uiMessageResolver
             fragment.selectedProviderText = selectedProviderText
             return fragment
         }
     }
 
     private var selectedProviderText: String? = null
-    private var dialogView: View? = null
-    private lateinit var uiMessageResolver: UIMessageResolver
     private lateinit var listener: AddOrderTrackingProviderActionListener
     private lateinit var presenter: AddOrderShipmentTrackingContract.Presenter
     private lateinit var providerListAdapter: AddOrderTrackingProviderListAdapter
@@ -58,8 +54,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), Toolbar.OnMenuIte
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialogView = inflater.inflate(R.layout.dialog_order_tracking_provider_list, container)
-        return dialogView
+        return inflater.inflate(R.layout.dialog_order_tracking_provider_list, container)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -126,14 +121,14 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), Toolbar.OnMenuIte
         }
     }
 
-    /**
-     * TODO: need to rethink how to display Snackbar error over the dialog popup
-     * It doesn't seem possible without having to create our own custom SnackBar
-     * https://stackoverflow.com/questions/45760678/how-does-google-inbox-show-a-snackbar-covering-the-keyboard
-     * And technically not sure if displaying a SnackBar inside dialog is the right way to go
-     */
     override fun showProviderListErrorSnack() {
-        uiMessageResolver.getSnack(R.string.orders_shipment_tracking_provider_list_error_fetch_generic).show()
+        dialog.window?.let {
+            Snackbar.make(
+                    it.findViewById(android.R.id.content),
+                    R.string.orders_shipment_tracking_provider_list_error_fetch_generic,
+                    Snackbar.LENGTH_LONG
+            ).show()
+        }
     }
 
     override fun showProviderList(providers: List<WCOrderShipmentProviderModel>) {
