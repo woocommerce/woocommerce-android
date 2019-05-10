@@ -11,13 +11,20 @@
         android:id="@+id/toolbar"
         layout="@layout/view_toolbar"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/addTrackingProviderList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <LinearLayout
+        android:id="@+id/providersView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/addTrackingProviderList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
