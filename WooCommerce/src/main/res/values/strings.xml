@@ -238,6 +238,8 @@
     <string name="order_shipment_tracking_number_label">Tracking number</string>
     <string name="order_shipment_tracking_number_hint">Enter Tracking number</string>
     <string name="order_shipment_tracking_date_label">Date shipped</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">Shipping Providers</string>
+    <string name="order_shipment_tracking_provider_list_item">Selected Shipment Provider</string>
     <!--
         Notifications
     -->
