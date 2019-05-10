@@ -134,6 +134,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Order Fulfillment
         SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED,
         ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED,
+        ORDER_FULFILMENT_ORDER_SHIPMENT_TRACKING_LOADED,
+
+        // -- Order Shipment Tracking
+        ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED,
+        ORDER_SHIPMENT_TRACKING_ADD,
+        ORDER_SHIPMENT_TRACKING_ADD_SUCCESS,
+        ORDER_SHIPMENT_TRACKING_ADD_FAILED,
 
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,

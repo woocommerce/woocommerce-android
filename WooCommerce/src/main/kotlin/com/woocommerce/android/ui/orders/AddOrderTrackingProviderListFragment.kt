@@ -44,6 +44,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), Toolbar.OnMenuIte
     }
 
     private var selectedProviderText: String? = null
+    private var dialogView: View? = null
     private lateinit var uiMessageResolver: UIMessageResolver
     private lateinit var listener: AddOrderTrackingProviderActionListener
     private lateinit var presenter: AddOrderShipmentTrackingContract.Presenter
@@ -57,7 +58,8 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), Toolbar.OnMenuIte
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.dialog_order_tracking_provider_list, container)
+        dialogView = inflater.inflate(R.layout.dialog_order_tracking_provider_list, container)
+        return dialogView
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -124,6 +126,12 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), Toolbar.OnMenuIte
         }
     }
 
+    /**
+     * TODO: need to rethink how to display Snackbar error over the dialog popup
+     * It doesn't seem possible without having to create our own custom SnackBar
+     * https://stackoverflow.com/questions/45760678/how-does-google-inbox-show-a-snackbar-covering-the-keyboard
+     * And technically not sure if displaying a SnackBar inside dialog is the right way to go
+     */
     override fun showProviderListErrorSnack() {
         uiMessageResolver.getSnack(R.string.orders_shipment_tracking_provider_list_error_fetch_generic).show()
     }

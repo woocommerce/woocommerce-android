@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
@@ -8,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
@@ -122,7 +125,21 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                 true
             }
             R.id.menu_add -> {
-                // TODO: add button functionality to be added
+                AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED)
+                if (!networkStatus.isConnected()) {
+                    uiMessageResolver.showOfflineSnack()
+                } else {
+                    val providerText = getProviderText()
+                    val trackingNumText = addTracking_number.text.toString()
+                    if (!providerText.isEmpty() && !trackingNumText.isEmpty()) {
+                        val data = Intent()
+                        data.putExtra(FIELD_ORDER_TRACKING_NUMBER, trackingNumText)
+                        data.putExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED, getDateShippedText())
+                        data.putExtra(FIELD_ORDER_TRACKING_PROVIDER, providerText)
+                        setResult(Activity.RESULT_OK, data)
+                        finish()
+                    }
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

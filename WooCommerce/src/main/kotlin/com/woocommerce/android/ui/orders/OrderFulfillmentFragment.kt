@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -17,6 +18,9 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_DATE_SHIPPED
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_NUMBER
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_PROVIDER
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -88,6 +92,23 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         super.onDestroyView()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_ADD_TRACKING) {
+            if (resultCode == RESULT_OK && data != null) {
+                val trackingNumText = data.getStringExtra(FIELD_ORDER_TRACKING_NUMBER)
+                val dateShippedText = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
+                val providerText = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
+                orderFulfill_addShipmentTracking.addTransientTrackingProvider(
+                        providerText,
+                        trackingNumText,
+                        dateShippedText
+                )
+                presenter.pushShipmentTrackingProvider(providerText, trackingNumText, dateShippedText)
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun showOrderDetail(order: WCOrderModel) {
         // Populate the Order Product List Card
         orderFulfill_products.initView(
@@ -129,6 +150,14 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                 WooAnimUtils.scaleOut(orderFulfill_addShipmentTracking, WooAnimUtils.Duration.MEDIUM)
             }
         }
+    }
+
+    override fun showAddShipmentTrackingSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_added).show()
+    }
+
+    override fun showAddAddShipmentTrackingErrorSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_error).show()
     }
 
     override fun onClick(v: View?) {
