@@ -30,7 +30,7 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
 
     override var orderModel: WCOrderModel? = null
     override var orderIdentifier: OrderIdentifier? = null
-    override var isUsingCachedShipmentTrackingProviders = false
+    override var isTrackingProviderFetched: Boolean = false
     private var addTrackingView: AddOrderShipmentTrackingContract.View? = null
     private var addTrackingProviderView: AddOrderShipmentTrackingContract.DialogView? = null
 
@@ -54,31 +54,35 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         addTrackingProviderView = null
     }
 
-    override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, isTrackingProviderFetched: Boolean) {
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
         }
+
+        // Pre-load shipment tracking providers when activity is first displayed
+        this.isTrackingProviderFetched = isTrackingProviderFetched
+        loadShipmentTrackingProviders()
     }
 
     /**
-     * Currently we are fetching providers list from the api if the network is connected.
-     * Perhaps have a mechanism to load providers based on some time limit?
-     * or once every time the app is opened (only if the plugin is available)?
-     * or initiate the request only once when add tracking button is clicked, before the dialog is even opened?
+     * Pre-load shipment tracking providers only if it is not already fetched
+     * If it is already fetched, load the providers list from db.
+     * If it is not fetched, and if network is connected, fetch list from api
+     * If it is not fetched and if network is not connected, fetch cached data from db
      */
     override fun loadShipmentTrackingProviders() {
         orderModel?.let { order ->
-            // preload data from db if available
-            loadShipmentTrackingProvidersFromDb()
-
-            if (networkStatus.isConnected()) {
-                // Attempt to refresh tracking providers from api in the background
-                addTrackingProviderView?.showSkeleton(true)
-                requestShipmentTrackingProvidersFromApi(order)
+            if (isTrackingProviderFetched) {
+                loadShipmentTrackingProvidersFromDb()
             } else {
-                // Track so when the device is connected shipment tracking providers list can be refreshed
-                isUsingCachedShipmentTrackingProviders = true
+                if (networkStatus.isConnected()) {
+                    addTrackingProviderView?.showSkeleton(true)
+                    requestShipmentTrackingProvidersFromApi(order)
+                } else {
+                    isTrackingProviderFetched = false
+                    loadShipmentTrackingProvidersFromDb()
+                }
             }
         }
     }
@@ -101,7 +105,7 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
             WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
             addTrackingProviderView?.showProviderListErrorSnack()
         } else {
-            isUsingCachedShipmentTrackingProviders = false
+            isTrackingProviderFetched = true
             loadShipmentTrackingProvidersFromDb()
         }
     }
@@ -112,7 +116,7 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         if (event.isConnected) {
             // Refresh order tracking providers list now that a connection is active
             orderModel?.let { order ->
-                if (isUsingCachedShipmentTrackingProviders) {
+                if (!isTrackingProviderFetched) {
                     requestShipmentTrackingProvidersFromApi(order)
                 }
             }

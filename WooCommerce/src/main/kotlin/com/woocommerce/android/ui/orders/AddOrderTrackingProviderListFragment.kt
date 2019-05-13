@@ -109,13 +109,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
             adapter = providerListAdapter
         }
 
-        /**
-         *  Load shipment tracking providers list from api.
-         *
-         *  This logic would need to be modified to refresh the provider list
-         *  only after a certain time frame. Perhaps once they open the app
-         **/
-
+        // Load shipment tracking providers
         presenter.loadShipmentTrackingProviders()
     }
 

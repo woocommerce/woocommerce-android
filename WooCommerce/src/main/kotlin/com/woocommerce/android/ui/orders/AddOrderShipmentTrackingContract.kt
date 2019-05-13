@@ -10,16 +10,17 @@ interface AddOrderShipmentTrackingContract {
     interface Presenter : BasePresenter<View> {
         var orderModel: WCOrderModel?
         var orderIdentifier: OrderIdentifier?
-        var isUsingCachedShipmentTrackingProviders: Boolean
+        var isTrackingProviderFetched: Boolean
         fun takeProviderDialogView(view: AddOrderShipmentTrackingContract.DialogView)
         fun dropProviderDialogView()
-        fun loadOrderDetail(orderIdentifier: OrderIdentifier)
+        fun loadOrderDetail(orderIdentifier: OrderIdentifier, isTrackingProviderFetched: Boolean)
         fun loadShipmentTrackingProviders()
         fun loadShipmentTrackingProvidersFromDb()
         fun requestShipmentTrackingProvidersFromApi(order: WCOrderModel)
     }
 
     interface View : BaseView<Presenter> {
+        fun isTrackingProviderFetched(): Boolean
         fun getDateShippedText(): String
         fun getProviderText(): String
     }

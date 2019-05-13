@@ -57,8 +57,8 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     }
 
     /*
-     * a transient note is a temporary placeholder created after the user adds a note but before the request to
-     * add the note has completed - this enables us to be optimistic about connectivity
+     * a transient note is a temporary placeholder created after the user adds a provider but before the request to
+     * add the provider has completed - this enables us to be optimistic about connectivity
      */
     fun addTransientTrackingProvider(
         provider: String,

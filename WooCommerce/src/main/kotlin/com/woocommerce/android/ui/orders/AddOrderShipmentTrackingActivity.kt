@@ -27,6 +27,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
         const val FIELD_ORDER_TRACKING_DATE_SHIPPED = "order-tracking-date-shipped"
         const val FIELD_ORDER_TRACKING_PROVIDER = "order-tracking-provider"
+        const val FIELD_ORDER_TRACKING_PROVIDER_FETCHED = "order-tracking-provider-fetched"
     }
 
     @Inject lateinit var networkStatus: NetworkStatus
@@ -34,6 +35,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     @Inject lateinit var presenter: AddOrderShipmentTrackingContract.Presenter
 
     private lateinit var orderId: OrderIdentifier
+    private var trackingProviderFetched: Boolean = false
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var providerListPickerDialog: AddOrderTrackingProviderListFragment? = null
 
@@ -49,17 +51,21 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
 
         if (savedInstanceState != null) {
             orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER) ?: ""
+            trackingProviderFetched = savedInstanceState.getBoolean(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, false)
             addTracking_number.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_NUMBER, ""))
             addTracking_editCarrier.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_PROVIDER, "")
             addTracking_date.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED)
         } else {
             orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER) ?: ""
+            trackingProviderFetched = intent.getBooleanExtra(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, false)
             intent.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)?.let { addTracking_editCarrier.text = it }
-            displayFormatDateShippedText(DateUtils.getCurrentDateString())
+            val dateShipped = intent.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)?.let { it }
+                    ?: DateUtils.getCurrentDateString()
+            displayFormatDateShippedText(dateShipped)
         }
 
         presenter.takeView(this)
-        presenter.loadOrderDetail(orderId)
+        presenter.loadOrderDetail(orderId, trackingProviderFetched)
 
         /**
          * When date field is clicked, open calendar dialog with default date set to
@@ -120,7 +126,12 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                // set result here to pass the selected provider text and the flag for fetching provider list
+                val intent = intent
+                intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, getProviderText())
+                intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, isTrackingProviderFetched())
+                setResult(Activity.RESULT_CANCELED, intent)
+                finish()
                 true
             }
             R.id.menu_add -> {
@@ -150,7 +161,12 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         outState?.putString(FIELD_ORDER_TRACKING_NUMBER, addTracking_number.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_DATE_SHIPPED, addTracking_date.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_PROVIDER, addTracking_editCarrier.text.toString())
+        outState?.putBoolean(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, isTrackingProviderFetched())
         super.onSaveInstanceState(outState)
+    }
+
+    override fun isTrackingProviderFetched(): Boolean {
+        return presenter.isTrackingProviderFetched
     }
 
     override fun getProviderText(): String {
