@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.RadioButton
 import android.widget.TextView
 import com.woocommerce.android.R
@@ -12,8 +14,9 @@ import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_header
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 
-class AddOrderTrackingProviderListAdapter : SectionedRecyclerViewAdapter() {
-    private val providerList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
+class AddOrderTrackingProviderListAdapter : SectionedRecyclerViewAdapter(), Filterable {
+    private var providerList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
+    private var providerSearchList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
 
     var selectedCarrierName: String = ""
         set(value) {
@@ -24,6 +27,23 @@ class AddOrderTrackingProviderListAdapter : SectionedRecyclerViewAdapter() {
         }
 
     fun setProviders(providers: List<WCOrderShipmentProviderModel>) {
+        updateAdapter(providers)
+        providerList.clear()
+        providerList.addAll(providers)
+
+        providerSearchList.clear()
+        providerSearchList.addAll(providerList)
+    }
+
+    fun clearAdapterData() {
+        if (providerList.isNotEmpty()) {
+            removeAllSections()
+            providerList.clear()
+            notifyDataSetChanged()
+        }
+    }
+
+    private fun updateAdapter(providers: List<WCOrderShipmentProviderModel>) {
         // clear all the current data from the adapter
         removeAllSections()
 
@@ -40,9 +60,34 @@ class AddOrderTrackingProviderListAdapter : SectionedRecyclerViewAdapter() {
             addSection(ProviderListSection(it.key, it.value))
         }
         notifyDataSetChanged()
+    }
 
-        providerList.clear()
-        providerList.addAll(providers)
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): Filter.FilterResults {
+                val charString = charSequence.toString()
+                providerList = if (charString.isEmpty()) {
+                    providerSearchList
+                } else {
+                    val filteredList = ArrayList<WCOrderShipmentProviderModel>()
+                    for (row in providerSearchList) {
+                        if (row.carrierName.contains(charString) ||
+                                row.country.contains(charString) ||
+                                row.carrierLink.contains(charString)) {
+                            filteredList.add(row)
+                        }
+                    }
+                    filteredList
+                }
+                val filterResults = Filter.FilterResults()
+                filterResults.values = providerList
+                return filterResults
+            }
+            override fun publishResults(charSequence: CharSequence, filterResults: Filter.FilterResults) {
+                providerList = filterResults.values as ArrayList<WCOrderShipmentProviderModel>
+                updateAdapter(providerList)
+            }
+        }
     }
 
     /**
