@@ -11,6 +11,7 @@ import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_PROVIDER_BUTTON_TAPPED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
@@ -86,6 +87,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
          * When carrier field is clicked, open dialog fragment to display list of providers
          */
         addTracking_editCarrier.setOnClickListener {
+            AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_PROVIDER_BUTTON_TAPPED)
             providerListPickerDialog = AddOrderTrackingProviderListFragment
                     .newInstance(
                             selectedProviderText = getProviderText(),
@@ -126,6 +128,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             android.R.id.home -> {
+                AnalyticsTracker.trackBackPressed(this)
                 // set result here to pass the selected provider text and the flag for fetching provider list
                 val intent = intent
                 intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, getProviderText())

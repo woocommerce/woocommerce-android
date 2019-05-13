@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_PROVIDERS_LIST_SEARCH
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -82,7 +83,6 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
 
         savedInstanceState?.let {
             selectedProviderText = it.getString(STATE_KEY_SELECTED_PROVIDER)
-//            listState = it.getParcelable(STATE_KEY_LIST)
             searchQuery = it.getString(STATE_KEY_SEARCH_QUERY, "")
         }
 
@@ -159,6 +159,10 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
 
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
+        AnalyticsTracker.track(
+                ORDER_SHIPMENT_TRACKING_PROVIDERS_LIST_SEARCH,
+                mapOf(AnalyticsTracker.KEY_SEARCH to query))
+
         providerListAdapter.filter.filter(query)
         org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
         return true
