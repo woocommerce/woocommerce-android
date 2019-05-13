@@ -48,6 +48,14 @@ object DateUtils {
         return context.getString(R.string.date_at_time, dateLabel, timeString)
     }
 
+    /**
+     * Similar to the above but returns only the date portion
+     */
+    fun getFriendlyShortDateString(context: Context, rawDate: String): String {
+        val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
+        return DateFormat.getDateFormat(context).format(date)
+    }
+
     fun getFriendlyLongDateAtTimeString(context: Context, rawDate: String): String {
         val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
         val timeGroup = TimeGroup.getTimeGroupForDate(date)
