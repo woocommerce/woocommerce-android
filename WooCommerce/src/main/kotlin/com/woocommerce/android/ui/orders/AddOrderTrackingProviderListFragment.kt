@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
@@ -20,11 +19,11 @@ import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 
 class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentTrackingContract.DialogView,
-        OnQueryTextListener {
+        OnQueryTextListener, View.OnClickListener {
     companion object {
         const val TAG: String = "AddOrderTrackingProviderListFragment"
-        const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
+        const val STATE_KEY_SELECTED_PROVIDER = "selected-provider"
 
         /**
          * @param selectedProviderText = to update the currently selected provider item (if already selected)
@@ -37,6 +36,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
             listener: AddOrderTrackingProviderActionListener
         ): AddOrderTrackingProviderListFragment {
             val fragment = AddOrderTrackingProviderListFragment()
+            fragment.retainInstance = true
             fragment.listener = listener
             fragment.presenter = presenter
             fragment.selectedProviderText = selectedProviderText
@@ -45,11 +45,10 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
     }
 
     private var selectedProviderText: String? = null
-    private lateinit var listener: AddOrderTrackingProviderActionListener
-    private lateinit var presenter: AddOrderShipmentTrackingContract.Presenter
+    private var listener: AddOrderTrackingProviderActionListener? = null
+    private var presenter: AddOrderShipmentTrackingContract.Presenter? = null
     private lateinit var providerListAdapter: AddOrderTrackingProviderListAdapter
 
-    private var listState: Parcelable? = null // Save the state of the recycler view
     private var searchView: SearchView? = null
     private var searchQuery: String = ""
 
@@ -58,10 +57,6 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme)
-        savedInstanceState?.let { bundle ->
-            listState = bundle.getParcelable(STATE_KEY_LIST)
-            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -75,11 +70,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         val toolbar = toolbar as Toolbar
         toolbar.title = getString(R.string.order_shipment_tracking_provider_toolbar_title)
         toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.zui_ic_back)
-        toolbar.setNavigationOnClickListener {
-            // handles back button navigation
-            listener.onTrackingProviderSelected(providerListAdapter.selectedCarrierName)
-            dismiss()
-        }
+        toolbar.setNavigationOnClickListener(this)
         toolbar.inflateMenu(R.menu.menu_search)
         val searchMenuItem = toolbar.menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
@@ -89,18 +80,21 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        presenter.takeProviderDialogView(this)
-
-        listState?.let {
-            addTrackingProviderList.layoutManager?.onRestoreInstanceState(listState)
-            listState = null
+        savedInstanceState?.let {
+            selectedProviderText = it.getString(STATE_KEY_SELECTED_PROVIDER)
+//            listState = it.getParcelable(STATE_KEY_LIST)
+            searchQuery = it.getString(STATE_KEY_SEARCH_QUERY, "")
         }
+
+        presenter?.takeProviderDialogView(this)
 
         // Initialise the adapter
         providerListAdapter = AddOrderTrackingProviderListAdapter()
 
         // Update previously selected provider by the user, if available
-        selectedProviderText?.let { providerListAdapter.selectedCarrierName = it }
+        selectedProviderText?.let {
+            providerListAdapter.selectedCarrierName = it
+        }
 
         addTrackingProviderList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -110,13 +104,12 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         }
 
         // Load shipment tracking providers
-        presenter.loadShipmentTrackingProviders()
+        presenter?.loadShipmentTrackingProviders()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        val listState = addTrackingProviderList.layoutManager?.onSaveInstanceState()
-        outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
+        outState.putString(STATE_KEY_SELECTED_PROVIDER, providerListAdapter.selectedCarrierName)
 
         super.onSaveInstanceState(outState)
     }
@@ -127,8 +120,13 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
     }
 
     override fun onDestroyView() {
-        presenter.dropProviderDialogView()
+        presenter?.dropProviderDialogView()
         searchView = null
+
+        if (retainInstance) {
+            dialog?.setDismissMessage(null)
+        }
+
         super.onDestroyView()
     }
 
@@ -154,6 +152,11 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         providerListAdapter.setProviders(providers)
     }
 
+    override fun onClick(v: View?) {
+        listener?.onTrackingProviderSelected(providerListAdapter.selectedCarrierName)
+        dismiss()
+    }
+
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
         providerListAdapter.filter.filter(query)
@@ -166,7 +169,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
             providerListAdapter.clearAdapterData()
             providerListAdapter.filter.filter(newText)
         } else {
-            presenter.loadShipmentTrackingProvidersFromDb()
+            presenter?.loadShipmentTrackingProvidersFromDb()
         }
         return true
     }
