@@ -2,6 +2,10 @@ package com.woocommerce.android.ui.orders
 
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
+import java.text.SimpleDateFormat
+import java.util.Date
 
 object OrderTestUtils {
     /**
@@ -110,6 +114,31 @@ object OrderTestUtils {
                 note = "This is a test note $i"
             })
         }
+        return result
+    }
+
+    fun generateOrderShipmentTrackings(totalCount: Int, lOrderId: Int): List<WCOrderShipmentTrackingModel> {
+        val result = ArrayList<WCOrderShipmentTrackingModel>()
+        for (i in totalCount downTo 1) {
+            result.add(WCOrderShipmentTrackingModel(totalCount).apply {
+                trackingProvider = "TNT Express $i"
+                trackingNumber = "$i"
+                dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
+                trackingLink = "www.somelink$i.com"
+                localOrderId = lOrderId
+            })
+        }
+        return result
+    }
+
+    fun generateOrderShipmentProviders(): List<WCOrderShipmentProviderModel> {
+        val result = ArrayList<WCOrderShipmentProviderModel>()
+        result.add(WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "Australia"
+            carrierName = "Anitaa Test"
+            carrierLink = "http://google.com"
+        })
         return result
     }
 }

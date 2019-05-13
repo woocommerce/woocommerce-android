@@ -61,6 +61,16 @@ class OrderFulfillmentPresenter @Inject constructor(
         }
     }
 
+    /**
+     * Question:
+     * Since order shipment tracking list is already requested in [OrderDetailFragment]
+     * does it make sense to fetch from api again here, even if network is connected?
+     * Unless the user clicks on `Fulfil Order` button before the api data is returned, in which
+     * case it would be better to call api again.
+     * So logic should be to load from cache is available.
+     * If data not available in cache, fetch from api if network is connected.
+     * If data not available in cache and network not available, the optional tracking card will not be displayed
+     */
     override fun loadOrderShipmentTrackings() {
         orderModel?.let { order ->
             // Preload trackings from the db is available
