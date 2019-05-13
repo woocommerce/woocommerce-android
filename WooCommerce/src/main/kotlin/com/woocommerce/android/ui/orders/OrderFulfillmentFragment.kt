@@ -148,8 +148,11 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         orderFulfill_btnComplete.setOnClickListener(this)
     }
 
+    /**
+     * The Optional shipment tracking card should be displayed
+     * even if there are no trackings available
+     */
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
-        if (trackings.isNotEmpty()) {
             orderFulfill_addShipmentTracking.initView(
                     trackings = trackings,
                     uiMessageResolver = uiMessageResolver,
@@ -159,11 +162,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
             if (orderFulfill_addShipmentTracking.visibility != View.VISIBLE) {
                 WooAnimUtils.scaleIn(orderFulfill_addShipmentTracking, WooAnimUtils.Duration.MEDIUM)
             }
-        } else {
-            if (orderFulfill_addShipmentTracking.visibility == View.VISIBLE) {
-                WooAnimUtils.scaleOut(orderFulfill_addShipmentTracking, WooAnimUtils.Duration.MEDIUM)
-            }
-        }
     }
 
     override fun showAddShipmentTrackingSnack() {
