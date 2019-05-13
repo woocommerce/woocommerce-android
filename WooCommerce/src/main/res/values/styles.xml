@@ -319,6 +319,10 @@
     <style name="Woo.OrderList.Header" parent="Woo.ListHeader"/>
     <style name="Woo.OrderList.TextAppearance.Header" parent="Woo.TextAppearance.ListHeader"/>
     <style name="Woo.OrderList.TextAppearance.ListItem" parent="Woo.TextAppearance.ListItem"/>
+    <style name="Woo.OrderList.TextAppearance.ListItem.Date" parent="Woo.TextAppearance.ListItem">
+        <item name="tabTextColor">@color/wc_grey</item>
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
     <style name="Woo.OrderList.TextAppearance.ListItem.Title" parent="Woo.TextAppearance.ListItem.Title"/>
     <style name="Woo.OrderList.TextAppearance.ListItem.Title.Bold">
         <item name="android:textStyle">bold</item>

@@ -7,13 +7,24 @@
     style="@style/Woo.OrderList.Item">
 
     <TextView
+        android:id="@+id/orderDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="May 11, 1967"/>
+
+    <TextView
         android:id="@+id/orderNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/orderDate"
         tools:text="#51"/>
 
     <TextView
@@ -22,23 +33,21 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/list_item_padding_intra_h"
         android:layout_marginStart="@dimen/list_item_padding_intra_h"
-        android:layout_marginTop="8dp"
         android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title.Bold"
+        app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toStartOf="@+id/orderTotal"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/orderNum"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="@+id/orderNum"
         tools:text="John Doe"/>
 
     <TextView
         android:id="@+id/orderTotal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:textAppearance="@style/Woo.OrderList.TextAppearance.ListItem.Title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/orderNum"
         tools:text="$100"/>
 
     <com.woocommerce.android.widgets.FlowLayout

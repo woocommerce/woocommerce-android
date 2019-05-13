@@ -7,6 +7,8 @@ import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.FlowLayout
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
@@ -178,11 +180,29 @@ class OrderListAdapter @Inject constructor(
             return ItemViewHolder(view)
         }
 
+        private fun getShortOrderDate(order: WCOrderModel): String? {
+            try {
+                val dateOnly = order.dateCreated.substringBefore("T")
+                return DateUtils.getShortMonthDayString(dateOnly)
+            } catch (e: IllegalArgumentException) {
+                WooLog.e(WooLog.T.ORDERS, e)
+                return null
+            }
+        }
+
         override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val order = list[position]
             val itemHolder = holder as ItemViewHolder
             val resources = itemHolder.rootView.context.applicationContext.resources
             val ctx = itemHolder.rootView.context
+
+            val dateStr = getShortOrderDate(order)
+            if (dateStr != null) {
+                itemHolder.orderDate.text = dateStr
+                itemHolder.orderDate.visibility = View.VISIBLE
+            } else {
+                itemHolder.orderDate.visibility = View.GONE
+            }
 
             itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.number)
             itemHolder.orderName.text = resources.getString(
@@ -237,6 +257,7 @@ class OrderListAdapter @Inject constructor(
     }
 
     private class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        var orderDate: TextView = view.orderDate
         var orderNum: TextView = view.orderNum
         var orderName: TextView = view.orderName
         var orderTotal: TextView = view.orderTotal
