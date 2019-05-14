@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_PROVIDERS_LIST_SEARCH
@@ -75,7 +76,10 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         toolbar.inflateMenu(R.menu.menu_search)
         val searchMenuItem = toolbar.menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.setOnQueryTextListener(this)
+        searchView?.let {
+            it.imeOptions = it.imeOptions or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+            it.setOnQueryTextListener(this)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
