@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.R
@@ -17,7 +18,6 @@ import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
-import java.text.DateFormat
 import java.util.Date
 import javax.inject.Inject
 
@@ -35,7 +35,6 @@ class OrderListAdapter @Inject constructor(
 
     private var loadMoreListener: OnLoadMoreListener? = null
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
-    private val dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT)
     var orderStatusFilter: String? = null
     private var orderStatusOptionsMap: Map<String, WCOrderStatusModel> = emptyMap()
 
@@ -168,13 +167,18 @@ class OrderListAdapter @Inject constructor(
     }
 
     /**
-     * Returns the order date formatted as a date string, or null if the date is missing or invalid
+     * Returns the order date formatted as a date string, or null if the date is missing or invalid.
+     * Note that the year is not shown when it's the same as the current one
      */
-    private fun getFormattedOrderDate(order: WCOrderModel): String? {
-        val date = DateTimeUtils.dateUTCFromIso8601(order.dateCreated)
-        return date?.let {
-            dateFormatter.format(it)
-        }
+    private fun getFormattedOrderDate(context: Context, order: WCOrderModel): String? {
+        DateTimeUtils.dateUTCFromIso8601(order.dateCreated)?.let { date ->
+            val flags = if (DateTimeUtils.isSameYear(date, DateTimeUtils.nowUTC())) {
+                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_YEAR
+            } else {
+                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
+            }
+            return DateUtils.formatDateTime(context, date.time, flags)
+        } ?: return null
     }
 
     /**
@@ -196,7 +200,7 @@ class OrderListAdapter @Inject constructor(
             val resources = itemHolder.rootView.context.applicationContext.resources
             val ctx = itemHolder.rootView.context
 
-            val dateStr = getFormattedOrderDate(order)
+            val dateStr = getFormattedOrderDate(ctx, order)
             if (dateStr != null) {
                 itemHolder.orderDate.text = dateStr
                 itemHolder.orderDate.visibility = View.VISIBLE
