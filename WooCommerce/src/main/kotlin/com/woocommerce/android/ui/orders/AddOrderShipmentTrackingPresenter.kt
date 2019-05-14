@@ -16,11 +16,13 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersChanged
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class AddOrderShipmentTrackingPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val wcStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus
 ) : AddOrderShipmentTrackingContract.Presenter {
@@ -102,6 +104,10 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         } else {
             addTrackingProviderView?.showProviderList(providers)
         }
+    }
+
+    override fun loadStoreCountryFromDb(): String? {
+        return wcStore.getStoreCountry(selectedSite.get())
     }
 
     @Suppress("unused")

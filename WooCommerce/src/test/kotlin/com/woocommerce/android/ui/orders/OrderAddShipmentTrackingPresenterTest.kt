@@ -19,12 +19,14 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class OrderAddShipmentTrackingPresenterTest {
     private val view: AddOrderShipmentTrackingContract.View = mock()
     private val dialogView: AddOrderShipmentTrackingContract.DialogView = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
+    private val wcStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
 
@@ -35,7 +37,7 @@ class OrderAddShipmentTrackingPresenterTest {
     @Before
     fun setup() {
         presenter = spy(AddOrderShipmentTrackingPresenter(
-                dispatcher, orderStore, selectedSite, networkStatus
+                dispatcher, orderStore, wcStore, selectedSite, networkStatus
         ))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()

@@ -17,6 +17,7 @@ interface AddOrderShipmentTrackingContract {
         fun loadShipmentTrackingProviders()
         fun loadShipmentTrackingProvidersFromDb()
         fun requestShipmentTrackingProvidersFromApi(order: WCOrderModel)
+        fun loadStoreCountryFromDb(): String?
     }
 
     interface View : BaseView<Presenter> {

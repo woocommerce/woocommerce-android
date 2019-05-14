@@ -94,7 +94,10 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         presenter?.takeProviderDialogView(this)
 
         // Initialise the adapter
-        providerListAdapter = AddOrderTrackingProviderListAdapter(this)
+        providerListAdapter = AddOrderTrackingProviderListAdapter(
+                presenter?.loadStoreCountryFromDb(),
+                this
+        )
 
         // Update previously selected provider by the user, if available
         selectedProviderText?.let {
