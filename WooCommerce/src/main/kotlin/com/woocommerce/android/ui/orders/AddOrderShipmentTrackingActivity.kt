@@ -121,7 +121,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
      * Reusing the same menu used for adding order notes
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_add_note, menu)
+        menuInflater.inflate(R.menu.menu_add, menu)
         return true
     }
 

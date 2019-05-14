@@ -98,7 +98,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_add_note, menu)
+        menuInflater.inflate(R.menu.menu_add, menu)
         return true
     }
 
