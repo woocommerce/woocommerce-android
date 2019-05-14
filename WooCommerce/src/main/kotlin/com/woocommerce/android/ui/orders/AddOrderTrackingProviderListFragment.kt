@@ -16,12 +16,13 @@ import android.view.inputmethod.EditorInfo
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_PROVIDERS_LIST_SEARCH
+import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListAdapter.OnProviderClickListener
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 
 class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentTrackingContract.DialogView,
-        OnQueryTextListener, View.OnClickListener {
+        OnQueryTextListener, OnProviderClickListener {
     companion object {
         const val TAG: String = "AddOrderTrackingProviderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -72,7 +73,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         val toolbar = toolbar as Toolbar
         toolbar.title = getString(R.string.order_shipment_tracking_provider_toolbar_title)
         toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.zui_ic_back)
-        toolbar.setNavigationOnClickListener(this)
+        toolbar.setNavigationOnClickListener { dismiss() }
         toolbar.inflateMenu(R.menu.menu_search)
         val searchMenuItem = toolbar.menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
@@ -93,7 +94,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         presenter?.takeProviderDialogView(this)
 
         // Initialise the adapter
-        providerListAdapter = AddOrderTrackingProviderListAdapter()
+        providerListAdapter = AddOrderTrackingProviderListAdapter(this)
 
         // Update previously selected provider by the user, if available
         selectedProviderText?.let {
@@ -152,13 +153,13 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         }
     }
 
-    override fun showProviderList(providers: List<WCOrderShipmentProviderModel>) {
-        providerListAdapter.setProviders(providers)
-    }
-
-    override fun onClick(v: View?) {
+    override fun onProviderClick(providerName: String) {
         listener?.onTrackingProviderSelected(providerListAdapter.selectedCarrierName)
         dismiss()
+    }
+
+    override fun showProviderList(providers: List<WCOrderShipmentProviderModel>) {
+        providerListAdapter.setProviders(providers)
     }
 
     // region search

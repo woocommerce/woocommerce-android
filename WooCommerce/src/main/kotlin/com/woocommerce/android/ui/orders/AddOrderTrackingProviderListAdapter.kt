@@ -14,7 +14,9 @@ import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_header
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 
-class AddOrderTrackingProviderListAdapter : SectionedRecyclerViewAdapter(), Filterable {
+class AddOrderTrackingProviderListAdapter(
+    val listener: OnProviderClickListener
+) : SectionedRecyclerViewAdapter(), Filterable {
     private var providerList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
     private var providerSearchList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
 
@@ -25,6 +27,10 @@ class AddOrderTrackingProviderListAdapter : SectionedRecyclerViewAdapter(), Filt
                 notifyDataSetChanged()
             }
         }
+
+    interface OnProviderClickListener {
+        fun onProviderClick(providerName: String)
+    }
 
     fun setProviders(providers: List<WCOrderShipmentProviderModel>) {
         updateAdapter(providers)
@@ -124,6 +130,7 @@ class AddOrderTrackingProviderListAdapter : SectionedRecyclerViewAdapter(), Filt
                 val providerItem = it.tag as WCOrderShipmentProviderModel
                 if (selectedCarrierName != providerItem.carrierName) {
                     selectedCarrierName = providerItem.carrierName
+                    listener.onProviderClick(selectedCarrierName)
                 }
             }
         }
