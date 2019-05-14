@@ -74,6 +74,10 @@
             android:name=".ui.imageviewer.ImageViewerActivity"
             android:theme="@style/ImageViewer.Activity"/>
 
+        <activity
+            android:name=".ui.orders.AddOrderShipmentTrackingActivity"
+            android:configChanges="orientation|screenSize"/>
+
         <!-- Services -->
         <service
             android:name=".push.FCMRegistrationIntentService"
