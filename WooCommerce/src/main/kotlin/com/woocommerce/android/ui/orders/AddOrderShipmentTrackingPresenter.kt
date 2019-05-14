@@ -69,7 +69,8 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
      * Pre-load shipment tracking providers only if it is not already fetched
      * If it is already fetched, load the providers list from db.
      * If it is not fetched, and if network is connected, fetch list from api
-     * If it is not fetched and if network is not connected, fetch cached data from db
+     * If it is not fetched and if network is not connected, fetch cached data from db, if available
+     * If no cached data is available and network is not connected, display error snack
      */
     override fun loadShipmentTrackingProviders() {
         orderModel?.let { order ->
@@ -80,7 +81,6 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
                     addTrackingProviderView?.showSkeleton(true)
                     requestShipmentTrackingProvidersFromApi(order)
                 } else {
-                    isTrackingProviderFetched = false
                     loadShipmentTrackingProvidersFromDb()
                 }
             }
@@ -92,9 +92,16 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentProvidersAction(payload))
     }
 
+    /**
+     * When data from cache is empty, display error snack
+     */
     override fun loadShipmentTrackingProvidersFromDb() {
         val providers = orderStore.getShipmentProvidersForSite(selectedSite.get())
-        addTrackingProviderView?.showProviderList(providers)
+        if (providers.isNullOrEmpty()) {
+            addTrackingProviderView?.showProviderListErrorSnack()
+        } else {
+            addTrackingProviderView?.showProviderList(providers)
+        }
     }
 
     @Suppress("unused")

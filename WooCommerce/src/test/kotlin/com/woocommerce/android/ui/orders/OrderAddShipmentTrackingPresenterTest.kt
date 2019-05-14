@@ -15,6 +15,7 @@ import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -60,9 +61,12 @@ class OrderAddShipmentTrackingPresenterTest {
     fun `Request order shipment providers from api only when network available - success`() {
         presenter.takeProviderDialogView(dialogView)
         doReturn(order).whenever(presenter).orderModel
+
+        // request providers list from api only if network available
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(wcOrderShipmentProviderModels).whenever(orderStore).getShipmentProvidersForSite(any())
 
+        // request providers list from api only if not already fetched i.e. isTrackingProviderFetched = false
         presenter.loadOrderDetail(order.getIdentifier(), false)
         verify(presenter, times(0)).loadShipmentTrackingProvidersFromDb()
         verify(presenter, times(1)).requestShipmentTrackingProvidersFromApi(any())
@@ -81,6 +85,7 @@ class OrderAddShipmentTrackingPresenterTest {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(wcOrderShipmentProviderModels).whenever(orderStore).getShipmentProvidersForSite(any())
 
+        // request providers list from api only if not already fetched i.e. isTrackingProviderFetched = false
         presenter.loadOrderDetail(order.getIdentifier(), false)
         verify(presenter, times(0)).loadShipmentTrackingProvidersFromDb()
         verify(presenter, times(1)).requestShipmentTrackingProvidersFromApi(any())
@@ -101,6 +106,7 @@ class OrderAddShipmentTrackingPresenterTest {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(wcOrderShipmentProviderModels).whenever(orderStore).getShipmentProvidersForSite(any())
 
+        // isTrackingProviderFetched = true so providers list already fetched
         presenter.loadOrderDetail(order.getIdentifier(), true)
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
         verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())
@@ -140,5 +146,17 @@ class OrderAddShipmentTrackingPresenterTest {
 
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())
+    }
+
+    @Test
+    fun `Display error when no cache and no network available`() {
+        presenter.takeProviderDialogView(dialogView)
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(false).whenever(networkStatus).isConnected()
+        doReturn(emptyList<WCOrderShipmentProviderModel>()).whenever(orderStore).getShipmentProvidersForSite(any())
+
+        presenter.loadOrderDetail(order.getIdentifier(), false)
+        verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
+        verify(dialogView, times(1)).showProviderListErrorSnack()
     }
 }
