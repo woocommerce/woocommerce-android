@@ -7,7 +7,6 @@ import android.widget.TextView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.FlowLayout
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
@@ -18,6 +17,7 @@ import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
+import java.text.DateFormat
 import java.util.Date
 import javax.inject.Inject
 
@@ -35,6 +35,7 @@ class OrderListAdapter @Inject constructor(
 
     private var loadMoreListener: OnLoadMoreListener? = null
     private val orderList: ArrayList<WCOrderModel> = ArrayList()
+    private val dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT)
     var orderStatusFilter: String? = null
     private var orderStatusOptionsMap: Map<String, WCOrderStatusModel> = emptyMap()
 
@@ -167,6 +168,16 @@ class OrderListAdapter @Inject constructor(
     }
 
     /**
+     * Returns the order date formatted as a date string, or null if the date is missing or invalid
+     */
+    private fun getFormattedOrderDate(order: WCOrderModel): String? {
+        val date = DateTimeUtils.dateUTCFromIso8601(order.dateCreated)
+        return date?.let {
+            dateFormatter.format(it)
+        }
+    }
+
+    /**
      * Custom class represents a single [TimeGroup] and it's assigned list of [WCOrderModel]. Responsible
      * for providing and populating the header and item view holders.
      */
@@ -185,8 +196,8 @@ class OrderListAdapter @Inject constructor(
             val resources = itemHolder.rootView.context.applicationContext.resources
             val ctx = itemHolder.rootView.context
 
-            val dateStr = DateUtils.getFriendlyShortDateString(ctx, order.dateCreated)
-            if (dateStr.isNotEmpty()) {
+            val dateStr = getFormattedOrderDate(order)
+            if (dateStr != null) {
                 itemHolder.orderDate.text = dateStr
                 itemHolder.orderDate.visibility = View.VISIBLE
             } else {
