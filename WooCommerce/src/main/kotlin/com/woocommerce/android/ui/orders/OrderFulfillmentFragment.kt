@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_DATE_SHIPPED
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_NUMBER
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_PROVIDER
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_PROVIDER_FETCHED
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -57,7 +56,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     @Inject lateinit var productImageMap: ProductImageMap
 
     private var shipmentTrackingProviderName: String? = null
-    private var shipmentTrackingProviderFetched: Boolean = false
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -101,7 +99,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
             if (data != null) {
                 val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
                 shipmentTrackingProviderName = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
-                shipmentTrackingProviderFetched = data.getBooleanExtra(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, false)
 
                 if (resultCode == RESULT_OK) {
                     shipmentTrackingProviderName?.let {
@@ -210,7 +207,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         presenter.orderModel?.let {
             val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
             intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
-            intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, shipmentTrackingProviderFetched)
             intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, shipmentTrackingProviderName)
             startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
         }

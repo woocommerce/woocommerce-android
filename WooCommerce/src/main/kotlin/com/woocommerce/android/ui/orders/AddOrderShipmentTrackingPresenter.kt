@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
@@ -30,7 +31,7 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
 
     override var orderModel: WCOrderModel? = null
     override var orderIdentifier: OrderIdentifier? = null
-    override var isTrackingProviderFetched: Boolean = false
+    override var isShipmentTrackingProviderListFetched: Boolean = false
     private var addTrackingView: AddOrderShipmentTrackingContract.View? = null
     private var addTrackingProviderView: AddOrderShipmentTrackingContract.DialogView? = null
 
@@ -54,36 +55,38 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         addTrackingProviderView = null
     }
 
-    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, isTrackingProviderFetched: Boolean) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            loadShipmentTrackingProviders()
         }
-
-        // Pre-load shipment tracking providers when activity is first displayed
-        this.isTrackingProviderFetched = isTrackingProviderFetched
-        loadShipmentTrackingProviders()
     }
 
     /**
-     * Pre-load shipment tracking providers only if it is not already fetched
-     * If it is already fetched, load the providers list from db.
-     * If it is not fetched, and if network is connected, fetch list from api
-     * If it is not fetched and if network is not connected, fetch cached data from db, if available
-     * If no cached data is available and network is not connected, display error snack
+     * Load provider list from db.
+     * If list not available in cache and if network is connected, fetch list from api
+     * If list not available in cache and if network is not connected, display error snack
      */
     override fun loadShipmentTrackingProviders() {
         orderModel?.let { order ->
-            if (isTrackingProviderFetched) {
-                loadShipmentTrackingProvidersFromDb()
-            } else {
+            loadShipmentTrackingProvidersFromDb()
+            if (!isShipmentTrackingProviderListFetched) {
                 if (networkStatus.isConnected()) {
                     addTrackingProviderView?.showSkeleton(true)
                     requestShipmentTrackingProvidersFromApi(order)
                 } else {
-                    loadShipmentTrackingProvidersFromDb()
+                    addTrackingProviderView?.showProviderListErrorSnack()
                 }
             }
+        }
+    }
+
+    override fun loadShipmentTrackingProvidersFromDb() {
+        val providers = requestShipmentTrackingProvidersFromDb()
+        if (!providers.isNullOrEmpty()) {
+            isShipmentTrackingProviderListFetched = true
+            addTrackingProviderView?.showProviderList(providers)
         }
     }
 
@@ -92,16 +95,8 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentProvidersAction(payload))
     }
 
-    /**
-     * When data from cache is empty, display error snack
-     */
-    override fun loadShipmentTrackingProvidersFromDb() {
-        val providers = orderStore.getShipmentProvidersForSite(selectedSite.get())
-        if (providers.isNullOrEmpty()) {
-            addTrackingProviderView?.showProviderListErrorSnack()
-        } else {
-            addTrackingProviderView?.showProviderList(providers)
-        }
+    override fun requestShipmentTrackingProvidersFromDb(): List<WCOrderShipmentProviderModel> {
+        return orderStore.getShipmentProvidersForSite(selectedSite.get())
     }
 
     @Suppress("unused")
@@ -112,7 +107,6 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
             WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
             addTrackingProviderView?.showProviderListErrorSnack()
         } else {
-            isTrackingProviderFetched = true
             loadShipmentTrackingProvidersFromDb()
         }
     }
@@ -123,7 +117,7 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         if (event.isConnected) {
             // Refresh order tracking providers list now that a connection is active
             orderModel?.let { order ->
-                if (!isTrackingProviderFetched) {
+                if (!isShipmentTrackingProviderListFetched) {
                     requestShipmentTrackingProvidersFromApi(order)
                 }
             }

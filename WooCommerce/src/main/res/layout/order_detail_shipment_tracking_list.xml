@@ -36,7 +36,7 @@
         style="@style/Woo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_gravity="center_vertical"
         android:text="@string/order_shipment_tracking_add_button"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
