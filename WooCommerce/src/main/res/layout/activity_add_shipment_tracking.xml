@@ -31,17 +31,17 @@
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/addTracking_editCarrier"
-            style="@style/EditText"
+            style="@style/Woo.Add.Tracking.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/ic_arrow_right_grey"
             android:gravity="top"
+            android:hint="@string/order_shipment_tracking_provider_hint"
             android:minHeight="0dp"
-            android:paddingLeft="0dp"
-            android:paddingStart="0dp"
-            android:paddingRight="0dp"
             android:paddingEnd="0dp"
-            tools:text="Fedex"/>
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingStart="0dp"
+            />
 
         <View
             android:id="@+id/addTracking_editCarrierDivider"
@@ -60,6 +60,7 @@
 
         <EditText
             android:id="@+id/addTracking_number"
+            style="@style/Woo.Add.Tracking.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_medium"
@@ -87,14 +88,16 @@
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/addTracking_date"
-            style="@style/Widget.AppCompat.Spinner"
+            style="@style/Woo.Add.Tracking.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="top"
+            android:inputType="date"
+            android:minHeight="0dp"
             android:paddingEnd="0dp"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
             android:paddingStart="0dp"
-            android:inputType="date"
             android:textColor="@color/edit_text_text_color"
             tools:text="May 8, 2019"/>
     </LinearLayout>
