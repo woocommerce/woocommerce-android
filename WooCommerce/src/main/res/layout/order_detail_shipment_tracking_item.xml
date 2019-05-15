@@ -15,8 +15,6 @@
         android:focusable="true"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/order_shipment_tracking_copy_to_clipboard"
-        android:paddingStart="@dimen/list_item_padding_start"
-        android:paddingEnd="@dimen/list_item_padding_end"
         android:paddingTop="@dimen/list_divider_padding_top"
         android:paddingBottom="@dimen/list_divider_padding_bottom"
         app:layout_constraintEnd_toStartOf="@+id/tracking_btnTrack"
