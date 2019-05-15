@@ -1,20 +1,19 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderFulfillmentContract.View
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
@@ -100,8 +99,10 @@ class OrderFulfillmentPresenter @Inject constructor(
 
     override fun pushShipmentTrackingProvider(provider: String, trackingNum: String, dateShipped: String) {
         AnalyticsTracker.track(
-                ORDER_SHIPMENT_TRACKING_ADD,
-                mapOf(AnalyticsTracker.KEY_PARENT_ID to orderModel!!.remoteOrderId)
+                ORDER_TRACKING_ADD,
+                mapOf(AnalyticsTracker.KEY_ID to orderModel!!.remoteOrderId,
+                        AnalyticsTracker.KEY_STATUS to orderModel!!.status,
+                        AnalyticsTracker.KEY_CARRIER to provider)
         )
 
         if (!networkStatus.isConnected()) {
@@ -150,7 +151,7 @@ class OrderFulfillmentPresenter @Inject constructor(
         if (event.causeOfChange == ADD_ORDER_SHIPMENT_TRACKING) {
             if (event.isError) {
                 AnalyticsTracker.track(
-                        ORDER_SHIPMENT_TRACKING_ADD_FAILED, mapOf(
+                        ORDER_TRACKING_FAILED, mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
                         AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
@@ -158,7 +159,7 @@ class OrderFulfillmentPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error posting order note : ${event.error.message}")
                 orderView?.showAddAddShipmentTrackingErrorSnack()
             } else {
-                AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_SUCCESS)
+                AnalyticsTracker.track(ORDER_TRACKING_SUCCESS)
             }
 
             // note that we refresh even on error to make sure the transient tracking provider is removed
@@ -169,10 +170,6 @@ class OrderFulfillmentPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order shipment tracking info: ${event.error.message}")
             } else {
                 orderModel?.let { order ->
-                    AnalyticsTracker.track(
-                            Stat.ORDER_FULFILMENT_ORDER_SHIPMENT_TRACKING_LOADED,
-                            mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
-
                     isUsingCachedShipmentTrackings = false
                     loadShipmentTrackingsFromDb()
                 }

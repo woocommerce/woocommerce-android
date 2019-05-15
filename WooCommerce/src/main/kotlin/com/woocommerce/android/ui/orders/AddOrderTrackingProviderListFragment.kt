@@ -15,7 +15,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_PROVIDERS_LIST_SEARCH
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_CARRIER_SELECTED
 import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListAdapter.OnProviderClickListener
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list.*
@@ -154,6 +154,10 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
     }
 
     override fun onProviderClick(providerName: String) {
+        AnalyticsTracker.track(
+                ORDER_FULFILLMENT_TRACKING_CARRIER_SELECTED,
+                mapOf(AnalyticsTracker.KEY_OPTION to providerName)
+        )
         listener?.onTrackingProviderSelected(providerListAdapter.selectedCarrierName)
         dismiss()
     }
@@ -164,10 +168,6 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
 
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
-        AnalyticsTracker.track(
-                ORDER_SHIPMENT_TRACKING_PROVIDERS_LIST_SEARCH,
-                mapOf(AnalyticsTracker.KEY_SEARCH to query))
-
         providerListAdapter.filter.filter(query)
         org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
         return true
