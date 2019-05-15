@@ -76,7 +76,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         toolbar.setNavigationOnClickListener { dismiss() }
         toolbar.inflateMenu(R.menu.menu_search)
         val searchMenuItem = toolbar.menu?.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView?
+        searchView = searchMenuItem?.actionView as? SearchView?
         searchView?.let {
             it.imeOptions = it.imeOptions or EditorInfo.IME_FLAG_NO_EXTRACT_UI
             it.setOnQueryTextListener(this)
