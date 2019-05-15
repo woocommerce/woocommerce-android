@@ -147,7 +147,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         dialog.window?.let {
             Snackbar.make(
                     it.findViewById(android.R.id.content),
-                    R.string.orders_shipment_tracking_provider_list_error_fetch_generic,
+                    R.string.order_shipment_tracking_provider_list_error_fetch_generic,
                     Snackbar.LENGTH_LONG
             ).show()
         }
