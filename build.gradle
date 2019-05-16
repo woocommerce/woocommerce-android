@@ -79,7 +79,7 @@ task clean(type: Delete) {
 }
 
 ext {
-    fluxCVersion = 'c8f37bcb37c3cea868eb6bcbeb76b8b508d5d534'
+    fluxCVersion = 'a88243d1eeca956d75c8d44b010bf20be4304661'
     daggerVersion = '2.11'
     supportLibraryVersion = '28.0.0'
     glideVersion = '4.6.1'
