@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.TextView
 import com.woocommerce.android.R
@@ -194,6 +195,21 @@ class OrderListAdapter @Inject constructor(
     }
 
     /**
+     * Returns the order date formatted as a date string, or null if the date is missing or invalid.
+     * Note that the year is not shown when it's the same as the current one
+     */
+    private fun getFormattedOrderDate(context: Context, order: WCOrderModel): String? {
+        DateTimeUtils.dateUTCFromIso8601(order.dateCreated)?.let { date ->
+            val flags = if (DateTimeUtils.isSameYear(date, DateTimeUtils.nowUTC())) {
+                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_YEAR
+            } else {
+                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
+            }
+            return DateUtils.formatDateTime(context, date.time, flags)
+        } ?: return null
+    }
+
+    /**
      * Custom class represents a single [TimeGroup] and it's assigned list of [WCOrderModel]. Responsible
      * for providing and populating the header and item view holders.
      */
@@ -211,6 +227,14 @@ class OrderListAdapter @Inject constructor(
             val itemHolder = holder as ItemViewHolder
             val resources = itemHolder.rootView.context.applicationContext.resources
             val ctx = itemHolder.rootView.context
+
+            val dateStr = getFormattedOrderDate(ctx, order)
+            if (dateStr != null) {
+                itemHolder.orderDate.text = dateStr
+                itemHolder.orderDate.visibility = View.VISIBLE
+            } else {
+                itemHolder.orderDate.visibility = View.GONE
+            }
 
             itemHolder.orderNum.text = resources.getString(R.string.orderlist_item_order_num, order.number)
             itemHolder.orderName.text = resources.getString(
@@ -265,6 +289,7 @@ class OrderListAdapter @Inject constructor(
     }
 
     private class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        var orderDate: TextView = view.orderDate
         var orderNum: TextView = view.orderNum
         var orderName: TextView = view.orderName
         var orderTotal: TextView = view.orderTotal

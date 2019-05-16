@@ -11,18 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_018"
+msgid ""
+"1.8:\n"
+"This release is all about behind the scenes changes: bug fixes, UI refinements, and performance improvements.\n"
+msgstr ""
+
 msgctxt "release_note_017"
 msgid ""
 "1.7:\n"
 "* Tap on a product to reveal a read-only detail view.\n"
 "* Shipment Tracking date formatting is now localized.\n"
 "* In the help section, the FAQ button is now "Help Center" and routes to WooCommerce mobile documentation.\n"
-msgstr ""
-
-msgctxt "release_note_016"
-msgid ""
-"1.6:\n"
-"We now support the Shipment Tracking plugin! See read-only Shipment tracking information on completed orders, and track packages right from the order detail screen. This release also takes care of some visual and functional hiccups.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
