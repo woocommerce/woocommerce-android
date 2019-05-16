@@ -99,7 +99,7 @@ class AddOrderShipmentTrackingPresenterTest {
         presenter.onOrderShipmentProviderChanged(OnOrderShipmentProvidersChanged(1).apply {
             error = OrderError()
         })
-        verify(dialogView, times(1)).showProviderListErrorSnack()
+        verify(dialogView, times(1)).showProviderListErrorSnack(any())
     }
 
     @Test
@@ -117,7 +117,7 @@ class AddOrderShipmentTrackingPresenterTest {
         verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
 
-        verify(dialogView, times(1)).showProviderListErrorSnack()
+        verify(dialogView, times(1)).showProviderListErrorSnack(any())
     }
 
     @Test
