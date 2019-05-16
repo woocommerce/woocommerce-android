@@ -36,6 +36,9 @@
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/addTracking_editCarrier"
             style="@style/Woo.Add.Tracking.EditText"
+            android:background="@android:color/transparent"
+            android:paddingTop="@dimen/default_padding"
+            android:paddingBottom="@dimen/default_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top"

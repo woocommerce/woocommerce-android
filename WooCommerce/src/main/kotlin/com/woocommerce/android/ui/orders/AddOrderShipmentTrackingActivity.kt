@@ -131,6 +131,20 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                 true
             }
             R.id.menu_add -> {
+                if (getProviderText().isEmpty()) {
+                    addTracking_editCarrier.isFocusableInTouchMode = true
+                    addTracking_editCarrier.requestFocus()
+                    addTracking_editCarrier.error = getString(R.string.order_shipment_tracking_empty_provider)
+                    addTracking_number.error = null
+                    return true
+                }
+
+                if (addTracking_number.text.isNullOrEmpty()) {
+                    addTracking_editCarrier.error = null
+                    addTracking_number.error = getString(R.string.order_shipment_tracking_empty_tracking_num)
+                    return true
+                }
+
                 if (!networkStatus.isConnected()) {
                     uiMessageResolver.showOfflineSnack()
                 } else {
@@ -203,6 +217,9 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
 
     override fun onTrackingProviderSelected(selectedCarrierName: String) {
         addTracking_editCarrier.text = selectedCarrierName
+        addTracking_editCarrier.error = null
+        addTracking_editCarrier.isFocusableInTouchMode = false
+        addTracking_editCarrier.isFocusable = false
     }
 
     private fun displayFormatDateShippedText(dateString: String) {
