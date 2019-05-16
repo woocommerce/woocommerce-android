@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import com.woocommerce.android.R
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -76,7 +77,7 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
                     addTrackingProviderView?.showSkeleton(true)
                     requestShipmentTrackingProvidersFromApi(order)
                 } else {
-                    addTrackingProviderView?.showProviderListErrorSnack()
+                    addTrackingProviderView?.showProviderListErrorSnack(R.string.offline_error)
                 }
             }
         }
@@ -105,7 +106,9 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         addTrackingProviderView?.showSkeleton(false)
         if (event.isError) {
             WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
-            addTrackingProviderView?.showProviderListErrorSnack()
+            addTrackingProviderView?.showProviderListErrorSnack(
+                    R.string.order_shipment_tracking_provider_list_error_fetch_generic
+            )
         } else {
             loadShipmentTrackingProvidersFromDb()
         }

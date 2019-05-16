@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.support.annotation.StringRes
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -27,7 +28,7 @@ interface AddOrderShipmentTrackingContract {
 
     interface DialogView : BaseView<Presenter> {
         fun showSkeleton(show: Boolean)
-        fun showProviderListErrorSnack()
+        fun showProviderListErrorSnack(@StringRes stringResId: Int)
         fun showProviderList(providers: List<WCOrderShipmentProviderModel>)
     }
 }

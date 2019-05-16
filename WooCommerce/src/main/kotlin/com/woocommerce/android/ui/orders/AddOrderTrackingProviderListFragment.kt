@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.os.Bundle
+import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
@@ -143,11 +144,11 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         }
     }
 
-    override fun showProviderListErrorSnack() {
+    override fun showProviderListErrorSnack(@StringRes stringResId: Int) {
         dialog.window?.let {
             Snackbar.make(
                     it.findViewById(android.R.id.content),
-                    R.string.order_shipment_tracking_provider_list_error_fetch_generic,
+                    stringResId,
                     Snackbar.LENGTH_LONG
             ).show()
         }
