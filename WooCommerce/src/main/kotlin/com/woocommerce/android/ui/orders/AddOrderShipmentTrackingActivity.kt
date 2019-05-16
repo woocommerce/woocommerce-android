@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -26,12 +27,14 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
         const val FIELD_ORDER_TRACKING_DATE_SHIPPED = "order-tracking-date-shipped"
         const val FIELD_ORDER_TRACKING_PROVIDER = "order-tracking-provider"
+        const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var presenter: AddOrderShipmentTrackingContract.Presenter
 
+    private var isConfirmingDiscard = false
     private lateinit var orderId: OrderIdentifier
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var providerListPickerDialog: AddOrderTrackingProviderListFragment? = null
@@ -51,6 +54,9 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
             addTracking_number.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_NUMBER, ""))
             addTracking_editCarrier.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_PROVIDER, "")
             addTracking_date.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED)
+            if (savedInstanceState.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
+                confirmDiscard()
+            }
         } else {
             orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER) ?: ""
             intent.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)?.let { addTracking_editCarrier.text = it }
@@ -121,12 +127,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             android.R.id.home -> {
-                AnalyticsTracker.trackBackPressed(this)
-                // set result here to pass the selected provider text and the flag for fetching provider list
-                val intent = intent
-                intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, getProviderText())
-                setResult(Activity.RESULT_CANCELED, intent)
-                finish()
+                onBackPressed()
                 true
             }
             R.id.menu_add -> {
@@ -150,12 +151,45 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         }
     }
 
+    override fun onBackPressed() {
+        AnalyticsTracker.trackBackPressed(this)
+
+        if (getProviderText().isNotEmpty() || addTracking_number.text.isNotEmpty()) {
+            confirmDiscard()
+        } else {
+            onActivityFinish()
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         outState?.putString(FIELD_ORDER_IDENTIFIER, orderId)
+        outState?.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         outState?.putString(FIELD_ORDER_TRACKING_NUMBER, addTracking_number.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_DATE_SHIPPED, addTracking_date.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_PROVIDER, addTracking_editCarrier.text.toString())
         super.onSaveInstanceState(outState)
+    }
+
+    override fun confirmDiscard() {
+        isConfirmingDiscard = true
+        AlertDialog.Builder(this)
+                .setMessage(R.string.order_shipment_tracking_confirm_discard)
+                .setCancelable(true)
+                .setPositiveButton(R.string.discard) { _, _ ->
+                    onActivityFinish()
+                }
+                .setNegativeButton(R.string.cancel) { _, _ ->
+                    isConfirmingDiscard = false
+                }
+                .show()
+    }
+
+    override fun onActivityFinish() {
+        // set result here to pass the selected provider text and the flag for fetching provider list
+        val intent = intent
+        intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, getProviderText())
+        setResult(Activity.RESULT_CANCELED, intent)
+        finish()
     }
 
     override fun getProviderText(): String {

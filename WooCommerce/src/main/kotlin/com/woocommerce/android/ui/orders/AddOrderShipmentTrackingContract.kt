@@ -22,6 +22,8 @@ interface AddOrderShipmentTrackingContract {
     }
 
     interface View : BaseView<Presenter> {
+        fun confirmDiscard()
+        fun onActivityFinish()
         fun getDateShippedText(): String
         fun getProviderText(): String
     }
