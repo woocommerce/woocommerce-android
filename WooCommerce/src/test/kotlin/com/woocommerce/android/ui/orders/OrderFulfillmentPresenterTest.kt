@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
@@ -20,6 +21,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class OrderFulfillmentPresenterTest {
     private val view: OrderFulfillmentContract.View = mock()
@@ -71,51 +74,78 @@ class OrderFulfillmentPresenterTest {
     }
 
     @Test
-    fun `Display order shipment tracking card correctly`() {
+    fun `Load order shipment tracking card from cache if data already fetched`() {
         val orderTrackingList = OrderTestUtils.generateOrderShipmentTrackings(3, order.id)
 
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        presenter.loadOrderDetail(order.getIdentifier())
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+
+        // order shipment tracking is already fetched from api
+        presenter.loadOrderDetail(order.getIdentifier(), false)
 
         // fetch order shipment trackings
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
-        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
-        verify(dispatcher, times(1)).dispatch(any<Action<*>>())
-
-        // OnOrderChanged callback from FluxC should trigger the appropriate UI update
-        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
-        presenter.onOrderChanged(OnOrderChanged(3).apply { causeOfChange = FETCH_ORDER_SHIPMENT_TRACKINGS })
+        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+        verify(dispatcher, times(0)).dispatch(any<Action<*>>())
 
         // verify that shipment tracking card is displayed
         verify(view).showOrderShipmentTrackings(orderTrackingList)
     }
 
     @Test
-    fun `Hide order shipment tracking card on fetch order tracking error`() {
+    fun `Request order shipment trackings from api if data not already fetched and network connected - success`() {
+        val orderTrackingList = OrderTestUtils.generateOrderShipmentTrackings(3, order.id)
+
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        presenter.loadOrderDetail(order.getIdentifier())
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+
+        // order shipment tracking is not fetched from api
+        presenter.loadOrderDetail(order.getIdentifier(), true)
 
         // fetch order shipment trackings
+        assertTrue(presenter.isUsingCachedShipmentTrackings)
+        verify(presenter, times(0)).loadShipmentTrackingsFromDb()
+        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
         verify(dispatcher, times(1)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
-        presenter.onOrderChanged(OnOrderChanged(0).apply {
+        presenter.onOrderChanged(OnOrderChanged(3).apply {
             causeOfChange = FETCH_ORDER_SHIPMENT_TRACKINGS
-            error = OrderError()
         })
+
+        // verify that shipment tracking card is displayed
+        verify(view).showOrderShipmentTrackings(orderTrackingList)
+        assertFalse(presenter.isUsingCachedShipmentTrackings)
     }
 
     @Test
-    fun `Request order shipment trackings from api and load cached from db`() {
-        doReturn(order).whenever(presenter).orderModel
-        doReturn(true).whenever(networkStatus).isConnected()
-        presenter.takeView(view)
+    fun `Request order shipment trackings from api if data not already fetched and network connected - failure`() {
+        val orderTrackingList = OrderTestUtils.generateOrderShipmentTrackings(3, order.id)
 
-        presenter.loadOrderDetail(order.getIdentifier())
-        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
+        presenter.takeView(view)
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+
+        // order shipment tracking is not fetched from api
+        presenter.loadOrderDetail(order.getIdentifier(), true)
+
+        // fetch order shipment trackings
+        assertTrue(presenter.isUsingCachedShipmentTrackings)
+        verify(presenter, times(0)).loadShipmentTrackingsFromDb()
         verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+        verify(dispatcher, times(1)).dispatch(any<Action<*>>())
+
+        // OnOrderChanged callback from FluxC with error should trigger error message
+        presenter.onOrderChanged(OnOrderChanged(3).apply {
+            causeOfChange = FETCH_ORDER_SHIPMENT_TRACKINGS
+            error = OrderError()
+        })
+
+        // verify that shipment tracking card is displayed
+        verify(view, never()).showOrderShipmentTrackings(orderTrackingList)
+        assertTrue(presenter.isUsingCachedShipmentTrackings)
     }
 
     @Test
@@ -124,7 +154,7 @@ class OrderFulfillmentPresenterTest {
         doReturn(false).whenever(networkStatus).isConnected()
         presenter.takeView(view)
 
-        presenter.loadOrderDetail(order.getIdentifier())
+        presenter.loadOrderDetail(order.getIdentifier(), true)
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
         verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
     }

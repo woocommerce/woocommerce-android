@@ -10,7 +10,7 @@ interface OrderFulfillmentContract {
     interface Presenter : BasePresenter<View> {
         var orderModel: WCOrderModel?
         var isUsingCachedShipmentTrackings: Boolean
-        fun loadOrderDetail(orderIdentifier: OrderIdentifier)
+        fun loadOrderDetail(orderIdentifier: OrderIdentifier, isUsingCachedShipmentTrackings: Boolean = false)
         fun loadOrderShipmentTrackings()
         fun pushShipmentTrackingProvider(provider: String, trackingNum: String, dateShipped: String)
         fun loadShipmentTrackingsFromDb()

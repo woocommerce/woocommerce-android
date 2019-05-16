@@ -50,7 +50,8 @@ class OrderFulfillmentPresenter @Inject constructor(
         orderView = null
     }
 
-    override fun loadOrderDetail(orderIdentifier: OrderIdentifier) {
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, isUsingCachedShipmentTrackings: Boolean) {
+        this.isUsingCachedShipmentTrackings = isUsingCachedShipmentTrackings
         orderView?.let { view ->
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
             orderModel?.let { order ->
@@ -61,26 +62,23 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     /**
-     * Question:
      * Since order shipment tracking list is already requested in [OrderDetailFragment]
-     * does it make sense to fetch from api again here, even if network is connected?
-     * Unless the user clicks on `Fulfil Order` button before the api data is returned, in which
-     * case it would be better to call api again.
-     * So logic should be to load from cache is available.
-     * If data not available in cache, fetch from api if network is connected.
-     * If data not available in cache and network not available, the optional tracking card will not be displayed
+     * we use [isUsingCachedShipmentTrackings] variable to check if the list is updated or using
+     * only a cached version.
+     * If [isUsingCachedShipmentTrackings] = true, if network connected, fetch from api
+     * If [isUsingCachedShipmentTrackings] = true, and network not connected, load from cache, if available
+     * if [isUsingCachedShipmentTrackings] = false, then load from cache
      */
     override fun loadOrderShipmentTrackings() {
         orderModel?.let { order ->
-            // Preload trackings from the db is available
-            loadShipmentTrackingsFromDb()
-
-            if (networkStatus.isConnected()) {
-                // Attempt to refresh trackings from api in the background
-                requestShipmentTrackingsFromApi(order)
+            if (!isUsingCachedShipmentTrackings) {
+                loadShipmentTrackingsFromDb()
             } else {
-                // Track so when the device is connected shipment trackings can be refreshed
-                isUsingCachedShipmentTrackings = true
+                if (networkStatus.isConnected()) {
+                    requestShipmentTrackingsFromApi(order)
+                } else {
+                    loadShipmentTrackingsFromDb()
+                }
             }
         }
     }

@@ -35,14 +35,20 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
+        const val FIELD_CACHED_SHIPMENT_TRACKINGS = "is-using-cached-shipment-trackings"
         const val REQUEST_CODE_ADD_TRACKING = 101
 
-        fun newInstance(order: WCOrderModel): Fragment {
+        fun newInstance(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean = false): Fragment {
             val args = Bundle()
             args.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
 
             // Use for populating the title only, not for record retrieval
             args.putString(FIELD_ORDER_NUMBER, order.number)
+
+            // Used to check if the shipment trackings is using cache only. If shipment
+            // trackings list is already fetched from api in order detail, we can just
+            // fetch the same from local cache
+            args.putBoolean(FIELD_CACHED_SHIPMENT_TRACKINGS, isUsingCachedShipmentTrackings)
 
             val fragment = OrderFulfillmentFragment()
             fragment.arguments = args
@@ -76,7 +82,12 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
+        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
+            presenter.loadOrderDetail(
+                    orderIdentifier = it,
+                    isUsingCachedShipmentTrackings = arguments?.getBoolean(FIELD_CACHED_SHIPMENT_TRACKINGS) ?: false
+            )
+        }
 
         scrollView.setOnScrollChangeListener {
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
