@@ -242,7 +242,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun openOrderFulfillment(order: WCOrderModel) {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
-                router.openOrderFulfillment(order)
+                router.openOrderFulfillment(order, presenter.isUsingCachedShipmentTrackings)
             }
         }
     }

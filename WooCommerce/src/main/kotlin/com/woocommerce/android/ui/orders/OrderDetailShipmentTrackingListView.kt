@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED
 import com.woocommerce.android.ui.base.UIMessageResolver
 import kotlinx.android.synthetic.main.order_detail_shipment_tracking_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -53,7 +53,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
             shipmentTrack_label.text = context.getString(R.string.order_shipment_tracking_add_label)
             shipmentTrack_btnAddTracking.visibility = View.VISIBLE
             shipmentTrack_btnAddTracking.setOnClickListener {
-                AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
+                AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
                 shipmentTrackingActionListener?.openAddOrderShipmentTrackingScreen()
             }
         }

@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.AddOrderNoteActivity
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
+import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderListModule
@@ -76,6 +77,9 @@ abstract class ActivityBindingModule {
     abstract fun provideProductDetailActivityInjector(): ProductDetailActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = [AddOrderShipmentTrackingModule::class])
+    @ContributesAndroidInjector(modules = [
+        AddOrderShipmentTrackingModule::class,
+        AddOrderTrackingProviderListModule::class
+    ])
     abstract fun provideAddOrderShipmentTrackingActivity(): AddOrderShipmentTrackingActivity
 }

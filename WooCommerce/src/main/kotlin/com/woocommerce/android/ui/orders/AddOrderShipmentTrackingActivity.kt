@@ -1,20 +1,23 @@
 package com.woocommerce.android.ui.orders
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_PROVIDER_BUTTON_TAPPED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_add_shipment_tracking.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.utils.DateUtils
@@ -22,21 +25,22 @@ import java.util.Calendar
 import javax.inject.Inject
 
 class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTrackingContract.View,
-        AddOrderTrackingProviderActionListener {
+        AddOrderTrackingProviderActionListener, HasSupportFragmentInjector {
     companion object {
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
         const val FIELD_ORDER_TRACKING_DATE_SHIPPED = "order-tracking-date-shipped"
         const val FIELD_ORDER_TRACKING_PROVIDER = "order-tracking-provider"
-        const val FIELD_ORDER_TRACKING_PROVIDER_FETCHED = "order-tracking-provider-fetched"
+        const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var presenter: AddOrderShipmentTrackingContract.Presenter
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
+    private var isConfirmingDiscard = false
     private lateinit var orderId: OrderIdentifier
-    private var trackingProviderFetched: Boolean = false
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var providerListPickerDialog: AddOrderTrackingProviderListFragment? = null
 
@@ -52,13 +56,14 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
 
         if (savedInstanceState != null) {
             orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER) ?: ""
-            trackingProviderFetched = savedInstanceState.getBoolean(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, false)
             addTracking_number.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_NUMBER, ""))
             addTracking_editCarrier.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_PROVIDER, "")
             addTracking_date.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED)
+            if (savedInstanceState.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
+                confirmDiscard()
+            }
         } else {
             orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER) ?: ""
-            trackingProviderFetched = intent.getBooleanExtra(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, false)
             intent.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)?.let { addTracking_editCarrier.text = it }
             val dateShipped = intent.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)?.let { it }
                     ?: DateUtils.getCurrentDateString()
@@ -66,7 +71,6 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         }
 
         presenter.takeView(this)
-        presenter.loadOrderDetail(orderId, trackingProviderFetched)
 
         /**
          * When date field is clicked, open calendar dialog with default date set to
@@ -87,12 +91,10 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
          * When carrier field is clicked, open dialog fragment to display list of providers
          */
         addTracking_editCarrier.setOnClickListener {
-            AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_PROVIDER_BUTTON_TAPPED)
             providerListPickerDialog = AddOrderTrackingProviderListFragment
                     .newInstance(
                             selectedProviderText = getProviderText(),
-                            presenter = presenter,
-                            listener = this)
+                            orderIdentifier = orderId)
                     .also { it.show(supportFragmentManager, AddOrderTrackingProviderListFragment.TAG) }
         }
     }
@@ -128,17 +130,24 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             android.R.id.home -> {
-                AnalyticsTracker.trackBackPressed(this)
-                // set result here to pass the selected provider text and the flag for fetching provider list
-                val intent = intent
-                intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, getProviderText())
-                intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, isTrackingProviderFetched())
-                setResult(Activity.RESULT_CANCELED, intent)
-                finish()
+                onBackPressed()
                 true
             }
             R.id.menu_add -> {
-                AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED)
+                if (getProviderText().isEmpty()) {
+                    addTracking_editCarrier.isFocusableInTouchMode = true
+                    addTracking_editCarrier.requestFocus()
+                    addTracking_editCarrier.error = getString(R.string.order_shipment_tracking_empty_provider)
+                    addTracking_number.error = null
+                    return true
+                }
+
+                if (addTracking_number.text.isNullOrEmpty()) {
+                    addTracking_editCarrier.error = null
+                    addTracking_number.error = getString(R.string.order_shipment_tracking_empty_tracking_num)
+                    return true
+                }
+
                 if (!networkStatus.isConnected()) {
                     uiMessageResolver.showOfflineSnack()
                 } else {
@@ -159,17 +168,45 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         }
     }
 
+    override fun onBackPressed() {
+        AnalyticsTracker.trackBackPressed(this)
+
+        if (getProviderText().isNotEmpty() || addTracking_number.text.isNotEmpty()) {
+            confirmDiscard()
+        } else {
+            onActivityFinish()
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         outState?.putString(FIELD_ORDER_IDENTIFIER, orderId)
+        outState?.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         outState?.putString(FIELD_ORDER_TRACKING_NUMBER, addTracking_number.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_DATE_SHIPPED, addTracking_date.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_PROVIDER, addTracking_editCarrier.text.toString())
-        outState?.putBoolean(FIELD_ORDER_TRACKING_PROVIDER_FETCHED, isTrackingProviderFetched())
         super.onSaveInstanceState(outState)
     }
 
-    override fun isTrackingProviderFetched(): Boolean {
-        return presenter.isTrackingProviderFetched
+    override fun confirmDiscard() {
+        isConfirmingDiscard = true
+        AlertDialog.Builder(this)
+                .setMessage(R.string.order_shipment_tracking_confirm_discard)
+                .setCancelable(true)
+                .setPositiveButton(R.string.discard) { _, _ ->
+                    onActivityFinish()
+                }
+                .setNegativeButton(R.string.cancel) { _, _ ->
+                    isConfirmingDiscard = false
+                }
+                .show()
+    }
+
+    override fun onActivityFinish() {
+        // set result here to pass the selected provider text and the flag for fetching provider list
+        val intent = intent
+        intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, getProviderText())
+        setResult(Activity.RESULT_CANCELED, intent)
+        finish()
     }
 
     override fun getProviderText(): String {
@@ -183,7 +220,12 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
 
     override fun onTrackingProviderSelected(selectedCarrierName: String) {
         addTracking_editCarrier.text = selectedCarrierName
+        addTracking_editCarrier.error = null
+        addTracking_editCarrier.isFocusableInTouchMode = false
+        addTracking_editCarrier.isFocusable = false
     }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
     private fun displayFormatDateShippedText(dateString: String) {
         addTracking_date.text = com.woocommerce.android.util.DateUtils.getLocalizedLongDateString(

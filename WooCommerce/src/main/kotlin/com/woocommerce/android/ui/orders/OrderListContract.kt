@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 interface OrderListContract {
     interface Presenter : BasePresenter<View> {
+        var isShipmentTrackingProviderFetched: Boolean
         fun loadOrders(filterByStatus: String? = null, forceRefresh: Boolean)
         fun loadMoreOrders(orderStatusFilter: String? = null)
         fun canLoadMoreOrders(): Boolean
@@ -17,6 +18,7 @@ interface OrderListContract {
         fun searchMoreOrders(searchQuery: String)
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
         fun refreshOrderStatusOptions()
+        fun loadShipmentTrackingProviders(order: WCOrderModel)
     }
 
     interface View : BaseView<Presenter>, OrdersViewRouter {

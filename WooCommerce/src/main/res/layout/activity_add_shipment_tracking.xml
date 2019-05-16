@@ -1,5 +1,6 @@
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/snack_root"
     android:layout_width="match_parent"
@@ -20,7 +21,10 @@
         android:layout_below="@+id/toolbar"
         android:background="@color/white"
         android:orientation="vertical"
-        android:padding="@dimen/margin_large">
+        android:padding="@dimen/margin_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <TextView
             android:id="@+id/addTracking_carrier_label"
@@ -31,17 +35,20 @@
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/addTracking_editCarrier"
-            style="@style/EditText"
+            style="@style/Woo.Add.Tracking.EditText"
+            android:background="@android:color/transparent"
+            android:paddingTop="@dimen/default_padding"
+            android:paddingBottom="@dimen/default_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/ic_arrow_right_grey"
             android:gravity="top"
+            android:hint="@string/order_shipment_tracking_provider_hint"
             android:minHeight="0dp"
-            android:paddingLeft="0dp"
-            android:paddingStart="0dp"
-            android:paddingRight="0dp"
             android:paddingEnd="0dp"
-            tools:text="Fedex"/>
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingStart="0dp"
+            />
 
         <View
             android:id="@+id/addTracking_editCarrierDivider"
@@ -60,6 +67,7 @@
 
         <EditText
             android:id="@+id/addTracking_number"
+            style="@style/Woo.Add.Tracking.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_medium"
@@ -87,16 +95,18 @@
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/addTracking_date"
-            style="@style/Widget.AppCompat.Spinner"
+            style="@style/Woo.Add.Tracking.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="top"
+            android:inputType="date"
+            android:minHeight="0dp"
             android:paddingEnd="0dp"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
             android:paddingStart="0dp"
-            android:inputType="date"
             android:textColor="@color/edit_text_text_color"
             tools:text="May 8, 2019"/>
     </LinearLayout>
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
