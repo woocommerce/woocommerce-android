@@ -48,7 +48,7 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
     }
 
     override fun loadStoreCountryFromDb(): String? {
-        return wcStore.getStoreCountry(selectedSite.get())
+        return wcStore.getStoreCountryCode(selectedSite.get())
     }
 
     /**

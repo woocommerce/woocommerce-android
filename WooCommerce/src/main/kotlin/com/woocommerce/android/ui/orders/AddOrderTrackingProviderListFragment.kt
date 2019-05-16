@@ -19,6 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_CARRIER_SELECTED
 import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListAdapter.OnProviderClickListener
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list.*
@@ -115,7 +116,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
         // Initialise the adapter
         providerListAdapter = AddOrderTrackingProviderListAdapter(
-                presenter.loadStoreCountryFromDb(),
+                getCountryName(),
                 this
         )
 
@@ -157,6 +158,13 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
         }
 
         super.onDestroyView()
+    }
+
+    override fun getCountryName(): String? {
+        context?.let {
+            return StringUtils.getCountryByCountryCode(it, presenter.loadStoreCountryFromDb())
+        }
+        return null
     }
 
     override fun showSkeleton(show: Boolean) {
