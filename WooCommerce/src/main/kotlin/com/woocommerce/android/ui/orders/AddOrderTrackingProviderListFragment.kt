@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.Context
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
@@ -19,44 +20,61 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_CARRIER_SELECTED
 import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListAdapter.OnProviderClickListener
 import com.woocommerce.android.widgets.SkeletonView
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import javax.inject.Inject
 
-class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentTrackingContract.DialogView,
+class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingProviderListContract.View,
         OnQueryTextListener, OnProviderClickListener {
     companion object {
         const val TAG: String = "AddOrderTrackingProviderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_SELECTED_PROVIDER = "selected-provider"
+        const val STATE_KEY_ORDER_IDENTIFIER = "order-identifier"
 
         /**
+         * @param orderIdentifier = to fetch the list of providers from api
          * @param selectedProviderText = to update the currently selected provider item (if already selected)
-         * @param presenter = to load the list of providers from api
-         * @param listener = to pass the selected provider back to the [AddOrderShipmentTrackingActivity]
          */
         fun newInstance(
-            selectedProviderText: String?,
-            presenter: AddOrderShipmentTrackingContract.Presenter,
-            listener: AddOrderTrackingProviderActionListener
+            orderIdentifier: OrderIdentifier,
+            selectedProviderText: String?
         ): AddOrderTrackingProviderListFragment {
             val fragment = AddOrderTrackingProviderListFragment()
             fragment.retainInstance = true
-            fragment.listener = listener
-            fragment.presenter = presenter
+            fragment.orderIdentifier = orderIdentifier
             fragment.selectedProviderText = selectedProviderText
             return fragment
         }
     }
 
+    @Inject lateinit var presenter: AddOrderTrackingProviderListContract.Presenter
+
+    private var orderIdentifier: OrderIdentifier? = null
     private var selectedProviderText: String? = null
     private var listener: AddOrderTrackingProviderActionListener? = null
-    private var presenter: AddOrderShipmentTrackingContract.Presenter? = null
+
     private lateinit var providerListAdapter: AddOrderTrackingProviderListAdapter
 
     private var searchView: SearchView? = null
     private var searchQuery: String = ""
 
     private val skeletonView = SkeletonView()
+
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+        if (activity is AddOrderTrackingProviderActionListener) {
+            listener = activity as AddOrderTrackingProviderActionListener
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,11 +106,12 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         super.onViewCreated(view, savedInstanceState)
 
         savedInstanceState?.let {
+            orderIdentifier = it.getString(STATE_KEY_ORDER_IDENTIFIER)
             selectedProviderText = it.getString(STATE_KEY_SELECTED_PROVIDER)
             searchQuery = it.getString(STATE_KEY_SEARCH_QUERY, "")
         }
 
-        presenter?.takeProviderDialogView(this)
+        presenter.takeView(this)
 
         // Initialise the adapter
         providerListAdapter = AddOrderTrackingProviderListAdapter(this)
@@ -110,11 +129,12 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
         }
 
         // Load shipment tracking providers
-        presenter?.loadShipmentTrackingProviders()
+        presenter.loadShipmentTrackingProviders(orderIdentifier)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
+        outState.putString(STATE_KEY_ORDER_IDENTIFIER, orderIdentifier)
         outState.putString(STATE_KEY_SELECTED_PROVIDER, providerListAdapter.selectedCarrierName)
 
         super.onSaveInstanceState(outState)
@@ -126,7 +146,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
     }
 
     override fun onDestroyView() {
-        presenter?.dropProviderDialogView()
+        presenter.dropView()
         searchView = null
 
         if (retainInstance) {
@@ -179,7 +199,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderShipmentT
             providerListAdapter.clearAdapterData()
             providerListAdapter.filter.filter(newText)
         } else {
-            presenter?.loadShipmentTrackingProvidersFromDb()
+            presenter.loadShipmentTrackingProvidersFromDb()
         }
         return true
     }

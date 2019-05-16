@@ -20,9 +20,8 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 
-class AddOrderShipmentTrackingPresenterTest {
-    private val view: AddOrderShipmentTrackingContract.View = mock()
-    private val dialogView: AddOrderShipmentTrackingContract.DialogView = mock()
+class AddOrderTrackingProviderListPresenterTest {
+    private val view: AddOrderTrackingProviderListContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
@@ -30,11 +29,11 @@ class AddOrderShipmentTrackingPresenterTest {
 
     private val order = OrderTestUtils.generateOrder()
     private val wcOrderShipmentProviderModels = OrderTestUtils.generateOrderShipmentProviders()
-    private lateinit var presenter: AddOrderShipmentTrackingPresenter
+    private lateinit var presenter: AddOrderTrackingProviderListPresenter
 
     @Before
     fun setup() {
-        presenter = spy(AddOrderShipmentTrackingPresenter(
+        presenter = spy(AddOrderTrackingProviderListPresenter(
                 dispatcher, orderStore, selectedSite, networkStatus
         ))
         // Use a dummy selected site
@@ -45,22 +44,21 @@ class AddOrderShipmentTrackingPresenterTest {
     @Test
     fun `Shows and hides the provider list skeleton correctly`() {
         presenter.takeView(view)
-        presenter.takeProviderDialogView(dialogView)
         doReturn(order).whenever(presenter).orderModel
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(emptyList<WCOrderShipmentProviderModel>()).whenever(orderStore).getShipmentProvidersForSite(any())
 
-        presenter.loadOrderDetail(order.getIdentifier())
-        verify(dialogView).showSkeleton(true)
+        presenter.loadShipmentTrackingProviders(order.getIdentifier())
+        verify(view).showSkeleton(true)
         verify(presenter, times(1)).requestShipmentTrackingProvidersFromApi(any())
 
         presenter.onOrderShipmentProviderChanged(OnOrderShipmentProvidersChanged(10))
-        verify(dialogView).showSkeleton(false)
+        verify(view).showSkeleton(false)
     }
 
     @Test
     fun `Request order shipment providers from api when network not available and local cache data empty - success`() {
-        presenter.takeProviderDialogView(dialogView)
+        presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
 
         // request providers list from api only if cache data is empty and when network is connected
@@ -71,7 +69,7 @@ class AddOrderShipmentTrackingPresenterTest {
                 .thenReturn(emptyList())
                 .thenReturn(wcOrderShipmentProviderModels)
 
-        presenter.loadOrderDetail(order.getIdentifier())
+        presenter.loadShipmentTrackingProviders(order.getIdentifier())
 
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
         verify(presenter, times(1)).requestShipmentTrackingProvidersFromApi(any())
@@ -79,19 +77,19 @@ class AddOrderShipmentTrackingPresenterTest {
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
 
         presenter.onOrderShipmentProviderChanged(OnOrderShipmentProvidersChanged(1))
-        verify(dialogView).showProviderList(wcOrderShipmentProviderModels)
+        verify(view).showProviderList(wcOrderShipmentProviderModels)
     }
 
     @Test
     fun `Request order shipment providers from api when network not available and local cache data empty - failure`() {
-        presenter.takeProviderDialogView(dialogView)
+        presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
 
         // request providers list from api only if cache data is empty and when network is connected
         doReturn(true).whenever(networkStatus).isConnected()
         whenever(presenter.requestShipmentTrackingProvidersFromDb()).thenReturn(emptyList())
 
-        presenter.loadOrderDetail(order.getIdentifier())
+        presenter.loadShipmentTrackingProviders(order.getIdentifier())
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
         verify(presenter, times(1)).requestShipmentTrackingProvidersFromApi(any())
         verify(dispatcher, times(1)).dispatch(any<Action<*>>())
@@ -99,12 +97,12 @@ class AddOrderShipmentTrackingPresenterTest {
         presenter.onOrderShipmentProviderChanged(OnOrderShipmentProvidersChanged(1).apply {
             error = OrderError()
         })
-        verify(dialogView, times(1)).showProviderListErrorSnack(any())
+        verify(view, times(1)).showProviderListErrorSnack(any())
     }
 
     @Test
     fun `Display order shipment providers list when network is not available and cache is empty`() {
-        presenter.takeProviderDialogView(dialogView)
+        presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
 
         // network is not available
@@ -112,37 +110,37 @@ class AddOrderShipmentTrackingPresenterTest {
         doReturn(false).whenever(networkStatus).isConnected()
         whenever(presenter.requestShipmentTrackingProvidersFromDb()).thenReturn(emptyList())
 
-        presenter.loadOrderDetail(order.getIdentifier())
+        presenter.loadShipmentTrackingProviders(order.getIdentifier())
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
         verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
 
-        verify(dialogView, times(1)).showProviderListErrorSnack(any())
+        verify(view, times(1)).showProviderListErrorSnack(any())
     }
 
     @Test
     fun `Do not request order shipment providers list if cache is not empty even if network is connected`() {
-        presenter.takeProviderDialogView(dialogView)
+        presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
 
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(wcOrderShipmentProviderModels).whenever(orderStore).getShipmentProvidersForSite(any())
 
-        presenter.loadOrderDetail(order.getIdentifier())
+        presenter.loadShipmentTrackingProviders(order.getIdentifier())
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
         verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
-        verify(dialogView, times(1)).showProviderList(wcOrderShipmentProviderModels)
+        verify(view, times(1)).showProviderList(wcOrderShipmentProviderModels)
     }
 
     @Test
     fun `Do not refresh shipment providers on network connected event if cached data already refreshed`() {
-        presenter.takeProviderDialogView(dialogView)
+        presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
         doReturn(false).whenever(networkStatus).isConnected()
         doReturn(wcOrderShipmentProviderModels).whenever(orderStore).getShipmentProvidersForSite(any())
 
-        presenter.loadOrderDetail(order.getIdentifier())
+        presenter.loadShipmentTrackingProviders(order.getIdentifier())
 
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())

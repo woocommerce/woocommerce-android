@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -14,6 +15,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_add_shipment_tracking.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.utils.DateUtils
@@ -21,7 +25,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTrackingContract.View,
-        AddOrderTrackingProviderActionListener {
+        AddOrderTrackingProviderActionListener, HasSupportFragmentInjector {
     companion object {
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
@@ -33,6 +37,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var presenter: AddOrderShipmentTrackingContract.Presenter
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
     private var isConfirmingDiscard = false
     private lateinit var orderId: OrderIdentifier
@@ -66,7 +71,6 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         }
 
         presenter.takeView(this)
-        presenter.loadOrderDetail(orderId)
 
         /**
          * When date field is clicked, open calendar dialog with default date set to
@@ -90,8 +94,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
             providerListPickerDialog = AddOrderTrackingProviderListFragment
                     .newInstance(
                             selectedProviderText = getProviderText(),
-                            presenter = presenter,
-                            listener = this)
+                            orderIdentifier = orderId)
                     .also { it.show(supportFragmentManager, AddOrderTrackingProviderListFragment.TAG) }
         }
     }
@@ -221,6 +224,8 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         addTracking_editCarrier.isFocusableInTouchMode = false
         addTracking_editCarrier.isFocusable = false
     }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
     private fun displayFormatDateShippedText(dateString: String) {
         addTracking_date.text = com.woocommerce.android.util.DateUtils.getLocalizedLongDateString(
