@@ -16,6 +16,7 @@
 
     <issue id="InvalidPackage">
         <ignore regexp="java-common-1.13.jar" />
+        <ignore path="**/sentry*.jar"/>
     </issue>
 
     <issue id="IconDuplicates" severity="error">

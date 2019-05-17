@@ -9,6 +9,10 @@
     {
       "file": "android/WCAndroid/google-services.json",
       "destination": "WooCommerce/google-services.json"
+    },
+    {
+      "file": "android/WCAndroid/sentry.properties",
+      "destination": "sentry.properties"
     }
   ],
   "file_dependencies": [

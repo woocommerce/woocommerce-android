@@ -23,7 +23,7 @@ import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
-import com.woocommerce.android.util.CrashlyticsUtils
+import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
@@ -110,7 +110,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         // to catch crashes that may occur before we can access the site and account (most notably crashes with
         // initializing WellSql). In order to do this, we must first init AppPrefs since Crashlytics uses it.
         AppPrefs.init(this)
-        CrashlyticsUtils.initCrashlytics(this, null, null)
 
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
@@ -127,7 +126,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         } else {
             null
         }
-        CrashlyticsUtils.initCrashlytics(this, accountStore.account, site)
+
+        CrashUtils.initCrashLogging(this, accountStore.account, site)
 
         notificationHandler.createNotificationChannels(this)
 
@@ -237,7 +237,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             // Reset analytics
             AnalyticsTracker.flush()
             AnalyticsTracker.clearAllData()
-            CrashlyticsUtils.resetAccountAndSite()
+            CrashUtils.resetAccountAndSite()
             zendeskHelper.reset()
 
             // Wipe user-specific preferences
@@ -248,7 +248,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
             }
-            CrashlyticsUtils.initAccount(accountStore.account)
+            CrashUtils.setCurrentAccount(accountStore.account)
         }
     }
 
@@ -256,7 +256,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUnexpectedError(event: OnUnexpectedError) {
         with(event) {
-            CrashlyticsUtils.logException(exception, message = "FluxC: ${exception.message}: $description")
+            CrashUtils.logException(exception, message = "FluxC: ${exception.message}: $description")
         }
     }
 

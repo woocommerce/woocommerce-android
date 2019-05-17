@@ -1,13 +1,12 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url 'https://maven.fabric.io/public' }
         maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.28.0'
         classpath 'com.google.gms:google-services:3.2.0'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.51'
+        classpath 'io.sentry:sentry-android-gradle-plugin:1.7.16'
     }
 }
 
@@ -16,11 +15,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-allopen'
-apply plugin: 'io.fabric'
 apply plugin: 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
+apply plugin: 'io.sentry.android.gradle'
+
 
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
     maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
 }
 
@@ -92,9 +91,6 @@ android {
 }
 
 dependencies {
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
-        transitive = true
-    }
 
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
@@ -123,7 +119,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.automattic:tracks:1.1.6'
+    implementation 'com.github.Automattic:Automattic-Tracks-Android:7e5889cae5'
 
     implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -186,33 +182,11 @@ dependencies {
     }
 }
 
-task generateCrashlyticsConfig(group: "generate", description: "Generate Crashlytics config") {
-    def outputFile = new File("${rootDir}/WooCommerce/fabric.properties")
-    def inputFile = checkGradlePropertiesFile()
-    outputs.file outputFile
-    inputs.file inputFile
-    doLast {
-        def properties = loadPropertiesFromFile(inputFile)
-        def crashlyticsApiKey = properties.getProperty('wc.fabric.apikey', '0')
-        def writer = new FileWriter(outputFile)
-        writer.write("""// Auto-generated file from ${rootDir}/gradle.properties - do not modify
-apiKey=${crashlyticsApiKey}""")
-        writer.close()
-    }
-}
-
 task copyGoogleServicesExampleFile(type: Copy) {
     from('.')
     into('.')
     include('google-services.json-example')
     rename('google-services.json-example', 'google-services.json')
-}
-
-// Add generateCrashlyticsConfig to all generateBuildConfig tasks (all variants)
-android.applicationVariants.all { variant ->
-    variant.generateBuildConfigProvider.configure {
-        dependsOn(generateCrashlyticsConfig)
-    }
 }
 
 // Add properties named "wc.xxx" to our BuildConfig
