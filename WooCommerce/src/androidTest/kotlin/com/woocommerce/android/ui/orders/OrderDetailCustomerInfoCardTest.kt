@@ -38,6 +38,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.wordpress.android.fluxc.model.SiteModel
+import android.app.Activity
+import android.app.Instrumentation.ActivityResult
+import android.support.test.espresso.intent.matcher.IntentMatchers.isInternal
+import android.support.test.espresso.intent.Intents.intending
+import org.hamcrest.CoreMatchers.not
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -49,6 +54,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     override fun setup() {
         super.setup()
         Intents.init()
+
+        // By default Espresso Intents does not stub any Intents. Stubbing needs to be setup before
+        // every test run. In this case all external Intents will be blocked.
+        intending(not(isInternal())).respondWith(ActivityResult(Activity.RESULT_OK, null))
 
         // Bypass login screen and display dashboard
         activityTestRule.launchMainActivityLoggedIn(null, SiteModel())
