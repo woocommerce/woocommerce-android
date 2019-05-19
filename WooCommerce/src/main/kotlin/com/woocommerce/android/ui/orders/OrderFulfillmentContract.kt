@@ -9,8 +9,8 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 interface OrderFulfillmentContract {
     interface Presenter : BasePresenter<View> {
         var orderModel: WCOrderModel?
-        var isUsingCachedShipmentTrackings: Boolean
-        fun loadOrderDetail(orderIdentifier: OrderIdentifier, isUsingCachedShipmentTrackings: Boolean = false)
+        var isShipmentTrackingsFetched: Boolean
+        fun loadOrderDetail(orderIdentifier: OrderIdentifier, isShipmentTrackingsFetched: Boolean = false)
         fun loadOrderShipmentTrackings()
         fun pushShipmentTrackingProvider(provider: String, trackingNum: String, dateShipped: String)
         fun loadShipmentTrackingsFromDb()

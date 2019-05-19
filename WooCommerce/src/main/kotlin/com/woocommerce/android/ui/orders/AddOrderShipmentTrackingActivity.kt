@@ -12,6 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.AndroidInjection
@@ -151,6 +152,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                 if (!networkStatus.isConnected()) {
                     uiMessageResolver.showOfflineSnack()
                 } else {
+                    AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED)
                     val providerText = getProviderText()
                     val trackingNumText = addTracking_number.text.toString()
                     if (!providerText.isEmpty() && !trackingNumText.isEmpty()) {
@@ -195,7 +197,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                 .setPositiveButton(R.string.discard) { _, _ ->
                     onActivityFinish()
                 }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+                .setNegativeButton(R.string.keep_editing) { _, _ ->
                     isConfirmingDiscard = false
                 }
                 .show()

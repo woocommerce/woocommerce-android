@@ -158,7 +158,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                 .setPositiveButton(R.string.discard) { _, _ ->
                     finish()
                 }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+                .setNegativeButton(R.string.keep_editing) { _, _ ->
                     isConfirmingDiscard = false
                 }
                 .show()

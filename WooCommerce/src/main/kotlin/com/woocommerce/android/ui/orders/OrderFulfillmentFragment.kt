@@ -35,7 +35,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
-        const val FIELD_CACHED_SHIPMENT_TRACKINGS = "is-using-cached-shipment-trackings"
+        const val FIELD_SHIPMENT_TRACKINGS_FETCHED = "is-shipment-trackings-fetched"
         const val REQUEST_CODE_ADD_TRACKING = 101
 
         fun newInstance(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean = false): Fragment {
@@ -48,7 +48,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
             // Used to check if the shipment trackings is using cache only. If shipment
             // trackings list is already fetched from api in order detail, we can just
             // fetch the same from local cache
-            args.putBoolean(FIELD_CACHED_SHIPMENT_TRACKINGS, isUsingCachedShipmentTrackings)
+            args.putBoolean(FIELD_SHIPMENT_TRACKINGS_FETCHED, isUsingCachedShipmentTrackings)
 
             val fragment = OrderFulfillmentFragment()
             fragment.arguments = args
@@ -85,7 +85,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
             presenter.loadOrderDetail(
                     orderIdentifier = it,
-                    isUsingCachedShipmentTrackings = arguments?.getBoolean(FIELD_CACHED_SHIPMENT_TRACKINGS) ?: false
+                    isShipmentTrackingsFetched = arguments?.getBoolean(FIELD_SHIPMENT_TRACKINGS_FETCHED) ?: false
             )
         }
 
