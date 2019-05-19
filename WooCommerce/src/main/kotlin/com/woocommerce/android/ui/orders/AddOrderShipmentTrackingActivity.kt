@@ -195,7 +195,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                 .setPositiveButton(R.string.discard) { _, _ ->
                     onActivityFinish()
                 }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+                .setNegativeButton(R.string.keep_editing) { _, _ ->
                     isConfirmingDiscard = false
                 }
                 .show()

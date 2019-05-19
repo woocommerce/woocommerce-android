@@ -39,6 +39,7 @@
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
+    <string name="keep_editing">Keep editing</string>
     <string name="learn_more">Learn More</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
