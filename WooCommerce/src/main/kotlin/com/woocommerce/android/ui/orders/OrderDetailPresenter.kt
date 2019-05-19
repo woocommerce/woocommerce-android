@@ -64,6 +64,13 @@ class OrderDetailPresenter @Inject constructor(
     override var orderIdentifier: OrderIdentifier? = null
     override var isUsingCachedNotes = false
     override var isUsingCachedShipmentTrackings = false
+
+    /**
+     * Adding another flag here to check if shipment trackings have been fetched from api.
+     * This is used to passed to [OrderFulfillmentPresenter] and if true, shipment trackings
+     * are fetched from db
+     */
+    override var isShipmentTrackingsFetched: Boolean = false
     private var pendingRemoteOrderId: Long? = null
     private var pendingMarkReadNotification: NotificationModel? = null
 
@@ -253,6 +260,7 @@ class OrderDetailPresenter @Inject constructor(
                             mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
 
                     isUsingCachedShipmentTrackings = false
+                    isShipmentTrackingsFetched = true
                     loadShipmentTrackingsFromDb()
                 }
             }

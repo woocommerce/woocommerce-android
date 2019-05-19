@@ -82,7 +82,7 @@ class OrderFulfillmentPresenterTest {
         doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
 
         // order shipment tracking is already fetched from api
-        presenter.loadOrderDetail(order.getIdentifier(), false)
+        presenter.loadOrderDetail(order.getIdentifier(), true)
 
         // fetch order shipment trackings
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
@@ -102,10 +102,10 @@ class OrderFulfillmentPresenterTest {
         doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
 
         // order shipment tracking is not fetched from api
-        presenter.loadOrderDetail(order.getIdentifier(), true)
+        presenter.loadOrderDetail(order.getIdentifier(), false)
 
         // fetch order shipment trackings
-        assertTrue(presenter.isUsingCachedShipmentTrackings)
+        assertFalse(presenter.isShipmentTrackingsFetched)
         verify(presenter, times(0)).loadShipmentTrackingsFromDb()
         verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
         verify(dispatcher, times(1)).dispatch(any<Action<*>>())
@@ -117,7 +117,7 @@ class OrderFulfillmentPresenterTest {
 
         // verify that shipment tracking card is displayed
         verify(view).showOrderShipmentTrackings(orderTrackingList)
-        assertFalse(presenter.isUsingCachedShipmentTrackings)
+        assertTrue(presenter.isShipmentTrackingsFetched)
     }
 
     @Test
@@ -129,10 +129,10 @@ class OrderFulfillmentPresenterTest {
         doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
 
         // order shipment tracking is not fetched from api
-        presenter.loadOrderDetail(order.getIdentifier(), true)
+        presenter.loadOrderDetail(order.getIdentifier(), false)
 
         // fetch order shipment trackings
-        assertTrue(presenter.isUsingCachedShipmentTrackings)
+        assertFalse(presenter.isShipmentTrackingsFetched)
         verify(presenter, times(0)).loadShipmentTrackingsFromDb()
         verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
         verify(dispatcher, times(1)).dispatch(any<Action<*>>())
@@ -145,7 +145,7 @@ class OrderFulfillmentPresenterTest {
 
         // verify that shipment tracking card is displayed
         verify(view, never()).showOrderShipmentTrackings(orderTrackingList)
-        assertTrue(presenter.isUsingCachedShipmentTrackings)
+        assertFalse(presenter.isShipmentTrackingsFetched)
     }
 
     @Test
@@ -161,7 +161,7 @@ class OrderFulfillmentPresenterTest {
 
     @Test
     fun `Request fresh shipment tracking from api on network connected event if using non-updated cached data`() {
-        doReturn(true).whenever(presenter).isUsingCachedShipmentTrackings
+        doReturn(false).whenever(presenter).isShipmentTrackingsFetched
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(view)
 
@@ -171,7 +171,7 @@ class OrderFulfillmentPresenterTest {
 
     @Test
     fun `Do not refresh shipment trackings on network connected event if cached data already refreshed`() {
-        doReturn(false).whenever(presenter).isUsingCachedShipmentTrackings
+        doReturn(true).whenever(presenter).isShipmentTrackingsFetched
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(view)
 

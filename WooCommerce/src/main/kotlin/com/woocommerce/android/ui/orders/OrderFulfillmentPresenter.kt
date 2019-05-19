@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
+import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -40,18 +41,22 @@ class OrderFulfillmentPresenter @Inject constructor(
 
     override var orderModel: WCOrderModel? = null
     private var orderView: OrderFulfillmentContract.View? = null
-    override var isUsingCachedShipmentTrackings = false
+    override var isShipmentTrackingsFetched = false
 
     override fun takeView(view: View) {
         orderView = view
+        dispatcher.register(this)
+        ConnectionChangeReceiver.getEventBus().register(this)
     }
 
     override fun dropView() {
         orderView = null
+        dispatcher.unregister(this)
+        ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, isUsingCachedShipmentTrackings: Boolean) {
-        this.isUsingCachedShipmentTrackings = isUsingCachedShipmentTrackings
+    override fun loadOrderDetail(orderIdentifier: OrderIdentifier, isShipmentTrackingsFetched: Boolean) {
+        this.isShipmentTrackingsFetched = isShipmentTrackingsFetched
         orderView?.let { view ->
             orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
             orderModel?.let { order ->
@@ -63,15 +68,14 @@ class OrderFulfillmentPresenter @Inject constructor(
 
     /**
      * Since order shipment tracking list is already requested in [OrderDetailFragment]
-     * we use [isUsingCachedShipmentTrackings] variable to check if the list is updated or using
-     * only a cached version.
-     * If [isUsingCachedShipmentTrackings] = true, if network connected, fetch from api
-     * If [isUsingCachedShipmentTrackings] = true, and network not connected, load from cache, if available
-     * if [isUsingCachedShipmentTrackings] = false, then load from cache
+     * we use [isShipmentTrackingsFetched] variable to check if shipment tracking list is already fetched from api
+     * If [isShipmentTrackingsFetched] = true, then load from cache
+     * If [isShipmentTrackingsFetched] = false, and network not connected, load from cache, if available
+     * if [isShipmentTrackingsFetched] = false, then request from api
      */
     override fun loadOrderShipmentTrackings() {
         orderModel?.let { order ->
-            if (!isUsingCachedShipmentTrackings) {
+            if (isShipmentTrackingsFetched) {
                 loadShipmentTrackingsFromDb()
             } else {
                 if (networkStatus.isConnected()) {
@@ -167,8 +171,8 @@ class OrderFulfillmentPresenter @Inject constructor(
             if (event.isError) {
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order shipment tracking info: ${event.error.message}")
             } else {
-                orderModel?.let { order ->
-                    isUsingCachedShipmentTrackings = false
+                orderModel?.let {
+                    isShipmentTrackingsFetched = true
                     loadShipmentTrackingsFromDb()
                 }
             }
@@ -181,7 +185,7 @@ class OrderFulfillmentPresenter @Inject constructor(
         if (event.isConnected) {
             // Refresh order notes now that a connection is active is needed
             orderModel?.let { order ->
-                if (isUsingCachedShipmentTrackings) {
+                if (!isShipmentTrackingsFetched) {
                     requestShipmentTrackingsFromApi(order)
                 }
             }
