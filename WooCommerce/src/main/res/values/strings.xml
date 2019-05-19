@@ -245,7 +245,7 @@
     <string name="order_shipment_tracking_provider_list_error_fetch_generic">Error fetching providers</string>
     <string name="order_shipment_tracking_added">Shipment tracking added</string>
     <string name="order_shipment_tracking_error">Unable to add tracking</string>
-    <string name="order_shipment_tracking_confirm_discard">Discard this tracking?</string>
+    <string name="order_shipment_tracking_confirm_discard">Are you sure you want to discard this tracking?</string>
     <string name="order_shipment_tracking_empty_provider">Please select a provider</string>
     <string name="order_shipment_tracking_empty_tracking_num">Please enter a tracking number</string>
     <!--
