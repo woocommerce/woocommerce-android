@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -149,7 +149,7 @@ class OrderFulfillmentPresenter @Inject constructor(
         if (event.causeOfChange == ADD_ORDER_SHIPMENT_TRACKING) {
             if (event.isError) {
                 AnalyticsTracker.track(
-                        ORDER_TRACKING_FAILED, mapOf(
+                        ORDER_TRACKING_ADD_FAILED, mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
                         AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
@@ -157,7 +157,7 @@ class OrderFulfillmentPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error posting order note : ${event.error.message}")
                 orderView?.showAddAddShipmentTrackingErrorSnack()
             } else {
-                AnalyticsTracker.track(ORDER_TRACKING_SUCCESS)
+                AnalyticsTracker.track(ORDER_TRACKING_ADD_SUCCESS)
             }
 
             // note that we refresh even on error to make sure the transient tracking provider is removed
