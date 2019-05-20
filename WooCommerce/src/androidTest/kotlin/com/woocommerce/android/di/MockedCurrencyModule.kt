@@ -40,9 +40,9 @@ object MockedCurrencyModule {
          * Whatever parameters are passed to the [CurrencyFormatter.formatCurrency] method, the same
          * parameters will be passed to the mock method defined in [WcOrderTestUtils.formatCurrencyForDisplay]
          */
-        whenever(mockCurrencyFormatter.formatCurrency(anyString(), anyString(), anyBoolean())).thenAnswer { invocation ->
+        whenever(mockCurrencyFormatter.formatCurrency(anyString(), anyString(), anyBoolean()))
+                .thenAnswer { invocation ->
             val args = invocation.arguments
-            val mock = invocation.mock
             WcOrderTestUtils.formatCurrencyForDisplay(
                     args[0] as String,
                     WcOrderTestUtils.generateSiteSettings(),
