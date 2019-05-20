@@ -101,7 +101,7 @@ class OrderDetailPaymentCardTest : TestBase() {
     @Test
     fun verifyPaymentCardViewPopulatedSuccessfullyForEuro() {
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                currency = "euro", paymentMethodTitle = "Credit Card (Stripe)"
+                currency = "EUR", paymentMethodTitle = "Credit Card (Stripe)"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -110,21 +110,21 @@ class OrderDetailPaymentCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // check if order payment card sub total matches this text
-        onView(withId(R.id.paymentInfo_subTotal)).check(matches(withText("euro22.00")))
+        onView(withId(R.id.paymentInfo_subTotal)).check(matches(withText("€22.00")))
 
         // check if order payment card shipping total matches this text
-        onView(withId(R.id.paymentInfo_shippingTotal)).check(matches(withText("euro12.00")))
+        onView(withId(R.id.paymentInfo_shippingTotal)).check(matches(withText("€12.00")))
 
         // check if order payment card tax total matches this text
-        onView(withId(R.id.paymentInfo_taxesTotal)).check(matches(withText("euro2.00")))
+        onView(withId(R.id.paymentInfo_taxesTotal)).check(matches(withText("€2.00")))
 
         // check if order payment card total matches this text
-        onView(withId(R.id.paymentInfo_total)).check(matches(withText("euro44.00")))
+        onView(withId(R.id.paymentInfo_total)).check(matches(withText("€44.00")))
 
         // check if order payment message messages this text
         onView(withId(R.id.paymentInfo_paymentMsg)).check(matches(withText(appContext.getString(
                 R.string.orderdetail_payment_summary_completed,
-                "euro44.00",
+                "€44.00",
                 mockWCOrderModel.paymentMethodTitle)
         )))
     }
@@ -162,7 +162,7 @@ class OrderDetailPaymentCardTest : TestBase() {
     @Test
     fun verifyPaymentCardViewPopulatedSuccessfullyForInr() {
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                currency = "inr", paymentMethodTitle = "Credit Card (Stripe)"
+                currency = "INR", paymentMethodTitle = "Credit Card (Stripe)"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 

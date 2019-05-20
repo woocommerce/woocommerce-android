@@ -129,7 +129,7 @@ class OrderListItemTest : TestBase() {
 
         // verify if the first order item order total matches: euro14.53
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(5, R.id.orderTotal))
-                .check(matches(withText("euro14.53")))
+                .check(matches(withText("€14.53")))
 
         // verify if the first order item order total matches: inr14.53
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(7, R.id.orderTotal))

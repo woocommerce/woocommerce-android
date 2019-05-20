@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.text.DecimalFormat
@@ -8,6 +9,7 @@ import kotlin.math.roundToInt
 
 typealias FormatCurrencyRounded = (rawValue: Double, currencyCode: String) -> String
 
+@OpenClassOnDebug
 class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selectedSite: SelectedSite) {
     companion object {
         private const val ONE_THOUSAND = 1000
