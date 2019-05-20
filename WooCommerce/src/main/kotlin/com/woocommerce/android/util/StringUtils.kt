@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import android.content.res.Resources.NotFoundException
 import android.net.Uri
 import android.support.annotation.StringRes
 import android.util.Patterns
@@ -75,5 +76,39 @@ object StringUtils {
             absNumber >= ONE_THOUSAND -> (number / ONE_THOUSAND).toString() + "k"
             else -> number.toString()
         }
+    }
+
+    /**
+     * Returns the name of the country associated with the current store.
+     * @param [storeCountry], if available is in the format US:NY.
+     * This method will transform `US:NY` into `United States`
+     * by getting the corresponding country name from string.xml for this
+     * value: "country_mapping_$countryCode"
+     *
+     * Will return nil if it can not figure out a valid country name
+     * There might be some scenario where the store country is not
+     * mapped to a valid country name. In order to avoid potential
+     * crashes because of this, logging the exception and returning
+     * null
+     * */
+    fun getCountryByCountryCode(
+        context: Context,
+        storeCountry: String?
+    ): String? {
+        try {
+            storeCountry?.let {
+                val countryCode = it.split(":")[0]
+                val resourceId = context.resources.getIdentifier(
+                        "country_mapping_$countryCode",
+                        "string",
+                        context.packageName
+                )
+                return context.getString(resourceId)
+            }
+        } catch (e: NotFoundException) {
+            WooLog.d(WooLog.T.UTILS, "Unable to find a valid country name for country code: $storeCountry")
+            return null
+        }
+        return null
     }
 }
