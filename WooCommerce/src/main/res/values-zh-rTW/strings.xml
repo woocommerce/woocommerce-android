@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-03 07:54:03+0000
+Translation-Revision-Date: 2019-05-07 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
@@ -14,7 +14,7 @@ Language: zh_TW
     <string name="product_name_virtual">虛擬 %s</string>
     <string name="product_name_grouped">組合 %s</string>
     <string name="product_name_external">附屬機構 %s</string>
-    <string name="product_name_variable">可變的 %s</string>
+    <string name="product_name_variable">各式 %s</string>
     <string name="product_backorders_notify">允許，但通知顧客</string>
     <string name="product_backorders_yes">允許</string>
     <string name="product_backorders_no">不允許</string>
