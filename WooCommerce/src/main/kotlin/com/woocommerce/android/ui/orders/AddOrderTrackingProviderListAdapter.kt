@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.Filter
@@ -15,8 +16,9 @@ import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_item.v
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 
 class AddOrderTrackingProviderListAdapter(
-    val storeCountry: String?,
-    val listener: OnProviderClickListener
+    private val context: Context?,
+    private val storeCountry: String?,
+    private val listener: OnProviderClickListener
 ) : SectionedRecyclerViewAdapter(), Filterable {
     private var providerList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
     private var providerSearchList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
@@ -55,6 +57,11 @@ class AddOrderTrackingProviderListAdapter(
         removeAllSections()
 
         /**
+         * Add a new section at the top of the list to display custom provider
+         */
+        getCustomProviderSection()?.let { addSection(it) }
+
+        /**
          * Build a list of [WCOrderShipmentProviderModel] for each country section
          * if the country that the store is associated with matches a country on the providers list
          * then that country section should be displayed first
@@ -73,6 +80,23 @@ class AddOrderTrackingProviderListAdapter(
             addSection(ProviderListSection(it.key, it.value))
         }
         notifyDataSetChanged()
+    }
+
+    /**
+     * Create a section to display custom provider at the top of the list
+     */
+    private fun getCustomProviderSection(): ProviderListSection? {
+        context?.let {
+            val customShipmentProviderModel: WCOrderShipmentProviderModel =
+                    WCOrderShipmentProviderModel().apply {
+                        carrierName = it.getString(R.string.order_shipment_tracking_custom_provider_section_name)
+                    }
+            return ProviderListSection(
+                    it.getString(R.string.order_shipment_tracking_custom_provider_section_title),
+                    listOf(customShipmentProviderModel)
+            )
+        }
+        return null
     }
 
     override fun getFilter(): Filter {

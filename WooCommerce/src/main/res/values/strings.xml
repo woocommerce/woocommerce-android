@@ -252,6 +252,8 @@
     <string name="order_shipment_tracking_confirm_discard">Are you sure you want to discard this tracking?</string>
     <string name="order_shipment_tracking_empty_provider">Please select a provider</string>
     <string name="order_shipment_tracking_empty_tracking_num">Please enter a tracking number</string>
+    <string name="order_shipment_tracking_custom_provider_section_title">Custom</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Custom Provider</string>
     <!--
         Notifications
     -->

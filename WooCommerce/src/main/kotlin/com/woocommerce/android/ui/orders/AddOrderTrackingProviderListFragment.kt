@@ -116,6 +116,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
         // Initialise the adapter
         providerListAdapter = AddOrderTrackingProviderListAdapter(
+                context,
                 getCountryName(),
                 this
         )
