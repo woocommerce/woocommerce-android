@@ -33,7 +33,8 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
         const val FIELD_ORDER_TRACKING_DATE_SHIPPED = "order-tracking-date-shipped"
         const val FIELD_ORDER_TRACKING_PROVIDER = "order-tracking-provider"
-        const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
+        const val FIELD_IS_CONFIRMING_DISCARD = "is-confirming-discard"
+        const val FIELD_IS_CUSTOM_PROVIDER = "is-custom-provider"
         const val FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME = "order-tracking-custom-provider-name"
         const val FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL = "order-tracking-custom-provider-url"
     }
@@ -150,16 +151,28 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                 true
             }
             R.id.menu_add -> {
-                if (getProviderText().isEmpty()) {
+                if (addTracking_editCarrier.text.toString().isEmpty()) {
                     addTracking_editCarrier.isFocusableInTouchMode = true
                     addTracking_editCarrier.requestFocus()
                     addTracking_editCarrier.error = getString(R.string.order_shipment_tracking_empty_provider)
                     addTracking_number.error = null
+                    addTracking_custom_provider_name.error = null
+                    return true
+                }
+
+                if (isCustomProvider() && addTracking_custom_provider_name.text.toString().isEmpty()) {
+                    addTracking_number.error = null
+                    addTracking_editCarrier.error = null
+                    addTracking_custom_provider_name.requestFocus()
+                    addTracking_custom_provider_name.error = getString(
+                            R.string.order_shipment_tracking_empty_custom_provider_name
+                    )
                     return true
                 }
 
                 if (addTracking_number.text.isNullOrEmpty()) {
                     addTracking_editCarrier.error = null
+                    addTracking_custom_provider_name.error = null
                     addTracking_number.error = getString(R.string.order_shipment_tracking_empty_tracking_num)
                     return true
                 }
@@ -170,14 +183,16 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                     AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED)
                     val providerText = getProviderText()
                     val trackingNumText = addTracking_number.text.toString()
-                    if (!providerText.isEmpty() && !trackingNumText.isEmpty()) {
-                        val data = Intent()
-                        data.putExtra(FIELD_ORDER_TRACKING_NUMBER, trackingNumText)
-                        data.putExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED, getDateShippedText())
-                        data.putExtra(FIELD_ORDER_TRACKING_PROVIDER, providerText)
-                        setResult(Activity.RESULT_OK, data)
-                        finish()
-                    }
+                    val customProviderTrackingUrl = addTracking_custom_provider_url.text.toString()
+
+                    val data = Intent()
+                    data.putExtra(FIELD_ORDER_TRACKING_NUMBER, trackingNumText)
+                    data.putExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED, getDateShippedText())
+                    data.putExtra(FIELD_ORDER_TRACKING_PROVIDER, providerText)
+                    data.putExtra(FIELD_IS_CUSTOM_PROVIDER, isCustomProvider())
+                    data.putExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL, customProviderTrackingUrl)
+                    setResult(Activity.RESULT_OK, data)
+                    finish()
                 }
                 true
             }
@@ -188,7 +203,11 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        if (getProviderText().isNotEmpty() || addTracking_number.text.toString().isNotEmpty()) {
+        if (addTracking_editCarrier.text.toString().isNotEmpty() || addTracking_number.text.toString().isNotEmpty() ||
+                (isCustomProvider() && (
+                        addTracking_custom_provider_name.text.toString().isNotEmpty() ||
+                                addTracking_custom_provider_url.text.toString().isNotEmpty()
+                        ))) {
             confirmDiscard()
         } else {
             onActivityFinish()
@@ -229,7 +248,11 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     }
 
     override fun getProviderText(): String {
-        return addTracking_editCarrier.text.toString().trim()
+        return if (isCustomProvider()) {
+            addTracking_custom_provider_name.text.toString()
+        } else {
+            addTracking_editCarrier.text.toString().trim()
+        }
     }
 
     override fun getDateShippedText(): String {

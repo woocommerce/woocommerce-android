@@ -88,6 +88,7 @@
                 android:inputType="text"
                 android:maxLength="@integer/max_length_tracking_number"
                 android:paddingBottom="@dimen/margin_extra_large"
+                android:nextFocusForward="@+id/addTracking_number"
                 android:theme="@style/Woo.Add.Tracking.EditText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

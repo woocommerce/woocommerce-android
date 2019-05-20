@@ -99,12 +99,15 @@ class OrderFulfillmentPresenter @Inject constructor(
         }
     }
 
-    override fun pushShipmentTrackingProvider(provider: String, trackingNum: String, dateShipped: String) {
+    override fun pushShipmentTrackingProvider(
+        wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel,
+        isCustomProvider: Boolean
+    ) {
         AnalyticsTracker.track(
                 ORDER_TRACKING_ADD,
                 mapOf(AnalyticsTracker.KEY_ID to orderModel!!.remoteOrderId,
                         AnalyticsTracker.KEY_STATUS to orderModel!!.status,
-                        AnalyticsTracker.KEY_CARRIER to provider)
+                        AnalyticsTracker.KEY_CARRIER to wcOrderShipmentTrackingModel.trackingProvider)
         )
 
         if (!networkStatus.isConnected()) {
@@ -114,16 +117,11 @@ class OrderFulfillmentPresenter @Inject constructor(
             return
         }
 
-        val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
-        orderShipmentTrackingModel.trackingNumber = trackingNum
-        orderShipmentTrackingModel.dateShipped = dateShipped
-        orderShipmentTrackingModel.trackingProvider = provider
-
         val payload = AddOrderShipmentTrackingPayload(
                 selectedSite.get(),
                 orderModel!!,
-                orderShipmentTrackingModel,
-                false
+                wcOrderShipmentTrackingModel,
+                isCustomProvider
         )
         dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
 

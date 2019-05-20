@@ -18,6 +18,8 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_IS_CUSTOM_PROVIDER
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_DATE_SHIPPED
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_NUMBER
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_PROVIDER
@@ -108,22 +110,25 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_ADD_TRACKING) {
             if (data != null) {
-                val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
                 shipmentTrackingProviderName = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
 
                 if (resultCode == RESULT_OK) {
                     shipmentTrackingProviderName?.let {
+                        val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
+                        val isCustomProvider = data.getBooleanExtra(FIELD_IS_CUSTOM_PROVIDER, false)
+                        val customProviderUrlText = data.getStringExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL)
                         val trackingNumText = data.getStringExtra(FIELD_ORDER_TRACKING_NUMBER)
-                        orderFulfill_addShipmentTracking.addTransientTrackingProvider(
-                                it,
-                                trackingNumText,
-                                dateShipped
-                        )
-                        presenter.pushShipmentTrackingProvider(
-                                it,
-                                trackingNumText,
-                                dateShipped
-                        )
+
+                        val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
+                        orderShipmentTrackingModel.trackingNumber = trackingNumText
+                        orderShipmentTrackingModel.dateShipped = dateShipped
+                        orderShipmentTrackingModel.trackingProvider = it
+                        if (isCustomProvider) {
+                            customProviderUrlText?.let { orderShipmentTrackingModel.trackingLink = it }
+                        }
+
+                        orderFulfill_addShipmentTracking.addTransientTrackingProvider(orderShipmentTrackingModel)
+                        presenter.pushShipmentTrackingProvider(orderShipmentTrackingModel, isCustomProvider)
                     }
                 }
             }
