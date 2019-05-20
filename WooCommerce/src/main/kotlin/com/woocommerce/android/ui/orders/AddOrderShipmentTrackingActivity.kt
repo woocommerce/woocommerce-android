@@ -173,7 +173,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        if (getProviderText().isNotEmpty() || addTracking_number.text.isNotEmpty()) {
+        if (getProviderText().isNotEmpty() || addTracking_number.text.toString().isNotEmpty()) {
             confirmDiscard()
         } else {
             onActivityFinish()
