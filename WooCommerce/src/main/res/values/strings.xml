@@ -237,8 +237,12 @@
     <string name="order_shipment_tracking_toolbar_title">Add Tracking</string>
     <string name="order_shipment_tracking_carrier_label">Carrier</string>
     <string name="order_shipment_tracking_number_label">Tracking number</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Provider name</string>
+    <string name="order_shipment_tracking_custom_provider_url_label">Tracking link (optional)</string>
     <string name="order_shipment_tracking_provider_hint">Select provider</string>
     <string name="order_shipment_tracking_number_hint">Enter Tracking number</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Enter provider name</string>
+    <string name="order_shipment_tracking_custom_provider_url_hint">Enter tracking link</string>
     <string name="order_shipment_tracking_date_label">Date shipped</string>
     <string name="order_shipment_tracking_provider_toolbar_title">Shipping Providers</string>
     <string name="order_shipment_tracking_provider_list_item">Selected Shipment Provider</string>
