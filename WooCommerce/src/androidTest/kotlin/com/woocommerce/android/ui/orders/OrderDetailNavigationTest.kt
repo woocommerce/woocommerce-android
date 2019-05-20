@@ -15,6 +15,7 @@ import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.helpers.WCMatchers
+import com.woocommerce.android.helpers.WcDateTimeTestUtils
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.util.DateUtils
@@ -23,17 +24,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.wordpress.android.fluxc.model.SiteModel
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class OrderDetailNavigationTest : TestBase() {
     @Rule
     @JvmField var activityTestRule = MainActivityTestRule()
-
-    val dateFormat by lazy { DateTimeFormatter.ofPattern("YYYY-MM-dd'T'hh:mm:ss'Z'", Locale.getDefault()) }
 
     @Before
     override fun setup() {
@@ -83,7 +79,7 @@ class OrderDetailNavigationTest : TestBase() {
     fun verifyOrderDetailCardDateCreatedTodayView() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                LocalDateTime.now().format(dateFormat)
+                WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTime())
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -105,7 +101,7 @@ class OrderDetailNavigationTest : TestBase() {
     fun verifyOrderDetailCardDateCreatedYesterdayView() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                LocalDateTime.now().minusDays(1).format(dateFormat)
+                WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(1))
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -127,7 +123,7 @@ class OrderDetailNavigationTest : TestBase() {
     fun verifyOrderDetailCardDateCreatedTwoDaysView() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                LocalDateTime.now().minusDays(3).format(dateFormat)
+                WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(3))
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -149,7 +145,7 @@ class OrderDetailNavigationTest : TestBase() {
     fun verifyOrderDetailCardDateCreatedOlderThanAWeekView() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                LocalDateTime.now().minusWeeks(2).format(dateFormat)
+                WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(14))
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -171,7 +167,7 @@ class OrderDetailNavigationTest : TestBase() {
     fun verifyOrderDetailCardDateCreatedOlderThanAMonthView() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                LocalDateTime.now().minusMonths(2).format(dateFormat)
+                WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusMonths(2))
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
