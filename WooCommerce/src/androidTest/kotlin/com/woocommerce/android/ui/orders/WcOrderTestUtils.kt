@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.google.gson.Gson
+import com.woocommerce.android.helpers.WcDateTimeTestUtils
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -12,16 +13,9 @@ import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import org.wordpress.android.util.LanguageUtils
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import kotlin.math.absoluteValue
 
 object WcOrderTestUtils {
-    private val dateFormat by lazy {
-        DateTimeFormatter.ofPattern("YYYY-MM-dd'T'hh:mm:ss'Z'", Locale.ROOT)
-    }
-
     /**
      * [WCOrderModel.LineItem] values cannot be modified so adding as string here
      */
@@ -56,7 +50,7 @@ object WcOrderTestUtils {
             // Currency : USD
             currency = "USD"
             // today
-            dateCreated = LocalDateTime.now().format(dateFormat)
+            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTime())
             localSiteId = 1
             number = "1"
             // Processing
@@ -71,7 +65,7 @@ object WcOrderTestUtils {
             // Currency : CAD
             currency = "CAD"
             // Yesterday
-            dateCreated = LocalDateTime.now().minusDays(1).format(dateFormat)
+            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(1))
             localSiteId = 1
             number = "63"
             // Pending payment
@@ -85,7 +79,7 @@ object WcOrderTestUtils {
             // Currency : EURO
             currency = "EUR"
             // 2 days ago
-            dateCreated = LocalDateTime.now().minusDays(3).format(dateFormat)
+            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(3))
             localSiteId = 1
             number = "14"
             // On Hold
@@ -99,7 +93,7 @@ object WcOrderTestUtils {
             // Currency : INR
             currency = "INR"
             // More than a week
-            dateCreated = LocalDateTime.now().minusWeeks(2).format(dateFormat)
+            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(14))
             localSiteId = 1
             number = "15"
             // Completed
@@ -112,7 +106,7 @@ object WcOrderTestUtils {
             billingLastName = "Jones"
             currency = "AUD"
             // Older than a month
-            dateCreated = LocalDateTime.now().minusMonths(2).format(dateFormat)
+            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusMonths(2))
             localSiteId = 1
             number = "3"
             // Cancelled
@@ -319,7 +313,6 @@ object WcOrderTestUtils {
                 currencyDecimalNumber = 2)
     }
 
-
     /**
      * Mock of the method in FluxC
      * Not sure if this is the best way to mock SiteSettings in FluxC.
@@ -337,8 +330,8 @@ object WcOrderTestUtils {
      * doReturn(WcOrderTestUtils.generateSiteSettings()).whenever(mockWcStore).getSiteSettings(any())
      * will result in cannot mock/spy the class error.
      *
-     * This approach was to mock the [CurrencyFormatter] class. But the only logic in this class is to call
-     * the appropriate method in FluxC. So rather than calling this method in [CurrencyFormatter] class,
+     * This approach was to mock the CurrencyFormatter class. But the only logic in this class is to call
+     * the appropriate method in FluxC. So rather than calling this method in CurrencyFormatter class,
      * we can mock this method to return the appropriate value. But the logic to format is still retained in
      * fluxC so we would need to replicate this logic in this method and check if the value matches.
      * I admit I am not sure if this is the best approach since we would only be replicating the same logic
