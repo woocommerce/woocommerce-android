@@ -1,1 +1,2 @@
-This release is all about behind the scenes changes: bug fixes, UI refinements, and performance improvements.
+* The date of each order is now displayed in the orders list screen.
+* Fixed an issue where the app would sometimes show the wrong title when it is re-opened.
