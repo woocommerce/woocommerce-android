@@ -9,6 +9,7 @@ import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -63,8 +64,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var productImageMap: ProductImageMap
 
-    private var shipmentTrackingProviderName: String? = null
-
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -110,26 +109,25 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_ADD_TRACKING) {
             if (data != null) {
-                shipmentTrackingProviderName = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
+                val selectedShipmentTrackingProviderName = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
+                AppPrefs.setSelectedShipmentTrackingProviderName(selectedShipmentTrackingProviderName)
 
                 if (resultCode == RESULT_OK) {
-                    shipmentTrackingProviderName?.let {
-                        val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
-                        val isCustomProvider = data.getBooleanExtra(FIELD_IS_CUSTOM_PROVIDER, false)
-                        val customProviderUrlText = data.getStringExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL)
-                        val trackingNumText = data.getStringExtra(FIELD_ORDER_TRACKING_NUMBER)
+                    val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
+                    val isCustomProvider = data.getBooleanExtra(FIELD_IS_CUSTOM_PROVIDER, false)
+                    val customProviderUrlText = data.getStringExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL)
+                    val trackingNumText = data.getStringExtra(FIELD_ORDER_TRACKING_NUMBER)
 
-                        val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
-                        orderShipmentTrackingModel.trackingNumber = trackingNumText
-                        orderShipmentTrackingModel.dateShipped = dateShipped
-                        orderShipmentTrackingModel.trackingProvider = it
-                        if (isCustomProvider) {
-                            customProviderUrlText?.let { orderShipmentTrackingModel.trackingLink = it }
-                        }
-
-                        orderFulfill_addShipmentTracking.addTransientTrackingProvider(orderShipmentTrackingModel)
-                        presenter.pushShipmentTrackingProvider(orderShipmentTrackingModel, isCustomProvider)
+                    val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
+                    orderShipmentTrackingModel.trackingNumber = trackingNumText
+                    orderShipmentTrackingModel.dateShipped = dateShipped
+                    orderShipmentTrackingModel.trackingProvider = selectedShipmentTrackingProviderName
+                    if (isCustomProvider) {
+                        customProviderUrlText?.let { orderShipmentTrackingModel.trackingLink = it }
                     }
+
+                    orderFulfill_addShipmentTracking.addTransientTrackingProvider(orderShipmentTrackingModel)
+                    presenter.pushShipmentTrackingProvider(orderShipmentTrackingModel, isCustomProvider)
                 }
             }
         }
@@ -223,7 +221,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         presenter.orderModel?.let {
             val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
             intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
-            intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, shipmentTrackingProviderName)
+            intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, AppPrefs.getSelectedShipmentTrackingProviderName())
             startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
         }
     }
