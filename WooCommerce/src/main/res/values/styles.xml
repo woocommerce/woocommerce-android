@@ -487,9 +487,28 @@
         <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
     </style>
 
+    <style name="Woo.Add.Tracking.EditText" parent="@style/EditText">
+        <item name="android:textColorHint">@color/edit_text_color_control_normal</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
     <style name="Woo.Dialog.Promo">
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+
+    <style name="Woo.Dialog.ProviderList">
+        <item name="android:windowEnterAnimation">@anim/activity_slide_in_from_right</item>
+        <item name="android:windowExitAnimation">@anim/activity_slide_out_to_right</item>
+    </style>
+
+    <!--
+        Add Tracking Provider List
+    -->
+    <style name="Woo.Dialog.ProviderList.Header" parent="Woo.ListHeader">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="android:textSize">@dimen/list_item_text_size</item>
     </style>
 
 </resources>

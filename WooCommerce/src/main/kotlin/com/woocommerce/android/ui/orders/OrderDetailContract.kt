@@ -15,6 +15,7 @@ interface OrderDetailContract {
         var orderIdentifier: OrderIdentifier?
         var isUsingCachedNotes: Boolean
         var isUsingCachedShipmentTrackings: Boolean
+        var isShipmentTrackingsFetched: Boolean
         fun fetchOrder(remoteOrderId: Long)
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()

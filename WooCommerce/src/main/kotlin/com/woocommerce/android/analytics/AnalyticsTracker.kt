@@ -134,6 +134,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Order Fulfillment
         SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED,
         ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED,
+        ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED,
+
+        // -- Order Shipment Tracking
+        ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED,
+        ORDER_TRACKING_ADD,
+        ORDER_TRACKING_ADD_FAILED,
+        ORDER_TRACKING_ADD_SUCCESS,
+        ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED,
 
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
@@ -351,6 +359,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SEARCH = "search"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
+        const val KEY_CARRIER = "carrier"
+        const val KEY_OPTION = "option"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
