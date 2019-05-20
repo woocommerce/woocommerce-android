@@ -189,7 +189,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
     override fun onProviderClick(providerName: String) {
         context?.let {
-            if(providerName == it.getString(R.string.order_shipment_tracking_custom_provider_section_name)) {
+            if (providerName == it.getString(R.string.order_shipment_tracking_custom_provider_section_name)) {
                 AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED)
             } else {
                 AnalyticsTracker.track(
