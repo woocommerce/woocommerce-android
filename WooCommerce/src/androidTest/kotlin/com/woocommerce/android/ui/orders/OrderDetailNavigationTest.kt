@@ -187,7 +187,6 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(withText(appContext.getString(R.string.orderdetail_orderstatus_created, yDayDateString))))
     }
 
-
     /**
      * This test checks if the order status label name, label text color and label background color matches the
      * corresponding order status. In order to check background color of the TagView, we need to get the
@@ -198,7 +197,8 @@ class OrderDetailNavigationTest : TestBase() {
     @Test
     fun verifyOrderDetailCardPendingStatusLabelView() {
         Assume.assumeTrue(
-                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available " +
+                        "in devices below API 24",
                 VERSION.SDK_INT >= 24
         )
 
@@ -232,7 +232,8 @@ class OrderDetailNavigationTest : TestBase() {
     @Test
     fun verifyOrderDetailCardProcessingStatusLabelView() {
         Assume.assumeTrue(
-                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available " +
+                        "in devices below API 24",
                 VERSION.SDK_INT >= 24
         )
 
@@ -267,7 +268,8 @@ class OrderDetailNavigationTest : TestBase() {
     @Test
     fun verifyOrderDetailCardOnHoldStatusLabelView() {
         Assume.assumeTrue(
-                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available " +
+                        "in devices below API 24",
                 VERSION.SDK_INT >= 24
         )
 
@@ -302,7 +304,8 @@ class OrderDetailNavigationTest : TestBase() {
     @Test
     fun verifyOrderDetailCardCompletedStatusLabelView() {
         Assume.assumeTrue(
-                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available " +
+                        "in devices below API 24",
                 VERSION.SDK_INT >= 24
         )
 
@@ -337,7 +340,8 @@ class OrderDetailNavigationTest : TestBase() {
     @Test
     fun verifyOrderDetailCardCancelledStatusLabelView() {
         Assume.assumeTrue(
-                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available " +
+                        "in devices below API 24",
                 VERSION.SDK_INT >= 24
         )
 
@@ -372,7 +376,8 @@ class OrderDetailNavigationTest : TestBase() {
     @Test
     fun verifyOrderDetailCardRefundedStatusLabelView() {
         Assume.assumeTrue(
-                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available " +
+                        "in devices below API 24",
                 VERSION.SDK_INT >= 24
         )
 
@@ -407,7 +412,8 @@ class OrderDetailNavigationTest : TestBase() {
     @Test
     fun verifyOrderDetailCardFailedStatusLabelView() {
         Assume.assumeTrue(
-                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available " +
+                        "in devices below API 24",
                 VERSION.SDK_INT >= 24
         )
 

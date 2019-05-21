@@ -24,7 +24,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.wordpress.android.fluxc.model.SiteModel
 
-
 /**
  * Related FluxC issue in MockedStack_WCBaseStoreTest.kt#L116
  * Some of the internals of java.util.Currency seem to be stubbed in a unit test environment,

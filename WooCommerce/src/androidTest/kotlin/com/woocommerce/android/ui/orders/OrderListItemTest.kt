@@ -169,7 +169,8 @@ class OrderListItemTest : TestBase() {
     @Test
     fun verifyOrderListItemOrderStatusLabelDisplayedCorrectly() {
         Assume.assumeTrue(
-                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available " +
+                        "in devices below API 24",
                 VERSION.SDK_INT >= 24
         )
 
