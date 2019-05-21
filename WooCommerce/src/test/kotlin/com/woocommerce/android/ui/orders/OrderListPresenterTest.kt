@@ -11,6 +11,8 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -20,8 +22,10 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 
 class OrderListPresenterTest {
@@ -185,5 +189,74 @@ class OrderListPresenterTest {
 
         presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
         verify(orderListView, times(1)).showSkeleton(false)
+    }
+
+    @Test
+    fun `Load shipment provider lists only if orders list is loaded`() {
+        // load shipment tracking only if order list is not empty
+        presenter.takeView(orderListView)
+        presenter.loadOrders(forceRefresh = true)
+
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
+
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
+        verify(orderListView).showOrders(orders, isFreshData = true)
+
+        verify(presenter).loadShipmentTrackingProviders(orders[0])
+    }
+
+    @Test
+    fun `Do not load shipment provider lists if already loaded when network connected`() {
+        // do not load shipment tracking provider list only if already fetched
+        presenter.takeView(orderListView)
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        doReturn(true).whenever(presenter).isShipmentTrackingProviderFetched
+
+        presenter.loadOrders(forceRefresh = false)
+        verify(presenter).loadShipmentTrackingProviders(orders[0])
+        verify(dispatcher, never()).dispatch(any())
+    }
+
+    @Test
+    fun `Do not load shipment provider list if not already loaded but network not connected`() {
+        // Do not load shipment provider lists if not loaded and network not connected
+        presenter.takeView(orderListView)
+        doReturn(false).whenever(networkStatus).isConnected()
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+
+        presenter.loadOrders(forceRefresh = false)
+        verify(presenter).loadShipmentTrackingProviders(orders[0])
+        verify(dispatcher, never()).dispatch(any())
+    }
+
+    @Test
+    fun `Load shipment provider list if not already loaded but network is connected - success`() {
+        // load shipment tracking provider list only if not already fetched & network is connected - success
+        presenter.takeView(orderListView)
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        presenter.loadOrders(forceRefresh = false)
+        verify(orderListView).showOrders(orders, isFreshData = false)
+
+        verify(presenter).loadShipmentTrackingProviders(orders[0])
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderShipmentProvidersPayload>>())
+        presenter.onOrderShipmentProviderChanged(OnOrderShipmentProvidersChanged(1))
+        assertTrue(presenter.isShipmentTrackingProviderFetched)
+    }
+
+    @Test
+    fun `Load shipment provider list if not already loaded but network is connected - failure`() {
+        // load shipment tracking provider list only if not already fetched & network is connected - failure
+        presenter.takeView(orderListView)
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        presenter.loadOrders(forceRefresh = false)
+        verify(orderListView).showOrders(orders, isFreshData = false)
+
+        verify(presenter).loadShipmentTrackingProviders(orders[0])
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrderShipmentProvidersPayload>>())
+        presenter.onOrderShipmentProviderChanged(OnOrderShipmentProvidersChanged(1).apply {
+            error = OrderError()
+        })
+        assertFalse(presenter.isShipmentTrackingProviderFetched)
     }
 }

@@ -22,6 +22,8 @@
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
+        android:paddingLeft="@dimen/list_item_padding_start"
+        android:paddingRight="@dimen/list_item_padding_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_label"
         tools:itemCount="3"
@@ -29,4 +31,17 @@
         tools:targetApi="lollipop">
 
     </android.support.v7.widget.RecyclerView>
+
+    <!-- Button: Add Tracking -->
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/shipmentTrack_btnAddTracking"
+        style="@style/Woo.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="@string/order_shipment_tracking_add_button"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_items"
+        tools:visibility="visible"/>
 </merge>

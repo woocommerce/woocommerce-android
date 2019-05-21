@@ -1,0 +1,108 @@
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/snack_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_window_background"
+    android:orientation="vertical"
+    tools:context="com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"/>
+
+    <LinearLayout
+        android:id="@+id/addTracking_editContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <!-- Select provider view -->
+        <TextView
+            android:id="@+id/addTracking_carrier_label"
+            style="@style/Woo.TextAppearance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/order_shipment_tracking_carrier_label"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/addTracking_editCarrier"
+            style="@style/Woo.Add.Tracking.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:backgroundTint="@color/list_divider"
+            android:gravity="top"
+            android:hint="@string/order_shipment_tracking_provider_hint"
+            android:minHeight="0dp"
+            android:paddingBottom="@dimen/default_padding"
+            android:paddingEnd="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingStart="0dp"
+            android:paddingTop="@dimen/default_padding"
+            />
+
+        <View
+            android:id="@+id/addTracking_editCarrierDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:background="@color/list_divider"/>
+
+        <!-- Add tracking number view -->
+        <TextView
+            android:id="@+id/addTracking_number_label"
+            style="@style/Woo.TextAppearance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:text="@string/order_shipment_tracking_number_label"/>
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/addTracking_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:gravity="top"
+            android:hint="@string/order_shipment_tracking_number_hint"
+            android:inputType="text"
+            android:maxLength="@integer/max_length_tracking_number"
+            android:paddingBottom="@dimen/margin_extra_large"
+            android:theme="@style/Woo.Add.Tracking.EditText"/>
+
+        <!-- Select date shipped view -->
+        <TextView
+            android:id="@+id/addTracking_date_label"
+            style="@style/Woo.TextAppearance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:text="@string/order_shipment_tracking_date_label"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/addTracking_date"
+            style="@style/Woo.Add.Tracking.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:inputType="date"
+            android:minHeight="0dp"
+            android:paddingEnd="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingStart="0dp"
+            android:textColor="@color/edit_text_text_color"
+            tools:text="May 8, 2019"/>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

@@ -102,10 +102,10 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
         }
     }
 
-    override fun openOrderFulfillment(order: WCOrderModel) {
+    override fun openOrderFulfillment(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean) {
         val tag = OrderFulfillmentFragment.TAG
         if (!popToState(tag)) {
-            loadChildFragment(OrderFulfillmentFragment.newInstance(order), tag)
+            loadChildFragment(OrderFulfillmentFragment.newInstance(order, isUsingCachedShipmentTrackings), tag)
         }
     }
 
