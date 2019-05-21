@@ -60,6 +60,10 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             }
         } else {
             tracking_btnTrack.visibility = View.GONE
+            tracking_btnDelete.visibility = View.VISIBLE
+            tracking_btnDelete.setOnClickListener {
+                // TODO: add delete functionality in a next commit
+            }
         }
     }
 

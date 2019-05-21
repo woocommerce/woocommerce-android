@@ -10,13 +10,13 @@
         android:id="@+id/tracking_copyNumber"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:clickable="true"
-        android:focusable="true"
         android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
         android:contentDescription="@string/order_shipment_tracking_copy_to_clipboard"
-        android:paddingTop="@dimen/list_divider_padding_top"
+        android:focusable="true"
+        android:orientation="vertical"
         android:paddingBottom="@dimen/list_divider_padding_bottom"
+        android:paddingTop="@dimen/list_divider_padding_top"
         app:layout_constraintEnd_toStartOf="@+id/tracking_btnTrack"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -33,8 +33,8 @@
             android:id="@+id/tracking_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/card_item_padding_intra_v"
             android:paddingBottom="@dimen/card_item_padding_intra_v"
+            android:paddingTop="@dimen/card_item_padding_intra_v"
             android:textAppearance="@style/Woo.TextAppearance.Medium.Bold"
             tools:text="111222 3334 4444Z"/>
 
@@ -55,10 +55,25 @@
         android:contentDescription="@string/order_shipment_tracking_button"
         android:scaleType="center"
         android:src="@drawable/ic_menu_more_vert_compat"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tracking_copyNumber"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
         tools:visibility="visible"/>
+
+    <ImageButton
+        android:id="@+id/tracking_btnDelete"
+        style="@android:style/Widget.ActionButton"
+        android:layout_width="@dimen/shipment_tracking_delete_button_width"
+        android:layout_height="@dimen/shipment_tracking_delete_button_width"
+        android:background="@drawable/ic_btn_circle"
+        android:contentDescription="@string/orderdetail_delete_tracking"
+        android:scaleType="center"
+        android:src="@drawable/ic_close"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone"/>
 
 </android.support.constraint.ConstraintLayout>
