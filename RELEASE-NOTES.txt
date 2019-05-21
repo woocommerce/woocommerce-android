@@ -1,5 +1,11 @@
+2.0
+----
+
 1.9
 -----
+
+Improvements
+* Dates have been added to the order list
  
 1.8
 -----
@@ -25,6 +31,7 @@ Bugfixes
 * Fixed rare crash in order detail while loading product images
 * Fixed rare crash when showing order note
 * Fixed a very rare crash when showing the filter menu options button
+* Minor style fixes
 
 Improvements
 * Dashboard no longer reloads every time you return to it
