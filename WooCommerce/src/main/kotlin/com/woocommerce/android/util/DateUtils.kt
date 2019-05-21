@@ -168,4 +168,21 @@ object DateUtils {
             throw IllegalArgumentException("Date string argument is not of format YYYY-MM: $iso8601Date")
         }
     }
+
+    /**
+     * Given a date of format MMMM d, YYYY, returns date string in yyyy-MM-dd format
+     *
+     * @throws IllegalArgumentException if the argument is not a valid date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getDateString(dateString: String): String {
+        return try {
+            val originalFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.ROOT)
+            val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
+            val date = originalFormat.parse(dateString)
+            targetFormat.format(date)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format MMMM dd, yyyy: $dateString")
+        }
+    }
 }

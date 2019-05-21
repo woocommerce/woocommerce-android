@@ -34,6 +34,18 @@
             android:layout_height="wrap_content"
             style="@style/Woo.Card.Expandable"/>
 
+        <!-- Add Optional Shipment Tracking -->
+        <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
+            android:id="@+id/orderFulfill_addShipmentTracking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card.List"
+            android:clipToPadding="false"
+            android:paddingBottom="0dp"
+            android:contentDescription="@string/order_shipment_tracking_add_label"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
         <!-- Button: Mark Order Complete -->
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/orderFulfill_btnComplete"
