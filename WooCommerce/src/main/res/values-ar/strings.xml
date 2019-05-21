@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-16 13:54:03+0000
+Translation-Revision-Date: 2019-05-01 10:54:08+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">يرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك وكلمة مرورك.</string>
+    <string name="error_user_username_instead_of_email">يُرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك على وردبرس.كوم بدلاً من عنوان البريد الإلكتروني.</string>
+    <string name="login_invalid_site_url">عنوان الموقع الذي أدخلته غير صالح. يرجى إدخاله مجددًا.</string>
+    <string name="no_site_error">الموقع الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب أن يستخدم وردبرس.</string>
+    <string name="support_help_center">مركز المساعدة</string>
+    <string name="product_name_virtual">%s ظاهري</string>
+    <string name="product_name_grouped">%s مجمَّع</string>
+    <string name="product_name_external">%s تابع</string>
+    <string name="product_name_variable">%s متغيِّر</string>
+    <string name="product_backorders_notify">اسمح بذلك، ولكن مع تنبيه العميل</string>
+    <string name="product_backorders_yes">سماح</string>
+    <string name="product_backorders_no">لا تسمح بذلك</string>
+    <string name="product_stock_status_on_backorder">على المتأخرات من الأمر</string>
+    <string name="product_stock_status_out_of_stock">غير متوفِّر</string>
+    <string name="product_stock_status_instock">متوفِّر</string>
+    <string name="read_more">قراءة المزيد</string>
     <string name="error_loading_image">Unable to load image</string>
     <string name="product_status_draft">مسودة</string>
     <string name="product_status_pending">معلّق</string>
@@ -141,7 +157,6 @@ Language: ar
     <string name="support_contact_detail">يمكنك الوصول إلى مهندسينا الذين تسرهم مساعدتك في الإجابة عن الأسئلة الصعبة</string>
     <string name="support_contact">الاتصال بالدعم</string>
     <string name="support_faq_detail">احصل على إجابات عن أسئلتك</string>
-    <string name="support_faq">استعراض الأسئلة المتداولة</string>
     <string name="support_subtitle">كيف نساعدك؟</string>
     <string name="support_identity_input_dialog_email_label">البريد الإلكتروني</string>
     <string name="support_identity_input_dialog_enter_email">يُرجى إدخال عنوان بريدك الإلكتروني</string>
@@ -176,7 +191,6 @@ Language: ar
     <string name="xmlrpc_post_blocked_error">تعذر الاتصال. يقوم المضيف الخاص بك بحظر طلبات POST، ويحتاج التطبيق إليها\n للاتصال بموقعك. يُرجى الاتصال بالمضيف لحل هذه المشكلة.</string>
     <string name="xmlrpc_missing_method_error">تعذر الاتصال. طرق XML-RPC غير موجودة على الخادم.</string>
     <string name="invalid_site_url_message">تحقق من أن عنوان URL الذي تم إدخاله في الموقع صحيح</string>
-    <string name="no_site_error">يتعذر الاتصال بموقع وردبرس. لا يوجد موقع وردبرس صالح في هذا\n العنوان. تحقق من عنوان الموقع (URL) الذي أدخلته.</string>
     <string name="error_generic">حدث خطأ</string>
     <string name="forgot_password">نسيت كلمة المرور؟</string>
     <string name="email_invalid">أدخل عنوان بريد إلكتروني صالح</string>

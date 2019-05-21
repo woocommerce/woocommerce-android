@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-16 07:54:03+0000
+Translation-Revision-Date: 2019-05-02 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">Bitte melde dich mit deinem Benutzernamen und deinem Passwort an.</string>
+    <string name="error_user_username_instead_of_email">Bitte melde dich mit deinem WordPress.com-Benutzernamen anstelle deiner E-Mail-Adresse an.</string>
+    <string name="login_invalid_site_url">Die eingegebene Website-Adresse ist ungültig. Bitte gib sie noch einmal ein.</string>
+    <string name="no_site_error">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss die Website WordPress verwenden.</string>
+    <string name="support_help_center">Hilfe-Center</string>
+    <string name="product_name_virtual">Virtuelles %s</string>
+    <string name="product_name_grouped">Gruppiertes %s</string>
+    <string name="product_name_external">Partner-%s</string>
+    <string name="product_name_variable">Variables %s</string>
+    <string name="product_backorders_notify">Zulassen, aber Kunden benachrichtigen</string>
+    <string name="product_backorders_yes">Zulassen</string>
+    <string name="product_backorders_no">Nicht zulassen</string>
+    <string name="product_stock_status_on_backorder">Lieferrückstand</string>
+    <string name="product_stock_status_out_of_stock">Ausverkauft</string>
+    <string name="product_stock_status_instock">Auf Lager</string>
+    <string name="read_more">Weitere Informationen</string>
     <string name="error_loading_image">Bild konnte nicht geladen werden</string>
     <string name="product_status_draft">Entwurf</string>
     <string name="product_status_pending">Ausstehend</string>
@@ -141,7 +157,6 @@ Language: de
     <string name="support_contact_detail">Wende dich an unsere Support-Mitarbeiter, die dir bei schwierigen Fragen weiterhelfen können</string>
     <string name="support_contact">Support kontaktieren</string>
     <string name="support_faq_detail">Erhalte Antworten auf deine Fragen</string>
-    <string name="support_faq">Durchsuche unser FAQ</string>
     <string name="support_subtitle">Wie können wir helfen?</string>
     <string name="support_identity_input_dialog_email_label">E-Mail</string>
     <string name="support_identity_input_dialog_enter_email">Bitte gib deine E-Mail-Adresse ein</string>
@@ -176,7 +191,6 @@ Language: de
     <string name="xmlrpc_post_blocked_error">Konnte nicht verbinden. Dein Host blockiert POST-Anforderungen und die App benötigt\n diese, um mit deiner Website zu kommunizieren. Kontaktiere deinen Host, um dieses Problem zu beheben.</string>
     <string name="xmlrpc_missing_method_error">Konnte nicht verbinden. Die benötigte XML-RPC Methoden sind nicht auf dem Server vorhanden.</string>
     <string name="invalid_site_url_message">Überprüfe, ob die eingegebene Website-URL gültig ist.</string>
-    <string name="no_site_error">Konnte keine Verbindung zur WordPress-Website herstellen. Es gibt keine gültige WordPress-Website an dieser\n Adresse. Überprüfe die eingegebene Website-Adresse (URL).</string>
     <string name="error_generic">Es ist ein Fehler aufgetreten</string>
     <string name="forgot_password">Passwort vergessen?</string>
     <string name="email_invalid">Gib eine gültige E-Mail-Adresse ein</string>

@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-15 14:54:03+0000
+Translation-Revision-Date: 2019-05-02 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">Accedi con i tuoi nome utente e password.</string>
+    <string name="error_user_username_instead_of_email">Accedi utilizzando il tuo nome utente di WordPress.com invece del tuo indirizzo e-mail.</string>
+    <string name="login_invalid_site_url">L\'indirizzo del sito immesso non è valido. Immettilo di nuovo.</string>
+    <string name="no_site_error">Il sito a questo indirizzo non è un sito WordPress. Per poterci connettere, il sito deve utilizzare WordPress.</string>
+    <string name="support_help_center">Centro assistenza</string>
+    <string name="product_name_virtual">%s virtuale</string>
+    <string name="product_name_grouped">%s raggruppato</string>
+    <string name="product_name_external">%s di affiliazione</string>
+    <string name="product_name_variable">%s variabile</string>
+    <string name="product_backorders_notify">Permetti, ma invia notifica al cliente</string>
+    <string name="product_backorders_yes">Permetti</string>
+    <string name="product_backorders_no">Non permettere</string>
+    <string name="product_stock_status_on_backorder">Ordine arretrato</string>
+    <string name="product_stock_status_out_of_stock">Esaurito</string>
+    <string name="product_stock_status_instock">In magazzino</string>
+    <string name="read_more">Leggi altro</string>
     <string name="error_loading_image">Impossibile caricare le immagini</string>
     <string name="product_status_draft">Bozza</string>
     <string name="product_status_pending">In attesa</string>
@@ -141,7 +157,6 @@ Language: it
     <string name="support_contact_detail">Contatta i nostri Happiness Engineer che possono aiutarti a rispondere a domande difficili</string>
     <string name="support_contact">Contatta il supporto</string>
     <string name="support_faq_detail">Ottieni risposte alle tue domande</string>
-    <string name="support_faq">Leggi le nostre FAQ</string>
     <string name="support_subtitle">Come possiamo aiutarti?</string>
     <string name="support_identity_input_dialog_email_label">E-mail</string>
     <string name="support_identity_input_dialog_enter_email">Inserisci il tuo indirizzo e-mail</string>
@@ -176,7 +191,6 @@ Language: it
     <string name="xmlrpc_post_blocked_error">Non è possibile connettersi. Il tuo host sta bloccando le richieste POST ma queste sono necessarie al corretto funzionamento dell\'app\n per comunicare con il tuo sito. Contatta il tuo fornitore del servizio di hosting per risolvere questo problema.</string>
     <string name="xmlrpc_missing_method_error">Non è possibile connettersi. Sul server mancano i necessari metodi XML-RPC</string>
     <string name="invalid_site_url_message">Controlla che l\'URL del sito sia valido</string>
-    <string name="no_site_error">Non è possibile connettersi al sito WordPress. Non è presente alcun sito WordPress valido a questo\n indirizzo. Controlla l\'indirizzo del sito (URL) che hai inserito.</string>
     <string name="error_generic">Si è verificato un errore</string>
     <string name="forgot_password">Password dimenticata?</string>
     <string name="email_invalid">Inserisci un indirizzo e-mail valido</string>

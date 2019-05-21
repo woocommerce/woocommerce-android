@@ -17,6 +17,7 @@ import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -296,10 +297,16 @@ class NotificationHandler @Inject constructor(
             try {
                 val decodedIconUrl = URLDecoder.decode(iconUrl, "UTF-8")
                 val largeIconSize = context.resources.getDimensionPixelSize(
-                        android.R.dimen.notification_large_icon_height)
+                        android.R.dimen.notification_large_icon_height
+                )
                 val resizedUrl = PhotonUtils.getPhotonImageUrl(decodedIconUrl, largeIconSize, largeIconSize)
 
-                val largeIconBitmap = ImageUtils.downloadBitmap(resizedUrl)
+                val largeIconBitmap = Glide.with(context)
+                        .asBitmap()
+                        .load(resizedUrl)
+                        .submit()
+                        .get()
+
                 if (largeIconBitmap != null && shouldCircularizeIcon) {
                     return ImageUtils.getCircularBitmap(largeIconBitmap)
                 }

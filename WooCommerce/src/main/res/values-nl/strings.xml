@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-15 12:54:33+0000
+Translation-Revision-Date: 2019-04-30 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">Log in met je gebruikersnaam en wachtwoord.</string>
+    <string name="error_user_username_instead_of_email">Log in met je WordPress.com-gebruikersnaam in plaats van met je e-mailadres.</string>
+    <string name="login_invalid_site_url">Het site-adres dat je hebt ingevuld, is ongeldig. Voer het opnieuw in.</string>
+    <string name="no_site_error">De site op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet de site gebruikmaken van WordPress.</string>
+    <string name="support_help_center">Help Center</string>
+    <string name="product_name_virtual">Virtuele %s</string>
+    <string name="product_name_grouped">Gegroepeerde %s</string>
+    <string name="product_name_external">Partner %s</string>
+    <string name="product_name_variable">Variabele %s</string>
+    <string name="product_backorders_notify">Toestaan, maar melden bij klant</string>
+    <string name="product_backorders_yes">Toestaan</string>
+    <string name="product_backorders_no">Niet toestaan</string>
+    <string name="product_stock_status_on_backorder">In nabestelling</string>
+    <string name="product_stock_status_out_of_stock">Niet op voorraad</string>
+    <string name="product_stock_status_instock">Op voorraad</string>
+    <string name="read_more">Meer informatie</string>
     <string name="error_loading_image">Kan afbeelding niet laden</string>
     <string name="product_status_draft">Concept</string>
     <string name="product_status_pending">In behandeling</string>
@@ -141,7 +157,6 @@ Language: nl
     <string name="support_contact_detail">Neem contact op met onze Happiness Engineers, die alle lastige vragen kunnen beantwoorden</string>
     <string name="support_contact">Neem contact op met ondersteuning</string>
     <string name="support_faq_detail">Krijg antwoord op de vragen die je hebt</string>
-    <string name="support_faq">Bekijk onze veelgestelde vragen</string>
     <string name="support_subtitle">Hoe kunnen we helpen?</string>
     <string name="support_identity_input_dialog_email_label">E-mail</string>
     <string name="support_identity_input_dialog_enter_email">Voer je e-mailadres in</string>
@@ -176,7 +191,6 @@ Language: nl
     <string name="xmlrpc_post_blocked_error">Kan geen verbinding maken. Je host blokkeert POST-aanvragen en de app heeft\n dat nodig om met je site te communiceren. Neem contact op met je host om dit probleem op te lossen.</string>
     <string name="xmlrpc_missing_method_error">Kon geen verbinding maken. Vereiste XML-RPC-methoden ontbreken op de server.</string>
     <string name="invalid_site_url_message">Controleer of de ingevoerde site-URL geldig is</string>
-    <string name="no_site_error">Kan geen verbinding maken met de WordPress-site. Er is geen geldige WordPress-site op dit\n adres. Controleer of je het goede websiteadres (URL) hebt opgegeven.</string>
     <string name="error_generic">Er heeft zich een fout voorgedaan</string>
     <string name="forgot_password">Wachtwoord vergeten?</string>
     <string name="email_invalid">Voer een geldig e-mailadres in</string>

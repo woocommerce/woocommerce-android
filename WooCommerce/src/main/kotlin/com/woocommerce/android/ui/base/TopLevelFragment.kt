@@ -21,6 +21,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         // If the value associated with this label is true, then this
         // fragment is currently hosting a child fragment (drilled in).
         const val CHILD_FRAGMENT_ACTIVE = "child-fragment-active"
+        const val FRAGMENT_TITLE = "fragment-title"
     }
 
     /**
@@ -50,11 +51,6 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
             layout.addView(view)
         }
         return layout
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        updateActivityTitle()
     }
 
     override fun onResume() {
@@ -121,6 +117,9 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         super.onSaveInstanceState(outState)
         // Save the current view state of this top-level fragment.
         outState.putBoolean(CHILD_FRAGMENT_ACTIVE, childFragmentManager.backStackEntryCount > 0)
+
+        // Save the current fragment title
+        outState.putString(FRAGMENT_TITLE, activity?.title.toString())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -128,7 +127,12 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         savedInstanceState?.let { bundle ->
             val childViewActive = bundle.getBoolean(CHILD_FRAGMENT_ACTIVE, false)
             updateParentViewState(childViewActive)
-        }
+
+            val title = bundle.getString(FRAGMENT_TITLE)
+            title?.let {
+                activity?.title = it
+            }
+        } ?: updateActivityTitle()
     }
 
     /**
@@ -158,7 +162,6 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
             container?.getChildAt(0)?.visibility = View.VISIBLE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
-            mainActivity?.title = getFragmentTitle()
         }
     }
 
