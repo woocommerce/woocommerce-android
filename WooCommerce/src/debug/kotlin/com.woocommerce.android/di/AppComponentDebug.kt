@@ -5,7 +5,7 @@ import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
 import dagger.BindsInstance
 import dagger.Component
-import dagger.android.support.AndroidSupportInjectionModule
+import dagger.android.AndroidInjectionModule
 import org.wordpress.android.fluxc.module.DebugOkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseBaseModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [
-        AndroidSupportInjectionModule::class,
+        AndroidInjectionModule::class,
         ApplicationModule::class,
         AppConfigModule::class,
         ReleaseBaseModule::class,
