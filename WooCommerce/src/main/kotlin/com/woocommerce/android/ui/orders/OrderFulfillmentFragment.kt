@@ -292,7 +292,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                 super.onDismissed(transientBottomBar, event)
                 if (!deleteOrderShipmentTrackingCancelled) {
                     deletedOrderShipmentTrackingModel = item
-//                    presenter.deleteOrderShipmentTracking(item)
+                    presenter.deleteOrderShipmentTracking(item)
                 }
             }
         }
