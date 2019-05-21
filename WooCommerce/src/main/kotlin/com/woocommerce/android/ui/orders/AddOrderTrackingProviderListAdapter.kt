@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_item.v
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 
 class AddOrderTrackingProviderListAdapter(
+    val storeCountry: String?,
     val listener: OnProviderClickListener
 ) : SectionedRecyclerViewAdapter(), Filterable {
     private var providerList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
@@ -62,7 +63,13 @@ class AddOrderTrackingProviderListAdapter(
                 .groupBy { it.country }
                 .mapValues { entry -> entry.value.map { it } }
 
-        countryProvidersMap.forEach {
+        val finalMap = mutableMapOf<String, List<WCOrderShipmentProviderModel>>()
+        countryProvidersMap[storeCountry]?.let { wcOrderShipmentProviderModels ->
+            storeCountry?.let { finalMap.put(it, wcOrderShipmentProviderModels) }
+        }
+        finalMap.putAll(countryProvidersMap)
+
+        finalMap.forEach {
             addSection(ProviderListSection(it.key, it.value))
         }
         notifyDataSetChanged()
