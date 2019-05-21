@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.os.Build.VERSION
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.action.ViewActions.swipeDown
@@ -20,6 +21,7 @@ import com.woocommerce.android.ui.main.MainActivityTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertTrue
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -117,8 +119,18 @@ class OrderListItemTest : TestBase() {
                 .check(matches(isCompletelyDisplayed()))
     }
 
+    /**
+     * Related FluxC issue in MockedStack_WCBaseStoreTest.kt#L116
+     * Some of the internals of java.util.Currency seem to be stubbed in a unit test environment,
+     * giving results inconsistent with a normal running app
+     */
     @Test
     fun verifyOrderListItemTotalDisplayedCorrectlyForMultipleCurrencies() {
+        Assume.assumeTrue(
+                "Requires API 23 or higher due to localized currency values differing on older versions",
+                VERSION.SDK_INT >= 23
+        )
+
         // verify if the first order item order total matches: $14.53
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(1, R.id.orderTotal))
                 .check(matches(withText("$14.53")))
@@ -147,8 +159,20 @@ class OrderListItemTest : TestBase() {
                 .check(matches(withText("A$14.53")))
     }
 
+    /**
+     * This test checks if the order status label name, label text color and label background color matches the
+     * corresponding order status. In order to check background color of the TagView, we need to get the
+     * background color of the GradientDrawable and check if it matches. The getColor() method in GradientDrawable
+     * is only available on devices above API 23. So adding a check here that assumes the device testing takes place
+     * in devices above API 23.
+     */
     @Test
     fun verifyOrderListItemOrderStatusLabelDisplayedCorrectly() {
+        Assume.assumeTrue(
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                VERSION.SDK_INT >= 24
+        )
+
         // PROCESSING: Check if order status label name, label text color, label background color
         val processingStatusPosition = 1
         onView(WCMatchers.withRecyclerView(R.id.ordersList).atPositionOnView(processingStatusPosition, R.id.orderTags))

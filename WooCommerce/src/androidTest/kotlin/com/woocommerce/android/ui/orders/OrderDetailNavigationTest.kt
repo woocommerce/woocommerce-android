@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.os.Build.VERSION
 import android.support.test.espresso.Espresso
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions
@@ -19,6 +20,7 @@ import com.woocommerce.android.helpers.WcDateTimeTestUtils
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.util.DateUtils
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -185,8 +187,21 @@ class OrderDetailNavigationTest : TestBase() {
                 matches(withText(appContext.getString(R.string.orderdetail_orderstatus_created, yDayDateString))))
     }
 
+
+    /**
+     * This test checks if the order status label name, label text color and label background color matches the
+     * corresponding order status. In order to check background color of the TagView, we need to get the
+     * background color of the GradientDrawable and check if it matches. The getColor() method in GradientDrawable
+     * is only available on devices above API 23. So adding a check here that assumes the device testing takes place
+     * in devices above API 23.
+     */
     @Test
     fun verifyOrderDetailCardPendingStatusLabelView() {
+        Assume.assumeTrue(
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                VERSION.SDK_INT >= 24
+        )
+
         // add mock data to order detail screen
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail())
 
@@ -207,8 +222,20 @@ class OrderDetailNavigationTest : TestBase() {
         )
     }
 
+    /**
+     * This test checks if the order status label name, label text color and label background color matches the
+     * corresponding order status. In order to check background color of the TagView, we need to get the
+     * background color of the GradientDrawable and check if it matches. The getColor() method in GradientDrawable
+     * is only available on devices above API 23. So adding a check here that assumes the device testing takes place
+     * in devices above API 23.
+     */
     @Test
     fun verifyOrderDetailCardProcessingStatusLabelView() {
+        Assume.assumeTrue(
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                VERSION.SDK_INT >= 24
+        )
+
         // add mock data to order detail screen
         val wcOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail("Processing")
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail(), wcOrderStatusModel)
@@ -230,8 +257,20 @@ class OrderDetailNavigationTest : TestBase() {
         )
     }
 
+    /**
+     * This test checks if the order status label name, label text color and label background color matches the
+     * corresponding order status. In order to check background color of the TagView, we need to get the
+     * background color of the GradientDrawable and check if it matches. The getColor() method in GradientDrawable
+     * is only available on devices above API 23. So adding a check here that assumes the device testing takes place
+     * in devices above API 23.
+     */
     @Test
     fun verifyOrderDetailCardOnHoldStatusLabelView() {
+        Assume.assumeTrue(
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                VERSION.SDK_INT >= 24
+        )
+
         // add mock data to order detail screen
         val wcOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail("On Hold")
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail(), wcOrderStatusModel)
@@ -253,8 +292,20 @@ class OrderDetailNavigationTest : TestBase() {
         )
     }
 
+    /**
+     * This test checks if the order status label name, label text color and label background color matches the
+     * corresponding order status. In order to check background color of the TagView, we need to get the
+     * background color of the GradientDrawable and check if it matches. The getColor() method in GradientDrawable
+     * is only available on devices above API 23. So adding a check here that assumes the device testing takes place
+     * in devices above API 23.
+     */
     @Test
     fun verifyOrderDetailCardCompletedStatusLabelView() {
+        Assume.assumeTrue(
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                VERSION.SDK_INT >= 24
+        )
+
         // add mock data to order detail screen
         val wcOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail("Completed")
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail(), wcOrderStatusModel)
@@ -276,8 +327,20 @@ class OrderDetailNavigationTest : TestBase() {
         )
     }
 
+    /**
+     * This test checks if the order status label name, label text color and label background color matches the
+     * corresponding order status. In order to check background color of the TagView, we need to get the
+     * background color of the GradientDrawable and check if it matches. The getColor() method in GradientDrawable
+     * is only available on devices above API 23. So adding a check here that assumes the device testing takes place
+     * in devices above API 23.
+     */
     @Test
     fun verifyOrderDetailCardCancelledStatusLabelView() {
+        Assume.assumeTrue(
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                VERSION.SDK_INT >= 24
+        )
+
         // add mock data to order detail screen
         val wcOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail("Cancelled")
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail(), wcOrderStatusModel)
@@ -299,8 +362,20 @@ class OrderDetailNavigationTest : TestBase() {
         )
     }
 
+    /**
+     * This test checks if the order status label name, label text color and label background color matches the
+     * corresponding order status. In order to check background color of the TagView, we need to get the
+     * background color of the GradientDrawable and check if it matches. The getColor() method in GradientDrawable
+     * is only available on devices above API 23. So adding a check here that assumes the device testing takes place
+     * in devices above API 23.
+     */
     @Test
     fun verifyOrderDetailCardRefundedStatusLabelView() {
+        Assume.assumeTrue(
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                VERSION.SDK_INT >= 24
+        )
+
         // add mock data to order detail screen
         val wcOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail("Refunded")
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail(), wcOrderStatusModel)
@@ -322,8 +397,20 @@ class OrderDetailNavigationTest : TestBase() {
         )
     }
 
+    /**
+     * This test checks if the order status label name, label text color and label background color matches the
+     * corresponding order status. In order to check background color of the TagView, we need to get the
+     * background color of the GradientDrawable and check if it matches. The getColor() method in GradientDrawable
+     * is only available on devices above API 23. So adding a check here that assumes the device testing takes place
+     * in devices above API 23.
+     */
     @Test
     fun verifyOrderDetailCardFailedStatusLabelView() {
+        Assume.assumeTrue(
+                "Requires API 24 or higher due to getColor() method in GradientDrawable not available devices below API 24",
+                VERSION.SDK_INT >= 24
+        )
+
         // add mock data to order detail screen
         val wcOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail("Failed")
         activityTestRule.setOrderDetailWithMockData(WcOrderTestUtils.generateOrderDetail(), wcOrderStatusModel)

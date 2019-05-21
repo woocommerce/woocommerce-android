@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.os.Build.VERSION
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
@@ -16,12 +17,20 @@ import com.woocommerce.android.R
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.wordpress.android.fluxc.model.SiteModel
 
+
+/**
+ * Related FluxC issue in MockedStack_WCBaseStoreTest.kt#L116
+ * Some of the internals of java.util.Currency seem to be stubbed in a unit test environment,
+ * giving results inconsistent with a normal running app.
+ * So adding a check here that assumes the device testing takes place in devices above API 23.
+ */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class OrderDetailPaymentCardTest : TestBase() {
@@ -31,6 +40,11 @@ class OrderDetailPaymentCardTest : TestBase() {
     @Before
     override fun setup() {
         super.setup()
+        Assume.assumeTrue(
+                "Requires API 23 or higher due to localized currency values differing on older versions",
+                VERSION.SDK_INT >= 23
+        )
+
         // Bypass login screen and display dashboard
         activityTestRule.launchMainActivityLoggedIn(null, SiteModel())
 
