@@ -1,38 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Woo.ListItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/card_padding_bottom"
-    android:paddingTop="@dimen/card_padding_top">
+    app:cardElevation="0dp">
 
-    <TextView
-        android:id="@+id/addShipmentTrackingProviderListItem_name"
-        style="@style/Woo.TextAppearance.Title.Large"
-        android:layout_width="0dp"
+    <android.support.constraint.ConstraintLayout
+        style="@style/Woo.ListItem"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/addShipmentTrackingProviderListItem_tick"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Canada Post"/>
+        android:background="?attr/selectableItemBackground"
+        android:paddingBottom="@dimen/card_padding_bottom"
+        android:paddingTop="@dimen/card_padding_top">
 
-    <RadioButton
-        android:id="@+id/addShipmentTrackingProviderListItem_tick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/order_shipment_tracking_provider_list_item"
-        android:visibility="gone"
-        android:button="@null"
-        android:background="@drawable/ic_done_purple_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"/>
+        <TextView
+            android:id="@+id/addShipmentTrackingProviderListItem_name"
+            style="@style/Woo.TextAppearance.Title.Large"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_padding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/addShipmentTrackingProviderListItem_tick"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Canada Post"/>
 
-</android.support.constraint.ConstraintLayout>
+        <RadioButton
+            android:id="@+id/addShipmentTrackingProviderListItem_tick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_done_purple_24dp"
+            android:button="@null"
+            android:contentDescription="@string/order_shipment_tracking_provider_list_item"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"/>
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>
