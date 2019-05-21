@@ -1,2 +1,2 @@
-* The date of each order is now displayed in the orders list screen.
-* Fixed an issue where the app would sometimes show the wrong title when it is re-opened.
+* The orders list screen now displays the date of every order.
+* Sometimes you’d re-open the app and it would display the wrong title. Unhelpful! That’s fixed.
