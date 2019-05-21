@@ -63,17 +63,10 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
      * a transient note is a temporary placeholder created after the user adds a provider but before the request to
      * add the provider has completed - this enables us to be optimistic about connectivity
      */
-    fun addTransientTrackingProvider(
-        provider: String,
-        trackingNum: String,
-        dateShipped: String
-    ) {
+    fun addTransientTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
         enableItemAnimator(true)
-        val wcOrderShipmentTrackingModel = WCOrderShipmentTrackingModel(nextTransientTrackingId)
-        wcOrderShipmentTrackingModel.trackingNumber = trackingNum
-        wcOrderShipmentTrackingModel.dateShipped = dateShipped
-        wcOrderShipmentTrackingModel.trackingProvider = provider
-        (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).addNote(wcOrderShipmentTrackingModel)
+        wcOrderShipmentTrackingModel.id = nextTransientTrackingId
+        (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).addTracking(wcOrderShipmentTrackingModel)
         nextTransientTrackingId--
         shipmentTrack_items.scrollToPosition(0)
     }
@@ -102,7 +95,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
 
         override fun getItemCount() = trackings.size
 
-        fun addNote(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+        fun addTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
             trackings.add(0, wcOrderShipmentTrackingModel)
             notifyItemInserted(0)
         }

@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -180,15 +181,43 @@ class OrderFulfillmentPresenterTest {
     }
 
     @Test
-    fun `Add Order shipment tracking request correctly`() {
+    fun `Add order shipment tracking request correctly`() {
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
 
-        presenter.pushShipmentTrackingProvider(
-                provider = "Anitaa Test",
-                trackingNum = "123456",
-                dateShipped = "2019-05-13T16:11:13Z"
-        )
+        val defaultShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Test"
+            trackingLink = "123456"
+            dateShipped = "2019-05-13T16:11:13Z"
+        }
+        presenter.pushShipmentTrackingProvider(defaultShipmentTrackingModel, false)
+        verify(view).showAddShipmentTrackingSnack()
+    }
+
+    @Test
+    fun `Add order shipment tracking with custom provider name request correctly`() {
+        presenter.takeView(view)
+        doReturn(order).whenever(presenter).orderModel
+
+        val customShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Inc"
+            dateShipped = "2019-05-13T16:11:13Z"
+        }
+        presenter.pushShipmentTrackingProvider(customShipmentTrackingModel, true)
+        verify(view).showAddShipmentTrackingSnack()
+    }
+
+    @Test
+    fun `Add order shipment tracking with custom provider tracking link request correctly`() {
+        presenter.takeView(view)
+        doReturn(order).whenever(presenter).orderModel
+
+        val customShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Inc"
+            dateShipped = "2019-05-13T16:11:13Z"
+            trackingLink = "sample.com"
+        }
+        presenter.pushShipmentTrackingProvider(customShipmentTrackingModel, true)
         verify(view).showAddShipmentTrackingSnack()
     }
 
@@ -198,11 +227,12 @@ class OrderFulfillmentPresenterTest {
         doReturn(order).whenever(presenter).orderModel
         doReturn(false).whenever(networkStatus).isConnected()
 
-        presenter.pushShipmentTrackingProvider(
-                provider = "Anitaa Test",
-                trackingNum = "123456",
-                dateShipped = "2019-05-13T16:11:13Z"
-        )
+        val defaultShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Test"
+            trackingLink = "123456"
+            dateShipped = "2019-05-13T16:11:13Z"
+        }
+        presenter.pushShipmentTrackingProvider(defaultShipmentTrackingModel, false)
 
         verify(view, times(0)).showAddShipmentTrackingSnack()
         verify(uiMessageResolver, times(1)).showOfflineSnack()

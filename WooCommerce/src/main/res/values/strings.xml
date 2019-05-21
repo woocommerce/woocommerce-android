@@ -237,8 +237,12 @@
     <string name="order_shipment_tracking_toolbar_title">Add Tracking</string>
     <string name="order_shipment_tracking_carrier_label">Carrier</string>
     <string name="order_shipment_tracking_number_label">Tracking number</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Provider name</string>
+    <string name="order_shipment_tracking_custom_provider_url_label">Tracking link (optional)</string>
     <string name="order_shipment_tracking_provider_hint">Select provider</string>
     <string name="order_shipment_tracking_number_hint">Enter Tracking number</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Enter provider name</string>
+    <string name="order_shipment_tracking_custom_provider_url_hint">Enter tracking link</string>
     <string name="order_shipment_tracking_date_label">Date shipped</string>
     <string name="order_shipment_tracking_provider_toolbar_title">Shipping Providers</string>
     <string name="order_shipment_tracking_provider_list_item">Selected Shipment Provider</string>
@@ -248,6 +252,9 @@
     <string name="order_shipment_tracking_confirm_discard">Are you sure you want to discard this tracking?</string>
     <string name="order_shipment_tracking_empty_provider">Please select a provider</string>
     <string name="order_shipment_tracking_empty_tracking_num">Please enter a tracking number</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Please enter a provider name</string>
+    <string name="order_shipment_tracking_custom_provider_section_title">Custom</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Custom Provider</string>
     <!--
         Notifications
     -->
