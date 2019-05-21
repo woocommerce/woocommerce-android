@@ -47,25 +47,18 @@
             tools:text="Shipped February 27, 2019"/>
     </LinearLayout>
 
-    <FrameLayout
+    <ImageButton
         android:id="@+id/tracking_btnTrack"
-        android:layout_width="50dp"
-        android:layout_height="0dp"
-        android:background="?android:attr/selectableItemBackground"
+        style="@android:style/Widget.ActionButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:contentDescription="@string/order_shipment_tracking_button"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="center"
+        android:src="@drawable/ic_menu_more_vert_compat"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tracking_copyNumber"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:importantForAccessibility="no"
-            android:scaleType="center"
-            android:tint="@color/wc_purple"
-            app:srcCompat="@drawable/ic_external"/>
-    </FrameLayout>
 </android.support.constraint.ConstraintLayout>

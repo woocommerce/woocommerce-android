@@ -6,6 +6,7 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import android.widget.PopupMenu
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -48,14 +49,37 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             }
         }
 
-        // TODO: modify logic to display delete button if allowAddTrackingOption is true
-        if (!allowAddTrackingOption && item.trackingLink.isNotEmpty()) {
+        if (!allowAddTrackingOption) {
+            tracking_btnTrack.visibility = View.VISIBLE
             tracking_btnTrack.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED)
-                ChromeCustomTabUtils.launchUrl(context, item.trackingLink)
+                showTrackingOrDeleteOptionPopup(item)
             }
         } else {
             tracking_btnTrack.visibility = View.GONE
         }
+    }
+
+    /**
+     * Question: Should we count this action as non trivial action and
+     * call AppRatingDialog to incrementInteractions?
+     */
+    private fun showTrackingOrDeleteOptionPopup(item: WCOrderShipmentTrackingModel) {
+        val popup = PopupMenu(context, tracking_btnTrack)
+        popup.menuInflater.inflate(R.menu.menu_order_detail_shipment_tracking_actions, popup.menu)
+
+        /**
+         * Track shipment menu option is not displayed if the tracking link
+         * is not empty
+         */
+        if (item.trackingLink.isNotEmpty()) {
+            popup.menu.findItem(R.id.menu_track_shipment)?.isVisible = true
+            popup.menu.findItem(R.id.menu_track_shipment)?.setOnMenuItemClickListener {
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED)
+                ChromeCustomTabUtils.launchUrl(context, item.trackingLink)
+                true
+            }
+        }
+
+        popup.show()
     }
 }
