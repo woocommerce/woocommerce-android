@@ -38,7 +38,8 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         val viewAdapter = ShipmentTrackingListAdapter(
                 trackings.toMutableList(),
                 uiMessageResolver,
-                allowAddTrackingOption
+                allowAddTrackingOption,
+                shipmentTrackingActionListener
         )
 
         shipmentTrack_items.apply {
@@ -71,6 +72,16 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         shipmentTrack_items.scrollToPosition(0)
     }
 
+    fun deleteTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+        enableItemAnimator(true)
+        (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).deleteTracking(wcOrderShipmentTrackingModel)
+    }
+
+    fun undoDeleteTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+        enableItemAnimator(true)
+        (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).undoDeleteTracking(wcOrderShipmentTrackingModel)
+    }
+
     private fun enableItemAnimator(enable: Boolean) {
         shipmentTrack_items.itemAnimator = if (enable) DefaultItemAnimator() else null
     }
@@ -78,8 +89,11 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     class ShipmentTrackingListAdapter(
         private val trackings: MutableList<WCOrderShipmentTrackingModel>,
         private val uiMessageResolver: UIMessageResolver,
-        private val allowAddTrackingOption: Boolean
+        private val allowAddTrackingOption: Boolean,
+        private val shipmentTrackingActionListener: OrderShipmentTrackingActionListener?
     ) : RecyclerView.Adapter<ShipmentTrackingListAdapter.ViewHolder>() {
+        private var deletedTrackingModelIndex = -1
+
         class ViewHolder(val view: OrderDetailShipmentTrackingItemView) : RecyclerView.ViewHolder(view)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -90,7 +104,12 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.view.initView(trackings[position], uiMessageResolver, allowAddTrackingOption)
+            holder.view.initView(
+                    item = trackings[position],
+                    uiMessageResolver = uiMessageResolver,
+                    allowAddTrackingOption = allowAddTrackingOption,
+                    shipmentTrackingActionListener = shipmentTrackingActionListener
+            )
         }
 
         override fun getItemCount() = trackings.size
@@ -98,6 +117,18 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         fun addTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
             trackings.add(0, wcOrderShipmentTrackingModel)
             notifyItemInserted(0)
+        }
+
+        fun deleteTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+            deletedTrackingModelIndex = trackings.indexOf(wcOrderShipmentTrackingModel)
+            trackings.remove(wcOrderShipmentTrackingModel)
+            notifyItemRemoved(deletedTrackingModelIndex)
+        }
+
+        fun undoDeleteTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+            trackings.add(deletedTrackingModelIndex, wcOrderShipmentTrackingModel)
+            notifyItemInserted(deletedTrackingModelIndex)
+            deletedTrackingModelIndex = -1
         }
     }
 }

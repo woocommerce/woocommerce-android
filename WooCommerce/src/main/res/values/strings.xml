@@ -211,6 +211,9 @@
     <string name="order_shipment_tracking_shipped_date">Shipped %s</string>
     <string name="order_shipment_tracking_add_label">Optional tracking information</string>
     <string name="order_shipment_tracking_add_button">Add tracking</string>
+    <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
+    <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
+    <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
     <!--
         Add Order Note
     -->

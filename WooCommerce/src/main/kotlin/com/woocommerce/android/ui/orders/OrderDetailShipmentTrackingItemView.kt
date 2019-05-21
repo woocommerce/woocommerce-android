@@ -25,11 +25,15 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         View.inflate(context, R.layout.order_detail_shipment_tracking_item, this)
     }
 
+    private var listener: OrderShipmentTrackingActionListener? = null
+
     fun initView(
         item: WCOrderShipmentTrackingModel,
         uiMessageResolver: UIMessageResolver,
-        allowAddTrackingOption: Boolean
+        allowAddTrackingOption: Boolean,
+        shipmentTrackingActionListener: OrderShipmentTrackingActionListener?
     ) {
+        this.listener = shipmentTrackingActionListener
         tracking_type.text = item.trackingProvider
         tracking_number.text = item.trackingNumber
         tracking_dateShipped.text = context.getString(
@@ -68,7 +72,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         popup.menuInflater.inflate(R.menu.menu_order_detail_shipment_tracking_actions, popup.menu)
 
         /**
-         * Track shipment menu option is not displayed if the tracking link
+         * Track shipment menu option is only displayed if the tracking link
          * is not empty
          */
         if (item.trackingLink.isNotEmpty()) {
@@ -78,6 +82,12 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
                 ChromeCustomTabUtils.launchUrl(context, item.trackingLink)
                 true
             }
+        }
+
+        popup.menu.findItem(R.id.menu_delete_shipment)?.setOnMenuItemClickListener {
+            AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE)
+            listener?.deleteOrderShipmentTracking(item)
+            true
         }
 
         popup.show()

@@ -26,9 +26,11 @@ interface OrderDetailContract {
         fun getOrderStatusForStatusKey(key: String): WCOrderStatusModel
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
         fun refreshOrderStatusOptions()
+        fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
     }
 
-    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener {
+    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener,
+            OrderShipmentTrackingActionListener {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)
@@ -47,5 +49,8 @@ interface OrderDetailContract {
         fun showLoadOrderError()
         fun refreshOrderStatus()
         fun refreshProductImages()
+        fun reAddDeletedTrackingOnError()
+        fun markTrackingDeletedOnSuccess()
+        fun showDeleteTrackingErrorSnack()
     }
 }

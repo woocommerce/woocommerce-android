@@ -225,4 +225,8 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
             startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
         }
     }
+
+    override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
 }

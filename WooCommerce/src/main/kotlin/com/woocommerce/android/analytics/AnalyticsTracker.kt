@@ -143,6 +143,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_TRACKING_ADD_SUCCESS,
         ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED,
         ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED,
+        ORDER_TRACKING_DELETE,
 
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
