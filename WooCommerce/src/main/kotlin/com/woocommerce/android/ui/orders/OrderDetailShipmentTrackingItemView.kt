@@ -62,7 +62,8 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             tracking_btnTrack.visibility = View.GONE
             tracking_btnDelete.visibility = View.VISIBLE
             tracking_btnDelete.setOnClickListener {
-                // TODO: add delete functionality in a next commit
+                AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE)
+                listener?.deleteOrderShipmentTracking(item)
             }
         }
     }

@@ -18,12 +18,14 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
+import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
@@ -145,6 +147,22 @@ class OrderFulfillmentPresenter @Inject constructor(
         }
     }
 
+    override fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+        if (!networkStatus.isConnected()) {
+            // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
+            // just in case...
+            uiMessageResolver.showOfflineSnack()
+            // re-add the deleted tracking item back to the shipment tracking list
+            orderView?.reAddDeletedTrackingOnError()
+            return
+        }
+
+        orderModel?.let { order ->
+            val payload = DeleteOrderShipmentTrackingPayload(selectedSite.get(), order, wcOrderShipmentTrackingModel)
+            dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
+        }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -173,6 +191,16 @@ class OrderFulfillmentPresenter @Inject constructor(
                     isShipmentTrackingsFetched = true
                     loadShipmentTrackingsFromDb()
                 }
+            }
+        } else if (event.causeOfChange == DELETE_ORDER_SHIPMENT_TRACKING) {
+            if (event.isError) {
+                // TODO add event here to confirm delete error
+                WooLog.e(T.ORDERS, "$TAG - Error deleting order shipment tracking : ${event.error.message}")
+                orderView?.showDeleteTrackingErrorSnack()
+                orderView?.reAddDeletedTrackingOnError()
+            } else {
+                // TODO add event here to confirm delete success
+                orderView?.markTrackingDeletedOnSuccess()
             }
         }
     }
