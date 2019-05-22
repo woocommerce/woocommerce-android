@@ -84,6 +84,8 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
     }
 
+    fun getShipmentTrackingCount() = shipmentTrack_items.adapter?.itemCount
+
     private fun enableItemAnimator(enable: Boolean) {
         shipmentTrack_items.itemAnimator = if (enable) DefaultItemAnimator() else null
     }

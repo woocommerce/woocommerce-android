@@ -444,10 +444,11 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         /**
          * This error could be because of network error
          * or a failure to delete the shipment tracking from server api.
-         * In both cases, add the deleted item back to the shipment tracking list
+         * In both cases, add the deleted item back to the shipment tracking list.
         */
         deletedOrderShipmentTrackingModel?.let {
             orderDetail_shipmentList.undoDeleteTrackingProvider(it)
+            orderDetail_shipmentList.visibility = View.VISIBLE
         }
         deletedOrderShipmentTrackingModel = null
     }
@@ -470,7 +471,8 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {
         /**
          * Check if network is available. If not display offline snack
-         * remove the shipment tracking model from the tracking list
+         * remove the shipment tracking model from the tracking list.
+         * If there are no more items on the list, hide the shipment tracking card
          * display snackbar message with undo option
          * if undo option is selected, add the tracking model to the list
          * if snackbar is dismissed or times out, initiate request to delete the tracking
@@ -482,12 +484,18 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
         deleteOrderShipmentTrackingCancelled = false
         orderDetail_shipmentList.deleteTrackingProvider(item)
+        orderDetail_shipmentList.getShipmentTrackingCount()?.let {
+            if (it == 0) {
+                orderDetail_shipmentList.visibility = View.GONE
+            }
+        }
 
         // Listener for the UNDO button in the snackbar
         val actionListener = View.OnClickListener {
             // User canceled the action to delete the shipment tracking
             deleteOrderShipmentTrackingCancelled = true
             orderDetail_shipmentList.undoDeleteTrackingProvider(item)
+            orderDetail_shipmentList.visibility = View.VISIBLE
         }
 
         val callback = object : Snackbar.Callback() {
