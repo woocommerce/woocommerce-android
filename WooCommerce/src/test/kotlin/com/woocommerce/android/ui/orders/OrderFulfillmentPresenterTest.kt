@@ -15,11 +15,13 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import kotlin.test.assertFalse
@@ -236,5 +238,72 @@ class OrderFulfillmentPresenterTest {
 
         verify(view, times(0)).showAddShipmentTrackingSnack()
         verify(uiMessageResolver, times(1)).showOfflineSnack()
+    }
+
+    @Test
+    fun `Do not request delete shipment tracking when network is not available`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(view)
+
+        // call delete shipment tracking
+        presenter.deleteOrderShipmentTracking(WCOrderShipmentTrackingModel(id = 1))
+
+        // ensure that offline snack message is displayed
+        verify(uiMessageResolver, times(1)).showOfflineSnack()
+
+        // ensure that deleted item is added back to the list
+        verify(view, times(1)).reAddDeletedTrackingOnError()
+
+        // ensure that dispatcher is not invoked
+        verify(dispatcher, times(0)).dispatch(any<Action<*>>())
+    }
+
+    @Test
+    fun `Request delete shipment tracking when network is available - error`() {
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(view)
+
+        // call delete shipment tracking
+        val trackings = OrderTestUtils.generateOrderShipmentTrackings(
+                3, order.id
+        )
+        presenter.deleteOrderShipmentTracking(trackings[0])
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<DeleteOrderShipmentTrackingPayload>>())
+
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
+            error = OrderError()
+        })
+
+        // ensure that error snack message is displayed
+        verify(view, times(1)).showDeleteTrackingErrorSnack()
+
+        // ensure that deleted item is added back to the list
+        verify(view, times(1)).reAddDeletedTrackingOnError()
+    }
+
+    @Test
+    fun `Request delete shipment tracking when network is available - success`() {
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(view)
+
+        // call delete shipment tracking
+        val trackings = OrderTestUtils.generateOrderShipmentTrackings(
+                3, order.id
+        )
+        presenter.deleteOrderShipmentTracking(trackings[0])
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<DeleteOrderShipmentTrackingPayload>>())
+
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
+        })
+
+        // ensure that success snack message is displayed
+        verify(view, times(1)).markTrackingDeletedOnSuccess()
     }
 }
