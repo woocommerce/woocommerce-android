@@ -135,10 +135,8 @@ class AddOrderTrackingProviderListAdapter(
 
             itemHolder.rootView.setOnClickListener {
                 val providerItem = it.tag as WCOrderShipmentProviderModel
-                if (selectedCarrierName != providerItem.carrierName) {
-                    selectedCarrierName = providerItem.carrierName
-                    listener.onProviderClick(selectedCarrierName)
-                }
+                selectedCarrierName = providerItem.carrierName
+                listener.onProviderClick(selectedCarrierName)
             }
         }
 
