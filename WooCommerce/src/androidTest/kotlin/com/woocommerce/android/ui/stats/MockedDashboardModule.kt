@@ -6,7 +6,6 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.di.ActivityScope
-import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardContract
@@ -66,7 +65,6 @@ abstract class MockedDashboardModule {
         }
     }
 
-    @FragmentScope
     @ContributesAndroidInjector
     abstract fun dashboardFragment(): DashboardFragment
 }

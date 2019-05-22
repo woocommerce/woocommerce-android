@@ -6,7 +6,6 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.di.ActivityScope
-import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import dagger.Module
@@ -63,7 +62,6 @@ abstract class MockedOrderListModule {
         }
     }
 
-    @FragmentScope
     @ContributesAndroidInjector
     abstract fun orderListFragment(): OrderListFragment
 }
