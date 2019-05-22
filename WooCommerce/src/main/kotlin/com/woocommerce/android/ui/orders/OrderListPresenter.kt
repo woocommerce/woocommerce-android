@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -28,6 +29,7 @@ import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
 
+@OpenClassOnDebug
 @ActivityScope
 class OrderListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -117,6 +119,10 @@ class OrderListPresenter @Inject constructor(
         return orderListState != OrderListState.IDLE
     }
 
+    override fun isOrderStatusOptionsRefreshing(): Boolean {
+        return isRefreshingOrderStatusOptions
+    }
+
     override fun canLoadMoreOrders(): Boolean {
         orderView?.let {
             if (it.isSearching) return canSearchMore
@@ -136,7 +142,7 @@ class OrderListPresenter @Inject constructor(
 
     override fun refreshOrderStatusOptions() {
         // Refresh the order status options from the API
-        if (!isRefreshingOrderStatusOptions) {
+        if (!isOrderStatusOptionsRefreshing()) {
             isRefreshingOrderStatusOptions = true
             dispatcher.dispatch(
                     WCOrderActionBuilder
@@ -238,10 +244,20 @@ class OrderListPresenter @Inject constructor(
      * @param orderStatusFilter If not null, only pull orders whose status matches this filter. Default null.
      * @param isForceRefresh True if orders were refreshed from the API, else false.
      */
-    override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean) {
-        val orders = orderStatusFilter?.let {
+    override fun fetchOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean): List<WCOrderModel> {
+        return orderStatusFilter?.let {
             orderStore.getOrdersForSite(selectedSite.get(), it)
         } ?: orderStore.getOrdersForSite(selectedSite.get())
+    }
+
+    /**
+     * Load orders from the local database and display it in UI.
+     *
+     * @param orderStatusFilter If not null, only pull orders whose status matches this filter. Default null.
+     * @param isForceRefresh True if orders were refreshed from the API, else false.
+     */
+    override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean) {
+        val orders = fetchOrdersFromDb(orderStatusFilter, isForceRefresh)
         orderView?.let { view ->
             val currentOrders = removeFutureOrders(orders)
             if (currentOrders.count() > 0) {
