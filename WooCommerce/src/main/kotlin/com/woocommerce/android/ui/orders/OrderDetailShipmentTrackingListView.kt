@@ -75,11 +75,13 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     fun deleteTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
         enableItemAnimator(true)
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).deleteTracking(wcOrderShipmentTrackingModel)
+        shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
     }
 
     fun undoDeleteTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
         enableItemAnimator(true)
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).undoDeleteTracking(wcOrderShipmentTrackingModel)
+        shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
     }
 
     private fun enableItemAnimator(enable: Boolean) {
