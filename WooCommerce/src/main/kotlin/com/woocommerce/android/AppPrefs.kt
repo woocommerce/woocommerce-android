@@ -21,7 +21,8 @@ object AppPrefs {
         SUPPORT_NAME,
         IS_USING_V3_API,
         HAS_UNSEEN_NOTIFS,
-        SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME
+        SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
+        SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM
     }
 
     /**
@@ -132,6 +133,13 @@ object AppPrefs {
 
     fun setSelectedShipmentTrackingProviderName(providerName: String) {
         setString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME, providerName)
+    }
+
+    fun getIsSelectedShipmentTrackingProviderCustom(): Boolean =
+            getBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, false)
+
+    fun setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider: Boolean) {
+        setBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, isCustomProvider)
     }
 
     /**

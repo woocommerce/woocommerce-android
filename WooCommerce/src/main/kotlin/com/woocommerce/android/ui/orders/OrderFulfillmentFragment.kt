@@ -113,8 +113,10 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                 AppPrefs.setSelectedShipmentTrackingProviderName(selectedShipmentTrackingProviderName)
 
                 if (resultCode == RESULT_OK) {
-                    val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
                     val isCustomProvider = data.getBooleanExtra(FIELD_IS_CUSTOM_PROVIDER, false)
+                    AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider)
+
+                    val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
                     val customProviderUrlText = data.getStringExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL)
                     val trackingNumText = data.getStringExtra(FIELD_ORDER_TRACKING_NUMBER)
 
@@ -222,6 +224,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
             val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
             intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
             intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, AppPrefs.getSelectedShipmentTrackingProviderName())
+            intent.putExtra(FIELD_IS_CUSTOM_PROVIDER, AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
             startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
         }
     }
