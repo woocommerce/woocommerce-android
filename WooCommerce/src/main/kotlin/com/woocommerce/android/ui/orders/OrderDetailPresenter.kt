@@ -6,6 +6,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -325,12 +327,12 @@ class OrderDetailPresenter @Inject constructor(
             loadNotesFromDb()
         } else if (event.causeOfChange == DELETE_ORDER_SHIPMENT_TRACKING) {
             if (event.isError) {
-                // TODO add event here to confirm delete error
+                AnalyticsTracker.track(ORDER_TRACKING_DELETE_FAILED)
                 WooLog.e(T.ORDERS, "$TAG - Error deleting order shipment tracking : ${event.error.message}")
                 orderView?.showDeleteTrackingErrorSnack()
                 orderView?.reAddDeletedTrackingOnError()
             } else {
-                // TODO add event here to confirm delete success
+                AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()
             }
         }
