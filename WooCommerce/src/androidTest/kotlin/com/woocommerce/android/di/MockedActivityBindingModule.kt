@@ -8,6 +8,9 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
+import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
@@ -60,4 +63,11 @@ abstract class MockedActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = [HelpModule::class])
     abstract fun provideHelpActivity(): HelpActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = [
+        AddOrderShipmentTrackingModule::class,
+        AddOrderTrackingProviderListModule::class
+    ])
+    abstract fun provideAddOrderShipmentTrackingActivity(): AddOrderShipmentTrackingActivity
 }

@@ -182,4 +182,36 @@ object WCMatchers {
     fun withDrawable(resourceId: Int): Matcher<View> {
         return DrawableMatcher(resourceId)
     }
+
+    /**
+     * Matcher to check if the Textview/EditText/Button
+     * have error text that matches the incoming string
+     */
+    fun matchesError(error: String): Matcher<View> {
+        return object : BoundedMatcher<View, TextView>(TextView::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("has error text: ")
+            }
+
+            override fun matchesSafely(view: TextView): Boolean {
+                return view.error == error
+            }
+        }
+    }
+
+    /**
+     * Matcher to check if the Textview/EditText/Button
+     * have no error text and it is set to null
+     */
+    fun matchesHasNoErrorText(): Matcher<View> {
+        return object : BoundedMatcher<View, TextView>(TextView::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("has no error text: ")
+            }
+
+            override fun matchesSafely(view: TextView): Boolean {
+                return view.error == null
+            }
+        }
+    }
 }
