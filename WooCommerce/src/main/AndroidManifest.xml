@@ -20,6 +20,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- TODO: we eventually want to drop support for Apache, but for now it's used by FluxC -->
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
         <activity
             android:name=".ui.main.MainActivity"
             android:windowSoftInputMode="adjustResize"

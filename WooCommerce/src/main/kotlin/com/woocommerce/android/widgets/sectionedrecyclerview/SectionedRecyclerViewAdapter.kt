@@ -113,6 +113,14 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     }
 
     /**
+     * Return the total number of sections
+     * from the list
+     */
+    fun getSectionTotal(): Int {
+        return sectionsMap.size
+    }
+
+    /**
      * Add a section to this recyclerview.
      *
      * @param tag unique identifier of the section
