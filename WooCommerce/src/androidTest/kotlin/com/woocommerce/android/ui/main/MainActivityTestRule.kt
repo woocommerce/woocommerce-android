@@ -4,6 +4,7 @@ import android.content.Intent
 import android.support.test.rule.ActivityTestRule
 import com.woocommerce.android.di.MockedSelectedSiteModule
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
+import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
@@ -54,5 +55,17 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         MockedOrderDetailModule.setOrderStatus(orderStatus)
         MockedOrderDetailModule.setOrderNotes(orderNotes)
         MockedOrderDetailModule.setOrderShipmentTrackings(orderShipmentTrackings)
+    }
+
+    /**
+     * Setting mock data for order fulfillment screen
+     */
+    fun setOrderFulfillmentWithMockData(
+        order: WCOrderModel,
+        orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings()
+    ) {
+        setOrderDetailWithMockData(order, orderShipmentTrackings = orderShipmentTrackings)
+        MockedOrderFulfillmentModule.setOrderInfo(order)
+        MockedOrderFulfillmentModule.setOrderShipmentTrackings(orderShipmentTrackings)
     }
 }

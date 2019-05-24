@@ -25,7 +25,6 @@ import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.tools.FormattableContentMapper
 
@@ -37,8 +36,6 @@ abstract class MockedOrderDetailModule {
         private var orderStatus: WCOrderStatusModel? = null
         private var orderNotes: List<WCOrderNoteModel>? = null
         private var orderShipmentTrackings: List<WCOrderShipmentTrackingModel>? = null
-
-        private var onOrderChanged: OnOrderChanged? = null
 
         fun setOrderInfo(order: WCOrderModel) {
             this.order = order

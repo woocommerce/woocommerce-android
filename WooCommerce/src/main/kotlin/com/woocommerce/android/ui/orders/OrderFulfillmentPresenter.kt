@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -32,6 +33,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTracking
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
+@OpenClassOnDebug
 class OrderFulfillmentPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
@@ -62,12 +64,20 @@ class OrderFulfillmentPresenter @Inject constructor(
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, isShipmentTrackingsFetched: Boolean) {
         this.isShipmentTrackingsFetched = isShipmentTrackingsFetched
         orderView?.let { view ->
-            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 view.showOrderDetail(order)
                 loadOrderShipmentTrackings()
             }
         }
+    }
+
+    /**
+     * Loading order detail from local database.
+     * Segregating methods that request data from db for better ui testing
+     */
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? {
+        return orderStore.getOrderByIdentifier(orderIdentifier)
     }
 
     /**
@@ -96,9 +106,16 @@ class OrderFulfillmentPresenter @Inject constructor(
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
     }
 
+    /**
+     * Segregating methods that request data from db for better ui testing
+     */
+    override fun requestShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel> {
+        return orderStore.getShipmentTrackingsForOrder(order)
+    }
+
     override fun loadShipmentTrackingsFromDb() {
         orderModel?.let { order ->
-            val trackings = orderStore.getShipmentTrackingsForOrder(order)
+            val trackings = requestShipmentTrackingsFromDb(order)
             orderView?.showOrderShipmentTrackings(trackings)
         }
     }
