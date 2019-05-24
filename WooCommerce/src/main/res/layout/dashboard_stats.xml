@@ -115,7 +115,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/chart_height">
 
-        <com.github.mikephil.charting.charts.BarChart
+        <com.woocommerce.android.ui.dashboard.DashboardStatsBarChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

@@ -45,6 +45,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
     private var isConfirmingDiscard = false
+    private var isSelectedProviderCustom = false
     private lateinit var orderId: OrderIdentifier
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var providerListPickerDialog: AddOrderTrackingProviderListFragment? = null
@@ -61,8 +62,8 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
 
         if (savedInstanceState != null) {
             orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER) ?: ""
+            isSelectedProviderCustom = savedInstanceState.getBoolean(FIELD_IS_CUSTOM_PROVIDER, false)
             addTracking_number.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_NUMBER, ""))
-            addTracking_editCarrier.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_PROVIDER, "")
             addTracking_date.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED)
             addTracking_custom_provider_name.setText(
                     savedInstanceState.getString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME, "")
@@ -75,10 +76,22 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
             }
         } else {
             orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER) ?: ""
-            intent.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)?.let { addTracking_editCarrier.text = it }
+            isSelectedProviderCustom = intent.getBooleanExtra(FIELD_IS_CUSTOM_PROVIDER, false)
             val dateShipped = intent.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)?.let { it }
                     ?: DateUtils.getCurrentDateString()
             displayFormatDateShippedText(dateShipped)
+        }
+
+        val selectedCarrierName = savedInstanceState?.let {
+            savedInstanceState.getString(FIELD_ORDER_TRACKING_PROVIDER)
+        } ?: intent.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)?.let { it } ?: ""
+        if (isCustomProvider()) {
+            addTracking_custom_provider_name.setText(selectedCarrierName)
+            addTracking_editCarrier.text = getString(R.string.order_shipment_tracking_custom_provider_section_name)
+            showCustomProviderFields()
+        } else {
+            addTracking_editCarrier.text = selectedCarrierName
+            hideCustomProviderFields()
         }
 
         presenter.takeView(this)
@@ -104,15 +117,9 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         addTracking_editCarrier.setOnClickListener {
             providerListPickerDialog = AddOrderTrackingProviderListFragment
                     .newInstance(
-                            selectedProviderText = getProviderText(),
+                            selectedProviderText = addTracking_editCarrier.text.toString(),
                             orderIdentifier = orderId)
                     .also { it.show(supportFragmentManager, AddOrderTrackingProviderListFragment.TAG) }
-        }
-
-        if (isCustomProvider()) {
-            showCustomProviderFields()
-        } else {
-            hideCustomProviderFields()
         }
     }
 
@@ -220,6 +227,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         outState?.putString(FIELD_ORDER_TRACKING_NUMBER, addTracking_number.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_DATE_SHIPPED, addTracking_date.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_PROVIDER, addTracking_editCarrier.text.toString())
+        outState?.putBoolean(FIELD_IS_CUSTOM_PROVIDER, isCustomProvider())
         outState?.putString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME, addTracking_custom_provider_name.text.toString())
         outState?.putString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL, addTracking_custom_provider_url.text.toString())
         super.onSaveInstanceState(outState)
@@ -265,7 +273,8 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
         addTracking_editCarrier.error = null
         addTracking_editCarrier.isFocusableInTouchMode = false
         addTracking_editCarrier.isFocusable = false
-
+        isSelectedProviderCustom = addTracking_editCarrier.text ==
+                getString(R.string.order_shipment_tracking_custom_provider_section_name)
         /**
          * Display custom provider fields only if
          * @param selectedCarrierName = custom provider
@@ -278,7 +287,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     }
 
     override fun isCustomProvider(): Boolean {
-        return addTracking_editCarrier.text == getString(R.string.order_shipment_tracking_custom_provider_section_name)
+        return isSelectedProviderCustom
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
