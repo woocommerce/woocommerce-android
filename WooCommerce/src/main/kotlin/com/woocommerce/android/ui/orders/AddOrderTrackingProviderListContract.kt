@@ -15,9 +15,11 @@ interface AddOrderTrackingProviderListContract {
         fun loadShipmentTrackingProvidersFromDb()
         fun requestShipmentTrackingProvidersFromDb(): List<WCOrderShipmentProviderModel>
         fun requestShipmentTrackingProvidersFromApi(order: WCOrderModel)
+        fun loadStoreCountryFromDb(): String?
     }
 
     interface View : BaseView<Presenter> {
+        fun getCountryName(): String?
         fun showSkeleton(show: Boolean)
         fun showProviderListErrorSnack(@StringRes stringResId: Int)
         fun showProviderList(providers: List<WCOrderShipmentProviderModel>)
