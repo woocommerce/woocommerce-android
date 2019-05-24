@@ -62,7 +62,9 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             tracking_btnTrack.visibility = View.GONE
             tracking_btnDelete.visibility = View.VISIBLE
             tracking_btnDelete.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE)
+                AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE, mapOf(
+                        AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_FULFILL
+                ))
                 listener?.deleteOrderShipmentTracking(item)
             }
         }
@@ -90,7 +92,9 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         }
 
         popup.menu.findItem(R.id.menu_delete_shipment)?.setOnMenuItemClickListener {
-            AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE)
+            AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE, mapOf(
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_DETAIL
+            ))
             listener?.deleteOrderShipmentTracking(item)
             true
         }

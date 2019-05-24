@@ -365,9 +365,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
         const val KEY_OPTION = "option"
+        const val KEY_SOURCE = "source"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
+        const val VALUE_ORDER_DETAIL = "order_detail"
+        const val VALUE_ORDER_FULFILL = "order_fulfill"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
