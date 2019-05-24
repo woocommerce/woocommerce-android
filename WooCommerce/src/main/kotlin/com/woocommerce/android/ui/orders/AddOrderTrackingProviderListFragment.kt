@@ -18,6 +18,7 @@ import android.view.inputmethod.EditorInfo
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED
 import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListAdapter.OnProviderClickListener
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -116,6 +117,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
         // Initialise the adapter
         providerListAdapter = AddOrderTrackingProviderListAdapter(
+                context,
                 getCountryName(),
                 this
         )
@@ -186,10 +188,16 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
     }
 
     override fun onProviderClick(providerName: String) {
-        AnalyticsTracker.track(
-                ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED,
-                mapOf(AnalyticsTracker.KEY_OPTION to providerName)
-        )
+        context?.let {
+            if (providerName == it.getString(R.string.order_shipment_tracking_custom_provider_section_name)) {
+                AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED)
+            } else {
+                AnalyticsTracker.track(
+                        ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED,
+                        mapOf(AnalyticsTracker.KEY_OPTION to providerName)
+                )
+            }
+        }
         listener?.onTrackingProviderSelected(providerListAdapter.selectedCarrierName)
         dismiss()
     }
