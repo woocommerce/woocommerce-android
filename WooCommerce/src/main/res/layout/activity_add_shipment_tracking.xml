@@ -143,7 +143,7 @@
                 android:layout_marginBottom="@dimen/margin_medium"
                 android:gravity="top"
                 android:hint="@string/order_shipment_tracking_custom_provider_url_hint"
-                android:inputType="text"
+                android:inputType="textUri"
                 android:maxLength="@integer/max_length_tracking_number"
                 android:paddingBottom="@dimen/margin_extra_large"
                 android:theme="@style/Woo.Add.Tracking.EditText"
