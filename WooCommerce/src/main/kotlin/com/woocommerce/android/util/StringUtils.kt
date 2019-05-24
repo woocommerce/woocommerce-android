@@ -107,7 +107,6 @@ object StringUtils {
             }
         } catch (e: NotFoundException) {
             WooLog.d(WooLog.T.UTILS, "Unable to find a valid country name for country code: $storeCountry")
-            return null
         }
         return null
     }
