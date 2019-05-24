@@ -200,7 +200,7 @@ class OrderDetailPresenterTest {
         // we also want to verify that notes are loaded even on error because the UI adds
         // a transient note while the note is pushed and it won't be removed from the
         // note list until notes are loaded
-        verify(presenter, times(1)).loadNotesFromDb()
+        verify(presenter, times(1)).fetchAndLoadOrderNotesFromDb()
     }
 
     @Test
@@ -210,7 +210,7 @@ class OrderDetailPresenterTest {
 
         presenter.doChangeOrderStatus(CoreOrderStatus.COMPLETED.value)
         verify(uiMessageResolver, times(1)).showOfflineSnack()
-        verify(presenter, times(0)).loadNotesFromDb()
+        verify(presenter, times(0)).fetchAndLoadOrderNotesFromDb()
     }
 
     @Test
@@ -220,7 +220,7 @@ class OrderDetailPresenterTest {
         doReturn(false).whenever(networkStatus).isConnected()
 
         presenter.loadOrderNotes()
-        verify(presenter, times(1)).loadNotesFromDb()
+        verify(presenter, times(1)).fetchAndLoadOrderNotesFromDb()
         verify(presenter, times(0)).requestOrderNotesFromApi(any())
     }
 

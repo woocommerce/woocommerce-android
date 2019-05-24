@@ -3,7 +3,13 @@ package com.woocommerce.android.ui.main
 import android.content.Intent
 import android.support.test.rule.ActivityTestRule
 import com.woocommerce.android.di.MockedSelectedSiteModule
+import com.woocommerce.android.ui.orders.MockedOrderDetailModule
+import com.woocommerce.android.ui.orders.MockedOrderListModule
+import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
 class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.java, false, false) {
     /**
@@ -21,5 +27,29 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         // The reason for doing this here is the same as for the MockedMainModule
         MockedSelectedSiteModule.setSiteModel(siteModel)
         return super.launchActivity(startIntent)
+    }
+
+    /**
+     * Setting mock data for order list screen
+     */
+    fun setOrderListWithMockData(
+        orders: List<WCOrderModel> = WcOrderTestUtils.generateOrders(),
+        orderStatusList: Map<String, WCOrderStatusModel> = WcOrderTestUtils.generateOrderStatusOptions()
+    ) {
+        MockedOrderListModule.setOrders(orders)
+        MockedOrderListModule.setOrderStatusList(orderStatusList)
+    }
+
+    /**
+     * Setting mock data for order detail screen
+     */
+    fun setOrderDetailWithMockData(
+        order: WCOrderModel,
+        orderStatus: WCOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail(),
+        orderNotes: List<WCOrderNoteModel> = WcOrderTestUtils.generateSampleNotes()
+    ) {
+        MockedOrderDetailModule.setOrderInfo(order)
+        MockedOrderDetailModule.setOrderStatus(orderStatus)
+        MockedOrderDetailModule.setOrderNotes(orderNotes)
     }
 }
