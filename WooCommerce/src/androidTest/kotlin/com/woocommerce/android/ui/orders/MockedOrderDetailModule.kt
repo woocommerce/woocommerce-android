@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doCallRealMethod
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
@@ -16,6 +17,7 @@ import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
@@ -34,6 +36,7 @@ abstract class MockedOrderDetailModule {
         private var order: WCOrderModel? = null
         private var orderStatus: WCOrderStatusModel? = null
         private var orderNotes: List<WCOrderNoteModel>? = null
+        private var orderShipmentTrackings: List<WCOrderShipmentTrackingModel>? = null
 
         fun setOrderInfo(order: WCOrderModel) {
             this.order = order
@@ -45,6 +48,10 @@ abstract class MockedOrderDetailModule {
 
         fun setOrderNotes(orderNotes: List<WCOrderNoteModel>) {
             this.orderNotes = orderNotes
+        }
+
+        fun setOrderShipmentTrackings(orderShipmentTrackings: List<WCOrderShipmentTrackingModel>) {
+            this.orderShipmentTrackings = orderShipmentTrackings
         }
 
         @JvmStatic
@@ -66,7 +73,8 @@ abstract class MockedOrderDetailModule {
                     WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
                     WCProductStore(
                             mockDispatcher,
-                            ProductRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
+                            ProductRestClient(mockContext, mockDispatcher, mock(), mock(), mock())
+                    ),
                     SelectedSite(mockContext, mockSiteStore),
                     mock(),
                     NetworkStatus(mockContext),
@@ -83,6 +91,10 @@ abstract class MockedOrderDetailModule {
             doReturn(order).whenever(mockedOrderDetailPresenter).loadOrderDetailFromDb(any())
             doReturn(orderStatus).whenever(mockedOrderDetailPresenter).getOrderStatusForStatusKey(any())
             doReturn(orderNotes).whenever(mockedOrderDetailPresenter).fetchOrderNotesFromDb(any())
+            doReturn(orderShipmentTrackings)
+                    .whenever(mockedOrderDetailPresenter)
+                    .fetchOrderShipmentTrackingsFromDb(any())
+            doCallRealMethod().whenever(mockedOrderDetailPresenter).deleteOrderShipmentTracking(any())
             return mockedOrderDetailPresenter
         }
     }

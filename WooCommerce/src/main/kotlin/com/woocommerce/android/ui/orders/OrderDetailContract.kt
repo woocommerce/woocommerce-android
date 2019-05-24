@@ -23,6 +23,8 @@ interface OrderDetailContract {
         fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel>
         fun fetchAndLoadOrderNotesFromDb()
         fun loadOrderShipmentTrackings()
+        fun fetchOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel>
+        fun fetchAndLoadShipmentTrackingsFromDb()
         fun doChangeOrderStatus(newStatus: String)
         fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
         fun markOrderNotificationRead(context: Context, remoteNoteId: Long)

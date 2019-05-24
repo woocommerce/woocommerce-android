@@ -165,7 +165,7 @@ class OrderDetailPresenter @Inject constructor(
     override fun loadOrderShipmentTrackings() {
         orderModel?.let { order ->
             // Preload trackings from the db is available
-            loadShipmentTrackingsFromDb()
+            fetchAndLoadShipmentTrackingsFromDb()
 
             if (networkStatus.isConnected()) {
                 // Attempt to refresh trackings from api in the background
@@ -174,6 +174,25 @@ class OrderDetailPresenter @Inject constructor(
                 // Track so when the device is connected shipment trackings can be refreshed
                 isUsingCachedShipmentTrackings = true
             }
+        }
+    }
+
+    /**
+     * Fetch the order shipment trackings from the device database
+     * Segregating the fetching from db and displaying to UI into two separate methods
+     * for better ui testing
+     */
+    override fun fetchOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel> {
+        return orderStore.getShipmentTrackingsForOrder(order)
+    }
+
+    /**
+     * Fetch and display the order shipment trackings from the device database
+     */
+    override fun fetchAndLoadShipmentTrackingsFromDb() {
+        orderModel?.let { order ->
+            val trackings = fetchOrderShipmentTrackingsFromDb(order)
+            orderView?.showOrderShipmentTrackings(trackings)
         }
     }
 
@@ -319,7 +338,7 @@ class OrderDetailPresenter @Inject constructor(
 
                     isUsingCachedShipmentTrackings = false
                     isShipmentTrackingsFetched = true
-                    loadShipmentTrackingsFromDb()
+                    fetchAndLoadShipmentTrackingsFromDb()
                 }
             }
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
@@ -372,16 +391,6 @@ class OrderDetailPresenter @Inject constructor(
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()
             }
-        }
-    }
-
-    /**
-     * Fetch the order shipment tracking records from the device db.
-     */
-    fun loadShipmentTrackingsFromDb() {
-        orderModel?.let { order ->
-            val trackings = orderStore.getShipmentTrackingsForOrder(order)
-            orderView?.showOrderShipmentTrackings(trackings)
         }
     }
 
