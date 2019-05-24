@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doCallRealMethod
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
@@ -26,6 +25,7 @@ import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.tools.FormattableContentMapper
 
@@ -37,6 +37,8 @@ abstract class MockedOrderDetailModule {
         private var orderStatus: WCOrderStatusModel? = null
         private var orderNotes: List<WCOrderNoteModel>? = null
         private var orderShipmentTrackings: List<WCOrderShipmentTrackingModel>? = null
+
+        private var onOrderChanged: OnOrderChanged? = null
 
         fun setOrderInfo(order: WCOrderModel) {
             this.order = order
@@ -67,6 +69,7 @@ abstract class MockedOrderDetailModule {
             val mockDispatcher = mock<Dispatcher>()
             val mockContext = mock<Context>()
             val mockSiteStore = mock<SiteStore>()
+            val mockNetworkStatus = mock<NetworkStatus>()
 
             val mockedOrderDetailPresenter = spy(OrderDetailPresenter(
                     mockDispatcher,
@@ -77,7 +80,7 @@ abstract class MockedOrderDetailModule {
                     ),
                     SelectedSite(mockContext, mockSiteStore),
                     mock(),
-                    NetworkStatus(mockContext),
+                    mockNetworkStatus,
                     NotificationStore(
                             mock(), mockContext,
                             NotificationRestClient(mockContext, mockDispatcher, mock(), mock(), mock()),
@@ -91,10 +94,9 @@ abstract class MockedOrderDetailModule {
             doReturn(order).whenever(mockedOrderDetailPresenter).loadOrderDetailFromDb(any())
             doReturn(orderStatus).whenever(mockedOrderDetailPresenter).getOrderStatusForStatusKey(any())
             doReturn(orderNotes).whenever(mockedOrderDetailPresenter).fetchOrderNotesFromDb(any())
-            doReturn(orderShipmentTrackings)
-                    .whenever(mockedOrderDetailPresenter)
+            doReturn(orderShipmentTrackings).whenever(mockedOrderDetailPresenter)
                     .fetchOrderShipmentTrackingsFromDb(any())
-            doCallRealMethod().whenever(mockedOrderDetailPresenter).deleteOrderShipmentTracking(any())
+
             return mockedOrderDetailPresenter
         }
     }

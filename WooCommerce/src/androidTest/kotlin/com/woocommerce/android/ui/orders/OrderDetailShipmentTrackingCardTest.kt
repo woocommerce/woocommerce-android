@@ -14,12 +14,15 @@ import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.espresso.matcher.ViewMatchers.Visibility.GONE
 import android.support.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
+import android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.filters.LargeTest
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
 import android.widget.ListView
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.R
@@ -38,7 +41,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -53,13 +59,11 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
      * Helper method to update the network status for the current fragment to test
      * offline scenarios
      */
-    private fun updateNetworkStatus(isConnected: Boolean) {
-        // mock network status to return false to simulate offline status
+    private fun getOrderDetailFragment(): OrderDetailFragment? {
         val orderListFragment = activityTestRule.activity.supportFragmentManager
                 .findFragmentByTag(OrderListFragment.TAG) as? OrderListFragment
-        val orderDetailFragment = orderListFragment?.childFragmentManager
+        return orderListFragment?.childFragmentManager
                 ?.findFragmentByTag(OrderDetailFragment.TAG) as? OrderDetailFragment
-        doReturn(isConnected).whenever(orderDetailFragment?.networkStatus)?.isConnected()
     }
 
     @Before
@@ -279,8 +283,9 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnTrack))
                 .perform(WCMatchers.scrollTo(), click())
 
-        // mock network status to return false to simulate offline status
-        updateNetworkStatus(false)
+        // mock network not available
+        val orderDetailFragment = getOrderDetailFragment()
+        doReturn(false).whenever(orderDetailFragment?.networkStatus)?.isConnected()
 
         // click on the popup menu item "Delete shipment"
         onView(withText(appContext.getString(R.string.orderdetail_delete_tracking)))
@@ -333,13 +338,8 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         Assert.assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
     }
 
-    /**
-     * If the network is not available, for some reason, after the undo snack bar is
-     * dismissed, then the offline snack bar would be displayed and the deleted
-     * item will be added back to the list
-     */
     @Test
-    fun verifyShipmentTrackingItemDeleteItemClickWhenNetworkNotAvailable() {
+    fun verifyShipmentTrackingItemDeleteItemClickWhenResponseSuccess() {
         activityTestRule.setOrderDetailWithMockData(
                 order = mockWCOrderModel,
                 orderShipmentTrackings = mockShipmentTrackingList
@@ -361,17 +361,69 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
         Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
 
-        // mock network status to return false to simulate offline status
-        updateNetworkStatus(false)
+        // mock api success response
+        val orderDetailFragment = getOrderDetailFragment()
+        val onOrderChangedSuccessResponse = OnOrderChanged(1).apply {
+            causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
+        }
+        doAnswer {
+            (orderDetailFragment?.presenter as? OrderDetailPresenter)?.onOrderChanged(onOrderChangedSuccessResponse)
+        }. whenever(orderDetailFragment?.presenter)?.deleteOrderShipmentTracking(any())
 
         // TODO: find an alternate solution for this
         Thread.sleep(5000)
 
-//         check if the offline snack is displayed
-//        onView(allOf(
-//                withId(android.support.design.R.id.snackbar_text),
-//                withText(R.string.offline_error))
-//        ).check(matches(isDisplayed()))
+        // check if the success snack is displayed
+        onView(allOf(
+                withId(android.support.design.R.id.snackbar_text),
+                withText(R.string.order_shipment_tracking_delete_success))
+        ).check(matches(withEffectiveVisibility(VISIBLE)))
+
+        // verify that the deleted item is not added back to the list
+        Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
+    }
+
+    @Test
+    fun verifyShipmentTrackingItemDeleteItemClickWhenResponseFailure() {
+        activityTestRule.setOrderDetailWithMockData(
+                order = mockWCOrderModel,
+                orderShipmentTrackings = mockShipmentTrackingList
+        )
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify that the Hamburger icon button for first item is clicked and popup is opened
+        onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnTrack))
+                .perform(WCMatchers.scrollTo(), click())
+
+        // click on the popup menu item "Delete shipment"
+        onView(withText(appContext.getString(R.string.orderdetail_delete_tracking)))
+                .inRoot(RootMatchers.isPlatformPopup()).perform(click())
+
+        // verify that the deleted item is removed from the shipment tracking list
+        val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
+        Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
+
+        // mock api success response
+        val orderDetailFragment = getOrderDetailFragment()
+        val onOrderChangedErrorResponse = OnOrderChanged(1).apply {
+            causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
+            error = OrderError()
+        }
+        doAnswer {
+            (orderDetailFragment?.presenter as? OrderDetailPresenter)?.onOrderChanged(onOrderChangedErrorResponse)
+        }. whenever(orderDetailFragment?.presenter)?.deleteOrderShipmentTracking(any())
+
+        // TODO: find an alternate solution for this
+        Thread.sleep(5000)
+
+        // check if the error snack is displayed
+        onView(allOf(
+                withId(android.support.design.R.id.snackbar_text),
+                withText(R.string.order_shipment_tracking_delete_error))
+        ).check(matches(withEffectiveVisibility(VISIBLE)))
 
         // verify that the deleted item is added back to the list
         Assert.assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
