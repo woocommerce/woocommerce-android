@@ -44,8 +44,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "1.8-rc-1"
-        versionCode 53
+        versionName "1.9-rc.1"
+        versionCode 55
 
         minSdkVersion 21
         targetSdkVersion 28
@@ -168,13 +168,15 @@ dependencies {
     androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
     androidTestImplementation "com.android.support.test:rules:$testRunnerVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-intents:$espressoVersion"
     androidTestImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
 
     // Resolve conflicts between main and test APK
     androidTestImplementation "com.android.support:support-annotations:$supportLibraryVersion"
-    androidTestImplementation "com.google.code.findbugs:jsr305:3.0.1"
+    androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
     implementation (group: 'com.zendesk', name: 'support', version: '2.3.1') {
         exclude group: 'com.google.dagger'

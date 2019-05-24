@@ -65,7 +65,6 @@
     <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:textSize">@dimen/text_medium</item>
-        <item name="android:fontFamily">@font/roboto</item>
     </style>
 
     <style name="Woo.TextAppearance.Bold">
