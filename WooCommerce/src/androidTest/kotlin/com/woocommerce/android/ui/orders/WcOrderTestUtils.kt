@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.woocommerce.android.helpers.WcDateTimeTestUtils
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
@@ -297,6 +298,9 @@ object WcOrderTestUtils {
         return options.map { it.statusKey to it }.toMap()
     }
 
+    /**
+     * Generates an array containing multiple [WCOrderShipmentTrackingModel] objects.
+     */
     fun generateOrderShipmentTrackings(): List<WCOrderShipmentTrackingModel> {
         val result = ArrayList<WCOrderShipmentTrackingModel>()
 
@@ -335,6 +339,64 @@ object WcOrderTestUtils {
         result.add(om2)
         result.add(om3)
         result.add(om4)
+        return result
+    }
+
+    /**
+     * Generates an array containing multiple [WCOrderShipmentProviderModel] objects.
+     */
+    fun generateShipmentTrackingProviderList(): List<WCOrderShipmentProviderModel> {
+        val result = ArrayList<WCOrderShipmentProviderModel>()
+
+        val pv1 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "Australia"
+            carrierName = "Australia Provider 1"
+            carrierLink = "http://google.com"
+        }
+
+        val pv2 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "Australia"
+            carrierName = "Australia Provider 2 alongwithareallylongprovidernametocheckui"
+            carrierLink = "http://google.com"
+        }
+
+        val pv3 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "India"
+            carrierName = "India Provider 1"
+            carrierLink = "http://google.com"
+        }
+
+        val pv4 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "United States"
+            carrierName = "US Provider 1"
+            carrierLink = "http://google.com"
+        }
+
+        val pv5 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "United States"
+            carrierName = "US Provider 2"
+            carrierLink = "http://google.com"
+        }
+
+        val pv6 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "United States"
+            carrierName = "US Provider 3"
+            carrierLink = "http://google.com"
+        }
+
+        result.add(pv1)
+        result.add(pv2)
+        result.add(pv3)
+        result.add(pv4)
+        result.add(pv5)
+        result.add(pv6)
+
         return result
     }
 

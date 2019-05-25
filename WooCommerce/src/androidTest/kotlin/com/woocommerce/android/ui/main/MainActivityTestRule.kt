@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.main
 import android.content.Intent
 import android.support.test.rule.ActivityTestRule
 import com.woocommerce.android.di.MockedSelectedSiteModule
+import com.woocommerce.android.ui.orders.MockedAddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
@@ -10,6 +11,7 @@ import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
@@ -67,5 +69,18 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         setOrderDetailWithMockData(order, orderShipmentTrackings = orderShipmentTrackings)
         MockedOrderFulfillmentModule.setOrderInfo(order)
         MockedOrderFulfillmentModule.setOrderShipmentTrackings(orderShipmentTrackings)
+    }
+
+    /**
+     * Setting mock data for order provider list screen
+     */
+    fun setOrderProviderListWithMockData(
+        storeCountry: String = "United States",
+        order: WCOrderModel = WcOrderTestUtils.generateOrderDetail(orderStatus = "processing"),
+        orderProviderList: List<WCOrderShipmentProviderModel> = WcOrderTestUtils.generateShipmentTrackingProviderList()
+    ) {
+        MockedAddOrderTrackingProviderListModule.setOrderInfo(order)
+        MockedAddOrderTrackingProviderListModule.setStoreCountry(storeCountry)
+        MockedAddOrderTrackingProviderListModule.setOrderShipmentTrackingProviders(orderProviderList)
     }
 }

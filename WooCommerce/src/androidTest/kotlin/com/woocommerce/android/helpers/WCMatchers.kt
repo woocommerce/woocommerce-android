@@ -12,6 +12,7 @@ import android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.NestedScrollView
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.HorizontalScrollView
@@ -19,6 +20,7 @@ import android.widget.ListView
 import android.widget.ScrollView
 import android.widget.TextView
 import com.woocommerce.android.widgets.FlowLayout
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -145,6 +147,23 @@ object WCMatchers {
             override fun matchesSafely(listView: ListView): Boolean {
                 val adapter = listView.adapter
                 return adapter.count == itemsCount
+            }
+        }
+    }
+
+    /**
+     * Custom matcher to check if the [SectionedRecyclerViewAdapter] section count matches
+     * the incoming count value
+     */
+    fun withSectionCount(itemsCount: Int): Matcher<View> {
+        return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("with number of items: $itemsCount")
+            }
+
+            override fun matchesSafely(recyclerView: RecyclerView): Boolean {
+                val adapter = recyclerView.adapter as? SectionedRecyclerViewAdapter
+                return adapter?.getSectionTotal() == itemsCount
             }
         }
     }

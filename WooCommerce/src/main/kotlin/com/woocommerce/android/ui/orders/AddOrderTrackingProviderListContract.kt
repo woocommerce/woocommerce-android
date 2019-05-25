@@ -11,6 +11,7 @@ interface AddOrderTrackingProviderListContract {
     interface Presenter : BasePresenter<View> {
         var orderModel: WCOrderModel?
         var isShipmentTrackingProviderListFetched: Boolean
+        fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadShipmentTrackingProviders(orderIdentifier: OrderIdentifier?)
         fun loadShipmentTrackingProvidersFromDb()
         fun requestShipmentTrackingProvidersFromDb(): List<WCOrderShipmentProviderModel>

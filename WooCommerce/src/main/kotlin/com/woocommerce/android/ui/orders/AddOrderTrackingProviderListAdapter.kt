@@ -52,6 +52,20 @@ class AddOrderTrackingProviderListAdapter(
         }
     }
 
+    /**
+     * returns the total section item count give the
+     * @param title
+     */
+    fun getSectionItemsTotal(title: String): Int {
+        for (entry in sectionsMap) {
+            val section = entry.value as? ProviderListSection
+            if (title == section?.country) {
+                return section.list.size
+            }
+        }
+        return 0
+    }
+
     private fun updateAdapter(providers: List<WCOrderShipmentProviderModel>) {
         // clear all the current data from the adapter
         removeAllSections()
