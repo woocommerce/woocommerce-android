@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.content.Intent
-import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
@@ -38,17 +36,6 @@ class AddOrderTrackingProviderListTest : TestBase() {
     private val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(orderStatus = "processing")
     private val mockShipmentTrackingProviders = WcOrderTestUtils.generateShipmentTrackingProviderList()
 
-    private fun launchAddShipmentActivityWithIntent(providerName: String, isCustomProvider: Boolean = false) {
-        val targetContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val result = Intent(targetContext, AddOrderShipmentTrackingActivity::class.java)
-        result.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_TRACKING_PROVIDER, providerName)
-        result.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, mockWCOrderModel.getIdentifier())
-        result.putExtra(AddOrderShipmentTrackingActivity.FIELD_IS_CUSTOM_PROVIDER, isCustomProvider)
-
-        // Launch activity with intent
-        activityTestRule.launchActivity(result)
-    }
-
     /**
      * Custom matcher to check if the [SectionedRecyclerViewAdapter] section count matches
      * the incoming count value
@@ -69,7 +56,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
     @Test
     fun verifyProviderListSectionsDisplayedCorrectly() {
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent("")
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData()
@@ -98,7 +85,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
     @Test
     fun verifyStoreCountryDisplayedFirstForUnitedStates() {
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent("")
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData()
@@ -122,7 +109,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
     @Test
     fun verifyStoreCountryDisplayedFirstForIndia() {
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent("")
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData(storeCountry = "IN")
@@ -146,7 +133,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
     @Test
     fun verifyStoreCountryNotDisplayedFirstForHongKong() {
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent("")
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData(storeCountry = "HK")
@@ -171,7 +158,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
     @Test
     fun verifySelectDefaultProviderFromList() {
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent("")
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
 
         // verify that the select provider field is empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText("")))
@@ -204,7 +191,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
     @Test
     fun verifySelectCustomProviderFromList() {
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent("")
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
 
         // verify that the select provider field is empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText("")))
@@ -242,7 +229,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
     fun verifyAlreadySelectedProviderNameDisplayedCorrectly() {
         // launch activity with empty provider name
         val providerName = "US Provider 1"
-        launchAddShipmentActivityWithIntent(providerName)
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), providerName)
 
         // verify that the select provider field is not empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText(providerName)))

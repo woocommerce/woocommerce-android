@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.content.Intent
-import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.NoActivityResumedException
@@ -13,7 +11,6 @@ import android.support.test.espresso.matcher.ViewMatchers.withContentDescription
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.filters.LargeTest
-import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.woocommerce.android.R
 import com.woocommerce.android.helpers.WCMatchers
@@ -28,27 +25,14 @@ import org.junit.runner.RunWith
 @LargeTest
 class AddShipmentTrackingNavigationTest : TestBase() {
     @Rule
-    @JvmField var activityTestRule = ActivityTestRule<AddOrderShipmentTrackingActivity>(
-            AddOrderShipmentTrackingActivity::class.java
-    )
+    @JvmField var activityTestRule = AddShipmentTrackingActivityTestRule()
 
     private val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(orderStatus = "processing")
-
-    private fun launchAddShipmentActivityWithIntent(providerName: String, isCustomProvider: Boolean = false) {
-        val targetContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val result = Intent(targetContext, AddOrderShipmentTrackingActivity::class.java)
-        result.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_TRACKING_PROVIDER, providerName)
-        result.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, mockWCOrderModel.getIdentifier())
-        result.putExtra(AddOrderShipmentTrackingActivity.FIELD_IS_CUSTOM_PROVIDER, isCustomProvider)
-
-        // Launch activity with intent
-        activityTestRule.launchActivity(result)
-    }
 
     @Test
     fun verifyErrorDisplayedOnProviderFieldWhenAddButtonClicked() {
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent("")
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
 
         // verify that provider text is empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText("")))
@@ -66,7 +50,7 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     fun verifyErrorDisplayedOnTrackingNumFieldWhenAddButtonClicked() {
         val providerName = "Fedex"
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent(providerName)
+        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), providerName)
 
         // verify that provider text is not empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText(providerName)))
@@ -87,7 +71,9 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     fun verifyErrorDisplayedOnTrackingNumFieldWhenAddButtonClickedForCustomProvider() {
         val providerName = "Anitaa Test Inc"
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent(providerName, true)
+        activityTestRule.launchAddShipmentActivityWithIntent(
+                mockWCOrderModel.getIdentifier(), providerName, true
+        )
 
         // verify that provider text = Custom provider
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText(
@@ -119,7 +105,9 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     fun verifyErrorDisplayedOnCustomProviderFieldWhenAddButtonClickedForCustomProvider() {
         val providerName = ""
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent(providerName, true)
+        activityTestRule.launchAddShipmentActivityWithIntent(
+                mockWCOrderModel.getIdentifier(), providerName, true
+        )
 
         // verify that provider text = Custom provider
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText(
@@ -151,7 +139,9 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     fun verifyToolbarItemsDisplayedCorrectly() {
         val providerName = ""
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent(providerName, false)
+        activityTestRule.launchAddShipmentActivityWithIntent(
+                mockWCOrderModel.getIdentifier(), providerName, false
+        )
 
         // verify toolbar title is displayed correctly
         onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(equalToIgnoringCase(
@@ -170,7 +160,9 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     fun verifyDiscardDialogDisplayedWhenTrackingDetailsEntered() {
         val providerName = "Fedex"
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent(providerName, false)
+        activityTestRule.launchAddShipmentActivityWithIntent(
+                mockWCOrderModel.getIdentifier(), providerName, false
+        )
 
         // Clicking the "up" button in order detail screen returns the user to the orders fulfill screen.
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
@@ -193,7 +185,9 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     fun verifyDiscardDialogKeepEditingButtonClickDismissesDialog() {
         val providerName = "Fedex"
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent(providerName, false)
+        activityTestRule.launchAddShipmentActivityWithIntent(
+                mockWCOrderModel.getIdentifier(), providerName, false
+        )
 
         // Clicking the "up" button in order detail screen returns the user to the orders fulfill screen.
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
@@ -211,7 +205,9 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     fun verifyDiscardDialogNotDisplayedWhenFieldsEmpty() {
         val providerName = ""
         // launch activity with empty provider name
-        launchAddShipmentActivityWithIntent(providerName, false)
+        activityTestRule.launchAddShipmentActivityWithIntent(
+                mockWCOrderModel.getIdentifier(), providerName, false
+        )
 
         // Clicking the "up" button in order detail screen returns the user to the orders fulfill screen.
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
