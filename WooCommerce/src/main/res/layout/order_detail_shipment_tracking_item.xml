@@ -63,10 +63,9 @@
 
     <ImageButton
         android:id="@+id/tracking_btnDelete"
-        style="@android:style/Widget.ActionButton"
+        style="@style/Woo.Delete.Button"
         android:layout_width="@dimen/shipment_tracking_delete_button_width"
         android:layout_height="@dimen/shipment_tracking_delete_button_width"
-        android:background="@drawable/ic_btn_circle"
         android:contentDescription="@string/orderdetail_delete_tracking"
         android:scaleType="center"
         android:src="@drawable/ic_close"
