@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_shipment_tracking_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 
@@ -65,15 +66,12 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
                 AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE, mapOf(
                         AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_FULFILL
                 ))
+                AppRatingDialog.incrementInteractions()
                 listener?.deleteOrderShipmentTracking(item)
             }
         }
     }
 
-    /**
-     * Question: Should we count this action as non trivial action and
-     * call AppRatingDialog to incrementInteractions?
-     */
     private fun showTrackingOrDeleteOptionPopup(item: WCOrderShipmentTrackingModel) {
         val popup = PopupMenu(context, tracking_btnTrack)
         popup.menuInflater.inflate(R.menu.menu_order_detail_shipment_tracking_actions, popup.menu)
@@ -87,6 +85,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             popup.menu.findItem(R.id.menu_track_shipment)?.setOnMenuItemClickListener {
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(context, item.trackingLink)
+                AppRatingDialog.incrementInteractions()
                 true
             }
         }
@@ -96,6 +95,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
                     AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_DETAIL
             ))
             listener?.deleteOrderShipmentTracking(item)
+            AppRatingDialog.incrementInteractions()
             true
         }
 
