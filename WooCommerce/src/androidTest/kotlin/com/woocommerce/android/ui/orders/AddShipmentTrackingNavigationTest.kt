@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.orders
 
-import android.support.test.espresso.Espresso
 import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.NoActivityResumedException
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.RootMatchers.isDialog
@@ -16,7 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
 import org.hamcrest.Matchers.equalToIgnoringCase
-import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -172,13 +170,8 @@ class AddShipmentTrackingNavigationTest : TestBase() {
                 .check(matches(isDisplayed()))
                 .perform(click())
 
-        // app should exit
-        try {
-            Espresso.pressBack()
-            Assert.fail("Expected app to be closed and throw an exception")
-        } catch (e: NoActivityResumedException) {
-            // Test OK
-        }
+        // verify that app is closed
+        assertTrue(activityTestRule.activity.isFinishing)
     }
 
     @Test
@@ -213,11 +206,7 @@ class AddShipmentTrackingNavigationTest : TestBase() {
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
 
         // app should exit
-        try {
-            Espresso.pressBack()
-            Assert.fail("Expected app to be closed and throw an exception")
-        } catch (e: NoActivityResumedException) {
-            // Test OK
-        }
+        // verify that app is closed
+        assertTrue(activityTestRule.activity.isFinishing)
     }
 }

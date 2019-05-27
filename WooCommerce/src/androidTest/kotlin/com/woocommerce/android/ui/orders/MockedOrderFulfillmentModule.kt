@@ -13,10 +13,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 
 @Module
@@ -24,10 +24,15 @@ abstract class MockedOrderFulfillmentModule {
     @Module
     companion object {
         private var order: WCOrderModel? = null
+        private var isNetworkConnected: Boolean = false
         private var orderShipmentTrackings: List<WCOrderShipmentTrackingModel>? = null
 
         fun setOrderInfo(order: WCOrderModel) {
             this.order = order
+        }
+
+        fun setNetworkConnected(isNetworkConnected: Boolean) {
+            this.isNetworkConnected = isNetworkConnected
         }
 
         fun setOrderShipmentTrackings(orderShipmentTrackings: List<WCOrderShipmentTrackingModel>) {
@@ -46,13 +51,13 @@ abstract class MockedOrderFulfillmentModule {
              */
             val mockDispatcher = mock<Dispatcher>()
             val mockContext = mock<Context>()
-            val mockSiteStore = mock<SiteStore>()
             val mockNetworkStatus = mock<NetworkStatus>()
+            val mockSelectedSite = mock<SelectedSite>()
 
             val mockedOrderFulfillmentPresenter = spy(OrderFulfillmentPresenter(
                     mockDispatcher,
                     WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
-                    SelectedSite(mockContext, mockSiteStore),
+                    mockSelectedSite,
                     mock(),
                     mockNetworkStatus
             ))
@@ -61,6 +66,8 @@ abstract class MockedOrderFulfillmentModule {
              * Mocking the below methods in [OrderFulfillmentPresenter] class to pass mock values.
              * These are the methods that invoke [WCOrderShipmentTrackingModel] methods from FluxC.
              */
+            doReturn(SiteModel()).whenever(mockSelectedSite).get()
+            doReturn(isNetworkConnected).whenever(mockNetworkStatus).isConnected()
             doReturn(true).whenever(mockedOrderFulfillmentPresenter).isShipmentTrackingsFetched
             doReturn(order).whenever(mockedOrderFulfillmentPresenter).loadOrderDetailFromDb(any())
             doReturn(orderShipmentTrackings).whenever(mockedOrderFulfillmentPresenter)

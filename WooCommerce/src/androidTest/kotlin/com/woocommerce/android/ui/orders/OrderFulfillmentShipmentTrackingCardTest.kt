@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders
 
 import android.support.test.espresso.Espresso.onView
+import android.support.test.espresso.action.ViewActions.clearText
 import android.support.test.espresso.action.ViewActions.click
+import android.support.test.espresso.action.ViewActions.typeText
 import android.support.test.espresso.assertion.ViewAssertions
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.contrib.RecyclerViewActions
@@ -21,18 +23,22 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.R.id
+import com.woocommerce.android.R.string
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.helpers.WCMatchers.withRecyclerView
 import com.woocommerce.android.helpers.WcHelperUtils
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.util.DateUtils
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
-import org.junit.Assert
-import org.junit.Before
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertSame
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyBoolean
+import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -58,9 +64,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
                 ?.findFragmentByTag(OrderFulfillmentFragment.TAG) as? OrderFulfillmentFragment
     }
 
-    @Before
-    override fun setup() {
-        super.setup()
+    private fun setupOrderFulfillPage(isNetworkConnected: Boolean = false) {
         // Bypass login screen and display dashboard
         activityTestRule.launchMainActivityLoggedIn(null, SiteModel())
 
@@ -76,7 +80,8 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
         // Set Order fulfillment with mock data
         activityTestRule.setOrderFulfillmentWithMockData(
                 order = mockWCOrderModel,
-                orderShipmentTrackings = mockShipmentTrackingList
+                orderShipmentTrackings = mockShipmentTrackingList,
+                isNetworkConnected = isNetworkConnected
         )
 
         // click on the first order in the list and check if redirected to order detail
@@ -89,9 +94,10 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
     @Test
     fun verifyOrderShipmentCardViewPopulatedSuccessfullyIfAvailable() {
+        setupOrderFulfillPage()
         // check if shipment tracking list is 4
         val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
-        Assert.assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
+        assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
 
         // verify that the Add tracking button is visible
         onView(withId(R.id.shipmentTrack_btnAddTracking)).check(
@@ -106,6 +112,8 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
     @Test
     fun verifyShipmentTrackingItemDetailsPopulatedSuccessfully() {
+        setupOrderFulfillPage()
+
         // verify if the first shipment tracking name matches the first item from the mock data
         onView(WCMatchers.withRecyclerView(id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_number))
                 .check(ViewAssertions.matches(withText(mockShipmentTrackingList[0].trackingNumber)))
@@ -128,16 +136,20 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
     @Test
     fun verifyShipmentTrackingItemClickCopiesToClipboard() {
+        setupOrderFulfillPage()
+
         // click on the shipment tracking item - this should copy the text to clipboard
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_copyNumber))
                 .perform(WCMatchers.scrollTo(), click())
 
         val clipboardText = WcHelperUtils.getClipboardText(appContext)
-        Assert.assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
+        assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
     }
 
     @Test
     fun verifyShipmentTrackingItemDeleteItemClickWhenOffline() {
+        setupOrderFulfillPage()
+
         // mock network not available
         val orderFulfillmentFragment = getOrderFulfillmentFragment()
         doReturn(false).whenever(orderFulfillmentFragment?.networkStatus)?.isConnected()
@@ -152,18 +164,20 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
         // verify that the shipment tracking list count matches the mock data count
         val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
-        Assert.assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
+        assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
     }
 
     @Test
     fun verifyShipmentTrackingItemDeleteItemClickUndoDeleteTracking() {
+        setupOrderFulfillPage()
+
         // click on the "Delete shipment" icon
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnDelete))
                 .perform(WCMatchers.scrollTo(), click())
 
         // check if the shipment tracking list count has reduced by 1
         val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
-        Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
+        assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
 
         // check if the snackbar with undo button is displayed
         onView(allOf(
@@ -175,18 +189,20 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
         onView(withText(appContext.getString(R.string.undo))).perform(click())
 
         // verify that the shipment tracking list count matches the mock data count
-        Assert.assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
+        assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
     }
 
     @Test
     fun verifyShipmentTrackingItemDeleteItemClickWhenResponseSuccess() {
+        setupOrderFulfillPage()
+
         // click on the "Delete shipment" icon
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnDelete))
                 .perform(WCMatchers.scrollTo(), click())
 
         // verify that the deleted item is removed from the shipment tracking list
         val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
-        Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
+        assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
 
         // mock api success response
         val orderFulfillmentFragment = getOrderFulfillmentFragment()
@@ -208,20 +224,21 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
         // verify that the deleted item is not added back to the list
-        Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
+        assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
     }
 
     @Test
     fun verifyShipmentTrackingItemDeleteItemClickWhenResponseFailure() {
+        setupOrderFulfillPage()
         // click on the "Delete shipment" icon
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnDelete))
                 .perform(WCMatchers.scrollTo(), click())
 
         // verify that the deleted item is removed from the shipment tracking list
         val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
-        Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
+        assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
 
-        // mock api success response
+        // mock api error response
         val orderFulfillmentFragment = getOrderFulfillmentFragment()
         val onOrderChangedErrorResponse = OnOrderChanged(1).apply {
             causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
@@ -242,6 +259,94 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
         // verify that the deleted item is added back to the list
-        Assert.assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
+        assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
+    }
+
+    @Test
+    fun verifyShipmentTrackingAddedOnAddButtonClick() {
+        setupOrderFulfillPage(true)
+
+        // redirect to Add shipment tracking activity
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
+
+        // inject mock data to the provider list screen
+        // click on select provider & select a provider from the list
+        // select the first item on the second section of the list: under United States
+        activityTestRule.setOrderProviderListWithMockData()
+        onView(withId(R.id.addTracking_editCarrier)).perform(click())
+        onView(withId(R.id.addTrackingProviderList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(3, click()))
+
+        // type tracking info
+        val trackingNum = "12121-12121-12121-12121"
+        onView(withId(R.id.addTracking_number)).perform(clearText(), typeText(trackingNum))
+
+        // mock network available
+        val orderFulfillmentFragment = getOrderFulfillmentFragment()
+        doReturn(true).whenever(orderFulfillmentFragment?.networkStatus)?.isConnected()
+
+        // click on "Add tracking" button
+        onView(withId(R.id.menu_add)).perform(click())
+
+        // verify that redirected to previous screen
+        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(Matchers.equalToIgnoringCase(
+                                appContext.getString(string.orderdetail_order_fulfillment, "1")
+                        ))))
+
+        // Verify that new tracking is added to the shipment tracking list
+        val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
+        assertSame(mockShipmentTrackingList.size + 1, recyclerView.adapter?.itemCount)
+
+        // verify that add tracking snackbar is displayed
+        onView(allOf(
+                withId(android.support.design.R.id.snackbar_text),
+                withText(R.string.order_shipment_tracking_added))
+        ).check(matches(withEffectiveVisibility(VISIBLE)))
+
+        // verify shipment tracking count is increased by 1
+        assertSame(mockShipmentTrackingList.size + 1, recyclerView.adapter?.itemCount)
+    }
+
+    @Test
+    fun verifyAddShipmentTrackingErrorResponse() {
+        setupOrderFulfillPage()
+
+        // redirect to Add shipment tracking activity
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
+
+        // inject mock data to the provider list screen
+        // click on select provider & select a provider from the list
+        // select the first item on the second section of the list: under United States
+        activityTestRule.setOrderProviderListWithMockData()
+        onView(withId(R.id.addTracking_editCarrier)).perform(click())
+        onView(withId(R.id.addTrackingProviderList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(3, click()))
+
+        // type tracking info
+        val trackingNum = "12121-12121-12121-12121"
+        onView(withId(R.id.addTracking_number)).perform(clearText(), typeText(trackingNum))
+
+        // mock api error response
+        val orderFulfillmentFragment = getOrderFulfillmentFragment()
+        val onOrderChangedErrorResponse = OnOrderChanged(1).apply {
+            causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
+            error = OrderError()
+        }
+        doAnswer {
+            (orderFulfillmentFragment?.presenter as? OrderFulfillmentPresenter)
+                    ?.onOrderChanged(onOrderChangedErrorResponse)
+        }. whenever(orderFulfillmentFragment?.presenter)?.pushShipmentTrackingProvider(any(), anyBoolean())
+
+        // click on "Add tracking" button
+        onView(withId(R.id.menu_add)).perform(click())
+
+        // verify that redirected to previous screen
+        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(Matchers.equalToIgnoringCase(
+                appContext.getString(string.orderdetail_order_fulfillment, "1")
+        ))))
+
+        // verify shipment tracking count is has not changed
+        val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
+        assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
     }
 }

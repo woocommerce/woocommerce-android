@@ -64,11 +64,13 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
      */
     fun setOrderFulfillmentWithMockData(
         order: WCOrderModel,
-        orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings()
+        orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings(),
+        isNetworkConnected: Boolean = false
     ) {
         setOrderDetailWithMockData(order, orderShipmentTrackings = orderShipmentTrackings)
         MockedOrderFulfillmentModule.setOrderInfo(order)
         MockedOrderFulfillmentModule.setOrderShipmentTrackings(orderShipmentTrackings)
+        MockedOrderFulfillmentModule.setNetworkConnected(isNetworkConnected)
     }
 
     /**
