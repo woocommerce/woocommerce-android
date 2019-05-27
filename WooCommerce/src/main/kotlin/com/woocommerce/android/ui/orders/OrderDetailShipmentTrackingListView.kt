@@ -65,7 +65,6 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
      * add the provider has completed - this enables us to be optimistic about connectivity
      */
     fun addTransientTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
-        enableItemAnimator(true)
         wcOrderShipmentTrackingModel.id = nextTransientTrackingId
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).addTracking(wcOrderShipmentTrackingModel)
         nextTransientTrackingId--
@@ -73,22 +72,16 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     }
 
     fun deleteTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
-        enableItemAnimator(true)
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).deleteTracking(wcOrderShipmentTrackingModel)
         shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
     }
 
     fun undoDeleteTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
-        enableItemAnimator(true)
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).undoDeleteTracking(wcOrderShipmentTrackingModel)
         shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
     }
 
     fun getShipmentTrackingCount() = shipmentTrack_items.adapter?.itemCount
-
-    private fun enableItemAnimator(enable: Boolean) {
-        shipmentTrack_items.itemAnimator = if (enable) DefaultItemAnimator() else null
-    }
 
     class ShipmentTrackingListAdapter(
         private val trackings: MutableList<WCOrderShipmentTrackingModel>,
