@@ -160,6 +160,7 @@
     <!--
         Shipment Trackings
     -->
-    <dimen name="shipment_tracking_delete_button_width">30dp</dimen>
-    <dimen name="shipment_tracking_delete_button_height">30dp</dimen>
+    <dimen name="shipment_tracking_delete_button_width">32dp</dimen>
+    <dimen name="shipment_tracking_delete_button_height">32dp</dimen>
+    <dimen name="shipment_tracking_delete_button_padding">16dp</dimen>
 </resources>

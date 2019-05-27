@@ -61,18 +61,25 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible"/>
 
-    <ImageButton
-        android:id="@+id/tracking_btnDelete"
-        style="@style/Woo.Delete.Button"
-        android:layout_width="@dimen/shipment_tracking_delete_button_width"
-        android:layout_height="@dimen/shipment_tracking_delete_button_width"
-        android:contentDescription="@string/orderdetail_delete_tracking"
-        android:scaleType="center"
-        android:src="@drawable/ic_close"
-        android:visibility="gone"
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/shipment_tracking_delete_button_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/tracking_btnDelete"
+            style="@style/Woo.Delete.Button"
+            android:layout_width="@dimen/shipment_tracking_delete_button_width"
+            android:layout_height="@dimen/shipment_tracking_delete_button_width"
+            android:contentDescription="@string/orderdetail_delete_tracking"
+            android:scaleType="center"
+            android:src="@drawable/ic_close"
+            android:visibility="gone"
+            tools:visibility="gone"/>
+
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
