@@ -76,7 +76,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
     }
 
-    fun undoDeleteTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+    fun undoDeleteTrackingRecord(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).undoDeleteTracking(wcOrderShipmentTrackingModel)
         shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
     }

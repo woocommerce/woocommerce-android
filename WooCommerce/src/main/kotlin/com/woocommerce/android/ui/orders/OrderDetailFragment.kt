@@ -447,7 +447,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
          * In both cases, add the deleted item back to the shipment tracking list.
         */
         deletedOrderShipmentTrackingModel?.let {
-            orderDetail_shipmentList.undoDeleteTrackingProvider(it)
+            orderDetail_shipmentList.undoDeleteTrackingRecord(it)
             orderDetail_shipmentList.visibility = View.VISIBLE
         }
         deletedOrderShipmentTrackingModel = null
@@ -494,7 +494,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         val actionListener = View.OnClickListener {
             // User canceled the action to delete the shipment tracking
             deleteOrderShipmentTrackingCancelled = true
-            orderDetail_shipmentList.undoDeleteTrackingProvider(item)
+            orderDetail_shipmentList.undoDeleteTrackingRecord(item)
             orderDetail_shipmentList.visibility = View.VISIBLE
         }
 

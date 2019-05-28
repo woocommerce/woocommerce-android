@@ -209,7 +209,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
      */
     override fun undoDeletedTrackingOnError() {
         deletedOrderShipmentTrackingModel?.let {
-            orderFulfill_addShipmentTracking.undoDeleteTrackingProvider(it)
+            orderFulfill_addShipmentTracking.undoDeleteTrackingRecord(it)
         }
         deletedOrderShipmentTrackingModel = null
     }
@@ -287,7 +287,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         val actionListener = View.OnClickListener {
             // User canceled the action to delete the shipment tracking
             deleteOrderShipmentTrackingCancelled = true
-            orderFulfill_addShipmentTracking.undoDeleteTrackingProvider(item)
+            orderFulfill_addShipmentTracking.undoDeleteTrackingRecord(item)
         }
 
         val callback = object : Snackbar.Callback() {
