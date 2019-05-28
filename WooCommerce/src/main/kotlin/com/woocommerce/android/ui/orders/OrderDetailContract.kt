@@ -52,7 +52,7 @@ interface OrderDetailContract {
         fun showLoadOrderError()
         fun refreshOrderStatus()
         fun refreshProductImages()
-        fun reAddDeletedTrackingOnError()
+        fun undoDeletedTrackingOnError()
         fun markTrackingDeletedOnSuccess()
         fun showDeleteTrackingErrorSnack()
     }

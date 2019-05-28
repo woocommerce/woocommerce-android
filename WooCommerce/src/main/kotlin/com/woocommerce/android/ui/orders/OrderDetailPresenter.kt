@@ -267,7 +267,7 @@ class OrderDetailPresenter @Inject constructor(
             // just in case...
             uiMessageResolver.showOfflineSnack()
             // re-add the deleted tracking item back to the shipment tracking list
-            orderView?.reAddDeletedTrackingOnError()
+            orderView?.undoDeletedTrackingOnError()
             return
         }
 
@@ -367,7 +367,7 @@ class OrderDetailPresenter @Inject constructor(
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_FAILED)
                 WooLog.e(T.ORDERS, "$TAG - Error deleting order shipment tracking : ${event.error.message}")
                 orderView?.showDeleteTrackingErrorSnack()
-                orderView?.reAddDeletedTrackingOnError()
+                orderView?.undoDeletedTrackingOnError()
             } else {
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()

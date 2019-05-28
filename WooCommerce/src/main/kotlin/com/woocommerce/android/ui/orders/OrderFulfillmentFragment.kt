@@ -202,12 +202,12 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         uiMessageResolver.getSnack(R.string.order_shipment_tracking_error).show()
     }
 
-    override fun reAddDeletedTrackingOnError() {
-        /**
-         * This error could be because of network error
-         * or a failure to delete the shipment tracking from server api.
-         * In both cases, add the deleted item back to the shipment tracking list
-         */
+    /**
+     * This method error could be because of network error
+     * or a failure to delete the shipment tracking from server api.
+     * In both cases, add the deleted item back to the shipment tracking list
+     */
+    override fun undoDeletedTrackingOnError() {
         deletedOrderShipmentTrackingModel?.let {
             orderFulfill_addShipmentTracking.undoDeleteTrackingProvider(it)
         }
@@ -268,7 +268,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {
-        /**
+        /*
          * Check if network is available. If not display offline snack
          * remove the shipment tracking model from the tracking list
          * display snackbar message with undo option

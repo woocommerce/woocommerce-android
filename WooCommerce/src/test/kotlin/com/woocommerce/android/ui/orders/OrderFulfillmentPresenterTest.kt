@@ -253,7 +253,7 @@ class OrderFulfillmentPresenterTest {
         verify(uiMessageResolver, times(1)).showOfflineSnack()
 
         // ensure that deleted item is added back to the list
-        verify(view, times(1)).reAddDeletedTrackingOnError()
+        verify(view, times(1)).undoDeletedTrackingOnError()
 
         // ensure that dispatcher is not invoked
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
@@ -282,7 +282,7 @@ class OrderFulfillmentPresenterTest {
         verify(view, times(1)).showDeleteTrackingErrorSnack()
 
         // ensure that deleted item is added back to the list
-        verify(view, times(1)).reAddDeletedTrackingOnError()
+        verify(view, times(1)).undoDeletedTrackingOnError()
     }
 
     @Test

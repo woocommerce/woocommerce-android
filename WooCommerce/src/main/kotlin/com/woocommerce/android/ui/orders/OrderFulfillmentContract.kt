@@ -29,7 +29,7 @@ interface OrderFulfillmentContract {
         fun showAddAddShipmentTrackingErrorSnack()
         fun toggleCompleteButton(isEnabled: Boolean)
         fun fulfillOrder()
-        fun reAddDeletedTrackingOnError()
+        fun undoDeletedTrackingOnError()
         fun markTrackingDeletedOnSuccess()
         fun showDeleteTrackingErrorSnack()
     }

@@ -440,7 +440,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         previousOrderStatus = null
     }
 
-    override fun reAddDeletedTrackingOnError() {
+    override fun undoDeletedTrackingOnError() {
         /**
          * This error could be because of network error
          * or a failure to delete the shipment tracking from server api.

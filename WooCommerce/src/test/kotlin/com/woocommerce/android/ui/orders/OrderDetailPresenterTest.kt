@@ -312,7 +312,7 @@ class OrderDetailPresenterTest {
         verify(uiMessageResolver, times(1)).showOfflineSnack()
 
         // ensure that deleted item is added back to the list
-        verify(orderDetailView, times(1)).reAddDeletedTrackingOnError()
+        verify(orderDetailView, times(1)).undoDeletedTrackingOnError()
 
         // ensure that dispatcher is not invoked
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
@@ -341,7 +341,7 @@ class OrderDetailPresenterTest {
         verify(orderDetailView, times(1)).showDeleteTrackingErrorSnack()
 
         // ensure that deleted item is added back to the list
-        verify(orderDetailView, times(1)).reAddDeletedTrackingOnError()
+        verify(orderDetailView, times(1)).undoDeletedTrackingOnError()
     }
 
     @Test
