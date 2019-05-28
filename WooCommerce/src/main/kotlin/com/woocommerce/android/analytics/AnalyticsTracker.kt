@@ -123,6 +123,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
         ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED,
         ORDER_TRACKING_LOADED,
+        ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED,
 
         // -- Order Notes
         ADD_ORDER_NOTE_ADD_BUTTON_TAPPED,
@@ -135,6 +136,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED,
         ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED,
         ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED,
+        ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED,
 
         // -- Order Shipment Tracking
         ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED,

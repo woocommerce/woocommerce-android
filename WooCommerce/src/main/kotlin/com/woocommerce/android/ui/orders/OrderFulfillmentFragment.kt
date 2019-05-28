@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
@@ -280,6 +281,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
             return
         }
 
+        AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED)
         deleteOrderShipmentTrackingCancelled = false
         orderFulfill_addShipmentTracking.deleteTrackingProvider(item)
 

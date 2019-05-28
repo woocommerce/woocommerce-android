@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
@@ -482,6 +483,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             return
         }
 
+        AnalyticsTracker.track(ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED)
         deleteOrderShipmentTrackingCancelled = false
         orderDetail_shipmentList.deleteTrackingProvider(item)
         orderDetail_shipmentList.getShipmentTrackingCount()?.let {

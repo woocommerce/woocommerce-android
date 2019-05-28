@@ -272,6 +272,9 @@ class OrderDetailPresenter @Inject constructor(
         }
 
         orderModel?.let { order ->
+            AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE, mapOf(
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_DETAIL
+            ))
             val payload = DeleteOrderShipmentTrackingPayload(selectedSite.get(), order, wcOrderShipmentTrackingModel)
             dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
         }
