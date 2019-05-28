@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -46,17 +45,30 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
             setHasFixedSize(true)
             layoutManager = viewManager
             itemAnimator = DefaultItemAnimator()
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             adapter = viewAdapter
         }
 
         if (allowAddTrackingOption) {
+            showOrHideDivider()
             shipmentTrack_label.text = context.getString(R.string.order_shipment_tracking_add_label)
             shipmentTrack_btnAddTracking.visibility = View.VISIBLE
             shipmentTrack_btnAddTracking.setOnClickListener {
                 AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
                 shipmentTrackingActionListener?.openAddOrderShipmentTrackingScreen()
             }
+        }
+    }
+
+    /*
+     * Divider should only be displayed when there is atleast one tracking
+     * item in the list
+     */
+    private fun showOrHideDivider() {
+        val show = getShipmentTrackingCount()?.let { it > 0 } ?: false
+        if (show && shipmentTrack_divider.visibility != View.VISIBLE) {
+            shipmentTrack_divider.visibility = View.VISIBLE
+        } else if (shipmentTrack_divider.visibility != View.GONE) {
+            shipmentTrack_divider.visibility = View.GONE
         }
     }
 
@@ -69,16 +81,19 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).addTracking(wcOrderShipmentTrackingModel)
         nextTransientTrackingId--
         shipmentTrack_items.scrollToPosition(0)
+        showOrHideDivider()
     }
 
     fun deleteTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).deleteTracking(wcOrderShipmentTrackingModel)
         shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
+        showOrHideDivider()
     }
 
     fun undoDeleteTrackingRecord(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
         (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).undoDeleteTracking(wcOrderShipmentTrackingModel)
         shipmentTrack_items.swapAdapter(shipmentTrack_items.adapter, false)
+        showOrHideDivider()
     }
 
     fun getShipmentTrackingCount() = shipmentTrack_items.adapter?.itemCount

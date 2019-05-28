@@ -32,6 +32,25 @@
 
     </android.support.v7.widget.RecyclerView>
 
+    <!-- Divider -->
+    <FrameLayout
+        android:id="@+id/shipmentTrack_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/card_item_padding_intra_h"
+        android:background="@color/list_divider"
+        android:layout_marginTop="@dimen/list_item_padding_start"
+        android:layout_marginLeft="@dimen/list_item_padding_start"
+        android:layout_marginStart="@dimen/list_item_padding_start"
+        android:layout_marginRight="@dimen/list_item_padding_start"
+        android:layout_marginEnd="@dimen/list_item_padding_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_items"
+        app:srcCompat="@drawable/list_divider"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
     <!-- Button: Add Tracking -->
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/shipmentTrack_btnAddTracking"
@@ -42,6 +61,6 @@
         android:text="@string/order_shipment_tracking_add_button"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_items"
+        app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_divider"
         tools:visibility="visible"/>
 </merge>
