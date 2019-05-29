@@ -129,7 +129,7 @@ class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
 
     override fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(main_container, R.layout.skeleton_notif_detail, delayed = true)
+            skeletonView.show(container, R.layout.skeleton_notif_detail, delayed = true)
         } else {
             skeletonView.hide()
         }

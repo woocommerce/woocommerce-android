@@ -69,7 +69,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     }
 
     override fun onDestroyView() {
-        main_container.removeAllViews()
+        container.removeAllViews()
         super.onDestroyView()
     }
 
@@ -104,7 +104,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
                             R.anim.activity_fade_in,
                             0
                     )
-                    .replace(R.id.main_container, fragment, tag)
+                    .replace(R.id.container, fragment, tag)
                     .addToBackStack(tag)
                     .commitAllowingStateLoss()
         } else {
@@ -146,11 +146,11 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
     private fun updateParentViewState(childActive: Boolean) {
         val mainActivity: AppCompatActivity? = activity as? AppCompatActivity
         if (childActive) {
-            main_container?.getChildAt(0)?.visibility = View.GONE
+            container?.getChildAt(0)?.visibility = View.GONE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(true)
         } else {
-            main_container?.getChildAt(0)?.visibility = View.VISIBLE
+            container?.getChildAt(0)?.visibility = View.VISIBLE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
         }
