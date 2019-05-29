@@ -18,6 +18,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.AddOrderNoteFragment.Companion.AddOrderNoteListener
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
@@ -30,8 +31,9 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
+class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener, AddOrderNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
+
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -378,7 +380,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showAddOrderNoteScreen(order: WCOrderModel) {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
-                router.openAddOrderNote(order)
+                router.openAddOrderNote(order, this)
             }
         }
     }
@@ -389,6 +391,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     override fun showAddOrderNoteErrorSnack() {
         uiMessageResolver.getSnack(R.string.add_order_note_error).show()
+    }
+
+    override fun onAddOrderNote(noteText: String, isCustomerNote: Boolean) {
+        presenter.pushOrderNote(noteText, isCustomerNote)
     }
 
     override fun markOrderStatusChangedSuccess() {

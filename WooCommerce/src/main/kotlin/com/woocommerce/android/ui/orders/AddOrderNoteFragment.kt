@@ -33,7 +33,11 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
         private const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
 
-        fun newInstance(order: WCOrderModel): AddOrderNoteFragment {
+        interface AddOrderNoteListener {
+            fun onAddOrderNote(noteText: String, isCustomerNote: Boolean)
+        }
+
+        fun newInstance(order: WCOrderModel, listener: AddOrderNoteListener): AddOrderNoteFragment {
             val args = Bundle().also {
                 it.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
                 it.putString(FIELD_ORDER_NUMBER, order.number)
@@ -41,6 +45,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
 
             val fragment = AddOrderNoteFragment()
             fragment.arguments = args
+            fragment.listener = listener
             return fragment
         }
     }
@@ -51,12 +56,17 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
 
     private lateinit var orderId: OrderIdentifier
     private lateinit var orderNumber: String
+    private lateinit var listener: AddOrderNoteListener
 
     private var isConfirmingDiscard = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    private fun setListener(listener: AddOrderNoteListener) {
+        this.listener = listener
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -147,7 +157,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
                 } else {
                     val isCustomerNote = addNote_switch.isChecked
                     if (noteText.isNotEmpty()) {
-                        (activity as? AddOrderNoteActionListener)?.let {
+                        listener?.let {
                             it.onAddOrderNote(noteText, isCustomerNote)
                             activity?.onBackPressed()
                         }

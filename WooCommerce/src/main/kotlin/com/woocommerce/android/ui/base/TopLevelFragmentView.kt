@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.ui.orders.AddOrderNoteFragment
+import com.woocommerce.android.ui.orders.AddOrderNoteFragment.Companion.AddOrderNoteListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderFulfillmentFragment
 import com.woocommerce.android.ui.orders.OrderProductListFragment
@@ -117,10 +118,10 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
         }
     }
 
-    override fun openAddOrderNote(order: WCOrderModel) {
+    override fun openAddOrderNote(order: WCOrderModel, listener: AddOrderNoteListener) {
         val tag = AddOrderNoteFragment.TAG
         if (!popToState(tag)) {
-            loadChildFragment(AddOrderNoteFragment.newInstance(order), tag)
+            loadChildFragment(AddOrderNoteFragment.newInstance(order, listener), tag)
         }
     }
 }
