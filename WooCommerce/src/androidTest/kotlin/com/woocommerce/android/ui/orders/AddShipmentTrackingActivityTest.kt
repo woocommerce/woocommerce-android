@@ -15,6 +15,7 @@ import android.support.test.filters.LargeTest
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
 import android.widget.DatePicker
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
@@ -61,6 +62,9 @@ class AddShipmentTrackingActivityTest : TestBase() {
                 order = mockWCOrderModel,
                 orderShipmentTrackings = mockShipmentTrackingList
         )
+
+        // setting the default provider value to empty here
+        AppPrefs.setSelectedShipmentTrackingProviderName("")
 
         // click on the first order in the list and check if redirected to order detail
         onView(withId(R.id.ordersList))
