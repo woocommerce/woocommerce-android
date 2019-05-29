@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -79,8 +80,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // TODO supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-
         orderId = arguments?.getString(FIELD_ORDER_IDENTIFIER) ?: ""
         orderNumber = arguments?.getString(FIELD_ORDER_NUMBER) ?: ""
 
@@ -114,14 +113,24 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
             addNote_editDivider.visibility = View.GONE
         }
 
-        activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
-
         presenter.takeView(this)
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
+        activity?.let {
+            it.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+        }
+    }
+
+    override fun onPause() {
+        activity?.let {
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+        }
+        super.onPause()
     }
 
     override fun onDestroyView() {
@@ -168,7 +177,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     /**
      * Provide back press in the main activity if the user entered a note so we can confirm the discard
      */
-    override fun onRequestBackPress(): Boolean {
+    override fun onRequestAllowBackPress(): Boolean {
         return if (getNoteText().isNotEmpty() && !disConfirmDiscard) {
             confirmDiscard()
             false

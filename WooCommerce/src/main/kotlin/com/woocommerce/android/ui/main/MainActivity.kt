@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(),
         const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
 
         interface BackPressListener {
-            fun onRequestBackPress(): Boolean
+            fun onRequestAllowBackPress(): Boolean
         }
 
         init {
@@ -177,7 +177,7 @@ class MainActivity : AppCompatActivity(),
                 // go no further if active fragment doesn't allow back press - we use this so fragments can
                 // provide confirmation before discarding the current action, such as adding an order note
                 val fragment = childFragmentManager.findFragmentById(R.id.main_container)
-                if (fragment is BackPressListener && !fragment.onRequestBackPress()) {
+                if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
                     return
                 }
                 childFragmentManager.popBackStack()

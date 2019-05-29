@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.orders.AddOrderNoteFragment.Companion.AddOrder
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -33,7 +34,6 @@ import javax.inject.Inject
 
 class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener, AddOrderNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
-
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -124,22 +124,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    // TODO
-    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_ADD_NOTE) {
-            if (resultCode == RESULT_OK && data != null) {
-                val noteText = data.getStringExtra(FIELD_NOTE_TEXT)
-                val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
-                orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
-                presenter.pushOrderNote(noteText, isCustomerNote)
-                AppRatingDialog.incrementInteractions()
-            } else if (resultCode == AddOrderNoteFragment.RESULT_INVALID_ORDER) {
-                uiMessageResolver.showSnack(R.string.add_order_note_invalid_order)
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }*/
 
     override fun onStart() {
         super.onStart()
@@ -365,18 +349,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun onRequestAddNote() {
-        if (!networkStatus.isConnected()) {
-            // If offline, show generic offline message and exit without opening add note screen
-            uiMessageResolver.showOfflineSnack()
-            return
-        }
-
-        presenter.orderModel?.let {
-            showAddOrderNoteScreen(it)
-        }
-    }
-
     override fun showAddOrderNoteScreen(order: WCOrderModel) {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
@@ -393,7 +365,30 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         uiMessageResolver.getSnack(R.string.add_order_note_error).show()
     }
 
+    /**
+     * User tapped the button to add a note, so show the add order note screen
+     */
+    override fun onRequestAddNote() {
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        presenter.orderModel?.let {
+            showAddOrderNoteScreen(it)
+        }
+    }
+
+    /**
+     * User added a note in the add order note screen, so push it to the backend
+     */
     override fun onAddOrderNote(noteText: String, isCustomerNote: Boolean) {
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        AppRatingDialog.incrementInteractions()
         presenter.pushOrderNote(noteText, isCustomerNote)
     }
 
