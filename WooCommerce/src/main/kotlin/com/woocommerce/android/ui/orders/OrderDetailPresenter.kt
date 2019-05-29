@@ -6,6 +6,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -24,6 +27,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
@@ -42,6 +46,7 @@ import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
@@ -262,6 +267,35 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
+    override fun pushShipmentTrackingProvider(
+        wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel,
+        isCustomProvider: Boolean
+    ) {
+        AnalyticsTracker.track(
+                ORDER_TRACKING_ADD,
+                mapOf(AnalyticsTracker.KEY_ID to orderModel!!.remoteOrderId,
+                        AnalyticsTracker.KEY_STATUS to orderModel!!.status,
+                        AnalyticsTracker.KEY_CARRIER to wcOrderShipmentTrackingModel.trackingProvider)
+        )
+
+        if (!networkStatus.isConnected()) {
+            // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
+            // just in case...
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        val payload = AddOrderShipmentTrackingPayload(
+                selectedSite.get(),
+                orderModel!!,
+                wcOrderShipmentTrackingModel,
+                isCustomProvider
+        )
+        dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
+
+        orderView?.showAddShipmentTrackingSnack()
+    }
+
     override fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
         this.deletedOrderShipmentTrackingModel = wcOrderShipmentTrackingModel
         if (!networkStatus.isConnected()) {
@@ -379,6 +413,23 @@ class OrderDetailPresenter @Inject constructor(
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()
             }
+        } else if (event.causeOfChange == ADD_ORDER_SHIPMENT_TRACKING) {
+            if (event.isError) {
+                AnalyticsTracker.track(
+                        ORDER_TRACKING_ADD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
+                WooLog.e(T.ORDERS, "$TAG - Error posting order note : ${event.error.message}")
+                orderView?.showAddAddShipmentTrackingErrorSnack()
+            } else {
+                AnalyticsTracker.track(ORDER_TRACKING_ADD_SUCCESS)
+            }
+
+            // note that we refresh even on error to make sure the transient tracking provider is removed
+            // from the tracking list
+            loadShipmentTrackingsFromDb()
         }
     }
 

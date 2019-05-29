@@ -10,9 +10,11 @@ import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
@@ -23,6 +25,11 @@ import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
 import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_IS_CUSTOM_PROVIDER
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_DATE_SHIPPED
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_NUMBER
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_PROVIDER
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
@@ -44,6 +51,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
         const val FIELD_REMOTE_NOTE_ID = "remote-notification-id"
         const val REQUEST_CODE_ADD_NOTE = 100
+        const val REQUEST_CODE_ADD_TRACKING = 102
 
         fun newInstance(
             orderId: OrderIdentifier,
@@ -149,6 +157,31 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             } else if (resultCode == AddOrderNoteActivity.RESULT_INVALID_ORDER) {
                 uiMessageResolver.showSnack(R.string.add_order_note_invalid_order)
             }
+        } else if (requestCode == REQUEST_CODE_ADD_TRACKING) {
+            if (data != null) {
+                val selectedShipmentTrackingProviderName = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
+                AppPrefs.setSelectedShipmentTrackingProviderName(selectedShipmentTrackingProviderName)
+
+                if (resultCode == RESULT_OK) {
+                    val isCustomProvider = data.getBooleanExtra(FIELD_IS_CUSTOM_PROVIDER, false)
+                    AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider)
+
+                    val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
+                    val customProviderUrlText = data.getStringExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL)
+                    val trackingNumText = data.getStringExtra(FIELD_ORDER_TRACKING_NUMBER)
+
+                    val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
+                    orderShipmentTrackingModel.trackingNumber = trackingNumText
+                    orderShipmentTrackingModel.dateShipped = dateShipped
+                    orderShipmentTrackingModel.trackingProvider = selectedShipmentTrackingProviderName
+                    if (isCustomProvider) {
+                        customProviderUrlText?.let { orderShipmentTrackingModel.trackingLink = it }
+                    }
+
+                    orderDetail_shipmentList.addTransientTrackingProvider(orderShipmentTrackingModel)
+                    presenter.pushShipmentTrackingProvider(orderShipmentTrackingModel, isCustomProvider)
+                }
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -232,6 +265,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             orderDetail_shipmentList.initView(
                     trackings = trackings,
                     uiMessageResolver = uiMessageResolver,
+                    isOrderDetail = true,
                     shipmentTrackingActionListener = this
             )
             if (orderDetail_shipmentList.visibility != View.VISIBLE) {
@@ -460,9 +494,28 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_success).show()
     }
 
+    override fun showAddShipmentTrackingSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_added).show()
+    }
+
+    override fun showAddAddShipmentTrackingErrorSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_error).show()
+    }
+
     override fun onOrderStatusSelected(orderStatus: String?) {
         orderStatus?.let {
             showChangeOrderStatusSnackbar(it)
+        }
+    }
+
+    override fun openAddOrderShipmentTrackingScreen() {
+        AnalyticsTracker.track(ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
+        presenter.orderModel?.let {
+            val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
+            intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
+            intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, AppPrefs.getSelectedShipmentTrackingProviderName())
+            intent.putExtra(FIELD_IS_CUSTOM_PROVIDER, AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
+            startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
         }
     }
 

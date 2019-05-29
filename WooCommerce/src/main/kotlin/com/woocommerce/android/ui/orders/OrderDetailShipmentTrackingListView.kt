@@ -10,8 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED
 import com.woocommerce.android.ui.base.UIMessageResolver
 import kotlinx.android.synthetic.main.order_detail_shipment_tracking_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -27,17 +25,22 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     // negative IDs denote transient tracking providers
     private var nextTransientTrackingId = -1
 
+    /**
+     * @param [isOrderDetail] = true, then
+     * 1. the delete icon would not be displayed. The hanburger menu should be displayed instead
+     * 2. The title should be "Tracking" instead of "Optional shipment tracking"
+     */
     fun initView(
         trackings: List<WCOrderShipmentTrackingModel>,
         uiMessageResolver: UIMessageResolver,
-        allowAddTrackingOption: Boolean = false,
+        isOrderDetail: Boolean,
         shipmentTrackingActionListener: OrderShipmentTrackingActionListener? = null
     ) {
         val viewManager = LinearLayoutManager(context)
         val viewAdapter = ShipmentTrackingListAdapter(
                 trackings.toMutableList(),
                 uiMessageResolver,
-                allowAddTrackingOption,
+                isOrderDetail,
                 shipmentTrackingActionListener
         )
 
@@ -48,14 +51,14 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
             adapter = viewAdapter
         }
 
-        if (allowAddTrackingOption) {
-            showOrHideDivider()
+        showOrHideDivider()
+        shipmentTrack_btnAddTracking.visibility = View.VISIBLE
+        shipmentTrack_btnAddTracking.setOnClickListener {
+            shipmentTrackingActionListener?.openAddOrderShipmentTrackingScreen()
+        }
+
+        if (!isOrderDetail) {
             shipmentTrack_label.text = context.getString(R.string.order_shipment_tracking_add_label)
-            shipmentTrack_btnAddTracking.visibility = View.VISIBLE
-            shipmentTrack_btnAddTracking.setOnClickListener {
-                AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
-                shipmentTrackingActionListener?.openAddOrderShipmentTrackingScreen()
-            }
         }
     }
 
@@ -101,7 +104,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     class ShipmentTrackingListAdapter(
         private val trackings: MutableList<WCOrderShipmentTrackingModel>,
         private val uiMessageResolver: UIMessageResolver,
-        private val allowAddTrackingOption: Boolean,
+        private val isOrderDetail: Boolean,
         private val shipmentTrackingActionListener: OrderShipmentTrackingActionListener?
     ) : RecyclerView.Adapter<ShipmentTrackingListAdapter.ViewHolder>() {
         private var deletedTrackingModelIndex = -1
@@ -119,7 +122,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
             holder.view.initView(
                     item = trackings[position],
                     uiMessageResolver = uiMessageResolver,
-                    allowAddTrackingOption = allowAddTrackingOption,
+                    isOrderDetail = isOrderDetail,
                     shipmentTrackingActionListener = shipmentTrackingActionListener
             )
         }
