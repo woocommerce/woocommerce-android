@@ -366,4 +366,62 @@ class OrderDetailPresenterTest {
         // ensure that success snack message is displayed
         verify(orderDetailView, times(1)).markTrackingDeletedOnSuccess()
     }
+
+    @Test
+    fun `Add order shipment tracking request correctly`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(presenter).orderModel
+
+        val defaultShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Test"
+            trackingLink = "123456"
+            dateShipped = "2019-05-13T16:11:13Z"
+        }
+        presenter.pushShipmentTrackingProvider(defaultShipmentTrackingModel, false)
+        verify(orderDetailView).showAddShipmentTrackingSnack()
+    }
+
+    @Test
+    fun `Add order shipment tracking with custom provider name request correctly`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(presenter).orderModel
+
+        val customShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Inc"
+            dateShipped = "2019-05-13T16:11:13Z"
+        }
+        presenter.pushShipmentTrackingProvider(customShipmentTrackingModel, true)
+        verify(orderDetailView).showAddShipmentTrackingSnack()
+    }
+
+    @Test
+    fun `Add order shipment tracking with custom provider tracking link request correctly`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(presenter).orderModel
+
+        val customShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Inc"
+            dateShipped = "2019-05-13T16:11:13Z"
+            trackingLink = "sample.com"
+        }
+        presenter.pushShipmentTrackingProvider(customShipmentTrackingModel, true)
+        verify(orderDetailView).showAddShipmentTrackingSnack()
+    }
+
+    @Test
+    fun `Show offline message on request to add order shipment tracking if not connected`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        val defaultShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Test"
+            trackingLink = "123456"
+            dateShipped = "2019-05-13T16:11:13Z"
+        }
+        presenter.pushShipmentTrackingProvider(defaultShipmentTrackingModel, false)
+
+        verify(orderDetailView, times(0)).showAddShipmentTrackingSnack()
+        verify(uiMessageResolver, times(1)).showOfflineSnack()
+    }
 }
