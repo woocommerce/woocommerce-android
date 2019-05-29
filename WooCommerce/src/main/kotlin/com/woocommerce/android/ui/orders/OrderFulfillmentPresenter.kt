@@ -47,6 +47,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     override var orderModel: WCOrderModel? = null
     private var orderView: OrderFulfillmentContract.View? = null
     override var isShipmentTrackingsFetched = false
+    override var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel? = null
 
     override fun takeView(view: View) {
         orderView = view
@@ -151,12 +152,14 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     override fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+        this.deletedOrderShipmentTrackingModel = wcOrderShipmentTrackingModel
         if (!networkStatus.isConnected()) {
             // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
             // just in case...
             uiMessageResolver.showOfflineSnack()
             // re-add the deleted tracking item back to the shipment tracking list
-            orderView?.undoDeletedTrackingOnError()
+            orderView?.undoDeletedTrackingOnError(deletedOrderShipmentTrackingModel)
+            deletedOrderShipmentTrackingModel = null
             return
         }
 
@@ -204,7 +207,8 @@ class OrderFulfillmentPresenter @Inject constructor(
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_FAILED)
                 WooLog.e(T.ORDERS, "$TAG - Error deleting order shipment tracking : ${event.error.message}")
                 orderView?.showDeleteTrackingErrorSnack()
-                orderView?.undoDeletedTrackingOnError()
+                orderView?.undoDeletedTrackingOnError(deletedOrderShipmentTrackingModel)
+                deletedOrderShipmentTrackingModel = null
             } else {
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()

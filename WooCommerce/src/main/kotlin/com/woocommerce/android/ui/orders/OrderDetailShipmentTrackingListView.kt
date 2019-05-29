@@ -67,7 +67,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         val show = getShipmentTrackingCount()?.let { it > 0 } ?: false
         if (show && shipmentTrack_divider.visibility != View.VISIBLE) {
             shipmentTrack_divider.visibility = View.VISIBLE
-        } else if (shipmentTrack_divider.visibility != View.GONE) {
+        } else if (!show && shipmentTrack_divider.visibility != View.GONE) {
             shipmentTrack_divider.visibility = View.GONE
         }
     }
