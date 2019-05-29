@@ -306,13 +306,14 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
 
         // call delete shipment tracking
-        presenter.deleteOrderShipmentTracking(WCOrderShipmentTrackingModel(id = 1))
+        val mockWCOrderShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1)
+        presenter.deleteOrderShipmentTracking(mockWCOrderShipmentTrackingModel)
 
         // ensure that offline snack message is displayed
         verify(uiMessageResolver, times(1)).showOfflineSnack()
 
         // ensure that deleted item is added back to the list
-        verify(orderDetailView, times(1)).undoDeletedTrackingOnError()
+        verify(orderDetailView, times(1)).undoDeletedTrackingOnError(mockWCOrderShipmentTrackingModel)
 
         // ensure that dispatcher is not invoked
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
@@ -341,7 +342,7 @@ class OrderDetailPresenterTest {
         verify(orderDetailView, times(1)).showDeleteTrackingErrorSnack()
 
         // ensure that deleted item is added back to the list
-        verify(orderDetailView, times(1)).undoDeletedTrackingOnError()
+        verify(orderDetailView, times(1)).undoDeletedTrackingOnError(trackings[0])
     }
 
     @Test
