@@ -105,6 +105,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         return if (fragment == null) null else fragment as LoginEmailFragment
     }
 
+    private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
+            supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -152,12 +155,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun startLogin() {
-        if (getLoginEmailFragment() != null) {
-            // email screen is already shown so, login has already started. Just bail.
+        if (getLoginViaSiteAddressFragment() != null) {
+            // login by site address is already shown so, login has already started. Just bail.
             return
         }
 
-        slideInFragment(LoginEmailFragment(), true, LoginEmailFragment.TAG)
+        loginViaSiteAddress()
     }
 
     //  -- BEGIN: LoginListener implementation methods
