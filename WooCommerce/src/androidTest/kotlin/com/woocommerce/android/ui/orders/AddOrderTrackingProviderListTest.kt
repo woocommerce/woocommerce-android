@@ -78,7 +78,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
         // verify that the item text in the "Custom" section = "Custom Provider"
         onView(WCMatchers.withRecyclerView(R.id.addTrackingProviderList).atPositionOnView(
-                1, R.id.addShipmentTrackingProviderListItem_name
+                5, R.id.addShipmentTrackingProviderListItem_name
         )).check(matches(withText(appContext.getString(R.string.order_shipment_tracking_custom_provider_section_name))))
     }
 
@@ -93,13 +93,13 @@ class AddOrderTrackingProviderListTest : TestBase() {
         // click on select provider field to redirect to provider list screen
         onView(withId(R.id.addTracking_editCarrier)).perform(click())
 
-        // verify the the second section in the list is has title United States
+        // verify the the first section in the list is has title United States
         val sectionTitle = appContext.getString(R.string.country_mapping_US)
         onView(WCMatchers.withRecyclerView(R.id.addTrackingProviderList).atPositionOnView(
-                2, R.id.providerListHeader
+                0, R.id.providerListHeader
         )).check(matches(withText(sectionTitle)))
 
-        // verify the the second section in the list is has section count 3
+        // verify the the first section in the list is has section count 3
         onView(ViewMatchers.isAssignableFrom(RecyclerView::class.java))
                 .check(matches(withProviderSectionItemCount(
                         sectionTitle, 3
@@ -117,13 +117,13 @@ class AddOrderTrackingProviderListTest : TestBase() {
         // click on select provider field to redirect to provider list screen
         onView(withId(R.id.addTracking_editCarrier)).perform(click())
 
-        // verify the the second section in the list is has title United States
+        // verify the the first section in the list is has title India
         val sectionTitle = appContext.getString(R.string.country_mapping_IN)
         onView(WCMatchers.withRecyclerView(R.id.addTrackingProviderList).atPositionOnView(
-                2, R.id.providerListHeader
+                0, R.id.providerListHeader
         )).check(matches(withText(sectionTitle)))
 
-        // verify the the second section in the list is has section count 1
+        // verify the the first section in the list is has section count 1
         onView(ViewMatchers.isAssignableFrom(RecyclerView::class.java))
                 .check(matches(withProviderSectionItemCount(
                         sectionTitle, 1
@@ -141,17 +141,17 @@ class AddOrderTrackingProviderListTest : TestBase() {
         // click on select provider field to redirect to provider list screen
         onView(withId(R.id.addTracking_editCarrier)).perform(click())
 
-        // verify the the second section in the list is has title Australia since there is no provider for the store
-        // country, the list will be displayed alphabetically
-        val sectionTitle = mockShipmentTrackingProviders.groupBy { it.country }.keys.first()
+        // verify the the first section in the list is Custom provider since there is no provider for the store
+        // country, the list will be displayed alphabetically after displaying the custom section
+        val sectionTitle = appContext.getString(R.string.order_shipment_tracking_custom_provider_section_title)
         onView(WCMatchers.withRecyclerView(R.id.addTrackingProviderList).atPositionOnView(
-                2, R.id.providerListHeader
+                0, R.id.providerListHeader
         )).check(matches(withText(sectionTitle)))
 
-        // verify the the second section in the list is has section count 3
+        // verify the the first section in the list is has section count 3
         onView(ViewMatchers.isAssignableFrom(RecyclerView::class.java))
                 .check(matches(withProviderSectionItemCount(
-                        sectionTitle, 2
+                        sectionTitle, 1
                 )))
     }
 
@@ -169,9 +169,9 @@ class AddOrderTrackingProviderListTest : TestBase() {
         // click on select provider field to redirect to provider list screen
         onView(withId(R.id.addTracking_editCarrier)).perform(click())
 
-        // select the first item on the second section of the list: under United States
+        // select the first item on the first section of the list: under United States
         onView(withId(R.id.addTrackingProviderList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(3, click()))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // verify if redirected to previous screen
         onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(
@@ -204,7 +204,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
         // select the Custom provider list item
         onView(withId(R.id.addTrackingProviderList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(5, click()))
 
         // verify if redirected to previous screen
         onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(
@@ -242,7 +242,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
         // verify that tick is displayed against the selected provider item
         onView(WCMatchers.withRecyclerView(R.id.addTrackingProviderList)
-                .atPositionOnView(3, R.id.addShipmentTrackingProviderListItem_tick))
+                .atPositionOnView(1, R.id.addShipmentTrackingProviderListItem_tick))
                 .check(matches(withEffectiveVisibility(VISIBLE)))
     }
 }
