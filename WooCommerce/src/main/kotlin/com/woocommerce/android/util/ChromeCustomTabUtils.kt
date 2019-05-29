@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,7 @@ import android.support.customtabs.CustomTabsServiceConnection
 import android.support.customtabs.CustomTabsSession
 import android.support.v4.content.ContextCompat
 import com.woocommerce.android.R
+import org.wordpress.android.util.ToastUtils
 
 /**
  * Simplifies using Chrome Custom Tabs
@@ -81,14 +83,19 @@ object ChromeCustomTabUtils {
     }
 
     fun launchUrl(context: Context, url: String) {
-        if (connection == null) {
-            if (canUseCustomTabs(context)) {
-                createIntent(context).launchUrl(context, Uri.parse(url))
+        try {
+            if (connection == null) {
+                if (canUseCustomTabs(context)) {
+                    createIntent(context).launchUrl(context, Uri.parse(url))
+                } else {
+                    ActivityUtils.openUrlExternal(context, url)
+                }
             } else {
-                ActivityUtils.openUrlExternal(context, url)
+                createIntent(context, session).launchUrl(context, Uri.parse(url))
             }
-        } else {
-            createIntent(context, session).launchUrl(context, Uri.parse(url))
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, context.getString(R.string.error_cant_open_url), ToastUtils.Duration.LONG)
+            WooLog.e(WooLog.T.UTILS, "No default app available on the device to open the link: $url", e)
         }
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-30 09:54:31+0000
+Translation-Revision-Date: 2019-05-27 13:42:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
@@ -327,6 +327,7 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>
@@ -341,6 +342,8 @@ Language: id
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">Tidak Ada Pesanan</string>
+    <string name="dashboard_fulfill_order_title_multiple">Anda memiliki %1$d pesanan untuk dipenuhi</string>
+    <string name="dashboard_fulfill_order_title_single">Anda memiliki 1 pesanan untuk dipenuhi</string>
     <string name="dashboard_action_view_orders">Lihat Pesanan</string>
     <string name="dashboard_action_view_order">Lihat Pesanan</string>
     <string name="dashboard_top_earners_empty">Tidak ada aktivitas dalam periode ini</string>
