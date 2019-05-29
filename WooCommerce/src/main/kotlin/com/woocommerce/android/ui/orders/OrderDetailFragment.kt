@@ -442,7 +442,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun undoDeletedTrackingOnError() {
-        /**
+        /*
          * This error could be because of network error
          * or a failure to delete the shipment tracking from server api.
          * In both cases, add the deleted item back to the shipment tracking list.
@@ -470,7 +470,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {
-        /**
+        /*
          * Check if network is available. If not display offline snack
          * remove the shipment tracking model from the tracking list.
          * If there are no more items on the list, hide the shipment tracking card
@@ -481,6 +481,13 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         if (!networkStatus.isConnected()) {
             uiMessageResolver.showOfflineSnack()
             return
+        }
+
+        // if undo snackbar is displayed for a deleted item and user clicks on another item to delete,
+        // the first snackbar should be dismissed before displaying the second snackbar
+        if(deleteOrderShipmentTrackingSnackbar?.isShownOrQueued == true) {
+            deleteOrderShipmentTrackingSnackbar?.dismiss()
+            deleteOrderShipmentTrackingSnackbar = null
         }
 
         AnalyticsTracker.track(ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED)
@@ -504,13 +511,15 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                 super.onDismissed(transientBottomBar, event)
                 if (!deleteOrderShipmentTrackingCancelled) {
-                    deletedOrderShipmentTrackingModel = item
-                    presenter.deleteOrderShipmentTracking(item)
+                    deletedOrderShipmentTrackingModel?.let {
+                        presenter.deleteOrderShipmentTracking(it)
+                    }
                 }
             }
         }
 
         // Display snack bar with undo option here
+        deletedOrderShipmentTrackingModel = item
         deleteOrderShipmentTrackingSnackbar = uiMessageResolver
                 .getUndoSnack(R.string.order_shipment_tracking_delete_snackbar_msg, actionListener = actionListener)
                 .also {
