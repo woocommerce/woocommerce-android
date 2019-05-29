@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_order_note.*
@@ -24,7 +25,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
-class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
+class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         private const val FIELD_ORDER_IDENTIFIER = "order-identifier"
@@ -59,14 +60,11 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
     private lateinit var listener: AddOrderNoteListener
 
     private var isConfirmingDiscard = false
+    private var disConfirmDiscard = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-    }
-
-    private fun setListener(listener: AddOrderNoteListener) {
-        this.listener = listener
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -80,7 +78,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
 
         // TODO supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 
@@ -141,14 +138,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
         val noteText = getNoteText()
 
         return when (item?.itemId) {
-            android.R.id.home -> {
-                if (noteText.isNotEmpty()) {
-                    confirmDiscard()
-                    true
-                } else {
-                    super.onOptionsItemSelected(item)
-                }
-            }
             R.id.menu_add -> {
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
 
@@ -157,10 +146,8 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
                 } else {
                     val isCustomerNote = addNote_switch.isChecked
                     if (noteText.isNotEmpty()) {
-                        listener?.let {
-                            it.onAddOrderNote(noteText, isCustomerNote)
-                            activity?.onBackPressed()
-                        }
+                        listener.onAddOrderNote(noteText, isCustomerNote)
+                        activity?.onBackPressed()
                     }
                 }
                 true
@@ -170,13 +157,25 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState?.putString(FIELD_NOTE_TEXT, getNoteText())
-        outState?.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch.isChecked)
-        outState?.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
+        outState.putString(FIELD_NOTE_TEXT, getNoteText())
+        outState.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch.isChecked)
+        outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         super.onSaveInstanceState(outState)
     }
 
     override fun getNoteText() = addNote_editor.text.toString().trim()
+
+    /**
+     * Provide back press in the main activity if the user entered a note so we can confirm the discard
+     */
+    override fun onRequestBackPress(): Boolean {
+        return if (getNoteText().isNotEmpty() && !disConfirmDiscard) {
+            confirmDiscard()
+            false
+        } else {
+            true
+        }
+    }
 
     override fun confirmDiscard() {
         isConfirmingDiscard = true
@@ -184,6 +183,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
                 .setMessage(R.string.add_order_note_confirm_discard)
                 .setCancelable(true)
                 .setPositiveButton(R.string.discard) { _, _ ->
+                    disConfirmDiscard = true
                     activity?.onBackPressed()
                 }
                 .setNegativeButton(R.string.cancel) { _, _ ->
