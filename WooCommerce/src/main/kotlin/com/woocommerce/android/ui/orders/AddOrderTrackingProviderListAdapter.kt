@@ -57,12 +57,11 @@ class AddOrderTrackingProviderListAdapter(
         removeAllSections()
 
         /**
-         * Add a new section at the top of the list to display custom provider
-         */
-        getCustomProviderSection()?.let { addSection(it) }
-
-        /**
-         * Build a list of [WCOrderShipmentProviderModel] for each country section
+         * Build a list of [WCOrderShipmentProviderModel] for each country section.
+         * Order of provider list should be:
+         * 1. Store country
+         * 2. Custom
+         * 3. Other countries
          * if the country that the store is associated with matches a country on the providers list
          * then that country section should be displayed first
          * */
@@ -74,6 +73,11 @@ class AddOrderTrackingProviderListAdapter(
         countryProvidersMap[storeCountry]?.let { wcOrderShipmentProviderModels ->
             storeCountry?.let { finalMap.put(it, wcOrderShipmentProviderModels) }
         }
+
+        /*
+         * Add a new section below the store country provider list section to display custom provider
+         */
+        getCustomProviderSection()?.let { finalMap.put(it.country, it.list) }
         finalMap.putAll(countryProvidersMap)
 
         finalMap.forEach {
