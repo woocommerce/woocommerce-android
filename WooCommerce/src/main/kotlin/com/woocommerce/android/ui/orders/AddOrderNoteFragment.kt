@@ -2,14 +2,16 @@ package com.woocommerce.android.ui.orders
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
+import android.content.Context
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
@@ -17,12 +19,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EM
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.AnalyticsUtils
-import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_add_order_note.*
+import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_add_order_note.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
-class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
+class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
     companion object {
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
@@ -30,6 +32,17 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
         const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
         const val RESULT_INVALID_ORDER = Activity.RESULT_FIRST_USER
+
+        fun newInstance(orderId: OrderIdentifier, orderNumber: String): AddOrderNoteFragment {
+            val args = Bundle().also {
+                it.putString(FIELD_ORDER_IDENTIFIER, orderId)
+                it.putString(FIELD_ORDER_NUMBER, orderNumber)
+            }
+
+            val fragment = AddOrderNoteFragment()
+            fragment.arguments = args
+            return fragment
+        }
     }
 
     @Inject lateinit var presenter: AddOrderNoteContract.Presenter
@@ -38,32 +51,36 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
 
     private lateinit var orderId: OrderIdentifier
     private lateinit var orderNumber: String
+
     private var isConfirmingDiscard = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_order_note)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_add_order_note, container, false)
+    }
 
-        setSupportActionBar(toolbar as Toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
 
-        if (savedInstanceState == null) {
-            orderId = intent.getStringExtra(FIELD_ORDER_IDENTIFIER) ?: ""
-            orderNumber = intent.getStringExtra(FIELD_ORDER_NUMBER) ?: ""
-        } else {
-            orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER) ?: ""
-            orderNumber = savedInstanceState.getString(FIELD_ORDER_NUMBER) ?: ""
-            addNote_switch.isChecked = savedInstanceState.getBoolean(FIELD_IS_CUSTOMER_NOTE)
-            if (savedInstanceState.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+
+        // TODO supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+
+        orderId = arguments?.getString(FIELD_ORDER_IDENTIFIER) ?: ""
+        orderNumber = arguments?.getString(FIELD_ORDER_NUMBER) ?: ""
+
+        savedInstanceState?.let { state ->
+            addNote_switch.isChecked = state.getBoolean(FIELD_IS_CUSTOMER_NOTE)
+            if (state.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
                 confirmDiscard()
             }
         }
 
         if (orderId.isEmpty() || orderNumber.isEmpty()) {
-            setResult(RESULT_INVALID_ORDER)
-            finish()
+            activity?.onBackPressed()
             return
         }
 
@@ -74,7 +91,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                         mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked)))
 
                 val drawableId = if (isChecked) R.drawable.ic_note_public else R.drawable.ic_note_private
-                addNote_icon.setImageDrawable(ContextCompat.getDrawable(this, drawableId))
+                addNote_icon.setImageDrawable(ContextCompat.getDrawable(activity!!, drawableId))
             }
         } else {
             addNote_switch.visibility = View.GONE
@@ -82,7 +99,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
             addNote_editDivider.visibility = View.GONE
         }
 
-        title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
+        activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
 
         presenter.takeView(this)
     }
@@ -92,30 +109,23 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
         presenter.dropView()
-        super.onDestroy()
+        super.onDestroyView()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_add_note, menu)
-        return true
-    }
-
-    override fun onBackPressed() {
-        AnalyticsTracker.trackBackPressed(this)
-
-        if (getNoteText().isNotEmpty()) {
-            confirmDiscard()
-        } else {
-            super.onBackPressed()
-        }
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_add_note, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                if (getNoteText().isNotEmpty()) {
+                    confirmDiscard()
+                } else {
+                    activity?.onBackPressed()
+                }
                 true
             }
             R.id.menu_add -> {
@@ -124,14 +134,13 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
                 if (!networkStatus.isConnected()) {
                     uiMessageResolver.showOfflineSnack()
                 } else {
+                    val isCustomerNote = addNote_switch.isChecked
                     val noteText = getNoteText()
-                    if (!noteText.isEmpty()) {
-                        val isCustomerNote = addNote_switch.isChecked
-                        val data = Intent()
-                        data.putExtra(FIELD_NOTE_TEXT, noteText)
-                        data.putExtra(FIELD_IS_CUSTOMER_NOTE, isCustomerNote)
-                        setResult(Activity.RESULT_OK, data)
-                        finish()
+                    if (noteText.isNotEmpty()) {
+                        (activity as? AddOrderNoteActionListener)?.let {
+                            it.onAddOrderNote(noteText, isCustomerNote)
+                            activity?.onBackPressed()
+                        }
                     }
                 }
                 true
@@ -140,9 +149,7 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putString(FIELD_ORDER_IDENTIFIER, orderId)
-        outState?.putString(FIELD_ORDER_NUMBER, orderNumber)
+    override fun onSaveInstanceState(outState: Bundle) {
         outState?.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch.isChecked)
         outState?.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         super.onSaveInstanceState(outState)
@@ -152,11 +159,11 @@ class AddOrderNoteActivity : AppCompatActivity(), AddOrderNoteContract.View {
 
     override fun confirmDiscard() {
         isConfirmingDiscard = true
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(activity)
                 .setMessage(R.string.add_order_note_confirm_discard)
                 .setCancelable(true)
                 .setPositiveButton(R.string.discard) { _, _ ->
-                    finish()
+                    activity?.onBackPressed()
                 }
                 .setNegativeButton(R.string.cancel) { _, _ ->
                     isConfirmingDiscard = false

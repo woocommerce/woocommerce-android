@@ -20,8 +20,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
+import com.woocommerce.android.ui.orders.AddOrderNoteFragment.Companion.FIELD_IS_CUSTOMER_NOTE
+import com.woocommerce.android.ui.orders.AddOrderNoteFragment.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
@@ -137,7 +137,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                 orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
                 presenter.pushOrderNote(noteText, isCustomerNote)
                 AppRatingDialog.incrementInteractions()
-            } else if (resultCode == AddOrderNoteActivity.RESULT_INVALID_ORDER) {
+            } else if (resultCode == AddOrderNoteFragment.RESULT_INVALID_ORDER) {
                 uiMessageResolver.showSnack(R.string.add_order_note_invalid_order)
             }
         }
@@ -380,9 +380,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     override fun showAddOrderNoteScreen() {
         presenter.orderModel?.let {
-            val intent = Intent(activity, AddOrderNoteActivity::class.java)
-            intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
-            intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_NUMBER, it.number)
+            val intent = Intent(activity, AddOrderNoteFragment::class.java)
+            intent.putExtra(AddOrderNoteFragment.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
+            intent.putExtra(AddOrderNoteFragment.FIELD_ORDER_NUMBER, it.number)
             startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
         }
     }

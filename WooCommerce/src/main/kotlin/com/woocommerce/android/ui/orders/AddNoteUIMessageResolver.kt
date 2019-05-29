@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import javax.inject.Inject
 
 @ActivityScope
-class AddNoteUIMessageResolver @Inject constructor(val activity: AddOrderNoteActivity) : UIMessageResolver {
+class AddNoteUIMessageResolver @Inject constructor(val activity: AddOrderNoteFragment) : UIMessageResolver {
     override val snackbarRoot: ViewGroup by lazy {
         activity.findViewById(R.id.snack_root) as ViewGroup
     }

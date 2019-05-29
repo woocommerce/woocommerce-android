@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity
+import com.woocommerce.android.ui.orders.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
@@ -59,7 +59,7 @@ abstract class ActivityBindingModule {
 
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(AddOrderNoteModule::class))
-    abstract fun provideAddOrderNoteActivity(): AddOrderNoteActivity
+    abstract fun provideAddOrderNoteActivity(): AddOrderNoteFragment
 
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(HelpModule::class))

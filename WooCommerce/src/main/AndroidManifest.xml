@@ -62,7 +62,7 @@
             android:name=".support.WooLogViewerActivity"/>
 
         <activity
-            android:name=".ui.orders.AddOrderNoteActivity"
+            android:name=".ui.orders.AddOrderNoteFragment"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
 
         <activity

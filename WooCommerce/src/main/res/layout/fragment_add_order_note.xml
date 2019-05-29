@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/default_window_background"
     android:orientation="vertical"
-    tools:context="com.woocommerce.android.ui.orders.AddOrderNoteActivity">
+    tools:context="com.woocommerce.android.ui.orders.AddOrderNoteFragment">
 
     <include
         android:id="@+id/toolbar"
