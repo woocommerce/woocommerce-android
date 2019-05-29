@@ -260,9 +260,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                siteAddress, siteAddress, siteName, siteIconUrl, null, null, true)
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true)
+        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
