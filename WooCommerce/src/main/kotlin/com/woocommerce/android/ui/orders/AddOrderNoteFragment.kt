@@ -121,7 +121,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
         AnalyticsTracker.trackViewShown(this)
 
         activity?.let {
-            it.title = getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
         }
     }
