@@ -485,7 +485,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
         // if undo snackbar is displayed for a deleted item and user clicks on another item to delete,
         // the first snackbar should be dismissed before displaying the second snackbar
-        if(deleteOrderShipmentTrackingSnackbar?.isShownOrQueued == true) {
+        if (deleteOrderShipmentTrackingSnackbar?.isShownOrQueued == true) {
             deleteOrderShipmentTrackingSnackbar?.dismiss()
             deleteOrderShipmentTrackingSnackbar = null
         }
