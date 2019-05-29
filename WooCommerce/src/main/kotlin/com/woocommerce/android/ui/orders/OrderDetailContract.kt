@@ -34,7 +34,7 @@ interface OrderDetailContract {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)
-        fun showAddOrderNoteScreen()
+        fun showAddOrderNoteScreen(order: WCOrderModel)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>)
         fun setOrderStatus(newStatus: String)

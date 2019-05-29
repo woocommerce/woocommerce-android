@@ -7,4 +7,5 @@ interface OrdersViewRouter {
     fun openOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNotificationId: Long? = null)
     fun openOrderFulfillment(order: WCOrderModel)
     fun openOrderProductList(order: WCOrderModel)
+    fun openAddOrderNote(order: WCOrderModel)
 }

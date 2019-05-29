@@ -1,18 +1,15 @@
 package com.woocommerce.android.ui.orders
 
-import com.woocommerce.android.di.ActivityScope
-import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.Binds
 import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
 @Module
 internal abstract class AddOrderNoteModule {
-    @ActivityScope
     @Binds
     abstract fun provideAddOrderNotePresenter(addOrderNotePresenter: AddOrderNotePresenter):
             AddOrderNoteContract.Presenter
 
-    @ActivityScope
-    @Binds
-    abstract fun provideUiMessageResolver(uiMessageResolver: AddNoteUIMessageResolver): UIMessageResolver
+    @ContributesAndroidInjector
+    abstract fun addOrderNoteFragment(): AddOrderNoteFragment
 }

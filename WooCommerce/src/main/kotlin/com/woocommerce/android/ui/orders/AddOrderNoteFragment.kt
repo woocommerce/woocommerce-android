@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
@@ -21,22 +20,23 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_order_note.*
+import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
 class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
     companion object {
-        const val FIELD_ORDER_IDENTIFIER = "order-identifier"
-        const val FIELD_ORDER_NUMBER = "order-number"
-        const val FIELD_NOTE_TEXT = "note_text"
-        const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
-        const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
-        const val RESULT_INVALID_ORDER = Activity.RESULT_FIRST_USER
+        const val TAG = "AddOrderNoteFragment"
+        private const val FIELD_ORDER_IDENTIFIER = "order-identifier"
+        private const val FIELD_ORDER_NUMBER = "order-number"
+        private const val FIELD_NOTE_TEXT = "note_text"
+        private const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
+        private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
 
-        fun newInstance(orderId: OrderIdentifier, orderNumber: String): AddOrderNoteFragment {
+        fun newInstance(order: WCOrderModel): AddOrderNoteFragment {
             val args = Bundle().also {
-                it.putString(FIELD_ORDER_IDENTIFIER, orderId)
-                it.putString(FIELD_ORDER_NUMBER, orderNumber)
+                it.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
+                it.putString(FIELD_ORDER_NUMBER, order.number)
             }
 
             val fragment = AddOrderNoteFragment()
@@ -53,6 +53,11 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
     private lateinit var orderNumber: String
 
     private var isConfirmingDiscard = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add_order_note, container, false)
@@ -76,6 +81,9 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
             addNote_switch.isChecked = state.getBoolean(FIELD_IS_CUSTOMER_NOTE)
             if (state.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
                 confirmDiscard()
+            }
+            state.getString(FIELD_NOTE_TEXT)?.let {
+                addNote_editor.setText(it)
             }
         }
 
@@ -116,17 +124,20 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_add_note, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item!!.itemId) {
+        val noteText = getNoteText()
+
+        return when (item?.itemId) {
             android.R.id.home -> {
-                if (getNoteText().isNotEmpty()) {
+                if (noteText.isNotEmpty()) {
                     confirmDiscard()
+                    true
                 } else {
-                    activity?.onBackPressed()
+                    super.onOptionsItemSelected(item)
                 }
-                true
             }
             R.id.menu_add -> {
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
@@ -135,7 +146,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
                     uiMessageResolver.showOfflineSnack()
                 } else {
                     val isCustomerNote = addNote_switch.isChecked
-                    val noteText = getNoteText()
                     if (noteText.isNotEmpty()) {
                         (activity as? AddOrderNoteActionListener)?.let {
                             it.onAddOrderNote(noteText, isCustomerNote)
@@ -150,6 +160,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        outState?.putString(FIELD_NOTE_TEXT, getNoteText())
         outState?.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch.isChecked)
         outState?.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         super.onSaveInstanceState(outState)
