@@ -52,7 +52,7 @@ object CrashUtils : CrashLoggingDataProvider {
         this.currentSite = null
     }
 
-    override fun context(): MutableMap<String, Any> {
+    override fun applicationContext(): MutableMap<String, Any> {
         val siteID = this.currentSite?.siteId ?: 0
         val siteURL = this.currentSite?.url ?: ""
 
@@ -60,6 +60,10 @@ object CrashUtils : CrashLoggingDataProvider {
                 SITE_ID_KEY to siteID,
                 SITE_URL_KEY to siteURL
         )
+    }
+
+    override fun userContext(): MutableMap<String, Any> {
+        return mutableMapOf()
     }
 
     fun logException(tr: Throwable, tag: T? = null, message: String? = null) {
@@ -87,10 +91,6 @@ object CrashUtils : CrashLoggingDataProvider {
         return !AppPrefs.isCrashReportingEnabled()
     }
 
-    override fun setUserHasOptedOut(userHasOptedOut: Boolean) {
-        AppPrefs.setCrashReportingEnabled(!userHasOptedOut)
-    }
-
     override fun buildType(): String {
         return BuildConfig.BUILD_TYPE
     }
@@ -112,18 +112,14 @@ object CrashUtils : CrashLoggingDataProvider {
     }
 
     private fun localeForContext(context: Context): Locale? {
+
+        val resources = context.resources
+
         return if (VERSION.SDK_INT >= VERSION_CODES.N) {
-            context
-                    ?.resources
-                    ?.configuration
-                    ?.locales
-                    ?.get(0)
+            resources?.configuration?.locales?.get(0)
         } else {
             @Suppress("DEPRECATION")
-            context
-                    ?.resources
-                    ?.configuration
-                    ?.locale
+            resources?.configuration?.locale
         }
     }
 }
