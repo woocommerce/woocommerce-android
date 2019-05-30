@@ -25,13 +25,11 @@ object CrashUtils : CrashLoggingDataProvider {
     private var currentSite: SiteModel? = null
     private var isInitialized = false
 
-    fun initCrashLogging(context: Context, account: AccountModel?, site: SiteModel?) {
+    fun initCrashLogging(context: Context) {
         if (this.isInitialized) {
             return
         }
 
-        this.currentAccount = account
-        this.currentSite = site
         this.locale = localeForContext(context)
 
         CrashLogging.start(context, this)

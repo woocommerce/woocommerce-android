@@ -106,10 +106,11 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             VolleyLog.DEBUG = false
         }
 
-        // We init Crashlytics further down using the selected site and account, but we also want to init it here
+        // We init Crash Logging further down using the selected site and account, but we also want to init it here
         // to catch crashes that may occur before we can access the site and account (most notably crashes with
-        // initializing WellSql). In order to do this, we must first init AppPrefs since Crashlytics uses it.
+        // initializing WellSql). In order to do this, we must first init AppPrefs since Crash Logging uses it.
         AppPrefs.init(this)
+        CrashUtils.initCrashLogging(this)
 
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
@@ -126,8 +127,6 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         } else {
             null
         }
-
-        CrashUtils.initCrashLogging(this, accountStore.account, site)
 
         notificationHandler.createNotificationChannels(this)
 
