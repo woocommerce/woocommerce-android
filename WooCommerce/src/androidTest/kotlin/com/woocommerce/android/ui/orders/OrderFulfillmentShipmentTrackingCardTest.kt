@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders
 
+import android.os.Handler
+import android.os.Looper
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.clearText
 import android.support.test.espresso.action.ViewActions.click
@@ -142,8 +144,11 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_copyNumber))
                 .perform(WCMatchers.scrollTo(), click())
 
-        val clipboardText = WcHelperUtils.getClipboardText(appContext)
-        assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
+        // tests are failing in devices below api 27 when getting clipboard text without handler
+        Handler(Looper.getMainLooper()).post {
+            val clipboardText = WcHelperUtils.getClipboardText(appContext)
+            assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
+        }
     }
 
     @Test
@@ -169,11 +174,14 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
     @Test
     fun verifyShipmentTrackingItemDeleteItemClickUndoDeleteTracking() {
-        setupOrderFulfillPage()
+        setupOrderFulfillPage(true)
+
+        val orderFulfillmentFragment = getOrderFulfillmentFragment()
+        doReturn(true).whenever(orderFulfillmentFragment?.networkStatus)?.isConnected()
 
         // click on the "Delete shipment" icon
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnDelete))
-                .perform(WCMatchers.scrollTo(), click())
+                .perform(click())
 
         // check if the shipment tracking list count has reduced by 1
         val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView

@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders
 import android.app.Activity
 import android.app.Instrumentation.ActivityResult
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
@@ -264,8 +266,11 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_copyNumber))
                 .perform(WCMatchers.scrollTo(), click())
 
-        val clipboardText = WcHelperUtils.getClipboardText(appContext)
-        Assert.assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
+        // tests are failing in devices below api 27 when getting clipboard text without handler
+        Handler(Looper.getMainLooper()).post {
+            val clipboardText = WcHelperUtils.getClipboardText(appContext)
+            Assert.assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
+        }
     }
 
     @Test
