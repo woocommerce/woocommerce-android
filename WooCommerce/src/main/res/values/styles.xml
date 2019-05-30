@@ -513,4 +513,11 @@
         <item name="android:textSize">@dimen/list_item_text_size</item>
     </style>
 
+    <!--
+        Delete Shipment Tracking
+    -->
+    <style name="Woo.Delete.Button" parent="android:style/Widget.ActionButton">
+        <item name="android:src">@drawable/delete_button_bg</item>
+    </style>
+
 </resources>

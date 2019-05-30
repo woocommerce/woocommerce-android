@@ -10,6 +10,7 @@ interface OrderFulfillmentContract {
     interface Presenter : BasePresenter<View> {
         var orderModel: WCOrderModel?
         var isShipmentTrackingsFetched: Boolean
+        var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, isShipmentTrackingsFetched: Boolean = false)
         fun loadOrderShipmentTrackings()
         fun pushShipmentTrackingProvider(
@@ -19,6 +20,7 @@ interface OrderFulfillmentContract {
         fun loadShipmentTrackingsFromDb()
         fun requestShipmentTrackingsFromApi(order: WCOrderModel)
         fun markOrderComplete()
+        fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
     }
 
     interface View : BaseView<Presenter>, OrderProductActionListener, OrderShipmentTrackingActionListener {
@@ -28,5 +30,8 @@ interface OrderFulfillmentContract {
         fun showAddAddShipmentTrackingErrorSnack()
         fun toggleCompleteButton(isEnabled: Boolean)
         fun fulfillOrder()
+        fun undoDeletedTrackingOnError(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?)
+        fun markTrackingDeletedOnSuccess()
+        fun showDeleteTrackingErrorSnack()
     }
 }

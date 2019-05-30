@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
@@ -89,6 +90,14 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     private var orderStatusSelector: OrderStatusSelectorDialog? = null
 
+    /**
+     * Keep track of the deleted [WCOrderShipmentTrackingModel] in case
+     * the request to server fails, we need to display an error message
+     * and add the deleted [WCOrderShipmentTrackingModel] back to the list
+     */
+    private var deleteOrderShipmentTrackingSnackbar: Snackbar? = null
+    private var deleteOrderShipmentTrackingSet = mutableSetOf<WCOrderShipmentTrackingModel>()
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -164,6 +173,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun onStop() {
         changeOrderStatusSnackbar?.dismiss()
         notesSnack?.dismiss()
+        deleteOrderShipmentTrackingSnackbar?.dismiss()
         super.onStop()
     }
 
@@ -219,7 +229,11 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
         if (trackings.isNotEmpty()) {
-            orderDetail_shipmentList.initView(trackings, uiMessageResolver)
+            orderDetail_shipmentList.initView(
+                    trackings = trackings,
+                    uiMessageResolver = uiMessageResolver,
+                    shipmentTrackingActionListener = this
+            )
             if (orderDetail_shipmentList.visibility != View.VISIBLE) {
                 WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
             }
@@ -426,10 +440,91 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         previousOrderStatus = null
     }
 
+    /**
+     * This method error could be because of network error
+     * or a failure to delete the shipment tracking from server api.
+     * In both cases, add the deleted item back to the shipment tracking list
+     */
+    override fun undoDeletedTrackingOnError(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?) {
+        wcOrderShipmentTrackingModel?.let {
+            orderDetail_shipmentList.undoDeleteTrackingRecord(it)
+            orderDetail_shipmentList.visibility = View.VISIBLE
+        }
+    }
+
+    override fun showDeleteTrackingErrorSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_error).show()
+    }
+
+    override fun markTrackingDeletedOnSuccess() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_success).show()
+    }
+
     override fun onOrderStatusSelected(orderStatus: String?) {
         orderStatus?.let {
             showChangeOrderStatusSnackbar(it)
         }
+    }
+
+    override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {
+        AnalyticsTracker.track(ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED)
+        /*
+         * Check if network is available. If not display offline snack
+         * remove the shipment tracking model from the tracking list.
+         * If there are no more items on the list, hide the shipment tracking card
+         * display snackbar message with undo option
+         * if undo option is selected, add the tracking model to the list
+         * if snackbar is dismissed or times out, initiate request to delete the tracking
+        */
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        // if undo snackbar is displayed for a deleted item and user clicks on another item to delete,
+        // the first snackbar should be dismissed before displaying the second snackbar
+        if (deleteOrderShipmentTrackingSnackbar?.isShownOrQueued == true) {
+            deleteOrderShipmentTrackingSnackbar?.dismiss()
+            deleteOrderShipmentTrackingSnackbar = null
+        }
+
+        deleteOrderShipmentTrackingSet.add(item)
+        orderDetail_shipmentList.deleteTrackingProvider(item)
+        orderDetail_shipmentList.getShipmentTrackingCount()?.let {
+            if (it == 0) {
+                orderDetail_shipmentList.visibility = View.GONE
+            }
+        }
+
+        // Listener for the UNDO button in the snackbar
+        val actionListener = View.OnClickListener {
+            // User canceled the action to delete the shipment tracking
+            deleteOrderShipmentTrackingSet.remove(item)
+            orderDetail_shipmentList.undoDeleteTrackingRecord(item)
+            orderDetail_shipmentList.visibility = View.VISIBLE
+        }
+
+        val callback = object : Snackbar.Callback() {
+            // The onDismiss in snack bar is called multiple times.
+            // In order to avoid requesting delete multiple times, we are
+            // storing the deleted items in a set and removing them from the set
+            // if they are dismissed or if the request to delete the item is already initiated
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (deleteOrderShipmentTrackingSet.contains(item)) {
+                    presenter.deleteOrderShipmentTracking(item)
+                    deleteOrderShipmentTrackingSet.remove(item)
+                }
+            }
+        }
+
+        // Display snack bar with undo option here
+        deleteOrderShipmentTrackingSnackbar = uiMessageResolver
+                .getUndoSnack(R.string.order_shipment_tracking_delete_snackbar_msg, actionListener = actionListener)
+                .also {
+                    it.addCallback(callback)
+                    it.show()
+                }
     }
 
     private fun showOrderStatusSelector() {

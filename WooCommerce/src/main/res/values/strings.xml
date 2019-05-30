@@ -193,6 +193,8 @@
     <string name="orderdetail_add_note">Add a note</string>
     <string name="orderdetail_addnote_contentdesc">Add an order note</string>
     <string name="orderdetail_change_order_status">Click to change order status</string>
+    <string name="orderdetail_track_shipment">Track shipment</string>
+    <string name="orderdetail_delete_tracking">Delete tracking</string>
     <string name="order_fulfill_order">Fulfill Order</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -204,11 +206,15 @@
     <string name="order_shipment_tracking_number">Tracking Number</string>
     <string name="order_shipment_tracking_number_clipboard">Tracking number copied to the clipboard</string>
     <string name="order_shipment_tracking_button">Track package</string>
+    <string name="order_detail_shipment_tracking_button_contentdesc">Track or delete shipment tracking</string>
     <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copy tracking number to clipboard</string>
     <string name="order_shipment_tracking_shipped_date">Shipped %s</string>
     <string name="order_shipment_tracking_add_label">Optional tracking information</string>
     <string name="order_shipment_tracking_add_button">Add tracking</string>
+    <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
+    <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
+    <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
     <!--
         Add Order Note
     -->

@@ -6,6 +6,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -22,6 +24,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
@@ -29,6 +32,7 @@ import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -38,6 +42,7 @@ import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
@@ -66,6 +71,7 @@ class OrderDetailPresenter @Inject constructor(
     override var orderIdentifier: OrderIdentifier? = null
     override var isUsingCachedNotes = false
     override var isUsingCachedShipmentTrackings = false
+    override var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel? = null
 
     /**
      * Adding another flag here to check if shipment trackings have been fetched from api.
@@ -256,6 +262,27 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
+    override fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+        this.deletedOrderShipmentTrackingModel = wcOrderShipmentTrackingModel
+        if (!networkStatus.isConnected()) {
+            // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
+            // just in case...
+            uiMessageResolver.showOfflineSnack()
+            // re-add the deleted tracking item back to the shipment tracking list
+            orderView?.undoDeletedTrackingOnError(deletedOrderShipmentTrackingModel)
+            deletedOrderShipmentTrackingModel = null
+            return
+        }
+
+        orderModel?.let { order ->
+            AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE, mapOf(
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_DETAIL
+            ))
+            val payload = DeleteOrderShipmentTrackingPayload(selectedSite.get(), order, wcOrderShipmentTrackingModel)
+            dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
+        }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -341,6 +368,17 @@ class OrderDetailPresenter @Inject constructor(
             // note that we refresh even on error to make sure the transient note is removed
             // from the note list
             fetchAndLoadOrderNotesFromDb()
+        } else if (event.causeOfChange == DELETE_ORDER_SHIPMENT_TRACKING) {
+            if (event.isError) {
+                AnalyticsTracker.track(ORDER_TRACKING_DELETE_FAILED)
+                WooLog.e(T.ORDERS, "$TAG - Error deleting order shipment tracking : ${event.error.message}")
+                orderView?.showDeleteTrackingErrorSnack()
+                orderView?.undoDeletedTrackingOnError(deletedOrderShipmentTrackingModel)
+                deletedOrderShipmentTrackingModel = null
+            } else {
+                AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
+                orderView?.markTrackingDeletedOnSuccess()
+            }
         }
     }
 
