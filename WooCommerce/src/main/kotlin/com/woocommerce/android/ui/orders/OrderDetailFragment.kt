@@ -467,6 +467,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {
+        AnalyticsTracker.track(ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED)
         /*
          * Check if network is available. If not display offline snack
          * remove the shipment tracking model from the tracking list.
@@ -487,7 +488,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             deleteOrderShipmentTrackingSnackbar = null
         }
 
-        AnalyticsTracker.track(ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED)
         deleteOrderShipmentTrackingSet.add(item)
         orderDetail_shipmentList.deleteTrackingProvider(item)
         orderDetail_shipmentList.getShipmentTrackingCount()?.let {
