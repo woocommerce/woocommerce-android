@@ -106,7 +106,6 @@ object CrashUtils : CrashLoggingDataProvider {
     }
 
     private fun localeForContext(context: Context): Locale? {
-
         val resources = context.resources
 
         return if (VERSION.SDK_INT >= VERSION_CODES.N) {
