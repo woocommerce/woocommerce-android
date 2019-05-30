@@ -94,7 +94,7 @@ abstract class MockedOrderDetailModule {
             doReturn(orderShipmentTrackings).whenever(mockedOrderDetailPresenter)
                     .fetchOrderShipmentTrackingsFromDb(any())
             orderShipmentTrackings?.let {
-                if(it.isNotEmpty()) {
+                if (it.isNotEmpty()) {
                     doReturn(it[0]).whenever(mockedOrderDetailPresenter).deletedOrderShipmentTrackingModel
                 }
             }
