@@ -163,11 +163,11 @@
         android:layout_below="@+id/settingsView"
         android:layout_centerHorizontal="true"
         android:text="@string/settings_signout"
-        android:paddingTop="@dimen/settings_logout_button_padding_top"
-        android:paddingBottom="@dimen/settings_logout_button_padding_bottom"
-        android:paddingStart="@dimen/settings_logout_button_padding_start"
-        android:paddingEnd="@dimen/settings_logout_button_padding_start"
-        android:layout_marginTop="@dimen/settings_logout_button_margin_top"/>
+        android:paddingTop="@dimen/settings_logout_button_vert"
+        android:paddingBottom="@dimen/settings_logout_button_vert"
+        android:paddingStart="@dimen/settings_logout_button_horz"
+        android:paddingEnd="@dimen/settings_logout_button_horz"
+        android:layout_marginTop="32dp"/>
 
     <ImageView
         android:id="@+id/imageHeart"
