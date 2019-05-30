@@ -93,6 +93,11 @@ abstract class MockedOrderDetailModule {
             doReturn(orderNotes).whenever(mockedOrderDetailPresenter).fetchOrderNotesFromDb(any())
             doReturn(orderShipmentTrackings).whenever(mockedOrderDetailPresenter)
                     .fetchOrderShipmentTrackingsFromDb(any())
+            orderShipmentTrackings?.let {
+                if(it.isNotEmpty()) {
+                    doReturn(it[0]).whenever(mockedOrderDetailPresenter).deletedOrderShipmentTrackingModel
+                }
+            }
 
             return mockedOrderDetailPresenter
         }
