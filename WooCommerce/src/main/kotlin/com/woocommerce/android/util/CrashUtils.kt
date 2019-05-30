@@ -41,15 +41,19 @@ object CrashUtils : CrashLoggingDataProvider {
 
     fun setCurrentAccount(account: AccountModel?) {
         this.currentAccount = account
+        CrashLogging.setNeedsDataRefresh()
     }
 
     fun setCurrentSite(site: SiteModel?) {
         this.currentSite = site
+        CrashLogging.setNeedsDataRefresh()
     }
 
     fun resetAccountAndSite() {
         this.currentAccount = null
         this.currentSite = null
+
+        CrashLogging.setNeedsDataRefresh()
     }
 
     override fun applicationContext(): MutableMap<String, Any> {
