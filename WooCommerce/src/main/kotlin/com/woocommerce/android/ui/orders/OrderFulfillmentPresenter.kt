@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
@@ -48,6 +49,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     override var orderModel: WCOrderModel? = null
     private var orderView: OrderFulfillmentContract.View? = null
     override var isShipmentTrackingsFetched = false
+    override var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel? = null
 
     override fun takeView(view: View) {
         orderView = view
@@ -167,16 +169,22 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     override fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
+        this.deletedOrderShipmentTrackingModel = wcOrderShipmentTrackingModel
         if (!networkStatus.isConnected()) {
             // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
             // just in case...
             uiMessageResolver.showOfflineSnack()
             // re-add the deleted tracking item back to the shipment tracking list
-            orderView?.reAddDeletedTrackingOnError()
+            orderView?.undoDeletedTrackingOnError(deletedOrderShipmentTrackingModel)
+            deletedOrderShipmentTrackingModel = null
             return
         }
 
         orderModel?.let { order ->
+            AnalyticsTracker.track(
+                    Stat.ORDER_TRACKING_DELETE, mapOf(
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_FULFILL
+            ))
             val payload = DeleteOrderShipmentTrackingPayload(selectedSite.get(), order, wcOrderShipmentTrackingModel)
             dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
         }
@@ -216,7 +224,8 @@ class OrderFulfillmentPresenter @Inject constructor(
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_FAILED)
                 WooLog.e(T.ORDERS, "$TAG - Error deleting order shipment tracking : ${event.error.message}")
                 orderView?.showDeleteTrackingErrorSnack()
-                orderView?.reAddDeletedTrackingOnError()
+                orderView?.undoDeletedTrackingOnError(deletedOrderShipmentTrackingModel)
+                deletedOrderShipmentTrackingModel = null
             } else {
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()

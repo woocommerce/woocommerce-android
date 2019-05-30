@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -188,6 +189,8 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                     uiMessageResolver.showOfflineSnack()
                 } else {
                     AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED)
+                    AppRatingDialog.incrementInteractions()
+
                     val providerText = getProviderText()
                     val trackingNumText = addTracking_number.text.toString()
                     val customProviderTrackingUrl = addTracking_custom_provider_url.text.toString()

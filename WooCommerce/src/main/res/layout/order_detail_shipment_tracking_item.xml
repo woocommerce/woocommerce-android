@@ -50,9 +50,9 @@
     <ImageButton
         android:id="@+id/tracking_btnTrack"
         style="@android:style/Widget.ActionButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:contentDescription="@string/order_shipment_tracking_button"
+        android:layout_width="@dimen/card_level_button_width"
+        android:layout_height="@dimen/card_level_button_height"
+        android:contentDescription="@string/order_detail_shipment_tracking_button_contentdesc"
         android:scaleType="center"
         android:src="@drawable/ic_menu_more_vert_compat"
         android:visibility="gone"
@@ -63,17 +63,16 @@
 
     <ImageButton
         android:id="@+id/tracking_btnDelete"
-        style="@android:style/Widget.ActionButton"
-        android:layout_width="@dimen/shipment_tracking_delete_button_width"
-        android:layout_height="@dimen/shipment_tracking_delete_button_width"
-        android:background="@drawable/ic_btn_circle"
+        style="@style/Woo.Delete.Button"
+        android:layout_width="@dimen/card_level_button_width"
+        android:layout_height="@dimen/card_level_button_height"
+        android:padding="@dimen/card_level_button_padding"
         android:contentDescription="@string/orderdetail_delete_tracking"
-        android:scaleType="center"
-        android:src="@drawable/ic_close"
-        android:visibility="gone"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </android.support.constraint.ConstraintLayout>

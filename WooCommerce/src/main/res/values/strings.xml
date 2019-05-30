@@ -206,6 +206,7 @@
     <string name="order_shipment_tracking_number">Tracking Number</string>
     <string name="order_shipment_tracking_number_clipboard">Tracking number copied to the clipboard</string>
     <string name="order_shipment_tracking_button">Track package</string>
+    <string name="order_detail_shipment_tracking_button_contentdesc">Track or delete shipment tracking</string>
     <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copy tracking number to clipboard</string>
     <string name="order_shipment_tracking_shipped_date">Shipped %s</string>
