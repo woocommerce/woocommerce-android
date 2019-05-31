@@ -266,7 +266,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
 
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(presenter, times(1)).fetchAndLoadShipmentTrackingsFromDb()
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
         verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
     }
 
@@ -277,7 +277,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
 
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(presenter, times(1)).fetchAndLoadShipmentTrackingsFromDb()
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
         verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
     }
 

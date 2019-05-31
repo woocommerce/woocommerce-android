@@ -71,7 +71,7 @@ abstract class MockedOrderFulfillmentModule {
             doReturn(true).whenever(mockedOrderFulfillmentPresenter).isShipmentTrackingsFetched
             doReturn(order).whenever(mockedOrderFulfillmentPresenter).loadOrderDetailFromDb(any())
             doReturn(orderShipmentTrackings).whenever(mockedOrderFulfillmentPresenter)
-                    .requestShipmentTrackingsFromDb(any())
+                    .getShipmentTrackingsFromDb(any())
             orderShipmentTrackings?.let {
                 if (it.isNotEmpty()) {
                     doReturn(it[0]).whenever(mockedOrderFulfillmentPresenter).deletedOrderShipmentTrackingModel

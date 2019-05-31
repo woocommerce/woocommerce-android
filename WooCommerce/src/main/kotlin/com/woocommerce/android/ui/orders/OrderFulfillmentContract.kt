@@ -19,8 +19,8 @@ interface OrderFulfillmentContract {
             isCustomProvider: Boolean
         )
         fun loadShipmentTrackingsFromDb()
-        fun requestShipmentTrackingsFromApi(order: WCOrderModel)
-        fun requestShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel>
+        fun fetchShipmentTrackingsFromApi(order: WCOrderModel)
+        fun getShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel>
         fun markOrderComplete()
         fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
     }

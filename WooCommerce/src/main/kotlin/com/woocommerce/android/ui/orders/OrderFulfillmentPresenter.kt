@@ -78,9 +78,8 @@ class OrderFulfillmentPresenter @Inject constructor(
      * Loading order detail from local database.
      * Segregating methods that request data from db for better ui testing
      */
-    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? {
-        return orderStore.getOrderByIdentifier(orderIdentifier)
-    }
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? =
+            orderStore.getOrderByIdentifier(orderIdentifier)
 
     /**
      * Since order shipment tracking list is already requested in [OrderDetailFragment]
@@ -95,7 +94,7 @@ class OrderFulfillmentPresenter @Inject constructor(
                 loadShipmentTrackingsFromDb()
             } else {
                 if (networkStatus.isConnected()) {
-                    requestShipmentTrackingsFromApi(order)
+                    fetchShipmentTrackingsFromApi(order)
                 } else {
                     loadShipmentTrackingsFromDb()
                 }
@@ -103,7 +102,7 @@ class OrderFulfillmentPresenter @Inject constructor(
         }
     }
 
-    override fun requestShipmentTrackingsFromApi(order: WCOrderModel) {
+    override fun fetchShipmentTrackingsFromApi(order: WCOrderModel) {
         val payload = FetchOrderShipmentTrackingsPayload(selectedSite.get(), order)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
     }
@@ -111,13 +110,11 @@ class OrderFulfillmentPresenter @Inject constructor(
     /**
      * Segregating methods that request data from db for better ui testing
      */
-    override fun requestShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel> {
-        return orderStore.getShipmentTrackingsForOrder(order)
-    }
+    override fun getShipmentTrackingsFromDb(order: WCOrderModel) = orderStore.getShipmentTrackingsForOrder(order)
 
     override fun loadShipmentTrackingsFromDb() {
         orderModel?.let { order ->
-            val trackings = requestShipmentTrackingsFromDb(order)
+            val trackings = getShipmentTrackingsFromDb(order)
             orderView?.showOrderShipmentTrackings(trackings)
         }
     }
@@ -240,7 +237,7 @@ class OrderFulfillmentPresenter @Inject constructor(
             // Refresh order notes now that a connection is active is needed
             orderModel?.let { order ->
                 if (!isShipmentTrackingsFetched) {
-                    requestShipmentTrackingsFromApi(order)
+                    fetchShipmentTrackingsFromApi(order)
                 }
             }
         }

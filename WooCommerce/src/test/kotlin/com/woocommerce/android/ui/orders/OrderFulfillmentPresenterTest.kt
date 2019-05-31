@@ -91,7 +91,7 @@ class OrderFulfillmentPresenterTest {
 
         // fetch order shipment trackings
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
-        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+        verify(presenter, times(0)).fetchShipmentTrackingsFromApi(any())
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
 
         // verify that shipment tracking card is displayed
@@ -112,7 +112,7 @@ class OrderFulfillmentPresenterTest {
         // fetch order shipment trackings
         assertFalse(presenter.isShipmentTrackingsFetched)
         verify(presenter, times(0)).loadShipmentTrackingsFromDb()
-        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+        verify(presenter, times(1)).fetchShipmentTrackingsFromApi(any())
         verify(dispatcher, times(1)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
@@ -139,7 +139,7 @@ class OrderFulfillmentPresenterTest {
         // fetch order shipment trackings
         assertFalse(presenter.isShipmentTrackingsFetched)
         verify(presenter, times(0)).loadShipmentTrackingsFromDb()
-        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+        verify(presenter, times(1)).fetchShipmentTrackingsFromApi(any())
         verify(dispatcher, times(1)).dispatch(any<Action<*>>())
 
         // OnOrderChanged callback from FluxC with error should trigger error message
@@ -161,7 +161,7 @@ class OrderFulfillmentPresenterTest {
 
         presenter.loadOrderDetail(order.getIdentifier(), true)
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
-        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+        verify(presenter, times(0)).fetchShipmentTrackingsFromApi(any())
     }
 
     @Test
@@ -171,7 +171,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
 
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+        verify(presenter, times(1)).fetchShipmentTrackingsFromApi(any())
     }
 
     @Test
@@ -181,7 +181,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
 
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+        verify(presenter, times(0)).fetchShipmentTrackingsFromApi(any())
     }
 
     @Test

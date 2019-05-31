@@ -107,9 +107,8 @@ class OrderDetailPresenter @Inject constructor(
     /**
      * Loading order detail from local database
      */
-    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? {
-        return orderStore.getOrderByIdentifier(orderIdentifier)
-    }
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? =
+            orderStore.getOrderByIdentifier(orderIdentifier)
 
     /**
      * displaying the loaded order detail data in UI
@@ -171,7 +170,7 @@ class OrderDetailPresenter @Inject constructor(
     override fun loadOrderShipmentTrackings() {
         orderModel?.let { order ->
             // Preload trackings from the db is available
-            fetchAndLoadShipmentTrackingsFromDb()
+            loadShipmentTrackingsFromDb()
 
             if (networkStatus.isConnected()) {
                 // Attempt to refresh trackings from api in the background
@@ -188,16 +187,16 @@ class OrderDetailPresenter @Inject constructor(
      * Segregating the fetching from db and displaying to UI into two separate methods
      * for better ui testing
      */
-    override fun fetchOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel> {
+    override fun getOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel> {
         return orderStore.getShipmentTrackingsForOrder(order)
     }
 
     /**
      * Fetch and display the order shipment trackings from the device database
      */
-    override fun fetchAndLoadShipmentTrackingsFromDb() {
+    override fun loadShipmentTrackingsFromDb() {
         orderModel?.let { order ->
-            val trackings = fetchOrderShipmentTrackingsFromDb(order)
+            val trackings = getOrderShipmentTrackingsFromDb(order)
             orderView?.showOrderShipmentTrackings(trackings)
         }
     }
@@ -378,7 +377,7 @@ class OrderDetailPresenter @Inject constructor(
 
                     isUsingCachedShipmentTrackings = false
                     isShipmentTrackingsFetched = true
-                    fetchAndLoadShipmentTrackingsFromDb()
+                    loadShipmentTrackingsFromDb()
                 }
             }
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
@@ -448,7 +447,7 @@ class OrderDetailPresenter @Inject constructor(
 
             // note that we refresh even on error to make sure the transient tracking provider is removed
             // from the tracking list
-            fetchAndLoadShipmentTrackingsFromDb()
+            loadShipmentTrackingsFromDb()
         }
     }
 
