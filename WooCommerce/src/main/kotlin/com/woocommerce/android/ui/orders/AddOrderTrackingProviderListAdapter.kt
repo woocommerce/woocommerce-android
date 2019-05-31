@@ -53,14 +53,15 @@ class AddOrderTrackingProviderListAdapter(
     }
 
     /**
-     * returns the total section item count give the
-     * @param title
+     * returns the total item count in a given section
+     * @param title = the title of the section
      */
     fun getSectionItemsTotal(title: String): Int {
         for (entry in sectionsMap) {
-            val section = entry.value as? ProviderListSection
-            if (title == section?.country) {
-                return section.list.size
+            (entry.value as? ProviderListSection)?.let {
+                if (title == it.country) {
+                    return it.list.size
+                }
             }
         }
         return 0
