@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.google.gson.Gson
-import com.woocommerce.android.helpers.WcDateTimeTestUtils
+import com.woocommerce.android.helpers.WCDateTimeTestUtils
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -52,7 +52,7 @@ object WcOrderTestUtils {
             // Currency : USD
             currency = "USD"
             // today
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTime())
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTime())
             localSiteId = 1
             number = "1"
             // Processing
@@ -67,7 +67,7 @@ object WcOrderTestUtils {
             // Currency : CAD
             currency = "CAD"
             // Yesterday
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(1))
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(1))
             localSiteId = 1
             number = "63"
             // Pending payment
@@ -81,7 +81,7 @@ object WcOrderTestUtils {
             // Currency : EURO
             currency = "EUR"
             // 2 days ago
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(3))
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(3))
             localSiteId = 1
             number = "14"
             // On Hold
@@ -95,7 +95,7 @@ object WcOrderTestUtils {
             // Currency : INR
             currency = "INR"
             // More than a week
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(14))
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(14))
             localSiteId = 1
             number = "15"
             // Completed
@@ -108,7 +108,7 @@ object WcOrderTestUtils {
             billingLastName = "Jones"
             currency = "AUD"
             // Older than a month
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusMonths(2))
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusMonths(2))
             localSiteId = 1
             number = "3"
             // Cancelled

@@ -31,7 +31,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.helpers.WCMatchers.withRecyclerView
-import com.woocommerce.android.helpers.WcHelperUtils
+import com.woocommerce.android.helpers.WCHelperUtils
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.util.DateUtils
@@ -127,7 +127,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         Assert.assertSame(mockShipmentTrackingList.size, recyclerView.adapter?.itemCount)
 
         // verify that the Add tracking button is not visible
-        onView(withId(R.id.shipmentTrack_btnAddTracking)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
 
         // verify that the shipment tracking title is displayed correctly
         onView(withId(R.id.shipmentTrack_label)).check(matches(
@@ -268,7 +268,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // tests are failing in devices below api 27 when getting clipboard text without handler
         Handler(Looper.getMainLooper()).post {
-            val clipboardText = WcHelperUtils.getClipboardText(appContext)
+            val clipboardText = WCHelperUtils.getClipboardText(appContext)
             Assert.assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
         }
     }

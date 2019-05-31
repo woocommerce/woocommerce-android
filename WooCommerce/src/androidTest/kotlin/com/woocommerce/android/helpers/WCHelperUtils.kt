@@ -7,7 +7,7 @@ import android.content.Context.CLIPBOARD_SERVICE
 /**
  * Utils class for helper methods
  */
-object WcHelperUtils {
+object WCHelperUtils {
     /**
      * Method to get the Clipboard text
      */

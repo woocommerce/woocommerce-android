@@ -28,7 +28,7 @@ import com.woocommerce.android.R.id
 import com.woocommerce.android.R.string
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.helpers.WCMatchers.withRecyclerView
-import com.woocommerce.android.helpers.WcHelperUtils
+import com.woocommerce.android.helpers.WCHelperUtils
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.util.DateUtils
@@ -146,7 +146,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
         // tests are failing in devices below api 27 when getting clipboard text without handler
         Handler(Looper.getMainLooper()).post {
-            val clipboardText = WcHelperUtils.getClipboardText(appContext)
+            val clipboardText = WCHelperUtils.getClipboardText(appContext)
             assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
         }
     }
@@ -343,7 +343,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
         doAnswer {
             (orderFulfillmentFragment?.presenter as? OrderFulfillmentPresenter)
                     ?.onOrderChanged(onOrderChangedErrorResponse)
-        }. whenever(orderFulfillmentFragment?.presenter)?.pushShipmentTrackingProvider(any(), anyBoolean())
+        }. whenever(orderFulfillmentFragment?.presenter)?.pushShipmentTrackingRecord(any(), anyBoolean())
 
         // click on "Add tracking" button
         onView(withId(R.id.menu_add)).perform(click())
