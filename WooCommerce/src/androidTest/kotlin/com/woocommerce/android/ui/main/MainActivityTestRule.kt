@@ -51,12 +51,14 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         order: WCOrderModel,
         orderStatus: WCOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail(),
         orderNotes: List<WCOrderNoteModel> = WcOrderTestUtils.generateSampleNotes(),
-        orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings()
+        orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings(),
+        isNetworkConnected: Boolean = false
     ) {
         MockedOrderDetailModule.setOrderInfo(order)
         MockedOrderDetailModule.setOrderStatus(orderStatus)
         MockedOrderDetailModule.setOrderNotes(orderNotes)
         MockedOrderDetailModule.setOrderShipmentTrackings(orderShipmentTrackings)
+        MockedOrderDetailModule.setNetworkConnected(isNetworkConnected)
     }
 
     /**
