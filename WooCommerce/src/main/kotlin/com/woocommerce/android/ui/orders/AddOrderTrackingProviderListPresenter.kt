@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.R
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -20,6 +21,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersCh
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
+@OpenClassOnDebug
 class AddOrderTrackingProviderListPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
@@ -52,13 +54,21 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
     }
 
     /**
+     * Loading order detail from local database.
+     * Segregating methods that request data from db for better ui testing
+     */
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? {
+        return orderStore.getOrderByIdentifier(orderIdentifier)
+    }
+
+    /**
      * Load provider list from db.
      * If list not available in cache and if network is connected, fetch list from api
      * If list not available in cache and if network is not connected, display error snack
      */
     override fun loadShipmentTrackingProviders(orderIdentifier: OrderIdentifier?) {
         orderIdentifier?.let {
-            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderModel = loadOrderDetailFromDb(it)
         }
 
         orderModel?.let { order ->

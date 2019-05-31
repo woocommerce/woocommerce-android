@@ -107,9 +107,8 @@ class OrderDetailPresenter @Inject constructor(
     /**
      * Loading order detail from local database
      */
-    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? {
-        return orderStore.getOrderByIdentifier(orderIdentifier)
-    }
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? =
+            orderStore.getOrderByIdentifier(orderIdentifier)
 
     /**
      * displaying the loaded order detail data in UI
@@ -180,6 +179,25 @@ class OrderDetailPresenter @Inject constructor(
                 // Track so when the device is connected shipment trackings can be refreshed
                 isUsingCachedShipmentTrackings = true
             }
+        }
+    }
+
+    /**
+     * Fetch the order shipment trackings from the device database
+     * Segregating the fetching from db and displaying to UI into two separate methods
+     * for better ui testing
+     */
+    override fun getOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel> {
+        return orderStore.getShipmentTrackingsForOrder(order)
+    }
+
+    /**
+     * Fetch and display the order shipment trackings from the device database
+     */
+    override fun loadShipmentTrackingsFromDb() {
+        orderModel?.let { order ->
+            val trackings = getOrderShipmentTrackingsFromDb(order)
+            orderView?.showOrderShipmentTrackings(trackings)
         }
     }
 
@@ -430,16 +448,6 @@ class OrderDetailPresenter @Inject constructor(
             // note that we refresh even on error to make sure the transient tracking provider is removed
             // from the tracking list
             loadShipmentTrackingsFromDb()
-        }
-    }
-
-    /**
-     * Fetch the order shipment tracking records from the device db.
-     */
-    fun loadShipmentTrackingsFromDb() {
-        orderModel?.let { order ->
-            val trackings = orderStore.getShipmentTrackingsForOrder(order)
-            orderView?.showOrderShipmentTrackings(trackings)
         }
     }
 

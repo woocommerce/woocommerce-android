@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -33,6 +34,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTracking
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
+@OpenClassOnDebug
 class OrderFulfillmentPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
@@ -64,13 +66,20 @@ class OrderFulfillmentPresenter @Inject constructor(
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, isShipmentTrackingsFetched: Boolean) {
         this.isShipmentTrackingsFetched = isShipmentTrackingsFetched
         orderView?.let { view ->
-            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 view.showOrderDetail(order)
                 loadOrderShipmentTrackings()
             }
         }
     }
+
+    /**
+     * Loading order detail from local database.
+     * Segregating methods that request data from db for better ui testing
+     */
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? =
+            orderStore.getOrderByIdentifier(orderIdentifier)
 
     /**
      * Since order shipment tracking list is already requested in [OrderDetailFragment]
@@ -85,7 +94,7 @@ class OrderFulfillmentPresenter @Inject constructor(
                 loadShipmentTrackingsFromDb()
             } else {
                 if (networkStatus.isConnected()) {
-                    requestShipmentTrackingsFromApi(order)
+                    fetchShipmentTrackingsFromApi(order)
                 } else {
                     loadShipmentTrackingsFromDb()
                 }
@@ -93,14 +102,19 @@ class OrderFulfillmentPresenter @Inject constructor(
         }
     }
 
-    override fun requestShipmentTrackingsFromApi(order: WCOrderModel) {
+    override fun fetchShipmentTrackingsFromApi(order: WCOrderModel) {
         val payload = FetchOrderShipmentTrackingsPayload(selectedSite.get(), order)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
     }
 
+    /**
+     * Segregating methods that request data from db for better ui testing
+     */
+    override fun getShipmentTrackingsFromDb(order: WCOrderModel) = orderStore.getShipmentTrackingsForOrder(order)
+
     override fun loadShipmentTrackingsFromDb() {
         orderModel?.let { order ->
-            val trackings = orderStore.getShipmentTrackingsForOrder(order)
+            val trackings = getShipmentTrackingsFromDb(order)
             orderView?.showOrderShipmentTrackings(trackings)
         }
     }
@@ -223,7 +237,7 @@ class OrderFulfillmentPresenter @Inject constructor(
             // Refresh order notes now that a connection is active is needed
             orderModel?.let { order ->
                 if (!isShipmentTrackingsFetched) {
-                    requestShipmentTrackingsFromApi(order)
+                    fetchShipmentTrackingsFromApi(order)
                 }
             }
         }
