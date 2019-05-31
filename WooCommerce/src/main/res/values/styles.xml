@@ -492,6 +492,13 @@
         <item name="colorControlNormal">@color/list_divider</item>
         <item name="colorControlActivated">@color/list_divider</item>
         <item name="colorControlHighlight">@color/list_divider</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="Woo.Add.Tracking.TextAppearance" parent="@style/Woo.TextAppearance">
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:gravity">start</item>
     </style>
 
     <style name="Woo.Dialog.Promo">
