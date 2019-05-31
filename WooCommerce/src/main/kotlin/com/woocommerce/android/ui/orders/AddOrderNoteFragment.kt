@@ -69,6 +69,9 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        activity?.let {
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+        }
         return inflater.inflate(R.layout.fragment_add_order_note, container, false)
     }
 
@@ -119,20 +122,12 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-
-        activity?.let {
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-        }
-    }
-
-    override fun onPause() {
-        activity?.let {
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
-        }
-        super.onPause()
     }
 
     override fun onDestroyView() {
+        activity?.let {
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+        }
         presenter.dropView()
         super.onDestroyView()
     }
