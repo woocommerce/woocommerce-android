@@ -448,17 +448,6 @@
     </style>
 
     <!--
-        Product detail
-    -->
-    <style name="ProductDetail" />
-    // TODO: change or remove this
-    <style name="ProductDetail.Activity" parent="AppTheme">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <!--
         Image viewer
     -->
     <style name="ImageViewer" />
