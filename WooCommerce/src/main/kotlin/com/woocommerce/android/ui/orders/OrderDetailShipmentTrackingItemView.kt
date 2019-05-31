@@ -31,7 +31,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
     fun initView(
         item: WCOrderShipmentTrackingModel,
         uiMessageResolver: UIMessageResolver,
-        allowAddTrackingOption: Boolean,
+        isOrderDetail: Boolean,
         shipmentTrackingActionListener: OrderShipmentTrackingActionListener?
     ) {
         this.listener = shipmentTrackingActionListener
@@ -54,7 +54,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             }
         }
 
-        if (!allowAddTrackingOption) {
+        if (isOrderDetail) {
             tracking_btnTrack.visibility = View.VISIBLE
             tracking_btnTrack.setOnClickListener {
                 showTrackingOrDeleteOptionPopup(item)

@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
@@ -146,7 +147,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                     }
 
                     orderFulfill_addShipmentTracking.addTransientTrackingProvider(orderShipmentTrackingModel)
-                    presenter.pushShipmentTrackingProvider(orderShipmentTrackingModel, isCustomProvider)
+                    presenter.pushShipmentTrackingRecord(orderShipmentTrackingModel, isCustomProvider)
                 }
             }
         }
@@ -186,7 +187,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
             orderFulfill_addShipmentTracking.initView(
                     trackings = trackings,
                     uiMessageResolver = uiMessageResolver,
-                    allowAddTrackingOption = true,
+                    isOrderDetail = false,
                     shipmentTrackingActionListener = this
             )
             if (orderFulfill_addShipmentTracking.visibility != View.VISIBLE) {
@@ -256,6 +257,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     override fun openAddOrderShipmentTrackingScreen() {
+        AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
         presenter.orderModel?.let {
             val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
             intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
