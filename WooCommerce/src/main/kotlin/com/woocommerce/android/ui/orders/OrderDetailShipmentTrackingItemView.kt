@@ -54,7 +54,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             }
         }
 
-        if (!isOrderDetail) {
+        if (isOrderDetail) {
             tracking_btnTrack.visibility = View.VISIBLE
             tracking_btnTrack.setOnClickListener {
                 showTrackingOrDeleteOptionPopup(item)
