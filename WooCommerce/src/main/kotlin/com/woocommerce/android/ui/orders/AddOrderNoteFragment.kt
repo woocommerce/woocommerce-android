@@ -24,6 +24,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_order_note.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressListener {
@@ -114,6 +115,11 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
             addNote_switch.visibility = View.GONE
             addNote_switchDivider.visibility = View.GONE
             addNote_editDivider.visibility = View.GONE
+        }
+
+        if (savedInstanceState == null) {
+            addNote_editor.requestFocus()
+            ActivityUtils.showKeyboard(addNote_editor)
         }
 
         presenter.takeView(this)
