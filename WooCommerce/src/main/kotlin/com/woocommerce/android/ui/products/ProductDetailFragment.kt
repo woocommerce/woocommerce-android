@@ -95,9 +95,12 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
         super.onAttach(context)
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        activity?.let {
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+        }
         presenter.dropView()
-        super.onDestroy()
+        super.onDestroyView()
     }
 
     override fun onResume() {
