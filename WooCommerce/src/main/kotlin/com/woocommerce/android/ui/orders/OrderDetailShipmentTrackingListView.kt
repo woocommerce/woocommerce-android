@@ -78,7 +78,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
      */
     fun addTransientTrackingProvider(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel) {
         wcOrderShipmentTrackingModel.id = nextTransientTrackingId
-        (shipmentTrack_items.adapter as ShipmentTrackingListAdapter).addTracking(wcOrderShipmentTrackingModel)
+        (shipmentTrack_items.adapter as? ShipmentTrackingListAdapter)?.addTracking(wcOrderShipmentTrackingModel)
         nextTransientTrackingId--
         shipmentTrack_items.scrollToPosition(0)
         showOrHideDivider()
