@@ -448,7 +448,7 @@ class OrderDetailPresenter @Inject constructor(
 
             // note that we refresh even on error to make sure the transient tracking provider is removed
             // from the tracking list
-            loadShipmentTrackingsFromDb()
+            fetchAndLoadShipmentTrackingsFromDb()
         }
     }
 
