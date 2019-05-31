@@ -267,7 +267,7 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    override fun pushShipmentTrackingProvider(
+    override fun pushShipmentTrackingRecord(
         wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel,
         isCustomProvider: Boolean
     ) {

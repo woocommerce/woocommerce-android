@@ -31,7 +31,7 @@ interface OrderDetailContract {
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
         fun refreshOrderStatusOptions()
         fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
-        fun pushShipmentTrackingProvider(
+        fun pushShipmentTrackingRecord(
             wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel,
             isCustomProvider: Boolean
         )

@@ -179,7 +179,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
                     }
 
                     orderDetail_shipmentList.addTransientTrackingProvider(orderShipmentTrackingModel)
-                    presenter.pushShipmentTrackingProvider(orderShipmentTrackingModel, isCustomProvider)
+                    presenter.pushShipmentTrackingRecord(orderShipmentTrackingModel, isCustomProvider)
                 }
             }
         }

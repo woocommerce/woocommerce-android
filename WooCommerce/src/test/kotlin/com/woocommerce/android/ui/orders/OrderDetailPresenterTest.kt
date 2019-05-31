@@ -377,7 +377,7 @@ class OrderDetailPresenterTest {
             trackingLink = "123456"
             dateShipped = "2019-05-13T16:11:13Z"
         }
-        presenter.pushShipmentTrackingProvider(defaultShipmentTrackingModel, false)
+        presenter.pushShipmentTrackingRecord(defaultShipmentTrackingModel, false)
         verify(orderDetailView).showAddShipmentTrackingSnack()
     }
 
@@ -390,7 +390,7 @@ class OrderDetailPresenterTest {
             trackingProvider = "Anitaa Inc"
             dateShipped = "2019-05-13T16:11:13Z"
         }
-        presenter.pushShipmentTrackingProvider(customShipmentTrackingModel, true)
+        presenter.pushShipmentTrackingRecord(customShipmentTrackingModel, true)
         verify(orderDetailView).showAddShipmentTrackingSnack()
     }
 
@@ -404,7 +404,7 @@ class OrderDetailPresenterTest {
             dateShipped = "2019-05-13T16:11:13Z"
             trackingLink = "sample.com"
         }
-        presenter.pushShipmentTrackingProvider(customShipmentTrackingModel, true)
+        presenter.pushShipmentTrackingRecord(customShipmentTrackingModel, true)
         verify(orderDetailView).showAddShipmentTrackingSnack()
     }
 
@@ -419,7 +419,7 @@ class OrderDetailPresenterTest {
             trackingLink = "123456"
             dateShipped = "2019-05-13T16:11:13Z"
         }
-        presenter.pushShipmentTrackingProvider(defaultShipmentTrackingModel, false)
+        presenter.pushShipmentTrackingRecord(defaultShipmentTrackingModel, false)
 
         verify(orderDetailView, times(0)).showAddShipmentTrackingSnack()
         verify(uiMessageResolver, times(1)).showOfflineSnack()
