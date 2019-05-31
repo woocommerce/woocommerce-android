@@ -2,11 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.annotation.StringRes
-import android.support.design.widget.AppBarLayout
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -79,7 +77,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
-    private var collapsingToolbarEnabled = true
     private val skeletonView = SkeletonView()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -110,7 +107,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        adjustToolbar()
 
         // make image height a percentage of screen height, adjusting for landscape
         val displayHeight = DisplayUtils.getDisplayPixelHeight(activity!!)
@@ -125,24 +121,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
 
         presenter.takeView(this)
         presenter.loadProductDetail(remoteProductId)
-
-        // only show title when toolbar is collapsed
-        app_bar_layout.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
-            var scrollRange = -1
-
-            override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-                if (collapsingToolbarEnabled) {
-                    if (scrollRange == -1) {
-                        scrollRange = appBarLayout.totalScrollRange
-                    }
-                    if (scrollRange + verticalOffset == 0) {
-                        collapsing_toolbar.title = productTitle
-                    } else {
-                        collapsing_toolbar.title = " " // space between double quotes is on purpose
-                    }
-                }
-            }
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -217,20 +195,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
                 frameStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toString(activity!!)
             }
-        }
-
-        // if there's no product image we should disable the collapsible toolbar and move the badge's parent frame
-        // to the scrolling container
-        if (imageUrl == null && collapsingToolbarEnabled) {
-            collapsingToolbarEnabled = false
-            val params = collapsing_toolbar.getLayoutParams() as AppBarLayout.LayoutParams
-            params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
-            collapsing_toolbar.setLayoutParams(params)
-            collapsing_toolbar.isTitleEnabled = false
-            toolbar.title = productTitle
-            frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(activity!!, R.color.wc_grey_light))
-            (frameStatusBadge.parent as ViewGroup).removeView(frameStatusBadge)
-            productDetail_container.addView(frameStatusBadge)
         }
 
         addPrimaryCard(product)
@@ -533,18 +497,6 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
             }
             val title = resources.getText(R.string.product_share_dialog_title)
             startActivity(Intent.createChooser(shareIntent, title))
-        }
-    }
-
-    /*
-     * adjust the toolbar so it doesn't overlap the status bar
-     */
-    private fun adjustToolbar() {
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            val statusHeight = resources.getDimensionPixelSize(resourceId)
-            toolbar.layoutParams.height += statusHeight
-            toolbar.setPadding(0, statusHeight, 0, 0)
         }
     }
 
