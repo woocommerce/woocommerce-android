@@ -132,7 +132,7 @@ class MainNavigationView @JvmOverloads constructor(
         // add the fragment if it hasn't been added yet
         val tag = navPos.getTag()
         if (fragmentManager.findFragmentByTag(tag) == null) {
-            fragmentTransaction.add(R.id.main_container, fragment, tag)
+            fragmentTransaction.add(R.id.container, fragment, tag)
         }
 
         // show the new fragment

@@ -143,8 +143,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val noteText = getNoteText()
-
         return when (item?.itemId) {
             R.id.menu_add -> {
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
@@ -152,6 +150,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
                 if (!networkStatus.isConnected()) {
                     uiMessageResolver.showOfflineSnack()
                 } else {
+                    val noteText = getNoteText()
                     val isCustomerNote = addNote_switch.isChecked
                     if (noteText.isNotEmpty()) {
                         listener.onAddOrderNote(noteText, isCustomerNote)
