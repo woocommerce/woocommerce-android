@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
@@ -24,6 +25,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -368,7 +370,7 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Add order shipment tracking request correctly`() {
+    fun `Add order shipment tracking when network is available - success`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(presenter).orderModel
 
@@ -378,34 +380,51 @@ class OrderDetailPresenterTest {
             dateShipped = "2019-05-13T16:11:13Z"
         }
         presenter.pushShipmentTrackingRecord(defaultShipmentTrackingModel, false)
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<AddOrderShipmentTrackingPayload>>())
+
+        // verify that add shipment tracking snackbar is displayed
         verify(orderDetailView).showAddShipmentTrackingSnack()
+
+        // mock success response
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
+        })
+
+        // verify shipment trackings is loaded from db
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
     }
 
     @Test
-    fun `Add order shipment tracking with custom provider name request correctly`() {
-        presenter.takeView(orderDetailView)
+    fun `Add order shipment tracking when network is available - error`() {
         doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
 
-        val customShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
-            trackingProvider = "Anitaa Inc"
+        val defaultShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
+            trackingProvider = "Anitaa Test"
+            trackingLink = "123456"
             dateShipped = "2019-05-13T16:11:13Z"
         }
-        presenter.pushShipmentTrackingRecord(customShipmentTrackingModel, true)
-        verify(orderDetailView).showAddShipmentTrackingSnack()
-    }
+        presenter.pushShipmentTrackingRecord(defaultShipmentTrackingModel, false)
 
-    @Test
-    fun `Add order shipment tracking with custom provider tracking link request correctly`() {
-        presenter.takeView(orderDetailView)
-        doReturn(order).whenever(presenter).orderModel
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<AddOrderShipmentTrackingPayload>>())
 
-        val customShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
-            trackingProvider = "Anitaa Inc"
-            dateShipped = "2019-05-13T16:11:13Z"
-            trackingLink = "sample.com"
-        }
-        presenter.pushShipmentTrackingRecord(customShipmentTrackingModel, true)
+        // verify that add shipment tracking snackbar is displayed
         verify(orderDetailView).showAddShipmentTrackingSnack()
+
+        // mock error response
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
+            error = OrderError()
+        })
+
+        // ensure that error snack message is displayed
+        verify(orderDetailView, times(1)).showAddAddShipmentTrackingErrorSnack()
+
+        // verify shipment trackings is loaded from db
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
     }
 
     @Test

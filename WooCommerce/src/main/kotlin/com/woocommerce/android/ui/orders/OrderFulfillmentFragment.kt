@@ -147,7 +147,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                     }
 
                     orderFulfill_addShipmentTracking.addTransientTrackingProvider(orderShipmentTrackingModel)
-                    presenter.pushShipmentTrackingProvider(orderShipmentTrackingModel, isCustomProvider)
+                    presenter.pushShipmentTrackingRecord(orderShipmentTrackingModel, isCustomProvider)
                 }
             }
         }
