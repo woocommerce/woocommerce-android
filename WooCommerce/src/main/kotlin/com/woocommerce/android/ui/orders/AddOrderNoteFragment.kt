@@ -62,7 +62,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     private lateinit var listener: AddOrderNoteListener
 
     private var isConfirmingDiscard = false
-    private var disConfirmDiscard = false
+    private var shouldShowDiscardDialog = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -155,6 +155,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
                     val noteText = getNoteText()
                     val isCustomerNote = addNote_switch.isChecked
                     if (noteText.isNotEmpty()) {
+                        shouldShowDiscardDialog = false
                         listener.onAddOrderNote(noteText, isCustomerNote)
                         activity?.onBackPressed()
                     }
@@ -178,7 +179,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
      * Provide back press in the main activity if the user entered a note so we can confirm the discard
      */
     override fun onRequestAllowBackPress(): Boolean {
-        return if (getNoteText().isNotEmpty() && !disConfirmDiscard) {
+        return if (getNoteText().isNotEmpty() && shouldShowDiscardDialog) {
             confirmDiscard()
             false
         } else {
@@ -192,7 +193,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
                 .setMessage(R.string.add_order_note_confirm_discard)
                 .setCancelable(true)
                 .setPositiveButton(R.string.discard) { _, _ ->
-                    disConfirmDiscard = true
+                    shouldShowDiscardDialog = false
                     activity?.onBackPressed()
                 }
                 .setNegativeButton(R.string.cancel) { _, _ ->
