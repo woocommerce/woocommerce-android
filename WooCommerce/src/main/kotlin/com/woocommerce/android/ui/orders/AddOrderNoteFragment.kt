@@ -140,6 +140,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        menu?.clear()
         inflater?.inflate(R.menu.menu_add_note, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -176,7 +177,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     override fun getNoteText() = addNote_editor.text.toString().trim()
 
     /**
-     * Provide back press in the main activity if the user entered a note so we can confirm the discard
+     * Prevent back press in the main activity if the user entered a note so we can confirm the discard
      */
     override fun onRequestAllowBackPress(): Boolean {
         return if (getNoteText().isNotEmpty() && shouldShowDiscardDialog) {
