@@ -451,6 +451,7 @@
         Product detail
     -->
     <style name="ProductDetail" />
+    // TODO: change or remove this
     <style name="ProductDetail.Activity" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
