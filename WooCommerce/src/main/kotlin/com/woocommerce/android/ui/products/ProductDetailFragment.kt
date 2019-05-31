@@ -553,7 +553,12 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
         productImageUrl?.let { imageUrl ->
             productDetail_image.setOnClickListener {
                 AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                ImageViewerActivity.show(activity!!, imageUrl, title = productTitle, sharedElement = productDetail_image)
+                ImageViewerActivity.show(
+                        activity!!,
+                        imageUrl,
+                        title = productTitle,
+                        sharedElement = productDetail_image
+                )
             }
         }
         return false
