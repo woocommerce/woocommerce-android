@@ -133,6 +133,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     override fun onDestroyView() {
         activity?.let {
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+            ActivityUtils.hideKeyboard(it)
         }
         presenter.dropView()
         super.onDestroyView()
