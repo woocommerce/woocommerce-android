@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-29 19:54:36+0000
+Translation-Revision-Date: 2019-05-27 13:43:34+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
@@ -327,6 +327,7 @@ Language: pt_BR
     <string name="orderdetail_product_image_contentdesc">Imagem do produto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Imposto:</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">enviar e-mail para o cliente</string>
     <string name="orderdetail_billing_details">Detalhes de cobrança</string>
     <string name="orderdetail_shipping_details">Detalhes de envio</string>
@@ -341,6 +342,8 @@ Language: pt_BR
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">Nº %s</string>
     <string name="orderlist_no_orders">Não há pedidos</string>
+    <string name="dashboard_fulfill_order_title_multiple">Você tem %1$d pedidos para concluir</string>
+    <string name="dashboard_fulfill_order_title_single">Você tem um pedido para concluir</string>
     <string name="dashboard_action_view_orders">Visualizar pedidos</string>
     <string name="dashboard_action_view_order">Ver pedido</string>
     <string name="dashboard_top_earners_empty">Nenhuma atividade no período</string>

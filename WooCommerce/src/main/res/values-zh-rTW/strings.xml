@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-07 14:54:04+0000
+Translation-Revision-Date: 2019-05-28 15:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
@@ -91,6 +91,9 @@ Language: zh_TW
     <string name="waiting_for_customers">等待客戶</string>
     <string name="share_store_dialog_title">分享商店 URL</string>
     <string name="share_store_button">分享你的商店</string>
+    <string name="wc_mark_all_read_success">所有通知已標示為已讀</string>
+    <string name="login_update_required_title">將商店更新至 WooCommerce 3.5</string>
+    <string name="login_verifying_site_error">無法連線至 %s</string>
     <string name="dismiss">關閉</string>
     <string name="wc_mark_all_read_error">將全部通知標示為已讀時發生錯誤</string>
     <string name="wc_mark_all_read">將全部標示為已讀</string>
@@ -324,6 +327,7 @@ Language: zh_TW
     <string name="orderdetail_product_image_contentdesc">商品圖片</string>
     <string name="orderdetail_product_lineitem_sku">貨號：</string>
     <string name="orderdetail_product_lineitem_tax">稅金：</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">傳送電子郵件給客戶</string>
     <string name="orderdetail_billing_details">帳單詳細資料</string>
     <string name="orderdetail_shipping_details">運送詳細資料</string>
@@ -338,6 +342,8 @@ Language: zh_TW
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">編號%s</string>
     <string name="orderlist_no_orders">無訂單</string>
+    <string name="dashboard_fulfill_order_title_multiple">你有 %1$d 筆訂單尚未履行</string>
+    <string name="dashboard_fulfill_order_title_single">你有 1 筆訂單尚未履行</string>
     <string name="dashboard_action_view_orders">查看訂單</string>
     <string name="dashboard_action_view_order">查看訂單</string>
     <string name="dashboard_top_earners_empty">此期間沒有任何活動</string>
