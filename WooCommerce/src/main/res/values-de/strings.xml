@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-02 10:54:03+0000
+Translation-Revision-Date: 2019-05-28 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
@@ -98,7 +98,7 @@ Language: de
     <string name="wc_mark_all_read_error">Fehler beim Markieren aller Benachrichtigungen als gelesen</string>
     <string name="wc_mark_all_read">Alle als gelesen markieren</string>
     <string name="orderdetail_message_customer">Nachricht</string>
-    <string name="orderdetail_call_customer">Telefon</string>
+    <string name="orderdetail_call_customer">Anrufen</string>
     <string name="orderdetail_call_or_message_contentdesc">Anruf oder Nachricht an Kunden</string>
     <string name="wc_moderate_review_error">Fehler beim Aktualisieren des Produktbewertungsstatus</string>
     <string name="wc_load_review_error">Fehler beim Laden des Produktbewertungsdetail</string>
@@ -130,6 +130,7 @@ Language: de
     <string name="notification_channel_order_title">Benachrichtigungen bei neuer Bestellung</string>
     <string name="orderdetail_note_system">Systemstatus</string>
     <string name="orderdetail_note_public">Hinweis an Kunden</string>
+    <string name="login_verifying_site">Website wird verifiziert …</string>
     <string name="button_update_instructions">Aktualisierungsanweisungen</string>
     <string name="search">Suche</string>
     <string name="refresh_button">Neu laden</string>
@@ -327,6 +328,7 @@ Language: de
     <string name="orderdetail_product_image_contentdesc">Produktabbildung</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Steuern:</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">E-Mail an Kunden senden</string>
     <string name="orderdetail_billing_details">Abrechnungsdetails</string>
     <string name="orderdetail_shipping_details">Versanddetails</string>
@@ -341,6 +343,8 @@ Language: de
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">Keine Bestellungen</string>
+    <string name="dashboard_fulfill_order_title_multiple">Du musst %1$d Bestellungen abschließen</string>
+    <string name="dashboard_fulfill_order_title_single">Du musst 1 Bestellung abschließen</string>
     <string name="dashboard_action_view_orders">Bestellungen anzeigen</string>
     <string name="dashboard_action_view_order">Bestellung anzeigen</string>
     <string name="dashboard_top_earners_empty">Keine Aktivitäten in diesem Zeitraum</string>

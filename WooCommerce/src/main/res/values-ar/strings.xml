@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-01 10:54:08+0000
+Translation-Revision-Date: 2019-05-27 13:45:21+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -327,6 +327,7 @@ Language: ar
     <string name="orderdetail_product_image_contentdesc">صورة المنتج</string>
     <string name="orderdetail_product_lineitem_sku">وحدة SKU:</string>
     <string name="orderdetail_product_lineitem_tax">الضريبة:</string>
+    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">إرسال بريد إلكتروني إلى العميل</string>
     <string name="orderdetail_billing_details">تفاصيل الفوترة</string>
     <string name="orderdetail_shipping_details">تفاصيل الشحن</string>
@@ -341,6 +342,8 @@ Language: ar
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">لا توجد طلبات</string>
+    <string name="dashboard_fulfill_order_title_multiple">لديك %1$d من الطلبات لإتمامها</string>
+    <string name="dashboard_fulfill_order_title_single">لديك طلب واحد لإتمامه</string>
     <string name="dashboard_action_view_orders">عرض الطلبات</string>
     <string name="dashboard_action_view_order">عرض الطلب</string>
     <string name="dashboard_top_earners_empty">لا يوجد أي نشاط في هذه الفترة</string>
