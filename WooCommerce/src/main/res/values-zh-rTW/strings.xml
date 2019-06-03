@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-27 13:44:34+0000
+Translation-Revision-Date: 2019-05-28 15:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
@@ -91,6 +91,9 @@ Language: zh_TW
     <string name="waiting_for_customers">等待客戶</string>
     <string name="share_store_dialog_title">分享商店 URL</string>
     <string name="share_store_button">分享你的商店</string>
+    <string name="wc_mark_all_read_success">所有通知已標示為已讀</string>
+    <string name="login_update_required_title">將商店更新至 WooCommerce 3.5</string>
+    <string name="login_verifying_site_error">無法連線至 %s</string>
     <string name="dismiss">關閉</string>
     <string name="wc_mark_all_read_error">將全部通知標示為已讀時發生錯誤</string>
     <string name="wc_mark_all_read">將全部標示為已讀</string>
