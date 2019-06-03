@@ -74,6 +74,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
 
     private var remoteProductId = 0L
     private var productTitle = ""
+    private var activityTitle = ""
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
@@ -84,6 +85,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
         setHasOptionsMenu(true)
 
         activity?.let {
+            activityTitle = it.title.toString()
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
         }
 
@@ -97,6 +99,7 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
 
     override fun onDestroyView() {
         activity?.let {
+            it.title = activityTitle
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
         }
         presenter.dropView()
