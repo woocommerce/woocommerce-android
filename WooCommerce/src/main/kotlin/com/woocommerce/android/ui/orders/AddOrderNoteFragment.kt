@@ -16,7 +16,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.AnalyticsUtils
@@ -49,7 +48,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     }
 
     @Inject lateinit var presenter: AddOrderNoteContract.Presenter
-    @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var orderId: OrderIdentifier
@@ -144,20 +142,12 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
         return when (item?.itemId) {
             R.id.menu_add -> {
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
-
-                if (!networkStatus.isConnected()) {
-                    uiMessageResolver.showOfflineSnack()
-                } else {
-                    val noteText = getNoteText()
-                    if (noteText.isNotEmpty()) {
-                        val isCustomerNote = addNote_switch.isChecked
-                        if (presenter.pushOrderNote(orderId, noteText, isCustomerNote)) {
-                            uiMessageResolver.getSnack(R.string.add_order_note_added).show()
-                            shouldShowDiscardDialog = false
-                            activity?.onBackPressed()
-                        } else {
-                            uiMessageResolver.getSnack(R.string.add_order_note_error).show()
-                        }
+                val noteText = getNoteText()
+                if (noteText.isNotEmpty()) {
+                    val isCustomerNote = addNote_switch.isChecked
+                    if (presenter.pushOrderNote(orderId, noteText, isCustomerNote)) {
+                        shouldShowDiscardDialog = false
+                        activity?.onBackPressed()
                     }
                 }
                 true
@@ -200,5 +190,17 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
                     isConfirmingDiscard = false
                 }
                 .show()
+    }
+
+    override fun showAddOrderNoteSnack() {
+        uiMessageResolver.getSnack(R.string.add_order_note_added).show()
+    }
+
+    override fun showAddOrderNoteErrorSnack() {
+        uiMessageResolver.getSnack(R.string.add_order_note_error).show()
+    }
+
+    override fun showOfflineSnack() {
+        uiMessageResolver.showOfflineSnack()
     }
 }

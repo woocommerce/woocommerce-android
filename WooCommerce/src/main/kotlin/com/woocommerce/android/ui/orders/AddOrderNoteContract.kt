@@ -13,5 +13,8 @@ interface AddOrderNoteContract {
     interface View : BaseView<Presenter> {
         fun getNoteText(): String
         fun confirmDiscard()
+        fun showAddOrderNoteSnack()
+        fun showAddOrderNoteErrorSnack()
+        fun showOfflineSnack()
     }
 }

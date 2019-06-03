@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -16,7 +17,8 @@ import javax.inject.Inject
 class AddOrderNotePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val networkStatus: NetworkStatus
 ) : AddOrderNoteContract.Presenter {
     private var addNoteView: AddOrderNoteContract.View? = null
 
@@ -39,8 +41,14 @@ class AddOrderNotePresenter @Inject constructor(
     }
 
     override fun pushOrderNote(orderId: OrderIdentifier, noteText: String, isCustomerNote: Boolean): Boolean {
+        if (!networkStatus.isConnected()) {
+            addNoteView?.showOfflineSnack()
+            return false
+        }
+
         val order = orderStore.getOrderByIdentifier(orderId)
         if (order == null) {
+            addNoteView?.showAddOrderNoteErrorSnack()
             return false
         }
         AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.remoteOrderId))
@@ -51,6 +59,8 @@ class AddOrderNotePresenter @Inject constructor(
 
         val payload = WCOrderStore.PostOrderNotePayload(order, selectedSite.get(), noteModel)
         dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
+
+        addNoteView?.showAddOrderNoteSnack()
         return true
     }
 

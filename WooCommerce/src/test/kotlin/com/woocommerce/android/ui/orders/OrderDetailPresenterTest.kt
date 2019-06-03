@@ -15,7 +15,6 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
-import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
@@ -25,7 +24,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
-import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 
@@ -41,7 +39,6 @@ class OrderDetailPresenterTest {
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
-    private val remoteOderId = order.remoteOrderId
     private val orderNotes = OrderTestUtils.generateOrderNotes(10, 2, 1)
     private lateinit var presenter: OrderDetailPresenter
 
@@ -164,40 +161,6 @@ class OrderDetailPresenterTest {
             error = OrderError(message = "Error")
         })
         verify(orderDetailView).markOrderStatusChangedFailed()
-    }
-
-    @Test
-    fun `Add an order note - Displays add note snackbar correctly`() {
-        doReturn(order).whenever(presenter).orderModel
-        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-
-        presenter.takeView(orderDetailView)
-        presenter.pushOrderNote(noteText = "Test order note #1", isCustomerNote = false)
-        verify(dispatcher, times(1)).dispatch(any<Action<PostOrderNotePayload>>())
-
-        presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = POST_ORDER_NOTE })
-        verify(orderDetailView, times(1)).showAddOrderNoteSnack()
-    }
-
-    @Test
-    fun `Display error message on add order note error`() {
-        doReturn(order).whenever(presenter).orderModel
-        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-
-        presenter.takeView(orderDetailView)
-        presenter.pushOrderNote(noteText = "Test order note #2", isCustomerNote = false)
-        verify(dispatcher, times(1)).dispatch(any<Action<PostOrderNotePayload>>())
-
-        presenter.onOrderChanged(OnOrderChanged(0).apply {
-            causeOfChange = POST_ORDER_NOTE
-            error = OrderError()
-        })
-        verify(orderDetailView, times(1)).showAddOrderNoteErrorSnack()
-
-        // we also want to verify that notes are loaded even on error because the UI adds
-        // a transient note while the note is pushed and it won't be removed from the
-        // note list until notes are loaded
-        verify(presenter, times(1)).fetchAndLoadOrderNotesFromDb()
     }
 
     @Test
