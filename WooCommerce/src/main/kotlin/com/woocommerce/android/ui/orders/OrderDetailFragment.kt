@@ -18,7 +18,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.AddOrderNoteFragment.Companion.AddOrderNoteListener
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
@@ -32,7 +31,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener, AddOrderNoteListener,
+class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
     companion object {
         const val TAG = "OrderDetailFragment"
@@ -352,7 +351,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun showAddOrderNoteScreen(order: WCOrderModel) {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
-                router.openAddOrderNote(order, this)
+                router.openAddOrderNote(order)
             }
         }
     }
@@ -382,7 +381,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     /**
      * User added a note in the add order note screen, so push it to the backend
      */
-    override fun onAddOrderNote(noteText: String, isCustomerNote: Boolean) {
+    fun addOrderNote(noteText: String, isCustomerNote: Boolean) {
         if (!networkStatus.isConnected()) {
             uiMessageResolver.showOfflineSnack()
             return

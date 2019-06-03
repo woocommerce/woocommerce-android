@@ -36,11 +36,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
         private const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
 
-        interface AddOrderNoteListener {
-            fun onAddOrderNote(noteText: String, isCustomerNote: Boolean)
-        }
-
-        fun newInstance(order: WCOrderModel, listener: AddOrderNoteListener): AddOrderNoteFragment {
+        fun newInstance(order: WCOrderModel): AddOrderNoteFragment {
             val args = Bundle().also {
                 it.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
                 it.putString(FIELD_ORDER_NUMBER, order.number)
@@ -48,7 +44,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
 
             val fragment = AddOrderNoteFragment()
             fragment.arguments = args
-            fragment.listener = listener
             return fragment
         }
     }
@@ -59,7 +54,6 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
 
     private lateinit var orderId: OrderIdentifier
     private lateinit var orderNumber: String
-    private lateinit var listener: AddOrderNoteListener
 
     private var isConfirmingDiscard = false
     private var shouldShowDiscardDialog = true
@@ -67,6 +61,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        setRetainInstance(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -157,7 +152,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
                     val isCustomerNote = addNote_switch.isChecked
                     if (noteText.isNotEmpty()) {
                         shouldShowDiscardDialog = false
-                        listener.onAddOrderNote(noteText, isCustomerNote)
+                        (activity as? AddOrderNoteListener)?.onRequestAddOrderNote(noteText, isCustomerNote)
                         activity?.onBackPressed()
                     }
                 }
