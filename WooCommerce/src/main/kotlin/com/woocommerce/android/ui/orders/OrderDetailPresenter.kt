@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -183,26 +182,6 @@ class OrderDetailPresenter @Inject constructor(
             val payload = UpdateOrderStatusPayload(order, selectedSite.get(), newStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
         }
-    }
-
-    override fun pushOrderNote(noteText: String, isCustomerNote: Boolean) {
-        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to orderModel!!.remoteOrderId))
-
-        if (!networkStatus.isConnected()) {
-            // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
-            // just in case...
-            uiMessageResolver.showOfflineSnack()
-            return
-        }
-
-        val noteModel = WCOrderNoteModel()
-        noteModel.isCustomerNote = isCustomerNote
-        noteModel.note = noteText
-
-        val payload = WCOrderStore.PostOrderNotePayload(orderModel!!, selectedSite.get(), noteModel)
-        dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
-
-        orderView?.showAddOrderNoteSnack()
     }
 
     /**

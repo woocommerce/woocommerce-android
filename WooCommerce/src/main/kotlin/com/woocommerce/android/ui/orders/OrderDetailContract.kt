@@ -23,7 +23,6 @@ interface OrderDetailContract {
         fun fetchAndLoadOrderNotesFromDb()
         fun loadOrderShipmentTrackings()
         fun doChangeOrderStatus(newStatus: String)
-        fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
         fun markOrderNotificationRead(context: Context, remoteNoteId: Long)
         fun getOrderStatusForStatusKey(key: String): WCOrderStatusModel
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
@@ -40,7 +39,6 @@ interface OrderDetailContract {
         fun setOrderStatus(newStatus: String)
         fun showChangeOrderStatusSnackbar(newStatus: String)
         fun showNotesErrorSnack()
-        fun showAddOrderNoteSnack()
         fun showAddOrderNoteErrorSnack()
         fun showOrderStatusChangedError()
         fun markOrderStatusChangedSuccess()

@@ -29,8 +29,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
-import com.woocommerce.android.ui.orders.AddOrderNoteListener
-import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductDetailActivity
@@ -54,7 +52,6 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
         MainContract.View,
-        AddOrderNoteListener,
         HasSupportFragmentInjector,
         FragmentScrollListener,
         MainNavigationView.MainNavigationListener,
@@ -473,14 +470,5 @@ class MainActivity : AppCompatActivity(),
                 showSettingsScreen()
             } else -> {}
         }
-    }
-
-    /**
-     * Uxer added an order note from AddOrderNoteFragment, tell the order detail fragment to add the note
-     */
-    override fun onRequestAddOrderNote(noteText: String, isCustomerNote: Boolean) {
-        val parentFragment = bottomNavView.activeFragment
-        val orderFragment = parentFragment.childFragmentManager.findFragmentByTag(OrderDetailFragment.TAG)
-        (orderFragment as? OrderDetailFragment)?.addOrderNote(noteText, isCustomerNote)
     }
 }

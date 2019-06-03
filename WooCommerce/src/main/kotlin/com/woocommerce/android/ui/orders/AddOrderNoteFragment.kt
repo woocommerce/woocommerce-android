@@ -149,11 +149,15 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
                     uiMessageResolver.showOfflineSnack()
                 } else {
                     val noteText = getNoteText()
-                    val isCustomerNote = addNote_switch.isChecked
                     if (noteText.isNotEmpty()) {
-                        shouldShowDiscardDialog = false
-                        (activity as? AddOrderNoteListener)?.onRequestAddOrderNote(noteText, isCustomerNote)
-                        activity?.onBackPressed()
+                        val isCustomerNote = addNote_switch.isChecked
+                        if (presenter.pushOrderNote(orderId, noteText, isCustomerNote)) {
+                            uiMessageResolver.getSnack(R.string.add_order_note_added).show()
+                            shouldShowDiscardDialog = false
+                            activity?.onBackPressed()
+                        } else {
+                            uiMessageResolver.getSnack(R.string.add_order_note_error).show()
+                        }
                     }
                 }
                 true

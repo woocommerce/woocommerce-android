@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -356,10 +355,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun showAddOrderNoteSnack() {
-        uiMessageResolver.getSnack(R.string.add_order_note_added).show()
-    }
-
     override fun showAddOrderNoteErrorSnack() {
         uiMessageResolver.getSnack(R.string.add_order_note_error).show()
     }
@@ -376,19 +371,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         presenter.orderModel?.let {
             showAddOrderNoteScreen(it)
         }
-    }
-
-    /**
-     * User added a note in the add order note screen, so push it to the backend
-     */
-    fun addOrderNote(noteText: String, isCustomerNote: Boolean) {
-        if (!networkStatus.isConnected()) {
-            uiMessageResolver.showOfflineSnack()
-            return
-        }
-
-        AppRatingDialog.incrementInteractions()
-        presenter.pushOrderNote(noteText, isCustomerNote)
     }
 
     override fun markOrderStatusChangedSuccess() {
