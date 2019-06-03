@@ -172,6 +172,8 @@ class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestLis
             }
         }
 
+        activity?.title = productTitle
+
         isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
 
         val imageUrl = product.getFirstImageUrl()
