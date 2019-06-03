@@ -280,6 +280,7 @@
         <item name="android:layout_height">@dimen/list_group_header_height</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:textAppearance">@style/Woo.TextAppearance.ListHeader</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="Woo.TextAppearance.ListHeader">
