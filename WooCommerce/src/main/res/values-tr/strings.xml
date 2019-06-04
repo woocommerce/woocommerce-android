@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-27 13:30:00+0000
+Translation-Revision-Date: 2019-05-28 11:12:31+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
@@ -11,6 +11,10 @@ Language: tr
     <string name="login_invalid_site_url">Girdiğiniz site adresi geçersiz. Lütfen tekrar girin.</string>
     <string name="no_site_error">Bu adresteki site bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress kullanılmalıdır.</string>
     <string name="support_help_center">Yardım Merkezi</string>
+    <string name="product_name_virtual">Sanal %s</string>
+    <string name="product_name_grouped">Gruplanmış %s</string>
+    <string name="product_name_external">Üye alma %s</string>
+    <string name="product_name_variable">Değişken %s</string>
     <string name="product_backorders_notify">İzin ver fakat müşteriyi bilgilendir</string>
     <string name="product_backorders_yes">İzin ver</string>
     <string name="product_backorders_no">İzin verme</string>

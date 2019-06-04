@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.support.constraint.ConstraintLayout
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 
@@ -94,11 +95,12 @@ class AlignedDividerDecoration @JvmOverloads constructor(
 
     private fun drawForVertical(canvas: Canvas, parent: RecyclerView) {
         val adjustedChildCount = parent.childCount - 2
+        val isRtl = ViewCompat.getLayoutDirection(parent) == ViewCompat.LAYOUT_DIRECTION_RTL
         (0..adjustedChildCount)
                 .map { parent.getChildAt(it) }
                 .forEach {
-                    val left = it.findViewById<View>(alignStartToStartOf)
-                    val right = it.findViewById<View>(alignEndToEndOf)
+                    val left = it.findViewById<View>(if (isRtl) alignEndToEndOf else alignStartToStartOf)
+                    val right = it.findViewById<View>(if (isRtl) alignStartToStartOf else alignEndToEndOf)
 
                     var dividerStart = left?.left ?: 0
                     var dividerEnd = right?.right ?: parent.width

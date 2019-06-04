@@ -16,7 +16,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.AnalyticsUtils
@@ -36,11 +35,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
         private const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
 
-        interface AddOrderNoteListener {
-            fun onAddOrderNote(noteText: String, isCustomerNote: Boolean)
-        }
-
-        fun newInstance(order: WCOrderModel, listener: AddOrderNoteListener): AddOrderNoteFragment {
+        fun newInstance(order: WCOrderModel): AddOrderNoteFragment {
             val args = Bundle().also {
                 it.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
                 it.putString(FIELD_ORDER_NUMBER, order.number)
@@ -48,18 +43,15 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
 
             val fragment = AddOrderNoteFragment()
             fragment.arguments = args
-            fragment.listener = listener
             return fragment
         }
     }
 
     @Inject lateinit var presenter: AddOrderNoteContract.Presenter
-    @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var orderId: OrderIdentifier
     private lateinit var orderNumber: String
-    private lateinit var listener: AddOrderNoteListener
 
     private var isConfirmingDiscard = false
     private var shouldShowDiscardDialog = true
@@ -67,6 +59,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        setRetainInstance(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -149,15 +142,11 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
         return when (item?.itemId) {
             R.id.menu_add -> {
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
-
-                if (!networkStatus.isConnected()) {
-                    uiMessageResolver.showOfflineSnack()
-                } else {
-                    val noteText = getNoteText()
+                val noteText = getNoteText()
+                if (noteText.isNotEmpty()) {
                     val isCustomerNote = addNote_switch.isChecked
-                    if (noteText.isNotEmpty()) {
+                    if (presenter.pushOrderNote(orderId, noteText, isCustomerNote)) {
                         shouldShowDiscardDialog = false
-                        listener.onAddOrderNote(noteText, isCustomerNote)
                         activity?.onBackPressed()
                     }
                 }
@@ -201,5 +190,17 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
                     isConfirmingDiscard = false
                 }
                 .show()
+    }
+
+    override fun showAddOrderNoteSnack() {
+        uiMessageResolver.getSnack(R.string.add_order_note_added).show()
+    }
+
+    override fun showAddOrderNoteErrorSnack() {
+        uiMessageResolver.getSnack(R.string.add_order_note_error).show()
+    }
+
+    override fun showOfflineSnack() {
+        uiMessageResolver.showOfflineSnack()
     }
 }
