@@ -12,6 +12,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_shipment_tracking.*
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.util.Calendar
@@ -213,29 +215,28 @@ class AddOrderShipmentTrackingFragment : Fragment(), AddOrderShipmentTrackingCon
                     return true
                 }
 
-                if (!networkStatus.isConnected()) {
-                    uiMessageResolver.showOfflineSnack()
-                } else {
-                    AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED)
-                    AppRatingDialog.incrementInteractions()
+                AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED)
+                AppRatingDialog.incrementInteractions()
 
-                    val providerText = getProviderText()
-                    val trackingNumText = addTracking_number.text.toString()
-                    val customProviderTrackingUrl = addTracking_custom_provider_url.text.toString()
+                val providerText = getProviderText()
+                val trackingNumText = addTracking_number.text.toString()
+                val isCustomProvider = isCustomProvider()
+                val customProviderTrackingUrl = addTracking_custom_provider_url.text.toString()
 
-                    // TODO: add logic to add the shipment tracking directly from this screen
-//                    if (presenter.pushOrderNote(orderId, noteText, isCustomerNote)) {
-//                        shouldShowDiscardDialog = false
-//                        activity?.onBackPressed()
-//                    }
-//                    val data = Intent()
-//                    data.putExtra(FIELD_ORDER_TRACKING_NUMBER, trackingNumText)
-//                    data.putExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED, getDateShippedText())
-//                    data.putExtra(FIELD_ORDER_TRACKING_PROVIDER, providerText)
-//                    data.putExtra(FIELD_IS_CUSTOM_PROVIDER, isCustomProvider())
-//                    data.putExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL, customProviderTrackingUrl)
-//                    setResult(Activity.RESULT_OK, data)
-//                    finish()
+                AppPrefs.setSelectedShipmentTrackingProviderName(providerText)
+                AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider)
+
+                val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
+                orderShipmentTrackingModel.trackingNumber = trackingNumText
+                orderShipmentTrackingModel.dateShipped = getDateShippedText()
+                orderShipmentTrackingModel.trackingProvider = providerText
+                if (isCustomProvider) {
+                    orderShipmentTrackingModel.trackingLink = customProviderTrackingUrl
+                }
+
+                if (presenter.pushShipmentTrackingRecord(orderId, orderShipmentTrackingModel, isCustomProvider)) {
+                    shouldShowDiscardDialog = false
+                    activity?.onBackPressed()
                 }
                 true
             }
@@ -321,6 +322,18 @@ class AddOrderShipmentTrackingFragment : Fragment(), AddOrderShipmentTrackingCon
 
     override fun isCustomProvider(): Boolean {
         return isSelectedProviderCustom
+    }
+
+    override fun showOfflineSnack() {
+        uiMessageResolver.showOfflineSnack()
+    }
+
+    override fun showAddAddShipmentTrackingErrorSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_error).show()
+    }
+
+    override fun showAddShipmentTrackingSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_added).show()
     }
 
     private fun displayFormatDateShippedText(dateString: String) {

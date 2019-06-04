@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.orders
 
-import android.app.Activity.RESULT_OK
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -23,11 +21,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_IS_CUSTOM_PROVIDER
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_DATE_SHIPPED
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_NUMBER
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_PROVIDER
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
@@ -140,36 +133,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_ADD_TRACKING) {
-            if (data != null) {
-                val selectedShipmentTrackingProviderName = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
-                AppPrefs.setSelectedShipmentTrackingProviderName(selectedShipmentTrackingProviderName)
-
-                if (resultCode == RESULT_OK) {
-                    val isCustomProvider = data.getBooleanExtra(FIELD_IS_CUSTOM_PROVIDER, false)
-                    AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider)
-
-                    val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
-                    val customProviderUrlText = data.getStringExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL)
-                    val trackingNumText = data.getStringExtra(FIELD_ORDER_TRACKING_NUMBER)
-
-                    val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
-                    orderShipmentTrackingModel.trackingNumber = trackingNumText
-                    orderShipmentTrackingModel.dateShipped = dateShipped
-                    orderShipmentTrackingModel.trackingProvider = selectedShipmentTrackingProviderName
-                    if (isCustomProvider) {
-                        customProviderUrlText?.let { orderShipmentTrackingModel.trackingLink = it }
-                    }
-
-                    orderDetail_shipmentList.addTransientTrackingProvider(orderShipmentTrackingModel)
-                    presenter.pushShipmentTrackingRecord(orderShipmentTrackingModel, isCustomProvider)
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onStart() {
