@@ -115,6 +115,8 @@
         Settings
     -->
     <dimen name="settings_padding">16dp</dimen>
+    <dimen name="settings_logout_button_horz">50dp</dimen>
+    <dimen name="settings_logout_button_vert">12dp</dimen>
 
     <!--
         Stats and Top earners
@@ -156,4 +158,11 @@
     <dimen name="product_icon_sz">40dp</dimen>
     <dimen name="product_detail_card_divider_height">16dp</dimen>
     <dimen name="product_detail_property_margin">@dimen/settings_padding</dimen>
+
+    <!--
+        Shipment Trackings
+    -->
+    <dimen name="card_level_button_width">32dp</dimen>
+    <dimen name="card_level_button_height">32dp</dimen>
+    <dimen name="card_level_button_padding">6dp</dimen>
 </resources>

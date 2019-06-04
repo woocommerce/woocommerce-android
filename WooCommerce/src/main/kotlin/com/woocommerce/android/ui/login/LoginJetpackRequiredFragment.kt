@@ -57,8 +57,6 @@ class LoginJetpackRequiredFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-
-        // Inflate the layout for this fragment
         return inflater.inflate(layout.fragment_login_jetpack_required, container, false)
     }
 

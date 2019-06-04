@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
     android:focusableInTouchMode="true"
-    tools:context="com.woocommerce.android.ui.products.ProductDetailActivity">
+    tools:context="com.woocommerce.android.ui.products.ProductDetailFragment">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -40,7 +40,7 @@
                     android:contentDescription="@string/orderdetail_product_image_contentdesc"
                     android:scaleType="centerCrop"
                     android:transitionName="@string/shared_element_transition"
-                    tools:height="224dp"/>
+                    tools:height="200dp"/>
 
                 <ImageView
                     android:id="@+id/imageScrim"
@@ -81,14 +81,6 @@
                     android:layout_gravity="bottom"/>
 
             </FrameLayout>
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

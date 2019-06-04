@@ -96,4 +96,30 @@ class DateUtilsTest {
             DateUtils.getShortMonthDayString("")
         }
     }
+
+    @Test
+    fun `getDateString() returns correct values`() {
+        assertEquals("2019-05-09", DateUtils.getDateString("May 9, 2019"))
+        assertEquals("2018-12-31", DateUtils.getDateString("Dec 31, 2018"))
+        assertEquals("2019-01-01", DateUtils.getDateString("Jan 01, 2019"))
+        assertEquals("2019-02-28", DateUtils.getDateString("Feb 28, 2019"))
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getDateString("Dec 30 2018")
+        }
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getDateString("2019-12-31")
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getDateString("-07-41")
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getDateString("")
+        }
+    }
 }

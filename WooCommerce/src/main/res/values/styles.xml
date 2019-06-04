@@ -88,6 +88,7 @@
     <style name="Woo.TextAppearance.Title.Large">
         <item name="android:textColor">@color/default_text_title</item>
         <item name="android:textSize">@dimen/text_extra_large</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="Woo.TextAppearance.Title.Large.Bold">
@@ -280,6 +281,7 @@
         <item name="android:layout_height">@dimen/list_group_header_height</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:textAppearance">@style/Woo.TextAppearance.ListHeader</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="Woo.TextAppearance.ListHeader">
@@ -448,16 +450,6 @@
     </style>
 
     <!--
-        Product detail
-    -->
-    <style name="ProductDetail" />
-    <style name="ProductDetail.Activity" parent="AppTheme">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <!--
         Image viewer
     -->
     <style name="ImageViewer" />
@@ -486,6 +478,21 @@
         <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
     </style>
 
+    <style name="Woo.OrderTracking.Add.EditText" parent="@style/EditText">
+        <item name="android:textColorHint">@color/edit_text_color_control_normal</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="colorControlNormal">@color/list_divider</item>
+        <item name="colorControlActivated">@color/list_divider</item>
+        <item name="colorControlHighlight">@color/list_divider</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="Woo.TextAppearance.OrderTracking" parent="@style/Woo.TextAppearance">
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:gravity">start</item>
+    </style>
+
     <style name="Woo.Dialog.Promo">
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
@@ -503,6 +510,28 @@
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textAlignment">center</item>
         <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <style name="Woo.Dialog.ProviderList">
+        <item name="android:windowEnterAnimation">@anim/activity_slide_in_from_right</item>
+        <item name="android:windowExitAnimation">@anim/activity_slide_out_to_right</item>
+    </style>
+
+    <!--
+        Add Tracking Provider List
+    -->
+    <style name="Woo.Dialog.ProviderList.Header" parent="Woo.ListHeader">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/wc_purple</item>
+        <item name="android:textSize">@dimen/list_item_text_size</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+
+    <!--
+        Delete Shipment Tracking
+    -->
+    <style name="Woo.Delete.Button" parent="android:style/Widget.ActionButton">
+        <item name="android:src">@drawable/delete_button_bg</item>
     </style>
 
 </resources>
