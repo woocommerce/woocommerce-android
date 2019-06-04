@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.orders
 
-import android.app.Activity.RESULT_OK
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -23,11 +21,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_IS_CUSTOM_PROVIDER
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_DATE_SHIPPED
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_NUMBER
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_PROVIDER
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -43,7 +36,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
         const val FIELD_SHIPMENT_TRACKINGS_FETCHED = "is-shipment-trackings-fetched"
-        const val REQUEST_CODE_ADD_TRACKING = 101
 
         fun newInstance(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean = false): Fragment {
             val args = Bundle()
@@ -126,36 +118,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         deleteOrderShipmentTrackingResponseSnackbar?.dismiss()
         deleteOrderShipmentTrackingResponseSnackbar = null
         super.onStop()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_ADD_TRACKING) {
-            if (data != null) {
-                val selectedShipmentTrackingProviderName = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
-                AppPrefs.setSelectedShipmentTrackingProviderName(selectedShipmentTrackingProviderName)
-
-                if (resultCode == RESULT_OK) {
-                    val isCustomProvider = data.getBooleanExtra(FIELD_IS_CUSTOM_PROVIDER, false)
-                    AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider)
-
-                    val dateShipped = data.getStringExtra(FIELD_ORDER_TRACKING_DATE_SHIPPED)
-                    val customProviderUrlText = data.getStringExtra(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL)
-                    val trackingNumText = data.getStringExtra(FIELD_ORDER_TRACKING_NUMBER)
-
-                    val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
-                    orderShipmentTrackingModel.trackingNumber = trackingNumText
-                    orderShipmentTrackingModel.dateShipped = dateShipped
-                    orderShipmentTrackingModel.trackingProvider = selectedShipmentTrackingProviderName
-                    if (isCustomProvider) {
-                        customProviderUrlText?.let { orderShipmentTrackingModel.trackingLink = it }
-                    }
-
-                    orderFulfill_addShipmentTracking.addTransientTrackingProvider(orderShipmentTrackingModel)
-                    presenter.pushShipmentTrackingRecord(orderShipmentTrackingModel, isCustomProvider)
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun showOrderDetail(order: WCOrderModel) {
@@ -270,12 +232,15 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun openAddOrderShipmentTrackingScreen() {
         AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
-        presenter.orderModel?.let {
-            val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
-            intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
-            intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, AppPrefs.getSelectedShipmentTrackingProviderName())
-            intent.putExtra(FIELD_IS_CUSTOM_PROVIDER, AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
-            startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                presenter.orderModel?.let {
+                    router.openAddOrderShipmentTracking(
+                            orderIdentifier = it.getIdentifier(),
+                            orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
+                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
+                }
+            }
         }
     }
 

@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.orders
 
+import android.support.design.R.id
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.Espresso.pressBack
+import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.contrib.PickerActions
 import android.support.test.espresso.contrib.RecyclerViewActions
+import android.support.test.espresso.matcher.ViewMatchers
+import android.support.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.espresso.matcher.ViewMatchers.withClassName
 import android.support.test.espresso.matcher.ViewMatchers.withContentDescription
@@ -17,10 +21,12 @@ import android.support.v7.widget.RecyclerView
 import android.widget.DatePicker
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.util.DateUtils
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.equalToIgnoringCase
 import org.junit.Before
@@ -35,7 +41,7 @@ import java.util.Calendar.YEAR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class AddShipmentTrackingActivityTest : TestBase() {
+class AddShipmentTrackingFragmentTest : TestBase() {
     @Rule
     @JvmField var activityTestRule = MainActivityTestRule()
 
@@ -177,5 +183,31 @@ class AddShipmentTrackingActivityTest : TestBase() {
 
         // check that the provider text is still empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText("")))
+    }
+
+    @Test
+    fun verifyAddShipmentTrackingNoNetworkResponse() {
+        // inject mock data to the provider list screen
+        // click on select provider & select a provider from the list
+        // select the first item on the second section of the list: under United States
+        activityTestRule.setOrderProviderListWithMockData()
+        onView(withId(R.id.addTracking_editCarrier)).perform(click())
+        onView(withId(R.id.addTrackingProviderList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(3, click()))
+
+        // type tracking info
+        val trackingNum = "12121-12121-12121-12121"
+        onView(withId(R.id.addTracking_number)).perform(ViewActions.clearText(), ViewActions.typeText(trackingNum))
+
+        // click on "Add tracking" button
+        onView(withId(R.id.menu_add)).perform(click())
+
+        // verify that offline snackbar is displayed
+        onView(
+                Matchers.allOf(
+                        withId(id.snackbar_text),
+                        withText(string.offline_error)
+                )
+        ).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
     }
 }

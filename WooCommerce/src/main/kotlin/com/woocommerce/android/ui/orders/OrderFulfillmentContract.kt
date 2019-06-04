@@ -14,10 +14,6 @@ interface OrderFulfillmentContract {
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, isShipmentTrackingsFetched: Boolean = false)
         fun getOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderShipmentTrackings()
-        fun pushShipmentTrackingRecord(
-            wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel,
-            isCustomProvider: Boolean
-        )
         fun loadShipmentTrackingsFromDb()
         fun fetchShipmentTrackingsFromApi(order: WCOrderModel)
         fun getShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel>

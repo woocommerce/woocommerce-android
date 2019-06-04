@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
@@ -28,7 +27,6 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -117,35 +115,6 @@ class OrderFulfillmentPresenter @Inject constructor(
             val trackings = getShipmentTrackingsFromDb(order)
             orderView?.showOrderShipmentTrackings(trackings)
         }
-    }
-
-    override fun pushShipmentTrackingRecord(
-        wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel,
-        isCustomProvider: Boolean
-    ) {
-        AnalyticsTracker.track(
-                ORDER_TRACKING_ADD,
-                mapOf(AnalyticsTracker.KEY_ID to orderModel!!.remoteOrderId,
-                        AnalyticsTracker.KEY_STATUS to orderModel!!.status,
-                        AnalyticsTracker.KEY_CARRIER to wcOrderShipmentTrackingModel.trackingProvider)
-        )
-
-        if (!networkStatus.isConnected()) {
-            // Device is not connected. Display generic message and exit. Technically we shouldn't get this far, but
-            // just in case...
-            uiMessageResolver.showOfflineSnack()
-            return
-        }
-
-        val payload = AddOrderShipmentTrackingPayload(
-                selectedSite.get(),
-                orderModel!!,
-                wcOrderShipmentTrackingModel,
-                isCustomProvider
-        )
-        dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
-
-        orderView?.showAddShipmentTrackingSnack()
     }
 
     override fun markOrderComplete() {

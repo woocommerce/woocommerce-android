@@ -15,23 +15,27 @@ import android.support.test.filters.LargeTest
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
+import com.woocommerce.android.ui.main.MainActivityTestRule
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.wordpress.android.fluxc.model.SiteModel
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class AddOrderTrackingProviderListTest : TestBase() {
     @Rule
-    @JvmField var activityTestRule = AddShipmentTrackingActivityTestRule()
+    @JvmField var activityTestRule = MainActivityTestRule()
 
     private val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(orderStatus = "processing")
     private val mockShipmentTrackingProviders = WcOrderTestUtils.generateShipmentTrackingProviderList()
@@ -53,10 +57,36 @@ class AddOrderTrackingProviderListTest : TestBase() {
         }
     }
 
+    @Before
+    override fun setup() {
+        super.setup()
+        // Bypass login screen and display dashboard
+        activityTestRule.launchMainActivityLoggedIn(null, SiteModel())
+
+        // Make sure the bottom navigation view is showing
+        activityTestRule.activity.showBottomNav()
+
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
+
+        // Click on Orders tab in the bottom bar
+        onView(withId(R.id.orders)).perform(click())
+
+        // add mock data to order detail screen
+        activityTestRule.setOrderDetailWithMockData(order = mockWCOrderModel)
+
+        // click on a single order from the list
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+    }
+
     @Test
     fun verifyProviderListSectionsDisplayedCorrectly() {
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
+        // setting the default provider value to empty here
+        AppPrefs.setSelectedShipmentTrackingProviderName("")
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData()
@@ -84,8 +114,11 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
     @Test
     fun verifyStoreCountryDisplayedFirstForUnitedStates() {
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
+        // setting the default provider value to empty here
+        AppPrefs.setSelectedShipmentTrackingProviderName("")
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData()
@@ -108,8 +141,11 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
     @Test
     fun verifyStoreCountryDisplayedFirstForIndia() {
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
+        // setting the default provider value to empty here
+        AppPrefs.setSelectedShipmentTrackingProviderName("")
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData(storeCountry = "IN")
@@ -132,8 +168,11 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
     @Test
     fun verifyStoreCountryNotDisplayedFirstForHongKong() {
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
+        // setting the default provider value to empty here
+        AppPrefs.setSelectedShipmentTrackingProviderName("")
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData(storeCountry = "HK")
@@ -157,8 +196,11 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
     @Test
     fun verifySelectDefaultProviderFromList() {
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
+        // setting the default provider value to empty here
+        AppPrefs.setSelectedShipmentTrackingProviderName("")
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify that the select provider field is empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText("")))
@@ -190,11 +232,14 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
     @Test
     fun verifySelectCustomProviderFromList() {
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
+        AppPrefs.setSelectedShipmentTrackingProviderName("")
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(true)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify that the select provider field is empty
-        onView(withId(R.id.addTracking_editCarrier)).check(matches(withText("")))
+        onView(withId(R.id.addTracking_custom_provider_name)).check(matches(withText("")))
 
         // inject mock data to the provider list screen
         activityTestRule.setOrderProviderListWithMockData()
@@ -227,9 +272,12 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
     @Test
     fun verifyAlreadySelectedProviderNameDisplayedCorrectly() {
-        // launch activity with empty provider name
         val providerName = "US Provider 1"
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), providerName)
+        AppPrefs.setSelectedShipmentTrackingProviderName(providerName)
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(false)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify that the select provider field is not empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText(providerName)))

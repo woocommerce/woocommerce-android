@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -41,10 +42,12 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
          * @param [selectedProviderText] to update the currently selected provider item (if already selected)
          */
         fun newInstance(
+            listener: Fragment,
             orderIdentifier: OrderIdentifier,
             selectedProviderText: String?
         ): AddOrderTrackingProviderListFragment {
             val fragment = AddOrderTrackingProviderListFragment()
+            fragment.setTargetFragment(listener, 100)
             fragment.retainInstance = true
             fragment.orderIdentifier = orderIdentifier
             fragment.selectedProviderText = selectedProviderText
@@ -68,18 +71,11 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
-        if (activity is AddOrderTrackingProviderActionListener) {
-            listener = activity as AddOrderTrackingProviderActionListener
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        listener = targetFragment as AddOrderTrackingProviderActionListener
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme)
     }
 

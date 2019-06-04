@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.contrib.RecyclerViewActions
 import android.support.test.espresso.matcher.RootMatchers.isDialog
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.espresso.matcher.ViewMatchers.withContentDescription
@@ -10,27 +11,60 @@ import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.filters.LargeTest
 import android.support.test.runner.AndroidJUnit4
+import android.support.v7.widget.RecyclerView
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
+import com.woocommerce.android.ui.main.MainActivityTestRule
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.equalToIgnoringCase
-import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.wordpress.android.fluxc.model.SiteModel
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class AddShipmentTrackingNavigationTest : TestBase() {
     @Rule
-    @JvmField var activityTestRule = AddShipmentTrackingActivityTestRule()
+    @JvmField var activityTestRule = MainActivityTestRule()
 
     private val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(orderStatus = "processing")
 
+    @Before
+    override fun setup() {
+        super.setup()
+        // Bypass login screen and display dashboard
+        activityTestRule.launchMainActivityLoggedIn(null, SiteModel())
+
+        // Make sure the bottom navigation view is showing
+        activityTestRule.activity.showBottomNav()
+
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
+
+        // Click on Orders tab in the bottom bar
+        onView(withId(R.id.orders)).perform(click())
+
+        // add mock data to order detail screen
+        activityTestRule.setOrderDetailWithMockData(order = mockWCOrderModel)
+
+        // click on a single order from the list
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+    }
+
     @Test
     fun verifyErrorDisplayedOnProviderFieldWhenAddButtonClicked() {
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), "")
+        // setting the default provider value to empty here
+        AppPrefs.setSelectedShipmentTrackingProviderName("")
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(false)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify that provider text is empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText("")))
@@ -46,9 +80,13 @@ class AddShipmentTrackingNavigationTest : TestBase() {
 
     @Test
     fun verifyErrorDisplayedOnTrackingNumFieldWhenAddButtonClicked() {
+        // launch activity with default provider name
         val providerName = "Fedex"
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(mockWCOrderModel.getIdentifier(), providerName)
+        AppPrefs.setSelectedShipmentTrackingProviderName(providerName)
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(false)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify that provider text is not empty
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText(providerName)))
@@ -67,11 +105,13 @@ class AddShipmentTrackingNavigationTest : TestBase() {
 
     @Test
     fun verifyErrorDisplayedOnTrackingNumFieldWhenAddButtonClickedForCustomProvider() {
+        // launch activity with custom provider name
         val providerName = "Anitaa Test Inc"
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(
-                mockWCOrderModel.getIdentifier(), providerName, true
-        )
+        AppPrefs.setSelectedShipmentTrackingProviderName(providerName)
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(true)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify that provider text = Custom provider
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText(
@@ -102,10 +142,11 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     @Test
     fun verifyErrorDisplayedOnCustomProviderFieldWhenAddButtonClickedForCustomProvider() {
         val providerName = ""
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(
-                mockWCOrderModel.getIdentifier(), providerName, true
-        )
+        AppPrefs.setSelectedShipmentTrackingProviderName(providerName)
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(true)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify that provider text = Custom provider
         onView(withId(R.id.addTracking_editCarrier)).check(matches(withText(
@@ -136,10 +177,11 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     @Test
     fun verifyToolbarItemsDisplayedCorrectly() {
         val providerName = ""
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(
-                mockWCOrderModel.getIdentifier(), providerName, false
-        )
+        AppPrefs.setSelectedShipmentTrackingProviderName(providerName)
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(false)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify toolbar title is displayed correctly
         onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(equalToIgnoringCase(
@@ -157,10 +199,11 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     @Test
     fun verifyDiscardDialogDisplayedWhenTrackingDetailsEntered() {
         val providerName = "Fedex"
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(
-                mockWCOrderModel.getIdentifier(), providerName, false
-        )
+        AppPrefs.setSelectedShipmentTrackingProviderName(providerName)
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(false)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // Clicking the "up" button in order detail screen returns the user to the orders fulfill screen.
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
@@ -170,17 +213,21 @@ class AddShipmentTrackingNavigationTest : TestBase() {
                 .check(matches(isDisplayed()))
                 .perform(click())
 
-        // verify that app is closed
-        assertTrue(activityTestRule.activity.isFinishing)
+        // verify that order detail screen is displayed
+        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(
+                Matchers.equalToIgnoringCase(
+                        appContext.getString(string.orderdetail_orderstatus_ordernum, "1")
+                ))))
     }
 
     @Test
     fun verifyDiscardDialogKeepEditingButtonClickDismissesDialog() {
         val providerName = "Fedex"
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(
-                mockWCOrderModel.getIdentifier(), providerName, false
-        )
+        AppPrefs.setSelectedShipmentTrackingProviderName(providerName)
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(false)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // Clicking the "up" button in order detail screen returns the user to the orders fulfill screen.
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
@@ -197,16 +244,19 @@ class AddShipmentTrackingNavigationTest : TestBase() {
     @Test
     fun verifyDiscardDialogNotDisplayedWhenFieldsEmpty() {
         val providerName = ""
-        // launch activity with empty provider name
-        activityTestRule.launchAddShipmentActivityWithIntent(
-                mockWCOrderModel.getIdentifier(), providerName, false
-        )
+        AppPrefs.setSelectedShipmentTrackingProviderName(providerName)
+        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(false)
+
+        // scroll to bottom and click on add tracking button and redirect to Add shipment tracking fragnent
+        onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // Clicking the "up" button in order detail screen returns the user to the orders fulfill screen.
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click())
 
-        // app should exit
-        // verify that app is closed
-        assertTrue(activityTestRule.activity.isFinishing)
+        // verify that order detail screen is displayed
+        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(
+                Matchers.equalToIgnoringCase(
+                        appContext.getString(string.orderdetail_orderstatus_ordernum, "1")
+                ))))
     }
 }

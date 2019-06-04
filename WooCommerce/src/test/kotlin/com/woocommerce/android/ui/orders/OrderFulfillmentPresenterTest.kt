@@ -22,7 +22,6 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -189,19 +188,6 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
 
-        val defaultShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
-            trackingProvider = "Anitaa Test"
-            trackingLink = "123456"
-            dateShipped = "2019-05-13T16:11:13Z"
-        }
-        presenter.pushShipmentTrackingRecord(defaultShipmentTrackingModel, false)
-
-        // ensure that dispatcher is invoked
-        verify(dispatcher, times(1)).dispatch(any<Action<AddOrderShipmentTrackingPayload>>())
-
-        // verify that add shipment tracking snackbar is displayed
-        verify(view).showAddShipmentTrackingSnack()
-
         // mock success response
         presenter.onOrderChanged(OnOrderChanged(1).apply {
             causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
@@ -216,19 +202,6 @@ class OrderFulfillmentPresenterTest {
         doReturn(order).whenever(presenter).orderModel
         presenter.takeView(view)
 
-        val defaultShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
-            trackingProvider = "Anitaa Test"
-            trackingLink = "123456"
-            dateShipped = "2019-05-13T16:11:13Z"
-        }
-        presenter.pushShipmentTrackingRecord(defaultShipmentTrackingModel, false)
-
-        // ensure that dispatcher is invoked
-        verify(dispatcher, times(1)).dispatch(any<Action<AddOrderShipmentTrackingPayload>>())
-
-        // verify that add shipment tracking snackbar is displayed
-        verify(view).showAddShipmentTrackingSnack()
-
         // mock error response
         presenter.onOrderChanged(OnOrderChanged(1).apply {
             causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
@@ -240,23 +213,6 @@ class OrderFulfillmentPresenterTest {
 
         // verify shipment trackings is loaded from db
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
-    }
-
-    @Test
-    fun `Show offline message on request to add order shipment tracking if not connected`() {
-        presenter.takeView(view)
-        doReturn(order).whenever(presenter).orderModel
-        doReturn(false).whenever(networkStatus).isConnected()
-
-        val defaultShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1).apply {
-            trackingProvider = "Anitaa Test"
-            trackingLink = "123456"
-            dateShipped = "2019-05-13T16:11:13Z"
-        }
-        presenter.pushShipmentTrackingRecord(defaultShipmentTrackingModel, false)
-
-        verify(view, times(0)).showAddShipmentTrackingSnack()
-        verify(uiMessageResolver, times(1)).showOfflineSnack()
     }
 
     @Test

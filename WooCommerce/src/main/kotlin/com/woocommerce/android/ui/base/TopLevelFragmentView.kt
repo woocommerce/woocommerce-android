@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.ui.orders.AddOrderNoteFragment
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderFulfillmentFragment
 import com.woocommerce.android.ui.orders.OrderProductListFragment
 import com.woocommerce.android.ui.orders.OrdersViewRouter
 import com.woocommerce.android.ui.products.ProductDetailFragment
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 /**
  * Special interface for top-level fragments like those hosted by the bottom bar.
@@ -122,6 +124,23 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
         val tag = AddOrderNoteFragment.TAG
         if (!popToState(tag)) {
             loadChildFragment(AddOrderNoteFragment.newInstance(order), tag)
+        }
+    }
+
+    override fun openAddOrderShipmentTracking(
+        orderIdentifier: OrderIdentifier,
+        orderTrackingProvider: String,
+        isCustomProvider: Boolean
+    ) {
+        val tag = AddOrderShipmentTrackingFragment.TAG
+        if (!popToState(tag)) {
+            loadChildFragment(
+                    AddOrderShipmentTrackingFragment.newInstance(
+                            orderIdentifier,
+                            orderTrackingProvider,
+                            isCustomProvider
+                    ), tag
+            )
         }
     }
 
