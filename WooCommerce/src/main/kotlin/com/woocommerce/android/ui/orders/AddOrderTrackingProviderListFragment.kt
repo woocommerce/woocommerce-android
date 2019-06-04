@@ -36,9 +36,9 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
         const val STATE_KEY_SELECTED_PROVIDER = "selected-provider"
         const val STATE_KEY_ORDER_IDENTIFIER = "order-identifier"
 
-        /*
-         * @param orderIdentifier = to fetch the list of providers from api
-         * @param selectedProviderText = to update the currently selected provider item (if already selected)
+        /**
+         * @param [orderIdentifier] to fetch the list of providers from api
+         * @param [selectedProviderText] to update the currently selected provider item (if already selected)
          */
         fun newInstance(
             orderIdentifier: OrderIdentifier,
