@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 
 class LoginWhatIsJetpackDialogFragment : DialogFragment() {
     companion object {
@@ -24,11 +25,15 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
         val dialogView = View.inflate(activity, R.layout.fragment_login_what_is_jetpack, null)
 
         dialogView.findViewById<Button>(R.id.btn_learn_more)?.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_LEARN_MORE_BUTTON_TAPPED
+            )
             // TODO: Open the help docs
             Toast.makeText(activity, "Not yet implemented", Toast.LENGTH_LONG).show()
         }
 
         dialogView.findViewById<Button>(R.id.btn_ok)?.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_OK_BUTTON_TAPPED)
+
             dialog?.dismiss()
         }
 
@@ -38,5 +43,10 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
                 .setView(dialogView)
                 .setCancelable(true)
                 .create()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 }
