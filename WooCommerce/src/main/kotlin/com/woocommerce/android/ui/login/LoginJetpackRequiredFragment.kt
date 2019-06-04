@@ -1,4 +1,4 @@
-package com.woocommerce.android
+package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
@@ -12,6 +12,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.woocommerce.android.R
+import com.woocommerce.android.R.layout
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
 import org.wordpress.android.login.LoginListener
 
@@ -57,7 +59,7 @@ class LoginJetpackRequiredFragment : Fragment() {
         setHasOptionsMenu(true)
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login_jetpack_required, container, false)
+        return inflater.inflate(layout.fragment_login_jetpack_required, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

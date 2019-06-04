@@ -8,8 +8,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.widget.Toast
-import com.woocommerce.android.LoginJetpackRequiredFragment
-import com.woocommerce.android.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
+import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.HelpActivity

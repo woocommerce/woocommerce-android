@@ -19,7 +19,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".LoginJetpackRequiredFragment">
+            tools:context=".ui.login.LoginJetpackRequiredFragment">
 
             <ImageView
                 android:id="@+id/imageView2"
