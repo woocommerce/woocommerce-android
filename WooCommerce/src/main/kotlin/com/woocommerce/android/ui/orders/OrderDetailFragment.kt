@@ -474,14 +474,16 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun showDeleteTrackingErrorSnack() {
-        deleteOrderShipmentTrackingResponseSnackbar = uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_error)
+        deleteOrderShipmentTrackingResponseSnackbar =
+                uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_error)
         if ((deleteOrderShipmentTrackingSnackbar?.isShownOrQueued) == false) {
             deleteOrderShipmentTrackingResponseSnackbar?.show()
         }
     }
 
     override fun markTrackingDeletedOnSuccess() {
-        deleteOrderShipmentTrackingResponseSnackbar = uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_success)
+        deleteOrderShipmentTrackingResponseSnackbar =
+                uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_success)
         if ((deleteOrderShipmentTrackingSnackbar?.isShownOrQueued) == false) {
             deleteOrderShipmentTrackingResponseSnackbar?.show()
         }
