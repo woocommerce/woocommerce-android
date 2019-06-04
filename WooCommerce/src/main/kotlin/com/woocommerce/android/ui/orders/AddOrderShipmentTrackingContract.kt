@@ -8,7 +8,6 @@ interface AddOrderShipmentTrackingContract {
 
     interface View : BaseView<BasePresenter<View>> {
         fun confirmDiscard()
-        fun onActivityFinish()
         fun getDateShippedText(): String
         fun getProviderText(): String
         fun isCustomProvider(): Boolean

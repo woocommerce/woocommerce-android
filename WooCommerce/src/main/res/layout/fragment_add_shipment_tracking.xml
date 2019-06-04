@@ -9,22 +9,19 @@
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/view_toolbar"/>
-
     <LinearLayout
         android:id="@+id/addTracking_editContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_below="@+id/toolbar"
         android:background="@color/white"
         android:orientation="vertical"
         android:padding="@dimen/margin_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toTopOf="parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <!-- Select provider view -->
         <TextView

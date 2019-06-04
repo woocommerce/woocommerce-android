@@ -258,12 +258,15 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun openAddOrderShipmentTrackingScreen() {
         AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
-        presenter.orderModel?.let {
-            val intent = Intent(activity, AddOrderShipmentTrackingActivity::class.java)
-            intent.putExtra(AddOrderShipmentTrackingActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
-            intent.putExtra(FIELD_ORDER_TRACKING_PROVIDER, AppPrefs.getSelectedShipmentTrackingProviderName())
-            intent.putExtra(FIELD_IS_CUSTOM_PROVIDER, AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
-            startActivityForResult(intent, REQUEST_CODE_ADD_TRACKING)
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                presenter.orderModel?.let {
+                    router.openAddOrderShipmentTracking(
+                            orderIdentifier = it.getIdentifier(),
+                            orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
+                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
+                }
+            }
         }
     }
 
