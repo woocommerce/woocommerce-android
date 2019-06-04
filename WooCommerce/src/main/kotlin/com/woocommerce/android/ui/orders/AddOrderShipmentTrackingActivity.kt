@@ -127,11 +127,14 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
     override fun onPause() {
         super.onPause()
         /**
-         * If calendar dialog is displaying when activity is in a paused state,
+         * If calendar dialog or provider list dialog is displaying when activity is in a paused state,
          * then dismiss the dialog
          */
         dateShippedPickerDialog?.dismiss()
         dateShippedPickerDialog = null
+
+        providerListPickerDialog?.dismiss()
+        providerListPickerDialog = null
     }
 
     override fun onResume() {
