@@ -36,7 +36,6 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
         const val FIELD_SHIPMENT_TRACKINGS_FETCHED = "is-shipment-trackings-fetched"
-        const val REQUEST_CODE_ADD_TRACKING = 101
 
         fun newInstance(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean = false): Fragment {
             val args = Bundle()

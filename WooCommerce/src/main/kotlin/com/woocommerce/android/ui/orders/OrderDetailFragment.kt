@@ -40,7 +40,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
         const val FIELD_REMOTE_NOTE_ID = "remote-notification-id"
-        const val REQUEST_CODE_ADD_TRACKING = 102
 
         fun newInstance(
             orderId: OrderIdentifier,
