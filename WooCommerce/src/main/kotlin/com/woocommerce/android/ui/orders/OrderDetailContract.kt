@@ -15,6 +15,8 @@ interface OrderDetailContract {
         var orderIdentifier: OrderIdentifier?
         var isUsingCachedNotes: Boolean
         var isUsingCachedShipmentTrackings: Boolean
+        var isShipmentTrackingsFetched: Boolean
+        var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?
         fun fetchOrder(remoteOrderId: Long)
         fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
@@ -22,14 +24,22 @@ interface OrderDetailContract {
         fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel>
         fun fetchAndLoadOrderNotesFromDb()
         fun loadOrderShipmentTrackings()
+        fun getOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel>
+        fun loadShipmentTrackingsFromDb()
         fun doChangeOrderStatus(newStatus: String)
         fun markOrderNotificationRead(context: Context, remoteNoteId: Long)
         fun getOrderStatusForStatusKey(key: String): WCOrderStatusModel
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
         fun refreshOrderStatusOptions()
+        fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
+        fun pushShipmentTrackingRecord(
+            wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel,
+            isCustomProvider: Boolean
+        )
     }
 
-    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener {
+    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener,
+            OrderShipmentTrackingActionListener {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)
@@ -47,5 +57,10 @@ interface OrderDetailContract {
         fun showLoadOrderError()
         fun refreshOrderStatus()
         fun refreshProductImages()
+        fun undoDeletedTrackingOnError(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?)
+        fun markTrackingDeletedOnSuccess()
+        fun showDeleteTrackingErrorSnack()
+        fun showAddShipmentTrackingSnack()
+        fun showAddAddShipmentTrackingErrorSnack()
     }
 }

@@ -19,9 +19,11 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrdersSearched
 import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersPayload
@@ -57,6 +59,7 @@ class OrderListPresenter @Inject constructor(
     private var nextSearchOffset = 0
 
     private var isRefreshingOrderStatusOptions = false
+    override var isShipmentTrackingProviderFetched: Boolean = false
 
     override fun takeView(view: OrderListContract.View) {
         orderView = view
@@ -263,6 +266,11 @@ class OrderListPresenter @Inject constructor(
             if (currentOrders.count() > 0) {
                 view.showEmptyView(false)
                 view.showOrders(currentOrders, orderStatusFilter, isForceRefresh)
+
+                // load shipment tracking providers list only if order list is fetched and displayed.
+                // for some reason, orderId is required to fetch shipment tracking providers
+                // so passing the first order in the order list
+                loadShipmentTrackingProviders(currentOrders[0])
             } else {
                 if (!networkStatus.isConnected()) {
                     // if the device is offline with no cached orders to display, show the loading
@@ -292,6 +300,27 @@ class OrderListPresenter @Inject constructor(
             }
         }
         return currentOrders
+    }
+
+    /**
+     * Pre-load shipment tracking providers only if it is not already fetched
+     * If it is not fetched, and if network is connected, fetch list from api
+     */
+    override fun loadShipmentTrackingProviders(order: WCOrderModel) {
+        if (!isShipmentTrackingProviderFetched && networkStatus.isConnected()) {
+            val payload = FetchOrderShipmentProvidersPayload(selectedSite.get(), order)
+            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentProvidersAction(payload))
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderShipmentProviderChanged(event: OnOrderShipmentProvidersChanged) {
+        if (event.isError) {
+            WooLog.e(T.ORDERS, "$TAG - Error fetching shipment tracking providers : ${event.error.message}")
+        } else {
+            isShipmentTrackingProviderFetched = true
+        }
     }
 
     @Suppress("unused")

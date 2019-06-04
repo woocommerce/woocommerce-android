@@ -27,7 +27,7 @@ import javax.inject.Singleton
         FCMServiceModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class,
-        NetworkStatusModule::class,
+        MockedNetworkStatusModule::class,
         MockedCurrencyModule::class,
         SupportModule::class])
 interface AppComponentTest : AppComponent {

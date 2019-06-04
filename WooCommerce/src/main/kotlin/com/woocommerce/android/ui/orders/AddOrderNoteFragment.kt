@@ -134,7 +134,7 @@ class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressLis
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         menu?.clear()
-        inflater?.inflate(R.menu.menu_add_note, menu)
+        inflater?.inflate(R.menu.menu_add, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 

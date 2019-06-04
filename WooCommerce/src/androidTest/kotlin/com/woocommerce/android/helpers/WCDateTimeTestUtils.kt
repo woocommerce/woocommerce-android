@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
-object WcDateTimeTestUtils {
+object WCDateTimeTestUtils {
     private const val DATE_FORMAT = "yyyy-MM-dd'T'hh:mm:ss'Z'"
 
     fun getCurrentDateTime(): Date = Calendar.getInstance().time
