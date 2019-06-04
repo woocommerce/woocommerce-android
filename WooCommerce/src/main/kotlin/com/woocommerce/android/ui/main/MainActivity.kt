@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.ui.products.ProductDetailActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -427,7 +426,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
-        ProductDetailActivity.show(this, remoteProductId)
+        val fragment = bottomNavView.getFragment(bottomNavView.currentPosition)
+        fragment.openProductDetail(remoteProductId)
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
