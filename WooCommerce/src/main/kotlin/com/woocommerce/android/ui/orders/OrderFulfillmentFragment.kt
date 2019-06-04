@@ -121,6 +121,7 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
 
     override fun onStop() {
         deleteOrderShipmentTrackingSnackbar?.dismiss()
+        deleteOrderShipmentTrackingSnackbar = null
         super.onStop()
     }
 
