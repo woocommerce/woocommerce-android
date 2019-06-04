@@ -272,6 +272,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
             slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         } else {
+            // hide the keyboard
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+            // Show the 'Jetpack required' fragment
             val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
             slideInFragment(jetpackReqFragment as Fragment, true, LoginJetpackRequiredFragment.TAG)
         }
