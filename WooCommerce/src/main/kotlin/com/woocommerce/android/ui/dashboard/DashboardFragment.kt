@@ -272,7 +272,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
-        (activity as? TopLevelFragmentRouter)?.showProductDetail(topEarner.id)
+        openProductDetail(topEarner.id)
     }
 
     override fun hideUnfilledOrdersCard() {
