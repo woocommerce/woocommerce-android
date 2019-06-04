@@ -100,6 +100,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
      * and add the deleted [WCOrderShipmentTrackingModel] back to the list
      */
     private var deleteOrderShipmentTrackingSnackbar: Snackbar? = null
+    private var deleteOrderShipmentTrackingResponseSnackbar: Snackbar? = null
     private var deleteOrderShipmentTrackingSet = mutableSetOf<WCOrderShipmentTrackingModel>()
 
     override fun onAttach(context: Context?) {
@@ -193,6 +194,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         changeOrderStatusSnackbar?.dismiss()
         notesSnack?.dismiss()
         deleteOrderShipmentTrackingSnackbar?.dismiss()
+        deleteOrderShipmentTrackingResponseSnackbar?.dismiss()
         super.onStop()
     }
 
@@ -472,11 +474,17 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun showDeleteTrackingErrorSnack() {
-        uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_error).show()
+        deleteOrderShipmentTrackingResponseSnackbar = uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_error)
+        if ((deleteOrderShipmentTrackingSnackbar?.isShownOrQueued) == false) {
+            deleteOrderShipmentTrackingResponseSnackbar?.show()
+        }
     }
 
     override fun markTrackingDeletedOnSuccess() {
-        uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_success).show()
+        deleteOrderShipmentTrackingResponseSnackbar = uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_success)
+        if ((deleteOrderShipmentTrackingSnackbar?.isShownOrQueued) == false) {
+            deleteOrderShipmentTrackingResponseSnackbar?.show()
+        }
     }
 
     override fun showAddShipmentTrackingSnack() {
