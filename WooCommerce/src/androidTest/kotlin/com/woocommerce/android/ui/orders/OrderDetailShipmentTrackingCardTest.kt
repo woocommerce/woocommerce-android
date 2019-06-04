@@ -45,7 +45,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyBoolean
 import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.model.SiteModel
@@ -341,6 +340,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         ).check(matches(isDisplayed()))
 
         // click on the undo button
+        Thread.sleep(1000)
         onView(withText(appContext.getString(R.string.undo))).perform(click())
 
         // verify that the shipment tracking list count matches the mock data count
@@ -439,7 +439,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
     }
 
     @Test
-    fun verifyShipmentTrackingAddedOnAddButtonClick() {
+    fun verifyAddShipmentTrackingSuccessResponse() {
         activityTestRule.setOrderDetailWithMockData(
                 order = mockWCOrderModel,
                 orderShipmentTrackings = mockShipmentTrackingList,
@@ -449,6 +449,12 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         // click on the first order in the list and check if redirected to order detail
         onView(withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // set mock response to add shipment tracking fragment
+        val onOrderChangedSuccessResponse = OnOrderChanged(1).apply {
+            causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
+        }
+        activityTestRule.setAddShipmentTrackingWithMockData(mockWCOrderModel, onOrderChangedSuccessResponse, true)
 
         // redirect to Add shipment tracking activity
         onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
@@ -465,22 +471,8 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         val trackingNum = "12121-12121-12121-12121"
         onView(withId(R.id.addTracking_number)).perform(ViewActions.clearText(), ViewActions.typeText(trackingNum))
 
-        // mock network available
-        val orderDetailFragment = getOrderDetailFragment()
-        doReturn(true).whenever(orderDetailFragment?.networkStatus)?.isConnected()
-
         // click on "Add tracking" button
         onView(withId(R.id.menu_add)).perform(click())
-
-        // verify that redirected to previous screen
-        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(
-                Matchers.equalToIgnoringCase(
-                        appContext.getString(string.orderdetail_orderstatus_ordernum, "1")
-                ))))
-
-        // Verify that new tracking is added to the shipment tracking list
-        val recyclerView = activityTestRule.activity.findViewById(R.id.shipmentTrack_items) as RecyclerView
-        Assert.assertSame(mockShipmentTrackingList.size + 1, recyclerView.adapter?.itemCount)
 
         // verify that add tracking snackbar is displayed
         onView(allOf(
@@ -488,8 +480,11 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
                 withText(R.string.order_shipment_tracking_added))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
-        // verify shipment tracking count is increased by 1
-        Assert.assertSame(mockShipmentTrackingList.size + 1, recyclerView.adapter?.itemCount)
+        // verify that redirected to previous screen
+        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(
+                Matchers.equalToIgnoringCase(
+                        appContext.getString(string.orderdetail_orderstatus_ordernum, "1")
+                ))))
     }
 
     @Test
@@ -503,6 +498,13 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         onView(withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
+        // set mock response to add shipment tracking fragment
+        val onOrderChangedErrorResponse = OnOrderChanged(1).apply {
+            causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
+            error = OrderError()
+        }
+        activityTestRule.setAddShipmentTrackingWithMockData(mockWCOrderModel, onOrderChangedErrorResponse, true)
+
         // redirect to Add shipment tracking activity
         onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
@@ -517,17 +519,6 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         // type tracking info
         val trackingNum = "12121-12121-12121-12121"
         onView(withId(R.id.addTracking_number)).perform(ViewActions.clearText(), ViewActions.typeText(trackingNum))
-
-        // mock api error response
-        val orderDetailFragment = getOrderDetailFragment()
-        val onOrderChangedErrorResponse = OnOrderChanged(1).apply {
-            causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
-            error = OrderError()
-        }
-        doAnswer {
-            (orderDetailFragment?.presenter as? OrderDetailPresenter)
-                    ?.onOrderChanged(onOrderChangedErrorResponse)
-        }. whenever(orderDetailFragment?.presenter)?.pushShipmentTrackingRecord(any(), anyBoolean())
 
         // click on "Add tracking" button
         onView(withId(R.id.menu_add)).perform(click())

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
@@ -16,6 +17,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPa
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
+@OpenClassOnDebug
 class AddOrderShipmentTrackingPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
