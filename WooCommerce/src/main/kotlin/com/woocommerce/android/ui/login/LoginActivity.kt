@@ -7,6 +7,9 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import android.widget.Toast
+import com.woocommerce.android.LoginJetpackRequiredFragment
+import com.woocommerce.android.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.HelpActivity
@@ -42,7 +45,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
-        HasSupportFragmentInjector {
+        HasSupportFragmentInjector, LoginJetpackRequiredListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
@@ -270,6 +273,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         } else {
             // TODO show jetpack dialog
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
+            slideInFragment(jetpackReqFragment as Fragment, true, LoginJetpackRequiredFragment.TAG)
         }
     }
 
@@ -400,4 +405,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     //  -- END: GoogleListener implementation methods
+
+    override fun onViewJetpackInstructions() {
+        // TODO - view instructions
+        Toast.makeText(this, "View jetpack instructions", Toast.LENGTH_LONG).show()
+    }
 }
