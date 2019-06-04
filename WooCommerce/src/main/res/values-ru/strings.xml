@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-04-16 11:54:03+0000
+Translation-Revision-Date: 2019-05-28 16:07:41+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
+    <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>
+    <string name="login_invalid_site_url">The site address you entered is invalid. Please re-enter it.</string>
+    <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
+    <string name="support_help_center">Help Center</string>
+    <string name="product_name_virtual">Virtual %s</string>
+    <string name="product_name_grouped">Grouped %s</string>
+    <string name="product_name_external">Affiliate %s</string>
+    <string name="product_name_variable">Variable %s</string>
+    <string name="product_backorders_notify">Allow, but notify customer</string>
+    <string name="product_backorders_yes">Разрешить</string>
+    <string name="product_backorders_no">Do not allow</string>
+    <string name="product_stock_status_on_backorder">В невыполненном заказе</string>
+    <string name="product_stock_status_out_of_stock">Out of stock</string>
+    <string name="product_stock_status_instock">In stock</string>
+    <string name="read_more">Читать далее</string>
     <string name="error_loading_image">Не удалось загрузить изображение</string>
     <string name="product_status_draft">Черновик</string>
     <string name="product_status_pending">На рассмотрении</string>

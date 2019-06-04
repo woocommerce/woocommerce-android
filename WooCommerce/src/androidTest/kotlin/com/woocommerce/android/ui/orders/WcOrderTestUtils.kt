@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders
 
 import com.google.gson.Gson
-import com.woocommerce.android.helpers.WcDateTimeTestUtils
+import com.woocommerce.android.helpers.WCDateTimeTestUtils
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
@@ -50,7 +52,7 @@ object WcOrderTestUtils {
             // Currency : USD
             currency = "USD"
             // today
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTime())
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTime())
             localSiteId = 1
             number = "1"
             // Processing
@@ -65,7 +67,7 @@ object WcOrderTestUtils {
             // Currency : CAD
             currency = "CAD"
             // Yesterday
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(1))
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(1))
             localSiteId = 1
             number = "63"
             // Pending payment
@@ -79,7 +81,7 @@ object WcOrderTestUtils {
             // Currency : EURO
             currency = "EUR"
             // 2 days ago
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(3))
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(3))
             localSiteId = 1
             number = "14"
             // On Hold
@@ -93,7 +95,7 @@ object WcOrderTestUtils {
             // Currency : INR
             currency = "INR"
             // More than a week
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusDays(14))
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusDays(14))
             localSiteId = 1
             number = "15"
             // Completed
@@ -106,7 +108,7 @@ object WcOrderTestUtils {
             billingLastName = "Jones"
             currency = "AUD"
             // Older than a month
-            dateCreated = WcDateTimeTestUtils.formatDate(WcDateTimeTestUtils.getCurrentDateTimeMinusMonths(2))
+            dateCreated = WCDateTimeTestUtils.formatDate(WCDateTimeTestUtils.getCurrentDateTimeMinusMonths(2))
             localSiteId = 1
             number = "3"
             // Cancelled
@@ -294,6 +296,108 @@ object WcOrderTestUtils {
                 }
         )
         return options.map { it.statusKey to it }.toMap()
+    }
+
+    /**
+     * Generates an array containing multiple [WCOrderShipmentTrackingModel] objects.
+     */
+    fun generateOrderShipmentTrackings(): List<WCOrderShipmentTrackingModel> {
+        val result = ArrayList<WCOrderShipmentTrackingModel>()
+
+        val om1 = WCOrderShipmentTrackingModel().apply {
+            localSiteId = 1
+            trackingProvider = "Anitaa Test"
+            trackingNumber = "1111-1111-1111-1111"
+            trackingLink = "http://somesite.com"
+            dateShipped = "2018-02-02"
+        }
+
+        val om2 = WCOrderShipmentTrackingModel().apply {
+            localSiteId = 1
+            trackingProvider = "DHL"
+            trackingNumber = "2222-2222-2222-2222"
+            dateShipped = "2019-01-01"
+        }
+
+        val om3 = WCOrderShipmentTrackingModel().apply {
+            localSiteId = 1
+            trackingProvider = "Fedex"
+            trackingNumber = "3333-3333-3333-3333"
+            trackingLink = "http://testlink3.com"
+            dateShipped = "2019-02-28"
+        }
+
+        val om4 = WCOrderShipmentTrackingModel().apply {
+            localSiteId = 1
+            trackingProvider = "Axle"
+            trackingNumber = "4444"
+            trackingLink = "http://testlink4.com"
+            dateShipped = "2019-05-23"
+        }
+
+        result.add(om1)
+        result.add(om2)
+        result.add(om3)
+        result.add(om4)
+        return result
+    }
+
+    /**
+     * Generates an array containing multiple [WCOrderShipmentProviderModel] objects.
+     */
+    fun generateShipmentTrackingProviderList(): List<WCOrderShipmentProviderModel> {
+        val result = ArrayList<WCOrderShipmentProviderModel>()
+
+        val pv1 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "Australia"
+            carrierName = "Australia Provider 1"
+            carrierLink = "http://google.com"
+        }
+
+        val pv2 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "Australia"
+            carrierName = "Australia Provider 2 alongwithareallylongprovidernametocheckui"
+            carrierLink = "http://google.com"
+        }
+
+        val pv3 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "India"
+            carrierName = "India Provider 1"
+            carrierLink = "http://google.com"
+        }
+
+        val pv4 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "United States"
+            carrierName = "US Provider 1"
+            carrierLink = "http://google.com"
+        }
+
+        val pv5 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "United States"
+            carrierName = "US Provider 2"
+            carrierLink = "http://google.com"
+        }
+
+        val pv6 = WCOrderShipmentProviderModel().apply {
+            localSiteId = 1
+            country = "United States"
+            carrierName = "US Provider 3"
+            carrierLink = "http://google.com"
+        }
+
+        result.add(pv1)
+        result.add(pv2)
+        result.add(pv3)
+        result.add(pv4)
+        result.add(pv5)
+        result.add(pv6)
+
+        return result
     }
 
     /**

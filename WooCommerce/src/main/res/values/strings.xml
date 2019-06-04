@@ -39,6 +39,7 @@
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
+    <string name="keep_editing">Keep editing</string>
     <string name="learn_more">Learn More</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -194,6 +195,8 @@
     <string name="orderdetail_add_note">Add a note</string>
     <string name="orderdetail_addnote_contentdesc">Add an order note</string>
     <string name="orderdetail_change_order_status">Click to change order status</string>
+    <string name="orderdetail_track_shipment">Track shipment</string>
+    <string name="orderdetail_delete_tracking">Delete tracking</string>
     <string name="order_fulfill_order">Fulfill Order</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -205,9 +208,15 @@
     <string name="order_shipment_tracking_number">Tracking Number</string>
     <string name="order_shipment_tracking_number_clipboard">Tracking number copied to the clipboard</string>
     <string name="order_shipment_tracking_button">Track package</string>
+    <string name="order_detail_shipment_tracking_button_contentdesc">Track or delete shipment tracking</string>
     <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copy tracking number to clipboard</string>
     <string name="order_shipment_tracking_shipped_date">Shipped %s</string>
+    <string name="order_shipment_tracking_add_label">Optional tracking information</string>
+    <string name="order_shipment_tracking_add_button">Add tracking</string>
+    <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
+    <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
+    <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
     <!--
         Add Order Note
     -->
@@ -230,6 +239,30 @@
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
     <string name="orderstatus_contentDesc">Order status</string>
+    <!--
+        Add Shipment Tracking Labels
+    -->
+    <string name="order_shipment_tracking_toolbar_title">Add Tracking</string>
+    <string name="order_shipment_tracking_carrier_label">Carrier</string>
+    <string name="order_shipment_tracking_number_label">Tracking number</string>
+    <string name="order_shipment_tracking_custom_provider_name_label">Provider name</string>
+    <string name="order_shipment_tracking_custom_provider_url_label">Tracking link (optional)</string>
+    <string name="order_shipment_tracking_provider_hint">Select provider</string>
+    <string name="order_shipment_tracking_number_hint">Enter Tracking number</string>
+    <string name="order_shipment_tracking_custom_provider_name_hint">Enter provider name</string>
+    <string name="order_shipment_tracking_custom_provider_url_hint">Enter tracking link</string>
+    <string name="order_shipment_tracking_date_label">Date shipped</string>
+    <string name="order_shipment_tracking_provider_toolbar_title">Shipping Providers</string>
+    <string name="order_shipment_tracking_provider_list_item">Selected Shipment Provider</string>
+    <string name="order_shipment_tracking_provider_list_error_fetch_generic">Error fetching providers</string>
+    <string name="order_shipment_tracking_added">Shipment tracking added</string>
+    <string name="order_shipment_tracking_error">Unable to add tracking</string>
+    <string name="order_shipment_tracking_confirm_discard">Are you sure you want to discard this tracking?</string>
+    <string name="order_shipment_tracking_empty_provider">Please select a provider</string>
+    <string name="order_shipment_tracking_empty_tracking_num">Please enter a tracking number</string>
+    <string name="order_shipment_tracking_empty_custom_provider_name">Please enter a provider name</string>
+    <string name="order_shipment_tracking_custom_provider_section_title">Custom</string>
+    <string name="order_shipment_tracking_custom_provider_section_name">Custom Provider</string>
     <!--
         Notifications
     -->
@@ -533,4 +566,297 @@
     <string name="login_invalid_site_url">Enter a valid URL (e.g. www.example.com)</string>
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
+
+    <!-- Country Mapping -->
+    <!-- A -->
+    <string name="country_mapping_AX">Åland Islands</string>
+    <string name="country_mapping_AF">Afghanistan</string>
+    <string name="country_mapping_AL">Albania</string>
+    <string name="country_mapping_DZ">Algeria</string>
+    <string name="country_mapping_AS">American Samoa</string>
+    <string name="country_mapping_AD">Andorra</string>
+    <string name="country_mapping_AO">Angola</string>
+    <string name="country_mapping_AI">Anguilla</string>
+    <string name="country_mapping_AQ">Antarctica</string>
+    <string name="country_mapping_AG">Antigua and Barbuda</string>
+    <string name="country_mapping_AR">Argentina</string>
+    <string name="country_mapping_AM">Armenia</string>
+    <string name="country_mapping_AW">Aruba</string>
+    <string name="country_mapping_AU">Australia</string>
+    <string name="country_mapping_AT">Austria</string>
+    <string name="country_mapping_AZ">Azerbaijan</string>
+
+    <!-- B -->
+    <string name="country_mapping_BS">Bahamas</string>
+    <string name="country_mapping_BH">Bahrain</string>
+    <string name="country_mapping_BD">Bangladesh</string>
+    <string name="country_mapping_BB">Barbados</string>
+    <string name="country_mapping_BY">Belarus</string>
+    <string name="country_mapping_PW">Belau</string>
+    <string name="country_mapping_BE">Belgium</string>
+    <string name="country_mapping_BZ">Belize</string>
+    <string name="country_mapping_BJ">Benin</string>
+    <string name="country_mapping_BM">Bermuda</string>
+    <string name="country_mapping_BT">Bhutan</string>
+    <string name="country_mapping_BO">Bolivia</string>
+    <string name="country_mapping_BQ">Bonaire, Saint Eustatius and Saba</string>
+    <string name="country_mapping_BA">Bosnia and Herzegovina</string>
+    <string name="country_mapping_BW">Botswana</string>
+    <string name="country_mapping_BV">Bouvet Island</string>
+    <string name="country_mapping_BR">Brazil</string>
+    <string name="country_mapping_IO">British Indian Ocean Territory</string>
+    <string name="country_mapping_VG">British Virgin Islands</string>
+    <string name="country_mapping_BN">Brunei</string>
+    <string name="country_mapping_BG">Bulgaria</string>
+    <string name="country_mapping_BF">Burkina Faso</string>
+    <string name="country_mapping_BI">Burundi</string>
+
+    <!-- C -->
+    // C
+    <string name="country_mapping_KH">Cambodia</string>
+    <string name="country_mapping_CM">Cameroon</string>
+    <string name="country_mapping_CA">Canada</string>
+    <string name="country_mapping_CV">Cape Verde</string>
+    <string name="country_mapping_CF">Central African Republic</string>
+    <string name="country_mapping_TD">Chad</string>
+    <string name="country_mapping_CL">Chile</string>
+    <string name="country_mapping_CN">China</string>
+    <string name="country_mapping_CX">Christmas Island</string>
+    <string name="country_mapping_CC">Cocos (Keeling) Islands</string>
+    <string name="country_mapping_CO">Colombia</string>
+    <string name="country_mapping_KM">Comoros</string>
+    <string name="country_mapping_CG">Congo (Brazzaville)</string>
+    <string name="country_mapping_CD">Congo (Kinshasa)</string>
+    <string name="country_mapping_CK">Cook Islands</string>
+    <string name="country_mapping_CR">Costa Rica</string>
+    <string name="country_mapping_CU">Cuba</string>
+    <string name="country_mapping_CW">Curacao</string>
+    <string name="country_mapping_CY">Cyprus</string>
+    <string name="country_mapping_CZ">Czech Republic</string>
+
+    <!-- D -->
+    <string name="country_mapping_DK">Denmark</string>
+    <string name="country_mapping_DJ">Djibouti</string>
+    <string name="country_mapping_DM">Dominica</string>
+    <string name="country_mapping_DO">Dominican Republic</string>
+
+    <!-- E -->
+    <string name="country_mapping_EC">Ecuador</string>
+    <string name="country_mapping_EG">Egypt</string>
+    <string name="country_mapping_SV">El Salvador</string>
+    <string name="country_mapping_ER">Eritrea</string>
+    <string name="country_mapping_EE">Estonia</string>
+    <string name="country_mapping_ET">Ethiopia</string>
+
+    <!-- F -->
+    <string name="country_mapping_FK">Falkland Islands</string>
+    <string name="country_mapping_FO">Faroe Islands</string>
+    <string name="country_mapping_FJ">Fiji</string>
+    <string name="country_mapping_FI">Finland</string>
+    <string name="country_mapping_FR">France</string>
+    <string name="country_mapping_PF">French Polynesia</string>
+    <string name="country_mapping_TF">French Southern Territories</string>
+
+    <!-- G -->
+    <string name="country_mapping_GA">Gabon</string>
+    <string name="country_mapping_GM">Gambia</string>
+    <string name="country_mapping_GE">Georgia</string>
+    <string name="country_mapping_DE">Germany</string>
+    <string name="country_mapping_GH">Ghana</string>
+    <string name="country_mapping_GI">Gibraltar</string>
+    <string name="country_mapping_GR">Greece</string>
+    <string name="country_mapping_GL">Greenland</string>
+    <string name="country_mapping_GD">Grenada</string>
+    <string name="country_mapping_GP">Guadeloupe</string>
+    <string name="country_mapping_GU">Guam</string>
+    <string name="country_mapping_GT">Guatemala</string>
+    <string name="country_mapping_GG">Guernsey</string>
+    <string name="country_mapping_GN">Guinea</string>
+    <string name="country_mapping_GW">Guinea-Bissau</string>
+    <string name="country_mapping_GY">Guyana</string>
+
+    <!-- H -->
+    <string name="country_mapping_HT">Haiti</string>
+    <string name="country_mapping_HM">Heard Island and McDonald Islands</string>
+    <string name="country_mapping_HN">Honduras</string>
+    <string name="country_mapping_HK">Hong Kong</string>
+    <string name="country_mapping_HU">Hungary</string>
+
+    <!-- I -->
+    <string name="country_mapping_IS">Iceland</string>
+    <string name="country_mapping_IN">India</string>
+    <string name="country_mapping_ID">Indonesia</string>
+    <string name="country_mapping_IR">Iran</string>
+    <string name="country_mapping_IQ">Iraq</string>
+    <string name="country_mapping_IE">Ireland</string>
+    <string name="country_mapping_IM">Isle of Man</string>
+    <string name="country_mapping_IL">Israel</string>
+    <string name="country_mapping_IT">Italy</string>
+    <string name="country_mapping_CI">Ivory Coast</string>
+
+    <!-- J -->
+    <string name="country_mapping_JM">Jamaica</string>
+    <string name="country_mapping_JP">Japan</string>
+    <string name="country_mapping_JE">Jersey</string>
+    <string name="country_mapping_JO">Jordan</string>
+
+    <!-- K -->
+    <string name="country_mapping_KZ">Kazakhstan</string>
+    <string name="country_mapping_KE">Kenya</string>
+    <string name="country_mapping_KI">Kiribati</string>
+    <string name="country_mapping_KW">Kuwait</string>
+    <string name="country_mapping_KG">Kyrgyzstan</string>
+
+    <!-- L -->
+    <string name="country_mapping_LA">Laos</string>
+    <string name="country_mapping_LV">Latvia</string>
+    <string name="country_mapping_LB">Lebanon</string>
+    <string name="country_mapping_LS">Lesotho</string>
+    <string name="country_mapping_LR">Liberia</string>
+    <string name="country_mapping_LY">Libya</string>
+    <string name="country_mapping_LI">Liechtenstein</string>
+    <string name="country_mapping_LT">Lithuania</string>
+    <string name="country_mapping_LU">Luxembourg</string>
+
+    <!-- M -->
+    <string name="country_mapping_MO">Macao S.A.R., China</string>
+    <string name="country_mapping_MK">Macedonia</string>
+    <string name="country_mapping_MG">Madagascar</string>
+    <string name="country_mapping_MW">Malawi</string>
+    <string name="country_mapping_MY">Malaysia</string>
+    <string name="country_mapping_MV">Maldives</string>
+    <string name="country_mapping_ML">Mali</string>
+    <string name="country_mapping_MT">Malta</string>
+    <string name="country_mapping_MH">Marshall Islands</string>
+    <string name="country_mapping_MQ">Martinique</string>
+    <string name="country_mapping_MR">Mauritania</string>
+    <string name="country_mapping_MU">Mauritius</string>
+    <string name="country_mapping_YT">Mayotte</string>
+    <string name="country_mapping_MX">Mexico</string>
+    <string name="country_mapping_FM">Micronesia</string>
+    <string name="country_mapping_MD">Moldova</string>
+    <string name="country_mapping_MC">Monaco</string>
+    <string name="country_mapping_MN">Mongolia</string>
+    <string name="country_mapping_ME">Montenegro</string>
+    <string name="country_mapping_MS">Montserrat</string>
+    <string name="country_mapping_MA">Morocco</string>
+    <string name="country_mapping_MZ">Mozambique</string>
+    <string name="country_mapping_MM">Myanmar</string>
+
+    <!-- N -->
+    <string name="country_mapping_NA">Namibia</string>
+    <string name="country_mapping_NR">Nauru</string>
+    <string name="country_mapping_NP">Nepal</string>
+    <string name="country_mapping_NL">Netherlands</string>
+    <string name="country_mapping_NC">New Caledonia</string>
+    <string name="country_mapping_NZ">New Zealand</string>
+    <string name="country_mapping_NI">Nicaragua</string>
+    <string name="country_mapping_NE">Niger</string>
+    <string name="country_mapping_NG">Nigeria</string>
+    <string name="country_mapping_NU">Niue</string>
+    <string name="country_mapping_NF">Norfolk Island</string>
+    <string name="country_mapping_KP">North Korea</string>
+    <string name="country_mapping_MP">Northern Mariana Islands</string>
+    <string name="country_mapping_NO">Norway</string>
+
+    <!-- O -->
+    <string name="country_mapping_OM">Oman</string>
+
+    <!-- P -->
+    <string name="country_mapping_PK">Pakistan</string>
+    <string name="country_mapping_PS">Palestinian Territory</string>
+    <string name="country_mapping_PA">Panama</string>
+    <string name="country_mapping_PG">Papua New Guinea</string>
+    <string name="country_mapping_PY">Paraguay</string>
+    <string name="country_mapping_PE">Peru</string>
+    <string name="country_mapping_PH">Philippines</string>
+    <string name="country_mapping_PN">Pitcairn</string>
+    <string name="country_mapping_PL">Poland</string>
+    <string name="country_mapping_PT">Portugal</string>
+    <string name="country_mapping_PR">Puerto Rico</string>
+
+    <!-- Q -->
+    <string name="country_mapping_QA">Qatar</string>
+
+    <!-- R -->
+    <string name="country_mapping_RE">Reunion</string>
+    <string name="country_mapping_RO">Romania</string>
+    <string name="country_mapping_RU">Russia</string>
+    <string name="country_mapping_RW">Rwanda</string>
+
+    <!-- S -->
+    <string name="country_mapping_ST">São Tomé and Príncipe</string>
+    <string name="country_mapping_BL">Saint Barthélemy</string>
+    <string name="country_mapping_SH">Saint Helena</string>
+    <string name="country_mapping_KN">Saint Kitts and Nevis</string>
+    <string name="country_mapping_LC">Saint Lucia</string>
+    <string name="country_mapping_MF">Saint Martin (French part)</string>
+    <string name="country_mapping_PM">Saint Pierre and Miquelon</string>
+    <string name="country_mapping_VC">Saint Vincent and the Grenadines</string>
+    <string name="country_mapping_WS">Samoa</string>
+    <string name="country_mapping_SM">San Marino</string>
+    <string name="country_mapping_SA">Saudi Arabia</string>
+    <string name="country_mapping_SN">Senegal</string>
+    <string name="country_mapping_RS">Serbia</string>
+    <string name="country_mapping_SC">Seychelles</string>
+    <string name="country_mapping_SL">Sierra Leone</string>
+    <string name="country_mapping_SG">Singapore</string>
+    <string name="country_mapping_SK">Slovakia</string>
+    <string name="country_mapping_SI">Slovenia</string>
+    <string name="country_mapping_SB">Solomon Islands</string>
+    <string name="country_mapping_SO">Somalia</string>
+    <string name="country_mapping_ZA">South Africa</string>
+    <string name="country_mapping_GS">South Georgia/Sandwich Islands</string>
+    <string name="country_mapping_KR">South Korea</string>
+    <string name="country_mapping_SS">South Sudan</string>
+    <string name="country_mapping_LK">Sri Lanka</string>
+    <string name="country_mapping_SD">Sudan</string>
+    <string name="country_mapping_SR">Suriname</string>
+    <string name="country_mapping_SJ">Svalbard and Jan Mayen</string>
+    <string name="country_mapping_SZ">Swaziland</string>
+    <string name="country_mapping_SE">Sweden</string>
+    <string name="country_mapping_CH">Switzerland</string>
+    <string name="country_mapping_SY">Syria</string>
+
+    <!-- T -->
+    <string name="country_mapping_TW">Taiwan</string>
+    <string name="country_mapping_TJ">Tajikistan</string>
+    <string name="country_mapping_TZ">Tanzania</string>
+    <string name="country_mapping_TH">Thailand</string>
+    <string name="country_mapping_TL">Timor-Leste</string>
+    <string name="country_mapping_TG">Togo</string>
+    <string name="country_mapping_TK">Tokelau</string>
+    <string name="country_mapping_TO">Tonga</string>
+    <string name="country_mapping_TT">Trinidad and Tobago</string>
+    <string name="country_mapping_TN">Tunisia</string>
+    <string name="country_mapping_TR">Turkey</string>
+    <string name="country_mapping_TM">Turkmenistan</string>
+    <string name="country_mapping_TC">Turks and Caicos Islands</string>
+    <string name="country_mapping_TV">Tuvalu</string>
+
+    <!-- U -->
+    <string name="country_mapping_UG">Uganda</string>
+    <string name="country_mapping_UA">Ukraine</string>
+    <string name="country_mapping_AE">United Arab Emirates</string>
+    <string name="country_mapping_GB">United Kingdom</string>
+    <string name="country_mapping_US">United States</string>
+    <string name="country_mapping_UY">Uruguay</string>
+    <string name="country_mapping_UZ">Uzbekistan</string>
+
+    <!-- V -->
+    <string name="country_mapping_VU">Vanuatu</string>
+    <string name="country_mapping_VA">Vatican</string>
+    <string name="country_mapping_VE">Venezuela</string>
+    <string name="country_mapping_VN">Vietnam</string>
+
+    <!-- W -->
+    <string name="country_mapping_WF">Wallis and Futuna</string>
+    <string name="country_mapping_EH">Western Sahara</string>
+
+    <!-- Y -->
+    <string name="country_mapping_YE">Yemen</string>
+
+    <!-- Z -->
+    <string name="country_mapping_ZM">Zambia</string>
+    <string name="country_mapping_ZW">Zimbabwe</string>
 </resources>

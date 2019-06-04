@@ -1,2 +1,41 @@
-* The orders list screen now displays the date of every order.
-* Sometimes you’d re-open the app and it would display the wrong title. Unhelpful! That’s fixed.
+2.0
+----
+* Translations have been added for the "Orders to Fulfill" card in My Store.
+
+1.9
+-----
+
+Improvements
+* Dates have been added to the order list
+ 
+1.8
+-----
+
+1.7
+-----
+
+Improvements
+* Changed FAQ button in help section to "Help Center". The button now routes to WooCommerce mobile documentation.
+* Hide the external link button on shipment tracking views if no external link available
+* Redirect to username/password login when WordPress.com reports email login not allowed
+* Shipment Tracking date formatting is now localized
+ 
+New Features
+* You can now tap a product to view a read-only detail view
+
+1.6
+-----
+
+Bugfixes
+* Fixed bug that led to incorrect stats bar heights
+* Fixed rare crash opening order detail when it's already showing
+* Fixed rare crash in order detail while loading product images
+* Fixed rare crash when showing order note
+* Fixed a very rare crash when showing the filter menu options button
+* Minor style fixes
+
+Improvements
+* Dashboard no longer reloads every time you return to it
+
+New Features
+* New support for the Shipment Tracking plugin. Read-only Shipment tracking information will now be displayed on a completed order and packages may be tracked directly from the order detail screen. Support for adding shipment tracking information is coming in a future release, so stay tuned!
