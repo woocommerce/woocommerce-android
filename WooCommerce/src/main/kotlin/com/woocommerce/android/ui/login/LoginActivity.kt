@@ -264,6 +264,15 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 
+    override fun gotConnectedSiteInfo(siteAddress: String, hasJetpack: Boolean) {
+        if (hasJetpack) {
+            val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        } else {
+            // TODO show jetpack dialog
+        }
+    }
+
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
                 inputSiteAddress, endpointAddress, null, null, null, null, false)
