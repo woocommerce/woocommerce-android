@@ -272,7 +272,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
             slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         } else {
-            // TODO show jetpack dialog
             val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
             slideInFragment(jetpackReqFragment as Fragment, true, LoginJetpackRequiredFragment.TAG)
         }
