@@ -69,6 +69,10 @@ class MainActivity : AppCompatActivity(),
         const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
         const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
 
+        interface BackPressListener {
+            fun onRequestAllowBackPress(): Boolean
+        }
+
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         }
@@ -170,6 +174,12 @@ class MainActivity : AppCompatActivity(),
 
         with(bottomNavView.activeFragment) {
             if (isAdded && childFragmentManager.backStackEntryCount > 0) {
+                // go no further if active fragment doesn't allow back press - we use this so fragments can
+                // provide confirmation before discarding the current action, such as adding an order note
+                val fragment = childFragmentManager.findFragmentById(R.id.container)
+                if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
+                    return
+                }
                 childFragmentManager.popBackStack()
                 return
             }

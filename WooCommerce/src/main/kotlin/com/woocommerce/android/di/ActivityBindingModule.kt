@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
@@ -37,6 +36,7 @@ abstract class ActivityBindingModule {
             OrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
+            AddOrderNoteModule::class,
             NotifsListModule::class,
             ReviewDetailModule::class,
             SitePickerModule::class))
@@ -56,10 +56,6 @@ abstract class ActivityBindingModule {
             MainSettingsModule::class,
             PrivacySettingsModule::class))
     abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
-
-    @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(AddOrderNoteModule::class))
-    abstract fun provideAddOrderNoteActivity(): AddOrderNoteActivity
 
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(HelpModule::class))
