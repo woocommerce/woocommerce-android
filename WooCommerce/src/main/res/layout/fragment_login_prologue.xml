@@ -1,8 +1,21 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white">
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/img_slanted_rectangle"/>
 
     <ImageView
         android:id="@+id/image_prologue"
@@ -11,13 +24,15 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="64dp"
         android:importantForAccessibility="no"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/img_woo_logo"/>
 
     <TextView
         android:id="@+id/text_prologue"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/image_prologue"
         android:layout_marginEnd="@dimen/login_prologue_padding"
         android:layout_marginStart="@dimen/login_prologue_padding"
         android:layout_marginTop="@dimen/login_prologue_padding"
@@ -25,7 +40,10 @@
         android:text="@string/login_prologue_banner"
         android:textColor="@color/wc_purple"
         android:textSize="@dimen/text_medium_extra_large"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_prologue"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -34,42 +52,21 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/login_prologue_padding"
         android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/img_bubbles"/>
 
-    <ImageView
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/button_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/img_slanted_rectangle"/>
+        android:layout_margin="@dimen/margin_extra_large"
+        android:text="@string/login"
+        android:theme="@style/Woo.Button.White"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-    <LinearLayout
-        android:clipToPadding="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="0dp"
-        android:orientation="vertical"
-        android:padding="@dimen/margin_extra_large">
-
-        <TextView
-            android:id="@+id/text_jetpack"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/margin_large"
-            android:drawableStart="@drawable/ic_jetpack"
-            android:text="@string/login_jetpack_required"
-            android:textColor="@color/white"
-            android:textColorLink="@color/white"/>
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/button_login_jetpack"
-            android:theme="@style/Woo.Button.White"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:text="@string/login_with_jetpack"/>
-    </LinearLayout>
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

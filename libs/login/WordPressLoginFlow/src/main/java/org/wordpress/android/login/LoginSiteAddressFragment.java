@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.network.MemorizingTrustManager;
 import org.wordpress.android.fluxc.network.discovery.SelfHostedEndpointFinder.DiscoveryError;
 import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.fluxc.store.AccountStore.OnDiscoveryResponse;
+import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked;
 import org.wordpress.android.fluxc.store.SiteStore.OnWPComSiteFetched;
 import org.wordpress.android.login.util.SiteUtils;
 import org.wordpress.android.login.widgets.WPLoginInputRow;
@@ -86,6 +87,9 @@ public class LoginSiteAddressFragment extends LoginBaseFormFragment<LoginListene
         // important for accessibility - talkback
         getActivity().setTitle(R.string.site_address_login_title);
         mSiteAddressInput = rootView.findViewById(R.id.login_site_address_row);
+        if (BuildConfig.DEBUG) {
+            mSiteAddressInput.getEditText().setText(BuildConfig.DEBUG_WPCOM_WEBSITE_URL);
+        }
         mSiteAddressInput.addTextChangedListener(this);
         mSiteAddressInput.setOnEditorCommitListener(this);
     }
@@ -162,7 +166,15 @@ public class LoginSiteAddressFragment extends LoginBaseFormFragment<LoginListene
         mRequestedSiteAddress = cleanedSiteAddress;
 
         String cleanedXmlrpcSuffix = UrlUtils.removeXmlrpcSuffix(mRequestedSiteAddress);
-        mDispatcher.dispatch(SiteActionBuilder.newFetchWpcomSiteByUrlAction(cleanedXmlrpcSuffix));
+
+        if (mLoginListener.getLoginMode() == LoginMode.WOO_LOGIN_MODE) {
+            // TODO: This is temporary code to test out sign in flow milestone 1 effectiveness. If we move
+            // forward with this flow, we will need to just call the XMLRPC discovery code and handle all the
+            // edge cases such as HTTP auth and self-signed SSL.
+            mDispatcher.dispatch(SiteActionBuilder.newFetchConnectSiteInfoAction(cleanedXmlrpcSuffix));
+        } else {
+            mDispatcher.dispatch(SiteActionBuilder.newFetchWpcomSiteByUrlAction(cleanedXmlrpcSuffix));
+        }
 
         startProgress();
     }
@@ -352,5 +364,51 @@ public class LoginSiteAddressFragment extends LoginBaseFormFragment<LoginListene
 
         AppLog.i(T.NUX, "Discovery succeeded, endpoint: " + event.xmlRpcEndpoint);
         mLoginListener.gotXmlRpcEndpoint(requestedSiteAddress, event.xmlRpcEndpoint);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFetchedConnectSiteInfo(OnConnectSiteInfoChecked event) {
+        if (mRequestedSiteAddress == null) {
+            // bail if user canceled
+            return;
+        }
+
+        if (!isAdded()) {
+            return;
+        }
+
+        // hold the URL in a variable to use below otherwise it gets cleared up by endProgress
+        final String requestedSiteAddress = mRequestedSiteAddress;
+
+        if (isInProgress()) {
+            endProgress();
+        }
+
+        if (event.isError()) {
+            mAnalyticsListener.trackLoginFailed(event.getClass().getSimpleName(),
+                    event.error.type.name(), event.error.message);
+
+            AppLog.e(T.API, "onFetchedConnectSiteInfo has error: " + event.error.message);
+
+            showError(R.string.invalid_site_url_message);
+        } else {
+            if (!event.info.exists) {
+                // Site does not exist
+                showError(R.string.invalid_site_url_message);
+            } else if (!event.info.isWordPress) {
+                // Not a WordPress site
+                showError(R.string.enter_wordpress_site);
+            } else {
+                boolean hasJetpack = false;
+                if (event.info.isWPCom && event.info.hasJetpack) {
+                    // This is likely an atomic site.
+                    hasJetpack = true;
+                } else if (event.info.hasJetpack && event.info.isJetpackActive && event.info.isJetpackConnected) {
+                    hasJetpack = true;
+                }
+                mLoginListener.gotConnectedSiteInfo(event.info.url, hasJetpack);
+            }
+        }
     }
 }
