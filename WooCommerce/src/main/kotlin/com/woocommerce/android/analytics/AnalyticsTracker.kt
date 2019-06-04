@@ -74,6 +74,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CREATED_ACCOUNT(siteless = true),
         LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED(siteless = true),
         LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
+        LOGIN_CONNECTED_SITE_INFO_REQUESTED(siteless = true),
+        LOGIN_CONNECTED_SITE_INFO_FAILED(siteless = true),
+        LOGIN_CONNECTED_SITE_INFO_SUCCEEDED(siteless = true),
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -369,6 +372,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_CARRIER = "carrier"
         const val KEY_OPTION = "option"
         const val KEY_SOURCE = "source"
+        const val KEY_URL = "url"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
