@@ -488,7 +488,7 @@
         <item name="colorControlNormal">@color/edit_text_color_control_normal</item>
     </style>
 
-    <style name="Woo.Add.Tracking.EditText" parent="@style/EditText">
+    <style name="Woo.OrderTracking.Add.EditText" parent="@style/EditText">
         <item name="android:textColorHint">@color/edit_text_color_control_normal</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="colorControlNormal">@color/list_divider</item>
@@ -498,7 +498,7 @@
         <item name="android:gravity">start</item>
     </style>
 
-    <style name="Woo.Add.Tracking.TextAppearance" parent="@style/Woo.TextAppearance">
+    <style name="Woo.TextAppearance.OrderTracking" parent="@style/Woo.TextAppearance">
         <item name="android:textAlignment">viewStart</item>
         <item name="android:gravity">start</item>
     </style>

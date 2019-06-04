@@ -29,14 +29,14 @@
         <!-- Select provider view -->
         <TextView
             android:id="@+id/addTracking_carrier_label"
-            style="@style/Woo.Add.Tracking.TextAppearance"
+            style="@style/Woo.TextAppearance.OrderTracking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/order_shipment_tracking_carrier_label"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/addTracking_editCarrier"
-            style="@style/Woo.Add.Tracking.EditText"
+            style="@style/Woo.OrderTracking.Add.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
@@ -69,7 +69,7 @@
 
             <TextView
                 android:id="@+id/addTracking_custom_provider_name_label"
-                style="@style/Woo.Add.Tracking.TextAppearance"
+                style="@style/Woo.TextAppearance.OrderTracking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
@@ -89,7 +89,7 @@
                 android:maxLength="@integer/max_length_tracking_number"
                 android:paddingBottom="@dimen/margin_extra_large"
                 android:nextFocusForward="@+id/addTracking_number"
-                android:theme="@style/Woo.Add.Tracking.EditText"
+                android:theme="@style/Woo.OrderTracking.Add.EditText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addTracking_custom_provider_name_label"/>
@@ -99,7 +99,7 @@
         <!-- Add tracking number view -->
         <TextView
             android:id="@+id/addTracking_number_label"
-            style="@style/Woo.Add.Tracking.TextAppearance"
+            style="@style/Woo.TextAppearance.OrderTracking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
@@ -115,7 +115,7 @@
             android:inputType="text"
             android:maxLength="@integer/max_length_tracking_number"
             android:paddingBottom="@dimen/margin_extra_large"
-            android:theme="@style/Woo.Add.Tracking.EditText"/>
+            android:theme="@style/Woo.OrderTracking.Add.EditText"/>
 
         <!-- Add custom provider tracking url view -only visible if custom provider is selected -->
         <android.support.constraint.ConstraintLayout
@@ -127,7 +127,7 @@
 
             <TextView
                 android:id="@+id/addTracking_custom_provider_url_label"
-                style="@style/Woo.Add.Tracking.TextAppearance"
+                style="@style/Woo.TextAppearance.OrderTracking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
@@ -146,7 +146,7 @@
                 android:inputType="textUri"
                 android:maxLength="@integer/max_length_tracking_number"
                 android:paddingBottom="@dimen/margin_extra_large"
-                android:theme="@style/Woo.Add.Tracking.EditText"
+                android:theme="@style/Woo.OrderTracking.Add.EditText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addTracking_custom_provider_url_label"/>
@@ -156,7 +156,7 @@
         <!-- Select date shipped view -->
         <TextView
             android:id="@+id/addTracking_date_label"
-            style="@style/Woo.Add.Tracking.TextAppearance"
+            style="@style/Woo.TextAppearance.OrderTracking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
@@ -164,7 +164,7 @@
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/addTracking_date"
-            style="@style/Woo.Add.Tracking.EditText"
+            style="@style/Woo.OrderTracking.Add.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top"
