@@ -115,6 +115,8 @@
         Settings
     -->
     <dimen name="settings_padding">16dp</dimen>
+    <dimen name="settings_logout_button_horz">50dp</dimen>
+    <dimen name="settings_logout_button_vert">12dp</dimen>
 
     <!--
         Stats and Top earners

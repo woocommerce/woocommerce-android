@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-06 15:07:59+0000
+Translation-Revision-Date: 2019-05-28 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
@@ -91,8 +91,8 @@ Language: sv_SE
     <string name="waiting_for_customers">Väntar på kunder</string>
     <string name="share_store_dialog_title">Dela din butiks URL</string>
     <string name="share_store_button">Dela din butik</string>
-    <string name="wc_mark_all_read_success">Alla notiser markerade som lästa</string>
-    <string name="login_update_required_title">Uppdatera Store till WooCommerce 3.5</string>
+    <string name="wc_mark_all_read_success">Alla meddelanden markerade som lästa</string>
+    <string name="login_update_required_title">Uppdatera butik till WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Kan inte ansluta till %s</string>
     <string name="dismiss">Avfärda</string>
     <string name="wc_mark_all_read_error">Ett fel uppstod när alla notifikationer skulle markeras som lästa</string>

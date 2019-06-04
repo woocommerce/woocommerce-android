@@ -23,8 +23,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_IS_CUSTOM_PROVIDER
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Companion.FIELD_ORDER_TRACKING_DATE_SHIPPED
@@ -33,7 +31,6 @@ import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity.Compan
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -50,7 +47,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
         const val FIELD_REMOTE_NOTE_ID = "remote-notification-id"
-        const val REQUEST_CODE_ADD_NOTE = 100
         const val REQUEST_CODE_ADD_TRACKING = 102
 
         fun newInstance(
@@ -147,17 +143,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_ADD_NOTE) {
-            if (resultCode == RESULT_OK && data != null) {
-                val noteText = data.getStringExtra(FIELD_NOTE_TEXT)
-                val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
-                orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
-                presenter.pushOrderNote(noteText, isCustomerNote)
-                AppRatingDialog.incrementInteractions()
-            } else if (resultCode == AddOrderNoteActivity.RESULT_INVALID_ORDER) {
-                uiMessageResolver.showSnack(R.string.add_order_note_invalid_order)
-            }
-        } else if (requestCode == REQUEST_CODE_ADD_TRACKING) {
+        if (requestCode == REQUEST_CODE_ADD_TRACKING) {
             if (data != null) {
                 val selectedShipmentTrackingProviderName = data.getStringExtra(FIELD_ORDER_TRACKING_PROVIDER)
                 AppPrefs.setSelectedShipmentTrackingProviderName(selectedShipmentTrackingProviderName)
@@ -224,10 +210,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
             orderDetail_orderStatus
                     .initView(order, orderStatus, object : OrderDetailOrderStatusView.OrderStatusListener {
-                override fun openOrderStatusSelector() {
-                    showOrderStatusSelector()
-                }
-            })
+                        override fun openOrderStatusSelector() {
+                            showOrderStatusSelector()
+                        }
+                    })
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(
@@ -416,31 +402,30 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun onRequestAddNote() {
-        if (!networkStatus.isConnected()) {
-            // If offline, show generic offline message and exit without opening add note screen
-            uiMessageResolver.showOfflineSnack()
-            return
+    override fun showAddOrderNoteScreen(order: WCOrderModel) {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                router.openAddOrderNote(order)
+            }
         }
-
-        showAddOrderNoteScreen()
-    }
-
-    override fun showAddOrderNoteScreen() {
-        presenter.orderModel?.let {
-            val intent = Intent(activity, AddOrderNoteActivity::class.java)
-            intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
-            intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_NUMBER, it.number)
-            startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
-        }
-    }
-
-    override fun showAddOrderNoteSnack() {
-        uiMessageResolver.getSnack(R.string.add_order_note_added).show()
     }
 
     override fun showAddOrderNoteErrorSnack() {
         uiMessageResolver.getSnack(R.string.add_order_note_error).show()
+    }
+
+    /**
+     * User tapped the button to add a note, so show the add order note screen
+     */
+    override fun onRequestAddNote() {
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        presenter.orderModel?.let {
+            showAddOrderNoteScreen(it)
+        }
     }
 
     override fun markOrderStatusChangedSuccess() {
