@@ -194,7 +194,9 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         changeOrderStatusSnackbar?.dismiss()
         notesSnack?.dismiss()
         deleteOrderShipmentTrackingSnackbar?.dismiss()
+        deleteOrderShipmentTrackingSnackbar = null
         deleteOrderShipmentTrackingResponseSnackbar?.dismiss()
+        deleteOrderShipmentTrackingResponseSnackbar = null
         super.onStop()
     }
 
