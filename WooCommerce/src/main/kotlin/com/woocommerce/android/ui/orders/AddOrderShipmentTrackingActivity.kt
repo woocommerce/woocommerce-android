@@ -181,6 +181,7 @@ class AddOrderShipmentTrackingActivity : AppCompatActivity(), AddOrderShipmentTr
                 if (addTracking_number.text.isNullOrEmpty()) {
                     addTracking_editCarrier.error = null
                     addTracking_custom_provider_name.error = null
+                    addTracking_number.requestFocus()
                     addTracking_number.error = getString(R.string.order_shipment_tracking_empty_tracking_num)
                     return true
                 }

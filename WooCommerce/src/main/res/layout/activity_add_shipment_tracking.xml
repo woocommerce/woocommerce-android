@@ -29,7 +29,7 @@
         <!-- Select provider view -->
         <TextView
             android:id="@+id/addTracking_carrier_label"
-            style="@style/Woo.TextAppearance"
+            style="@style/Woo.Add.Tracking.TextAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/order_shipment_tracking_carrier_label"/>
@@ -69,7 +69,7 @@
 
             <TextView
                 android:id="@+id/addTracking_custom_provider_name_label"
-                style="@style/Woo.TextAppearance"
+                style="@style/Woo.Add.Tracking.TextAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
@@ -99,7 +99,7 @@
         <!-- Add tracking number view -->
         <TextView
             android:id="@+id/addTracking_number_label"
-            style="@style/Woo.TextAppearance"
+            style="@style/Woo.Add.Tracking.TextAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
@@ -127,7 +127,7 @@
 
             <TextView
                 android:id="@+id/addTracking_custom_provider_url_label"
-                style="@style/Woo.TextAppearance"
+                style="@style/Woo.Add.Tracking.TextAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
@@ -156,7 +156,7 @@
         <!-- Select date shipped view -->
         <TextView
             android:id="@+id/addTracking_date_label"
-            style="@style/Woo.TextAppearance"
+            style="@style/Woo.Add.Tracking.TextAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"

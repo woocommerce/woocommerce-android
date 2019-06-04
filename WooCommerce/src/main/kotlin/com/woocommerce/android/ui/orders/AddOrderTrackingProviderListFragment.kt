@@ -93,7 +93,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
         val toolbar = toolbar as Toolbar
         toolbar.title = getString(R.string.order_shipment_tracking_provider_toolbar_title)
-        toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.zui_ic_back)
+        toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_white_24dp)
         toolbar.setNavigationOnClickListener { dismiss() }
         toolbar.inflateMenu(R.menu.menu_search)
         val searchMenuItem = toolbar.menu?.findItem(R.id.menu_search)
