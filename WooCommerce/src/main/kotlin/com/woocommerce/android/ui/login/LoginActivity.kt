@@ -260,7 +260,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true)
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 
