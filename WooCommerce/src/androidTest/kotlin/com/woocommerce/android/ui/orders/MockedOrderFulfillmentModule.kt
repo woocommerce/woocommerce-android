@@ -69,7 +69,7 @@ abstract class MockedOrderFulfillmentModule {
             doReturn(SiteModel()).whenever(mockSelectedSite).get()
             doReturn(isNetworkConnected).whenever(mockNetworkStatus).isConnected()
             doReturn(true).whenever(mockedOrderFulfillmentPresenter).isShipmentTrackingsFetched
-            doReturn(order).whenever(mockedOrderFulfillmentPresenter).loadOrderDetailFromDb(any())
+            doReturn(order).whenever(mockedOrderFulfillmentPresenter).getOrderDetailFromDb(any())
             doReturn(orderShipmentTrackings).whenever(mockedOrderFulfillmentPresenter)
                     .getShipmentTrackingsFromDb(any())
             orderShipmentTrackings?.let {

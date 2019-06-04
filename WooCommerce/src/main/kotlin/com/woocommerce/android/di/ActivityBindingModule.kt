@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingActivity
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
 import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
@@ -41,9 +42,7 @@ abstract class ActivityBindingModule {
             NotifsListModule::class,
             ProductDetailModule::class,
             ReviewDetailModule::class,
-            SitePickerModule::class,
-            AddOrderShipmentTrackingModule::class,
-            AddOrderTrackingProviderListModule::class))
+            SitePickerModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
@@ -68,4 +67,11 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
     abstract fun provideSitePickerActivityInjector(): SitePickerActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = [
+        AddOrderShipmentTrackingModule::class,
+        AddOrderTrackingProviderListModule::class
+    ])
+    abstract fun provideAddOrderShipmentTrackingActivity(): AddOrderShipmentTrackingActivity
 }

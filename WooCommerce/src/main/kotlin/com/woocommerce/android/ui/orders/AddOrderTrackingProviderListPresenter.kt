@@ -49,17 +49,14 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadStoreCountryFromDb(): String? {
-        return wcStore.getStoreCountryCode(selectedSite.get())
-    }
+    override fun loadStoreCountryFromDb(): String? = wcStore.getStoreCountryCode(selectedSite.get())
 
     /**
      * Loading order detail from local database.
      * Segregating methods that request data from db for better ui testing
      */
-    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? {
-        return orderStore.getOrderByIdentifier(orderIdentifier)
-    }
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? =
+            orderStore.getOrderByIdentifier(orderIdentifier)
 
     /**
      * Load provider list from db.
@@ -76,7 +73,7 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
             if (!isShipmentTrackingProviderListFetched) {
                 if (networkStatus.isConnected()) {
                     providerListView?.showSkeleton(true)
-                    requestShipmentTrackingProvidersFromApi(order)
+                    fetchShipmentTrackingProvidersFromApi(order)
                 } else {
                     providerListView?.showProviderListErrorSnack(R.string.offline_error)
                 }
@@ -85,19 +82,19 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
     }
 
     override fun loadShipmentTrackingProvidersFromDb() {
-        val providers = requestShipmentTrackingProvidersFromDb()
+        val providers = getShipmentTrackingProvidersFromDb()
         if (!providers.isNullOrEmpty()) {
             isShipmentTrackingProviderListFetched = true
             providerListView?.showProviderList(providers)
         }
     }
 
-    override fun requestShipmentTrackingProvidersFromApi(order: WCOrderModel) {
+    override fun fetchShipmentTrackingProvidersFromApi(order: WCOrderModel) {
         val payload = FetchOrderShipmentProvidersPayload(selectedSite.get(), order)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentProvidersAction(payload))
     }
 
-    override fun requestShipmentTrackingProvidersFromDb(): List<WCOrderShipmentProviderModel> {
+    override fun getShipmentTrackingProvidersFromDb(): List<WCOrderShipmentProviderModel> {
         return orderStore.getShipmentProvidersForSite(selectedSite.get())
     }
 
@@ -122,7 +119,7 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
             // Refresh order tracking providers list now that a connection is active
             orderModel?.let { order ->
                 if (!isShipmentTrackingProviderListFetched) {
-                    requestShipmentTrackingProvidersFromApi(order)
+                    fetchShipmentTrackingProvidersFromApi(order)
                 }
             }
         }

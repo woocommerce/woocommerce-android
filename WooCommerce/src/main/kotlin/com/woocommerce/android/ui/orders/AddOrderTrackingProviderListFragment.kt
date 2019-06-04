@@ -38,8 +38,8 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
         const val STATE_KEY_ORDER_IDENTIFIER = "order-identifier"
 
         /**
-         * @param orderIdentifier = to fetch the list of providers from api
-         * @param selectedProviderText = to update the currently selected provider item (if already selected)
+         * @param [orderIdentifier] to fetch the list of providers from api
+         * @param [selectedProviderText] to update the currently selected provider item (if already selected)
          */
         fun newInstance(
             listener: Fragment,
@@ -87,16 +87,18 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Dialog_ProviderList
 
-        val toolbar = toolbar as Toolbar
-        toolbar.title = getString(R.string.order_shipment_tracking_provider_toolbar_title)
-        toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.zui_ic_back)
-        toolbar.setNavigationOnClickListener { dismiss() }
-        toolbar.inflateMenu(R.menu.menu_search)
-        val searchMenuItem = toolbar.menu?.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as? SearchView?
-        searchView?.let {
-            it.imeOptions = it.imeOptions or EditorInfo.IME_FLAG_NO_EXTRACT_UI
-            it.setOnQueryTextListener(this)
+        with(toolbar as Toolbar) {
+            title = getString(R.string.order_shipment_tracking_provider_toolbar_title)
+            navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_white_24dp)
+            setNavigationOnClickListener { dismiss() }
+            inflateMenu(R.menu.menu_search)
+
+            val searchMenuItem = menu?.findItem(R.id.menu_search)
+            searchView = searchMenuItem?.actionView as? SearchView?
+            searchView?.let {
+                it.imeOptions = it.imeOptions or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+                it.setOnQueryTextListener(this@AddOrderTrackingProviderListFragment)
+            }
         }
     }
 

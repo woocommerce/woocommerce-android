@@ -64,7 +64,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, isShipmentTrackingsFetched: Boolean) {
         this.isShipmentTrackingsFetched = isShipmentTrackingsFetched
         orderView?.let { view ->
-            orderModel = loadOrderDetailFromDb(orderIdentifier)
+            orderModel = getOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 view.showOrderDetail(order)
                 loadOrderShipmentTrackings()
@@ -76,7 +76,7 @@ class OrderFulfillmentPresenter @Inject constructor(
      * Loading order detail from local database.
      * Segregating methods that request data from db for better ui testing
      */
-    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? =
+    override fun getOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? =
             orderStore.getOrderByIdentifier(orderIdentifier)
 
     /**

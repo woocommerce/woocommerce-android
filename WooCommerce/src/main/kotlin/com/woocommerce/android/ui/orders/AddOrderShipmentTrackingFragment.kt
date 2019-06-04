@@ -128,10 +128,8 @@ class AddOrderShipmentTrackingFragment : Fragment(), AddOrderShipmentTrackingCon
 
         presenter.takeView(this)
 
-        /**
-         * When date field is clicked, open calendar dialog with default date set to
-         * current date if no date was previously selected
-         */
+        // When date field is clicked, open calendar dialog with default date set to
+        // current date if no date was previously selected
         addTracking_date.setOnClickListener {
             val calendar = DateUtils.getCalendarInstance(getDateShippedText())
             dateShippedPickerDialog = DatePickerDialog(requireActivity(),
@@ -143,9 +141,7 @@ class AddOrderShipmentTrackingFragment : Fragment(), AddOrderShipmentTrackingCon
             dateShippedPickerDialog?.show()
         }
 
-        /**
-         * When carrier field is clicked, open dialog fragment to display list of providers
-         */
+        // When carrier field is clicked, open dialog fragment to display list of providers
         addTracking_editCarrier.setOnClickListener {
             providerListPickerDialog = AddOrderTrackingProviderListFragment
                     .newInstance(
@@ -158,12 +154,13 @@ class AddOrderShipmentTrackingFragment : Fragment(), AddOrderShipmentTrackingCon
 
     override fun onPause() {
         super.onPause()
-        /**
-         * If calendar dialog is displaying when activity is in a paused state,
-         * then dismiss the dialog
-         */
+        // If calendar dialog or provider list dialog is displaying when activity is in a paused state,
+        // then dismiss the dialog
         dateShippedPickerDialog?.dismiss()
         dateShippedPickerDialog = null
+
+        providerListPickerDialog?.dismiss()
+        providerListPickerDialog = null
     }
 
     override fun onResume() {
@@ -309,10 +306,7 @@ class AddOrderShipmentTrackingFragment : Fragment(), AddOrderShipmentTrackingCon
         addTracking_editCarrier.isFocusable = false
         isSelectedProviderCustom = addTracking_editCarrier.text ==
                 getString(R.string.order_shipment_tracking_custom_provider_section_name)
-        /**
-         * Display custom provider fields only if
-         * @param selectedCarrierName = custom provider
-         */
+        // Display custom provider fields only if selectedCarrierName = custom provider
         if (isCustomProvider()) {
             showCustomProviderFields()
         } else {
@@ -320,9 +314,7 @@ class AddOrderShipmentTrackingFragment : Fragment(), AddOrderShipmentTrackingCon
         }
     }
 
-    override fun isCustomProvider(): Boolean {
-        return isSelectedProviderCustom
-    }
+    override fun isCustomProvider() = isSelectedProviderCustom
 
     override fun showOfflineSnack() {
         uiMessageResolver.showOfflineSnack()
