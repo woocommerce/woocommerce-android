@@ -11,7 +11,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
@@ -36,7 +35,8 @@ class LoginJetpackRequiredFragment : Fragment() {
     }
 
     interface LoginJetpackRequiredListener {
-        fun onViewJetpackInstructions()
+        fun showJetpackInstructions()
+        fun showWhatIsJetpackDialog()
     }
 
     private var loginListener: LoginListener? = null
@@ -74,7 +74,7 @@ class LoginJetpackRequiredFragment : Fragment() {
         }
 
         btn_jetpack_instructions.setOnClickListener {
-            jetpackLoginListener?.onViewJetpackInstructions()
+            jetpackLoginListener?.showJetpackInstructions()
         }
 
         btn_contact_support.setOnClickListener {
@@ -82,8 +82,7 @@ class LoginJetpackRequiredFragment : Fragment() {
         }
 
         btn_what_is_jetpack.setOnClickListener {
-            // TODO open dialog with information on jetpack
-            Toast.makeText(activity, "What is jetpack?", Toast.LENGTH_LONG).show()
+            jetpackLoginListener?.showWhatIsJetpackDialog()
         }
     }
 
