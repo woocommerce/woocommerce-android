@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderFulfillmentFragment
 import com.woocommerce.android.ui.orders.OrderProductListFragment
 import com.woocommerce.android.ui.orders.OrdersViewRouter
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
@@ -133,11 +134,20 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
     ) {
         val tag = AddOrderShipmentTrackingFragment.TAG
         if (!popToState(tag)) {
-            loadChildFragment(AddOrderShipmentTrackingFragment.newInstance(
-                    orderIdentifier,
-                    orderTrackingProvider,
-                    isCustomProvider
-            ), tag)
+            loadChildFragment(
+                    AddOrderShipmentTrackingFragment.newInstance(
+                            orderIdentifier,
+                            orderTrackingProvider,
+                            isCustomProvider
+                    ), tag
+            )
+        }
+    }
+
+    fun openProductDetail(remoteProductId: Long) {
+        val tag = ProductDetailFragment.TAG
+        if (!popToState(tag)) {
+            loadChildFragment(ProductDetailFragment.newInstance(remoteProductId), tag)
         }
     }
 }
