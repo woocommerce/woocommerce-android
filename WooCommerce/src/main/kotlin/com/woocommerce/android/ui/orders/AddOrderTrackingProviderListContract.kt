@@ -14,8 +14,8 @@ interface AddOrderTrackingProviderListContract {
         fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadShipmentTrackingProviders(orderIdentifier: OrderIdentifier?)
         fun loadShipmentTrackingProvidersFromDb()
-        fun requestShipmentTrackingProvidersFromDb(): List<WCOrderShipmentProviderModel>
-        fun requestShipmentTrackingProvidersFromApi(order: WCOrderModel)
+        fun getShipmentTrackingProvidersFromDb(): List<WCOrderShipmentProviderModel>
+        fun fetchShipmentTrackingProvidersFromApi(order: WCOrderModel)
         fun loadStoreCountryFromDb(): String?
     }
 

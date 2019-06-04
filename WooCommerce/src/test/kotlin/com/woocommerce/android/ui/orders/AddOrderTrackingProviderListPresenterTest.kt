@@ -52,7 +52,7 @@ class AddOrderTrackingProviderListPresenterTest {
 
         presenter.loadShipmentTrackingProviders(order.getIdentifier())
         verify(view).showSkeleton(true)
-        verify(presenter, times(1)).requestShipmentTrackingProvidersFromApi(any())
+        verify(presenter, times(1)).fetchShipmentTrackingProvidersFromApi(any())
 
         presenter.onOrderShipmentProviderChanged(OnOrderShipmentProvidersChanged(10))
         verify(view).showSkeleton(false)
@@ -64,17 +64,17 @@ class AddOrderTrackingProviderListPresenterTest {
         doReturn(order).whenever(presenter).orderModel
 
         // request providers list from api only if cache data is empty and when network is connected
-        // the `requestShipmentTrackingProvidersFromDb()` method will return empty the first time and
+        // the `getShipmentTrackingProvidersFromDb()` method will return empty the first time and
         // return list of providers the second time
         doReturn(true).whenever(networkStatus).isConnected()
-        whenever(presenter.requestShipmentTrackingProvidersFromDb())
+        whenever(presenter.getShipmentTrackingProvidersFromDb())
                 .thenReturn(emptyList())
                 .thenReturn(wcOrderShipmentProviderModels)
 
         presenter.loadShipmentTrackingProviders(order.getIdentifier())
 
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
-        verify(presenter, times(1)).requestShipmentTrackingProvidersFromApi(any())
+        verify(presenter, times(1)).fetchShipmentTrackingProvidersFromApi(any())
         verify(dispatcher, times(1)).dispatch(any<Action<*>>())
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
 
@@ -89,11 +89,11 @@ class AddOrderTrackingProviderListPresenterTest {
 
         // request providers list from api only if cache data is empty and when network is connected
         doReturn(true).whenever(networkStatus).isConnected()
-        whenever(presenter.requestShipmentTrackingProvidersFromDb()).thenReturn(emptyList())
+        whenever(presenter.getShipmentTrackingProvidersFromDb()).thenReturn(emptyList())
 
         presenter.loadShipmentTrackingProviders(order.getIdentifier())
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
-        verify(presenter, times(1)).requestShipmentTrackingProvidersFromApi(any())
+        verify(presenter, times(1)).fetchShipmentTrackingProvidersFromApi(any())
         verify(dispatcher, times(1)).dispatch(any<Action<*>>())
 
         presenter.onOrderShipmentProviderChanged(OnOrderShipmentProvidersChanged(1).apply {
@@ -108,13 +108,13 @@ class AddOrderTrackingProviderListPresenterTest {
         doReturn(order).whenever(presenter).orderModel
 
         // network is not available
-        // the `requestShipmentTrackingProvidersFromDb()` method will return empty the first time
+        // the `getShipmentTrackingProvidersFromDb()` method will return empty the first time
         doReturn(false).whenever(networkStatus).isConnected()
-        whenever(presenter.requestShipmentTrackingProvidersFromDb()).thenReturn(emptyList())
+        whenever(presenter.getShipmentTrackingProvidersFromDb()).thenReturn(emptyList())
 
         presenter.loadShipmentTrackingProviders(order.getIdentifier())
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
-        verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())
+        verify(presenter, times(0)).fetchShipmentTrackingProvidersFromApi(any())
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
 
         verify(view, times(1)).showProviderListErrorSnack(any())
@@ -130,7 +130,7 @@ class AddOrderTrackingProviderListPresenterTest {
 
         presenter.loadShipmentTrackingProviders(order.getIdentifier())
         verify(presenter, times(1)).loadShipmentTrackingProvidersFromDb()
-        verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())
+        verify(presenter, times(0)).fetchShipmentTrackingProvidersFromApi(any())
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
         verify(view, times(1)).showProviderList(wcOrderShipmentProviderModels)
     }
@@ -145,6 +145,6 @@ class AddOrderTrackingProviderListPresenterTest {
         presenter.loadShipmentTrackingProviders(order.getIdentifier())
 
         presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(presenter, times(0)).requestShipmentTrackingProvidersFromApi(any())
+        verify(presenter, times(0)).fetchShipmentTrackingProvidersFromApi(any())
     }
 }

@@ -48,7 +48,7 @@ abstract class MockedAddOrderTrackingProviderListModule {
             /**
              * Creating a spy object here since we need to mock specific methods of
              * [AddOrderTrackingProviderListPresenter] class instead of mocking all the methods in the class.
-             * We cannot mock final classes ([WCOrderStore], [WCProductStore], [SelectedSite] and [NetworkStatus]), so
+             * We cannot mock final classes ([WCOrderStore], [SelectedSite] and [NetworkStatus]), so
              * creating a mock instance of those classes and passing to the presenter class constructor.
              */
             val mockDispatcher = mock<Dispatcher>()
@@ -74,7 +74,7 @@ abstract class MockedAddOrderTrackingProviderListModule {
              */
             doReturn(order).whenever(mockPresenter).loadOrderDetailFromDb(any())
             doReturn(storeCountry).whenever(mockPresenter).loadStoreCountryFromDb()
-            doReturn(providers).whenever(mockPresenter).requestShipmentTrackingProvidersFromDb()
+            doReturn(providers).whenever(mockPresenter).getShipmentTrackingProvidersFromDb()
 
             return mockPresenter
         }

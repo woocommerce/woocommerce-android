@@ -71,7 +71,7 @@ class AddOrderTrackingProviderListAdapter(
         // clear all the current data from the adapter
         removeAllSections()
 
-        /**
+        /*
          * Build a list of [WCOrderShipmentProviderModel] for each country section.
          * Order of provider list should be:
          * 1. Store country

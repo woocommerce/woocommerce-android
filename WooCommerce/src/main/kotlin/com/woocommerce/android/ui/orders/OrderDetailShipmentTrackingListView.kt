@@ -26,7 +26,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     private var nextTransientTrackingId = -1
 
     /**
-     * @param [isOrderDetail] = true, then
+     * @param [isOrderDetail] is true, then
      * 1. the delete icon would not be displayed. The hanburger menu should be displayed instead
      * 2. The title should be "Tracking" instead of "Optional shipment tracking"
      */
@@ -62,7 +62,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         }
     }
 
-    /*
+    /**
      * Divider should only be displayed when there is atleast one tracking
      * item in the list
      */
@@ -75,7 +75,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         }
     }
 
-    /*
+    /**
      * a transient note is a temporary placeholder created after the user adds a provider but before the request to
      * add the provider has completed - this enables us to be optimistic about connectivity
      */

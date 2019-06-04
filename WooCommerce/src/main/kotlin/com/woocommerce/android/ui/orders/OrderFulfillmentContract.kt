@@ -12,7 +12,7 @@ interface OrderFulfillmentContract {
         var isShipmentTrackingsFetched: Boolean
         var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, isShipmentTrackingsFetched: Boolean = false)
-        fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
+        fun getOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderShipmentTrackings()
         fun pushShipmentTrackingRecord(
             wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel,
