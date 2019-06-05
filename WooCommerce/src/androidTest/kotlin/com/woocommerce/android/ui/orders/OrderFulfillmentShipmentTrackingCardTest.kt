@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.os.Handler
 import android.os.Looper
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click

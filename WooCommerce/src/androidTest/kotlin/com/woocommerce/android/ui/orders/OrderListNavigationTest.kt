@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions

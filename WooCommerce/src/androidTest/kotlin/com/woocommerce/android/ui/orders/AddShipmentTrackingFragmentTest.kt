@@ -204,7 +204,7 @@ class AddShipmentTrackingFragmentTest : TestBase() {
         // verify that offline snackbar is displayed
         onView(
                 Matchers.allOf(
-                        withId(id.snackbar_text),
+                        withId(R.id.snackbar_text),
                         withText(string.offline_error)
                 )
         ).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
