@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig

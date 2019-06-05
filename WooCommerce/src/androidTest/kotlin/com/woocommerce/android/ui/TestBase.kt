@@ -1,9 +1,8 @@
 package com.woocommerce.android.ui
 
-import android.support.test.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.di.AppComponentTest
-import com.woocommerce.android.di.DaggerAppComponentTest
 import org.junit.Before
 
 open class TestBase {

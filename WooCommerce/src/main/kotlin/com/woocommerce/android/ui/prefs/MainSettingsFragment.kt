@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
 
-class MainSettingsFragment : Fragment(), MainSettingsContract.View {
+class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContract.View {
     companion object {
         const val TAG = "main-settings"
         private const val SETTING_NOTIFS_ORDERS = "notifications_orders"

@@ -26,7 +26,7 @@
         android:layout_marginTop="@dimen/margin_large"
         tools:text="@string/waiting_for_customers"/>
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/empty_view_share_button"
         style="@style/Woo.Button.Purple"
         android:layout_width="wrap_content"

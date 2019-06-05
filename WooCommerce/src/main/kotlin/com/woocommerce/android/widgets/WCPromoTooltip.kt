@@ -2,10 +2,10 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.os.Handler
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
 import android.view.Gravity
 import android.view.View
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import com.tooltip.Tooltip
 import com.woocommerce.android.R
 import java.lang.ref.WeakReference

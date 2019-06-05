@@ -19,11 +19,11 @@
         tools:text="@string/support_identity_input_dialog_enter_email_and_name" >
     </TextView>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent" >
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/support_identity_input_dialog_email_edit_text"
             android:hint="@string/support_identity_input_dialog_email_label"
             android:inputType="textEmailAddress"
@@ -31,15 +31,15 @@
             android:layout_marginBottom="@dimen/margin_large"
             android:layout_width="match_parent"
             app:theme="@style/EditText" >
-        </android.support.design.widget.TextInputEditText>
+        </com.google.android.material.textfield.TextInputEditText>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent" >
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/support_identity_input_dialog_name_edit_text"
             android:hint="@string/support_identity_input_dialog_name_label"
             android:inputType="text"
@@ -47,8 +47,8 @@
             android:layout_width="match_parent"
             android:maxLength="50"
             app:theme="@style/EditText" >
-        </android.support.design.widget.TextInputEditText>
+        </com.google.android.material.textfield.TextInputEditText>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

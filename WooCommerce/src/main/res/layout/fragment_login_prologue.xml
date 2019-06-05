@@ -63,7 +63,7 @@
             android:textColor="@color/white"
             android:textColorLink="@color/white"/>
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_login_jetpack"
             android:theme="@style/Woo.Button.White"
             android:layout_width="match_parent"

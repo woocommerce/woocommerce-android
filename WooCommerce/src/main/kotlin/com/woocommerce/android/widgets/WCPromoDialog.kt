@@ -4,11 +4,10 @@ import android.app.Dialog
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.AppCompatButton
 import android.view.View
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_GOT_IT
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton.SITE_PICKER_TRY_IT
@@ -18,7 +17,7 @@ import org.wordpress.android.util.DisplayUtils
  * Used to advertise a new feature with a single-shot dialog. This was initially added to promote the ability to
  * switch sites but is no longer used. Code is being left here for possible future use.
  */
-class WCPromoDialog : DialogFragment() {
+class WCPromoDialog : androidx.fragment.app.DialogFragment() {
     companion object {
         const val TAG: String = "WCPromoDialog"
         private const val PREF_NAME = "woo_promo_dialog"

@@ -4,14 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.SearchView
-import android.support.v7.widget.SearchView.OnQueryTextListener
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -19,6 +11,11 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -61,7 +58,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
 
-    private lateinit var ordersDividerDecoration: DividerItemDecoration
+    private lateinit var ordersDividerDecoration: androidx.recyclerview.widget.DividerItemDecoration
     private var orderFilterDialog: OrderStatusSelectorDialog? = null
 
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
@@ -227,16 +224,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         super.onActivityCreated(savedInstanceState)
 
         // Set the divider decoration for the list
-        ordersDividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        ordersDividerDecoration = androidx.recyclerview.widget.DividerItemDecoration(
+                context,
+                androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+        )
 
         ordersList.apply {
-            layoutManager = LinearLayoutManager(context)
-            itemAnimator = DefaultItemAnimator()
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) {
                         onScrollDown()
                     } else if (dy < 0) {

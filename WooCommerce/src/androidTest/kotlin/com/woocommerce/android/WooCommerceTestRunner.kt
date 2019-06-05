@@ -1,9 +1,8 @@
 package com.woocommerce.android
 
 import android.app.Application
-import android.support.test.runner.AndroidJUnitRunner
-
 import android.content.Context
+import androidx.test.runner.AndroidJUnitRunner
 
 /**
  * Custom AndroidJUnitRunner that replaces the original application with [WooCommerceTest].
