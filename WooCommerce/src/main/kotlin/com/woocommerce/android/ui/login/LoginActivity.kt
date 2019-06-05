@@ -408,8 +408,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     //  -- END: GoogleListener implementation methods
 
-    override fun onViewJetpackInstructions() {
+    override fun showJetpackInstructions() {
         // TODO - view instructions
-        Toast.makeText(this, "View jetpack instructions", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Not yet implemented", Toast.LENGTH_LONG).show()
+    }
+
+    override fun showWhatIsJetpackDialog() {
+        LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
     }
 }
