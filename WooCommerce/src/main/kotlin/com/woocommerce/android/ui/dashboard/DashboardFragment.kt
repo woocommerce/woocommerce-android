@@ -155,6 +155,15 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
     }
 
+    override fun onBackStackChanged() {
+        super.onBackStackChanged()
+        // If this fragment is now visible and we've deferred loading stats due to it not
+        // being visible - go ahead and load the stats.
+        if (isActive && !deferInit) {
+            refreshDashboard(forced = this.isRefreshPending)
+        }
+    }
+
     override fun showStats(
         revenueStats: Map<String, Double>,
         salesStats: Map<String, Int>,
