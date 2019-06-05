@@ -1,20 +1,20 @@
 package com.woocommerce.android.ui.orders
 
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.contrib.RecyclerViewActions
-import android.support.test.espresso.matcher.BoundedMatcher
-import android.support.test.espresso.matcher.ViewMatchers
-import android.support.test.espresso.matcher.ViewMatchers.Visibility
-import android.support.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
-import android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.espresso.matcher.ViewMatchers.withText
-import android.support.test.filters.LargeTest
-import android.support.test.runner.AndroidJUnit4
-import android.support.v7.widget.RecyclerView
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.BoundedMatcher
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.Visibility
+import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
+import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -96,11 +96,11 @@ class AddOrderTrackingProviderListTest : TestBase() {
 
         // the section count matches the country count from the mock data + custom provider section
         val expectedSectionCount = mockShipmentTrackingProviders.groupBy { it.country }.keys.size + 1
-        onView(ViewMatchers.isAssignableFrom(RecyclerView::class.java))
+        onView(ViewMatchers.isAssignableFrom(androidx.recyclerview.widget.RecyclerView::class.java))
                 .check(matches(WCMatchers.withSectionCount(expectedSectionCount)))
 
         // verify the there is 1 item in the `Custom` section
-        onView(ViewMatchers.isAssignableFrom(RecyclerView::class.java))
+        onView(ViewMatchers.isAssignableFrom(androidx.recyclerview.widget.RecyclerView::class.java))
                 .check(matches(withProviderSectionItemCount(
                         appContext.getString(R.string.order_shipment_tracking_custom_provider_section_title),
                         1
@@ -133,7 +133,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
         )).check(matches(withText(sectionTitle)))
 
         // verify the the first section in the list is has section count 3
-        onView(ViewMatchers.isAssignableFrom(RecyclerView::class.java))
+        onView(ViewMatchers.isAssignableFrom(androidx.recyclerview.widget.RecyclerView::class.java))
                 .check(matches(withProviderSectionItemCount(
                         sectionTitle, 3
                 )))
@@ -160,7 +160,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
         )).check(matches(withText(sectionTitle)))
 
         // verify the the first section in the list is has section count 1
-        onView(ViewMatchers.isAssignableFrom(RecyclerView::class.java))
+        onView(ViewMatchers.isAssignableFrom(androidx.recyclerview.widget.RecyclerView::class.java))
                 .check(matches(withProviderSectionItemCount(
                         sectionTitle, 1
                 )))
@@ -188,7 +188,7 @@ class AddOrderTrackingProviderListTest : TestBase() {
         )).check(matches(withText(sectionTitle)))
 
         // verify the the first section in the list is has section count 3
-        onView(ViewMatchers.isAssignableFrom(RecyclerView::class.java))
+        onView(ViewMatchers.isAssignableFrom(androidx.recyclerview.widget.RecyclerView::class.java))
                 .check(matches(withProviderSectionItemCount(
                         sectionTitle, 1
                 )))

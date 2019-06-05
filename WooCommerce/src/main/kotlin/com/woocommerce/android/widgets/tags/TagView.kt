@@ -2,10 +2,10 @@ package com.woocommerce.android.widgets.tags
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
 import android.util.TypedValue
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.util.getDensityPixel
 

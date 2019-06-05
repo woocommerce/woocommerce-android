@@ -1,4 +1,4 @@
-<android.support.v4.widget.NestedScrollView
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/snack_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/order_shipment_tracking_carrier_label"/>
 
-            <android.support.v7.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/addTracking_editCarrier"
                 style="@style/Woo.OrderTracking.Add.EditText"
                 android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                 android:background="@color/list_divider"/>
 
             <!-- Add custom provider name view -only visible if custom provider is selected -->
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/addTracking_custom_provider_name_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/addTracking_custom_provider_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/addTracking_custom_provider_name_label"/>
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Add tracking number view -->
             <TextView
@@ -107,7 +107,7 @@
                 android:layout_marginTop="@dimen/margin_medium"
                 android:text="@string/order_shipment_tracking_number_label"/>
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addTracking_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -120,7 +120,7 @@
                 android:theme="@style/Woo.OrderTracking.Add.EditText"/>
 
             <!-- Add custom provider tracking url view -only visible if custom provider is selected -->
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/addTracking_custom_provider_url_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/addTracking_custom_provider_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/addTracking_custom_provider_url_label"/>
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Select date shipped view -->
             <TextView
@@ -164,7 +164,7 @@
                 android:layout_marginTop="@dimen/margin_medium"
                 android:text="@string/order_shipment_tracking_date_label"/>
 
-            <android.support.v7.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/addTracking_date"
                 style="@style/Woo.OrderTracking.Add.EditText"
                 android:layout_width="match_parent"
@@ -180,5 +180,5 @@
                 tools:text="May 8, 2019"/>
         </LinearLayout>
 
-    </android.support.constraint.ConstraintLayout>
-</android.support.v4.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

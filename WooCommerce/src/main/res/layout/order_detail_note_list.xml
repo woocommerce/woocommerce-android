@@ -68,7 +68,7 @@
             android:layout_marginStart="56dp"
             android:background="@color/list_divider"/>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/notesList_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

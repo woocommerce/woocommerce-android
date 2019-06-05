@@ -2,20 +2,17 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.design.widget.Snackbar
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.SearchView
-import android.support.v7.widget.SearchView.OnQueryTextListener
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED
@@ -42,7 +39,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
          * @param [selectedProviderText] to update the currently selected provider item (if already selected)
          */
         fun newInstance(
-            listener: Fragment,
+            listener: androidx.fragment.app.Fragment,
             orderIdentifier: OrderIdentifier,
             selectedProviderText: String?
         ): AddOrderTrackingProviderListFragment {
@@ -76,7 +73,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listener = targetFragment as AddOrderTrackingProviderActionListener
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme)
+        setStyle(androidx.fragment.app.DialogFragment.STYLE_NORMAL, R.style.AppTheme)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -126,8 +123,8 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
         }
 
         addTrackingProviderList.apply {
-            layoutManager = LinearLayoutManager(context)
-            itemAnimator = DefaultItemAnimator()
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(true)
             adapter = providerListAdapter
         }

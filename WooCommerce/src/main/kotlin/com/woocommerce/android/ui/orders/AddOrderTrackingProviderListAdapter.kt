@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
@@ -161,11 +161,11 @@ class AddOrderTrackingProviderListAdapter(
     ) {
         override fun getContentItemsTotal() = list.size
 
-        override fun getItemViewHolder(view: View): RecyclerView.ViewHolder {
+        override fun getItemViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             return ItemViewHolder(view)
         }
 
-        override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindItemViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val provider = list[position]
             val itemHolder = holder as ItemViewHolder
 
@@ -183,11 +183,11 @@ class AddOrderTrackingProviderListAdapter(
             }
         }
 
-        override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
+        override fun getHeaderViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             return HeaderViewHolder(view)
         }
 
-        override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
+        override fun onBindHeaderViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
             val headerViewHolder = holder as HeaderViewHolder
             headerViewHolder.title.text = country
         }

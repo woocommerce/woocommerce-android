@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.R
 
 /**
