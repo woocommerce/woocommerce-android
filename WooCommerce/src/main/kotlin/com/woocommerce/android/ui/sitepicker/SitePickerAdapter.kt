@@ -1,13 +1,13 @@
 package com.woocommerce.android.ui.sitepicker
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.SiteViewHolder
 import com.woocommerce.android.util.StringUtils
@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.site_picker_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 
 class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
-        RecyclerView.Adapter<SiteViewHolder>() {
+        androidx.recyclerview.widget.RecyclerView.Adapter<SiteViewHolder>() {
     var siteList: List<SiteModel> = ArrayList()
         set(value) {
             if (!isSameSiteList(value)) {

@@ -1,14 +1,12 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import kotlinx.android.synthetic.main.order_detail_shipment_tracking_list.view.*
@@ -36,7 +34,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         isOrderDetail: Boolean,
         shipmentTrackingActionListener: OrderShipmentTrackingActionListener? = null
     ) {
-        val viewManager = LinearLayoutManager(context)
+        val viewManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         val viewAdapter = ShipmentTrackingListAdapter(
                 trackings.toMutableList(),
                 uiMessageResolver,
@@ -47,7 +45,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         shipmentTrack_items.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
-            itemAnimator = DefaultItemAnimator()
+            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             adapter = viewAdapter
         }
 

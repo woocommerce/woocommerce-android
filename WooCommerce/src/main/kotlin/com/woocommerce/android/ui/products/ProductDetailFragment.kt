@@ -4,10 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -17,6 +13,9 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -45,7 +44,7 @@ import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
-class ProductDetailFragment : Fragment(), ProductDetailContract.View, RequestListener<Drawable> {
+class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailContract.View, RequestListener<Drawable> {
     companion object {
         const val TAG = "ProductDetailFragment"
         private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"

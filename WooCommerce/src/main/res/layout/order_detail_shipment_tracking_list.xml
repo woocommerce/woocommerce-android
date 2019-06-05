@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <!-- List: Order Shipment Trackings -->
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/shipmentTrack_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         tools:listitem="@layout/order_detail_shipment_tracking_list_item"
         tools:targetApi="lollipop">
 
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <!-- Divider -->
     <FrameLayout
@@ -52,7 +52,7 @@
         tools:visibility="visible"/>
 
     <!-- Button: Add Tracking -->
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/shipmentTrack_btnAddTracking"
         style="@style/Woo.Button"
         android:layout_width="wrap_content"

@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
-import android.support.constraint.ConstraintSet
 import android.util.AttributeSet
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*

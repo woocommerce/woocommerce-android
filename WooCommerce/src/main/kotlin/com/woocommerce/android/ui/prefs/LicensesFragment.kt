@@ -1,16 +1,15 @@
 package com.woocommerce.android.ui.prefs
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import kotlinx.android.synthetic.main.fragment_licenses.*
 
-class LicensesFragment : Fragment() {
+class LicensesFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val TAG = "licenses"
 

@@ -8,9 +8,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.support.annotation.ColorRes
-import android.support.v4.content.ContextCompat
 import android.view.WindowManager
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils

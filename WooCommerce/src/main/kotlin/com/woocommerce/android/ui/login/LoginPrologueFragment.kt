@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import kotlinx.android.synthetic.main.fragment_login_prologue.*
 
-class LoginPrologueFragment : Fragment() {
+class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val TAG = "login-prologue-fragment"
 
