@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -17,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICA
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.android.support.AndroidSupportInjection
@@ -29,6 +31,8 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         private const val SETTING_NOTIFS_ORDERS = "notifications_orders"
         private const val SETTING_NOTIFS_REVIEWS = "notifications_reviews"
         private const val SETTING_NOTIFS_TONE = "notifications_tone"
+
+        private const val SITE_PICKER_REQUEST_CODE = 1000
     }
 
     @Inject lateinit var presenter: MainSettingsContract.Presenter
@@ -38,7 +42,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         fun onRequestShowPrivacySettings()
         fun onRequestShowAbout()
         fun onRequestShowLicenses()
-        fun onRequestShowSitePicker()
+        fun onSiteChanged()
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -123,7 +127,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         if (presenter.hasMultipleStores()) {
             primaryStoreView.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
-                settingsListener.onRequestShowSitePicker()
+                SitePickerActivity.showSitePickerForResult(this, SITE_PICKER_REQUEST_CODE)
             }
 
             // advertise the site switcher if we haven't already
@@ -136,6 +140,16 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         AnalyticsTracker.trackViewShown(this)
 
         activity?.setTitle(R.string.settings)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // if we're returning from the site picker, update the main fragment so the new store is shown
+        if (requestCode == SITE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            updateStoreViews()
+            settingsListener.onSiteChanged()
+        }
     }
 
     /**

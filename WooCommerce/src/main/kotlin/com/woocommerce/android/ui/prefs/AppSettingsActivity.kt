@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.annotation.IdRes
@@ -18,7 +17,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -33,7 +31,6 @@ class AppSettingsActivity : AppCompatActivity(),
         AppSettingsContract.View,
         HasSupportFragmentInjector {
     companion object {
-        private const val SITE_PICKER_REQUEST_CODE = 1000
         private const val KEY_SITE_CHANGED = "key_site_changed"
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
     }
@@ -82,40 +79,23 @@ class AppSettingsActivity : AppCompatActivity(),
         super.onSaveInstanceState(outState)
     }
 
-    /*override fun onBackPressed() {
+    override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
+        super.onBackPressed()
+    }
 
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            finish()
-        } else {
-            super.onBackPressed()
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
-            supportActionBar?.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-        }
-    }*/
+    override fun onSiteChanged() {
+        siteChanged = true
+        setResult(RESULT_CODE_SITE_CHANGED)
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // if we're returning from the site picker, update the main fragment so the new store is shown
-        if (requestCode == SITE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            siteChanged = true
-            setResult(RESULT_CODE_SITE_CHANGED)
-
-            // TODO
-            supportFragmentManager.findFragmentByTag(MainSettingsFragment.TAG)?.let {
-                (it as MainSettingsFragment).updateStoreViews()
-            }
-
-            // Display a message to the user advising notifications will only be shown
-            // for the current store.
-            selectedSite.getIfExists()?.let {
-                Snackbar.make(
-                        main_content,
-                        getString(R.string.settings_switch_site_notifs_msg, it.name),
-                        Snackbar.LENGTH_LONG
-                ).show()
-            }
+        // Display a message to the user advising notifications will only be shown
+        // for the current store.
+        selectedSite.getIfExists()?.let {
+            Snackbar.make(
+                    main_content,
+                    getString(R.string.settings_switch_site_notifs_msg, it.name),
+                    Snackbar.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -133,10 +113,6 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onRequestShowLicenses() {
         showLicensesFragment()
-    }
-
-    override fun onRequestShowSitePicker() {
-        SitePickerActivity.showSitePickerForResult(this, SITE_PICKER_REQUEST_CODE)
     }
 
     override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
