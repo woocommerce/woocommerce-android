@@ -1,5 +1,9 @@
+2.1
+-----
+ 
 2.0
 ----
+* Translations have been added for the "Orders to Fulfill" card in My Store.
 
 1.9
 -----

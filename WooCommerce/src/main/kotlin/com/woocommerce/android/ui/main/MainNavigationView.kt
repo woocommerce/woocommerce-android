@@ -153,7 +153,10 @@ class MainNavigationView @JvmOverloads constructor(
      */
     private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
         fragment?.let {
-            if (!it.isAdded) {
+            /**
+             * if isStateSaved  = true then the fragment is added and its state has already been saved by its host.
+             */
+            if (!it.isAdded || it.isStateSaved) {
                 return false
             }
             with(it.childFragmentManager) {

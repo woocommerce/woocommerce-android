@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -47,6 +48,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
+@OpenClassOnDebug
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
@@ -84,10 +86,20 @@ class OrderDetailPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
+    /**
+     * Loading order detail from local database
+     */
+    override fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel? {
+        return orderStore.getOrderByIdentifier(orderIdentifier)
+    }
+
+    /**
+     * displaying the loaded order detail data in UI
+     */
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
         this.orderIdentifier = orderIdentifier
         if (orderIdentifier.isNotEmpty()) {
-            orderModel = orderStore.getOrderByIdentifier(orderIdentifier)
+            orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 orderView?.showOrderDetail(order)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
@@ -101,14 +113,39 @@ class OrderDetailPresenter @Inject constructor(
         orderView?.showOrderNotesSkeleton(true)
         orderModel?.let { order ->
             // Preload order notes from database if available
-            loadNotesFromDb()
+            fetchAndLoadOrderNotesFromDb()
 
             if (networkStatus.isConnected()) {
                 // Attempt to refresh notes from api in the background
                 requestOrderNotesFromApi(order)
             } else {
                 // Track so when the device is connected notes can be refreshed
+                orderView?.showOrderNotesSkeleton(false)
                 isUsingCachedNotes = true
+            }
+        }
+    }
+
+    /**
+     * Fetch the order notes from the device database
+     * Segregating the fetching from db and displaying to UI into two separate methods
+     * for better ui testing
+     */
+    override fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel> {
+        return orderStore.getOrderNotesForOrder(order)
+    }
+
+    /**
+     * Fetch and display the order notes from the device database
+     */
+    override fun fetchAndLoadOrderNotesFromDb() {
+        orderModel?.let { order ->
+            val notes = fetchOrderNotesFromDb(order)
+            if (isNotesInit) {
+                orderView?.updateOrderNotes(notes)
+            } else {
+                isNotesInit = true
+                orderView?.showOrderNotes(notes)
             }
         }
     }
@@ -295,22 +332,7 @@ class OrderDetailPresenter @Inject constructor(
 
             // note that we refresh even on error to make sure the transient note is removed
             // from the note list
-            loadNotesFromDb()
-        }
-    }
-
-    /**
-     * Fetch the order notes from the device database.
-     */
-    fun loadNotesFromDb() {
-        orderModel?.let { order ->
-            val notes = orderStore.getOrderNotesForOrder(order)
-            if (isNotesInit) {
-                orderView?.updateOrderNotes(notes)
-            } else {
-                isNotesInit = true
-                orderView?.showOrderNotes(notes)
-            }
+            fetchAndLoadOrderNotesFromDb()
         }
     }
 
