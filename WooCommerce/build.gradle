@@ -168,18 +168,18 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
 
     // Dependencies for Espresso UI tests
-    androidTestImplementation "androidx.test.ext:junit:1.1.0"
-    androidTestImplementation "androidx.test:rules:1.1.0"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.1.0"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.1.0"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:3.1.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.1"
+    androidTestImplementation "androidx.test:rules:1.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
     androidTestImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
 
     // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.0.0"
-    androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
+    androidTestImplementation "androidx.annotation:annotation:1.0.2"
+    androidTestImplementation "com.google.code.findbugs:jsr305:3.0.2"
 
     implementation (group: 'com.zendesk', name: 'support', version: '2.3.1') {
         exclude group: 'com.google.dagger'
