@@ -54,6 +54,8 @@
         android:layout_marginEnd="@dimen/card_item_padding_intra_h"
         android:layout_marginStart="@dimen/card_section_padding_h"
         android:paddingBottom="@dimen/card_item_padding_intra_v"
+        android:layout_gravity="start"
+        android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:drawable="@drawable/button_purple_bg_oval"
+        android:gravity="center"/>
+
+    <item
+        android:left="@dimen/card_level_button_padding"
+        android:right="@dimen/card_level_button_padding"
+        android:end="@dimen/card_level_button_padding"
+        android:start="@dimen/card_level_button_padding"
+        android:top="@dimen/card_level_button_padding"
+        android:bottom="@dimen/card_level_button_padding"
+        android:drawable="@drawable/ic_close"
+        android:gravity="center"/>
+</layer-list>

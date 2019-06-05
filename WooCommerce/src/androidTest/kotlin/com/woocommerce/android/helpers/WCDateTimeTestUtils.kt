@@ -5,7 +5,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.TimeZone
 
-object WcDateTimeTestUtils {
+object WCDateTimeTestUtils {
     private const val DATE_FORMAT = "yyyy-MM-dd'T'hh:mm:ss'Z'"
     private val timeZone = TimeZone.getTimeZone("UTC")
 
