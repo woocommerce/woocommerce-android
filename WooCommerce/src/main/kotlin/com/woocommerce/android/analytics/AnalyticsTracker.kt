@@ -149,6 +149,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_TRACKING_DELETE,
         ORDER_TRACKING_DELETE_SUCCESS,
         ORDER_TRACKING_DELETE_FAILED,
+        ORDER_TRACKING_PROVIDERS_LOADED,
 
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
