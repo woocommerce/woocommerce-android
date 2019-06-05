@@ -19,6 +19,9 @@ apply plugin: 'kotlin-allopen'
 apply plugin: 'io.fabric'
 apply plugin: 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
 
+// Copy and install git-hooks
+apply from: '../tools/team-props/git-hooks.gradle'
+
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
