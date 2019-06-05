@@ -123,7 +123,7 @@ class MainNavigationTest : TestBase() {
     fun verifyOverFlowMenuAndSettingsIsDisplayed() {
         // Open the overflow menu OR open the options menu,
         // depending on if the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext())
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
 
         // verify that there are 2 items in the menu list
         onView(isAssignableFrom(ListView::class.java))
@@ -154,7 +154,7 @@ class MainNavigationTest : TestBase() {
     fun verifyOverFlowMenuAndHelpIsDisplayed() {
         // Open the overflow menu OR open the options menu,
         // depending on if the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext())
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
 
         // verify that there are 2 items in the menu list
         onView(isAssignableFrom(ListView::class.java))
