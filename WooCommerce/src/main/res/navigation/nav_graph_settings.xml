@@ -2,18 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/nav_graph_settings"
-            app:startDestination="@id/appSettingsActivity">
+            app:startDestination="@id/mainSettingsFragment">
 
-    <activity
-        android:id="@+id/appSettingsActivity"
-        android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
-        android:label="AppSettingsActivity">
-        <action
-            android:id="@+id/action_appSettingsActivity_to_mainSettingsFragment"
-            app:destination="@id/mainSettingsFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@anim/activity_fade_out"/>
-    </activity>
     <fragment
         android:id="@+id/mainSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.MainSettingsFragment"
@@ -24,7 +14,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_right"/>
         <action
-            android:id="@+id/action_mainSettingsFragment_to_licensesFragment2"
+            android:id="@+id/action_mainSettingsFragment_to_licensesFragment"
             app:destination="@id/licensesFragment2"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_right"/>
