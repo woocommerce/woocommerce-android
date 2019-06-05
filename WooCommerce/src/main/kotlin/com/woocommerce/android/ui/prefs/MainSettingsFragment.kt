@@ -29,10 +29,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         private const val SETTING_NOTIFS_ORDERS = "notifications_orders"
         private const val SETTING_NOTIFS_REVIEWS = "notifications_reviews"
         private const val SETTING_NOTIFS_TONE = "notifications_tone"
-
-        fun newInstance(): MainSettingsFragment {
-            return MainSettingsFragment()
-        }
     }
 
     @Inject lateinit var presenter: MainSettingsContract.Presenter
@@ -45,7 +41,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         fun onRequestShowSitePicker()
     }
 
-    private lateinit var listener: AppSettingsListener
+    private lateinit var settingsListener: AppSettingsListener
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -60,7 +56,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         super.onActivityCreated(savedInstanceState)
 
         if (activity is AppSettingsListener) {
-            listener = activity as AppSettingsListener
+            settingsListener = activity as AppSettingsListener
         } else {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
@@ -73,7 +69,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
-            listener.onRequestLogout()
+            settingsListener.onRequestLogout()
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
@@ -111,23 +107,23 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         textPrivacySettings.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
-            listener.onRequestShowPrivacySettings()
+            settingsListener.onRequestShowPrivacySettings()
         }
 
         textAbout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
-            listener.onRequestShowAbout()
+            settingsListener.onRequestShowAbout()
         }
 
         textLicenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
-            listener.onRequestShowLicenses()
+            settingsListener.onRequestShowLicenses()
         }
 
         if (presenter.hasMultipleStores()) {
             primaryStoreView.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
-                listener.onRequestShowSitePicker()
+                settingsListener.onRequestShowSitePicker()
             }
 
             // advertise the site switcher if we haven't already

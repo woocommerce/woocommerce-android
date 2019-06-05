@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.view.MenuItem
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
@@ -56,6 +55,7 @@ class AppSettingsActivity : AppCompatActivity(),
         navController = findNavController(R.id.nav_host_fragment)
         presenter.takeView(this)
 
+        // TODO not working
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -80,19 +80,6 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(KEY_SITE_CHANGED, siteChanged)
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        }
-
-        return false
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return super.onSupportNavigateUp()
     }
 
     /*override fun onBackPressed() {
@@ -170,6 +157,10 @@ class AppSettingsActivity : AppCompatActivity(),
         showFragment(R.id.action_mainSettingsFragment_to_licensesFragment)
     }
 
+    private fun showFragment(@IdRes navResId: Int) {
+        navController.navigate(navResId)
+    }
+
     override fun confirmLogout() {
         val message = String.format(
                 Locale.getDefault(),
@@ -195,9 +186,5 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun clearNotificationPreferences() {
         sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
-    }
-
-    private fun showFragment(@IdRes navResId: Int) {
-        navController.navigate(navResId)
     }
 }
