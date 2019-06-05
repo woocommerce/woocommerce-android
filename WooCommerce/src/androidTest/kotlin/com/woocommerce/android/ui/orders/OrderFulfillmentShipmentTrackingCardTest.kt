@@ -163,7 +163,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
                 .perform(WCMatchers.scrollTo(), click())
 
         // check if the offline snack is displayed
-        onView(allOf(withId(android.support.design.R.id.snackbar_text), withText(R.string.offline_error)))
+        onView(allOf(withId(com.google.android.material.R.id.snackbar_text), withText(R.string.offline_error)))
                 .check(matches(isDisplayed()))
 
         // verify that the shipment tracking list count matches the mock data count
@@ -188,7 +188,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
         // check if the snackbar with undo button is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_snackbar_msg))
         ).check(matches(isDisplayed()))
 
@@ -226,7 +226,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
         // check if the success snack is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_success))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
@@ -261,7 +261,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
         // check if the error snack is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_error))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
@@ -299,7 +299,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
 
         // verify that add tracking snackbar is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_added))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 

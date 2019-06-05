@@ -301,7 +301,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // check if the offline snack is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.offline_error))
         ).check(matches(isDisplayed()))
 
@@ -335,7 +335,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // check if the snackbar with undo button is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_snackbar_msg))
         ).check(matches(isDisplayed()))
 
@@ -384,7 +384,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // check if the success snack is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_success))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
@@ -430,7 +430,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // check if the error snack is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_error))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
@@ -476,7 +476,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // verify that add tracking snackbar is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_added))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
