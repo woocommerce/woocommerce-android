@@ -1,11 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
-import android.support.annotation.StringRes
-import android.support.design.widget.TabLayout
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -59,9 +57,9 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         this.selectedSite = selectedSite
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
 
-        topEarners_recycler.layoutManager = LinearLayoutManager(context)
+        topEarners_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
-        topEarners_recycler.itemAnimator = DefaultItemAnimator()
+        topEarners_recycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
 
         StatsGranularity.values().forEach { granularity ->
             val tab = topEarners_tab_layout.newTab().apply {

@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <!-- List: Products -->
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productList_products"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         tools:targetApi="lollipop"/>
 
     <!-- Button: Details -->
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/productList_btnDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/productList_products"/>
 
     <!-- Button: Fulfill Order-->
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/productList_btnFulfill"
         style="@style/Woo.Button.Purple"
         android:layout_width="0dp"

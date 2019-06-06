@@ -1,32 +1,32 @@
 package com.woocommerce.android.ui.main
 
-import android.support.design.widget.BottomNavigationView
-import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.Espresso
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
-import android.support.test.espresso.NoActivityResumedException
-import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.assertion.ViewAssertions.doesNotExist
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
-import android.support.test.espresso.matcher.ViewMatchers.withContentDescription
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.espresso.matcher.ViewMatchers.withText
-import android.support.test.filters.LargeTest
-import android.support.test.runner.AndroidJUnit4
 import android.widget.ListView
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.NoActivityResumedException
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.woocommerce.android.R
+import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
+import org.hamcrest.Matchers.equalToIgnoringCase
 import org.junit.Assert.fail
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.wordpress.android.fluxc.model.SiteModel
-import com.woocommerce.android.helpers.WCMatchers
-import org.hamcrest.Matchers.equalToIgnoringCase
-import org.junit.Before
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -123,7 +123,7 @@ class MainNavigationTest : TestBase() {
     fun verifyOverFlowMenuAndSettingsIsDisplayed() {
         // Open the overflow menu OR open the options menu,
         // depending on if the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext())
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
 
         // verify that there are 2 items in the menu list
         onView(isAssignableFrom(ListView::class.java))
@@ -154,7 +154,7 @@ class MainNavigationTest : TestBase() {
     fun verifyOverFlowMenuAndHelpIsDisplayed() {
         // Open the overflow menu OR open the options menu,
         // depending on if the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext())
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
 
         // verify that there are 2 items in the menu list
         onView(isAssignableFrom(ListView::class.java))

@@ -5,12 +5,11 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.ContextThemeWrapper
-import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.appcompat.widget.Toolbar
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -40,7 +39,7 @@ class AppSettingsActivity : AppCompatActivity(),
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
     }
 
-    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
     @Inject lateinit var presenter: AppSettingsContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
 
@@ -153,7 +152,7 @@ class AppSettingsActivity : AppCompatActivity(),
         SitePickerActivity.showSitePickerForResult(this, SITE_PICKER_REQUEST_CODE)
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+    override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
 
     override fun close() {
         finish()
@@ -206,7 +205,7 @@ class AppSettingsActivity : AppCompatActivity(),
         sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
     }
 
-    private fun showFragment(fragment: Fragment, tag: String, anim: FragmentAnim = SLIDE_IN) {
+    private fun showFragment(fragment: androidx.fragment.app.Fragment, tag: String, anim: FragmentAnim = SLIDE_IN) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         if (anim == SLIDE_IN) {
             fragmentTransaction.setCustomAnimations(

@@ -8,7 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
