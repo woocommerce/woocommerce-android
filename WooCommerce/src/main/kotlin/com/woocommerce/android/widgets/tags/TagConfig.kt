@@ -1,9 +1,9 @@
 package com.woocommerce.android.widgets.tags
 
 import android.content.Context
-import android.support.annotation.ColorInt
-import android.support.annotation.Dimension
-import android.support.v4.content.ContextCompat
+import androidx.annotation.ColorInt
+import androidx.annotation.Dimension
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 
 class TagConfig(context: Context) {

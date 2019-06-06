@@ -3,8 +3,8 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
-import android.support.annotation.StringRes
 import android.util.Patterns
+import androidx.annotation.StringRes
 import org.wordpress.android.fluxc.model.SiteModel
 
 object StringUtils {

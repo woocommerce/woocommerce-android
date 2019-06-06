@@ -1,6 +1,6 @@
 package com.woocommerce.android.widgets.sectionedrecyclerview
 
-import android.support.annotation.LayoutRes
+import androidx.annotation.LayoutRes
 
 /**
  * Class used as constructor parameters of [Section].

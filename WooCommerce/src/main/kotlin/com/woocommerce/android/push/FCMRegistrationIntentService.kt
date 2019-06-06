@@ -3,7 +3,7 @@ package com.woocommerce.android.push
 import android.content.Context
 import android.content.Intent
 import android.preference.PreferenceManager
-import android.support.v4.app.JobIntentService
+import androidx.core.app.JobIntentService
 import com.google.firebase.iid.FirebaseInstanceId
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog

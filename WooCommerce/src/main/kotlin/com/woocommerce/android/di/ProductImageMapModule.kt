@@ -1,7 +1,7 @@
 package com.woocommerce.android.di
 
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.tools.SelectedSite
 import dagger.Module
 import dagger.Provides
 import org.wordpress.android.fluxc.store.WCProductStore

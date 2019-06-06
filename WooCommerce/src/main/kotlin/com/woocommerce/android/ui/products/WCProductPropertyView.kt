@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 

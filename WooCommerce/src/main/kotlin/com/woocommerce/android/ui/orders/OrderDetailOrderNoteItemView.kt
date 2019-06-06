@@ -2,12 +2,12 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Build
-import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat
 import android.text.Html
 import android.text.Spanned
 import android.util.AttributeSet
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.order_detail_note_item.view.*

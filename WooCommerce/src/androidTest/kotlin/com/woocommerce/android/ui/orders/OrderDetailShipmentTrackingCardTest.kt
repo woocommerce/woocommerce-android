@@ -5,25 +5,25 @@ import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions
-import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.contrib.RecyclerViewActions
-import android.support.test.espresso.intent.Intents
-import android.support.test.espresso.intent.matcher.IntentMatchers
-import android.support.test.espresso.matcher.RootMatchers
-import android.support.test.espresso.matcher.ViewMatchers
-import android.support.test.espresso.matcher.ViewMatchers.Visibility.GONE
-import android.support.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
-import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
-import android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.espresso.matcher.ViewMatchers.withText
-import android.support.test.filters.LargeTest
-import android.support.test.runner.AndroidJUnit4
-import android.support.v7.widget.RecyclerView
 import android.widget.ListView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
+import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.doReturn
@@ -301,7 +301,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // check if the offline snack is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.offline_error))
         ).check(matches(isDisplayed()))
 
@@ -335,7 +335,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // check if the snackbar with undo button is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_snackbar_msg))
         ).check(matches(isDisplayed()))
 
@@ -384,7 +384,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // check if the success snack is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_success))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
@@ -430,7 +430,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // check if the error snack is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_delete_error))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
@@ -476,7 +476,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // verify that add tracking snackbar is displayed
         onView(allOf(
-                withId(android.support.design.R.id.snackbar_text),
+                withId(com.google.android.material.R.id.snackbar_text),
                 withText(R.string.order_shipment_tracking_added))
         ).check(matches(withEffectiveVisibility(VISIBLE)))
 
