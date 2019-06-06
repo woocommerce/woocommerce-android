@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.annotation.IdRes
@@ -17,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -81,7 +83,11 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
-        super.onBackPressed()
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            finish()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onSiteChanged() {

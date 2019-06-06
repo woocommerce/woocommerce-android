@@ -6,6 +6,10 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"/>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -19,10 +23,6 @@
             app:navGraph="@navigation/nav_graph_settings"/>
 
     </androidx.core.widget.NestedScrollView>
-
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/view_toolbar"/>
 
 </LinearLayout>
 
