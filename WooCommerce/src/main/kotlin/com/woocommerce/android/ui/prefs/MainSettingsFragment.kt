@@ -158,12 +158,12 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent()
             intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
-            intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.getPackageName())
+            intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)
             activity?.startActivity(intent)
         }
     }
 
-    fun updateStoreViews() {
+    private fun updateStoreViews() {
         textPrimaryStoreDomain.text = presenter.getStoreDomainName()
         textPrimaryStoreUsername.text = presenter.getUserDisplayName()
     }
