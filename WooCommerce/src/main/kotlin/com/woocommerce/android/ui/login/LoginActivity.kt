@@ -13,7 +13,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -49,14 +48,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
 
-    @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
+    @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
-    @Inject lateinit var supportHelper: SupportHelper
 
     private var loginMode: LoginMode? = null
 
-    override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
