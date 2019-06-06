@@ -20,10 +20,6 @@ class AboutFragment : androidx.fragment.app.Fragment() {
         private const val URL_AUTOMATTIC = "https://www.automattic.com/"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
         private const val URL_TOS = "https://woocommerce.com/terms-conditions/"
-
-        fun newInstance(): AboutFragment {
-            return AboutFragment()
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
