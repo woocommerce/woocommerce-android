@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.MenuItem
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
@@ -121,38 +120,10 @@ class AppSettingsActivity : AppCompatActivity(),
         confirmLogout()
     }
 
-    override fun onRequestShowPrivacySettings() {
-        showPrivacySettingsFragment()
-    }
-
-    override fun onRequestShowAbout() {
-        showAboutFragment()
-    }
-
-    override fun onRequestShowLicenses() {
-        showLicensesFragment()
-    }
-
     override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
 
     override fun close() {
         finish()
-    }
-
-    override fun showPrivacySettingsFragment() {
-        showFragment(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
-    }
-
-    override fun showAboutFragment() {
-        showFragment(R.id.action_mainSettingsFragment_to_aboutFragment)
-    }
-
-    override fun showLicensesFragment() {
-        showFragment(R.id.action_mainSettingsFragment_to_licensesFragment)
-    }
-
-    private fun showFragment(@IdRes navResId: Int) {
-        navController.navigate(navResId)
     }
 
     override fun confirmLogout() {

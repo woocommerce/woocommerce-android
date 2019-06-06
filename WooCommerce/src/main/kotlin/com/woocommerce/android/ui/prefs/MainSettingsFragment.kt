@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -39,9 +40,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
     interface AppSettingsListener {
         fun onRequestLogout()
-        fun onRequestShowPrivacySettings()
-        fun onRequestShowAbout()
-        fun onRequestShowLicenses()
         fun onSiteChanged()
     }
 
@@ -111,17 +109,17 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
 
         textPrivacySettings.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
-            settingsListener.onRequestShowPrivacySettings()
+            findNavController().navigate(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
         textAbout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
-            settingsListener.onRequestShowAbout()
+            findNavController().navigate(R.id.action_mainSettingsFragment_to_aboutFragment)
         }
 
         textLicenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
-            settingsListener.onRequestShowLicenses()
+            findNavController().navigate(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
         if (presenter.hasMultipleStores()) {
