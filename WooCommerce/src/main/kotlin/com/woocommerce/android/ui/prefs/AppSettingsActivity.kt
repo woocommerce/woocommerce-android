@@ -78,23 +78,14 @@ class AppSettingsActivity : AppCompatActivity(),
         super.onSaveInstanceState(outState)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onBackPressed() {
+    override fun onSupportNavigateUp(): Boolean {
         AnalyticsTracker.trackBackPressed(this)
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            finish()
-        } else {
+        return if (navController.navigateUp()) {
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
-            super.onBackPressed()
+            true
+        } else {
+            finish()
+            true
         }
     }
 
