@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.android.synthetic.main.fragment_login_prologue.*
 import org.wordpress.android.util.DisplayUtils
 
-class LoginPrologueFragment : Fragment() {
+class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     companion object {
         private const val JETPACK_HELP_URL = "https://jetpack.com/support/getting-started-with-jetpack/"
         const val TAG = "login-prologue-fragment"

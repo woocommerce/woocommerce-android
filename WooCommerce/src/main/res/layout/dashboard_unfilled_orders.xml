@@ -28,7 +28,7 @@
             android:text="@string/dashboard_fulfill_orders_msg"/>
 
         <!-- Action Button -->
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/alertAction_action"
             style="@style/Woo.Button"
             android:layout_width="wrap_content"

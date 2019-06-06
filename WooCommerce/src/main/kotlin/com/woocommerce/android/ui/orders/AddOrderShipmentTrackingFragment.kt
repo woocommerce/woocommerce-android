@@ -4,14 +4,13 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -28,7 +27,7 @@ import org.wordpress.android.fluxc.utils.DateUtils
 import java.util.Calendar
 import javax.inject.Inject
 
-class AddOrderShipmentTrackingFragment : Fragment(), AddOrderShipmentTrackingContract.View,
+class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOrderShipmentTrackingContract.View,
         AddOrderTrackingProviderActionListener, BackPressListener {
     companion object {
         const val TAG = "AddOrderShipmentTrackingFragment"

@@ -2,12 +2,12 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
@@ -30,7 +30,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import javax.inject.Inject
 
-class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
+class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
     companion object {
         const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"

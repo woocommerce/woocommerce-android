@@ -5,12 +5,11 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -42,7 +41,7 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
-class ReviewDetailFragment : Fragment(), ReviewDetailContract.View {
+class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContract.View {
     companion object {
         const val TAG = "ReviewDetailFragment"
         const val FIELD_REMOTE_NOTIF_ID = "notif-remote-id"

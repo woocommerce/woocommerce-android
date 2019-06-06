@@ -3,18 +3,15 @@ package com.woocommerce.android.ui.notifications
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -146,16 +143,21 @@ class NotifsListFragment : TopLevelFragment(),
         unreadDecoration.setListener(this)
 
         notifsList.apply {
-            layoutManager = LinearLayoutManager(context)
-            itemAnimator = DefaultItemAnimator()
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(false)
             // divider decoration between items
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                    androidx.recyclerview.widget.DividerItemDecoration(
+                            context,
+                            androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+                    )
+            )
             // unread item decoration
             addItemDecoration(unreadDecoration)
             adapter = notifsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) {
                         onScrollDown()
                     } else if (dy < 0) {

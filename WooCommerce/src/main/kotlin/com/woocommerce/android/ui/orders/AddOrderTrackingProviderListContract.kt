@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderModel

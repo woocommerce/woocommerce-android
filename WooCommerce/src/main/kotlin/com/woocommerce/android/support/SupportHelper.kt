@@ -1,13 +1,13 @@
 package com.woocommerce.android.support
 
 import android.content.Context
-import android.support.v7.app.AlertDialog
-import android.support.v7.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.ContextThemeWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.util.StringUtils
