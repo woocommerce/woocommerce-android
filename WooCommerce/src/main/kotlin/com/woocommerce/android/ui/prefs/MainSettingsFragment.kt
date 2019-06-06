@@ -143,7 +143,8 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // if we're returning from the site picker, update the main fragment so the new store is shown
+        // if we're returning from the site picker, make sure the new store is shown and the activity
+        // knows it has changed
         if (requestCode == SITE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             updateStoreViews()
             settingsListener.onSiteChanged()
