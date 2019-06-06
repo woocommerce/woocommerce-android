@@ -319,6 +319,7 @@ class OrderListPresenter @Inject constructor(
         if (event.isError) {
             WooLog.e(T.ORDERS, "$TAG - Error fetching shipment tracking providers : ${event.error.message}")
         } else {
+            AnalyticsTracker.track(Stat.ORDER_TRACKING_PROVIDERS_LOADED)
             isShipmentTrackingProviderFetched = true
         }
     }
