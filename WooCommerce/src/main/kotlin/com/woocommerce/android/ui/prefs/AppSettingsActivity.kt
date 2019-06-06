@@ -54,7 +54,6 @@ class AppSettingsActivity : AppCompatActivity(),
         navController = findNavController(R.id.nav_host_fragment)
         presenter.takeView(this)
 
-        // TODO not working
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
