@@ -93,6 +93,7 @@ class AppSettingsActivity : AppCompatActivity(),
         if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
         } else {
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
             super.onBackPressed()
         }
     }
