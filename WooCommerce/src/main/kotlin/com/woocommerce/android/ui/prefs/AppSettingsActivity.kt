@@ -7,7 +7,6 @@ import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -38,8 +37,6 @@ class AppSettingsActivity : AppCompatActivity(),
     @Inject lateinit var presenter: AppSettingsContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
 
-    private lateinit var navController: NavController
-
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
 
@@ -48,7 +45,6 @@ class AppSettingsActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_app_settings)
-        navController = findNavController(R.id.nav_host_fragment)
         presenter.takeView(this)
 
         setSupportActionBar(toolbar as Toolbar)
@@ -79,7 +75,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onSupportNavigateUp(): Boolean {
         AnalyticsTracker.trackBackPressed(this)
-        return if (navController.navigateUp()) {
+        return if (findNavController(R.id.nav_host_fragment).navigateUp()) {
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
             true
         } else {
