@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.view.MenuItem
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
@@ -18,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -80,6 +79,16 @@ class AppSettingsActivity : AppCompatActivity(),
         super.onSaveInstanceState(outState)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
         if (supportFragmentManager.backStackEntryCount == 1) {
@@ -89,6 +98,10 @@ class AppSettingsActivity : AppCompatActivity(),
         }
     }
 
+    /**
+     * User switched sites from the main settings fragment, set the result code so the calling activity
+     * will know the site changed
+     */
     override fun onSiteChanged() {
         siteChanged = true
         setResult(RESULT_CODE_SITE_CHANGED)

@@ -178,7 +178,7 @@ dependencies {
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
 
     // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.0.2"
+    androidTestImplementation "androidx.annotation:annotation:1.0.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
     implementation (group: 'com.zendesk', name: 'support', version: '2.3.1') {
