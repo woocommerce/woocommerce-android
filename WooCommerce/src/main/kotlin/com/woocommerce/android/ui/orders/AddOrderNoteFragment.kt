@@ -3,15 +3,14 @@ package com.woocommerce.android.ui.orders
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
@@ -26,7 +25,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddOrderNoteFragment : Fragment(), AddOrderNoteContract.View, BackPressListener {
+class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContract.View, BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         private const val FIELD_ORDER_IDENTIFIER = "order-identifier"

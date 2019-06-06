@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders
 
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 class OrderProductListPresenter @Inject constructor(
     private val orderStore: WCOrderStore

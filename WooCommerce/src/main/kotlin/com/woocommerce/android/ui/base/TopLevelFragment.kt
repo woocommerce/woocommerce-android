@@ -1,12 +1,11 @@
 package com.woocommerce.android.ui.base
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.main.MainContract
 import kotlinx.android.synthetic.main.fragment_parent.*
@@ -15,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_parent.*
  * The main fragments hosted by the bottom bar should extend this class to enforce
  * consistent navigation across top-level fragments and their children.
  */
-abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
+abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFragmentView {
     companion object {
         // Bundle label to store the state of this top-level fragment.
         // If the value associated with this label is true, then this
@@ -73,7 +72,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         super.onDestroyView()
     }
 
-    override fun getFragmentFromBackStack(tag: String): Fragment? {
+    override fun getFragmentFromBackStack(tag: String): androidx.fragment.app.Fragment? {
         return if (isAdded) {
             childFragmentManager.findFragmentByTag(tag)
         } else {
@@ -93,7 +92,7 @@ abstract class TopLevelFragment : Fragment(), TopLevelFragmentView {
         if (isAdded) childFragmentManager.popBackStackImmediate()
     }
 
-    override fun loadChildFragment(fragment: Fragment, tag: String) {
+    override fun loadChildFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         if (isAdded) {
             // before changing the custom animation, please read this PR:
             // https://github.com/woocommerce/woocommerce-android/pull/554

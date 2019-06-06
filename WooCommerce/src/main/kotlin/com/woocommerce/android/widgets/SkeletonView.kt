@@ -1,14 +1,14 @@
 package com.woocommerce.android.widgets
 
 import android.os.Handler
-import android.support.annotation.IdRes
-import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration

@@ -4,9 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.HelpActivity
@@ -47,14 +46,14 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
 
-    @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject lateinit var supportHelper: SupportHelper
 
     private var loginMode: LoginMode? = null
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+    override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -86,7 +85,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         startLogin()
     }
 
-    private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
+    private fun slideInFragment(fragment: androidx.fragment.app.Fragment, shouldAddToBackStack: Boolean, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(
                 R.anim.activity_slide_in_from_right,

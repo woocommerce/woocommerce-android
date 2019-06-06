@@ -1,16 +1,14 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -57,7 +55,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
             divider.setDrawable(drawable)
         }
 
-        val viewManager = LinearLayoutManager(context)
+        val viewManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         viewAdapter = ProductListAdapter(
                 order.getLineItemList(),
                 productImageMap,
@@ -89,7 +87,7 @@ class OrderDetailProductListView @JvmOverloads constructor(ctx: Context, attrs: 
         productList_products.apply {
             setHasFixedSize(false)
             layoutManager = viewManager
-            itemAnimator = DefaultItemAnimator()
+            itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             adapter = viewAdapter
         }
 
