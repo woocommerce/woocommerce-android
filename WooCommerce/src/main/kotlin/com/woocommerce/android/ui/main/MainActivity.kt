@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -46,6 +47,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
@@ -233,7 +235,6 @@ class MainActivity : AppCompatActivity(),
     override fun notifyTokenUpdated() {
         if (hasMagicLinkLoginIntent()) {
             loginAnalyticsListener.trackLoginMagicLinkSucceeded()
-            // TODO Launch next screen
         }
     }
 
@@ -266,8 +267,20 @@ class MainActivity : AppCompatActivity(),
         loginProgressDialog?.apply { if (isShowing) { cancel() } }
 
         if (!selectedSite.exists()) {
-            showSitePickerScreen()
-            return
+            // If using a url to login, try finding the site by this url
+            AppPrefs.getLoginSiteAddress()?.let { url ->
+                selectedSite.getSiteModelByUrl(url.toString())?.let { site ->
+                    selectedSite.set(site)
+
+                    // Delete the login site address from AppPrefs
+                    AppPrefs.clearLoginSiteAddress()
+                } ?: ToastUtils.showToast(this, "$url does not exist in this account!") // TODO: design real message
+            }
+
+            if (!selectedSite.exists()) {
+                showSitePickerScreen()
+                return
+            }
         }
 
         // Complete UI initialization
