@@ -332,7 +332,7 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
-        (getActiveDashboardFragment() as? TopLevelFragment)?.scrollToTop()
+        (getActiveTopLevelFragment() as? TopLevelFragment)?.scrollToTop()
         AnalyticsTracker.track(stat)
     }
     // endregion
@@ -390,8 +390,8 @@ class MainActivity : AppCompatActivity(),
     }
     // endregion
 
-    // TODO: this is a hack!
-    private fun getActiveDashboardFragment(): Fragment? {
+    // TODO: this is a hack that will be dropped once we fully switch over to the navigation component
+    private fun getActiveTopLevelFragment(): Fragment? {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main)
         return navHostFragment?.getChildFragmentManager()?.getFragments()?.get(0)
     }
@@ -406,7 +406,7 @@ class MainActivity : AppCompatActivity(),
         showBottomNav()
         navController.navigate(R.id.notifsListFragment)
 
-        (getActiveDashboardFragment() as? NotifsListFragment)?.let { fragment ->
+        (getActiveTopLevelFragment() as? NotifsListFragment)?.let { fragment ->
             val navPos = BottomNavigationPosition.NOTIFICATIONS.position
             bottom_nav.active(navPos)
 
@@ -427,7 +427,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
-        (getActiveDashboardFragment() as? TopLevelFragment)?.openProductDetail(remoteProductId)
+        (getActiveTopLevelFragment() as? TopLevelFragment)?.openProductDetail(remoteProductId)
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
