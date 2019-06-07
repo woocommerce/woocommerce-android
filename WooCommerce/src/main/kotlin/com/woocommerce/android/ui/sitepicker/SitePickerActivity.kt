@@ -390,7 +390,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         selectedSite.getSiteModelByUrl(url)?.let { site ->
             if (!site.hasWooCommerce) {
                 // Show not woo store message view.
-                showSiteNotWooStore(url)
+                showSiteNotWooStore(site.url, site.name)
             } else {
                 // We have a pre-validation woo store. Attempt to just
                 // login with this store directly.
@@ -443,12 +443,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * SignIn M1: The user the user submitted during login belongs
      * to a site that does not have WooCommerce installed.
      */
-    override fun showSiteNotWooStore(url: String) {
+    override fun showSiteNotWooStore(url: String, name: String?) {
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
 
         no_stores_view.visibility = View.VISIBLE
-        no_stores_view.text = getString(R.string.login_not_woo_store, url)
+        val siteName = name.takeIf { !it.isNullOrEmpty() } ?: url
+        no_stores_view.text = getString(R.string.login_not_woo_store, siteName)
 
         with(button_try_another) {
             visibility = View.VISIBLE
