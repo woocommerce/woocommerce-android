@@ -64,8 +64,23 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     private var progressDialog: ProgressDialog? = null
     private var calledFromLogin: Boolean = false
     private var currentSite: SiteModel? = null
-    private var loginSiteUrl: String? = null
     private var skeletonView = SkeletonView()
+
+    /**
+     * Signin M1: The url the customer logged into the app with.
+     */
+    private var loginSiteUrl: String? = null
+
+    /**
+     * Signin M1: Don't display the sites for selection if this is true.
+     */
+    private var deferLoadingSitesIntoView: Boolean = false
+
+    /**
+     * Signin M1: Tracks whether or not there are stores for the user to view.
+     * This controls the "view connected stores" button visibility.
+     */
+    private var hasConnectedStores: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -115,46 +130,32 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         savedInstanceState?.let { bundle ->
             val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
+            hasConnectedStores = sites.isNotEmpty()
+
+            // Signin M1: If using new login M1 flow, we skip showing the store list.
             bundle.getString(KEY_LOGIN_SITE_URL)?.let { url ->
                 processLoginSite(url)
+                deferLoadingSitesIntoView = true
                 return
-            }
-            showStoreList(sites)
+            } ?: showStoreList(sites)
         } ?: run {
-            // If using a url to login, try finding the site by this url
+            // Signin M1: If using a url to login, try finding the site by this url
             AppPrefs.getLoginSiteAddress()?.let { url ->
                 // Delete the login site address from AppPrefs
                 AppPrefs.clearLoginSiteAddress()
 
                 processLoginSite(url)
-                return
+                deferLoadingSitesIntoView = true
             }
 
+            // Signin M1: We still want the presenter to go out and fetch sites so we
+            // know whether or not to show the "view connected stores" button.
             presenter.loadAndFetchSites()
 
             AnalyticsTracker.track(
                     Stat.SITE_PICKER_STORES_SHOWN,
                     mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
             )
-        }
-    }
-
-    private fun processLoginSite(url: String) {
-        // TODO tracks events
-
-        loginSiteUrl = url
-
-        selectedSite.getSiteModelByUrl(url)?.let { site ->
-            if (!site.hasWooCommerce) {
-                // Show not woo store message
-                showSiteNotWooStore(url)
-            } else {
-                // We have a pre-validated woo store
-                siteSelected(site)
-            }
-        } ?: run {
-            // The url doesn't match any sites for this account
-            showSiteNotConnectedView(url)
         }
     }
 
@@ -219,6 +220,21 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun showStoreList(wcSites: List<SiteModel>) {
+        if (deferLoadingSitesIntoView) {
+            if (wcSites.size > 0) {
+                hasConnectedStores = true
+
+                // Make "show connected stores" visible to the user
+                button_continue.visibility = View.VISIBLE
+            } else {
+                hasConnectedStores = false
+
+                // Hide "show connected stores"
+                button_continue.visibility = View.GONE
+            }
+            return
+        }
+
         progressDialog?.takeIf { it.isShowing }?.dismiss()
         site_picker_root.visibility = View.VISIBLE
 
@@ -316,6 +332,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun showNoStoresView() {
+        if (deferLoadingSitesIntoView) {
+            return
+        }
+
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
@@ -332,6 +352,70 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
     }
 
+    override fun showSkeleton(show: Boolean) {
+        if (deferLoadingSitesIntoView) {
+            return
+        }
+
+        when (show) {
+            true -> skeletonView.show(sites_recycler, R.layout.skeleton_site_picker, delayed = true)
+            false -> skeletonView.hide()
+        }
+    }
+
+    /**
+     * called by the presenter after logout completes - this would occur if the user was logged out
+     * as a result of having no stores, which would only happen during the login flow
+     */
+    override fun didLogout() {
+        setResult(Activity.RESULT_CANCELED)
+        val intent = Intent(this, LoginActivity::class.java)
+        LoginMode.WOO_LOGIN_MODE.putInto(intent)
+        startActivity(intent)
+        finish()
+    }
+
+    // region SignIn M1
+    /**
+     * Signin M1: User logged in with a URL. Here we check that login url to see
+     * if the site is (in this order):
+     * - Connected to the same account the user logged in with
+     * - Has WooCommerce installed
+     */
+    private fun processLoginSite(url: String) {
+        // TODO tracks events
+
+        loginSiteUrl = url
+
+        selectedSite.getSiteModelByUrl(url)?.let { site ->
+            if (!site.hasWooCommerce) {
+                // Show not woo store message view.
+                showSiteNotWooStore(url)
+            } else {
+                // We have a pre-validation woo store. Attempt to just
+                // login with this store directly.
+                siteSelected(site)
+            }
+        } ?: run {
+            // The url doesn't match any sites for this account.
+            showSiteNotConnectedView(url)
+        }
+    }
+
+    /**
+     * SignIn M1: Shows the list of sites connected to the logged
+     * in user.
+     */
+    private fun showConnectedSites() {
+        deferLoadingSitesIntoView = false
+        presenter.loadSites()
+    }
+
+    /**
+     * SignIn M1: The url the user submitted during login belongs
+     * to a site that is not connected to the account the user logged
+     * in with.
+     */
     override fun showSiteNotConnectedView(url: String) {
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
@@ -346,10 +430,19 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         with(button_continue) {
             text = getString(R.string.login_view_connected_stores)
-            setOnClickListener { presenter.loadAndFetchSites() }
+            setOnClickListener { showConnectedSites() }
+            visibility = if (hasConnectedStores) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         }
     }
 
+    /**
+     * SignIn M1: The user the user submitted during login belongs
+     * to a site that does not have WooCommerce installed.
+     */
     override fun showSiteNotWooStore(url: String) {
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
@@ -364,25 +457,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         with(button_continue) {
             text = getString(R.string.login_view_connected_stores)
-            setOnClickListener { presenter.loadAndFetchSites() }
+            setOnClickListener { showConnectedSites() }
+            visibility = if (hasConnectedStores) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         }
     }
-
-    override fun showSkeleton(show: Boolean) {
-        when (show) {
-            true -> skeletonView.show(sites_recycler, R.layout.skeleton_site_picker, delayed = true)
-            false -> skeletonView.hide()
-        }
-    }
-    /**
-     * called by the presenter after logout completes - this would occur if the user was logged out
-     * as a result of having no stores, which would only happen during the login flow
-     */
-    override fun didLogout() {
-        setResult(Activity.RESULT_CANCELED)
-        val intent = Intent(this, LoginActivity::class.java)
-        LoginMode.WOO_LOGIN_MODE.putInto(intent)
-        startActivity(intent)
-        finish()
-    }
+    // endregion
 }
