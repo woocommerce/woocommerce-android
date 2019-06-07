@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
@@ -25,6 +26,7 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -373,7 +375,7 @@ class MainActivity : AppCompatActivity(),
                         NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                         // Just open the notifications tab
-                        navController.navigate(R.id.notifsListFragment
+                        navController.navigate(R.id.notifsListFragment)
                     }
                 }
             } else {
@@ -383,6 +385,12 @@ class MainActivity : AppCompatActivity(),
     }
     // endregion
 
+    // TODO: this is a hack!
+    private fun getActiveDashboardFragment(): Fragment? {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main)
+        return navHostFragment?.getChildFragmentManager()?.getFragments()?.get(0)
+    }
+
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()
         val args = Bundle().also {it.putString(OrderListFragment.ARG_ORDER_STATUS_FILTER, orderStatusFilter) }
@@ -391,29 +399,30 @@ class MainActivity : AppCompatActivity(),
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()
-        bottomNavView.currentPosition = NOTIFICATIONS
+        navController.navigate(R.id.notifsListFragment)
 
-        val fragment = bottomNavView.getFragment(NOTIFICATIONS)
-        val navPos = BottomNavigationPosition.NOTIFICATIONS.position
-        bottom_nav.active(navPos)
+        (getActiveDashboardFragment() as? NotifsListFragment)?.let { fragment ->
+            val navPos = BottomNavigationPosition.NOTIFICATIONS.position
+            bottom_nav.active(navPos)
 
-        (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {
-            when (it.getWooType()) {
-                NEW_ORDER -> {
-                    it.getRemoteOrderId()?.let { orderId ->
-                        (fragment as? NotifsListFragment)?.openOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
+            (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {notif ->
+                when (notif.getWooType()) {
+                    NEW_ORDER -> {
+                        notif.getRemoteOrderId()?.let { orderId ->
+                            fragment.openOrderDetail(notif.localSiteId, orderId, notif.remoteNoteId)
+                        }
+                    }
+                    PRODUCT_REVIEW -> fragment.openReviewDetail(notif)
+                    else -> { /* do nothing */
                     }
                 }
-                PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
-                else -> { /* do nothing */ }
             }
         }
     }
 
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
-        val fragment = bottomNavView.getFragment(bottomNavView.currentPosition)
-        fragment.openProductDetail(remoteProductId)
+        (getActiveDashboardFragment() as? TopLevelFragment)?.openProductDetail(remoteProductId)
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
