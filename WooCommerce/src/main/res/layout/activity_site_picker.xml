@@ -6,6 +6,7 @@
     android:id="@+id/site_picker_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:visibility="gone"
     android:background="@color/wc_grey_light">
 
     <include
@@ -67,7 +68,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_username"
         app:layout_constraintVertical_bias="0.0"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -100,21 +101,25 @@
 
     <TextView
         android:id="@+id/no_stores_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_extra_extra_large"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:drawableTop="@drawable/ic_woo_no_store"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:text="@string/login_no_stores"
         android:textColor="@color/grey_dark"
         android:textSize="@dimen/text_large"
         android:textStyle="bold"
+        android:lineSpacingExtra="2dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_username"
         tools:drawableTop="@drawable/ic_woo_no_store"
-        tools:visibility="gone"/>
+        tools:visibility="visible"/>
 
     <View
         android:id="@+id/view6"
@@ -125,7 +130,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/frame_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -133,9 +138,18 @@
         android:background="@color/white"
         android:clipToPadding="false"
         android:padding="@dimen/margin_extra_large"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_try_another"
+            android:theme="@style/Woo.Button.White"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/login_try_another_account"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_continue"
@@ -143,5 +157,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/continue_button"/>
-    </FrameLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
