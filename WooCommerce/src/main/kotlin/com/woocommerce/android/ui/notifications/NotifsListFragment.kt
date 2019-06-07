@@ -53,8 +53,6 @@ class NotifsListFragment : TopLevelFragment(),
         val TAG: String = NotifsListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-
-        fun newInstance() = NotifsListFragment()
     }
 
     @Inject lateinit var presenter: NotifsListContract.Presenter

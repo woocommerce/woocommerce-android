@@ -320,6 +320,10 @@ class MainActivity : AppCompatActivity(),
         if (navPos == NOTIFICATIONS) {
             NotificationHandler.removeAllNotificationsFromSystemBar(this)
         }
+
+        // TODO: this shouldn't be necessary since the nav controller should do it by itself, but when we assign
+        // an item selected listener to the bottom nav it interferes with the behavior of the nav controller
+        navController.navigate(navPos.id)
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
@@ -328,6 +332,7 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
+        (getActiveDashboardFragment() as? TopLevelFragment)?.scrollToTop()
         AnalyticsTracker.track(stat)
     }
     // endregion

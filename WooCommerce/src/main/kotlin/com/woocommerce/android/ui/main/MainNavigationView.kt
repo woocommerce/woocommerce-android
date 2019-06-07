@@ -65,7 +65,6 @@ class MainNavigationView @JvmOverloads constructor(
 
     override fun onNavigationItemReselected(item: MenuItem) {
         val navPos = findNavigationPositionById(item.itemId)
-        // TODO scroll active fragment to the top
         listener.onNavItemReselected(navPos)
     }
 
