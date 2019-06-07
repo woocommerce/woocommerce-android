@@ -55,7 +55,7 @@ class AppSettingsPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (!event.isError && !userIsLoggedIn()) {
-            appSettingsView?.close()
+            appSettingsView?.finishLogout()
         }
     }
 }

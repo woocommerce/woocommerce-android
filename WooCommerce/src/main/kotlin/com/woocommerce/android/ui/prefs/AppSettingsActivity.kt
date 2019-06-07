@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.NONE
 import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_IN
 import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_UP
@@ -153,6 +154,14 @@ class AppSettingsActivity : AppCompatActivity(),
     }
 
     override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
+
+    override fun finishLogout() {
+        val mainIntent = Intent(this, MainActivity::class.java)
+        mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(mainIntent)
+        setResult(Activity.RESULT_OK)
+        close()
+    }
 
     override fun close() {
         finish()
