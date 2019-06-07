@@ -106,6 +106,10 @@
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
     <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
+    <string name="login_not_connected_to_account">%1$s is not connected to this account. View stores connected to this account or login with a different account</string>
+    <string name="login_try_another_account">Try another account</string>
+    <string name="login_not_woo_store">%1$s is not a WooCommerce store. View stores connected to this account or login with a different account</string>
+    <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
     <string name="login_jetpack_view_instructions">View instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
