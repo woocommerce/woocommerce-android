@@ -8,6 +8,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -82,11 +83,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onPrologueFinished() {
-        // TODO Check loginMode here and handle different login cases
         startLogin()
     }
 
-    private fun slideInFragment(fragment: androidx.fragment.app.Fragment, shouldAddToBackStack: Boolean, tag: String) {
+    private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(
                 R.anim.activity_slide_in_from_right,
@@ -260,11 +260,19 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        siteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+
         val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 
     override fun gotConnectedSiteInfo(siteAddress: String, hasJetpack: Boolean) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        siteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+
         if (hasJetpack) {
             val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
             slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
@@ -279,6 +287,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
                 inputSiteAddress, endpointAddress, null, null, null, null, false)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
