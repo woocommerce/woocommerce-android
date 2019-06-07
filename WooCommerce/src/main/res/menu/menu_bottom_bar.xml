@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/dashboard"
+        android:id="@+id/dashboardFragment"
         android:icon="@drawable/ic_menu_dashboard"
         android:title="@string/my_store"/>
 
     <item
-        android:id="@+id/orders"
+        android:id="@+id/orderListFragment"
         android:icon="@drawable/ic_menu_orders_list"
         android:title="@string/orders"/>
 
     <item
-        android:id="@+id/notifications"
+        android:id="@+id/notifsListFragment"
         android:icon="@drawable/ic_menu_notifications"
         android:title="@string/notifications"/>
 </menu>

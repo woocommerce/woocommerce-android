@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/nav_graph_settings"
+            app:startDestination="@id/dashboardFragment">
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.woocommerce.android.ui.dashboard.DashboardFragment"
+        android:label="DashboardFragment"/>
+    <fragment
+        android:id="@+id/orderListFragment"
+        android:name="com.woocommerce.android.ui.orders.OrderListFragment"
+        android:label="OrderListFragment"/>
+    <fragment
+        android:id="@+id/notifsListFragment"
+        android:name="com.woocommerce.android.ui.notifications.NotifsListFragment"
+        android:label="NotifsListFragment"/>
+</navigation>

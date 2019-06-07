@@ -40,17 +40,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-        const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
 
-        private const val SEARCH_TYPING_DELAY_MS = 500L
+        const val ARG_ORDER_STATUS_FILTER = "order-status-filter"
 
-        fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
-            val fragment = OrderListFragment()
-            fragment.orderStatusFilter = orderStatusFilter
-            return fragment
-        }
+        private const val SEARCH_TYPING_DELAY_MS = 500L
     }
 
     @Inject lateinit var presenter: OrderListContract.Presenter
@@ -84,10 +79,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(STATE_KEY_LIST)
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
-            orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
+
+        orderStatusFilter = arguments?.getString(ARG_ORDER_STATUS_FILTER)
 
         ordersAdapter.setOnLoadMoreListener(this)
     }
@@ -265,7 +261,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
 
@@ -329,6 +324,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
         orderStatusFilter = filterByStatus
+        arguments?.putString(ARG_ORDER_STATUS_FILTER, orderStatusFilter)
 
         if (!ordersAdapter.isSameOrderList(orders)) {
             ordersList?.let {
@@ -447,6 +443,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     override fun onOrderStatusSelected(orderStatus: String?) {
         orderStatusFilter = orderStatus
+        arguments?.putString(ARG_ORDER_STATUS_FILTER, orderStatusFilter)
 
         if (isAdded) {
             AnalyticsTracker.track(

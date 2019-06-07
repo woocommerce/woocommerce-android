@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/notifsRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.woocommerce.android.ui.notifications.NotifsListFragment">
 
     <RelativeLayout
         android:id="@+id/notifsContainer"
@@ -26,12 +27,6 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <com.woocommerce.android.widgets.WCEmptyView
-            android:id="@+id/empty_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"/>
-
         <ProgressBar
             android:id="@+id/notifsLoadMoreProgress"
             style="?android:attr/progressBarStyle"
@@ -42,5 +37,11 @@
             android:layout_marginBottom="@dimen/margin_large"
             android:visibility="gone"
             tools:visibility="visible"/>
+
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
     </RelativeLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

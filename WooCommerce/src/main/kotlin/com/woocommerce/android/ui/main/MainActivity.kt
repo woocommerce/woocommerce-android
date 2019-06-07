@@ -9,6 +9,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -60,7 +62,6 @@ class MainActivity : AppCompatActivity(),
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
-        private const val STATE_KEY_POSITION = "key-position"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
@@ -83,6 +84,7 @@ class MainActivity : AppCompatActivity(),
 
     private var isBottomNavShowing = true
     private lateinit var bottomNavView: MainNavigationView
+    private lateinit var navController: NavController
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
@@ -96,7 +98,8 @@ class MainActivity : AppCompatActivity(),
         setSupportActionBar(toolbar as Toolbar)
 
         presenter.takeView(this)
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+        navController = findNavController(R.id.nav_host_fragment_main)
+        bottomNavView = bottom_nav.also { it.init(navController, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -147,20 +150,6 @@ class MainActivity : AppCompatActivity(),
         super.onDestroy()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        // Store the current bottom bar navigation position.
-        outState?.putInt(STATE_KEY_POSITION, bottomNavView.currentPosition.id)
-        super.onSaveInstanceState(outState)
-    }
-
-    private fun restoreSavedInstanceState(savedInstanceState: Bundle?) {
-        // Restore the current navigation position
-        savedInstanceState?.also {
-            val id = it.getInt(STATE_KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
-            bottomNavView.restoreSelectedItemState(id)
-        }
-    }
-
     /**
      * Send the onBackPressed request to the current active fragment to pop any
      * child fragments it may have on its back stack.
@@ -170,7 +159,8 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        with(bottomNavView.activeFragment) {
+        // TODO
+        /*with(bottomNavView.activeFragment) {
             if (isAdded && childFragmentManager.backStackEntryCount > 0) {
                 // go no further if active fragment doesn't allow back press - we use this so fragments can
                 // provide confirmation before discarding the current action, such as adding an order note
@@ -181,7 +171,7 @@ class MainActivity : AppCompatActivity(),
                 childFragmentManager.popBackStack()
                 return
             }
-        }
+        }*/
 
         super.onBackPressed()
     }
@@ -271,8 +261,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         // Complete UI initialization
-
-        bottomNavView.init(supportFragmentManager, this)
+        bottomNavView.init(navController, this)
         initFragment(null)
     }
 
@@ -345,61 +334,59 @@ class MainActivity : AppCompatActivity(),
     private fun initFragment(savedInstanceState: Bundle?) {
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
 
-        if (savedInstanceState != null) {
-            restoreSavedInstanceState(savedInstanceState)
-        } else if (openedFromPush) {
-            // Opened from a push notificaton
-            //
-            // Reset this flag now that it's being processed
-            intent.removeExtra(FIELD_OPENED_FROM_PUSH)
-
-            if (intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH_GROUP, false)) {
+        if (savedInstanceState == null) {
+            if (openedFromPush) {
+                // Opened from a push notificaton
+                //
                 // Reset this flag now that it's being processed
-                intent.removeExtra(FIELD_OPENED_FROM_PUSH_GROUP)
+                intent.removeExtra(FIELD_OPENED_FROM_PUSH)
 
-                // Send analytics for viewing all notifications
-                NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+                if (intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH_GROUP, false)) {
+                    // Reset this flag now that it's being processed
+                    intent.removeExtra(FIELD_OPENED_FROM_PUSH_GROUP)
 
-                // Clear unread messages from the system bar
-                NotificationHandler.removeAllNotificationsFromSystemBar(this)
-
-                // User clicked on a group of notifications. Just show the notifications tab.
-                bottomNavView.currentPosition = NOTIFICATIONS
-            } else {
-                // Check for a notification ID - if one is present, open notification
-                val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
-                if (remoteNoteId > 0) {
-                    // Send track event
-                    NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
-
-                    // Remove single notification from the system bar
-                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
-
-                    // Open the detail view for this notification
-                    showNotificationDetail(remoteNoteId)
-                } else {
                     // Send analytics for viewing all notifications
                     NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
 
                     // Clear unread messages from the system bar
                     NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
-                    // Just open the notifications tab
-                    bottomNavView.currentPosition = NOTIFICATIONS
+                    // User clicked on a group of notifications. Just show the notifications tab.
+                    navController.navigate(R.id.notifsListFragment)
+                } else {
+                    // Check for a notification ID - if one is present, open notification
+                    val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
+                    if (remoteNoteId > 0) {
+                        // Send track event
+                        NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
+
+                        // Remove single notification from the system bar
+                        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
+
+                        // Open the detail view for this notification
+                        showNotificationDetail(remoteNoteId)
+                    } else {
+                        // Send analytics for viewing all notifications
+                        NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
+
+                        // Clear unread messages from the system bar
+                        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+
+                        // Just open the notifications tab
+                        navController.navigate(R.id.notifsListFragment
+                    }
                 }
+            } else {
+                navController.navigate(R.id.dashboardFragment)
             }
-        } else {
-            bottomNavView.currentPosition = DASHBOARD
         }
     }
     // endregion
 
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()
-        bottomNavView.updatePositionAndDeferInit(ORDERS)
-
-        val fragment = bottomNavView.getFragment(ORDERS)
-        (fragment as OrderListFragment).onOrderStatusSelected(orderStatusFilter)
+        val args = Bundle().also {it.putString(OrderListFragment.ARG_ORDER_STATUS_FILTER, orderStatusFilter) }
+        navController.navigate(R.id.orderListFragment, args)
     }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
