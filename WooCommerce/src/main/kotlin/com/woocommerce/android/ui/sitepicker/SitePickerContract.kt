@@ -24,6 +24,8 @@ interface SitePickerContract {
         fun showUserInfo()
         fun showStoreList(wcSites: List<SiteModel>)
         fun showNoStoresView()
+        fun showSiteNotConnectedView(url: String)
+        fun showSiteNotWooStore(url: String)
         fun didLogout()
         fun siteSelected(site: SiteModel)
         fun siteVerificationPassed(site: SiteModel)

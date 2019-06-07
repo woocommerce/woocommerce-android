@@ -267,20 +267,8 @@ class MainActivity : AppCompatActivity(),
         loginProgressDialog?.apply { if (isShowing) { cancel() } }
 
         if (!selectedSite.exists()) {
-            // If using a url to login, try finding the site by this url
-            AppPrefs.getLoginSiteAddress()?.let { url ->
-                selectedSite.getSiteModelByUrl(url.toString())?.let { site ->
-                    selectedSite.set(site)
-
-                    // Delete the login site address from AppPrefs
-                    AppPrefs.clearLoginSiteAddress()
-                } ?: ToastUtils.showToast(this, "$url does not exist in this account!") // TODO: design real message
-            }
-
-            if (!selectedSite.exists()) {
-                showSitePickerScreen()
-                return
-            }
+            showSitePickerScreen()
+            return
         }
 
         // Complete UI initialization
