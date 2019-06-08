@@ -390,7 +390,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         loginSiteUrl = url
 
-        selectedSite.getSiteModelByUrl(url)?.let { site ->
+        presenter.getSiteModelByUrl(url)?.let { site ->
             if (!site.hasWooCommerce) {
                 // Show not woo store message view.
                 showSiteNotWooStore(site.url, site.name)
