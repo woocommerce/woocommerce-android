@@ -9,6 +9,10 @@
     android:orientation="vertical"
     android:visibility="gone">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -28,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/help"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <Button
                 android:id="@+id/button_email_help"
@@ -54,7 +58,7 @@
                 android:contentDescription="@string/login_avatar_content_description"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@drawable/ic_placeholder_gravatar_grey_lighten_20_100dp"/>
 
             <TextView
@@ -120,7 +124,8 @@
                         android:clipToPadding="false"
                         android:paddingBottom="@dimen/margin_extra_large"
                         android:paddingEnd="@dimen/margin_extra_large"
-                        android:paddingStart="@dimen/margin_extra_large"/>
+                        android:paddingStart="@dimen/margin_extra_large"
+                        android:nestedScrollingEnabled="false"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -134,10 +139,6 @@
 
             <include
                 layout="@layout/view_login_no_stores"/>
-
-            <include
-                android:id="@+id/toolbar"
-                layout="@layout/view_toolbar"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
