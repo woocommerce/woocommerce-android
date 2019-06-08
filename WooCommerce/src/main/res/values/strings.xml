@@ -114,6 +114,10 @@
     <string name="login_jetpack_view_instructions">View instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
+    <string name="login_need_help_finding_email">Need help finding the connected email?</string>
+    <string name="login_email_help_title">What email do I use to sign in?</string>
+    <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections > Account connection%4$s</string>
+
     <!--
         Dashboard View
     -->

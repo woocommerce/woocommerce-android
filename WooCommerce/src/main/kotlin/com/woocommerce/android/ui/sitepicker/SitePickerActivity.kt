@@ -25,6 +25,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
@@ -199,6 +200,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     override fun showUserInfo() {
         if (calledFromLogin) {
+            user_info_group.visibility = View.VISIBLE
             text_displayname.text = presenter.getUserDisplayName()
 
             presenter.getUserName()?.let { userName ->
@@ -213,9 +215,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                     .circleCrop()
                     .into(image_avatar)
         } else {
-            text_displayname.visibility = View.GONE
-            text_username.visibility = View.GONE
-            image_avatar.visibility = View.GONE
+            user_info_group.visibility = View.GONE
         }
     }
 
@@ -417,11 +417,17 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * in with.
      */
     override fun showSiteNotConnectedView(url: String) {
+        // TODO tracks events
+
         site_picker_root.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
+        no_stores_view.visibility = View.VISIBLE
+        button_email_help.visibility = View.VISIBLE
 
         no_stores_view.text = getString(R.string.login_not_connected_to_account, url)
-        no_stores_view.visibility = View.VISIBLE
+
+        button_email_help.setOnClickListener {
+            LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
+        }
 
         with(button_try_another) {
             visibility = View.VISIBLE
@@ -444,10 +450,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * to a site that does not have WooCommerce installed.
      */
     override fun showSiteNotWooStore(url: String, name: String?) {
-        site_picker_root.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
+        // TODO tracks events
 
+        site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
+
         val siteName = name.takeIf { !it.isNullOrEmpty() } ?: url
         no_stores_view.text = getString(R.string.login_not_woo_store, siteName)
 
