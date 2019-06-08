@@ -131,15 +131,18 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         showUserInfo()
 
         savedInstanceState?.let { bundle ->
-            val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
-            hasConnectedStores = sites.isNotEmpty()
-
             // Signin M1: If using new login M1 flow, we skip showing the store list.
             bundle.getString(KEY_LOGIN_SITE_URL)?.let { url ->
                 processLoginSite(url)
                 deferLoadingSitesIntoView = true
-                return
-            } ?: showStoreList(sites)
+            }
+
+            val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
+            if (sites.size > 0) {
+                showStoreList(sites)
+            } else {
+                presenter.loadSites()
+            }
         } ?: run {
             // Signin M1: If using a url to login, try finding the site by this url
             AppPrefs.getLoginSiteAddress()?.let { url ->
