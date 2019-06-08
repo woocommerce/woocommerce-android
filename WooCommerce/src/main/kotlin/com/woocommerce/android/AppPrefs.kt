@@ -149,10 +149,6 @@ object AppPrefs {
 
     fun getLoginSiteAddress(): String? = getString(DeletablePrefKey.LOGIN_SITE_ADDRESS)
 
-    fun clearLoginSiteAddress() {
-        remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
-    }
-
     /**
      * Remove all user-related preferences.
      */
