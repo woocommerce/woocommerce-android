@@ -49,8 +49,8 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
         getEventBus().post(SelectedSiteChangedEvent(siteModel))
     }
 
-    fun getSiteModelByUrl(siteAddress: String): SiteModel?
-            = siteStore.getSitesByNameOrUrlMatching(siteAddress).firstOrNull()
+    fun getSiteModelByUrl(siteAddress: String): SiteModel? =
+            siteStore.getSitesByNameOrUrlMatching(siteAddress).firstOrNull()
 
     fun exists(): Boolean {
         val localSiteId = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)

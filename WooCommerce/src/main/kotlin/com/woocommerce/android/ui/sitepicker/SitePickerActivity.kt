@@ -39,8 +39,7 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener,
-        LoginEmailHelpDialogFragment.Listener
-{
+        LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
