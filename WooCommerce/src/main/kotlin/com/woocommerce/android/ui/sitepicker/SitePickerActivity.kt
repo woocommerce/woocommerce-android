@@ -33,6 +33,8 @@ import com.woocommerce.android.util.CrashlyticsUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
+import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
+import kotlinx.android.synthetic.main.view_login_no_stores.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.DisplayUtils
