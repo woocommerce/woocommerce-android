@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.text.Html
 import android.view.ContextThemeWrapper
@@ -14,6 +15,12 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
         const val TAG = "LoginEmailHelpDialogFragment"
     }
 
+    interface Listener {
+        fun onEmailNeedMoreHelpClicked()
+    }
+
+    private var listener: Listener? = null
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Dialog_Login_EmailHelp
@@ -26,7 +33,7 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
                 .setTitle(R.string.login_email_help_title)
                 .setMessage(message)
                 .setNeutralButton(R.string.login_site_address_more_help) { dialog, _ ->
-                    // TODO get help
+                    listener?.onEmailNeedMoreHelpClicked()
                     dialog.dismiss()
                 }
                 .setPositiveButton(android.R.string.ok) { dialog, _ ->
@@ -34,5 +41,13 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
                 }
                 .setCancelable(true)
                 .create()
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        if (context is Listener) {
+            listener = context
+        }
     }
 }

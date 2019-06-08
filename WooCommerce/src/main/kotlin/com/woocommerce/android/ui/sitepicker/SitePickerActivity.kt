@@ -38,7 +38,9 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
-class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener {
+class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener,
+        LoginEmailHelpDialogFragment.Listener
+{
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
@@ -472,6 +474,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 View.GONE
             }
         }
+    }
+
+    override fun onEmailNeedMoreHelpClicked() {
+        // TODO tracks
+
+        startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
     // endregion
 }
