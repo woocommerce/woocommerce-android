@@ -147,7 +147,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         } ?: run {
             // Signin M1: If using a url to login, try finding the site by this url
-            AppPrefs.getLoginSiteAddress()?.let { url ->
+            AppPrefs.getLoginSiteAddress().takeIf { !it.isNullOrEmpty() }?.let { url ->
                 processLoginSite(url)
                 deferLoadingSitesIntoView = true
             }
@@ -308,6 +308,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+
+        // Clear logged in url from AppPrefs
+        AppPrefs.removeLoginSiteAddress()
 
         setResult(Activity.RESULT_OK)
         finish()

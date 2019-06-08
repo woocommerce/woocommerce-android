@@ -147,9 +147,9 @@ object AppPrefs {
         setString(DeletablePrefKey.LOGIN_SITE_ADDRESS, loginSiteAddress)
     }
 
-    fun getLoginSiteAddress(): String? = getString(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+    fun getLoginSiteAddress() = getString(DeletablePrefKey.LOGIN_SITE_ADDRESS)
 
-    fun clearLoginSiteAddress() {
+    fun removeLoginSiteAddress() {
         remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
     }
 
