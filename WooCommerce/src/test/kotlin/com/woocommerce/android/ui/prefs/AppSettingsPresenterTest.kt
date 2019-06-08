@@ -61,6 +61,6 @@ class AppSettingsPresenterTest {
         doReturn(false).whenever(accountStore).hasAccessToken()
         appSettingsPresenter.onAuthenticationChanged(OnAuthenticationChanged())
 
-        verify(appSettingsContractView).close()
+        verify(appSettingsContractView).finishLogout()
     }
 }
