@@ -28,8 +28,8 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CrashlyticsUtils
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.util.CrashUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import org.wordpress.android.fluxc.model.SiteModel
@@ -245,7 +245,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         progressDialog?.dismiss()
 
         selectedSite.set(site)
-        CrashlyticsUtils.initSite(site)
+        CrashUtils.setCurrentSite(site)
         FCMRegistrationIntentService.enqueueWork(this)
 
         // if we came here from login, start the main activity

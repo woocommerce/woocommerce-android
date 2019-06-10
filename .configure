@@ -1,6 +1,6 @@
 {
   "branch": "master",
-  "pinned_hash": "df39fd1521bd882d12c7da0d89dfe4a5679b42df",
+  "pinned_hash": "6bdfbe1f6149d835bc4303d2d3c4eeefccba4fbc",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/gradle.properties",
@@ -9,6 +9,10 @@
     {
       "file": "android/WCAndroid/google-services.json",
       "destination": "WooCommerce/google-services.json"
+    },
+    {
+      "file": "android/WCAndroid/sentry.properties",
+      "destination": "sentry.properties"
     }
   ],
   "file_dependencies": [
