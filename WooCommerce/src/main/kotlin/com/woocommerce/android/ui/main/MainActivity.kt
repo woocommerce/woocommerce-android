@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -305,6 +306,14 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    /**
+     * Provides a single place for navigation so we don't have navController.navigate() calls littered
+     * throughout this activity
+     */
+    private fun navigateTo(@IdRes destId: Int, args: Bundle? = null) {
+        navController.navigate(destId, args)
+    }
+
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_SELECTED
@@ -322,7 +331,7 @@ class MainActivity : AppCompatActivity(),
 
         // TODO: this shouldn't be necessary since the nav controller should do it by itself, but when we assign
         // an item selected listener to the bottom nav it interferes with the behavior of the nav controller
-        navController.navigate(navPos.id)
+        navigateTo(navPos.id)
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
@@ -358,7 +367,7 @@ class MainActivity : AppCompatActivity(),
                     NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                     // User clicked on a group of notifications. Just show the notifications tab.
-                    navController.navigate(R.id.notifsListFragment)
+                    navigateTo(R.id.notifsListFragment)
                 } else {
                     // Check for a notification ID - if one is present, open notification
                     val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
@@ -379,11 +388,11 @@ class MainActivity : AppCompatActivity(),
                         NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                         // Just open the notifications tab
-                        navController.navigate(R.id.notifsListFragment)
+                        navigateTo(R.id.notifsListFragment)
                     }
                 }
             } else {
-                navController.navigate(R.id.dashboardFragment)
+                navigateTo(R.id.dashboardFragment)
             }
         }
     }
@@ -398,12 +407,12 @@ class MainActivity : AppCompatActivity(),
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()
         val args = Bundle().also { it.putString(OrderListFragment.ARG_ORDER_STATUS_FILTER, orderStatusFilter) }
-        navController.navigate(R.id.orderListFragment, args)
+        navigateTo(R.id.orderListFragment, args)
     }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()
-        navController.navigate(R.id.notifsListFragment)
+        navigateTo(R.id.notifsListFragment)
 
         (getActiveTopLevelFragment() as? NotifsListFragment)?.let { fragment ->
             val navPos = BottomNavigationPosition.NOTIFICATIONS.position

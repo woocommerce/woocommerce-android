@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.main
 
+import androidx.annotation.IdRes
 import com.woocommerce.android.R
 
-enum class BottomNavigationPosition(val position: Int, val id: Int) {
+// Note that the id must match the fragment id in the main navigation graph
+enum class BottomNavigationPosition(val position: Int, @IdRes val id: Int) {
     DASHBOARD(0, R.id.dashboardFragment),
     ORDERS(1, R.id.orderListFragment),
     NOTIFICATIONS(2, R.id.notifsListFragment)

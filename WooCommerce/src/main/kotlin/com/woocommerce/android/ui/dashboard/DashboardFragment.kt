@@ -151,8 +151,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
-        outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
+        outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats?.activeGranularity)
+        outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners?.activeGranularity)
     }
 
     override fun onBackStackChanged() {
