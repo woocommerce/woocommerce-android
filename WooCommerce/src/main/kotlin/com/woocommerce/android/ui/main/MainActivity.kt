@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.NavController.OnDestinationChangedListener
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -29,9 +31,6 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
-import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
-import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -57,7 +56,8 @@ class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
         FragmentScrollListener,
-        MainNavigationView.MainNavigationListener,
+        OnDestinationChangedListener,
+        MainBottomNavigationView.MainBottomNavigationListener,
         WCPromoDialog.PromoDialogListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var selectedSite: SelectedSite
 
     private var isBottomNavShowing = true
-    private lateinit var bottomNavView: MainNavigationView
+    private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
@@ -126,6 +126,8 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
+
+        navController.addOnDestinationChangedListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -311,34 +313,42 @@ class MainActivity : AppCompatActivity(),
      * throughout this activity
      */
     private fun navigateTo(@IdRes destId: Int, args: Bundle? = null) {
-        navController.navigate(destId, args)
+        if (navController.popBackStack(destId, false)) {
+            args?.let {
+                getActiveTopLevelFragment()?.arguments = it
+            }
+        } else {
+            navController.navigate(destId, args)
+        }
     }
 
-    override fun onNavItemSelected(navPos: BottomNavigationPosition) {
-        val stat = when (navPos) {
-            DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_SELECTED
-            ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_SELECTED
-            NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
+    /**
+     * Destination was changed in the navigation component
+     */
+    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+        when (destination.id) {
+            R.id.dashboardFragment -> {
+                AnalyticsTracker.track(Stat.MAIN_TAB_DASHBOARD_SELECTED)
+            }
+            R.id.orderListFragment -> {
+                AnalyticsTracker.track(Stat.MAIN_TAB_ORDERS_SELECTED)
+            }
+            R.id.notifsListFragment -> {
+                AnalyticsTracker.track(Stat.MAIN_TAB_NOTIFICATIONS_SELECTED)
+                // Update the unseen notifications badge visiblility
+                NotificationHandler.removeAllNotificationsFromSystemBar(this)
+            }
+            else -> {
+                // TODO this will need to handle child fragments once we add more than top level nav destinations
+            }
         }
-        AnalyticsTracker.track(stat)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-
-        // Update the unseen notifications badge visiblility
-        if (navPos == NOTIFICATIONS) {
-            NotificationHandler.removeAllNotificationsFromSystemBar(this)
-        }
-
-        // TODO: this shouldn't be necessary since the nav controller should do it by itself, but when we assign
-        // an item selected listener to the bottom nav it interferes with the behavior of the nav controller
-        navigateTo(navPos.id)
     }
 
-    override fun onNavItemReselected(navPos: BottomNavigationPosition) {
+    override fun onBottomNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_RESELECTED
-            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
-            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
+            BottomNavigationPosition.DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
+            BottomNavigationPosition.ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
+            BottomNavigationPosition.NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         (getActiveTopLevelFragment() as? TopLevelFragment)?.scrollToTop()
         AnalyticsTracker.track(stat)

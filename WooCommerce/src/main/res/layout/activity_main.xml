@@ -28,7 +28,7 @@
             app:navGraph="@navigation/nav_graph_main"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <com.woocommerce.android.ui.main.MainNavigationView
+    <com.woocommerce.android.ui.main.MainBottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

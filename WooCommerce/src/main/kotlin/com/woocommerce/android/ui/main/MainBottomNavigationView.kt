@@ -11,27 +11,25 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
-import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 
-class MainNavigationView @JvmOverloads constructor(
+class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : BottomNavigationView(context, attrs, defStyleAttr),
-        OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
+        OnNavigationItemReselectedListener {
     private lateinit var navController: NavController
-    private lateinit var listener: MainNavigationListener
+    private lateinit var listener: MainBottomNavigationListener
     private lateinit var badgeView: View
 
-    interface MainNavigationListener {
-        fun onNavItemSelected(navPos: BottomNavigationPosition)
-        fun onNavItemReselected(navPos: BottomNavigationPosition)
+    interface MainBottomNavigationListener {
+        fun onBottomNavItemReselected(navPos: BottomNavigationPosition)
     }
 
-    fun init(navController: NavController, listener: MainNavigationListener) {
+    fun init(navController: NavController, listener: MainBottomNavigationListener) {
         this.navController = navController
         this.listener = listener
 
@@ -42,9 +40,8 @@ class MainNavigationView @JvmOverloads constructor(
         badgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
         itemView.addView(badgeView)
 
-        this.setupWithNavController(navController)
-
-        assignNavigationListeners(true)
+        setupWithNavController(navController)
+        setOnNavigationItemReselectedListener(this)
     }
 
     fun showNotificationBadge(show: Boolean) {
@@ -57,19 +54,8 @@ class MainNavigationView @JvmOverloads constructor(
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val navPos = findNavigationPositionById(item.itemId)
-        listener.onNavItemSelected(navPos)
-        return true
-    }
-
     override fun onNavigationItemReselected(item: MenuItem) {
         val navPos = findNavigationPositionById(item.itemId)
-        listener.onNavItemReselected(navPos)
-    }
-
-    private fun assignNavigationListeners(assign: Boolean) {
-        setOnNavigationItemSelectedListener(if (assign) this else null)
-        setOnNavigationItemReselectedListener(if (assign) this else null)
+        listener.onBottomNavItemReselected(navPos)
     }
 }
