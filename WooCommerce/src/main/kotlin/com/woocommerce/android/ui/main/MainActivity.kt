@@ -308,6 +308,13 @@ class MainActivity : AppCompatActivity(),
      * throughout this activity
      */
     private fun navigateTo(@IdRes destId: Int, args: Bundle? = null) {
+        navController.currentDestination?.let {
+            if (it.id == destId) {
+                return
+            }
+        }
+
+        getActiveTopLevelFragment()?.childFragmentManager?.popBackStack()
         navController.navigate(destId, args)
     }
 
@@ -328,7 +335,16 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
-        (getActiveTopLevelFragment() as? TopLevelFragment)?.scrollToTop()
+
+        // if the user reselected a bottom nav item while a child fragment is showing, clear the back stack
+        // so they see the top level fragment, otherwise scroll the top level fragment to the top
+        (getActiveTopLevelFragment() as? TopLevelFragment)?.let { topFragment ->
+            if (topFragment.childFragmentManager.backStackEntryCount > 0) {
+                topFragment.childFragmentManager.popBackStack()
+            } else {
+                topFragment.scrollToTop()
+            }
+        }
     }
     // endregion
 
