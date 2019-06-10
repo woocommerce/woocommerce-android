@@ -12,8 +12,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.navigation.NavController.OnDestinationChangedListener
-import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -56,7 +54,6 @@ class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
         FragmentScrollListener,
-        OnDestinationChangedListener,
         MainBottomNavigationView.MainBottomNavigationListener,
         WCPromoDialog.PromoDialogListener {
     companion object {
@@ -102,7 +99,7 @@ class MainActivity : AppCompatActivity(),
 
         presenter.takeView(this)
         navController = findNavController(R.id.nav_host_fragment_main)
-        bottomNavView = bottom_nav.also { it.init(navController, this) }
+        bottomNavView = bottom_nav.also { it.init(this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -126,8 +123,6 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
-
-        navController.addOnDestinationChangedListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -265,7 +260,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         // Complete UI initialization
-        bottomNavView.init(navController, this)
+        bottomNavView.init(this)
         initFragment(null)
     }
 
@@ -317,26 +312,14 @@ class MainActivity : AppCompatActivity(),
         navController.navigate(destId, args)
     }
 
-    /**
-     * Destination was changed in the navigation component
-     */
-    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-        when (destination.id) {
-            R.id.dashboardFragment -> {
-                AnalyticsTracker.track(Stat.MAIN_TAB_DASHBOARD_SELECTED)
-            }
-            R.id.orderListFragment -> {
-                AnalyticsTracker.track(Stat.MAIN_TAB_ORDERS_SELECTED)
-            }
-            R.id.notifsListFragment -> {
-                AnalyticsTracker.track(Stat.MAIN_TAB_NOTIFICATIONS_SELECTED)
-                // Update the unseen notifications badge visiblility
-                NotificationHandler.removeAllNotificationsFromSystemBar(this)
-            }
-            else -> {
-                // TODO this will need to handle child fragments once we add more than top level nav destinations
-            }
+    override fun onBottomNavItemSelected(navPos: BottomNavigationPosition) {
+        val stat = when (navPos) {
+            BottomNavigationPosition.DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_SELECTED
+            BottomNavigationPosition.ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
+            BottomNavigationPosition.NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
+        AnalyticsTracker.track(stat)
+        navigateTo(navPos.id)
     }
 
     override fun onBottomNavItemReselected(navPos: BottomNavigationPosition) {
@@ -345,8 +328,8 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
             BottomNavigationPosition.NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
-        (getActiveTopLevelFragment() as? TopLevelFragment)?.scrollToTop()
         AnalyticsTracker.track(stat)
+        (getActiveTopLevelFragment() as? TopLevelFragment)?.scrollToTop()
     }
     // endregion
 
