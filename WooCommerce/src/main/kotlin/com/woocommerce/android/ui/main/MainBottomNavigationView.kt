@@ -3,14 +3,12 @@ package com.woocommerce.android.ui.main
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -19,8 +17,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : BottomNavigationView(context, attrs, defStyleAttr),
-        OnNavigationItemReselectedListener {
+) : BottomNavigationView(context, attrs, defStyleAttr) {
     private lateinit var navController: NavController
     private lateinit var listener: MainBottomNavigationListener
     private lateinit var badgeView: View
@@ -41,7 +38,11 @@ class MainBottomNavigationView @JvmOverloads constructor(
         itemView.addView(badgeView)
 
         setupWithNavController(navController)
-        setOnNavigationItemReselectedListener(this)
+
+        setOnNavigationItemReselectedListener { item ->
+            val navPos = findNavigationPositionById(item.itemId)
+            listener.onBottomNavItemReselected(navPos)
+        }
     }
 
     fun showNotificationBadge(show: Boolean) {
@@ -52,10 +53,5 @@ class MainBottomNavigationView @JvmOverloads constructor(
                 WooAnimUtils.fadeOut(this, Duration.MEDIUM)
             }
         }
-    }
-
-    override fun onNavigationItemReselected(item: MenuItem) {
-        val navPos = findNavigationPositionById(item.itemId)
-        listener.onBottomNavItemReselected(navPos)
     }
 }
