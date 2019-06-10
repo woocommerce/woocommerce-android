@@ -426,4 +426,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     override fun showWhatIsJetpackDialog() {
         LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
     }
+
+    override fun showHelpFindingConnectedEmail() {
+        LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
+    }
 }
