@@ -1,10 +1,10 @@
 package com.woocommerce.android.widgets.sectionedrecyclerview
 
-import android.support.annotation.VisibleForTesting
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State
@@ -29,7 +29,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     private var viewTypeCount = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        var viewHolder: RecyclerView.ViewHolder? = null
+        var viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder? = null
 
         for (entry in sectionViewTypeNumbers) {
             if (viewType >= entry.value && viewType < entry.value + VIEW_TYPE_QTY) {
@@ -172,7 +172,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
         this.sectionsMap.clear()
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         var currentPos = 0
 
         for (entry in sectionsMap) {

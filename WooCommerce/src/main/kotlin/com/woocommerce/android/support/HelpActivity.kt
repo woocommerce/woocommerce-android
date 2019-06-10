@@ -3,9 +3,9 @@ package com.woocommerce.android.support
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -166,6 +166,7 @@ class HelpActivity : AppCompatActivity() {
         LOGIN_SOCIAL("origin:login-social"),
         LOGIN_USERNAME_PASSWORD("origin:login-username-password"),
         LOGIN_EPILOGUE("origin:login-epilogue"),
+        LOGIN_CONNECTED_EMAIL_HELP("origin:login-connected-email-help"),
         SIGNUP_EMAIL("origin:signup-email"),
         SIGNUP_MAGIC_LINK("origin:signup-magic-link");
 

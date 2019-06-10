@@ -2,9 +2,6 @@ package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
 import android.os.Handler
-import android.support.annotation.StringRes
-import android.support.design.widget.TabLayout
-import android.support.v4.content.ContextCompat
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -12,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.BarData
@@ -19,6 +18,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat

@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.order_detail_customer_note.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel

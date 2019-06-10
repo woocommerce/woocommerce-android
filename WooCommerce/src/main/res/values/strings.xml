@@ -106,10 +106,18 @@
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
     <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
+    <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
+    <string name="login_try_another_account">Try another account</string>
+    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then refresh this app to continue.</string>
+    <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
     <string name="login_jetpack_view_instructions">View instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
+    <string name="login_need_help_finding_email">Need help finding the connected email?</string>
+    <string name="login_email_help_title">What email do I use to sign in?</string>
+    <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections > Account connection%4$s</string>
+
     <!--
         Dashboard View
     -->
@@ -438,7 +446,7 @@
     <string name="login_text_otp">Text me a code instead.</string>
     <string name="login_text_otp_another">Text me another code instead.</string>
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
-    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
+    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
     <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed. Hunt and peck no more!</string>
     <string name="login_magic_links_sent_label">Your magic link is on its way! Check your email on this device and tap the link in the email you received from WordPress.com.</string>

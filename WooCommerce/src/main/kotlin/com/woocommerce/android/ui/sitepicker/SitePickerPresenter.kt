@@ -85,6 +85,9 @@ class SitePickerPresenter @Inject constructor(
         return siteIdList.map { siteStore.getSiteByLocalId(it) }
     }
 
+    override fun getSiteModelByUrl(url: String): SiteModel? =
+            siteStore.getSitesByNameOrUrlMatching(url).firstOrNull()
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {

@@ -4,16 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -52,7 +52,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
-    @Inject lateinit var supportHelper: SupportHelper
 
     private var loginMode: LoginMode? = null
 
@@ -84,7 +83,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onPrologueFinished() {
-        // TODO Check loginMode here and handle different login cases
         startLogin()
     }
 
@@ -262,11 +260,19 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        siteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+
         val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 
     override fun gotConnectedSiteInfo(siteAddress: String, hasJetpack: Boolean) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        AppPrefs.setLoginSiteAddress(siteAddress)
+
         if (hasJetpack) {
             val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
             slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
@@ -281,6 +287,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
                 inputSiteAddress, endpointAddress, null, null, null, null, false)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
@@ -415,5 +425,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun showWhatIsJetpackDialog() {
         LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+    }
+
+    override fun showHelpFindingConnectedEmail() {
+        LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
     }
 }
