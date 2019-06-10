@@ -305,8 +305,7 @@ class MainActivity : AppCompatActivity(),
 
     /**
      * Provides a single place for navigation so we don't have navController.navigate() calls littered
-     * throughout this activity - note that this is *not* called when navigation occurs due to the user
-     * tapping a bottom navigation item
+     * throughout this activity
      */
     private fun navigateTo(@IdRes destId: Int, args: Bundle? = null) {
         navController.navigate(destId, args)
