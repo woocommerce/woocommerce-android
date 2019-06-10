@@ -13,11 +13,11 @@ import com.woocommerce.android.ui.orders.MockedAddOrderTrackingProviderListModul
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
-import com.woocommerce.android.ui.orders.OrderProductListModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
+import com.woocommerce.android.ui.products.MockedOrderProductListModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import com.woocommerce.android.ui.stats.MockedDashboardModule
@@ -33,7 +33,7 @@ abstract class MockedActivityBindingModule {
             MockedDashboardModule::class,
             MockedOrderListModule::class,
             MockedOrderDetailModule::class,
-            OrderProductListModule::class,
+            MockedOrderProductListModule::class,
             MockedOrderFulfillmentModule::class,
             NotifsListModule::class,
             ReviewDetailModule::class,

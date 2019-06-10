@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
+import com.woocommerce.android.ui.products.MockedOrderProductListModule
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
@@ -101,5 +102,14 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         MockedAddOrderTrackingProviderListModule.setOrderInfo(order)
         MockedAddOrderTrackingProviderListModule.setStoreCountry(storeCountry)
         MockedAddOrderTrackingProviderListModule.setOrderShipmentTrackingProviders(orderProviderList)
+    }
+
+    /**
+     * Setting mock data for order product list screen
+     */
+    fun setOrderProductListWithMockData(
+        order: WCOrderModel
+    ) {
+        MockedOrderProductListModule.setOrderInfo(order)
     }
 }
