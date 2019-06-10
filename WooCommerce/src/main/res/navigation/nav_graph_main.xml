@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/nav_graph_settings"
             app:startDestination="@id/dashboardFragment">
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.woocommerce.android.ui.dashboard.DashboardFragment"
-        android:label="DashboardFragment"/>
+        android:label="DashboardFragment"
+        tools:layout="@layout/fragment_dashboard"/>
     <fragment
         android:id="@+id/orderListFragment"
         android:name="com.woocommerce.android.ui.orders.OrderListFragment"
-        android:label="OrderListFragment"/>
+        android:label="OrderListFragment"
+        tools:layout="@layout/fragment_order_list"/>
     <fragment
         android:id="@+id/notifsListFragment"
         android:name="com.woocommerce.android.ui.notifications.NotifsListFragment"
-        android:label="NotifsListFragment"/>
+        android:label="NotifsListFragment"
+        tools:layout="@layout/fragment_notifs_list"/>
 </navigation>
