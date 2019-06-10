@@ -47,6 +47,7 @@ public interface LoginListener {
     // Login Site Address input callbacks
     void alreadyLoggedInWpcom(ArrayList<Integer> oldSitesIds);
     void gotWpcomSiteInfo(String siteAddress, String siteName, String siteIconUrl);
+    void gotConnectedSiteInfo(String siteAddress, boolean hasJetpack);
     void gotXmlRpcEndpoint(String inputSiteAddress, String endpointAddress);
     void handleSslCertificateError(MemorizingTrustManager memorizingTrustManager, SelfSignedSSLCallback callback);
     void helpSiteAddress(String url);

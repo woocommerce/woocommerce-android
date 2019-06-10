@@ -308,7 +308,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     override fun didLogout() {
         setResult(Activity.RESULT_CANCELED)
         val intent = Intent(this, LoginActivity::class.java)
-        LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
+        LoginMode.WOO_LOGIN_MODE.putInto(intent)
         startActivity(intent)
         finish()
     }

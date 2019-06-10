@@ -157,12 +157,12 @@
 
     <style name="Woo.Button.Purple" parent="Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/white</item>
-        <item name="colorButtonNormal">@color/button_purple_bg_color</item>
+        <item name="android:colorButtonNormal">@color/button_purple_bg_color</item>
     </style>
 
     <style name="Woo.Button.White" parent="Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/wc_purple</item>
-        <item name="colorButtonNormal">@color/white</item>
+        <item name="android:colorButtonNormal">@color/white</item>
     </style>
 
     <style name="Woo.Button.Grey" parent="Widget.AppCompat.Button.Colored">
@@ -496,6 +496,20 @@
     <style name="Woo.Dialog.Promo">
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+
+    <style name="Woo.Dialog.Login.WhatIsJetpack" parent="Woo.Dialog.Promo"/>
+
+    <!--
+        LOGIN
+    -->
+    <style name="Woo.Login"/>
+    <style name="Woo.Login.JetpackRequired"/>
+    <style name="Woo.Login.JetpackRequired.Message">
+        <item name="android:textColor">@color/wc_grey_dark</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:lineSpacingExtra">2dp</item>
     </style>
 
     <style name="Woo.Dialog.ProviderList">

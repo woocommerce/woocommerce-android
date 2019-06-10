@@ -6,6 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.HelpActivity
@@ -41,7 +44,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
-        HasSupportFragmentInjector {
+        HasSupportFragmentInjector, LoginJetpackRequiredListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
@@ -104,6 +107,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         return if (fragment == null) null else fragment as LoginEmailFragment
     }
 
+    private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
+            supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -151,12 +157,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun startLogin() {
-        if (getLoginEmailFragment() != null) {
-            // email screen is already shown so, login has already started. Just bail.
+        if (getLoginViaSiteAddressFragment() != null) {
+            // login by site address is already shown so, login has already started. Just bail.
             return
         }
 
-        slideInFragment(LoginEmailFragment(), true, LoginEmailFragment.TAG)
+        loginViaSiteAddress()
     }
 
     //  -- BEGIN: LoginListener implementation methods
@@ -256,9 +262,22 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                siteAddress, siteAddress, siteName, siteIconUrl, null, null, true)
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+    }
+
+    override fun gotConnectedSiteInfo(siteAddress: String, hasJetpack: Boolean) {
+        if (hasJetpack) {
+            val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        } else {
+            // hide the keyboard
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+            // Show the 'Jetpack required' fragment
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
+            slideInFragment(jetpackReqFragment as Fragment, true, LoginJetpackRequiredFragment.TAG)
+        }
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
@@ -388,4 +407,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     //  -- END: GoogleListener implementation methods
+
+    override fun showJetpackInstructions() {
+        // TODO - view instructions
+        Toast.makeText(this, "Not yet implemented", Toast.LENGTH_LONG).show()
+    }
+
+    override fun showWhatIsJetpackDialog() {
+        LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+    }
 }
