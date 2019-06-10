@@ -79,10 +79,6 @@ object CrashUtils : CrashLoggingDataProvider {
         }
     }
 
-    fun log(message: String) {
-        CrashLogging.log(message)
-    }
-
     override fun sentryDSN(): String {
         return BuildConfig.SENTRY_DSN
     }
