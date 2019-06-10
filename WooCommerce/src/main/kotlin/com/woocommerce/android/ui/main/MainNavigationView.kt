@@ -47,7 +47,7 @@ class MainNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
     }
 
-   fun showNotificationBadge(show: Boolean) {
+    fun showNotificationBadge(show: Boolean) {
         with(badgeView) {
             if (show && visibility != View.VISIBLE) {
                 WooAnimUtils.fadeIn(this, Duration.MEDIUM)

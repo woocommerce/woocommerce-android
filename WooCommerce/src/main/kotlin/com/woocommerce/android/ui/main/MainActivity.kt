@@ -161,19 +161,18 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        // TODO
-        /*with(bottomNavView.activeFragment) {
-            if (isAdded && childFragmentManager.backStackEntryCount > 0) {
+        getActiveTopLevelFragment()?.let { topFragment ->
+            if (topFragment.isAdded && topFragment.childFragmentManager.backStackEntryCount > 0) {
                 // go no further if active fragment doesn't allow back press - we use this so fragments can
                 // provide confirmation before discarding the current action, such as adding an order note
-                val fragment = childFragmentManager.findFragmentById(R.id.container)
+                val fragment = topFragment.childFragmentManager.findFragmentById(R.id.container)
                 if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
                     return
                 }
-                childFragmentManager.popBackStack()
+                topFragment.childFragmentManager.popBackStack()
                 return
             }
-        }*/
+        }
 
         super.onBackPressed()
     }
@@ -398,7 +397,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()
-        val args = Bundle().also {it.putString(OrderListFragment.ARG_ORDER_STATUS_FILTER, orderStatusFilter) }
+        val args = Bundle().also { it.putString(OrderListFragment.ARG_ORDER_STATUS_FILTER, orderStatusFilter) }
         navController.navigate(R.id.orderListFragment, args)
     }
 
@@ -410,7 +409,7 @@ class MainActivity : AppCompatActivity(),
             val navPos = BottomNavigationPosition.NOTIFICATIONS.position
             bottom_nav.active(navPos)
 
-            (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {notif ->
+            (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let { notif ->
                 when (notif.getWooType()) {
                     NEW_ORDER -> {
                         notif.getRemoteOrderId()?.let { orderId ->
