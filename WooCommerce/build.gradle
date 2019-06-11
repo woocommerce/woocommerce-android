@@ -120,7 +120,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:3b9a2b6ff6'
+    implementation 'com.github.Automattic:Automattic-Tracks-Android:52d3e23406'
 
     implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
