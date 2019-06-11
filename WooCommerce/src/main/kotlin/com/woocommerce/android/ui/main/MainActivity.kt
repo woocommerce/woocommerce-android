@@ -308,12 +308,14 @@ class MainActivity : AppCompatActivity(),
      * throughout this activity
      */
     private fun navigateTo(@IdRes destId: Int, args: Bundle? = null) {
+        // do nothing if this is the current destination and no arguments were passed
         navController.currentDestination?.let {
-            if (it.id == destId) {
+            if (it.id == destId && args == null) {
                 return
             }
         }
 
+        // clear any child fragments then navigate to the destination
         getActiveTopLevelFragment()?.childFragmentManager?.popBackStack()
         navController.navigate(destId, args)
     }
