@@ -27,3 +27,4 @@ wc.zendesk_app_id = woocommerce
 wc.zendesk.domain = http://www.google.com/
 wc.zendesk.oauth_client_id = woocommerce
 wc.reset_db_on_downgrade = false
+wc.sentry.dsn = woocommerce

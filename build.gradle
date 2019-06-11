@@ -49,6 +49,7 @@ subprojects {
 
     configurations {
         ktlint
+        compile.exclude group: 'org.jetbrains' , module:'annotations'
     }
 
     dependencies {
