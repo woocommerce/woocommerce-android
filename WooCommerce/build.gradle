@@ -111,8 +111,8 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.browser:browser:1.0.0"
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.0.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.0.0'
+    implementation "androidx.navigation:navigation-fragment-ktx:$navHostVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navHostVersion"
 
     implementation('org.wordpress:utils:1.22') {
         exclude group: "com.mcxiaoke.volley"
