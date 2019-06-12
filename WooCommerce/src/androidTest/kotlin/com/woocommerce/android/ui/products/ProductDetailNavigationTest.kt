@@ -50,7 +50,7 @@ class ProductDetailNavigationTest : TestBase() {
     @JvmField var activityTestRule = MainActivityTestRule()
 
     private val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(orderStatus = "Completed")
-    private val mockProductModel = WcOrderTestUtils.generateProductDetail()
+    private val mockProductModel = WcProductTestUtils.generateProductDetail()
 
     private fun chooser(matcher: Matcher<Intent>): Matcher<Intent> {
         return allOf(hasAction(Intent.ACTION_CHOOSER), hasExtra(`is`(Intent.EXTRA_INTENT), matcher))

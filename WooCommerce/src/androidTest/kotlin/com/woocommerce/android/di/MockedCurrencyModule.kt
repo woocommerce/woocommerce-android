@@ -7,6 +7,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.utils.WCSiteUtils
 import dagger.Module
 import dagger.Provides
 import org.mockito.ArgumentMatchers.anyBoolean
@@ -43,9 +44,9 @@ object MockedCurrencyModule {
         whenever(mockCurrencyFormatter.formatCurrency(anyString(), anyString(), anyBoolean()))
                 .thenAnswer { invocation ->
             val args = invocation.arguments
-            WcOrderTestUtils.formatCurrencyForDisplay(
+            WCSiteUtils.formatCurrencyForDisplay(
                     args[0] as String,
-                    WcOrderTestUtils.generateSiteSettings(),
+                    WCSiteUtils.generateSiteSettings(),
                     args[1] as String?,
                     args[2] as Boolean
             )

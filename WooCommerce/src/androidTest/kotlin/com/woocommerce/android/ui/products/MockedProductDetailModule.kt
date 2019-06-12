@@ -9,7 +9,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.WcOrderTestUtils
+import com.woocommerce.android.utils.WCSiteUtils
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
@@ -66,8 +66,8 @@ abstract class MockedProductDetailModule {
              * These are the methods that invoke [WCProductModel] methods from FluxC.
              */
             doReturn(product).whenever(mockedProductDetailPresenter).getProduct(any())
-            doReturn(WcOrderTestUtils.generateSiteSettings()).whenever(mockedProductDetailPresenter).getSiteSettings()
-            doReturn(WcOrderTestUtils.generateProductSettings())
+            doReturn(WCSiteUtils.generateSiteSettings()).whenever(mockedProductDetailPresenter).getSiteSettings()
+            doReturn(WcProductTestUtils.generateProductSettings())
                     .whenever(mockedProductDetailPresenter)
                     .getProductSiteSettings()
 
