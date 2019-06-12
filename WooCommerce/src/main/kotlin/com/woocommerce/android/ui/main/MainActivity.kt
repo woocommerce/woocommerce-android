@@ -161,14 +161,22 @@ class MainActivity : AppCompatActivity(),
         AnalyticsTracker.trackBackPressed(this)
 
         getActiveTopLevelFragment()?.let { topFragment ->
-            if (topFragment.isAdded && topFragment.childFragmentManager.backStackEntryCount > 0) {
-                // go no further if active fragment doesn't allow back press - we use this so fragments can
-                // provide confirmation before discarding the current action, such as adding an order note
-                val fragment = topFragment.childFragmentManager.findFragmentById(R.id.container)
-                if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
-                    return
+            if (topFragment.isAdded) {
+                if (topFragment.childFragmentManager.backStackEntryCount > 0) {
+                    // go no further if active fragment doesn't allow back press - we use this so fragments can
+                    // provide confirmation before discarding the current action, such as adding an order note
+                    val fragment = topFragment.childFragmentManager.findFragmentById(R.id.container)
+                    if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
+                        return
+                    }
+                    topFragment.childFragmentManager.popBackStack()
+                } else if (bottomNavView.selectedItemId != R.id.dashboardFragment) {
+                    // no child fragments, so navigate to the dashboard
+                    navigateTo(R.id.dashboardFragment)
+                } else {
+                    //  we're already on the dashboard so finish the app
+                    finish()
                 }
-                topFragment.childFragmentManager.popBackStack()
                 return
             }
         }

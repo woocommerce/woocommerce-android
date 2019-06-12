@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.IdRes
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -56,10 +57,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
     /**
      * If the passed id isn't the current one, temporarily disable the listener and make it current
      */
-    fun ensureSelectedItemId(id: Int) {
-        if (selectedItemId != id) {
+    fun ensureSelectedItemId(@IdRes itemId: Int) {
+        if (selectedItemId != itemId) {
             setOnNavigationItemSelectedListener(null)
-            selectedItemId = id
+            selectedItemId = itemId
             setOnNavigationItemSelectedListener(this)
         }
     }
