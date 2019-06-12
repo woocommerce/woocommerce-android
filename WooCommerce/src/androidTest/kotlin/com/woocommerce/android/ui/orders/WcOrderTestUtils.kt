@@ -28,14 +28,21 @@ object WcOrderTestUtils {
                             "variationId" to "0",
                             "name" to "Black T-shirt",
                             "quantity" to 1,
-                            "subtotal" to 10
+                            "subtotal" to 10,
+                            "price" to 14,
+                            "total" to 15,
+                            "total_tax" to 2,
+                            "sku" to "blabla"
                     ),
                     mapOf(
                             "productId" to "291",
                             "variationId" to "2",
                             "name" to "White Pants",
                             "quantity" to 2,
-                            "subtotal" to 12
+                            "subtotal" to 12,
+                            "price" to 11,
+                            "total" to 13,
+                            "total_tax" to 3
                     )
             )
     )
