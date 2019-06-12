@@ -9,12 +9,15 @@ import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
+import com.woocommerce.android.ui.products.MockedOrderProductListModule
+import com.woocommerce.android.ui.products.MockedProductDetailModule
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 
 class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.java, false, false) {
@@ -101,5 +104,23 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         MockedAddOrderTrackingProviderListModule.setOrderInfo(order)
         MockedAddOrderTrackingProviderListModule.setStoreCountry(storeCountry)
         MockedAddOrderTrackingProviderListModule.setOrderShipmentTrackingProviders(orderProviderList)
+    }
+
+    /**
+     * Setting mock data for order product list screen
+     */
+    fun setOrderProductListWithMockData(
+        order: WCOrderModel
+    ) {
+        MockedOrderProductListModule.setOrderInfo(order)
+    }
+
+    /**
+     * Setting mock data for order product detail screen
+     */
+    fun setOrderProductDetailWithMockData(
+        product: WCProductModel
+    ) {
+        MockedProductDetailModule.setMockProduct(product)
     }
 }

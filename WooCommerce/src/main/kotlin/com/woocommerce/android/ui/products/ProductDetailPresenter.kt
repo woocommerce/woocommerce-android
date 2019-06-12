@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_LOADED
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -13,14 +14,17 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductSettingsModel
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
+@OpenClassOnDebug
 class ProductDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
-    wooCommerceStore: WooCommerceStore,
+    private val wooCommerceStore: WooCommerceStore,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
@@ -31,16 +35,6 @@ class ProductDetailPresenter @Inject constructor(
     private var currencyCode: String? = null
     private var weightUnit: String? = null
     private var dimensionUnit: String? = null
-
-    init {
-        wooCommerceStore.getSiteSettings(selectedSite.get())?.let { settings ->
-            currencyCode = settings.currencyCode
-        }
-        wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
-            weightUnit = settings.weightUnit
-            dimensionUnit = settings.dimensionUnit
-        }
-    }
 
     private var view: ProductDetailContract.View? = null
 
@@ -57,6 +51,11 @@ class ProductDetailPresenter @Inject constructor(
     }
 
     override fun loadProductDetail(remoteProductId: Long) {
+        getSiteSettings()?.let { currencyCode = it.currencyCode }
+        getProductSiteSettings()?.let { settings ->
+            weightUnit = settings.weightUnit
+            dimensionUnit = settings.dimensionUnit
+        }
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
         getProduct(remoteProductId)?.let { product ->
@@ -66,6 +65,12 @@ class ProductDetailPresenter @Inject constructor(
             }
         } ?: fetchProduct(remoteProductId, true)
     }
+
+    override fun getSiteSettings(): WCSettingsModel? =
+            wooCommerceStore.getSiteSettings(selectedSite.get())
+
+    override fun getProductSiteSettings(): WCProductSettingsModel? =
+            wooCommerceStore.getProductSettings(selectedSite.get())
 
     override fun getProduct(remoteProductId: Long): WCProductModel? =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
