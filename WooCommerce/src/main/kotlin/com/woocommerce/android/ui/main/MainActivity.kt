@@ -404,10 +404,7 @@ class MainActivity : AppCompatActivity(),
     // endregion
 
     // TODO: this is a hack that will be dropped once we fully switch over to the navigation component
-    private fun getActiveTopLevelFragment(): Fragment? {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main)
-        return navHostFragment?.getChildFragmentManager()?.getFragments()?.get(0)
-    }
+    private fun getActiveTopLevelFragment(): Fragment? = supportFragmentManager.primaryNavigationFragment
 
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()
