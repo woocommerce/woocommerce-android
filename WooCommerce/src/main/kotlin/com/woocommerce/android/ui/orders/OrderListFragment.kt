@@ -82,7 +82,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             bundle.putAll(it)
         }
         listState = bundle.getParcelable(STATE_KEY_LIST)
-        isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
+        isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, true)
         isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
         searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         orderStatusFilter = bundle.getString(ARG_ORDER_STATUS_FILTER)
