@@ -76,14 +76,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        savedInstanceState?.let { bundle ->
-            listState = bundle.getParcelable(STATE_KEY_LIST)
-            isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
-            isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
-            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
-        }
 
-        orderStatusFilter = arguments?.getString(ARG_ORDER_STATUS_FILTER)
+        val bundle = savedInstanceState ?: Bundle()
+        arguments?.let {
+            bundle.putAll(it)
+        }
+        listState = bundle.getParcelable(STATE_KEY_LIST)
+        isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
+        isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
+        searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
+        orderStatusFilter = bundle.getString(ARG_ORDER_STATUS_FILTER)
 
         ordersAdapter.setOnLoadMoreListener(this)
     }
@@ -257,7 +259,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        val listState = ordersList.layoutManager?.onSaveInstanceState()
+        val listState = ordersList?.layoutManager?.onSaveInstanceState()
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)

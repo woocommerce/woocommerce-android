@@ -76,10 +76,13 @@ class NotifsListFragment : TopLevelFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        savedInstanceState?.let { bundle ->
-            listState = bundle.getParcelable(OrderListFragment.STATE_KEY_LIST)
-            isRefreshPending = bundle.getBoolean(OrderListFragment.STATE_KEY_REFRESH_PENDING, false)
+
+        val bundle = savedInstanceState ?: Bundle()
+        arguments?.let {
+            bundle.putAll(it)
         }
+        listState = bundle.getParcelable(OrderListFragment.STATE_KEY_LIST)
+        isRefreshPending = bundle.getBoolean(OrderListFragment.STATE_KEY_REFRESH_PENDING, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -197,7 +200,7 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        val listState = notifsList.layoutManager?.onSaveInstanceState()
+        val listState = notifsList?.layoutManager?.onSaveInstanceState()
 
         outState.putParcelable(STATE_KEY_LIST, listState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)

@@ -304,7 +304,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private val fragmentStateMap = SparseArray<Bundle>()
+    private val fragmentStates = SparseArray<Bundle>()
 
     /**
      * Provides a single place for navigation so we don't have navController.navigate() calls littered
@@ -320,9 +320,9 @@ class MainActivity : AppCompatActivity(),
 
             getActiveTopLevelFragment()?.let { fragmentOut ->
                 // save the state of the outgoing fragment
-                val bundleOut = Bundle()
-                fragmentOut.onSaveInstanceState(bundleOut)
-                fragmentStateMap.put(destination.id, bundleOut)
+                val stateOut = Bundle()
+                fragmentOut.onSaveInstanceState(stateOut)
+                fragmentStates.put(destination.id, stateOut)
 
                 // remove any child fragments
                 fragmentOut.childFragmentManager.popBackStack()
@@ -330,13 +330,13 @@ class MainActivity : AppCompatActivity(),
         }
 
         // restore incoming state
-        val bundleIn = fragmentStateMap.get(destId) ?: Bundle()
+        val stateIn = fragmentStates.get(destId) ?: Bundle()
         args?.let {
-            bundleIn.putAll(it)
+            stateIn.putAll(it)
         }
 
         // navigate to the destination
-        navController.navigate(destId, bundleIn)
+        navController.navigate(destId, stateIn)
     }
 
     override fun onBottomNavItemSelected(navPos: BottomNavigationPosition) {
@@ -423,7 +423,10 @@ class MainActivity : AppCompatActivity(),
     // endregion
 
     // TODO: this is a hack that will be dropped once we fully switch over to the navigation component
-    private fun getActiveTopLevelFragment(): Fragment? = supportFragmentManager.primaryNavigationFragment
+    private fun getActiveTopLevelFragment(): Fragment? {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main)
+        return navHostFragment?.getChildFragmentManager()?.getFragments()?.get(0)
+    }
 
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()

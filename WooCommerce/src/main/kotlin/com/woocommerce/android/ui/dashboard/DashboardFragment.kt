@@ -82,12 +82,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val bundle = savedInstanceState ?: arguments
-        bundle?.let {
-            isRefreshPending = it.getBoolean(STATE_KEY_REFRESH_PENDING, false)
-            dashboard_stats.tabStateStats = it.getSerializable(STATE_KEY_TAB_STATS)
-            dashboard_top_earners.tabStateStats = it.getSerializable(STATE_KEY_TAB_EARNERS)
+        // combine the saved state with any passed arguments
+        val bundle = savedInstanceState ?: Bundle()
+        arguments?.let {
+            bundle.putAll(it)
         }
+        isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
+        dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
+        dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
 
         presenter.takeView(this)
 
@@ -120,7 +122,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         if (isActive && !deferInit) {
-            refreshDashboard(forced = this.isRefreshPending)
+            refreshDashboard(forced = bundle.isEmpty)
         }
     }
 
