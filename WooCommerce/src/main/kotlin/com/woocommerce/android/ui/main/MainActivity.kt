@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.IdRes
@@ -303,21 +304,39 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    private val fragmentStateMap = SparseArray<Bundle>()
+
     /**
      * Provides a single place for navigation so we don't have navController.navigate() calls littered
-     * throughout this activity
+     * throughout this activity - this also enables us to save/restore state in top level fragments,
+     * since (annoyingly) the navigation component doesn't do that from bottom nav fragments
      */
     private fun navigateTo(@IdRes destId: Int, args: Bundle? = null) {
-        // do nothing if this is the current destination and no arguments were passed
-        navController.currentDestination?.let {
-            if (it.id == destId && args == null) {
+        navController.currentDestination?.let { destination ->
+            // do nothing if this is already the current destination
+            if (destination.id == destId) {
                 return
+            }
+
+            getActiveTopLevelFragment()?.let { fragmentOut ->
+                // save the state of the outgoing fragment
+                val bundleOut = Bundle()
+                fragmentOut.onSaveInstanceState(bundleOut)
+                fragmentStateMap.put(destination.id, bundleOut)
+
+                // remove any child fragments
+                fragmentOut.childFragmentManager.popBackStack()
             }
         }
 
-        // clear any child fragments then navigate to the destination
-        getActiveTopLevelFragment()?.childFragmentManager?.popBackStack()
-        navController.navigate(destId, args)
+        // restore incoming state
+        val bundleIn = fragmentStateMap.get(destId) ?: Bundle()
+        args?.let {
+            bundleIn.putAll(it)
+        }
+
+        // navigate to the destination
+        navController.navigate(destId, bundleIn)
     }
 
     override fun onBottomNavItemSelected(navPos: BottomNavigationPosition) {

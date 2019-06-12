@@ -34,7 +34,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         const val STATE_KEY_TAB_STATS = "tab-stats-state"
         const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-        fun newInstance() = DashboardFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
@@ -83,10 +82,11 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        savedInstanceState?.let { bundle ->
-            isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
-            dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
-            dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
+        val bundle = savedInstanceState ?: arguments
+        bundle?.let {
+            isRefreshPending = it.getBoolean(STATE_KEY_REFRESH_PENDING, false)
+            dashboard_stats.tabStateStats = it.getSerializable(STATE_KEY_TAB_STATS)
+            dashboard_top_earners.tabStateStats = it.getSerializable(STATE_KEY_TAB_EARNERS)
         }
 
         presenter.takeView(this)
