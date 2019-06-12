@@ -330,6 +330,8 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
+        navController.popBackStack(destId, true)
+
         // restore incoming state combined with passed arguments
         val stateIn = topLevelFragmentStates.get(destId) ?: Bundle()
         args?.let {
@@ -338,6 +340,7 @@ class MainActivity : AppCompatActivity(),
 
         // navigate to the destination
         navController.navigate(destId, stateIn)
+
         bottomNavView.ensureSelectedItemId(destId)
     }
 
