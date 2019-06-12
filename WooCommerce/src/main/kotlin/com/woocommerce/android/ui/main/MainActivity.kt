@@ -151,12 +151,6 @@ class MainActivity : AppCompatActivity(),
         super.onDestroy()
     }
 
-    /**
-     * Send the onBackPressed request to the current active fragment to pop any
-     * child fragments it may have on its back stack.
-     *
-     * Currently prevents the user from hitting back and exiting the app.
-     */
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
