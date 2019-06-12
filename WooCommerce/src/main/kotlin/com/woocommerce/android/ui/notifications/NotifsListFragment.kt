@@ -82,7 +82,7 @@ class NotifsListFragment : TopLevelFragment(),
             bundle.putAll(it)
         }
         listState = bundle.getParcelable(OrderListFragment.STATE_KEY_LIST)
-        isRefreshPending = bundle.getBoolean(OrderListFragment.STATE_KEY_REFRESH_PENDING, false)
+        isRefreshPending = bundle.getBoolean(OrderListFragment.STATE_KEY_REFRESH_PENDING, true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
