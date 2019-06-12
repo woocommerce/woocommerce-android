@@ -94,6 +94,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
         dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
 
+        // show the unfilled orders card if we previously had unfilled orders - this prevents it
+        // from animating in each time the user switches to this fragment
         if (numOrdersToFulfill > 0) {
             dashboard_unfilled_orders.updateOrdersCount(numOrdersToFulfill)
             dashboard_unfilled_orders.visibility = View.VISIBLE

@@ -53,6 +53,17 @@ class MainBottomNavigationView @JvmOverloads constructor(
         listener.onBottomNavItemReselected(navPos)
     }
 
+    /**
+     * If the passed id isn't the current one, temporarily disable the listener and make it current
+     */
+    fun ensureSelectedItemId(id: Int) {
+        if (selectedItemId != id) {
+            setOnNavigationItemSelectedListener(null)
+            selectedItemId = id
+            setOnNavigationItemSelectedListener(this)
+        }
+    }
+
     fun showNotificationBadge(show: Boolean) {
         with(badgeView) {
             if (show && visibility != View.VISIBLE) {

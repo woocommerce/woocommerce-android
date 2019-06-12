@@ -337,6 +337,7 @@ class MainActivity : AppCompatActivity(),
 
         // navigate to the destination
         navController.navigate(destId, stateIn)
+        bottomNavView.ensureSelectedItemId(destId)
     }
 
     override fun onBottomNavItemSelected(navPos: BottomNavigationPosition) {
