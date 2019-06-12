@@ -330,8 +330,6 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        navController.popBackStack(destId, true)
-
         // restore incoming state combined with passed arguments
         val stateIn = topLevelFragmentStates.get(destId) ?: Bundle()
         args?.let {
