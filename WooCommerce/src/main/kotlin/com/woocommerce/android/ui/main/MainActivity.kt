@@ -87,6 +87,8 @@ class MainActivity : AppCompatActivity(),
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
+    private val topLevelFragmentStates = SparseArray<Bundle>()
+
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
 
@@ -99,8 +101,8 @@ class MainActivity : AppCompatActivity(),
         setSupportActionBar(toolbar as Toolbar)
 
         presenter.takeView(this)
-        navController = findNavController(R.id.nav_host_fragment_main)
         bottomNavView = bottom_nav.also { it.init(this) }
+        navController = findNavController(R.id.nav_host_fragment_main)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -166,7 +168,7 @@ class MainActivity : AppCompatActivity(),
                     topFragment.childFragmentManager.popBackStack()
                 } else if (bottomNavView.selectedItemId != R.id.dashboardFragment) {
                     // no child fragments, so navigate to the dashboard
-                    navigateTo(R.id.dashboardFragment)
+                    navigateToTopLevelDestination(R.id.dashboardFragment)
                 } else {
                     //  we're already on the dashboard so finish the app
                     finish()
@@ -306,14 +308,11 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private val fragmentStates = SparseArray<Bundle>()
-
     /**
-     * Provides a single place for navigation so we don't have navController.navigate() calls littered
-     * throughout this activity - this also enables us to save/restore state in top level fragments,
-     * since (annoyingly) the navigation component doesn't do that from bottom nav fragments
+     * Navigates to one of the top level fragments and enables us to save/restore state
+     * since (annoyingly) the navigation component doesn't do that for bottom nav fragments
      */
-    private fun navigateTo(@IdRes destId: Int, args: Bundle? = null) {
+    private fun navigateToTopLevelDestination(@IdRes destId: Int, args: Bundle? = null) {
         navController.currentDestination?.let { destination ->
             // do nothing if this is already the current destination
             if (destination.id == destId) {
@@ -324,15 +323,15 @@ class MainActivity : AppCompatActivity(),
                 // save the state of the outgoing fragment
                 val stateOut = Bundle()
                 fragmentOut.onSaveInstanceState(stateOut)
-                fragmentStates.put(destination.id, stateOut)
+                topLevelFragmentStates.put(destination.id, stateOut)
 
                 // remove any child fragments of the outgoing fragment
                 fragmentOut.childFragmentManager.popBackStack()
             }
         }
 
-        // restore incoming state combine with passed arguments
-        val stateIn = fragmentStates.get(destId) ?: Bundle()
+        // restore incoming state combined with passed arguments
+        val stateIn = topLevelFragmentStates.get(destId) ?: Bundle()
         args?.let {
             stateIn.putAll(it)
         }
@@ -349,7 +348,7 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
-        navigateTo(navPos.id)
+        navigateToTopLevelDestination(navPos.id)
     }
 
     override fun onBottomNavItemReselected(navPos: BottomNavigationPosition) {
@@ -394,7 +393,7 @@ class MainActivity : AppCompatActivity(),
                     NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                     // User clicked on a group of notifications. Just show the notifications tab.
-                    navigateTo(R.id.notifsListFragment)
+                    navigateToTopLevelDestination(R.id.notifsListFragment)
                 } else {
                     // Check for a notification ID - if one is present, open notification
                     val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
@@ -415,11 +414,11 @@ class MainActivity : AppCompatActivity(),
                         NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                         // Just open the notifications tab
-                        navigateTo(R.id.notifsListFragment)
+                        navigateToTopLevelDestination(R.id.notifsListFragment)
                     }
                 }
             } else {
-                navigateTo(R.id.dashboardFragment)
+                navigateToTopLevelDestination(R.id.dashboardFragment)
             }
         }
     }
@@ -434,12 +433,12 @@ class MainActivity : AppCompatActivity(),
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()
         val args = Bundle().also { it.putString(OrderListFragment.ARG_ORDER_STATUS_FILTER, orderStatusFilter) }
-        navigateTo(R.id.orderListFragment, args)
+        navigateToTopLevelDestination(R.id.orderListFragment, args)
     }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()
-        navigateTo(R.id.notifsListFragment)
+        navigateToTopLevelDestination(R.id.notifsListFragment)
 
         (getActiveTopLevelFragment() as? NotifsListFragment)?.let { fragment ->
             val navPos = BottomNavigationPosition.NOTIFICATIONS.position
