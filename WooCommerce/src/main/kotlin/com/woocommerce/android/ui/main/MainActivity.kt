@@ -324,12 +324,12 @@ class MainActivity : AppCompatActivity(),
                 fragmentOut.onSaveInstanceState(stateOut)
                 fragmentStates.put(destination.id, stateOut)
 
-                // remove any child fragments
+                // remove any child fragments of the outgoing fragment
                 fragmentOut.childFragmentManager.popBackStack()
             }
         }
 
-        // restore incoming state
+        // restore incoming state combine with passed arguments
         val stateIn = fragmentStates.get(destId) ?: Bundle()
         args?.let {
             stateIn.putAll(it)
