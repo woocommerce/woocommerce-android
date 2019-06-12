@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
+import com.woocommerce.android.ui.products.MockedProductDetailModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import com.woocommerce.android.ui.stats.MockedDashboardModule
@@ -37,6 +38,7 @@ abstract class MockedActivityBindingModule {
             MockedOrderFulfillmentModule::class,
             NotifsListModule::class,
             ReviewDetailModule::class,
+            MockedProductDetailModule::class,
             MockedAddOrderShipmentTrackingModule::class,
             MockedAddOrderTrackingProviderListModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
