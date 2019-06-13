@@ -9,12 +9,15 @@ import com.woocommerce.android.ui.orders.MockedOrderDetailModule
 import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
+import com.woocommerce.android.ui.products.MockedOrderProductListModule
+import com.woocommerce.android.ui.products.MockedProductDetailModule
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 
 class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.java, false, false) {
@@ -54,13 +57,15 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         orderStatus: WCOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail(),
         orderNotes: List<WCOrderNoteModel> = WcOrderTestUtils.generateSampleNotes(),
         orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings(),
-        isNetworkConnected: Boolean = false
+        isNetworkConnected: Boolean = false,
+        onOrderChanged: OnOrderChanged? = null
     ) {
         MockedOrderDetailModule.setOrderInfo(order)
         MockedOrderDetailModule.setOrderStatus(orderStatus)
         MockedOrderDetailModule.setOrderNotes(orderNotes)
         MockedOrderDetailModule.setOrderShipmentTrackings(orderShipmentTrackings)
         MockedOrderDetailModule.setNetworkConnected(isNetworkConnected)
+        MockedOrderDetailModule.setOnOrderChanged(onOrderChanged)
     }
 
     /**
@@ -69,12 +74,16 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
     fun setOrderFulfillmentWithMockData(
         order: WCOrderModel,
         orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings(),
-        isNetworkConnected: Boolean = false
+        isNetworkConnected: Boolean = false,
+        onOrderChanged: OnOrderChanged? = null
     ) {
-        setOrderDetailWithMockData(order, orderShipmentTrackings = orderShipmentTrackings)
+        setOrderDetailWithMockData(
+                order = order, orderShipmentTrackings = orderShipmentTrackings, onOrderChanged = onOrderChanged
+        )
         MockedOrderFulfillmentModule.setOrderInfo(order)
         MockedOrderFulfillmentModule.setOrderShipmentTrackings(orderShipmentTrackings)
         MockedOrderFulfillmentModule.setNetworkConnected(isNetworkConnected)
+        MockedOrderFulfillmentModule.setOnOrderChanged(onOrderChanged)
     }
 
     /**
@@ -101,5 +110,23 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         MockedAddOrderTrackingProviderListModule.setOrderInfo(order)
         MockedAddOrderTrackingProviderListModule.setStoreCountry(storeCountry)
         MockedAddOrderTrackingProviderListModule.setOrderShipmentTrackingProviders(orderProviderList)
+    }
+
+    /**
+     * Setting mock data for order product list screen
+     */
+    fun setOrderProductListWithMockData(
+        order: WCOrderModel
+    ) {
+        MockedOrderProductListModule.setOrderInfo(order)
+    }
+
+    /**
+     * Setting mock data for order product detail screen
+     */
+    fun setOrderProductDetailWithMockData(
+        product: WCProductModel
+    ) {
+        MockedProductDetailModule.setMockProduct(product)
     }
 }

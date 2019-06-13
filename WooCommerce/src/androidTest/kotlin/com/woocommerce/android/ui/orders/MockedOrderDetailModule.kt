@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.doNothing
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -15,6 +16,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
@@ -26,6 +28,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.tools.FormattableContentMapper
 
@@ -35,6 +39,7 @@ abstract class MockedOrderDetailModule {
     companion object {
         private var order: WCOrderModel? = null
         private var isNetworkConnected: Boolean = false
+        private var onOrderChanged: OnOrderChanged? = null
         private var orderStatus: WCOrderStatusModel? = null
         private var orderNotes: List<WCOrderNoteModel>? = null
         private var orderShipmentTrackings: List<WCOrderShipmentTrackingModel>? = null
@@ -57,6 +62,10 @@ abstract class MockedOrderDetailModule {
 
         fun setOrderShipmentTrackings(orderShipmentTrackings: List<WCOrderShipmentTrackingModel>) {
             this.orderShipmentTrackings = orderShipmentTrackings
+        }
+
+        fun setOnOrderChanged(onOrderChanged: OnOrderChanged?) {
+            this.onOrderChanged = onOrderChanged
         }
 
         @JvmStatic
@@ -90,7 +99,7 @@ abstract class MockedOrderDetailModule {
                             NotificationSqlUtils(FormattableContentMapper(Gson())), mock())
             ))
 
-            /**
+            /*
              * Mocking the below methods in [OrderDetailPresenter] class to pass mock values.
              * These are the methods that invoke [WCOrderModel], [WCOrderStatusModel] methods from FluxC.
              */
@@ -108,6 +117,11 @@ abstract class MockedOrderDetailModule {
                     doReturn(it[0]).whenever(mockedOrderDetailPresenter).deletedOrderShipmentTrackingModel
                 }
             }
+
+            // adding mock response when order status is marked as complete
+            doAnswer {
+                onOrderChanged?.let { mockedOrderDetailPresenter.onOrderChanged(it) }
+            }.whenever(mockDispatcher).dispatch(any<Action<UpdateOrderStatusPayload>>())
 
             return mockedOrderDetailPresenter
         }

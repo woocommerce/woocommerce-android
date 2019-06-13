@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -29,8 +30,8 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CrashlyticsUtils
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.util.CrashUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
@@ -53,10 +54,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             context.startActivity(intent)
         }
 
-        fun showSitePickerForResult(activity: Activity, requestCode: Int) {
-            val intent = Intent(activity, SitePickerActivity::class.java)
+        fun showSitePickerForResult(fragment: Fragment, requestCode: Int) {
+            val intent = Intent(fragment.activity, SitePickerActivity::class.java)
             intent.putExtra(KEY_CALLED_FROM_LOGIN, false)
-            activity.startActivityForResult(intent, requestCode)
+            fragment.startActivityForResult(intent, requestCode)
         }
     }
 
@@ -314,7 +315,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         progressDialog?.dismiss()
 
         selectedSite.set(site)
-        CrashlyticsUtils.initSite(site)
+        CrashUtils.setCurrentSite(site)
         FCMRegistrationIntentService.enqueueWork(this)
 
         // if we came here from login, start the main activity
