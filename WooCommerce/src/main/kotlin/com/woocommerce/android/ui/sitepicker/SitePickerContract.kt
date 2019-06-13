@@ -18,12 +18,15 @@ interface SitePickerContract {
         fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel>
         fun verifySiteApiVersion(site: SiteModel)
         fun updateWooSiteSettings(site: SiteModel)
+        fun getSiteModelByUrl(url: String): SiteModel?
     }
 
     interface View : BaseView<Presenter> {
         fun showUserInfo()
         fun showStoreList(wcSites: List<SiteModel>)
         fun showNoStoresView()
+        fun showSiteNotConnectedView(url: String)
+        fun showSiteNotWooStore(url: String, name: String?)
         fun didLogout()
         fun siteSelected(site: SiteModel)
         fun siteVerificationPassed(site: SiteModel)
