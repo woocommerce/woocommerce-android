@@ -57,13 +57,15 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         orderStatus: WCOrderStatusModel = WcOrderTestUtils.generateOrderStatusDetail(),
         orderNotes: List<WCOrderNoteModel> = WcOrderTestUtils.generateSampleNotes(),
         orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings(),
-        isNetworkConnected: Boolean = false
+        isNetworkConnected: Boolean = false,
+        onOrderChanged: OnOrderChanged? = null
     ) {
         MockedOrderDetailModule.setOrderInfo(order)
         MockedOrderDetailModule.setOrderStatus(orderStatus)
         MockedOrderDetailModule.setOrderNotes(orderNotes)
         MockedOrderDetailModule.setOrderShipmentTrackings(orderShipmentTrackings)
         MockedOrderDetailModule.setNetworkConnected(isNetworkConnected)
+        MockedOrderDetailModule.setOnOrderChanged(onOrderChanged)
     }
 
     /**
@@ -72,12 +74,16 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
     fun setOrderFulfillmentWithMockData(
         order: WCOrderModel,
         orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings(),
-        isNetworkConnected: Boolean = false
+        isNetworkConnected: Boolean = false,
+        onOrderChanged: OnOrderChanged? = null
     ) {
-        setOrderDetailWithMockData(order, orderShipmentTrackings = orderShipmentTrackings)
+        setOrderDetailWithMockData(
+                order = order, orderShipmentTrackings = orderShipmentTrackings, onOrderChanged = onOrderChanged
+        )
         MockedOrderFulfillmentModule.setOrderInfo(order)
         MockedOrderFulfillmentModule.setOrderShipmentTrackings(orderShipmentTrackings)
         MockedOrderFulfillmentModule.setNetworkConnected(isNetworkConnected)
+        MockedOrderFulfillmentModule.setOnOrderChanged(onOrderChanged)
     }
 
     /**
