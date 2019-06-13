@@ -2,13 +2,14 @@ package com.woocommerce.android.ui.login
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 
@@ -27,8 +28,8 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
 
         dialogView.findViewById<Button>(R.id.btn_learn_more)?.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_LEARN_MORE_BUTTON_TAPPED)
-            // TODO: Open the help docs
-            Toast.makeText(activity, "Not yet implemented", Toast.LENGTH_LONG).show()
+
+            ChromeCustomTabUtils.launchUrl(activity as Context, getString(R.string.jetpack_view_instructions_link))
         }
 
         dialogView.findViewById<Button>(R.id.btn_ok)?.setOnClickListener {

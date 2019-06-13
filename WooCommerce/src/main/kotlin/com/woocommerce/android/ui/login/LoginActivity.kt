@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.automattic.android.tracks.CrashLogging.CrashLogging
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
@@ -424,8 +423,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     //  -- END: GoogleListener implementation methods
 
     override fun showJetpackInstructions() {
-        // TODO - view instructions
-        Toast.makeText(this, "Not yet implemented", Toast.LENGTH_LONG).show()
+        ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_view_instructions_link))
     }
 
     override fun showWhatIsJetpackDialog() {
