@@ -16,6 +16,7 @@ import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -45,11 +46,6 @@ import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
 class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailContract.View, RequestListener<Drawable> {
-    companion object {
-        const val TAG = "ProductDetailFragment"
-        const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
-    }
-
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -61,13 +57,14 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
 
-    private var remoteProductId = 0L
     private var productTitle = ""
     private var activityTitle = ""
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
+
+    val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -112,10 +109,8 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         // set the height of the gradient scrim that appears atop the image
         imageScrim.layoutParams.height = imageHeight / 3
 
-        remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
-
         presenter.takeView(this)
-        presenter.loadProductDetail(remoteProductId)
+        presenter.loadProductDetail(navArgs.remoteProductId)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -485,7 +480,7 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     }
 
     private fun shareProduct() {
-        presenter.getProduct(remoteProductId)?.let { product ->
+        presenter.getProduct(navArgs.remoteProductId)?.let { product ->
             val shareIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_SUBJECT, product.name)

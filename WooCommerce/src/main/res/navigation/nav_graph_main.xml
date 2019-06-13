@@ -3,16 +3,7 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/nav_graph_main"
-            app:startDestination="@id/emptyFragment">
-    <!--<activity
-        android:id="@+id/mainActivity"
-        android:name="com.woocommerce.android.ui.main.MainActivity"
-        android:label="activity_main"
-        tools:layout="@layout/activity_main">
-        <action
-            android:id="@+id/action_mainActivity_to_productDetailFragment"
-            app:destination="@id/productDetailFragment"/>
-    </activity>-->
+            app:startDestination="@id/rootFragment">
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
@@ -24,8 +15,12 @@
             android:defaultValue="0L"/>
     </fragment>
     <fragment
-        android:id="@+id/emptyFragment"
-        android:name="com.woocommerce.android.ui.main.EmptyFragment"
-        android:label="fragment_empty2"
-        tools:layout="@layout/fragment_empty2"/>
+        android:id="@+id/rootFragment"
+        android:name="com.woocommerce.android.ui.main.RootFragment"
+        android:label="fragment_root"
+        tools:layout="@layout/fragment_root">
+        <action
+            android:id="@+id/action_rootFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment"/>
+    </fragment>
 </navigation>

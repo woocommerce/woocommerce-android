@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -175,6 +174,13 @@ class MainActivity : AppCompatActivity(),
      */
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
+
+        navController.currentDestination?.let {
+            if (it.id != R.id.rootFragment) {
+                navController.navigateUp()
+                return
+            }
+        }
 
         with(bottomNavView.activeFragment) {
             if (isAdded && childFragmentManager.backStackEntryCount > 0) {
@@ -431,11 +437,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
-        val args = Bundle().also { it.putLong(ProductDetailFragment.ARG_REMOTE_PRODUCT_ID, remoteProductId)}
-        navController.navigate(R.id.productDetailFragment, args)
-        /* TODO: use safeArgs()
-        val action = MainActivityDirections.actionMainActivityToProductDetailFragment(remoteProductId)
-        navController.navigate(action)*/
+        val action = RootFragmentDirections.actionRootFragmentToProductDetailFragment(remoteProductId)
+        navController.navigate(action)
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
