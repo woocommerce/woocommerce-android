@@ -214,11 +214,12 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                router.openOrderFulfillment(order, presenter.isShipmentTrackingsFetched)
-            }
-        }
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderFulfillmentFragment(
+                order.getIdentifier(),
+                order.number,
+                presenter.isShipmentTrackingsFetched
+        )
+        findNavController().navigate(action)
     }
 
     override fun openOrderProductList(order: WCOrderModel) {

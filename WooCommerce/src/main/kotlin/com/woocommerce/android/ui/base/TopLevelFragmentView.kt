@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.woocommerce.android.ui.orders.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.orders.OrderFulfillmentFragment
 import com.woocommerce.android.ui.orders.OrderProductListFragment
 import com.woocommerce.android.ui.orders.OrdersViewRouter
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -75,13 +73,6 @@ interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackSta
      * @return The fragment matching the provided tag, or null if not found.
      */
     fun getFragmentFromBackStack(tag: String): androidx.fragment.app.Fragment?
-
-    override fun openOrderFulfillment(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean) {
-        val tag = OrderFulfillmentFragment.TAG
-        if (!popToState(tag)) {
-            loadChildFragment(OrderFulfillmentFragment.newInstance(order, isUsingCachedShipmentTrackings), tag)
-        }
-    }
 
     override fun openOrderProductList(order: WCOrderModel) {
         val tag = OrderProductListFragment.TAG
