@@ -22,5 +22,25 @@
         <action
             android:id="@+id/action_rootFragment_to_productDetailFragment"
             app:destination="@id/productDetailFragment"/>
+        <action
+            android:id="@+id/action_rootFragment_to_orderDetailFragment"
+            app:destination="@id/orderDetailFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/orderDetailFragment"
+        android:name="com.woocommerce.android.ui.orders.OrderDetailFragment"
+        android:label="fragment_order_detail"
+        tools:layout="@layout/fragment_order_detail">
+        <argument
+            android:name="orderId"
+            app:argType="string"/>
+        <argument
+            android:name="remoteNoteId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+        <argument
+            android:name="markComplete"
+            app:argType="boolean"
+            android:defaultValue="false"/>
     </fragment>
 </navigation>

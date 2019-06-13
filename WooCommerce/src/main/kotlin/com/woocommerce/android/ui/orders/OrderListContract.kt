@@ -35,6 +35,8 @@ interface OrderListContract {
         fun showLoadOrdersError()
         fun showNoConnectionError()
 
+        fun showOrderDetail(order: WCOrderModel)
+
         fun submitSearch(query: String)
         fun submitSearchDelayed(query: String)
         fun showSearchResults(query: String, orders: List<WCOrderModel>)

@@ -45,6 +45,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -426,7 +427,7 @@ class MainActivity : AppCompatActivity(),
             when (it.getWooType()) {
                 NEW_ORDER -> {
                     it.getRemoteOrderId()?.let { orderId ->
-                        (fragment as? NotifsListFragment)?.openOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
+                        showOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
                     }
                 }
                 PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
@@ -438,6 +439,12 @@ class MainActivity : AppCompatActivity(),
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
         val action = RootFragmentDirections.actionRootFragmentToProductDetailFragment(remoteProductId)
+        navController.navigate(action)
+    }
+
+    override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
+        val orderId = OrderIdentifier(localSiteId, remoteOrderId)
+        val action = RootFragmentDirections.actionRootFragmentToOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigate(action)
     }
 

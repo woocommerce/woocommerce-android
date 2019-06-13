@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.NestedScrollView
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -34,42 +35,6 @@ import javax.inject.Inject
 
 class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
-    companion object {
-        const val TAG = "OrderDetailFragment"
-        const val FIELD_ORDER_IDENTIFIER = "order-identifier"
-        const val FIELD_MARK_COMPLETE = "mark-order-complete"
-        const val FIELD_REMOTE_NOTE_ID = "remote-notification-id"
-
-        fun newInstance(
-            orderId: OrderIdentifier,
-            remoteNoteId: Long? = null,
-            markComplete: Boolean = false
-        ): androidx.fragment.app.Fragment {
-            val args = Bundle()
-            args.putString(FIELD_ORDER_IDENTIFIER, orderId)
-
-            // True if order fulfillment requested, else false
-            args.putBoolean(FIELD_MARK_COMPLETE, markComplete)
-
-            // If opened from a notification, add the remote_note_id
-            remoteNoteId?.let { args.putLong(FIELD_REMOTE_NOTE_ID, it) }
-
-            val fragment = OrderDetailFragment()
-            fragment.arguments = args
-            return fragment
-        }
-
-        fun newInstance(
-            localSiteId: Int,
-            remoteOrderId: Long,
-            remoteNoteId: Long? = null,
-            markComplete: Boolean = false
-        ): androidx.fragment.app.Fragment {
-            val orderIdentifier = OrderIdentifier(localSiteId, remoteOrderId)
-            return newInstance(orderIdentifier, remoteNoteId, markComplete)
-        }
-    }
-
     @Inject lateinit var presenter: OrderDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
@@ -94,6 +59,8 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     private var deleteOrderShipmentTrackingResponseSnackbar: Snackbar? = null
     private var deleteOrderShipmentTrackingSet = mutableSetOf<WCOrderShipmentTrackingModel>()
 
+    val navArgs: OrderDetailFragmentArgs by navArgs()
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -108,20 +75,18 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
         presenter.takeView(this)
 
-        arguments?.let {
-            val markComplete = it.getBoolean(FIELD_MARK_COMPLETE, false)
-            it.remove(FIELD_MARK_COMPLETE)
+            val markComplete = navArgs.markComplete
+            // navArgs.markComplete = false // TODO
 
-            val orderIdentifier = it.getString(FIELD_ORDER_IDENTIFIER) as OrderIdentifier
+            val orderIdentifier = navArgs.orderId as OrderIdentifier
             presenter.loadOrderDetail(orderIdentifier, markComplete)
 
-            val remoteNoteId = it.getLong(FIELD_REMOTE_NOTE_ID, 0)
+            val remoteNoteId = navArgs.remoteNoteId
             activity?.let { ctx ->
                 if (remoteNoteId > 0) {
                     presenter.markOrderNotificationRead(ctx, remoteNoteId)
                 }
             }
-        }
 
         scrollView.setOnScrollChangeListener {
             _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->

@@ -236,7 +236,7 @@ class OrderListPresenter @Inject constructor(
                 AnalyticsTracker.KEY_STATUS to order.status))
         orderView?.let {
             if (!it.isRefreshing) {
-                it.openOrderDetail(order)
+                it.showOrderDetail(order)
             }
         }
     }

@@ -213,12 +213,12 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
     }
 
     override fun fulfillOrder() {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                presenter.orderModel?.let {
-                    router.openOrderDetail(it, true)
-                }
-            }
+        presenter.orderModel?.let { order ->
+            (activity as? MainNavigationRouter)?.showOrderDetail(
+                    localSiteId = order.localSiteId,
+                    remoteOrderId = order.remoteOrderId,
+                    markComplete = true
+            )
         }
     }
 

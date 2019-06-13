@@ -24,6 +24,7 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderListAdapter.OnLoadMoreListener
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -435,6 +436,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     override fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
         ordersAdapter.setOrderStatusOptions(orderStatusOptions)
+    }
+
+    override fun showOrderDetail(order: WCOrderModel) {
+        (activity as? MainNavigationRouter)?.showOrderDetail(order.localSiteId, order.remoteOrderId)
     }
 
     // region Filtering

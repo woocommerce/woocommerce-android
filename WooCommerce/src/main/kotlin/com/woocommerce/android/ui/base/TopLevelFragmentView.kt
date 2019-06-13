@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.ui.orders.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderFulfillmentFragment
 import com.woocommerce.android.ui.orders.OrderProductListFragment
 import com.woocommerce.android.ui.orders.OrdersViewRouter
@@ -76,32 +75,6 @@ interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackSta
      * @return The fragment matching the provided tag, or null if not found.
      */
     fun getFragmentFromBackStack(tag: String): androidx.fragment.app.Fragment?
-
-    /**
-     * Only open the order detail if the list is not actively being refreshed.
-     */
-    override fun openOrderDetail(order: WCOrderModel, markOrderComplete: Boolean) {
-        val tag = OrderDetailFragment.TAG
-        getFragmentFromBackStack(tag)?.let {
-            val args = it.arguments ?: Bundle()
-            args.putString(OrderDetailFragment.FIELD_ORDER_IDENTIFIER, order.getIdentifier())
-            args.putBoolean(OrderDetailFragment.FIELD_MARK_COMPLETE, markOrderComplete)
-            it.arguments = args
-            popToState(tag)
-        } ?: loadChildFragment(
-                OrderDetailFragment.newInstance(
-                        orderId = order.getIdentifier(),
-                        markComplete = markOrderComplete
-                ), tag
-        )
-    }
-
-    override fun openOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNotificationId: Long?) {
-        val tag = OrderDetailFragment.TAG
-        if (!popToState(tag)) {
-            loadChildFragment(OrderDetailFragment.newInstance(localSiteId, remoteOrderId, remoteNotificationId), tag)
-        }
-    }
 
     override fun openOrderFulfillment(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean) {
         val tag = OrderFulfillmentFragment.TAG

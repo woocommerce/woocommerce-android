@@ -27,6 +27,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.notifications.NotifsListAdapter.ItemType
 import com.woocommerce.android.ui.notifications.NotifsListAdapter.NotifsListItemDecoration
 import com.woocommerce.android.ui.orders.OrderListFragment
@@ -281,8 +282,11 @@ class NotifsListFragment : TopLevelFragment(),
                     AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                             AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
                             AnalyticsTracker.KEY_ALREADY_READ to notification.read))
-
-                    openOrderDetail(selectedSite.get().id, it, notification.remoteNoteId)
+                    (activity as? MainNavigationRouter)?.showOrderDetail(
+                            selectedSite.get().id,
+                            it,
+                            notification.remoteNoteId
+                    )
                 } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
                     showLoadNotificationDetailError()
                 }
