@@ -313,6 +313,8 @@ class MainActivity : AppCompatActivity(),
      * since (annoyingly) the navigation component doesn't do that for bottom nav fragments
      */
     private fun navigateToTopLevelDestination(@IdRes destId: Int, args: Bundle? = null) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         navController.currentDestination?.let { destination ->
             // do nothing if this is already the current destination
             if (destination.id == destId) {
