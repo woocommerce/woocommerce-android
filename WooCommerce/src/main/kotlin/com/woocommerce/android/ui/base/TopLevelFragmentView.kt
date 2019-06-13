@@ -90,13 +90,6 @@ interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackSta
         }
     }
 
-    override fun openAddOrderNote(order: WCOrderModel) {
-        val tag = AddOrderNoteFragment.TAG
-        if (!popToState(tag)) {
-            loadChildFragment(AddOrderNoteFragment.newInstance(order), tag)
-        }
-    }
-
     override fun openAddOrderShipmentTracking(
         orderIdentifier: OrderIdentifier,
         orderTrackingProvider: String,

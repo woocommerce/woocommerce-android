@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.NestedScrollView
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -62,7 +63,7 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     private var deleteOrderShipmentTrackingResponseSnackbar: Snackbar? = null
     private var deleteOrderShipmentTrackingSet = mutableSetOf<WCOrderShipmentTrackingModel>()
 
-    val navArgs: OrderDetailFragmentArgs by navArgs()
+    private val navArgs: OrderDetailFragmentArgs by navArgs()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -338,11 +339,8 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     override fun showAddOrderNoteScreen(order: WCOrderModel) {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                router.openAddOrderNote(order)
-            }
-        }
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToAddOrderNoteFragment(order.getIdentifier(), order.number)
+        findNavController().navigate(action)
     }
 
     override fun showAddOrderNoteErrorSnack() {

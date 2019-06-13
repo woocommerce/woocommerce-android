@@ -42,5 +42,21 @@
             android:name="markComplete"
             app:argType="boolean"
             android:defaultValue="false"/>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_addOrderNoteFragment"
+            app:destination="@id/addOrderNoteFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/addOrderNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.AddOrderNoteFragment"
+        android:label="fragment_add_order_note"
+        tools:layout="@layout/fragment_add_order_note">
+        <argument
+            android:name="orderId"
+            app:argType="string"/>
+        <argument
+            android:name="orderNumber"
+            app:argType="string"
+            />
     </fragment>
 </navigation>
