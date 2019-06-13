@@ -38,6 +38,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_AUTOFILL_CREDENTIALS_FILLED(siteless = true),
         LOGIN_AUTOFILL_CREDENTIALS_UPDATED(siteless = true),
         LOGIN_EMAIL_FORM_VIEWED(siteless = true),
+        LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED(siteless = true),
         LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED(siteless = true),
         LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED(siteless = true),
         LOGIN_MAGIC_LINK_REQUEST_FORM_VIEWED(siteless = true),
@@ -74,11 +75,31 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CREATED_ACCOUNT(siteless = true),
         LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED(siteless = true),
         LOGIN_PROLOGUE_JETPACK_CONFIGURATION_INSTRUCTIONS_LINK_TAPPED(siteless = true),
+        LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED(siteless = true),
+        LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED(siteless = true),
+        LOGIN_JETPACK_REQUIRED_CONTACT_SUPPORT_BUTTON_TAPPED(siteless = true),
+        LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED(siteless = true),
+        LOGIN_JETPACK_REQUIRED_MENU_HELP_TAPPED(siteless = true),
+        LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_VIEWED(siteless = true),
+        LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_LEARN_MORE_BUTTON_TAPPED(siteless = true),
+        LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_OK_BUTTON_TAPPED(siteless = true),
+        LOGIN_CONNECTED_SITE_INFO_REQUESTED(siteless = true),
+        LOGIN_CONNECTED_SITE_INFO_FAILED(siteless = true),
+        LOGIN_CONNECTED_SITE_INFO_SUCCEEDED(siteless = true),
+        LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_VIEWED(siteless = true),
+        LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_NEED_MORE_HELP_LINK_TAPPED(siteless = true),
+        LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_OK_BUTTON_TAPPED(siteless = true),
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
         SITE_PICKER_CONTINUE_TAPPED(siteless = true),
         SITE_PICKER_HELP_BUTTON_TAPPED(siteless = true),
+        SITE_PICKER_AUTO_LOGIN_SUBMITTED(siteless = true),
+        SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER(siteless = true),
+        SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE(siteless = true),
+        SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED(siteless = true),
+        SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED(siteless = true),
+        SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED(siteless = true),
 
         // -- Dashboard
         DASHBOARD_PULLED_TO_REFRESH,
@@ -369,6 +390,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_CARRIER = "carrier"
         const val KEY_OPTION = "option"
         const val KEY_SOURCE = "source"
+        const val KEY_URL = "url"
+        const val KEY_HAS_CONNECTED_STORES = "has_connected_stores"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"

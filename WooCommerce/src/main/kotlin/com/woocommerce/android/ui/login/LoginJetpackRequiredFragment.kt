@@ -13,6 +13,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
 import org.wordpress.android.login.LoginListener
 
@@ -72,14 +74,17 @@ class LoginJetpackRequiredFragment : Fragment() {
         }
 
         btn_jetpack_instructions.setOnClickListener {
+            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
             jetpackLoginListener?.showJetpackInstructions()
         }
 
         btn_contact_support.setOnClickListener {
+            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_CONTACT_SUPPORT_BUTTON_TAPPED)
             loginListener?.helpSiteAddress(siteAddress)
         }
 
         btn_what_is_jetpack.setOnClickListener {
+            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
             jetpackLoginListener?.showWhatIsJetpackDialog()
         }
     }
@@ -91,6 +96,7 @@ class LoginJetpackRequiredFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
+            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_MENU_HELP_TAPPED)
             loginListener?.helpSiteAddress(siteAddress)
             return true
         }
@@ -104,5 +110,11 @@ class LoginJetpackRequiredFragment : Fragment() {
         // this will throw if parent activity doesn't implement the login listener interface
         loginListener = context as? LoginListener
         jetpackLoginListener = context as? LoginJetpackRequiredListener
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+        AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED)
     }
 }
