@@ -332,7 +332,7 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        // restore incoming state combined with passed arguments
+        // combine incoming state with passed arguments
         val stateIn = topLevelFragmentStates.get(destId) ?: Bundle()
         args?.let {
             stateIn.putAll(it)
@@ -341,6 +341,9 @@ class MainActivity : AppCompatActivity(),
         // navigate to the destination and make sure the correct bottom nav item is selected
         navController.navigate(destId, stateIn)
         bottomNavView.ensureSelectedItemId(destId)
+
+        // discard incoming state since we already have it
+        topLevelFragmentStates.delete(destId)
 
         // remove the badge if this is the notification list
         if (destId == R.id.notifsListFragment) {
