@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(),
 
         presenter.takeView(this)
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
-        navController = findNavController(R.id.container)
+        navController = findNavController(R.id.nav_host_fragment_main)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
