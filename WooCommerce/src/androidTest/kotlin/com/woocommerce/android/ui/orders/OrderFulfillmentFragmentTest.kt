@@ -5,6 +5,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeRight
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -133,14 +134,11 @@ class OrderFulfillmentFragmentTest : TestBase() {
         // verify that fulfill button is hidden
         onView(withId(R.id.productList_btnFulfill)).check(matches(withEffectiveVisibility(GONE)))
 
-        // verify undo snackbar is displayed
-        onView(allOf(
-                withId(com.google.android.material.R.id.snackbar_text),
-                withText(R.string.order_fulfill_marked_complete))
-        ).check(matches(isDisplayed()))
+        // verify undo snackbar is displayed and swipe to dismiss it
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+                .check(matches(withText(R.string.order_fulfill_marked_complete))).perform(swipeRight())
 
-        // wait till the snackbar is dismissed
-        Thread.sleep(5000)
+        Thread.sleep(1000) // Added to make it more reliable
 
         // check if the error snack is displayed
         onView(allOf(
