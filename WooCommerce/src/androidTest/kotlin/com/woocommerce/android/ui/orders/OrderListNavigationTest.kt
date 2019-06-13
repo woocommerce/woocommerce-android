@@ -46,7 +46,7 @@ class OrderListNavigationTest : TestBase() {
         activityTestRule.setOrderListWithMockData()
 
         // Click on Orders tab in the bottom bar
-        onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.orderListFragment)).perform(ViewActions.click())
     }
 
     @Test
@@ -87,8 +87,8 @@ class OrderListNavigationTest : TestBase() {
 
         // Clicking the "Dashboard" bottom bar option loads the DashboardFragment,
         // then clicking the "Orders" bottom bar option loads the OrderListFragment (so the detail view should no longer be visible)
-        onView(withId(R.id.dashboard)).perform(click())
-        onView(withId(R.id.orders)).perform(click())
+        onView(withId(R.id.dashboardFragment)).perform(click())
+        onView(withId(R.id.orderListFragment)).perform(click())
         onView(withId(R.id.toolbar)).check(matches(
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.orders)))))
     }
@@ -101,7 +101,7 @@ class OrderListNavigationTest : TestBase() {
 
         // Clicking the "Orders" bottom bar option loads the OrderListFragment and
         // Changes the Toolbar title to "Orders"
-        onView(withId(R.id.orders)).perform(click())
+        onView(withId(R.id.orderListFragment)).perform(click())
         onView(withId(R.id.toolbar)).check(matches(
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.orders)))))
     }

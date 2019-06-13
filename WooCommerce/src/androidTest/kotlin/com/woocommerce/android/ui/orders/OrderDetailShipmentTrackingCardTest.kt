@@ -91,7 +91,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         activityTestRule.setOrderListWithMockData()
 
         // Click on Orders tab in the bottom bar
-        onView(withId(R.id.orders)).perform(click())
+        onView(withId(R.id.orderListFragment)).perform(click())
     }
 
     @After

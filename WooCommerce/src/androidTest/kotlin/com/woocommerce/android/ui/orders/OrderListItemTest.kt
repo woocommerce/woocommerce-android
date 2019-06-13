@@ -50,7 +50,7 @@ class OrderListItemTest : TestBase() {
         activityTestRule.setOrderListWithMockData(orders)
 
         // Click on Orders tab in the bottom bar
-        onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.orderListFragment)).perform(ViewActions.click())
     }
 
     @Test

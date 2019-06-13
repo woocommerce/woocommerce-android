@@ -49,7 +49,7 @@ class MainNavigationTest : TestBase() {
     fun pressingBackAfterBottomNavOptionChangeExitsApp() {
         // Verify switching bottom bar tabs does not retain a back stack.
         // Switch from the default dashboard tab to the notifications tab
-        onView(withId(R.id.notifications)).perform(click())
+        onView(withId(R.id.notifsListFragment)).perform(click())
 
         // Clicking back should not switch back to the previous tab, it should
         // exit the app.
@@ -65,7 +65,7 @@ class MainNavigationTest : TestBase() {
         onView(withId(R.id.bottom_nav)).check { view, noMatchException ->
             view?.let {
                 val selectedMenuItem = (it as BottomNavigationView).selectedItemId
-                if (selectedMenuItem != R.id.dashboard) throw AssertionError("Dashboard is not selected!")
+                if (selectedMenuItem != R.id.dashboardFragment) throw AssertionError("Dashboard is not selected!")
             } ?: throw noMatchException
         }
 
@@ -83,7 +83,7 @@ class MainNavigationTest : TestBase() {
         activityTestRule.setOrderListWithMockData()
 
         // Select the orders bottom menu option
-        onView(withId(R.id.orders)).perform(click())
+        onView(withId(R.id.orderListFragment)).perform(click())
 
         // Verify the toolbar title has changed to Orders
         onView(withId(R.id.toolbar)).check(matches(
@@ -96,7 +96,7 @@ class MainNavigationTest : TestBase() {
         activityTestRule.activity.showBottomNav()
 
         // Select the notifications bottom bar option
-        onView(withId(R.id.notifications)).perform(click())
+        onView(withId(R.id.notifsListFragment)).perform(click())
 
         // Verify the toolbar title has changed to Notifications
         onView(withId(R.id.toolbar)).check(matches(
@@ -109,10 +109,10 @@ class MainNavigationTest : TestBase() {
         activityTestRule.activity.showBottomNav()
 
         // Switch away from the default selected dashboard option
-        onView(withId(R.id.notifications)).perform(click())
+        onView(withId(R.id.notifsListFragment)).perform(click())
 
         // Select the dashboard bottom bar option
-        onView(withId(R.id.dashboard)).perform(click())
+        onView(withId(R.id.dashboardFragment)).perform(click())
 
         // Verify the toolbar title has changed to 'My Store'
         onView(withId(R.id.toolbar)).check(matches(

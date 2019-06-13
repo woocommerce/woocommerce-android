@@ -166,11 +166,8 @@ class MainActivity : AppCompatActivity(),
                         return
                     }
                     topFragment.childFragmentManager.popBackStack()
-                } else if (bottomNavView.selectedItemId != R.id.dashboardFragment) {
-                    // no child fragments, so navigate to the dashboard
-                    navigateToTopLevelDestination(R.id.dashboardFragment)
                 } else {
-                    //  we're already on the dashboard so finish the app
+                    //  we're already at a top level destination so finish the app
                     finish()
                 }
                 return

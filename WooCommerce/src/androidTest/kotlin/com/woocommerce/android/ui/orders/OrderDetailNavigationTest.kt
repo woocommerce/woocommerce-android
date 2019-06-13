@@ -46,7 +46,7 @@ class OrderDetailNavigationTest : TestBase() {
         activityTestRule.setOrderListWithMockData()
 
         // Click on Orders tab in the bottom bar
-        Espresso.onView(ViewMatchers.withId(R.id.orders)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.orderListFragment)).perform(ViewActions.click())
     }
 
     @Test

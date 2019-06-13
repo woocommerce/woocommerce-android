@@ -7,6 +7,7 @@ import android.widget.HorizontalScrollView
 import android.widget.ListView
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatRatingBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
@@ -24,6 +25,7 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerVi
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
 import org.hamcrest.Matcher
+import org.hamcrest.TypeSafeMatcher
 import org.hamcrest.core.AnyOf.anyOf
 
 object WCMatchers {
@@ -230,6 +232,43 @@ object WCMatchers {
 
             override fun matchesSafely(view: TextView): Boolean {
                 return view.error == null
+            }
+        }
+    }
+
+    /**
+     * Matcher to get the particular view for a given id and get the view at a particular index provided.
+     * For instance, in Product Detail page, we have multiple dynamic views for the same view ID.
+     * Using this method, we can choose which view we want without causing an AmbiguousViewMatcherException
+     * Reference: https://stackoverflow.com/a/39756832/9862062
+     */
+    fun matchesWithIndex(matcher: Matcher<View>, index: Int): Matcher<View> {
+        return object : TypeSafeMatcher<View>() {
+            var currentIndex = 0
+
+            override fun describeTo(description: Description) {
+                description.appendText("with index: ")
+                description.appendValue(index)
+                matcher.describeTo(description)
+            }
+
+            override fun matchesSafely(view: View): Boolean {
+                return matcher.matches(view) && currentIndex++ == index
+            }
+        }
+    }
+
+    /**
+     * Matcher to check if the RatingBar have rating text that matches the incoming value
+     */
+    fun matchesRating(rating: Float): Matcher<View> {
+        return object : BoundedMatcher<View, AppCompatRatingBar>(AppCompatRatingBar::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("RatingBar should have $rating")
+            }
+
+            override fun matchesSafely(view: AppCompatRatingBar): Boolean {
+                return view.rating == rating
             }
         }
     }
