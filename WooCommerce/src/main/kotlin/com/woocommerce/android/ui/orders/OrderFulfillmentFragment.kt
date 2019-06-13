@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.NestedScrollView
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -206,17 +207,14 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
 
     override fun openAddOrderShipmentTrackingScreen() {
         AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
-        // TODO
-        /*parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                presenter.orderModel?.let {
-                    router.openAddOrderShipmentTracking(
-                            orderIdentifier = it.getIdentifier(),
-                            orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
-                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
-                }
-            }
-        }*/
+        presenter.orderModel?.let { order ->
+            val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToAddOrderShipmentTrackingFragment(
+                    orderId = order.getIdentifier(),
+                    orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
+                    isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom()
+            )
+            findNavController().navigate(action)
+        }
     }
 
     override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {

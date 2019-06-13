@@ -340,7 +340,10 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     override fun showAddOrderNoteScreen(order: WCOrderModel) {
-        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToAddOrderNoteFragment(order.getIdentifier(), order.number)
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToAddOrderNoteFragment(
+                order.getIdentifier(),
+                order.number
+        )
         findNavController().navigate(action)
     }
 
@@ -437,17 +440,14 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
     override fun openAddOrderShipmentTrackingScreen() {
         AnalyticsTracker.track(ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
-        // TODO
-        /*parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                presenter.orderModel?.let {
-                    router.openAddOrderShipmentTracking(
-                            orderIdentifier = it.getIdentifier(),
-                            orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
-                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
-                }
-            }
-        }*/
+        presenter.orderModel?.let { order ->
+            val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToAddOrderShipmentTrackingFragment(
+                    orderId = order.getIdentifier(),
+                    orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
+                    isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom()
+            )
+            findNavController().navigate(action)
+        }
     }
 
     override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {

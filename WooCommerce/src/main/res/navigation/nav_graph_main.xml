@@ -82,6 +82,9 @@
         <argument
             android:name="isUsingCachedShipmentTrackings"
             app:argType="boolean"/>
+        <action
+            android:id="@+id/action_orderFulfillmentFragment_to_addOrderShipmentTrackingFragment"
+            app:destination="@id/addOrderShipmentTrackingFragment"/>
     </fragment>
     <fragment
         android:id="@+id/orderProductListFragment"
