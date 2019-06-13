@@ -23,7 +23,7 @@ interface OrderListContract {
         fun loadShipmentTrackingProviders(order: WCOrderModel)
     }
 
-    interface View : BaseView<Presenter>, OrdersViewRouter {
+    interface View : BaseView<Presenter> {
         var isRefreshPending: Boolean
         var isSearching: Boolean
         var isRefreshing: Boolean

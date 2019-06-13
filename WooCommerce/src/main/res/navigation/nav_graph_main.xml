@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_orderProductListFragment"
             app:destination="@id/orderProductListFragment"/>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_addOrderShipmentTrackingFragment"
+            app:destination="@id/addOrderShipmentTrackingFragment"/>
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"
@@ -90,5 +93,20 @@
         <argument
             android:name="orderNumber"
             app:argType="string"/>
+    </fragment>
+    <fragment
+        android:id="@+id/addOrderShipmentTrackingFragment"
+        android:name="com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment"
+        android:label="fragment_add_shipment_tracking"
+        tools:layout="@layout/fragment_add_shipment_tracking">
+        <argument
+            android:name="orderId"
+            app:argType="string"/>
+        <argument
+            android:name="orderTrackingProvider"
+            app:argType="string"/>
+        <argument
+            android:name="isCustomProvider"
+            app:argType="boolean"/>
     </fragment>
 </navigation>

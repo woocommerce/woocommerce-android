@@ -437,7 +437,8 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
     override fun openAddOrderShipmentTrackingScreen() {
         AnalyticsTracker.track(ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
-        parentFragment?.let { router ->
+        // TODO
+        /*parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
                 presenter.orderModel?.let {
                     router.openAddOrderShipmentTracking(
@@ -446,7 +447,7 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
                             isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
                 }
             }
-        }
+        }*/
     }
 
     override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {

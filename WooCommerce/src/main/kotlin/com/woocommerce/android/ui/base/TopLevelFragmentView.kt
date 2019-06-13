@@ -4,18 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.orders.OrderProductListFragment
-import com.woocommerce.android.ui.orders.OrdersViewRouter
-import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 /**
  * Special interface for top-level fragments like those hosted by the bottom bar.
  * Adds an extra layer of management to ensure proper routing and handling of child
  * fragments and their associated back stack.
  */
-interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackStackChangedListener, OrdersViewRouter {
+interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackStackChangedListener {
     var isActive: Boolean
 
     /**
@@ -73,21 +68,4 @@ interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackSta
      * @return The fragment matching the provided tag, or null if not found.
      */
     fun getFragmentFromBackStack(tag: String): androidx.fragment.app.Fragment?
-
-    override fun openAddOrderShipmentTracking(
-        orderIdentifier: OrderIdentifier,
-        orderTrackingProvider: String,
-        isCustomProvider: Boolean
-    ) {
-        val tag = AddOrderShipmentTrackingFragment.TAG
-        if (!popToState(tag)) {
-            loadChildFragment(
-                    AddOrderShipmentTrackingFragment.newInstance(
-                            orderIdentifier,
-                            orderTrackingProvider,
-                            isCustomProvider
-                    ), tag
-            )
-        }
-    }
 }
