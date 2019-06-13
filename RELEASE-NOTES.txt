@@ -1,6 +1,7 @@
 2.1
 -----
- 
+* The sign in flow has been completely revamped with new help screens and documentation to help users successfully login to the app.
+
 2.0
 ----
 * Translations have been added for the "Orders to Fulfill" card in My Store.
