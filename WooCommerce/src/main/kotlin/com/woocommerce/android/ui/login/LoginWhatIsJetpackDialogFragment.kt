@@ -2,13 +2,14 @@ package com.woocommerce.android.ui.login
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.util.ChromeCustomTabUtils
 
 class LoginWhatIsJetpackDialogFragment : DialogFragment() {
     companion object {
@@ -24,8 +25,7 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
         val dialogView = View.inflate(activity, R.layout.fragment_login_what_is_jetpack, null)
 
         dialogView.findViewById<Button>(R.id.btn_learn_more)?.setOnClickListener {
-            // TODO: Open the help docs
-            Toast.makeText(activity, "Not yet implemented", Toast.LENGTH_LONG).show()
+            ChromeCustomTabUtils.launchUrl(activity as Context, getString(R.string.jetpack_view_instructions_link))
         }
 
         dialogView.findViewById<Button>(R.id.btn_ok)?.setOnClickListener {
