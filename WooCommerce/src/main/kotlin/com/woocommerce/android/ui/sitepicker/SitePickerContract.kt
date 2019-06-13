@@ -28,7 +28,7 @@ interface SitePickerContract {
         fun showSiteNotConnectedView(url: String)
         fun showSiteNotWooStore(url: String, name: String?)
         fun didLogout()
-        fun siteSelected(site: SiteModel)
+        fun siteSelected(site: SiteModel, isAutoLogin: Boolean = false)
         fun siteVerificationPassed(site: SiteModel)
         fun siteVerificationFailed(site: SiteModel)
         fun siteVerificationError(site: SiteModel)

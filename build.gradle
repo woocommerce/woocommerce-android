@@ -49,6 +49,7 @@ subprojects {
 
     configurations {
         ktlint
+        compile.exclude group: 'org.jetbrains' , module:'annotations'
     }
 
     dependencies {
@@ -78,6 +79,17 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
+/**
+ * Copies git-hooks from the `tools/team-props/git-hooks' directory to the `.git/hooks` folder
+ * at the root of this project.
+ */
+task installGitHooks(type: Copy) {
+    println "Copying git-hooks scripts from tools/team-props/git-hooks to .git/hooks"
+    from new File(rootProject.rootDir, 'tools/team-props/git-hooks')
+    into { new File(rootProject.rootDir, '.git/hooks') }
+    fileMode 0777
+}
+
 ext {
     fluxCVersion = '3a44520084671ff0018086933626075b5e323d98'
     daggerVersion = '2.22.1'
@@ -92,3 +104,5 @@ ext {
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.1.1'
 }
+
+tasks.getByPath('WooCommerce:preBuild').dependsOn installGitHooks

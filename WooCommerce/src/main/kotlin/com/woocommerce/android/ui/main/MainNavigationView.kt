@@ -121,12 +121,17 @@ class MainNavigationView @JvmOverloads constructor(
         val fragment = navAdapter.getFragment(navPos)
         fragment.deferInit = deferInit
 
-        // Close any child fragments if open
+        // Close any child fragments of active fragments, if open
         clearFragmentBackStack(fragment)
 
         // hide previous fragment if it exists
+        // close any child fragments of previous fragments, if open before hiding
         val fragmentTransaction = fragmentManager.beginTransaction()
-        previousNavPos?.let { fragmentTransaction.hide(navAdapter.getFragment(it)) }
+        previousNavPos?.let {
+            val previousFragment = navAdapter.getFragment(it)
+            clearFragmentBackStack(previousFragment)
+            fragmentTransaction.hide(previousFragment)
+        }
 
         // add the fragment if it hasn't been added yet
         val tag = navPos.getTag()
@@ -152,9 +157,7 @@ class MainNavigationView @JvmOverloads constructor(
      */
     private fun clearFragmentBackStack(fragment: androidx.fragment.app.Fragment?): Boolean {
         fragment?.let {
-            /**
-             * if isStateSaved  = true then the fragment is added and its state has already been saved by its host.
-             */
+            // if isStateSaved is true then the fragment is added and its state has already been saved by its host.
             if (!it.isAdded || it.isStateSaved) {
                 return false
             }

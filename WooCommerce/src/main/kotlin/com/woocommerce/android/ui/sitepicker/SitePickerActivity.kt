@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -29,8 +30,8 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CrashlyticsUtils
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.util.CrashUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
@@ -53,10 +54,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             context.startActivity(intent)
         }
 
-        fun showSitePickerForResult(activity: Activity, requestCode: Int) {
-            val intent = Intent(activity, SitePickerActivity::class.java)
+        fun showSitePickerForResult(fragment: Fragment, requestCode: Int) {
+            val intent = Intent(fragment.activity, SitePickerActivity::class.java)
             intent.putExtra(KEY_CALLED_FROM_LOGIN, false)
-            activity.startActivityForResult(intent, requestCode)
+            fragment.startActivityForResult(intent, requestCode)
         }
     }
 
@@ -135,31 +136,32 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         savedInstanceState?.let { bundle ->
             // Signin M1: If using new login M1 flow, we skip showing the store list.
             bundle.getString(KEY_LOGIN_SITE_URL)?.let { url ->
-                processLoginSite(url)
                 deferLoadingSitesIntoView = true
+                loginSiteUrl = url
             }
 
             val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
-            if (sites.size > 0) {
+            if (sites.isNotEmpty()) {
                 showStoreList(sites)
             } else {
                 presenter.loadSites()
             }
         } ?: run {
-            // Signin M1: If using a url to login, try finding the site by this url
-            AppPrefs.getLoginSiteAddress().takeIf { !it.isNullOrEmpty() }?.let { url ->
-                processLoginSite(url)
+            // Signin M1: If using a url to login, we skip showing the store list
+            AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }?.let { url ->
                 deferLoadingSitesIntoView = true
+                loginSiteUrl = url
             }
 
             // Signin M1: We still want the presenter to go out and fetch sites so we
             // know whether or not to show the "view connected stores" button.
-            presenter.loadAndFetchSites()
-
-            AnalyticsTracker.track(
-                    Stat.SITE_PICKER_STORES_SHOWN,
-                    mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
-            )
+            if (calledFromLogin) {
+                // Sites have already been fetched as part of the login process. Just load them
+                // from the db.
+                presenter.loadSites()
+            } else {
+                presenter.loadAndFetchSites()
+            }
         }
     }
 
@@ -224,7 +226,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun showStoreList(wcSites: List<SiteModel>) {
         if (deferLoadingSitesIntoView) {
-            if (wcSites.size > 0) {
+            if (wcSites.isNotEmpty()) {
                 hasConnectedStores = true
 
                 // Make "show connected stores" visible to the user
@@ -235,8 +237,16 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 // Hide "show connected stores"
                 button_continue.visibility = View.GONE
             }
+
+            loginSiteUrl?.let { processLoginSite(it) }
+
             return
         }
+
+        AnalyticsTracker.track(
+                Stat.SITE_PICKER_STORES_SHOWN,
+                mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
+        )
 
         progressDialog?.takeIf { it.isShowing }?.dismiss()
         site_picker_root.visibility = View.VISIBLE
@@ -271,7 +281,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         button_continue.isEnabled = true
     }
 
-    override fun siteSelected(site: SiteModel) {
+    override fun siteSelected(site: SiteModel, isAutoLogin: Boolean) {
         // finish if user simply selected the current site
         currentSite?.let {
             if (site.siteId == it.siteId) {
@@ -281,10 +291,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        AnalyticsTracker.track(
-                Stat.SITE_PICKER_CONTINUE_TAPPED,
-                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
-        )
+        if (isAutoLogin) {
+            AnalyticsTracker.track(
+                    Stat.SITE_PICKER_AUTO_LOGIN_SUBMITTED,
+                    mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
+        } else {
+            AnalyticsTracker.track(
+                    Stat.SITE_PICKER_CONTINUE_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
+        }
 
         progressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
         presenter.verifySiteApiVersion(site)
@@ -300,7 +315,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         progressDialog?.dismiss()
 
         selectedSite.set(site)
-        CrashlyticsUtils.initSite(site)
+        CrashUtils.setCurrentSite(site)
         FCMRegistrationIntentService.enqueueWork(this)
 
         // if we came here from login, start the main activity
@@ -389,10 +404,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * - Has WooCommerce installed
      */
     private fun processLoginSite(url: String) {
-        // TODO tracks events
-
-        loginSiteUrl = url
-
         presenter.getSiteModelByUrl(url)?.let { site ->
             if (!site.hasWooCommerce) {
                 // Show not woo store message view.
@@ -400,7 +411,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             } else {
                 // We have a pre-validation woo store. Attempt to just
                 // login with this store directly.
-                siteSelected(site)
+                siteSelected(site, isAutoLogin = true)
             }
         } ?: run {
             // The url doesn't match any sites for this account.
@@ -423,7 +434,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * in with.
      */
     override fun showSiteNotConnectedView(url: String) {
-        // TODO tracks events
+        AnalyticsTracker.track(
+                Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
+                mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
@@ -432,17 +445,27 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         no_stores_view.text = getString(R.string.login_not_connected_to_account, url)
 
         button_email_help.setOnClickListener {
+            AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+
             LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
         }
 
         with(button_try_another) {
             visibility = View.VISIBLE
-            setOnClickListener { presenter.logout() }
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
+
+                presenter.logout()
+            }
         }
 
         with(button_continue) {
             text = getString(R.string.login_view_connected_stores)
-            setOnClickListener { showConnectedSites() }
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+
+                showConnectedSites()
+            }
             visibility = if (hasConnectedStores) {
                 View.VISIBLE
             } else {
@@ -456,7 +479,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * to a site that does not have WooCommerce installed.
      */
     override fun showSiteNotWooStore(url: String, name: String?) {
-        // TODO tracks events
+        AnalyticsTracker.track(
+                Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
+                mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
@@ -466,12 +491,20 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         with(button_try_another) {
             visibility = View.VISIBLE
-            setOnClickListener { presenter.logout() }
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
+
+                presenter.logout()
+            }
         }
 
         with(button_continue) {
             text = getString(R.string.login_view_connected_stores)
-            setOnClickListener { showConnectedSites() }
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+
+                showConnectedSites()
+            }
             visibility = if (hasConnectedStores) {
                 View.VISIBLE
             } else {
@@ -481,8 +514,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun onEmailNeedMoreHelpClicked() {
-        // TODO tracks
-
         startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
     // endregion

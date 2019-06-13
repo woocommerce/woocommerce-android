@@ -5,10 +5,10 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
+import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -16,11 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.NONE
-import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_IN
-import com.woocommerce.android.ui.prefs.AppSettingsActivity.FragmentAnim.SLIDE_UP
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -35,7 +31,6 @@ class AppSettingsActivity : AppCompatActivity(),
         AppSettingsContract.View,
         HasSupportFragmentInjector {
     companion object {
-        private const val SITE_PICKER_REQUEST_CODE = 1000
         private const val KEY_SITE_CHANGED = "key_site_changed"
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
     }
@@ -47,12 +42,6 @@ class AppSettingsActivity : AppCompatActivity(),
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
 
-    enum class FragmentAnim {
-        SLIDE_IN,
-        SLIDE_UP,
-        NONE
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -63,9 +52,7 @@ class AppSettingsActivity : AppCompatActivity(),
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (savedInstanceState == null) {
-            showAppSettingsFragment()
-        } else {
+        if (savedInstanceState != null) {
             siteChanged = savedInstanceState.getBoolean(KEY_SITE_CHANGED)
             if (siteChanged) {
                 setResult(RESULT_CODE_SITE_CHANGED)
@@ -88,69 +75,38 @@ class AppSettingsActivity : AppCompatActivity(),
         super.onSaveInstanceState(outState)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        }
-
-        return false
-    }
-
-    override fun onBackPressed() {
+    override fun onSupportNavigateUp(): Boolean {
         AnalyticsTracker.trackBackPressed(this)
-
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            finish()
-        } else {
-            super.onBackPressed()
+        return if (findNavController(R.id.nav_host_fragment).navigateUp()) {
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
-            supportActionBar?.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            true
+        } else {
+            finish()
+            true
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    /**
+     * User switched sites from the main settings fragment, set the result code so the calling activity
+     * will know the site changed
+     */
+    override fun onSiteChanged() {
+        siteChanged = true
+        setResult(RESULT_CODE_SITE_CHANGED)
 
-        // if we're returning from the site picker, update the main fragment so the new store is shown
-        if (requestCode == SITE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            siteChanged = true
-            setResult(RESULT_CODE_SITE_CHANGED)
-
-            supportFragmentManager.findFragmentByTag(MainSettingsFragment.TAG)?.let {
-                (it as MainSettingsFragment).updateStoreViews()
-            }
-
-            // Display a message to the user advising notifications will only be shown
-            // for the current store.
-            selectedSite.getIfExists()?.let {
-                Snackbar.make(
-                        main_content,
-                        getString(R.string.settings_switch_site_notifs_msg, it.name),
-                        Snackbar.LENGTH_LONG
-                ).show()
-            }
+        // Display a message to the user advising notifications will only be shown
+        // for the current store.
+        selectedSite.getIfExists()?.let {
+            Snackbar.make(
+                    main_content,
+                    getString(R.string.settings_switch_site_notifs_msg, it.name),
+                    Snackbar.LENGTH_LONG
+            ).show()
         }
     }
 
     override fun onRequestLogout() {
         confirmLogout()
-    }
-
-    override fun onRequestShowPrivacySettings() {
-        showPrivacySettingsFragment()
-    }
-
-    override fun onRequestShowAbout() {
-        showAboutFragment()
-    }
-
-    override fun onRequestShowLicenses() {
-        showLicensesFragment()
-    }
-
-    override fun onRequestShowSitePicker() {
-        SitePickerActivity.showSitePickerForResult(this, SITE_PICKER_REQUEST_CODE)
     }
 
     override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
@@ -165,26 +121,6 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun close() {
         finish()
-    }
-
-    override fun showAppSettingsFragment() {
-        val fragment = MainSettingsFragment.newInstance()
-        showFragment(fragment, MainSettingsFragment.TAG, NONE)
-    }
-
-    override fun showPrivacySettingsFragment() {
-        val fragment = PrivacySettingsFragment.newInstance()
-        showFragment(fragment, PrivacySettingsFragment.TAG)
-    }
-
-    override fun showAboutFragment() {
-        val fragment = AboutFragment.newInstance()
-        showFragment(fragment, AboutFragment.TAG, SLIDE_UP)
-    }
-
-    override fun showLicensesFragment() {
-        val fragment = LicensesFragment.newInstance()
-        showFragment(fragment, LicensesFragment.TAG, SLIDE_UP)
     }
 
     override fun confirmLogout() {
@@ -212,24 +148,5 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun clearNotificationPreferences() {
         sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
-    }
-
-    private fun showFragment(fragment: androidx.fragment.app.Fragment, tag: String, anim: FragmentAnim = SLIDE_IN) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        if (anim == SLIDE_IN) {
-            fragmentTransaction.setCustomAnimations(
-                    R.anim.activity_slide_in_from_right,
-                    R.anim.activity_slide_out_to_left,
-                    R.anim.activity_slide_in_from_left,
-                    R.anim.activity_slide_out_to_right)
-        } else if (anim == SLIDE_UP) {
-            fragmentTransaction.setCustomAnimations(R.anim.slide_in_up,
-                    0,
-                    0,
-                    R.anim.slide_out_down)
-        }
-        fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
     }
 }

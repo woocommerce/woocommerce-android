@@ -23,10 +23,6 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
         const val TAG = "privacy-settings"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
         private const val URL_COOKIE_POLICY = "https://www.automattic.com/cookies"
-
-        fun newInstance(): PrivacySettingsFragment {
-            return PrivacySettingsFragment()
-        }
     }
 
     @Inject lateinit var presenter: PrivacySettingsContract.Presenter

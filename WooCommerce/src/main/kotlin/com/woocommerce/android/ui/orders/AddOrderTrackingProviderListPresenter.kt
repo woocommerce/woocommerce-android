@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -108,6 +110,7 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
                     R.string.order_shipment_tracking_provider_list_error_fetch_generic
             )
         } else {
+            AnalyticsTracker.track(Stat.ORDER_TRACKING_PROVIDERS_LOADED)
             loadShipmentTrackingProvidersFromDb()
         }
     }

@@ -6,11 +6,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.automattic.android.tracks.CrashLogging.CrashLogging
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -43,7 +46,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
-        HasSupportFragmentInjector, LoginJetpackRequiredListener {
+        HasSupportFragmentInjector, LoginJetpackRequiredListener, LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
@@ -193,6 +196,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
         loginAnalyticsListener.trackLoginSocialSuccess()
+        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -250,6 +254,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
+        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -317,6 +322,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
+        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -426,6 +432,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun showHelpFindingConnectedEmail() {
+        AnalyticsTracker.track(Stat.LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+
         LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
+    }
+
+    override fun onEmailNeedMoreHelpClicked() {
+        startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
 }

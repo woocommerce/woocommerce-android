@@ -12,10 +12,6 @@ import kotlinx.android.synthetic.main.fragment_licenses.*
 class LicensesFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val TAG = "licenses"
-
-        fun newInstance(): LicensesFragment {
-            return LicensesFragment()
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

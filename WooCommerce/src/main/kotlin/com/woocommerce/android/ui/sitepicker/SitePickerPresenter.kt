@@ -66,11 +66,7 @@ class SitePickerPresenter @Inject constructor(
 
     override fun loadSites() {
         val wcSites = wooCommerceStore.getWooCommerceSites()
-        if (wcSites.size > 0) {
-            view?.showStoreList(wcSites)
-        } else {
-            view?.showNoStoresView()
-        }
+        view?.showStoreList(wcSites)
     }
 
     override fun verifySiteApiVersion(site: SiteModel) {

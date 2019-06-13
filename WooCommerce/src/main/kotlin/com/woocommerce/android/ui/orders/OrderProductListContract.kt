@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 interface OrderProductListContract {
     interface Presenter : BasePresenter<View> {
+        fun getOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier)
     }
 
