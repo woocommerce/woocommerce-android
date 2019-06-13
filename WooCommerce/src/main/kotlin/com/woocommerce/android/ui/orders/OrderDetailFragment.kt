@@ -223,11 +223,11 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     override fun openOrderProductList(order: WCOrderModel) {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                router.openOrderProductList(order)
-            }
-        }
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderProductListFragment(
+                order.getIdentifier(),
+                order.number
+        )
+        findNavController().navigate(action)
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {

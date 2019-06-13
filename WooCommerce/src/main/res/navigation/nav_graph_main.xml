@@ -48,6 +48,9 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_orderFulfillmentFragment"
             app:destination="@id/orderFulfillmentFragment"/>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_orderProductListFragment"
+            app:destination="@id/orderProductListFragment"/>
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"
@@ -76,5 +79,16 @@
         <argument
             android:name="isUsingCachedShipmentTrackings"
             app:argType="boolean"/>
+    </fragment>
+    <fragment
+        android:id="@+id/orderProductListFragment"
+        android:name="com.woocommerce.android.ui.orders.OrderProductListFragment"
+        android:label="OrderProductListFragment">
+        <argument
+            android:name="orderId"
+            app:argType="string"/>
+        <argument
+            android:name="orderNumber"
+            app:argType="string"/>
     </fragment>
 </navigation>

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -20,26 +21,11 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
 class OrderProductListFragment : androidx.fragment.app.Fragment(), OrderProductListContract.View {
-    companion object {
-        const val TAG = "OrderProductListFragment"
-        const val FIELD_ORDER_IDENTIFIER = "order-identifier"
-        const val FIELD_ORDER_NUMBER = "order-number"
-
-        fun newInstance(order: WCOrderModel): androidx.fragment.app.Fragment {
-            val args = Bundle()
-            args.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
-
-            // Use for populating the title only, not for record retrieval
-            args.putString(FIELD_ORDER_NUMBER, order.number)
-            val fragment = OrderProductListFragment()
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     @Inject lateinit var presenter: OrderProductListContract.Presenter
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var productImageMap: ProductImageMap
+
+    private val navArgs: OrderProductListFragmentArgs by navArgs()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -49,9 +35,7 @@ class OrderProductListFragment : androidx.fragment.app.Fragment(), OrderProductL
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_order_product_list, container, false)
 
-        // Set activity title
-        arguments?.getString(FIELD_ORDER_NUMBER, "").also {
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it) }
+        activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, navArgs.orderNumber)
 
         return view
     }
@@ -60,7 +44,7 @@ class OrderProductListFragment : androidx.fragment.app.Fragment(), OrderProductL
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
+        presenter.loadOrderDetail(navArgs.orderId)
 
         productList_products.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {

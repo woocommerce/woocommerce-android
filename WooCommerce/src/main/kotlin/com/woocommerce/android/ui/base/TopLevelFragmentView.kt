@@ -74,13 +74,6 @@ interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackSta
      */
     fun getFragmentFromBackStack(tag: String): androidx.fragment.app.Fragment?
 
-    override fun openOrderProductList(order: WCOrderModel) {
-        val tag = OrderProductListFragment.TAG
-        if (!popToState(tag)) {
-            loadChildFragment(OrderProductListFragment.newInstance(order), tag)
-        }
-    }
-
     override fun openAddOrderShipmentTracking(
         orderIdentifier: OrderIdentifier,
         orderTrackingProvider: String,
