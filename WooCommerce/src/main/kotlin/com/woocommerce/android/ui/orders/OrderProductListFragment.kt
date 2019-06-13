@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.TopLevelFragmentRouter
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_product_list.*
@@ -91,10 +91,6 @@ class OrderProductListFragment : androidx.fragment.app.Fragment(), OrderProductL
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
-        activity?.let { router ->
-            if (router is TopLevelFragmentRouter) {
-                router.showProductDetail(remoteProductId)
-            }
-        }
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 }

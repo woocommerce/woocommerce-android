@@ -18,8 +18,8 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
@@ -255,11 +255,7 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
-        activity?.let { router ->
-            if (router is TopLevelFragmentRouter) {
-                router.showProductDetail(remoteProductId)
-            }
-        }
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
     override fun setOrderStatus(newStatus: String) {

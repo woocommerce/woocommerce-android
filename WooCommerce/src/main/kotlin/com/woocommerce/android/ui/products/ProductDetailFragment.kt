@@ -47,17 +47,7 @@ import javax.inject.Inject
 class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailContract.View, RequestListener<Drawable> {
     companion object {
         const val TAG = "ProductDetailFragment"
-        private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
-
-        fun newInstance(remoteProductId: Long): ProductDetailFragment {
-            val args = Bundle().also {
-                it.putLong(ARG_REMOTE_PRODUCT_ID, remoteProductId)
-            }
-
-            val fragment = ProductDetailFragment()
-            fragment.arguments = args
-            return fragment
-        }
+        const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
     }
 
     private enum class DetailCard {
