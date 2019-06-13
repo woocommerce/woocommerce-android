@@ -82,3 +82,6 @@ fastlane/.env
 
 # Ruby Dependencies
 /vendor
+
+# Sentry
+sentry.properties
