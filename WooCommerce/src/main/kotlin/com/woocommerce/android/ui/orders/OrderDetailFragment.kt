@@ -29,12 +29,15 @@ import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
+    companion object {
+        const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
+    }
+
     @Inject lateinit var presenter: OrderDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
@@ -75,21 +78,27 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
         presenter.takeView(this)
 
-            val markComplete = navArgs.markComplete
-            // navArgs.markComplete = false // TODO
+        // The navArgs tell us if we should mark the order complete, but we only want to do that once. We can't
+        // change the navArgs since they're read-only so we set ARG_DID_MARK_COMPLETE instead.
+        val didMarkComplete = arguments?.let {
+            it.getBoolean(ARG_DID_MARK_COMPLETE)
+        } ?: false
+        val markComplete = navArgs.markComplete && !didMarkComplete
+        if (markComplete) {
+            arguments = Bundle().also { it.putBoolean(ARG_DID_MARK_COMPLETE, true) }
+        }
 
-            val orderIdentifier = navArgs.orderId as OrderIdentifier
-            presenter.loadOrderDetail(orderIdentifier, markComplete)
+        val orderIdentifier = navArgs.orderId
+        presenter.loadOrderDetail(orderIdentifier, markComplete)
 
-            val remoteNoteId = navArgs.remoteNoteId
-            activity?.let { ctx ->
-                if (remoteNoteId > 0) {
-                    presenter.markOrderNotificationRead(ctx, remoteNoteId)
-                }
+        val remoteNoteId = navArgs.remoteNoteId
+        activity?.let { ctx ->
+            if (remoteNoteId > 0) {
+                presenter.markOrderNotificationRead(ctx, remoteNoteId)
             }
+        }
 
-        scrollView.setOnScrollChangeListener {
-            _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+        scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
         }
     }
