@@ -336,10 +336,14 @@ class MainActivity : AppCompatActivity(),
             stateIn.putAll(it)
         }
 
-        // navigate to the destination
+        // navigate to the destination and make sure the correct bottom nav item is selected
         navController.navigate(destId, stateIn)
-
         bottomNavView.ensureSelectedItemId(destId)
+
+        // remove the badge if this is the notification list
+        if (destId == R.id.notifsListFragment) {
+            showNotificationBadge(false)
+        }
     }
 
     override fun onBottomNavItemSelected(navPos: BottomNavigationPosition) {
