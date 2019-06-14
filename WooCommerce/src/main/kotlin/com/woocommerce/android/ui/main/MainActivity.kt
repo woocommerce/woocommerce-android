@@ -176,19 +176,17 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    /**
-     * Send the onBackPressed request to the current active fragment to pop any
-     * child fragments it may have on its back stack.
-     *
-     * Currently prevents the user from hitting back and exiting the app.
-     */
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
         if (!isAtNavigationRoot()) {
-            // TODO
             // go no further if active fragment doesn't allow back press - we use this so fragments can
             // provide confirmation before discarding the current action, such as adding an order note
+            getActiveNavigationFragment()?.let { fragment ->
+                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
+                    return
+                }
+            }
             navController.navigateUp() // TODO should this be popBackStack()
             return
         }
@@ -222,7 +220,19 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * The current fragment in the nav controller has changed
+     * Returns the fragment currently shown by the navigation component, or null if we're at the root
+     */
+    private fun getActiveNavigationFragment(): Fragment? {
+        if (isAtNavigationRoot()) {
+            return null
+        } else {
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main)
+            return navHostFragment?.getChildFragmentManager()?.getFragments()?.get(0)
+        }
+    }
+
+    /**
+     * The current fragment in the nav controller has changed - make sure the actionbar's up icon is correct
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
         var showUpIcon: Boolean
