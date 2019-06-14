@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity(),
         if (isAtNavigationRoot()) {
             return null
         } else {
-            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main)
+            val navHostFragment = supportFragmentManager.getPrimaryNavigationFragment()
             return navHostFragment?.getChildFragmentManager()?.getFragments()?.get(0)
         }
     }
@@ -235,8 +235,8 @@ class MainActivity : AppCompatActivity(),
      * The current fragment in the nav controller has changed - make sure the actionbar's up icon is correct
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-        var showUpIcon: Boolean
-        var showCrossIcon: Boolean
+        val showUpIcon: Boolean
+        val showCrossIcon: Boolean
         if (isAtNavigationRoot()) {
             showUpIcon = false
             showCrossIcon = false
