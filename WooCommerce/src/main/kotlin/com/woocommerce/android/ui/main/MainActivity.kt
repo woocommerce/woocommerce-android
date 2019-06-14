@@ -223,11 +223,11 @@ class MainActivity : AppCompatActivity(),
      * Returns the fragment currently shown by the navigation component, or null if we're at the root
      */
     private fun getActiveNavigationFragment(): Fragment? {
-        if (isAtNavigationRoot()) {
-            return null
+        return if (isAtNavigationRoot()) {
+            null
         } else {
-            val navHostFragment = supportFragmentManager.getPrimaryNavigationFragment()
-            return navHostFragment?.getChildFragmentManager()?.getFragments()?.get(0)
+            val navHostFragment = supportFragmentManager.primaryNavigationFragment
+            navHostFragment?.childFragmentManager?.fragments?.get(0)
         }
     }
 
@@ -408,7 +408,7 @@ class MainActivity : AppCompatActivity(),
             navigateToRoot()
         }
 
-        // Update the unseen notifications badge visiblility
+        // Update the unseen notifications badge visibility
         if (navPos == NOTIFICATIONS) {
             NotificationHandler.removeAllNotificationsFromSystemBar(this)
         }
@@ -438,7 +438,7 @@ class MainActivity : AppCompatActivity(),
         if (savedInstanceState != null) {
             restoreSavedInstanceState(savedInstanceState)
         } else if (openedFromPush) {
-            // Opened from a push notificaton
+            // Opened from a push notification
             //
             // Reset this flag now that it's being processed
             intent.removeExtra(FIELD_OPENED_FROM_PUSH)
