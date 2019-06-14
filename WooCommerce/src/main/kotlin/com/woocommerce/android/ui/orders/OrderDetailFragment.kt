@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.NestedScrollView
@@ -67,10 +65,6 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
     private val navArgs: OrderDetailFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -145,11 +139,6 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     override fun onDestroyView() {
         presenter.dropView()
         super.onDestroyView()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        menu?.clear()
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun showOrderDetail(order: WCOrderModel?) {
