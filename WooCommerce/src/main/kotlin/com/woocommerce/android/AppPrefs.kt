@@ -22,7 +22,8 @@ object AppPrefs {
         IS_USING_V3_API,
         HAS_UNSEEN_NOTIFS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
-        SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM
+        SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
+        LOGIN_SITE_ADDRESS
     }
 
     /**
@@ -140,6 +141,16 @@ object AppPrefs {
 
     fun setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider: Boolean) {
         setBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, isCustomProvider)
+    }
+
+    fun setLoginSiteAddress(loginSiteAddress: String) {
+        setString(DeletablePrefKey.LOGIN_SITE_ADDRESS, loginSiteAddress)
+    }
+
+    fun getLoginSiteAddress() = getString(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+
+    fun removeLoginSiteAddress() {
+        remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
     }
 
     /**
