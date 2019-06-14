@@ -105,5 +105,23 @@
             android:name="isCustomProvider"
             app:argType="boolean"/>
     </fragment>
-    <action android:id="@+id/action_global_productDetailFragment" app:destination="@id/productDetailFragment"/><action android:id="@+id/action_global_orderDetailFragment" app:destination="@id/orderDetailFragment"/>
+    <action android:id="@+id/action_global_productDetailFragment" app:destination="@id/productDetailFragment"/>
+    <action android:id="@+id/action_global_orderDetailFragment" app:destination="@id/orderDetailFragment"/>
+    <fragment
+        android:id="@+id/reviewDetailFragment"
+        android:name="com.woocommerce.android.ui.notifications.ReviewDetailFragment"
+        android:label="fragment_review_detail"
+        tools:layout="@layout/fragment_review_detail">
+        <argument
+            android:name="remoteNoteId"
+            app:argType="long"/>
+        <argument
+            android:name="remoteCommentId"
+            app:argType="long"/>
+        <argument
+            android:name="tempStatus"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
+    </fragment><action android:id="@+id/action_global_reviewDetailFragment" app:destination="@id/reviewDetailFragment"/>
 </navigation>

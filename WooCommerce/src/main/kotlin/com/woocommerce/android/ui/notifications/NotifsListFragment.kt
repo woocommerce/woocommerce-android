@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -18,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
+import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.onScrollDown
@@ -308,29 +310,13 @@ class NotifsListFragment : TopLevelFragment(),
         // If the notification is pending moderation, override the status to display in
         // the detail view.
         val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
-
-        val tag = ReviewDetailFragment.TAG
-        getFragmentFromBackStack(tag)?.let { frag ->
-            val args = frag.arguments ?: Bundle()
-
-            args.putLong(ReviewDetailFragment.FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
-
-            // Reset any existing comment status overrides
-            args.remove(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE)
-
-            // Add comment status override if needed
-            if (isPendingModeration) {
-                pendingModerationNewStatus?.let {
-                    args.putString(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE, it)
-                }
-            }
-            frag.arguments = args
-            popToState(tag)
-        } ?: if (isPendingModeration) {
-            loadChildFragment(ReviewDetailFragment.newInstance(notification, pendingModerationNewStatus), tag)
-        } else {
-            loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
-        }
+        val tempStates = if (isPendingModeration) pendingModerationNewStatus else null
+        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
+                notification.remoteNoteId,
+                notification.getCommentId(),
+                tempStates
+        )
+        findNavController().navigate(action)
     }
 
     override fun scrollToTop() {

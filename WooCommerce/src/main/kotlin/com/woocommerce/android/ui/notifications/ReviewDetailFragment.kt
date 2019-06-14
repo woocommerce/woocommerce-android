@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -17,7 +18,6 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.canMarkAsSpam
 import com.woocommerce.android.extensions.canModerate
 import com.woocommerce.android.extensions.canTrash
-import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getConvertedTimestamp
 import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
@@ -42,24 +42,6 @@ import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContract.View {
-    companion object {
-        const val TAG = "ReviewDetailFragment"
-        const val FIELD_REMOTE_NOTIF_ID = "notif-remote-id"
-        const val FIELD_REMOTE_COMMENT_ID = "remote-comment-id"
-        const val FIELD_COMMENT_STATUS_OVERRIDE = "status-override"
-
-        fun newInstance(notification: NotificationModel, tempStatus: String? = null): ReviewDetailFragment {
-            val args = Bundle()
-            args.putLong(FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
-            args.putLong(FIELD_REMOTE_COMMENT_ID, notification.getCommentId())
-            tempStatus?.let { args.putString(FIELD_COMMENT_STATUS_OVERRIDE, tempStatus) }
-
-            val fragment = ReviewDetailFragment()
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     @Inject lateinit var presenter: ReviewDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
@@ -73,6 +55,8 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
     private var remoteProductId: Long = 0L
     private var runOnStartFunc: (() -> Unit)? = null
     private var productIconSize: Int = 0
+
+    private val navArgs: ReviewDetailFragmentArgs by navArgs()
 
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
         AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
@@ -101,12 +85,10 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        arguments?.let {
-            remoteNoteId = it.getLong(FIELD_REMOTE_NOTIF_ID)
-            remoteCommentId = it.getLong(FIELD_REMOTE_COMMENT_ID)
-            commentStatusOverride = it.getString(FIELD_COMMENT_STATUS_OVERRIDE, null)?.let {
-                CommentStatus.fromString(it)
-            }
+        remoteNoteId = navArgs.remoteNoteId
+        remoteCommentId = navArgs.remoteCommentId
+        commentStatusOverride = navArgs.tempStatus?.let {
+            CommentStatus.fromString(it)
         }
 
         presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
@@ -264,7 +246,7 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
                 // Close this fragment
                 (parentFragment as? TopLevelFragmentView)?.closeCurrentChildFragment()
             } else {
-                WooLog.e(NOTIFICATIONS, "$TAG - ParentFragment must implement ReviewActionListener to " +
+                WooLog.e(NOTIFICATIONS, "ParentFragment must implement ReviewActionListener to " +
                         "moderate product review notifications!")
 
                 uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
