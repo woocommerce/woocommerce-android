@@ -95,12 +95,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     // region options menu
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_order_list_fragment, menu)
+        if (isActive) {
+            inflater?.inflate(R.menu.menu_order_list_fragment, menu)
 
-        filterMenuItem = menu?.findItem(R.id.menu_filter)
+            filterMenuItem = menu?.findItem(R.id.menu_filter)
 
-        searchMenuItem = menu?.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView?
+            searchMenuItem = menu?.findItem(R.id.menu_search)
+            searchView = searchMenuItem?.actionView as SearchView?
+        }
 
         super.onCreateOptionsMenu(menu, inflater)
     }
