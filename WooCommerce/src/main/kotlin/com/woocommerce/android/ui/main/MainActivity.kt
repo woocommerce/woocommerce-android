@@ -30,8 +30,10 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
+import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -438,13 +440,13 @@ class MainActivity : AppCompatActivity(),
 
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
-        val action = RootFragmentDirections.actionRootFragmentToProductDetailFragment(remoteProductId)
+        val action = ProductDetailFragmentDirections.actionGlobalProductDetailFragment(remoteProductId)
         navController.navigate(action)
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
-        val action = RootFragmentDirections.actionRootFragmentToOrderDetailFragment(orderId, remoteNoteId, markComplete)
+        val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigate(action)
     }
 

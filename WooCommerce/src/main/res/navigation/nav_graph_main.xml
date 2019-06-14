@@ -18,14 +18,7 @@
         android:id="@+id/rootFragment"
         android:name="com.woocommerce.android.ui.main.RootFragment"
         android:label="fragment_root"
-        tools:layout="@layout/fragment_root">
-        <action
-            android:id="@+id/action_rootFragment_to_productDetailFragment"
-            app:destination="@id/productDetailFragment"/>
-        <action
-            android:id="@+id/action_rootFragment_to_orderDetailFragment"
-            app:destination="@id/orderDetailFragment"/>
-    </fragment>
+        tools:layout="@layout/fragment_root"/>
     <fragment
         android:id="@+id/orderDetailFragment"
         android:name="com.woocommerce.android.ui.orders.OrderDetailFragment"
@@ -112,4 +105,5 @@
             android:name="isCustomProvider"
             app:argType="boolean"/>
     </fragment>
+    <action android:id="@+id/action_global_productDetailFragment" app:destination="@id/productDetailFragment"/><action android:id="@+id/action_global_orderDetailFragment" app:destination="@id/orderDetailFragment"/>
 </navigation>

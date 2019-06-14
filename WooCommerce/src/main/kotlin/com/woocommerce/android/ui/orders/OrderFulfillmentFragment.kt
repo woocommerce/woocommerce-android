@@ -208,11 +208,12 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
     override fun openAddOrderShipmentTrackingScreen() {
         AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
         presenter.orderModel?.let { order ->
-            val action = OrderFulfillmentFragmentDirections.actionOrderFulfillmentFragmentToAddOrderShipmentTrackingFragment(
-                    orderId = order.getIdentifier(),
-                    orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
-                    isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom()
-            )
+            val action =
+                    OrderFulfillmentFragmentDirections.actionOrderFulfillmentFragmentToAddOrderShipmentTrackingFragment(
+                            orderId = order.getIdentifier(),
+                            orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
+                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom()
+                    )
             findNavController().navigate(action)
         }
     }
