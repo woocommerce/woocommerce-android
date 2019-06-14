@@ -14,15 +14,6 @@ interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackSta
     var isActive: Boolean
 
     /**
-     * Load the provided fragment into the current view and disable the main
-     * underlying fragment view.
-     *
-     * @param fragment The child fragment to load
-     * @param tag The fragment tag for recovering fragment from back stack
-     */
-    fun loadChildFragment(fragment: androidx.fragment.app.Fragment, tag: String)
-
-    /**
      * Inflate the fragment view and return to be added to the parent
      * container.
      */
@@ -47,25 +38,4 @@ interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackSta
      * Scroll to the top of this view
      */
     fun scrollToTop()
-
-    /**
-     * Pop fragments on back stack until the one labeled with this state tag
-     * is reached.
-     *
-     * @return True if the state was found and all fragments above that state
-     * in the back stack were popped. False if state not found - no action taken.
-     */
-    fun popToState(tag: String): Boolean
-
-    /**
-     * Closes the current child fragment by popping it from the backstack
-     */
-    fun closeCurrentChildFragment()
-
-    /**
-     * Locate a fragment on the back stack using the back stack tag provided.
-     *
-     * @return The fragment matching the provided tag, or null if not found.
-     */
-    fun getFragmentFromBackStack(tag: String): androidx.fragment.app.Fragment?
 }

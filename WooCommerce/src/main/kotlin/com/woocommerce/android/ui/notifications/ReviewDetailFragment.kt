@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -23,7 +24,6 @@ import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
@@ -244,7 +244,7 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
                 }
 
                 // Close this fragment
-                (parentFragment as? TopLevelFragmentView)?.closeCurrentChildFragment()
+                findNavController().popBackStack()
             } else {
                 WooLog.e(NOTIFICATIONS, "ParentFragment must implement ReviewActionListener to " +
                         "moderate product review notifications!")

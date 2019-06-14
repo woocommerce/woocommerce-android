@@ -72,45 +72,6 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
         super.onDestroyView()
     }
 
-    override fun getFragmentFromBackStack(tag: String): androidx.fragment.app.Fragment? {
-        return if (isAdded) {
-            childFragmentManager.findFragmentByTag(tag)
-        } else {
-            null
-        }
-    }
-
-    override fun popToState(tag: String): Boolean {
-        return if (isAdded) {
-            childFragmentManager.popBackStackImmediate(tag, 0)
-        } else {
-            false
-        }
-    }
-
-    override fun closeCurrentChildFragment() {
-        if (isAdded) childFragmentManager.popBackStackImmediate()
-    }
-
-    override fun loadChildFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
-        if (isAdded) {
-            // before changing the custom animation, please read this PR:
-            // https://github.com/woocommerce/woocommerce-android/pull/554
-            childFragmentManager.beginTransaction()
-                    .setCustomAnimations(
-                            R.anim.activity_fade_in,
-                            R.anim.activity_fade_out,
-                            R.anim.activity_fade_in,
-                            0
-                    )
-                    .replace(R.id.container, fragment, tag)
-                    .addToBackStack(tag)
-                    .commitAllowingStateLoss()
-        } else {
-            runOnResumeFunc = { loadChildFragment(fragment, tag) }
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // Save the current view state of this top-level fragment.
