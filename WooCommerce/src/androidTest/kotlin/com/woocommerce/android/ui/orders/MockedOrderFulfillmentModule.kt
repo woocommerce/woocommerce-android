@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
@@ -13,11 +14,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 
 @Module
 abstract class MockedOrderFulfillmentModule {
@@ -25,6 +29,7 @@ abstract class MockedOrderFulfillmentModule {
     companion object {
         private var order: WCOrderModel? = null
         private var isNetworkConnected: Boolean = false
+        private var onOrderChanged: OnOrderChanged? = null
         private var orderShipmentTrackings: List<WCOrderShipmentTrackingModel>? = null
 
         fun setOrderInfo(order: WCOrderModel) {
@@ -33,6 +38,10 @@ abstract class MockedOrderFulfillmentModule {
 
         fun setNetworkConnected(isNetworkConnected: Boolean) {
             this.isNetworkConnected = isNetworkConnected
+        }
+
+        fun setOnOrderChanged(onOrderChanged: OnOrderChanged?) {
+            this.onOrderChanged = onOrderChanged
         }
 
         fun setOrderShipmentTrackings(orderShipmentTrackings: List<WCOrderShipmentTrackingModel>) {
@@ -77,6 +86,11 @@ abstract class MockedOrderFulfillmentModule {
                     doReturn(it[0]).whenever(mockedOrderFulfillmentPresenter).deletedOrderShipmentTrackingModel
                 }
             }
+
+            // adding mock response when order status is marked as complete
+            doAnswer {
+                onOrderChanged?.let { mockedOrderFulfillmentPresenter.onOrderChanged(it) }
+            }.whenever(mockDispatcher).dispatch(any<Action<UpdateOrderStatusPayload>>())
 
             return mockedOrderFulfillmentPresenter
         }
