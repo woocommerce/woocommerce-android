@@ -224,14 +224,13 @@ class MainActivity : AppCompatActivity(),
     override fun notifyTokenUpdated() {
         if (hasMagicLinkLoginIntent()) {
             loginAnalyticsListener.trackLoginMagicLinkSucceeded()
-            // TODO Launch next screen
         }
     }
 
     override fun showLoginScreen() {
         selectedSite.reset()
         val intent = Intent(this, LoginActivity::class.java)
-        LoginMode.WPCOM_LOGIN_ONLY.putInto(intent)
+        LoginMode.WOO_LOGIN_MODE.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
         finish()
     }
