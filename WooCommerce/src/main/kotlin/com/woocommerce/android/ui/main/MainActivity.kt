@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity(),
                     return
                 }
             }
-            navController.navigateUp() // TODO should this be popBackStack()
+            navController.navigateUp()
             return
         }
 
@@ -197,7 +197,7 @@ class MainActivity : AppCompatActivity(),
     /**
      * Returns true if the navigation controller is showing the root fragment (ie: a top level fragment is showing)
      */
-    private fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
+    fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
 
     /**
      * Navigates to the root fragment so only the top level fragment is showing

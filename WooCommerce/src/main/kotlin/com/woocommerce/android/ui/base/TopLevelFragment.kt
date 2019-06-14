@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainContract
 import kotlinx.android.synthetic.main.fragment_parent.*
 
@@ -30,7 +31,13 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
     private var runOnResumeFunc: (() -> Unit)? = null
 
     override var isActive: Boolean = false
-        get() = isAdded && childFragmentManager.backStackEntryCount == 0 && !isHidden
+        get() {
+            return if (isAdded && !isHidden) {
+                (activity as? MainActivity)?.isAtNavigationRoot() ?: false
+            } else {
+                false
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
