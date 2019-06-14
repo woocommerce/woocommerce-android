@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
@@ -25,6 +26,7 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -178,27 +180,40 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        navController.currentDestination?.let {
-            if (it.id != R.id.rootFragment) {
-                navController.navigateUp()
-                return
-            }
-        }
-
-        with(bottomNavView.activeFragment) {
-            if (isAdded && childFragmentManager.backStackEntryCount > 0) {
-                // go no further if active fragment doesn't allow back press - we use this so fragments can
-                // provide confirmation before discarding the current action, such as adding an order note
-                val fragment = childFragmentManager.findFragmentById(R.id.container)
-                if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
-                    return
-                }
-                childFragmentManager.popBackStack()
-                return
-            }
+        if (!isAtNavigationRoot()) {
+            // TODO
+            // go no further if active fragment doesn't allow back press - we use this so fragments can
+            // provide confirmation before discarding the current action, such as adding an order note
+            navController.navigateUp() // TODO should this be popBackStack()
+            return
         }
 
         super.onBackPressed()
+    }
+
+    /**
+     * Returns true if the navigation controller is showing the root fragment (ie: a top level fragment is showing)
+     */
+    private fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
+
+    /**
+     * Navigates to the root fragment so only the top level fragment is showing
+     */
+    private fun navigateToRoot() {
+        if (!isAtNavigationRoot())
+            navController.popBackStack(R.id.rootFragment, false)
+    }
+
+    /**
+     * Returns the current top level fragment (ie: the one showing in the bottom nav), or null if we've navigated
+     * to another fragment in the nav component
+     */
+    private fun getActiveTopLevelFragment(): Fragment? {
+        return if (isAtNavigationRoot()) {
+            supportFragmentManager.findFragmentById(R.id.container)
+        } else {
+            null
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -340,6 +355,11 @@ class MainActivity : AppCompatActivity(),
 
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
+        // if were not at the root, clear the nav controller's backstack
+        if (!isAtNavigationRoot()) {
+            navigateToRoot()
+        }
+
         // Update the unseen notifications badge visiblility
         if (navPos == NOTIFICATIONS) {
             NotificationHandler.removeAllNotificationsFromSystemBar(this)
@@ -353,6 +373,13 @@ class MainActivity : AppCompatActivity(),
             BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
+
+        // if we're at the root scroll the active fragment to the top, otherwise clear the nav's backstack
+        if (isAtNavigationRoot()) {
+            (getActiveTopLevelFragment() as? TopLevelFragment)?.scrollToTop()
+        } else {
+            navigateToRoot()
+        }
     }
     // endregion
 

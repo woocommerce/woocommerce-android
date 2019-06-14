@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 
 /**
- * Special interface for top-level fragments like those hosted by the bottom bar.
- * Adds an extra layer of management to ensure proper routing and handling of child
- * fragments and their associated back stack.
+ * Special interface for top-level fragments hosted by the bottom bar.
  */
 interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackStackChangedListener {
     var isActive: Boolean
