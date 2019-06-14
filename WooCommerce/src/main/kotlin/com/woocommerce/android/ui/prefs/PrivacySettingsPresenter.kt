@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_SUCCESS
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.CrashlyticsUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -63,11 +62,6 @@ class PrivacySettingsPresenter @Inject constructor(
 
     override fun setCrashReportingEnabled(context: Context, enabled: Boolean) {
         AppPrefs.setCrashReportingEnabled(enabled)
-        if (enabled) {
-            CrashlyticsUtils.initCrashlytics(context, accountStore.account, selectedSite.get())
-        } else {
-            CrashlyticsUtils.resetAccountAndSite()
-        }
     }
 
     @Suppress("unused")

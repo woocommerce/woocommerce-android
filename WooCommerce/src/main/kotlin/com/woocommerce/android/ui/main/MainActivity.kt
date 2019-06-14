@@ -233,7 +233,6 @@ class MainActivity : AppCompatActivity(),
     override fun notifyTokenUpdated() {
         if (hasMagicLinkLoginIntent()) {
             loginAnalyticsListener.trackLoginMagicLinkSucceeded()
-            // TODO Launch next screen
         }
     }
 
