@@ -19,7 +19,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 
-class MainNavigationView @JvmOverloads constructor(
+class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -36,12 +36,8 @@ class MainNavigationView @JvmOverloads constructor(
 
     interface MainNavigationListener {
         fun onNavItemSelected(navPos: BottomNavigationPosition)
-
         fun onNavItemReselected(navPos: BottomNavigationPosition)
     }
-
-    val activeFragment: TopLevelFragment
-        get() = navAdapter.getFragment(currentPosition)
 
     var currentPosition: BottomNavigationPosition
         get() = findNavigationPositionById(selectedItemId)
@@ -102,11 +98,6 @@ class MainNavigationView @JvmOverloads constructor(
 
     override fun onNavigationItemReselected(item: MenuItem) {
         val navPos = findNavigationPositionById(item.itemId)
-        val activeFragment = fragmentManager.findFragmentByTag(navPos.getTag())
-        if (!clearFragmentBackStack(activeFragment)) {
-            (activeFragment as? TopLevelFragment)?.scrollToTop()
-        }
-
         listener.onNavItemReselected(navPos)
     }
 

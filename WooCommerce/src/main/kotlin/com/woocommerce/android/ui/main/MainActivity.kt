@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity(),
         HasSupportFragmentInjector,
         FragmentScrollListener,
         MainNavigationRouter,
-        MainNavigationView.MainNavigationListener,
+        MainBottomNavigationView.MainNavigationListener,
         NavController.OnDestinationChangedListener,
         WCPromoDialog.PromoDialogListener {
     companion object {
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var selectedSite: SelectedSite
 
     private var isBottomNavShowing = true
-    private lateinit var bottomNavView: MainNavigationView
+    private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
