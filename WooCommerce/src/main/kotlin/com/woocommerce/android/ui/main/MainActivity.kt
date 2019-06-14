@@ -203,8 +203,9 @@ class MainActivity : AppCompatActivity(),
      * Navigates to the root fragment so only the top level fragment is showing
      */
     private fun navigateToRoot() {
-        if (!isAtNavigationRoot())
+        if (!isAtNavigationRoot()) {
             navController.popBackStack(R.id.rootFragment, false)
+        }
     }
 
     /**
@@ -400,8 +401,6 @@ class MainActivity : AppCompatActivity(),
             NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         // if were not at the root, clear the nav controller's backstack
         if (!isAtNavigationRoot()) {
