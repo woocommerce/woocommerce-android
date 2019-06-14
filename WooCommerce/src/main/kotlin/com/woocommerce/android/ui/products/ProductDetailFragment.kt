@@ -14,7 +14,6 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
@@ -72,7 +71,6 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
 
         activity?.let {
             activityTitle = it.title.toString()
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
         }
 
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
@@ -86,7 +84,6 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     override fun onDestroyView() {
         activity?.let {
             it.title = activityTitle
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
         }
         presenter.dropView()
         super.onDestroyView()

@@ -6,11 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -61,6 +63,7 @@ class MainActivity : AppCompatActivity(),
         FragmentScrollListener,
         MainNavigationRouter,
         MainNavigationView.MainNavigationListener,
+        NavController.OnDestinationChangedListener,
         WCPromoDialog.PromoDialogListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
@@ -106,7 +109,9 @@ class MainActivity : AppCompatActivity(),
 
         presenter.takeView(this)
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+
         navController = findNavController(R.id.nav_host_fragment_main)
+        navController.addOnDestinationChangedListener(this)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -213,6 +218,40 @@ class MainActivity : AppCompatActivity(),
             supportFragmentManager.findFragmentById(R.id.container)
         } else {
             null
+        }
+    }
+
+    /**
+     * The current fragment in the nav controller has changed
+     */
+    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+        var showUpIcon: Boolean
+        var showCrossIcon: Boolean
+        if (isAtNavigationRoot()) {
+            showUpIcon = false
+            showCrossIcon = false
+        } else {
+            showUpIcon = true
+            showCrossIcon = when (destination.id) {
+                R.id.productDetailFragment,
+                R.id.addOrderShipmentTrackingFragment,
+                R.id.addOrderNoteFragment -> {
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
+
+        supportActionBar?.let { actionBar ->
+            actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
+            @DrawableRes val icon = if (showCrossIcon) {
+                R.drawable.ic_gridicons_cross_white_24dp
+            } else {
+                R.drawable.ic_back_white_24dp
+            }
+            actionBar.setHomeAsUpIndicator(icon)
         }
     }
 

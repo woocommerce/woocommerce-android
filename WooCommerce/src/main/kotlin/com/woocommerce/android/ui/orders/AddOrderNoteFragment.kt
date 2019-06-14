@@ -9,7 +9,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -51,9 +50,6 @@ class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContr
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        activity?.let {
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-        }
         return inflater.inflate(R.layout.fragment_add_order_note, container, false)
     }
 
@@ -113,7 +109,6 @@ class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContr
 
     override fun onDestroyView() {
         activity?.let {
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
             ActivityUtils.hideKeyboard(it)
         }
         presenter.dropView()
