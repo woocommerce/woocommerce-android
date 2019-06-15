@@ -267,6 +267,8 @@ class MainActivity : AppCompatActivity(),
             }
             actionBar.setHomeAsUpIndicator(icon)
         }
+
+        showBottomNav()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
