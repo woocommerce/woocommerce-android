@@ -356,7 +356,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
 
         // Update the toolbar title
-        if (!isHidden) {
+        if (isActive) {
             activity?.title = getFragmentTitle()
         }
     }
