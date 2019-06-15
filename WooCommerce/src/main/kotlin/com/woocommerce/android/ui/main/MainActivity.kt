@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -239,9 +240,11 @@ class MainActivity : AppCompatActivity(),
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
         if (isAtNavigationRoot()) {
+            container.visibility = View.VISIBLE
             showUpIcon = false
             showCrossIcon = false
         } else {
+            container.visibility = View.INVISIBLE
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productDetailFragment,
