@@ -1,6 +1,7 @@
 2.1
 -----
 * The sign in flow has been completely revamped with new help screens and documentation to help users successfully login to the app.
+* Fixed a bug where the title of the current view may not update appropriately when navigating the app.
 
 2.0
 ----
