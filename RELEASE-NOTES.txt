@@ -1,6 +1,7 @@
 2.1
 -----
 * The sign in flow has been completely revamped with new help screens and documentation to help users successfully login to the app.
+* The orders list will now populate with cached data while it attempts to fetch fresh orders from the API.
 
 2.0
 ----
