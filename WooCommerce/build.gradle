@@ -162,6 +162,7 @@ dependencies {
     testImplementation "junit:junit:4.12"
     testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.mockito:mockito-android:$mockitoVersion"
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
