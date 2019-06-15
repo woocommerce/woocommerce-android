@@ -37,16 +37,24 @@
             android:defaultValue="false"/>
         <action
             android:id="@+id/action_orderDetailFragment_to_addOrderNoteFragment"
-            app:destination="@id/addOrderNoteFragment"/>
+            app:destination="@id/addOrderNoteFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
         <action
             android:id="@+id/action_orderDetailFragment_to_orderFulfillmentFragment"
-            app:destination="@id/orderFulfillmentFragment"/>
+            app:destination="@id/orderFulfillmentFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
         <action
             android:id="@+id/action_orderDetailFragment_to_orderProductListFragment"
-            app:destination="@id/orderProductListFragment"/>
+            app:destination="@id/orderProductListFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
         <action
             android:id="@+id/action_orderDetailFragment_to_addOrderShipmentTrackingFragment"
-            app:destination="@id/addOrderShipmentTrackingFragment"/>
+            app:destination="@id/addOrderShipmentTrackingFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"
@@ -77,7 +85,9 @@
             app:argType="boolean"/>
         <action
             android:id="@+id/action_orderFulfillmentFragment_to_addOrderShipmentTrackingFragment"
-            app:destination="@id/addOrderShipmentTrackingFragment"/>
+            app:destination="@id/addOrderShipmentTrackingFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/orderProductListFragment"
@@ -105,8 +115,16 @@
             android:name="isCustomProvider"
             app:argType="boolean"/>
     </fragment>
-    <action android:id="@+id/action_global_productDetailFragment" app:destination="@id/productDetailFragment"/>
-    <action android:id="@+id/action_global_orderDetailFragment" app:destination="@id/orderDetailFragment"/>
+    <action
+        android:id="@+id/action_global_productDetailFragment"
+        app:destination="@id/productDetailFragment"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out"/>
+    <action
+        android:id="@+id/action_global_orderDetailFragment"
+        app:destination="@id/orderDetailFragment"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out"/>
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.notifications.ReviewDetailFragment"
@@ -123,5 +141,10 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null"/>
-    </fragment><action android:id="@+id/action_global_reviewDetailFragment" app:destination="@id/reviewDetailFragment"/>
+    </fragment>
+    <action
+        android:id="@+id/action_global_reviewDetailFragment"
+        app:destination="@id/reviewDetailFragment"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out"/>
 </navigation>
