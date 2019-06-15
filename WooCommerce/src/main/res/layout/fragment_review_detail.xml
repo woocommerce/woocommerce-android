@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
+    android:fillViewport="true"
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.notifications.ReviewDetailFragment">
 
