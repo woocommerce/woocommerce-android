@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-27 13:45:21+0000
+Translation-Revision-Date: 2019-06-04 13:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -130,6 +130,7 @@ Language: ar
     <string name="notification_channel_order_title">تنبيهات الطلب الجديد</string>
     <string name="orderdetail_note_system">حالة النظام</string>
     <string name="orderdetail_note_public">ملاحظة إلى العميل</string>
+    <string name="login_verifying_site">جارٍ التحقُّق من الموقع…</string>
     <string name="button_update_instructions">إرشادات التحديث</string>
     <string name="search">بحث</string>
     <string name="refresh_button">تجديد</string>

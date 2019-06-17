@@ -75,6 +75,13 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
         return inflater.inflate(R.layout.fragment_review_detail, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Set the page title
+        activity?.title = getString(R.string.wc_review_title)
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val dimen = activity!!.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
