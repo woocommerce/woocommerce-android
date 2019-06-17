@@ -301,7 +301,6 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
      * example: May 9, 2019 -> 2019-05-09
      */
     override fun getDateShippedText(): String {
-        // TODO AMANDA - requireActivity() throws and IllegalStateException
         val dateSelected = DateUtils.getDateFromLocalizedLongDateString(
                 requireActivity(),
                 addTracking_date.text.toString())
