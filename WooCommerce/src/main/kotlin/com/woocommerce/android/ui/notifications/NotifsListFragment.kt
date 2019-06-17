@@ -209,9 +209,7 @@ class NotifsListFragment : TopLevelFragment(),
         super.onSaveInstanceState(outState)
     }
 
-    override fun onBackStackChanged() {
-        super.onBackStackChanged()
-
+    override fun onReturnedFromChildFragment() {
         if (isActive) {
             // If this fragment is now visible and we've deferred loading orders due to it not
             // being visible - go ahead and load the orders.

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 /**
  * Special interface for top-level fragments hosted by the bottom bar.
  */
-interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackStackChangedListener {
+interface TopLevelFragmentView {
     var isActive: Boolean
 
     /**
@@ -36,4 +36,9 @@ interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackSta
      * Scroll to the top of this view
      */
     fun scrollToTop()
+
+    /**
+     * User returned to this top level fragment from a non-top level fragment (ie: nav component fragment)
+     */
+    fun onReturnedFromChildFragment()
 }

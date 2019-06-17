@@ -8,12 +8,10 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.main.MainContract
 import kotlinx.android.synthetic.main.fragment_parent.*
 
 /**
- * The main fragments hosted by the bottom bar should extend this class to enforce
- * consistent navigation across top-level fragments and their children.
+ * The main fragments hosted by the bottom bar should extend this class
  */
 abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFragmentView {
     companion object {
@@ -38,11 +36,6 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
                 false
             }
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        childFragmentManager.addOnBackStackChangedListener(this)
-    }
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -91,18 +84,6 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
             val childViewActive = bundle.getBoolean(CHILD_FRAGMENT_ACTIVE, false)
             updateParentViewState(childViewActive)
         } ?: updateActivityTitle()
-    }
-
-    /**
-     * Set the top-level fragment view to [View.GONE] if a child has been added
-     * to prevent click events from passing through to the covered view.
-     *
-     * If all child views have been removed, set the top-level fragment view to
-     * [View.VISIBLE] to enable click events.
-     */
-    override fun onBackStackChanged() {
-        updateParentViewState(childFragmentManager.backStackEntryCount > 0)
-        (activity as? MainContract.View)?.showBottomNav()
     }
 
     /**

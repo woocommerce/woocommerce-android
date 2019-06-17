@@ -273,9 +273,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         super.onSaveInstanceState(outState)
     }
 
-    override fun onBackStackChanged() {
-        super.onBackStackChanged()
-
+    override fun onReturnedFromChildFragment() {
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         if (isActive) {

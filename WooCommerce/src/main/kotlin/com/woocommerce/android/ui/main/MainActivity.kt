@@ -213,9 +213,9 @@ class MainActivity : AppCompatActivity(),
      * Returns the current top level fragment (ie: the one showing in the bottom nav), or null if we've navigated
      * to another fragment in the nav component
      */
-    private fun getActiveTopLevelFragment(): Fragment? {
+    private fun getActiveTopLevelFragment(): TopLevelFragment? {
         return if (isAtNavigationRoot()) {
-            supportFragmentManager.findFragmentById(R.id.container)
+            supportFragmentManager.findFragmentById(R.id.container) as? TopLevelFragment
         } else {
             null
         }
@@ -234,17 +234,25 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * The current fragment in the nav controller has changed - make sure the actionbar's up icon is correct
+     * The current fragment in the nav controller has changed
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+        val isAtRoot = isAtNavigationRoot()
+
+        // show/hide the top level fragment container depending on whether we're at the root
+        if (isAtRoot) {
+            container.visibility = View.VISIBLE
+        } else {
+            container.visibility = View.INVISIBLE
+        }
+
+        // make sure the correct up icon appears
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
-        if (isAtNavigationRoot()) {
-            container.visibility = View.VISIBLE
+        if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
         } else {
-            container.visibility = View.INVISIBLE
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productDetailFragment,
@@ -257,7 +265,6 @@ class MainActivity : AppCompatActivity(),
                 }
             }
         }
-
         supportActionBar?.let { actionBar ->
             actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
             @DrawableRes val icon = if (showCrossIcon) {
@@ -268,7 +275,12 @@ class MainActivity : AppCompatActivity(),
             actionBar.setHomeAsUpIndicator(icon)
         }
 
+        // bottom nav should always reappear when the destination changes
         showBottomNav()
+
+        if (isAtRoot) {
+            getActiveTopLevelFragment()?.onReturnedFromChildFragment()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
