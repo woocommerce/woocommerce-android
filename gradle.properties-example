@@ -18,6 +18,10 @@ org.gradle.jvmargs=-Xmx1536m
 
 # WooCommerce for Android properties.
 
+android.useAndroidX=true
+android.enableJetifier=true
+
+
 # For more details on what these properties do visit
 # https://github.com/woocommerce/woocommerce-android/blob/develop/README.md
 
@@ -27,4 +31,4 @@ wc.zendesk_app_id = woocommerce
 wc.zendesk.domain = http://www.google.com/
 wc.zendesk.oauth_client_id = woocommerce
 wc.reset_db_on_downgrade = false
-wc.sentry.dsn = woocommerce
+wc.sentry.dsn = https://00000000000000000000000000000000@sentry.io/0000000

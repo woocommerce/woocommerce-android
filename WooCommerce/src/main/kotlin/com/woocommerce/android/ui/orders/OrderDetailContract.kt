@@ -15,6 +15,8 @@ interface OrderDetailContract {
         var orderIdentifier: OrderIdentifier?
         var isUsingCachedNotes: Boolean
         var isUsingCachedShipmentTrackings: Boolean
+        var isShipmentTrackingsFetched: Boolean
+        var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?
         fun fetchOrder(remoteOrderId: Long)
         fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
@@ -22,25 +24,27 @@ interface OrderDetailContract {
         fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel>
         fun fetchAndLoadOrderNotesFromDb()
         fun loadOrderShipmentTrackings()
+        fun getOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel>
+        fun loadShipmentTrackingsFromDb()
         fun doChangeOrderStatus(newStatus: String)
-        fun pushOrderNote(noteText: String, isCustomerNote: Boolean)
         fun markOrderNotificationRead(context: Context, remoteNoteId: Long)
         fun getOrderStatusForStatusKey(key: String): WCOrderStatusModel
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
         fun refreshOrderStatusOptions()
+        fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
     }
 
-    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener {
+    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener,
+            OrderShipmentTrackingActionListener {
         fun showOrderDetail(order: WCOrderModel?)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)
-        fun showAddOrderNoteScreen()
+        fun showAddOrderNoteScreen(order: WCOrderModel)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>)
         fun setOrderStatus(newStatus: String)
         fun showChangeOrderStatusSnackbar(newStatus: String)
         fun showNotesErrorSnack()
-        fun showAddOrderNoteSnack()
         fun showAddOrderNoteErrorSnack()
         fun showOrderStatusChangedError()
         fun markOrderStatusChangedSuccess()
@@ -49,5 +53,10 @@ interface OrderDetailContract {
         fun showLoadOrderError()
         fun refreshOrderStatus()
         fun refreshProductImages()
+        fun undoDeletedTrackingOnError(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?)
+        fun markTrackingDeletedOnSuccess()
+        fun showDeleteTrackingErrorSnack()
+        fun showAddShipmentTrackingSnack()
+        fun showAddAddShipmentTrackingErrorSnack()
     }
 }

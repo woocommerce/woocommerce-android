@@ -9,8 +9,9 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
+import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.OrderDetailModule
 import com.woocommerce.android.ui.orders.OrderFulfillmentModule
 import com.woocommerce.android.ui.orders.OrderListModule
@@ -19,7 +20,6 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
-import com.woocommerce.android.ui.products.ProductDetailActivity
 import com.woocommerce.android.ui.products.ProductDetailModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
@@ -37,9 +37,13 @@ abstract class ActivityBindingModule {
             OrderDetailModule::class,
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
+            AddOrderNoteModule::class,
             NotifsListModule::class,
+            ProductDetailModule::class,
             ReviewDetailModule::class,
-            SitePickerModule::class))
+            SitePickerModule::class,
+            AddOrderShipmentTrackingModule::class,
+            AddOrderTrackingProviderListModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
@@ -58,18 +62,10 @@ abstract class ActivityBindingModule {
     abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(AddOrderNoteModule::class))
-    abstract fun provideAddOrderNoteActivity(): AddOrderNoteActivity
-
-    @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(HelpModule::class))
     abstract fun provideHelpActivity(): HelpActivity
 
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(SitePickerModule::class))
     abstract fun provideSitePickerActivityInjector(): SitePickerActivity
-
-    @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(ProductDetailModule::class))
-    abstract fun provideProductDetailActivityInjector(): ProductDetailActivity
 }

@@ -1,18 +1,18 @@
 package com.woocommerce.android.ui.orders
 
-import android.app.Activity.RESULT_OK
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.NestedScrollView
+import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
@@ -20,12 +20,9 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_IS_CUSTOMER_NOTE
-import com.woocommerce.android.ui.orders.AddOrderNoteActivity.Companion.FIELD_NOTE_TEXT
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -35,20 +32,19 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
+class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
     companion object {
         const val TAG = "OrderDetailFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_MARK_COMPLETE = "mark-order-complete"
         const val FIELD_REMOTE_NOTE_ID = "remote-notification-id"
-        const val REQUEST_CODE_ADD_NOTE = 100
 
         fun newInstance(
             orderId: OrderIdentifier,
             remoteNoteId: Long? = null,
             markComplete: Boolean = false
-        ): Fragment {
+        ): androidx.fragment.app.Fragment {
             val args = Bundle()
             args.putString(FIELD_ORDER_IDENTIFIER, orderId)
 
@@ -68,7 +64,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             remoteOrderId: Long,
             remoteNoteId: Long? = null,
             markComplete: Boolean = false
-        ): Fragment {
+        ): androidx.fragment.app.Fragment {
             val orderIdentifier = OrderIdentifier(localSiteId, remoteOrderId)
             return newInstance(orderIdentifier, remoteNoteId, markComplete)
         }
@@ -88,6 +84,15 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     private var runOnStartFunc: (() -> Unit)? = null
 
     private var orderStatusSelector: OrderStatusSelectorDialog? = null
+
+    /**
+     * Keep track of the deleted [WCOrderShipmentTrackingModel] in case
+     * the request to server fails, we need to display an error message
+     * and add the deleted [WCOrderShipmentTrackingModel] back to the list
+     */
+    private var deleteOrderShipmentTrackingSnackbar: Snackbar? = null
+    private var deleteOrderShipmentTrackingResponseSnackbar: Snackbar? = null
+    private var deleteOrderShipmentTrackingSet = mutableSetOf<WCOrderShipmentTrackingModel>()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -129,21 +134,6 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_ADD_NOTE) {
-            if (resultCode == RESULT_OK && data != null) {
-                val noteText = data.getStringExtra(FIELD_NOTE_TEXT)
-                val isCustomerNote = data.getBooleanExtra(FIELD_IS_CUSTOMER_NOTE, false)
-                orderDetail_noteList.addTransientNote(noteText, isCustomerNote)
-                presenter.pushOrderNote(noteText, isCustomerNote)
-                AppRatingDialog.incrementInteractions()
-            } else if (resultCode == AddOrderNoteActivity.RESULT_INVALID_ORDER) {
-                uiMessageResolver.showSnack(R.string.add_order_note_invalid_order)
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     override fun onStart() {
         super.onStart()
 
@@ -164,6 +154,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun onStop() {
         changeOrderStatusSnackbar?.dismiss()
         notesSnack?.dismiss()
+        deleteOrderShipmentTrackingSnackbar?.dismiss()
+        deleteOrderShipmentTrackingSnackbar = null
+        deleteOrderShipmentTrackingResponseSnackbar?.dismiss()
+        deleteOrderShipmentTrackingResponseSnackbar = null
         super.onStop()
     }
 
@@ -181,10 +175,10 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
             val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
             orderDetail_orderStatus
                     .initView(order, orderStatus, object : OrderDetailOrderStatusView.OrderStatusListener {
-                override fun openOrderStatusSelector() {
-                    showOrderStatusSelector()
-                }
-            })
+                        override fun openOrderStatusSelector() {
+                            showOrderStatusSelector()
+                        }
+                    })
 
             // Populate the Order Product List Card
             orderDetail_productList.initView(
@@ -219,7 +213,12 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
 
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
         if (trackings.isNotEmpty()) {
-            orderDetail_shipmentList.initView(trackings, uiMessageResolver)
+            orderDetail_shipmentList.initView(
+                    trackings = trackings,
+                    uiMessageResolver = uiMessageResolver,
+                    isOrderDetail = true,
+                    shipmentTrackingActionListener = this
+            )
             if (orderDetail_shipmentList.visibility != View.VISIBLE) {
                 WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
             }
@@ -242,7 +241,7 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
     override fun openOrderFulfillment(order: WCOrderModel) {
         parentFragment?.let { router ->
             if (router is OrdersViewRouter) {
-                router.openOrderFulfillment(order)
+                router.openOrderFulfillment(order, presenter.isShipmentTrackingsFetched)
             }
         }
     }
@@ -368,31 +367,30 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         }
     }
 
-    override fun onRequestAddNote() {
-        if (!networkStatus.isConnected()) {
-            // If offline, show generic offline message and exit without opening add note screen
-            uiMessageResolver.showOfflineSnack()
-            return
+    override fun showAddOrderNoteScreen(order: WCOrderModel) {
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                router.openAddOrderNote(order)
+            }
         }
-
-        showAddOrderNoteScreen()
-    }
-
-    override fun showAddOrderNoteScreen() {
-        presenter.orderModel?.let {
-            val intent = Intent(activity, AddOrderNoteActivity::class.java)
-            intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_IDENTIFIER, it.getIdentifier())
-            intent.putExtra(AddOrderNoteActivity.FIELD_ORDER_NUMBER, it.number)
-            startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
-        }
-    }
-
-    override fun showAddOrderNoteSnack() {
-        uiMessageResolver.getSnack(R.string.add_order_note_added).show()
     }
 
     override fun showAddOrderNoteErrorSnack() {
         uiMessageResolver.getSnack(R.string.add_order_note_error).show()
+    }
+
+    /**
+     * User tapped the button to add a note, so show the add order note screen
+     */
+    override fun onRequestAddNote() {
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        presenter.orderModel?.let {
+            showAddOrderNoteScreen(it)
+        }
     }
 
     override fun markOrderStatusChangedSuccess() {
@@ -426,10 +424,121 @@ class OrderDetailFragment : Fragment(), OrderDetailContract.View, OrderDetailNot
         previousOrderStatus = null
     }
 
+    /**
+     * This method error could be because of network error
+     * or a failure to delete the shipment tracking from server api.
+     * In both cases, add the deleted item back to the shipment tracking list
+     */
+    override fun undoDeletedTrackingOnError(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?) {
+        wcOrderShipmentTrackingModel?.let {
+            orderDetail_shipmentList.undoDeleteTrackingRecord(it)
+            orderDetail_shipmentList.visibility = View.VISIBLE
+        }
+    }
+
+    override fun showDeleteTrackingErrorSnack() {
+        deleteOrderShipmentTrackingResponseSnackbar =
+                uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_error)
+        if ((deleteOrderShipmentTrackingSnackbar?.isShownOrQueued) == false) {
+            deleteOrderShipmentTrackingResponseSnackbar?.show()
+        }
+    }
+
+    override fun markTrackingDeletedOnSuccess() {
+        deleteOrderShipmentTrackingResponseSnackbar =
+                uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_success)
+        if ((deleteOrderShipmentTrackingSnackbar?.isShownOrQueued) == false) {
+            deleteOrderShipmentTrackingResponseSnackbar?.show()
+        }
+    }
+
+    override fun showAddShipmentTrackingSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_added).show()
+    }
+
+    override fun showAddAddShipmentTrackingErrorSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_error).show()
+    }
+
     override fun onOrderStatusSelected(orderStatus: String?) {
         orderStatus?.let {
             showChangeOrderStatusSnackbar(it)
         }
+    }
+
+    override fun openAddOrderShipmentTrackingScreen() {
+        AnalyticsTracker.track(ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                presenter.orderModel?.let {
+                    router.openAddOrderShipmentTracking(
+                            orderIdentifier = it.getIdentifier(),
+                            orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
+                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
+                }
+            }
+        }
+    }
+
+    override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {
+        AnalyticsTracker.track(ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED)
+        /*
+         * Check if network is available. If not display offline snack
+         * remove the shipment tracking model from the tracking list.
+         * If there are no more items on the list, hide the shipment tracking card
+         * display snackbar message with undo option
+         * if undo option is selected, add the tracking model to the list
+         * if snackbar is dismissed or times out, initiate request to delete the tracking
+        */
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        // if undo snackbar is displayed for a deleted item and user clicks on another item to delete,
+        // the first snackbar should be dismissed before displaying the second snackbar
+        if (deleteOrderShipmentTrackingSnackbar?.isShownOrQueued == true) {
+            deleteOrderShipmentTrackingSnackbar?.dismiss()
+            deleteOrderShipmentTrackingSnackbar = null
+        }
+
+        deleteOrderShipmentTrackingSet.add(item)
+        orderDetail_shipmentList.deleteTrackingProvider(item)
+        orderDetail_shipmentList.getShipmentTrackingCount()?.let {
+            if (it == 0) {
+                orderDetail_shipmentList.visibility = View.GONE
+            }
+        }
+
+        // Listener for the UNDO button in the snackbar
+        val actionListener = View.OnClickListener {
+            // User canceled the action to delete the shipment tracking
+            deleteOrderShipmentTrackingSet.remove(item)
+            orderDetail_shipmentList.undoDeleteTrackingRecord(item)
+            orderDetail_shipmentList.visibility = View.VISIBLE
+        }
+
+        val callback = object : Snackbar.Callback() {
+            // The onDismiss in snack bar is called multiple times.
+            // In order to avoid requesting delete multiple times, we are
+            // storing the deleted items in a set and removing them from the set
+            // if they are dismissed or if the request to delete the item is already initiated
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (deleteOrderShipmentTrackingSet.contains(item)) {
+                    presenter.deleteOrderShipmentTracking(item)
+                    deleteOrderShipmentTrackingSet.remove(item)
+                }
+            }
+        }
+
+        // Display snack bar with undo option here
+        deleteOrderShipmentTrackingSnackbar = uiMessageResolver
+                .getUndoSnack(R.string.order_shipment_tracking_delete_snackbar_msg, actionListener = actionListener)
+                .also {
+                    it.addCallback(callback)
+                    it.show()
+                }
     }
 
     private fun showOrderStatusSelector() {

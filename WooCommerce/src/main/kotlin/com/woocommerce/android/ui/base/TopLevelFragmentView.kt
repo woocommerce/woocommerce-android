@@ -1,23 +1,25 @@
 package com.woocommerce.android.ui.base
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.woocommerce.android.ui.orders.AddOrderNoteFragment
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderFulfillmentFragment
 import com.woocommerce.android.ui.orders.OrderProductListFragment
 import com.woocommerce.android.ui.orders.OrdersViewRouter
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 /**
  * Special interface for top-level fragments like those hosted by the bottom bar.
  * Adds an extra layer of management to ensure proper routing and handling of child
  * fragments and their associated back stack.
  */
-interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, OrdersViewRouter {
+interface TopLevelFragmentView : androidx.fragment.app.FragmentManager.OnBackStackChangedListener, OrdersViewRouter {
     var isActive: Boolean
 
     /**
@@ -27,7 +29,7 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
      * @param fragment The child fragment to load
      * @param tag The fragment tag for recovering fragment from back stack
      */
-    fun loadChildFragment(fragment: Fragment, tag: String)
+    fun loadChildFragment(fragment: androidx.fragment.app.Fragment, tag: String)
 
     /**
      * Inflate the fragment view and return to be added to the parent
@@ -74,7 +76,7 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
      *
      * @return The fragment matching the provided tag, or null if not found.
      */
-    fun getFragmentFromBackStack(tag: String): Fragment?
+    fun getFragmentFromBackStack(tag: String): androidx.fragment.app.Fragment?
 
     /**
      * Only open the order detail if the list is not actively being refreshed.
@@ -102,10 +104,10 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
         }
     }
 
-    override fun openOrderFulfillment(order: WCOrderModel) {
+    override fun openOrderFulfillment(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean) {
         val tag = OrderFulfillmentFragment.TAG
         if (!popToState(tag)) {
-            loadChildFragment(OrderFulfillmentFragment.newInstance(order), tag)
+            loadChildFragment(OrderFulfillmentFragment.newInstance(order, isUsingCachedShipmentTrackings), tag)
         }
     }
 
@@ -113,6 +115,37 @@ interface TopLevelFragmentView : FragmentManager.OnBackStackChangedListener, Ord
         val tag = OrderProductListFragment.TAG
         if (!popToState(tag)) {
             loadChildFragment(OrderProductListFragment.newInstance(order), tag)
+        }
+    }
+
+    override fun openAddOrderNote(order: WCOrderModel) {
+        val tag = AddOrderNoteFragment.TAG
+        if (!popToState(tag)) {
+            loadChildFragment(AddOrderNoteFragment.newInstance(order), tag)
+        }
+    }
+
+    override fun openAddOrderShipmentTracking(
+        orderIdentifier: OrderIdentifier,
+        orderTrackingProvider: String,
+        isCustomProvider: Boolean
+    ) {
+        val tag = AddOrderShipmentTrackingFragment.TAG
+        if (!popToState(tag)) {
+            loadChildFragment(
+                    AddOrderShipmentTrackingFragment.newInstance(
+                            orderIdentifier,
+                            orderTrackingProvider,
+                            isCustomProvider
+                    ), tag
+            )
+        }
+    }
+
+    fun openProductDetail(remoteProductId: Long) {
+        val tag = ProductDetailFragment.TAG
+        if (!popToState(tag)) {
+            loadChildFragment(ProductDetailFragment.newInstance(remoteProductId), tag)
         }
     }
 }

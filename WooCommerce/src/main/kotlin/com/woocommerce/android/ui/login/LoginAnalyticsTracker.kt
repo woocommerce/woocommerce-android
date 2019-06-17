@@ -194,4 +194,27 @@ class LoginAnalyticsTracker : LoginAnalyticsListener {
     override fun trackWpComBackgroundServiceUpdate(properties: Map<String, *>) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE, properties)
     }
+
+    override fun trackConnectedSiteInfoRequested(url: String?) {
+        AnalyticsTracker.track(
+                AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_REQUESTED,
+                mapOf(AnalyticsTracker.KEY_URL to url))
+    }
+
+    override fun trackConnectedSiteInfoFailed(
+        url: String?,
+        errorContext: String?,
+        errorType: String?,
+        errorDescription: String?
+    ) {
+        AnalyticsTracker.track(
+                AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_FAILED,
+                errorContext,
+                errorType,
+                errorDescription)
+    }
+
+    override fun trackConnectedSiteInfoSucceeded(properties: Map<String, *>) {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_SUCCEEDED, properties)
+    }
 }

@@ -5,7 +5,7 @@ import android.app.Service
 import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import android.support.multidex.MultiDexApplication
+import androidx.multidex.MultiDexApplication
 import com.android.volley.VolleyLog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability

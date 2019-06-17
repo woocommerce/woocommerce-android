@@ -62,17 +62,9 @@
             android:name=".support.WooLogViewerActivity"/>
 
         <activity
-            android:name=".ui.orders.AddOrderNoteActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize"/>
-
-        <activity
             android:name=".support.HelpActivity"
             android:label="@string/support_help"
             android:theme="@style/AppTheme" />
-
-        <activity
-            android:name=".ui.products.ProductDetailActivity"
-            android:theme="@style/ProductDetail.Activity"/>
 
         <activity
             android:name=".ui.imageviewer.ImageViewerActivity"

@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.text.format.DateUtils
 import android.view.View
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.CurrencyFormatter
@@ -187,7 +187,7 @@ class OrderListAdapter @Inject constructor(
         return 0
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         if (position == itemCount - 1) {
             loadMoreListener?.onRequestLoadMore()
@@ -218,11 +218,11 @@ class OrderListAdapter @Inject constructor(
     ) {
         override fun getContentItemsTotal() = list.size
 
-        override fun getItemViewHolder(view: View): RecyclerView.ViewHolder {
+        override fun getItemViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             return ItemViewHolder(view)
         }
 
-        override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindItemViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val order = list[position]
             val itemHolder = holder as ItemViewHolder
             val resources = itemHolder.rootView.context.applicationContext.resources
@@ -260,11 +260,11 @@ class OrderListAdapter @Inject constructor(
             }
         }
 
-        override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
+        override fun getHeaderViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             return HeaderViewHolder(view)
         }
 
-        override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
+        override fun onBindHeaderViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
             val headerViewHolder = holder as HeaderViewHolder
 
             when (TimeGroup.valueOf(title)) {

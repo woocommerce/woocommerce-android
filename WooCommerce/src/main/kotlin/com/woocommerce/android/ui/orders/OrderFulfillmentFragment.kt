@@ -2,38 +2,52 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_fulfillment.*
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import javax.inject.Inject
 
-class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
+class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
     companion object {
         const val TAG = "OrderFulfillmentFragment"
         const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_NUMBER = "order-number"
+        const val FIELD_SHIPMENT_TRACKINGS_FETCHED = "is-shipment-trackings-fetched"
 
-        fun newInstance(order: WCOrderModel): Fragment {
+        fun newInstance(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean = false): Fragment {
             val args = Bundle()
             args.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
 
             // Use for populating the title only, not for record retrieval
             args.putString(FIELD_ORDER_NUMBER, order.number)
+
+            // Used to check if the shipment trackings is using cache only. If shipment
+            // trackings list is already fetched from api in order detail, we can just
+            // fetch the same from local cache
+            args.putBoolean(FIELD_SHIPMENT_TRACKINGS_FETCHED, isUsingCachedShipmentTrackings)
 
             val fragment = OrderFulfillmentFragment()
             fragment.arguments = args
@@ -42,8 +56,19 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     }
 
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var networkStatus: NetworkStatus
+
+    /**
+     * Keep track of the deleted [WCOrderShipmentTrackingModel] in case
+     * the request to server fails, we need to display an error message
+     * and add the deleted [WCOrderShipmentTrackingModel] back to the list
+     */
+    private var deleteOrderShipmentTrackingSnackbar: Snackbar? = null
+    private var deleteOrderShipmentTrackingResponseSnackbar: Snackbar? = null
+    private var deleteOrderShipmentTrackingSet = mutableSetOf<WCOrderShipmentTrackingModel>()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -64,7 +89,12 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let { presenter.loadOrderDetail(it) }
+        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
+            presenter.loadOrderDetail(
+                    orderIdentifier = it,
+                    isShipmentTrackingsFetched = arguments?.getBoolean(FIELD_SHIPMENT_TRACKINGS_FETCHED) ?: false
+            )
+        }
 
         scrollView.setOnScrollChangeListener {
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
@@ -80,6 +110,14 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
     override fun onDestroyView() {
         presenter.dropView()
         super.onDestroyView()
+    }
+
+    override fun onStop() {
+        deleteOrderShipmentTrackingSnackbar?.dismiss()
+        deleteOrderShipmentTrackingSnackbar = null
+        deleteOrderShipmentTrackingResponseSnackbar?.dismiss()
+        deleteOrderShipmentTrackingResponseSnackbar = null
+        super.onStop()
     }
 
     override fun showOrderDetail(order: WCOrderModel) {
@@ -105,6 +143,57 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
         orderFulfill_customerInfo.initView(order, true)
 
         orderFulfill_btnComplete.setOnClickListener(this)
+    }
+
+    /**
+     * The Optional shipment tracking card should be displayed
+     * even if there are no trackings available
+     */
+    override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
+            orderFulfill_addShipmentTracking.initView(
+                    trackings = trackings,
+                    uiMessageResolver = uiMessageResolver,
+                    isOrderDetail = false,
+                    shipmentTrackingActionListener = this
+            )
+            if (orderFulfill_addShipmentTracking.visibility != View.VISIBLE) {
+                WooAnimUtils.scaleIn(orderFulfill_addShipmentTracking, WooAnimUtils.Duration.MEDIUM)
+            }
+    }
+
+    override fun showAddShipmentTrackingSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_added).show()
+    }
+
+    override fun showAddAddShipmentTrackingErrorSnack() {
+        uiMessageResolver.getSnack(R.string.order_shipment_tracking_error).show()
+    }
+
+    /**
+     * This method error could be because of network error
+     * or a failure to delete the shipment tracking from server api.
+     * In both cases, add the deleted item back to the shipment tracking list
+     */
+    override fun undoDeletedTrackingOnError(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?) {
+        wcOrderShipmentTrackingModel?.let {
+            orderFulfill_addShipmentTracking.undoDeleteTrackingRecord(it)
+        }
+    }
+
+    override fun showDeleteTrackingErrorSnack() {
+        deleteOrderShipmentTrackingResponseSnackbar =
+                uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_error)
+        if ((deleteOrderShipmentTrackingSnackbar?.isShownOrQueued) == false) {
+            deleteOrderShipmentTrackingResponseSnackbar?.show()
+        }
+    }
+
+    override fun markTrackingDeletedOnSuccess() {
+        deleteOrderShipmentTrackingResponseSnackbar =
+                uiMessageResolver.getSnack(R.string.order_shipment_tracking_delete_success)
+        if ((deleteOrderShipmentTrackingSnackbar?.isShownOrQueued) == false) {
+            deleteOrderShipmentTrackingResponseSnackbar?.show()
+        }
     }
 
     override fun onClick(v: View?) {
@@ -139,5 +228,73 @@ class OrderFulfillmentFragment : Fragment(), OrderFulfillmentContract.View, View
                 router.showProductDetail(remoteProductId)
             }
         }
+    }
+
+    override fun openAddOrderShipmentTrackingScreen() {
+        AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
+        parentFragment?.let { router ->
+            if (router is OrdersViewRouter) {
+                presenter.orderModel?.let {
+                    router.openAddOrderShipmentTracking(
+                            orderIdentifier = it.getIdentifier(),
+                            orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
+                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
+                }
+            }
+        }
+    }
+
+    override fun deleteOrderShipmentTracking(item: WCOrderShipmentTrackingModel) {
+        AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED)
+        /*
+         * Check if network is available. If not display offline snack
+         * remove the shipment tracking model from the tracking list
+         * display snackbar message with undo option
+         * if undo option is selected, add the tracking model to the list
+         * if snackbar is dismissed or times out, initiate request to delete the tracking
+         */
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
+        // if undo snackbar is displayed for a deleted item and user clicks on another item to delete,
+        // the first snackbar should be dismissed before displaying the second snackbar
+        if (deleteOrderShipmentTrackingSnackbar?.isShownOrQueued == true) {
+            deleteOrderShipmentTrackingSnackbar?.dismiss()
+            deleteOrderShipmentTrackingSnackbar = null
+        }
+
+        deleteOrderShipmentTrackingSet.add(item)
+        orderFulfill_addShipmentTracking.deleteTrackingProvider(item)
+
+        // Listener for the UNDO button in the snackbar
+        val actionListener = View.OnClickListener {
+            // User canceled the action to delete the shipment tracking
+            deleteOrderShipmentTrackingSet.remove(item)
+            orderFulfill_addShipmentTracking.undoDeleteTrackingRecord(item)
+        }
+
+        val callback = object : Snackbar.Callback() {
+            // The onDismiss in snack bar is called multiple times.
+            // In order to avoid requesting delete multiple times, we are
+            // storing the deleted items in a set and removing them from the set
+            // if they are dismissed or if the request to delete the item is already initiated
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (deleteOrderShipmentTrackingSet.contains(item)) {
+                    presenter.deleteOrderShipmentTracking(item)
+                    deleteOrderShipmentTrackingSet.remove(item)
+                }
+            }
+        }
+
+        // Display snack bar with undo option here
+        deleteOrderShipmentTrackingSnackbar = uiMessageResolver
+                .getUndoSnack(R.string.order_shipment_tracking_delete_snackbar_msg, actionListener = actionListener)
+                .also {
+                    it.addCallback(callback)
+                    it.show()
+                }
     }
 }

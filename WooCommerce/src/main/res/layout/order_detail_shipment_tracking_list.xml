@@ -16,17 +16,51 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <!-- List: Order Shipment Trackings -->
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/shipmentTrack_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
+        android:paddingLeft="@dimen/list_item_padding_start"
+        android:paddingRight="@dimen/list_item_padding_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_label"
         tools:itemCount="3"
         tools:listitem="@layout/order_detail_shipment_tracking_list_item"
         tools:targetApi="lollipop">
 
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <!-- Divider -->
+    <FrameLayout
+        android:id="@+id/shipmentTrack_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/card_item_padding_intra_h"
+        android:background="@color/list_divider"
+        android:layout_marginTop="@dimen/list_item_padding_start"
+        android:layout_marginLeft="@dimen/list_item_padding_start"
+        android:layout_marginStart="@dimen/list_item_padding_start"
+        android:layout_marginRight="@dimen/list_item_padding_start"
+        android:layout_marginEnd="@dimen/list_item_padding_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_items"
+        app:srcCompat="@drawable/list_divider"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <!-- Button: Add Tracking -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/shipmentTrack_btnAddTracking"
+        style="@style/Woo.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="@string/order_shipment_tracking_add_button"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shipmentTrack_divider"
+        tools:visibility="visible"/>
 </merge>

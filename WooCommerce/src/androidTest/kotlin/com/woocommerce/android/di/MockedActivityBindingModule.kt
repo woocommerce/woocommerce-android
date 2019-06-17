@@ -8,14 +8,17 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
+import com.woocommerce.android.ui.orders.MockedAddOrderShipmentTrackingModule
+import com.woocommerce.android.ui.orders.MockedAddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
+import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
-import com.woocommerce.android.ui.orders.OrderFulfillmentModule
-import com.woocommerce.android.ui.orders.OrderProductListModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
+import com.woocommerce.android.ui.products.MockedOrderProductListModule
+import com.woocommerce.android.ui.products.MockedProductDetailModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import com.woocommerce.android.ui.stats.MockedDashboardModule
@@ -31,10 +34,13 @@ abstract class MockedActivityBindingModule {
             MockedDashboardModule::class,
             MockedOrderListModule::class,
             MockedOrderDetailModule::class,
-            OrderProductListModule::class,
-            OrderFulfillmentModule::class,
+            MockedOrderProductListModule::class,
+            MockedOrderFulfillmentModule::class,
             NotifsListModule::class,
-            ReviewDetailModule::class))
+            ReviewDetailModule::class,
+            MockedProductDetailModule::class,
+            MockedAddOrderShipmentTrackingModule::class,
+            MockedAddOrderTrackingProviderListModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope

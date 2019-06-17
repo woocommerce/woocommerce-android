@@ -14,18 +14,20 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
+import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
-import org.wordpress.android.fluxc.action.WCOrderAction.POST_ORDER_NOTE
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
-import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 
@@ -41,7 +43,6 @@ class OrderDetailPresenterTest {
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
-    private val remoteOderId = order.remoteOrderId
     private val orderNotes = OrderTestUtils.generateOrderNotes(10, 2, 1)
     private lateinit var presenter: OrderDetailPresenter
 
@@ -167,40 +168,6 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Add an order note - Displays add note snackbar correctly`() {
-        doReturn(order).whenever(presenter).orderModel
-        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-
-        presenter.takeView(orderDetailView)
-        presenter.pushOrderNote(noteText = "Test order note #1", isCustomerNote = false)
-        verify(dispatcher, times(1)).dispatch(any<Action<PostOrderNotePayload>>())
-
-        presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = POST_ORDER_NOTE })
-        verify(orderDetailView, times(1)).showAddOrderNoteSnack()
-    }
-
-    @Test
-    fun `Display error message on add order note error`() {
-        doReturn(order).whenever(presenter).orderModel
-        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
-
-        presenter.takeView(orderDetailView)
-        presenter.pushOrderNote(noteText = "Test order note #2", isCustomerNote = false)
-        verify(dispatcher, times(1)).dispatch(any<Action<PostOrderNotePayload>>())
-
-        presenter.onOrderChanged(OnOrderChanged(0).apply {
-            causeOfChange = POST_ORDER_NOTE
-            error = OrderError()
-        })
-        verify(orderDetailView, times(1)).showAddOrderNoteErrorSnack()
-
-        // we also want to verify that notes are loaded even on error because the UI adds
-        // a transient note while the note is pushed and it won't be removed from the
-        // note list until notes are loaded
-        verify(presenter, times(1)).fetchAndLoadOrderNotesFromDb()
-    }
-
-    @Test
     fun `Do not mark order complete and just show offline message`() {
         presenter.takeView(orderDetailView)
         doReturn(false).whenever(networkStatus).isConnected()
@@ -294,5 +261,105 @@ class OrderDetailPresenterTest {
 
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+    }
+
+    @Test
+    fun `Do not request delete shipment tracking when network is not available`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        // call delete shipment tracking
+        val mockWCOrderShipmentTrackingModel = WCOrderShipmentTrackingModel(id = 1)
+        presenter.deleteOrderShipmentTracking(mockWCOrderShipmentTrackingModel)
+
+        // ensure that offline snack message is displayed
+        verify(uiMessageResolver, times(1)).showOfflineSnack()
+
+        // ensure that deleted item is added back to the list
+        verify(orderDetailView, times(1)).undoDeletedTrackingOnError(mockWCOrderShipmentTrackingModel)
+
+        // ensure that dispatcher is not invoked
+        verify(dispatcher, times(0)).dispatch(any<Action<*>>())
+    }
+
+    @Test
+    fun `Request delete shipment tracking when network is available - error`() {
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        // call delete shipment tracking
+        val trackings = OrderTestUtils.generateOrderShipmentTrackings(
+                3, order.id
+        )
+        presenter.deleteOrderShipmentTracking(trackings[0])
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<DeleteOrderShipmentTrackingPayload>>())
+
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
+            error = OrderError()
+        })
+
+        // ensure that error snack message is displayed
+        verify(orderDetailView, times(1)).showDeleteTrackingErrorSnack()
+
+        // ensure that deleted item is added back to the list
+        verify(orderDetailView, times(1)).undoDeletedTrackingOnError(trackings[0])
+    }
+
+    @Test
+    fun `Request delete shipment tracking when network is available - success`() {
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        // call delete shipment tracking
+        val trackings = OrderTestUtils.generateOrderShipmentTrackings(
+                3, order.id
+        )
+        presenter.deleteOrderShipmentTracking(trackings[0])
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<DeleteOrderShipmentTrackingPayload>>())
+
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
+        })
+
+        // ensure that success snack message is displayed
+        verify(orderDetailView, times(1)).markTrackingDeletedOnSuccess()
+    }
+
+    @Test
+    fun `Add order shipment tracking when network is available - success`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(presenter).orderModel
+
+        // mock success response
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
+        })
+
+        // verify shipment trackings is loaded from db
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
+    }
+
+    @Test
+    fun `Add order shipment tracking when network is available - error`() {
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        // mock error response
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = ADD_ORDER_SHIPMENT_TRACKING
+            error = OrderError()
+        })
+
+        // ensure that error snack message is displayed
+        verify(orderDetailView, times(1)).showAddAddShipmentTrackingErrorSnack()
+
+        // verify shipment trackings is loaded from db
+        verify(presenter, times(1)).loadShipmentTrackingsFromDb()
     }
 }

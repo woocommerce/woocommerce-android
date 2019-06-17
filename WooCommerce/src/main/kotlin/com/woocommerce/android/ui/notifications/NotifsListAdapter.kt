@@ -7,14 +7,14 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.LayerDrawable
 import android.os.Build
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
@@ -351,7 +351,7 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
 
         override fun getItemViewHolder(view: View) = ItemViewHolder(view)
 
-        override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindItemViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val notif = list[position]
             val itemHolder = holder as ItemViewHolder
             itemHolder.rating.visibility = View.GONE
@@ -415,7 +415,7 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
 
     class NotifsListItemDecoration(context: Context) : DividerItemDecoration(
             context,
-            DividerItemDecoration.HORIZONTAL
+            androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL
     ) {
         private val dividerWidth = DisplayUtils.dpToPx(context, 3).toFloat()
 
