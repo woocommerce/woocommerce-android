@@ -276,9 +276,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun onReturnedFromChildFragment() {
-        // If this fragment is now visible and we've deferred loading orders due to it not
-        // being visible - go ahead and load the orders.
-        refreshOptionsMenu()
+        showOptionsMenu(true)
+
         if (isSearching) {
             searchMenuItem?.expandActionView()
             searchView?.setQuery(searchQuery, false)
@@ -434,7 +433,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         ordersAdapter.setOrderStatusOptions(orderStatusOptions)
     }
 
+    /**
+     * We use this to clear the options menu when navigating to a child destination - otherwise this
+     * fragment's menu will continue to appear when the child is shown
+     */
+    private fun showOptionsMenu(show: Boolean) {
+        setHasOptionsMenu(show)
+        if (show) {
+            refreshOptionsMenu()
+        }
+    }
+
     override fun showOrderDetail(order: WCOrderModel) {
+        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(order.localSiteId, order.remoteOrderId)
     }
 
