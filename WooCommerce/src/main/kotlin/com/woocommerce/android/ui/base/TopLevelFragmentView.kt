@@ -38,7 +38,7 @@ interface TopLevelFragmentView {
     fun scrollToTop()
 
     /**
-     * User returned to this top level fragment from a non-top level fragment (ie: nav component fragment)
+     * User returned to this top level fragment from a nav component fragment
      */
     fun onReturnedFromChildFragment()
 }

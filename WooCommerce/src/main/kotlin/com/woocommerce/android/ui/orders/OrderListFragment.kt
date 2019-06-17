@@ -278,20 +278,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onReturnedFromChildFragment() {
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
-        if (isActive) {
-            refreshOptionsMenu()
-            if (isSearching) {
-                searchMenuItem?.expandActionView()
-                searchView?.setQuery(searchQuery, false)
-            } else {
-                presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
-            }
-            enableSearchListeners()
+        refreshOptionsMenu()
+        if (isSearching) {
+            searchMenuItem?.expandActionView()
+            searchView?.setQuery(searchQuery, false)
         } else {
-            // disable the search listeners until we return to this fragment - otherwise the query text
-            // will fire with an empty string and the collapse event will fire as we leave this fragment
-            disableSearchListeners()
-            refreshOptionsMenu()
+            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
         }
     }
 
@@ -306,8 +298,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        // silently refresh if this fragment is no longer hidden
-        if (!hidden) {
+        if (hidden) {
+            disableSearchListeners()
+        } else {
+            enableSearchListeners()
+
+            // silently refresh if this fragment is no longer hidden
             if (isSearching) {
                 presenter.searchOrders(searchQuery)
             } else {

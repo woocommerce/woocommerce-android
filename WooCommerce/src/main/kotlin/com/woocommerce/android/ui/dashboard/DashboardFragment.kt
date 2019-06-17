@@ -159,7 +159,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onReturnedFromChildFragment() {
         // If this fragment is now visible and we've deferred loading stats due to it not
         // being visible - go ahead and load the stats.
-        if (isActive && !deferInit) {
+        if (!deferInit) {
             refreshDashboard(forced = this.isRefreshPending)
         }
     }

@@ -210,15 +210,9 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun onReturnedFromChildFragment() {
-        if (isActive) {
-            // If this fragment is now visible and we've deferred loading orders due to it not
-            // being visible - go ahead and load the orders.
-            presenter.loadNotifs(forceRefresh = this.isRefreshPending)
-        } else {
-            // If this fragment is no longer visible, dismiss the pending notification
-            // moderation so it can be processed immediately.
-            changeCommentStatusSnackbar?.dismiss()
-        }
+        // If this fragment is now visible and we've deferred loading orders due to it not
+        // being visible - go ahead and load the orders.
+        presenter.loadNotifs(forceRefresh = this.isRefreshPending)
         updateMarkAllReadMenuItem()
     }
 
