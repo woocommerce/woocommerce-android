@@ -165,11 +165,13 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     }
 
     @Test
-    fun verifyOrderDetailCardViewBillingMatchesShippingPopulatedSuccessfully() {
+    fun verifyOrderDetailCardViewWithOnlyShippingPopulatedSuccessfully() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta",
-                billingCountry = "USA"
+                shippingFirstName = "Anitaa",
+                shippingLastName = "Murthy",
+                shippingAddress1 = "1234, Abs avenue",
+                shippingCountry = "USA"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -177,29 +179,46 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
-        // check if order customer info card shipping details matches this format:
-        // Anitaa Murthy
-        // 60, Fast lane, Chicago,
-        // USA
-        val billingName = appContext.getString(
+        val shippingName = appContext.getString(
                 R.string.customer_full_name,
-                mockWCOrderModel.billingFirstName, mockWCOrderModel.billingLastName
+                mockWCOrderModel.shippingFirstName, mockWCOrderModel.shippingLastName
         )
-        val billingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getBillingAddress())
-        val billingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.billingCountry)
+        val shippingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getShippingAddress())
+        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.shippingCountry)
+
+        // verify that the billing section is hidden since billing details not available
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
 
         // Assumes that the name, address and country info is available
-        val billingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(billingAddrFull)))
+        val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
+    }
 
-        // Note: the shipping address should match the billing address
-        onView(withId(R.id.customerInfo_billingAddr)).check(matches(withText(billingAddrFull)))
+    @Test
+    fun verifyOrderDetailCardViewWithNoShippingBillingPopulatedSuccessfully() {
+        // add mock data to order detail screen
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify that the billing section is hidden since billing details not available
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+
+        // no shipping available so displays empty text
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(
+                appContext.getString(R.string.orderdetail_empty_shipping_address)
+        )))
     }
 
     @Test
     fun verifyOrderDetailCardViewWithSeparateBillingPopulatedSuccessfully() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingFirstName = "Jane",
+                billingLastName = "Masterson",
                 billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta",
                 billingCountry = "USA",
                 shippingFirstName = "Anitaa",
@@ -242,9 +261,11 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     }
 
     @Test
-    fun verifyOrderDetailCardViewWithShippingForDifferentLocalePopulatedSuccessfully() {
+    fun verifyOrderDetailCardViewWithOnlyBillingPopulatedSuccessfully() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingFirstName = "Jane",
+                billingLastName = "Masterson",
                 billingAddress1 = "29, Kuppam Beach Road",
                 billingCountry = "India",
                 billingPostalCode = "600041"
@@ -268,13 +289,20 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // Assumes that the name, address and country info is available
         val billingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(billingAddrFull)))
+        onView(withId(R.id.customerInfo_billingAddr)).check(matches(withText(billingAddrFull)))
+
+        // no shipping available so displays empty text
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(
+                appContext.getString(R.string.orderdetail_empty_shipping_address)
+        )))
     }
 
     @Test
     fun verifyOrderDetailCardViewWithBillingPhonePopulatedSuccessfully() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingFirstName = "Jane",
+                billingLastName = "Masterson",
                 billingPhone = "9962789522"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
@@ -298,6 +326,8 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     fun verifyOrderDetailCardViewWithBillingPhoneForDifferentLocalePopulatedSuccessfully() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingFirstName = "Jane",
+                billingLastName = "Masterson",
                 billingPhone = "07911123456"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
@@ -333,6 +363,8 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     fun verifyDisplayPopupForCorrectPhoneNumber() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingFirstName = "Jane",
+                billingLastName = "Masterson",
                 billingPhone = "9962789422"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
@@ -364,6 +396,8 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     fun verifyDisplayPopupAndCallForCorrectPhoneNumber() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingFirstName = "Jane",
+                billingLastName = "Masterson",
                 billingPhone = "9962789422"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
@@ -392,6 +426,8 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     fun verifyDisplayPopupAndMessageForCorrectPhoneNumber() {
         // add mock data to order detail screen
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingFirstName = "Jane",
+                billingLastName = "Masterson",
                 billingPhone = "9962789422"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
@@ -420,7 +456,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     @Test
     fun verifyEmailCustomerWithCorrectEmail() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                billingFirstName = "Jane",
+                billingLastName = "Masterson"
+        )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail

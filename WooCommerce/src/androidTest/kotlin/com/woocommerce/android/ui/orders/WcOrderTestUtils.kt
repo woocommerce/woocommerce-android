@@ -155,6 +155,8 @@ object WcOrderTestUtils {
     fun generateOrderDetail(
         dateCreatedString: String = "",
         note: String = "",
+        billingFirstName: String = "",
+        billingLastName: String = "",
         billingAddress1: String = "",
         billingCountry: String = "",
         billingPostalCode: String = "",
@@ -175,8 +177,8 @@ object WcOrderTestUtils {
         refundTotal: Double = 0.00
     ): WCOrderModel {
         return WCOrderModel(2).apply {
-            billingFirstName = "Jane"
-            billingLastName = "Masterson"
+            this.billingFirstName = billingFirstName
+            this.billingLastName = billingLastName
             this.billingAddress1 = billingAddress1
             this.billingCountry = billingCountry
             this.currency = currency
