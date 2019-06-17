@@ -28,6 +28,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
         val billingAddrFull = getFullAddress(billingName, billingAddr, billingCountry)
 
+        // if shipping is empty, but billing is not, display empty text for shipping and display billing section
+        // if billing is empty, but shipping is not, hide billing section and display shipping section
+        // if both billing and shipping is empty, hide billing section and display empty text for shipping
+        // if both billing and shipping is available, display both
         if (order.hasSeparateShippingDetails()) {
             val shippingName = context
                     .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
@@ -37,10 +41,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             val shippingAddrFull = getFullAddress(shippingName, shippingAddr, shippingCountry)
             customerInfo_shippingAddr.text = shippingAddrFull
         } else {
-            customerInfo_shippingAddr.text = billingAddrFull
+            customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
         }
 
-        if (shippingOnly) {
+        if (shippingOnly || billingAddrFull.trim().isEmpty()) {
             // Only display the shipping information in this card and hide everything else.
             formatViewAsShippingOnly()
         } else {
