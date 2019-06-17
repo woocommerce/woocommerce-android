@@ -152,10 +152,13 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
             container?.getChildAt(0)?.visibility = View.VISIBLE
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
+            updateActivityTitle()
         }
     }
 
     fun updateActivityTitle() {
-        activity?.title = getFragmentTitle()
+        if (isActive) {
+            activity?.title = getFragmentTitle()
+        }
     }
 }
