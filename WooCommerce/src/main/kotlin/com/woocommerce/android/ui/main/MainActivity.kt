@@ -201,6 +201,11 @@ class MainActivity : AppCompatActivity(),
     override fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
 
     /**
+     * Return true if one of the nav component fragments is showing (the opposite of the above)
+     */
+    override fun isChildFragmentShowing() = !isAtNavigationRoot()
+
+    /**
      * Navigates to the root fragment so only the top level fragment is showing
      */
     private fun navigateToRoot() {

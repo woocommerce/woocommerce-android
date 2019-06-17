@@ -76,7 +76,7 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
         super.onSaveInstanceState(outState)
         // Save the current view state of this top-level fragment.
         (activity as? MainNavigationRouter)?. let { router ->
-            outState.putBoolean(CHILD_FRAGMENT_ACTIVE, router.isAtNavigationRoot())
+            outState.putBoolean(CHILD_FRAGMENT_ACTIVE, router.isChildFragmentShowing())
         }
     }
 
