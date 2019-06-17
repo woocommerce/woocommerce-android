@@ -139,6 +139,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun onReturnedFromChildFragment() {
+        // If this fragment is now visible and we've deferred loading stats due to it not
+        // being visible - go ahead and load the stats.
+        if (!deferInit) {
+            refreshDashboard(forced = this.isRefreshPending)
+        }
+    }
+
     override fun onStop() {
         errorSnackbar?.dismiss()
         super.onStop()
@@ -154,14 +162,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
         outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
-    }
-
-    override fun onReturnedFromChildFragment() {
-        // If this fragment is now visible and we've deferred loading stats due to it not
-        // being visible - go ahead and load the stats.
-        if (!deferInit) {
-            refreshDashboard(forced = this.isRefreshPending)
-        }
     }
 
     override fun showStats(

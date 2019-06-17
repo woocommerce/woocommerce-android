@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity(),
         if (!isAtNavigationRoot()) {
             // go no further if active fragment doesn't allow back press - we use this so fragments can
             // provide confirmation before discarding the current action, such as adding an order note
-            getActiveNavigationFragment()?.let { fragment ->
+            getActiveChildFragment()?.let { fragment ->
                 if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
                     return
                 }
@@ -215,26 +215,20 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * Returns the current top level fragment (ie: the one showing in the bottom nav), or null if we've navigated
-     * to another fragment in the nav component
+     * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
-    private fun getActiveTopLevelFragment(): TopLevelFragment? {
-        return if (isAtNavigationRoot()) {
+    private fun getActiveTopLevelFragment() =
             supportFragmentManager.findFragmentById(R.id.container) as? TopLevelFragment
-        } else {
-            null
-        }
-    }
 
     /**
      * Returns the fragment currently shown by the navigation component, or null if we're at the root
      */
-    private fun getActiveNavigationFragment(): Fragment? {
-        return if (isAtNavigationRoot()) {
-            null
-        } else {
+    private fun getActiveChildFragment(): Fragment? {
+        return if (isChildFragmentShowing()) {
             val navHostFragment = supportFragmentManager.primaryNavigationFragment
             navHostFragment?.childFragmentManager?.fragments?.get(0)
+        } else {
+            null
         }
     }
 
@@ -445,7 +439,7 @@ class MainActivity : AppCompatActivity(),
 
         // if we're at the root scroll the active fragment to the top, otherwise clear the nav's backstack
         if (isAtNavigationRoot()) {
-            (getActiveTopLevelFragment() as? TopLevelFragment)?.scrollToTop()
+            getActiveTopLevelFragment()?.scrollToTop()
         } else {
             navigateToRoot()
         }

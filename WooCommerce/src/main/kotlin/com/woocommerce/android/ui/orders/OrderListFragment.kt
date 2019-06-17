@@ -275,16 +275,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         super.onSaveInstanceState(outState)
     }
 
-    override fun onReturnedFromChildFragment() {
-        showOptionsMenu(true)
-
-        if (isSearching) {
-            searchMenuItem?.expandActionView()
-            searchView?.setQuery(searchQuery, false)
-        } else {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
-        }
-    }
 
     override fun onDestroyView() {
         disableSearchListeners()
@@ -308,6 +298,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             } else {
                 presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
             }
+        }
+    }
+
+    override fun onReturnedFromChildFragment() {
+        showOptionsMenu(true)
+
+        if (isSearching) {
+            searchMenuItem?.expandActionView()
+            searchView?.setQuery(searchQuery, false)
+        } else {
+            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
         }
     }
 
