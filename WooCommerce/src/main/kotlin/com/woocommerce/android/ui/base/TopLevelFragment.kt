@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import kotlinx.android.synthetic.main.fragment_parent.*
 
 /**
@@ -31,7 +31,7 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
     override var isActive: Boolean = false
         get() {
             return if (isAdded && !isHidden) {
-                (activity as? MainActivity)?.isAtNavigationRoot() ?: false
+                (activity as? MainNavigationRouter)?.isAtNavigationRoot() ?: false
             } else {
                 false
             }
@@ -75,7 +75,9 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // Save the current view state of this top-level fragment.
-        outState.putBoolean(CHILD_FRAGMENT_ACTIVE, childFragmentManager.backStackEntryCount > 0)
+        (activity as? MainNavigationRouter)?. let { router ->
+            outState.putBoolean(CHILD_FRAGMENT_ACTIVE, router.isAtNavigationRoot())
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
