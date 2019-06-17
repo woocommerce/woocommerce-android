@@ -275,7 +275,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         super.onSaveInstanceState(outState)
     }
 
-
     override fun onDestroyView() {
         disableSearchListeners()
         presenter.dropView()
