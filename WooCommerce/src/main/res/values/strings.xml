@@ -116,7 +116,7 @@
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
     <string name="login_need_help_finding_email">Need help finding the connected email?</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
-    <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections > Account connection%4$s</string>
+    <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections &gt; Account connection%4$s</string>
 
     <!--
         Dashboard View
@@ -447,7 +447,7 @@
     <string name="login_text_otp">Text me a code instead.</string>
     <string name="login_text_otp_another">Text me another code instead.</string>
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
-    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
+    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
     <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed. Hunt and peck no more!</string>
     <string name="login_magic_links_sent_label">Your magic link is on its way! Check your email on this device and tap the link in the email you received from WordPress.com.</string>
@@ -464,7 +464,7 @@
     <string name="login_site_address">Site address</string>
     <string name="login_site_address_help">Need help finding your site address?</string>
     <string name="login_site_address_help_title">What\'s my site address?</string>
-    <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in your web browser.</string>
+    <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
     <string name="login_site_address_more_help">Need more help?</string>
     <string name="login_checking_site_address">Checking site address</string>
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
@@ -509,7 +509,7 @@
     <string name="forgot_password">Lost your password?</string>
     <string name="error_generic">An error occurred</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
-    <string name="invalid_site_url_message">We were unable to reach this site. Make sure your site is up and running then try again.</string>
+    <string name="invalid_site_url_message">Check that the site URL entered is valid</string>
     <string name="xmlrpc_missing_method_error">Couldn\'t connect. Required XML-RPC methods are missing on the server.</string>
     <string name="xmlrpc_post_blocked_error">Couldn\'t connect. Your host is blocking POST requests, and the app needs
         that in order to communicate with your site. Contact your host to solve this problem.</string>
@@ -573,7 +573,7 @@
     <!-- Other -->
     <string name="shared_element_transition" translatable="false">shared_element</string>
     <string name="error_loading_image">Unable to load image</string>
-    <string name="login_invalid_site_url">Enter a valid URL (e.g. www.example.com)</string>
+    <string name="login_invalid_site_url">The site address you entered is invalid. Please re-enter it.</string>
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 
@@ -869,4 +869,8 @@
     <!-- Z -->
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
+    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
+    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
+    <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
+    <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
 </resources>
