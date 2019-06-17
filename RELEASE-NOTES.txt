@@ -2,6 +2,7 @@
 -----
 * The sign in flow has been completely revamped with new help screens and documentation to help users successfully login to the app.
 * The orders list will now populate with cached data while it attempts to fetch fresh orders from the API.
+* Fixed a bug where the title of the current view may not update appropriately when navigating the app.
 
 2.0
 ----

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-28 15:54:03+0000
+Translation-Revision-Date: 2019-06-05 12:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
@@ -130,6 +130,7 @@ Language: zh_CN
     <string name="notification_channel_order_title">新订单提醒</string>
     <string name="orderdetail_note_system">系统状态</string>
     <string name="orderdetail_note_public">给客户的备注</string>
+    <string name="login_verifying_site">正在验证站点…</string>
     <string name="button_update_instructions">更新说明</string>
     <string name="search">搜索</string>
     <string name="refresh_button">刷新</string>

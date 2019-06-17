@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-27 13:40:38+0000
+Translation-Revision-Date: 2019-06-04 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
@@ -130,6 +130,7 @@ Language: nl
     <string name="notification_channel_order_title">Meldingen nieuwe bestelling</string>
     <string name="orderdetail_note_system">Systeemstatus</string>
     <string name="orderdetail_note_public">Bericht aan klant</string>
+    <string name="login_verifying_site">Site wordt geverifieerd …</string>
     <string name="button_update_instructions">Update-instructies</string>
     <string name="search">Zoeken</string>
     <string name="refresh_button">Vernieuwen</string>

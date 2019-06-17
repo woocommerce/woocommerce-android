@@ -42,6 +42,7 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
+import java.util.concurrent.ExecutionException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -314,6 +315,11 @@ class NotificationHandler @Inject constructor(
                 return largeIconBitmap
             } catch (e: UnsupportedEncodingException) {
                 WooLog.e(T.NOTIFS, e)
+            } catch (e: ExecutionException) {
+                // ExecutionException happens when the image fails to load.
+                // handling the exception here to gracefully display notification, without icon
+                // instead of crashing the app
+                WooLog.e(T.NOTIFS, "Failed to load image with url $iconUrl")
             }
         }
         return null

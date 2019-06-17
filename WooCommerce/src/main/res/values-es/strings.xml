@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-27 13:43:56+0000
+Translation-Revision-Date: 2019-06-04 15:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
@@ -130,6 +130,7 @@ Language: es
     <string name="notification_channel_order_title">Alertas de nuevo pedido</string>
     <string name="orderdetail_note_system">Estado del sistema</string>
     <string name="orderdetail_note_public">Enviar la nota al cliente</string>
+    <string name="login_verifying_site">Verificando el sitio…</string>
     <string name="button_update_instructions">Actualizar instrucciones</string>
     <string name="search">Buscar</string>
     <string name="refresh_button">Actualizar</string>
