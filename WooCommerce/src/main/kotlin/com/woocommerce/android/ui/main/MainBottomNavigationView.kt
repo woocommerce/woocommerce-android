@@ -112,15 +112,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
         val fragment = navAdapter.getFragment(navPos)
         fragment.deferInit = deferInit
 
-        // Close any child fragments of active fragments, if open
-        clearFragmentBackStack(fragment)
-
         // hide previous fragment if it exists
-        // close any child fragments of previous fragments, if open before hiding
         val fragmentTransaction = fragmentManager.beginTransaction()
         previousNavPos?.let {
             val previousFragment = navAdapter.getFragment(it)
-            clearFragmentBackStack(previousFragment)
             fragmentTransaction.hide(previousFragment)
         }
 
@@ -140,27 +135,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private fun assignNavigationListeners(assign: Boolean) {
         setOnNavigationItemSelectedListener(if (assign) this else null)
         setOnNavigationItemReselectedListener(if (assign) this else null)
-    }
-
-    /**
-     * Pop all child fragments to return to the top-level view.
-     * returns true if child fragments existed.
-     */
-    private fun clearFragmentBackStack(fragment: androidx.fragment.app.Fragment?): Boolean {
-        fragment?.let {
-            // if isStateSaved is true then the fragment is added and its state has already been saved by its host.
-            if (!it.isAdded || it.isStateSaved) {
-                return false
-            }
-            with(it.childFragmentManager) {
-                if (backStackEntryCount > 0) {
-                    val firstEntry = getBackStackEntryAt(0)
-                    popBackStackImmediate(firstEntry.id, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                    return true
-                }
-            }
-        }
-        return false
     }
 
     /**
