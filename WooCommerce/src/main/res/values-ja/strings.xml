@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-27 13:42:33+0000
+Translation-Revision-Date: 2019-06-10 02:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
@@ -130,6 +130,7 @@ Language: ja_JP
     <string name="notification_channel_order_title">新規注文アラート</string>
     <string name="orderdetail_note_system">システム状況</string>
     <string name="orderdetail_note_public">お客様への通知</string>
+    <string name="login_verifying_site">サイトを認証中です…</string>
     <string name="button_update_instructions">手順を更新</string>
     <string name="search">検索</string>
     <string name="refresh_button">再読み込み</string>
