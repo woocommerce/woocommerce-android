@@ -26,7 +26,6 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
      * normal initialization until manually requested.
      */
     var deferInit: Boolean = false
-    private var runOnResumeFunc: (() -> Unit)? = null
 
     override var isActive: Boolean = false
         get() {
@@ -49,15 +48,6 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
             layout.addView(view)
         }
         return layout
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        runOnResumeFunc?.let { frag ->
-            frag.invoke()
-            runOnResumeFunc = null
-        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
