@@ -26,7 +26,8 @@
         tools:layout="@layout/fragment_order_detail">
         <argument
             android:name="orderId"
-            app:argType="string"/>
+            app:argType="string"
+            android:defaultValue='""'/>
         <argument
             android:name="remoteNoteId"
             app:argType="long"
@@ -63,11 +64,12 @@
         tools:layout="@layout/fragment_add_order_note">
         <argument
             android:name="orderId"
-            app:argType="string"/>
+            app:argType="string"
+            android:defaultValue='""'/>
         <argument
             android:name="orderNumber"
             app:argType="string"
-            />
+            android:defaultValue='""'/>
     </fragment>
     <fragment
         android:id="@+id/orderFulfillmentFragment"
@@ -76,13 +78,16 @@
         tools:layout="@layout/fragment_order_fulfillment">
         <argument
             android:name="orderId"
-            app:argType="string"/>
+            app:argType="string"
+            android:defaultValue='""'/>
         <argument
             android:name="orderNumber"
-            app:argType="string"/>
+            app:argType="string"
+            android:defaultValue='""'/>
         <argument
             android:name="isUsingCachedShipmentTrackings"
-            app:argType="boolean"/>
+            app:argType="boolean"
+            android:defaultValue="false"/>
         <action
             android:id="@+id/action_orderFulfillmentFragment_to_addOrderShipmentTrackingFragment"
             app:destination="@id/addOrderShipmentTrackingFragment"
@@ -95,10 +100,12 @@
         android:label="OrderProductListFragment">
         <argument
             android:name="orderId"
-            app:argType="string"/>
+            app:argType="string"
+            android:defaultValue='""'/>
         <argument
             android:name="orderNumber"
-            app:argType="string"/>
+            app:argType="string"
+            android:defaultValue='""'/>
     </fragment>
     <fragment
         android:id="@+id/addOrderShipmentTrackingFragment"
@@ -107,13 +114,17 @@
         tools:layout="@layout/fragment_add_shipment_tracking">
         <argument
             android:name="orderId"
-            app:argType="string"/>
+            app:argType="string"
+            android:defaultValue='""'/>
         <argument
             android:name="orderTrackingProvider"
-            app:argType="string"/>
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
         <argument
             android:name="isCustomProvider"
-            app:argType="boolean"/>
+            app:argType="boolean"
+            android:defaultValue="false"/>
     </fragment>
     <action
         android:id="@+id/action_global_productDetailFragment"
@@ -132,10 +143,12 @@
         tools:layout="@layout/fragment_review_detail">
         <argument
             android:name="remoteNoteId"
-            app:argType="long"/>
+            app:argType="long"
+            android:defaultValue="0L"/>
         <argument
             android:name="remoteCommentId"
-            app:argType="long"/>
+            app:argType="long"
+            android:defaultValue="0L"/>
         <argument
             android:name="tempStatus"
             app:argType="string"
