@@ -446,6 +446,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun showOrderDetail(order: WCOrderModel) {
+        disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(order.localSiteId, order.remoteOrderId)
     }
