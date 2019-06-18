@@ -254,7 +254,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         empty_view.setSiteToShare(selectedSite.get(), Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         if (isActive && !deferInit) {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending, isFirstRun = true)
         }
 
         listState?.let {
@@ -323,6 +323,18 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
     }
 
+    override fun showRefreshingIndicator(show: Boolean) {
+        orderRefreshLayout?.isRefreshing = show
+    }
+
+    override fun showLoading(show: Boolean) {
+        if (ordersAdapter.itemCount > 0) {
+            showRefreshingIndicator(show)
+        } else {
+            showSkeleton(show)
+        }
+    }
+
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
         orderStatusFilter = filterByStatus
 
@@ -340,7 +352,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
 
         // Update the toolbar title
-        if (!isHidden) {
+        if (isActive) {
             activity?.title = getFragmentTitle()
         }
     }
