@@ -30,6 +30,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
@@ -220,8 +221,14 @@ class MainActivity : AppCompatActivity(),
     /**
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
-    private fun getActiveTopLevelFragment() =
-            supportFragmentManager.findFragmentById(R.id.container) as? TopLevelFragment
+    private fun getActiveTopLevelFragment(): TopLevelFragment? {
+        val tag = when (bottomNavView.currentPosition) {
+            DASHBOARD -> DashboardFragment.TAG
+            ORDERS -> OrderListFragment.TAG
+            NOTIFICATIONS -> NotifsListFragment.TAG
+        }
+        return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
+    }
 
     /**
      * Returns the fragment currently shown by the navigation component, or null if we're at the root
@@ -415,9 +422,9 @@ class MainActivity : AppCompatActivity(),
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_SELECTED
-            ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_SELECTED
-            NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
+            DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_SELECTED
+            ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
+            NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -434,13 +441,13 @@ class MainActivity : AppCompatActivity(),
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_RESELECTED
-            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
-            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
+            DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
+            ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
+            NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
-        // if we're at the root scroll the active fragment to the top, otherwise clear the nav's backstack
+        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
         if (isAtNavigationRoot()) {
             getActiveTopLevelFragment()?.scrollToTop()
         } else {
