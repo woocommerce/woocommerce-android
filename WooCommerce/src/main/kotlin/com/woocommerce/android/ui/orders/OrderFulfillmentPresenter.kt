@@ -24,18 +24,21 @@ import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACK
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
 class OrderFulfillmentPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus
@@ -115,6 +118,28 @@ class OrderFulfillmentPresenter @Inject constructor(
             val trackings = getShipmentTrackingsFromDb(order)
             orderView?.showOrderShipmentTrackings(trackings)
         }
+    }
+
+    /**
+     * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
+     * and if product exists in the local cache.
+     */
+    override fun isVirtualProduct(lineItems: List<LineItem>): Boolean {
+        if (lineItems.isNullOrEmpty()) {
+            return false
+        }
+
+        val remoteProductIds: List<Long> = lineItems.filter { it.productId != null }.map { it.productId!! }
+        if (remoteProductIds.isNullOrEmpty()) {
+            return false
+        }
+
+        val productModels = productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+        if (productModels.isNullOrEmpty()) {
+            return false
+        }
+
+        return productModels.filter { !it.virtual }.count() == 0
     }
 
     override fun markOrderComplete() {

@@ -140,7 +140,14 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
         }
 
         // Populate the Customer Information Card
-        orderFulfill_customerInfo.initView(order, true)
+        // check if product is a virtual product. If it is, hide the shipping details card
+        if (presenter.isVirtualProduct(order.getLineItemList())) {
+            orderFulfill_customerInfo.visibility = View.GONE
+        } else {
+            // Populate the Customer Information Card
+            orderFulfill_customerInfo.visibility = View.VISIBLE
+            orderFulfill_customerInfo.initView(order, false)
+        }
 
         orderFulfill_btnComplete.setOnClickListener(this)
     }
