@@ -77,7 +77,8 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         order: WCOrderModel,
         orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings(),
         isNetworkConnected: Boolean = false,
-        onOrderChanged: OnOrderChanged? = null
+        onOrderChanged: OnOrderChanged? = null,
+        isVirtualProduct: Boolean = false
     ) {
         setOrderDetailWithMockData(
                 order = order, orderShipmentTrackings = orderShipmentTrackings, onOrderChanged = onOrderChanged
@@ -86,6 +87,7 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         MockedOrderFulfillmentModule.setOrderShipmentTrackings(orderShipmentTrackings)
         MockedOrderFulfillmentModule.setNetworkConnected(isNetworkConnected)
         MockedOrderFulfillmentModule.setOnOrderChanged(onOrderChanged)
+        MockedOrderFulfillmentModule.setIsVirtualProduct(isVirtualProduct)
     }
 
     /**

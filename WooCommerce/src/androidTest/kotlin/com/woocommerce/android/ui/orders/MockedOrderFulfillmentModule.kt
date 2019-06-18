@@ -19,15 +19,18 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
+import org.wordpress.android.fluxc.store.WCProductStore
 
 @Module
 abstract class MockedOrderFulfillmentModule {
     @Module
     companion object {
         private var order: WCOrderModel? = null
+        private var isVirtualProduct: Boolean = false
         private var isNetworkConnected: Boolean = false
         private var onOrderChanged: OnOrderChanged? = null
         private var orderShipmentTrackings: List<WCOrderShipmentTrackingModel>? = null
@@ -38,6 +41,10 @@ abstract class MockedOrderFulfillmentModule {
 
         fun setNetworkConnected(isNetworkConnected: Boolean) {
             this.isNetworkConnected = isNetworkConnected
+        }
+
+        fun setIsVirtualProduct(isVirtualProduct: Boolean) {
+            this.isVirtualProduct = isVirtualProduct
         }
 
         fun setOnOrderChanged(onOrderChanged: OnOrderChanged?) {
@@ -66,6 +73,10 @@ abstract class MockedOrderFulfillmentModule {
             val mockedOrderFulfillmentPresenter = spy(OrderFulfillmentPresenter(
                     mockDispatcher,
                     WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
+                    WCProductStore(
+                            mockDispatcher,
+                            ProductRestClient(mockContext, mockDispatcher, mock(), mock(), mock())
+                    ),
                     mockSelectedSite,
                     mock(),
                     mockNetworkStatus
@@ -77,6 +88,7 @@ abstract class MockedOrderFulfillmentModule {
              */
             doReturn(SiteModel()).whenever(mockSelectedSite).get()
             doReturn(isNetworkConnected).whenever(mockNetworkStatus).isConnected()
+            doReturn(isVirtualProduct).whenever(mockedOrderFulfillmentPresenter).isVirtualProduct(any())
             doReturn(true).whenever(mockedOrderFulfillmentPresenter).isShipmentTrackingsFetched
             doReturn(order).whenever(mockedOrderFulfillmentPresenter).getOrderDetailFromDb(any())
             doReturn(orderShipmentTrackings).whenever(mockedOrderFulfillmentPresenter)

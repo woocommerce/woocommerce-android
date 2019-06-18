@@ -5,7 +5,9 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
+import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -178,5 +180,33 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         if (!shippingAddr.isBlank()) shippingAddrFull += "$shippingAddr\n"
         if (!shippingCountry.isBlank()) shippingAddrFull += shippingCountry
         onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardHiddenWhenProductVirtual() {
+        // add mock data to order detail screen
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel, isVirtualProduct = true)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderDetail_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardDisplayedProductNotVirtual() {
+        // add mock data to order detail screen
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel, isVirtualProduct = false)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderDetail_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
     }
 }
