@@ -58,6 +58,7 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
      * Helper method to update the network status for the current fragment to test
      * offline scenarios
      */
+    // TODO: fix this to work with navigation component
     private fun getOrderFulfillmentFragment(): OrderFulfillmentFragment? {
         val orderListFragment = activityTestRule.activity.supportFragmentManager
                 .findFragmentByTag(OrderListFragment.TAG) as? OrderListFragment

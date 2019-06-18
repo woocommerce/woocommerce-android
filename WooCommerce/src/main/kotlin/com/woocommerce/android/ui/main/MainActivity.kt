@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity(),
         AppRatingDialog.showIfNeeded(this)
 
         // it's important to set this listener last, otherwise if the activity is recreated the listener will fire
-        // before we've had a chance to initialize the bottom nav fragments
+        // before we've had a chance to initialize the bottom nav fragments (resulting in a crash)
         navController.addOnDestinationChangedListener(this)
     }
 
