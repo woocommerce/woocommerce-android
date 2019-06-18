@@ -438,4 +438,32 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
                 Uri.parse("mailto:${mockWCOrderModel.billingEmail}")
         )))
     }
+
+    @Test
+    fun verifyCustomerInfoCardHiddenWhenProductVirtual() {
+        // add mock data to order detail screen
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel, isVirtualProduct = true)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderDetail_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardDisplayedProductNotVirtual() {
+        // add mock data to order detail screen
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel, isVirtualProduct = false)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderDetail_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
+    }
 }

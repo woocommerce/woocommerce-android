@@ -58,7 +58,8 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         orderNotes: List<WCOrderNoteModel> = WcOrderTestUtils.generateSampleNotes(),
         orderShipmentTrackings: List<WCOrderShipmentTrackingModel> = WcOrderTestUtils.generateOrderShipmentTrackings(),
         isNetworkConnected: Boolean = false,
-        onOrderChanged: OnOrderChanged? = null
+        onOrderChanged: OnOrderChanged? = null,
+        isVirtualProduct: Boolean = false
     ) {
         MockedOrderDetailModule.setOrderInfo(order)
         MockedOrderDetailModule.setOrderStatus(orderStatus)
@@ -66,6 +67,7 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
         MockedOrderDetailModule.setOrderShipmentTrackings(orderShipmentTrackings)
         MockedOrderDetailModule.setNetworkConnected(isNetworkConnected)
         MockedOrderDetailModule.setOnOrderChanged(onOrderChanged)
+        MockedOrderDetailModule.setIsVirtualProduct(isVirtualProduct)
     }
 
     /**
