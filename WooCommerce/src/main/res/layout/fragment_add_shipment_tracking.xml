@@ -51,8 +51,7 @@
                 android:paddingLeft="0dp"
                 android:paddingRight="0dp"
                 android:paddingStart="0dp"
-                android:paddingTop="@dimen/default_padding"
-                />
+                android:paddingTop="@dimen/default_padding"/>
 
             <View
                 android:id="@+id/addTracking_editCarrierDivider"
@@ -167,6 +166,8 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/addTracking_date"
                 style="@style/Woo.OrderTracking.Add.EditText"
+                android:background="?android:attr/selectableItemBackground"
+                android:backgroundTint="@color/list_divider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="top"
@@ -177,7 +178,9 @@
                 android:paddingRight="0dp"
                 android:paddingStart="0dp"
                 android:textColor="@color/edit_text_text_color"
-                tools:text="May 8, 2019"/>
+                tools:text="May 8, 2019"
+                android:paddingTop="@dimen/default_padding"
+                android:paddingBottom="@dimen/default_padding"/>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

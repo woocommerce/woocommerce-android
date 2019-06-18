@@ -75,6 +75,11 @@ google-services.json
 # Silver Searcher ignore file
 .agignore
 
+# VSCode
+.settings
+.classpath
+.project
+
 # Fastlane
 fastlane/README.md
 fastlane/report.xml
