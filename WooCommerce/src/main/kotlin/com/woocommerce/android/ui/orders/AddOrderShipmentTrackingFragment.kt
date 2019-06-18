@@ -18,14 +18,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TR
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_shipment_tracking.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.utils.DateUtils
 import java.util.Calendar
 import javax.inject.Inject
+import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
 class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOrderShipmentTrackingContract.View,
         AddOrderTrackingProviderActionListener, BackPressListener {
@@ -89,7 +90,7 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
             }
         } else {
             isSelectedProviderCustom = navArgs.isCustomProvider
-            val dateShipped = DateUtils.getCurrentDateString()
+            val dateShipped = FluxCDateUtils.getCurrentDateString()
             displayFormatDateShippedText(dateShipped)
         }
 
@@ -110,7 +111,7 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
         // When date field is clicked, open calendar dialog with default date set to
         // current date if no date was previously selected
         addTracking_date.setOnClickListener {
-            val calendar = DateUtils.getCalendarInstance(getDateShippedText())
+            val calendar = FluxCDateUtils.getCalendarInstance(getDateShippedText())
             dateShippedPickerDialog = DatePickerDialog(requireActivity(),
                     DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                         val actualMonth = month + 1
@@ -272,9 +273,17 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
         }
     }
 
+    /**
+     * Formats the localized date string and returns it in the format of yyyy-MM-dd
+     * for use with the API.
+     *
+     * example: May 9, 2019 -> 2019-05-09
+     */
     override fun getDateShippedText(): String {
-        // format displayed date to YYY-MM-dd i.e. from May 9, 2019 -> 2019-05-09
-        return com.woocommerce.android.util.DateUtils.getDateString(addTracking_date.text.toString())
+        val dateSelected = DateUtils.getDateFromLocalizedLongDateString(
+                requireActivity(),
+                addTracking_date.text.toString())
+        return DateUtils.getYearMonthDayStringFromDate(dateSelected)
     }
 
     override fun onTrackingProviderSelected(selectedCarrierName: String) {
@@ -308,7 +317,7 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
 
     private fun displayFormatDateShippedText(dateString: String) {
         context?.let {
-            addTracking_date.text = com.woocommerce.android.util.DateUtils.getLocalizedLongDateString(
+            addTracking_date.text = DateUtils.getLocalizedLongDateString(
                     it,
                     dateString
             )
