@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.notifications
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.CommentModel
+import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 
 interface NotifsListContract {
@@ -15,7 +16,7 @@ interface NotifsListContract {
         fun hasUnreadNotifs(): Boolean
     }
 
-    interface View : BaseView<Presenter>, ReviewActionListener {
+    interface View : BaseView<Presenter> {
         var isRefreshPending: Boolean
 
         fun showNotifications(notifsList: List<NotificationModel>, isFreshData: Boolean)
@@ -31,5 +32,6 @@ interface NotifsListContract {
         fun showMarkAllNotificationsReadError()
         fun showMarkAllNotificationsReadSuccess()
         fun updateMarkAllReadMenuItem()
+        fun moderateComment(remoteNoteId: Long, comment: CommentModel, newStatus: CommentStatus)
     }
 }

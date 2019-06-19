@@ -31,6 +31,7 @@ import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
+import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
@@ -42,6 +43,8 @@ import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContract.View {
+    class OnRequestModerateReviewEvent(val remoteNoteId: Long, val comment: CommentModel, val newStatus: CommentStatus)
+
     @Inject lateinit var presenter: ReviewDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
@@ -244,20 +247,11 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
     }
 
     private fun processCommentModeration(newStatus: CommentStatus) {
-        parentFragment?.let { listener ->
-            if (listener is ReviewActionListener) {
-                presenter.comment?.let {
-                    listener.moderateComment(remoteNoteId, it, newStatus)
-                }
-
-                // Close this fragment
-                findNavController().popBackStack()
-            } else {
-                WooLog.e(NOTIFICATIONS, "ParentFragment must implement ReviewActionListener to " +
-                        "moderate product review notifications!")
-
-                uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
-            }
+        // post an event to tell the notification list to moderate this comment then close this fragment
+        presenter.comment?.let { comment ->
+            val event = OnRequestModerateReviewEvent(remoteNoteId, comment, newStatus)
+            EventBus.getDefault().post(event)
+            findNavController().popBackStack()
         }
     }
 
