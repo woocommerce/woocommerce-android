@@ -90,7 +90,6 @@ class NotifsListFragment : TopLevelFragment(),
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_notifs_list_fragment, menu)
         menuMarkAllRead = menu?.findItem(R.id.menu_mark_all_read)
-
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -201,6 +200,14 @@ class NotifsListFragment : TopLevelFragment(),
         super.onPrepareOptionsMenu(menu)
     }
 
+    /**
+     * We use this to clear the options menu when navigating to a child destination - otherwise this
+     * fragment's menu will continue to appear when the child is shown
+     */
+    private fun showOptionsMenu(show: Boolean) {
+        setHasOptionsMenu(show)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = notifsList.layoutManager?.onSaveInstanceState()
 
@@ -213,6 +220,7 @@ class NotifsListFragment : TopLevelFragment(),
         // If this fragment is now visible and we've deferred loading orders due to it not
         // being visible - go ahead and load the orders.
         presenter.loadNotifs(forceRefresh = this.isRefreshPending)
+        showOptionsMenu(true)
         updateMarkAllReadMenuItem()
     }
 
@@ -276,6 +284,7 @@ class NotifsListFragment : TopLevelFragment(),
                     AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                             AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
                             AnalyticsTracker.KEY_ALREADY_READ to notification.read))
+                    showOptionsMenu(false)
                     (activity as? MainNavigationRouter)?.showOrderDetail(
                             selectedSite.get().id,
                             it,
@@ -308,6 +317,7 @@ class NotifsListFragment : TopLevelFragment(),
                 notification.getCommentId(),
                 tempStates
         )
+        showOptionsMenu(false)
         findNavController().navigate(action)
     }
 
