@@ -7,7 +7,6 @@
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
-        android:label="fragment_product_detail"
         tools:layout="@layout/fragment_product_detail">
         <argument
             android:name="remoteProductId"
@@ -17,12 +16,10 @@
     <fragment
         android:id="@+id/rootFragment"
         android:name="com.woocommerce.android.ui.main.RootFragment"
-        android:label="fragment_root"
         tools:layout="@layout/fragment_root"/>
     <fragment
         android:id="@+id/orderDetailFragment"
         android:name="com.woocommerce.android.ui.orders.OrderDetailFragment"
-        android:label="fragment_order_detail"
         tools:layout="@layout/fragment_order_detail">
         <argument
             android:name="orderId"
@@ -60,7 +57,6 @@
     <fragment
         android:id="@+id/addOrderNoteFragment"
         android:name="com.woocommerce.android.ui.orders.AddOrderNoteFragment"
-        android:label="fragment_add_order_note"
         tools:layout="@layout/fragment_add_order_note">
         <argument
             android:name="orderId"
@@ -74,7 +70,6 @@
     <fragment
         android:id="@+id/orderFulfillmentFragment"
         android:name="com.woocommerce.android.ui.orders.OrderFulfillmentFragment"
-        android:label="fragment_order_fulfillment"
         tools:layout="@layout/fragment_order_fulfillment">
         <argument
             android:name="orderId"
@@ -96,8 +91,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderProductListFragment"
-        android:name="com.woocommerce.android.ui.orders.OrderProductListFragment"
-        android:label="OrderProductListFragment">
+        android:name="com.woocommerce.android.ui.orders.OrderProductListFragment">
         <argument
             android:name="orderId"
             app:argType="string"
@@ -110,7 +104,6 @@
     <fragment
         android:id="@+id/addOrderShipmentTrackingFragment"
         android:name="com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment"
-        android:label="fragment_add_shipment_tracking"
         tools:layout="@layout/fragment_add_shipment_tracking">
         <argument
             android:name="orderId"
@@ -139,7 +132,6 @@
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.notifications.ReviewDetailFragment"
-        android:label="fragment_review_detail"
         tools:layout="@layout/fragment_review_detail">
         <argument
             android:name="remoteNoteId"
