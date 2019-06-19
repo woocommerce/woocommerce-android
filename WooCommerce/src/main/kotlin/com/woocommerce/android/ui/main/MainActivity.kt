@@ -568,6 +568,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
+        // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
+        // detail fragment and then show a new one
+        if (markComplete) {
+            navController.popBackStack(R.id.orderDetailFragment, true)
+        }
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigate(action)
