@@ -2,21 +2,20 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.design.widget.AppBarLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -37,23 +36,27 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
-import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_product_detail.*
+import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
-class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, RequestListener<Drawable> {
+class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailContract.View, RequestListener<Drawable> {
     companion object {
         const val TAG = "ProductDetailFragment"
         private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
 
-        fun show(context: Context, remoteProductId: Long) {
-            val intent = Intent(context, ProductDetailActivity::class.java)
-            intent.putExtra(ARG_REMOTE_PRODUCT_ID, remoteProductId)
-            context.startActivity(intent)
+        fun newInstance(remoteProductId: Long): ProductDetailFragment {
+            val args = Bundle().also {
+                it.putLong(ARG_REMOTE_PRODUCT_ID, remoteProductId)
+            }
+
+            val fragment = ProductDetailFragment()
+            fragment.arguments = args
+            return fragment
         }
     }
 
@@ -70,64 +73,36 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
 
     private var remoteProductId = 0L
     private var productTitle = ""
+    private var activityTitle = ""
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
-    private var collapsingToolbarEnabled = true
     private val skeletonView = SkeletonView()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
 
-        setContentView(R.layout.activity_product_detail)
+        activity?.let {
+            activityTitle = it.title.toString()
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+        }
 
-        setSupportActionBar(toolbar as Toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-        adjustToolbar()
-
-        // make image height a percentage of screen height, adjusting for landscape
-        val displayHeight = DisplayUtils.getDisplayPixelHeight(this)
-        val multiplier = if (DisplayUtils.isLandscape(this)) 0.6f else 0.4f
-        imageHeight = (displayHeight * multiplier).toInt()
-        productDetail_image.layoutParams.height = imageHeight
-
-        // set the height of the gradient scrim that appears atop the image
-        imageScrim.layoutParams.height = imageHeight / 3
-
-        presenter.takeView(this)
-
-        remoteProductId = savedInstanceState?.getLong(ARG_REMOTE_PRODUCT_ID) ?: intent.getLongExtra(
-                ARG_REMOTE_PRODUCT_ID,
-                0L
-        )
-
-        presenter.loadProductDetail(remoteProductId)
-
-        // only show title when toolbar is collapsed
-        app_bar_layout.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
-            var scrollRange = -1
-
-            override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-                if (collapsingToolbarEnabled) {
-                    if (scrollRange == -1) {
-                        scrollRange = appBarLayout.totalScrollRange
-                    }
-                    if (scrollRange + verticalOffset == 0) {
-                        collapsing_toolbar.title = productTitle
-                    } else {
-                        collapsing_toolbar.title = " " // space between double quotes is on purpose
-                    }
-                }
-            }
-        })
+        return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
-    override fun onDestroy() {
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
+    override fun onDestroyView() {
+        activity?.let {
+            it.title = activityTitle
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+        }
         presenter.dropView()
-        super.onDestroy()
+        super.onDestroyView()
     }
 
     override fun onResume() {
@@ -135,14 +110,27 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         AnalyticsTracker.trackViewShown(this)
     }
 
-    public override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putLong(ARG_REMOTE_PRODUCT_ID, remoteProductId)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        // make image height a percentage of screen height, adjusting for landscape
+        val displayHeight = DisplayUtils.getDisplayPixelHeight(activity!!)
+        val multiplier = if (DisplayUtils.isLandscape(activity!!)) 0.5f else 0.3f
+        imageHeight = (displayHeight * multiplier).toInt()
+        productDetail_image.layoutParams.height = imageHeight
+
+        // set the height of the gradient scrim that appears atop the image
+        imageScrim.layoutParams.height = imageHeight / 3
+
+        remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
+
+        presenter.takeView(this)
+        presenter.loadProductDetail(remoteProductId)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_share, menu)
-        return true
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        menu?.clear()
+        inflater?.inflate(R.menu.menu_share, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -152,17 +140,13 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
                 shareProduct()
                 true
             }
-            item?.itemId == android.R.id.home -> {
-                onBackPressed()
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun showFetchProductError() {
         uiMessageResolver.showSnack(R.string.product_detail_fetch_product_error)
-        onBackPressed()
+        activity?.onBackPressed()
     }
 
     override fun showSkeleton(show: Boolean) {
@@ -175,7 +159,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
     }
 
     override fun showProduct(product: WCProductModel) {
-        if (isFinishing) return
+        if (!isAdded) return
 
         productTitle = when (ProductType.fromString(product.type)) {
             EXTERNAL -> getString(R.string.product_name_external, product.name)
@@ -190,15 +174,17 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             }
         }
 
+        activity?.title = productTitle
+
         isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
 
         val imageUrl = product.getFirstImageUrl()
         if (imageUrl != null) {
-            val width = DisplayUtils.getDisplayPixelWidth(this)
-            val height = DisplayUtils.getDisplayPixelHeight(this)
+            val width = DisplayUtils.getDisplayPixelWidth(activity!!)
+            val height = DisplayUtils.getDisplayPixelHeight(activity!!)
             val imageSize = Math.max(width, height)
             productImageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
-            GlideApp.with(this)
+            GlideApp.with(activity!!)
                     .load(productImageUrl)
                     .error(R.drawable.ic_product)
                     .placeholder(R.drawable.product_detail_image_background)
@@ -214,22 +200,8 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         ProductStatus.fromString(product.status)?.let { status ->
             if (status != ProductStatus.PUBLISH) {
                 frameStatusBadge.visibility = View.VISIBLE
-                textStatusBadge.text = status.toString(this)
+                textStatusBadge.text = status.toString(activity!!)
             }
-        }
-
-        // if there's no product image we should disable the collapsible toolbar and move the badge's parent frame
-        // to the scrolling container
-        if (imageUrl == null && collapsingToolbarEnabled) {
-            collapsingToolbarEnabled = false
-            val params = collapsing_toolbar.getLayoutParams() as AppBarLayout.LayoutParams
-            params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
-            collapsing_toolbar.setLayoutParams(params)
-            collapsing_toolbar.isTitleEnabled = false
-            toolbar.title = productTitle
-            frameStatusBadge.background = ColorDrawable(ContextCompat.getColor(this, R.color.wc_grey_light))
-            (frameStatusBadge.parent as ViewGroup).removeView(frameStatusBadge)
-            productDetail_container.addView(frameStatusBadge)
         }
 
         addPrimaryCard(product)
@@ -400,7 +372,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         val propertyTag = "{$propertyName}_tag"
         var propertyView = container.findViewWithTag<WCProductPropertyView>(propertyTag)
         if (propertyView == null) {
-            propertyView = WCProductPropertyView(this)
+            propertyView = WCProductPropertyView(activity!!)
             propertyView.tag = propertyTag
             container.addView(propertyView)
         }
@@ -449,7 +421,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         var linkView = container.findViewWithTag<WCProductPropertyLinkView>(linkViewTag)
 
         if (linkView == null) {
-            linkView = WCProductPropertyLinkView(this)
+            linkView = WCProductPropertyLinkView(activity!!)
             linkView.tag = linkViewTag
             container.addView(linkView)
         }
@@ -471,7 +443,7 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         var readMoreView = container.findViewWithTag<WCProductPropertyReadMoreView>(readMoreTag)
 
         if (readMoreView == null) {
-            readMoreView = WCProductPropertyReadMoreView(this)
+            readMoreView = WCProductPropertyReadMoreView(activity!!)
             readMoreView.tag = readMoreTag
             container.addView(readMoreView)
         }
@@ -490,10 +462,10 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
 
         // add a divider above the card if this isn't the first card
         if (card != DetailCard.Primary) {
-            addCardDividerView(this)
+            addCardDividerView(activity!!)
         }
 
-        val cardView = WCProductPropertyCardView(this)
+        val cardView = WCProductPropertyCardView(activity!!)
         cardView.tag = cardTag
 
         val cardViewCaption: String? = when (card) {
@@ -532,18 +504,6 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
             }
             val title = resources.getText(R.string.product_share_dialog_title)
             startActivity(Intent.createChooser(shareIntent, title))
-        }
-    }
-
-    /*
-     * adjust the toolbar so it doesn't overlap the status bar
-     */
-    private fun adjustToolbar() {
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            val statusHeight = resources.getDimensionPixelSize(resourceId)
-            toolbar.layoutParams.height += statusHeight
-            toolbar.setPadding(0, statusHeight, 0, 0)
         }
     }
 
@@ -597,7 +557,12 @@ class ProductDetailActivity : AppCompatActivity(), ProductDetailContract.View, R
         productImageUrl?.let { imageUrl ->
             productDetail_image.setOnClickListener {
                 AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                ImageViewerActivity.show(this, imageUrl, title = productTitle, sharedElement = productDetail_image)
+                ImageViewerActivity.show(
+                        activity!!,
+                        imageUrl,
+                        title = productTitle,
+                        sharedElement = productDetail_image
+                )
             }
         }
         return false

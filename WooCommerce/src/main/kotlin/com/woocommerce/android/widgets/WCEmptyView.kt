@@ -2,10 +2,10 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.content.res.Configuration
-import android.support.annotation.StringRes
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils

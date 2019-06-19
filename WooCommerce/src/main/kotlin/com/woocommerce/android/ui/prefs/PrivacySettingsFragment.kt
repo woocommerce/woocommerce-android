@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,15 +18,11 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_privacy.*
 import javax.inject.Inject
 
-class PrivacySettingsFragment : Fragment(), PrivacySettingsContract.View {
+class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySettingsContract.View {
     companion object {
         const val TAG = "privacy-settings"
         private const val URL_PRIVACY_POLICY = "https://www.automattic.com/privacy"
         private const val URL_COOKIE_POLICY = "https://www.automattic.com/cookies"
-
-        fun newInstance(): PrivacySettingsFragment {
-            return PrivacySettingsFragment()
-        }
     }
 
     @Inject lateinit var presenter: PrivacySettingsContract.Presenter

@@ -4,14 +4,17 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import com.automattic.android.tracks.CrashLogging.CrashLogging
+import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment.LoginJetpackRequiredListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -42,7 +45,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
-        HasSupportFragmentInjector {
+        HasSupportFragmentInjector, LoginJetpackRequiredListener, LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
     }
@@ -50,7 +53,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     @Inject internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
-    @Inject lateinit var supportHelper: SupportHelper
 
     private var loginMode: LoginMode? = null
 
@@ -82,7 +84,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onPrologueFinished() {
-        // TODO Check loginMode here and handle different login cases
         startLogin()
     }
 
@@ -104,6 +105,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         val fragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG)
         return if (fragment == null) null else fragment as LoginEmailFragment
     }
+
+    private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
+            supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -152,12 +156,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun startLogin() {
-        if (getLoginEmailFragment() != null) {
-            // email screen is already shown so, login has already started. Just bail.
+        if (getLoginViaSiteAddressFragment() != null) {
+            // login by site address is already shown so, login has already started. Just bail.
             return
         }
 
-        slideInFragment(LoginEmailFragment(), true, LoginEmailFragment.TAG)
+        loginViaSiteAddress()
     }
 
     //  -- BEGIN: LoginListener implementation methods
@@ -191,6 +195,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
         loginAnalyticsListener.trackLoginSocialSuccess()
+        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -248,6 +253,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
+        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -257,12 +263,37 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                siteAddress, siteAddress, siteName, siteIconUrl, null, null, true)
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        siteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+    }
+
+    override fun gotConnectedSiteInfo(siteAddress: String, hasJetpack: Boolean) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        AppPrefs.setLoginSiteAddress(siteAddress)
+
+        if (hasJetpack) {
+            val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        } else {
+            // hide the keyboard
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+            // Show the 'Jetpack required' fragment
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
+            slideInFragment(jetpackReqFragment as Fragment, true, LoginJetpackRequiredFragment.TAG)
+        }
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
+        // Save site address to app prefs so it's available to MainActivity regardless of how the user
+        // logs into the app.
+        inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
                 inputSiteAddress, endpointAddress, null, null, null, null, false)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
@@ -290,6 +321,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
+        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -389,4 +421,22 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     //  -- END: GoogleListener implementation methods
+
+    override fun showJetpackInstructions() {
+        ChromeCustomTabUtils.launchUrl(this, getString(R.string.jetpack_view_instructions_link))
+    }
+
+    override fun showWhatIsJetpackDialog() {
+        LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+    }
+
+    override fun showHelpFindingConnectedEmail() {
+        AnalyticsTracker.track(Stat.LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+
+        LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
+    }
+
+    override fun onEmailNeedMoreHelpClicked() {
+        startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
+    }
 }

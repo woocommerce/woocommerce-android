@@ -3,6 +3,7 @@ package com.woocommerce.android.tools
 import android.content.Context
 import android.preference.PreferenceManager
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.util.PreferenceUtils
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
@@ -14,6 +15,7 @@ import javax.inject.Singleton
  * Persists and restores the selected site to/from the app preferences.
  */
 @Singleton
+@OpenClassOnDebug
 class SelectedSite(private var context: Context, private var siteStore: SiteStore) {
     companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"

@@ -2,12 +2,12 @@ package com.woocommerce.android.ui.dashboard
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -155,6 +155,15 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
     }
 
+    override fun onBackStackChanged() {
+        super.onBackStackChanged()
+        // If this fragment is now visible and we've deferred loading stats due to it not
+        // being visible - go ahead and load the stats.
+        if (isActive && !deferInit) {
+            refreshDashboard(forced = this.isRefreshPending)
+        }
+    }
+
     override fun showStats(
         revenueStats: Map<String, Double>,
         salesStats: Map<String, Int>,
@@ -272,7 +281,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
-        (activity as? TopLevelFragmentRouter)?.showProductDetail(topEarner.id)
+        openProductDetail(topEarner.id)
     }
 
     override fun hideUnfilledOrdersCard() {

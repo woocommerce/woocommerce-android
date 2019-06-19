@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-05-27 13:42:04+0000
+Translation-Revision-Date: 2019-06-05 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
@@ -130,6 +130,7 @@ Language: id
     <string name="notification_channel_order_title">Pemberitahuan pesanan baru</string>
     <string name="orderdetail_note_system">Status sistem</string>
     <string name="orderdetail_note_public">Catatan untuk pelanggan</string>
+    <string name="login_verifying_site">Memverifikasi situs…</string>
     <string name="button_update_instructions">Petunjuk pembaruan</string>
     <string name="search">Cari</string>
     <string name="refresh_button">Segarkan</string>

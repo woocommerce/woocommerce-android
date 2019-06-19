@@ -20,7 +20,10 @@ object AppPrefs {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
         IS_USING_V3_API,
-        HAS_UNSEEN_NOTIFS
+        HAS_UNSEEN_NOTIFS,
+        SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
+        SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
+        LOGIN_SITE_ADDRESS
     }
 
     /**
@@ -124,6 +127,30 @@ object AppPrefs {
     fun incNumTimesMarkAllReadSnackShown() {
         val numTimesShown = getNumTimesMarkAllReadSnackShown() + 1
         setInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, numTimesShown)
+    }
+
+    fun getSelectedShipmentTrackingProviderName(): String =
+            getString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME)
+
+    fun setSelectedShipmentTrackingProviderName(providerName: String) {
+        setString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME, providerName)
+    }
+
+    fun getIsSelectedShipmentTrackingProviderCustom(): Boolean =
+            getBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, false)
+
+    fun setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider: Boolean) {
+        setBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, isCustomProvider)
+    }
+
+    fun setLoginSiteAddress(loginSiteAddress: String) {
+        setString(DeletablePrefKey.LOGIN_SITE_ADDRESS, loginSiteAddress)
+    }
+
+    fun getLoginSiteAddress() = getString(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+
+    fun removeLoginSiteAddress() {
+        remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
     }
 
     /**

@@ -27,6 +27,10 @@ object DateUtils {
     }
     private val shortMonths by lazy { DateFormatSymbols().shortMonths }
 
+    private val yyyyMMddFormat by lazy {
+        SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    }
+
     /**
      * Returns a string in the format of {date} at {time}.
      */
@@ -118,6 +122,18 @@ object DateUtils {
     }
 
     /**
+     * Given a date string in localized format, returns a date object.
+     *
+     * @throws IllegalArgumentException is thronw by the [DateFormat] class if [dateString] cannot be
+     * properly parsed
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getDateFromLocalizedLongDateString(context: Context, dateString: String): Date {
+        val df = DateFormat.getLongDateFormat(context)
+        return df.parse(dateString)
+    }
+
+    /**
      * Given a date of format YYYY-'W'WW, returns the String in short month ("MMM d") format,
      * with the day being the first day of that week (a Monday, by ISO8601 convention).
      *
@@ -168,4 +184,26 @@ object DateUtils {
             throw IllegalArgumentException("Date string argument is not of format YYYY-MM: $iso8601Date")
         }
     }
+
+    /**
+     * Given a date of format MMMM d, YYYY, returns date string in yyyy-MM-dd format
+     *
+     * @throws IllegalArgumentException if the argument is not a valid date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getDateString(dateString: String): String {
+        return try {
+            val originalFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.ROOT)
+            val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
+            val date = originalFormat.parse(dateString)
+            targetFormat.format(date)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format MMMM dd, yyyy: $dateString")
+        }
+    }
+
+    /**
+     * Formats a date object and returns it in the format of yyyy-MM-dd
+     */
+    fun getYearMonthDayStringFromDate(date: Date): String = yyyyMMddFormat.format(date)
 }

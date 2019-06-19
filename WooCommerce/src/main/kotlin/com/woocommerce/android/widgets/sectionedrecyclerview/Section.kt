@@ -1,8 +1,7 @@
 package com.woocommerce.android.widgets.sectionedrecyclerview
 
-import android.support.annotation.LayoutRes
-import android.support.v7.widget.RecyclerView
 import android.view.View
+import androidx.annotation.LayoutRes
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.EMPTY
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.FAILED
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.LOADED
@@ -141,7 +140,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param holder ViewHolder for the Content of this Section
      * @param position position of the item in the Section, not in the RecyclerView
      */
-    fun onBindContentViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    fun onBindContentViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         when (state) {
             LOADING -> onBindLoadingViewHolder(holder)
             LOADED -> onBindItemViewHolder(holder, position)
@@ -156,7 +155,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param view View inflated by resource returned by getHeaderResourceId
      * @return ViewHolder for the Header of this Section
      */
-    open fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
+    open fun getHeaderViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return EmptyViewHolder(view)
     }
 
@@ -164,7 +163,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for the Header of this Section
      * @param holder ViewHolder for the Header of this Section
      */
-    open fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
+    open fun onBindHeaderViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
         // Nothing to bind here.
     }
 
@@ -173,7 +172,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param view View inflated by resource returned by getFooterResourceId
      * @return ViewHolder for the Footer of this Section
      */
-    open fun getFooterViewHolder(view: View): RecyclerView.ViewHolder {
+    open fun getFooterViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return EmptyViewHolder(view)
     }
 
@@ -181,7 +180,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for the Footer of this Section
      * @param holder ViewHolder for the Footer of this Section
      */
-    open fun onBindFooterViewHolder(holder: RecyclerView.ViewHolder) {
+    open fun onBindFooterViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
         // Nothing to bind here.
     }
 
@@ -190,21 +189,21 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param view View inflated by resource returned by getItemResourceId
      * @return ViewHolder for the Item of this Section
      */
-    abstract fun getItemViewHolder(view: View): RecyclerView.ViewHolder
+    abstract fun getItemViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder
 
     /**
      * Bind the data to the ViewHolder for an Item of this Section
      * @param holder ViewHolder for the Item of this Section
      * @param position position of the item in the Section, not in the RecyclerView
      */
-    abstract fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int)
+    abstract fun onBindItemViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int)
 
     /**
      * Return the ViewHolder for the Loading mState of this Section
      * @param view View inflated by resource returned by getItemResourceId
      * @return ViewHolder for the Loading mState of this Section
      */
-    open fun getLoadingViewHolder(view: View): RecyclerView.ViewHolder {
+    open fun getLoadingViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return EmptyViewHolder(view)
     }
 
@@ -212,7 +211,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for Loading mState of this Section
      * @param holder ViewHolder for the Loading mState of this Section
      */
-    open fun onBindLoadingViewHolder(holder: RecyclerView.ViewHolder) {
+    open fun onBindLoadingViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
         // Nothing to bind here.
     }
 
@@ -221,7 +220,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param view View inflated by resource returned by getItemResourceId
      * @return ViewHolder for the Failed of this Section
      */
-    open fun getFailedViewHolder(view: View): RecyclerView.ViewHolder {
+    open fun getFailedViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return EmptyViewHolder(view)
     }
 
@@ -229,7 +228,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for the Failed mState of this Section
      * @param holder ViewHolder for the Failed mState of this Section
      */
-    open fun onBindFailedViewHolder(holder: RecyclerView.ViewHolder) {
+    open fun onBindFailedViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
         // Nothing to bind here.
     }
 
@@ -238,7 +237,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @param view View inflated by resource returned by getItemResourceId
      * @return ViewHolder for the Empty of this Section
      */
-    open fun getEmptyViewHolder(view: View): RecyclerView.ViewHolder {
+    open fun getEmptyViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return EmptyViewHolder(view)
     }
 
@@ -246,7 +245,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * Bind the data to the ViewHolder for the Empty mState of this Section
      * @param holder ViewHolder for the Empty mState of this Section
      */
-    open fun onBindEmptyViewHolder(holder: RecyclerView.ViewHolder) {
+    open fun onBindEmptyViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
         // Nothing to bind here.
     }
 }

@@ -1,18 +1,17 @@
 package com.woocommerce.android.ui.main
 
 import android.content.Context
-import android.support.design.internal.BottomNavigationItemView
-import android.support.design.internal.BottomNavigationMenuView
-import android.support.design.widget.BottomNavigationView
-import android.support.design.widget.BottomNavigationView.OnNavigationItemReselectedListener
-import android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
+import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -27,7 +26,7 @@ class MainNavigationView @JvmOverloads constructor(
 ) : BottomNavigationView(context, attrs, defStyleAttr),
         OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
     private lateinit var navAdapter: NavAdapter
-    private lateinit var fragmentManager: FragmentManager
+    private lateinit var fragmentManager: androidx.fragment.app.FragmentManager
     private lateinit var listener: MainNavigationListener
     private lateinit var badgeView: View
 
@@ -48,7 +47,7 @@ class MainNavigationView @JvmOverloads constructor(
         get() = findNavigationPositionById(selectedItemId)
         set(navPos) = updateCurrentPosition(navPos)
 
-    fun init(fm: FragmentManager, listener: MainNavigationListener) {
+    fun init(fm: androidx.fragment.app.FragmentManager, listener: MainNavigationListener) {
         this.fragmentManager = fm
         this.listener = listener
 
@@ -122,12 +121,17 @@ class MainNavigationView @JvmOverloads constructor(
         val fragment = navAdapter.getFragment(navPos)
         fragment.deferInit = deferInit
 
-        // Close any child fragments if open
+        // Close any child fragments of active fragments, if open
         clearFragmentBackStack(fragment)
 
         // hide previous fragment if it exists
+        // close any child fragments of previous fragments, if open before hiding
         val fragmentTransaction = fragmentManager.beginTransaction()
-        previousNavPos?.let { fragmentTransaction.hide(navAdapter.getFragment(it)) }
+        previousNavPos?.let {
+            val previousFragment = navAdapter.getFragment(it)
+            clearFragmentBackStack(previousFragment)
+            fragmentTransaction.hide(previousFragment)
+        }
 
         // add the fragment if it hasn't been added yet
         val tag = navPos.getTag()
@@ -151,18 +155,16 @@ class MainNavigationView @JvmOverloads constructor(
      * Pop all child fragments to return to the top-level view.
      * returns true if child fragments existed.
      */
-    private fun clearFragmentBackStack(fragment: Fragment?): Boolean {
+    private fun clearFragmentBackStack(fragment: androidx.fragment.app.Fragment?): Boolean {
         fragment?.let {
-            /**
-             * if isStateSaved  = true then the fragment is added and its state has already been saved by its host.
-             */
+            // if isStateSaved is true then the fragment is added and its state has already been saved by its host.
             if (!it.isAdded || it.isStateSaved) {
                 return false
             }
             with(it.childFragmentManager) {
                 if (backStackEntryCount > 0) {
                     val firstEntry = getBackStackEntryAt(0)
-                    popBackStackImmediate(firstEntry.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    popBackStackImmediate(firstEntry.id, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     return true
                 }
             }

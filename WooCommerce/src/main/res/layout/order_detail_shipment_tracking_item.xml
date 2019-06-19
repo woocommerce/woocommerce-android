@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,22 +10,20 @@
         android:id="@+id/tracking_copyNumber"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:clickable="true"
-        android:focusable="true"
         android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
         android:contentDescription="@string/order_shipment_tracking_copy_to_clipboard"
-        android:paddingStart="@dimen/list_item_padding_start"
-        android:paddingEnd="@dimen/list_item_padding_end"
-        android:paddingTop="@dimen/list_divider_padding_top"
+        android:focusable="true"
+        android:orientation="vertical"
         android:paddingBottom="@dimen/list_divider_padding_bottom"
+        android:paddingTop="@dimen/list_divider_padding_top"
         app:layout_constraintEnd_toStartOf="@+id/tracking_btnTrack"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tracking_type"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/card_item_padding_intra_v"
             android:textAppearance="@style/Woo.TextAppearance.Medium"
@@ -33,41 +31,48 @@
 
         <TextView
             android:id="@+id/tracking_number"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/card_item_padding_intra_v"
             android:paddingBottom="@dimen/card_item_padding_intra_v"
+            android:paddingTop="@dimen/card_item_padding_intra_v"
             android:textAppearance="@style/Woo.TextAppearance.Medium.Bold"
             tools:text="111222 3334 4444Z"/>
 
         <TextView
             android:id="@+id/tracking_dateShipped"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/card_item_padding_intra_v"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Content"
             tools:text="Shipped February 27, 2019"/>
     </LinearLayout>
 
-    <FrameLayout
+    <ImageButton
         android:id="@+id/tracking_btnTrack"
-        android:layout_width="50dp"
-        android:layout_height="0dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:contentDescription="@string/order_shipment_tracking_button"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        style="@android:style/Widget.ActionButton"
+        android:layout_width="@dimen/card_level_button_width"
+        android:layout_height="@dimen/card_level_button_height"
+        android:contentDescription="@string/order_detail_shipment_tracking_button_contentdesc"
+        android:scaleType="center"
+        android:src="@drawable/ic_menu_more_vert_compat"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tracking_copyNumber"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"/>
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:importantForAccessibility="no"
-            android:scaleType="center"
-            android:tint="@color/wc_purple"
-            app:srcCompat="@drawable/ic_external"/>
-    </FrameLayout>
-</android.support.constraint.ConstraintLayout>
+    <ImageButton
+        android:id="@+id/tracking_btnDelete"
+        style="@style/Woo.Delete.Button"
+        android:layout_width="@dimen/card_level_button_width"
+        android:layout_height="@dimen/card_level_button_height"
+        android:padding="@dimen/card_level_button_padding"
+        android:contentDescription="@string/orderdetail_delete_tracking"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
