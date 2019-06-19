@@ -51,7 +51,7 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var providerListPickerDialog: AddOrderTrackingProviderListFragment? = null
 
-    private val navArgs: AddOrderShipmentTrackingFragmentArgs by navArgs() // TODO
+    private val navArgs: AddOrderShipmentTrackingFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
