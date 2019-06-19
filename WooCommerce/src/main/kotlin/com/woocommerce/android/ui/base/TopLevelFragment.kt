@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.fragment_parent.*
 /**
  * The main fragments hosted by the bottom bar should extend this class
  */
-abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFragmentView {
+abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
     companion object {
         // Bundle label to store the state of this top-level fragment.
         // If the value associated with this label is true, then this
@@ -50,13 +50,6 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
         return layout
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (!hidden) {
-            updateActivityTitle()
-        }
-    }
-
     override fun onDestroyView() {
         container.removeAllViews()
         super.onDestroyView()
@@ -75,7 +68,7 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
         savedInstanceState?.let { bundle ->
             val childViewActive = bundle.getBoolean(CHILD_FRAGMENT_ACTIVE, false)
             updateParentViewState(childViewActive)
-        } ?: updateActivityTitle()
+        }
     }
 
     /**
@@ -94,12 +87,6 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
             mainActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
             mainActivity?.supportActionBar?.setDisplayShowHomeEnabled(false)
             updateActivityTitle()
-        }
-    }
-
-    fun updateActivityTitle() {
-        if (isActive) {
-            activity?.title = getFragmentTitle()
         }
     }
 }
