@@ -265,9 +265,11 @@ class MainActivity : AppCompatActivity(),
         // make sure the correct up icon appears
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
+        val showBottomNav: Boolean
         if (isAtRoot) {
             showUpIcon = false
             showCrossIcon = false
+            showBottomNav = true
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
@@ -278,6 +280,15 @@ class MainActivity : AppCompatActivity(),
                 }
                 else -> {
                     false
+                }
+            }
+            showBottomNav = when (destination.id) {
+                R.id.addOrderShipmentTrackingFragment,
+                R.id.addOrderNoteFragment -> {
+                    false
+                }
+                else -> {
+                    true
                 }
             }
         }
@@ -291,8 +302,11 @@ class MainActivity : AppCompatActivity(),
             actionBar.setHomeAsUpIndicator(icon)
         }
 
-        // bottom nav should always reappear when the destination changes
-        showBottomNav()
+        if (showBottomNav) {
+            showBottomNav()
+        } else {
+            hideBottomNav()
+        }
 
         if (isAtRoot) {
             getActiveTopLevelFragment()?.onReturnedFromChildFragment()
