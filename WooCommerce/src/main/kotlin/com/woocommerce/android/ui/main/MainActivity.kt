@@ -306,7 +306,10 @@ class MainActivity : AppCompatActivity(),
         }
 
         if (isAtRoot) {
-            getActiveTopLevelFragment()?.onReturnedFromChildFragment()
+            getActiveTopLevelFragment()?.let {
+                it.updateActivityTitle()
+                it.onReturnedFromChildFragment()
+            }
         }
 
         previousDestinationId = destination.id
