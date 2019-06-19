@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var selectedSite: SelectedSite
 
     private var isBottomNavShowing = true
+    private var previousDestinationId: Int? = null
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
@@ -248,6 +249,12 @@ class MainActivity : AppCompatActivity(),
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
         val isAtRoot = isAtNavigationRoot()
 
+        // go no further if this is the initial navigation to the root fragment
+        if (isAtRoot && previousDestinationId == null) {
+            previousDestinationId = destination.id
+            return
+        }
+
         // show/hide the top level fragment container depending on whether we're at the root
         if (isAtRoot) {
             container.visibility = View.VISIBLE
@@ -290,6 +297,8 @@ class MainActivity : AppCompatActivity(),
         if (isAtRoot) {
             getActiveTopLevelFragment()?.onReturnedFromChildFragment()
         }
+
+        previousDestinationId = destination.id
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
