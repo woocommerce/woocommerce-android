@@ -81,9 +81,7 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
         // The navArgs tell us if we should mark the order complete, but we only want to do that once. We can't
         // change the navArgs since they're read-only so we set ARG_DID_MARK_COMPLETE instead.
-        val didMarkComplete = arguments?.let {
-            it.getBoolean(ARG_DID_MARK_COMPLETE)
-        } ?: false
+        val didMarkComplete = arguments?.getBoolean(ARG_DID_MARK_COMPLETE) ?: false
         val markComplete = navArgs.markComplete && !didMarkComplete
         if (markComplete) {
             arguments = Bundle().also { it.putBoolean(ARG_DID_MARK_COMPLETE, true) }

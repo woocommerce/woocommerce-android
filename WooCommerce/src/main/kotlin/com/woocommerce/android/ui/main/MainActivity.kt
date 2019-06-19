@@ -114,6 +114,7 @@ class MainActivity : AppCompatActivity(),
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         navController = findNavController(R.id.nav_host_fragment_main)
+        navController.addOnDestinationChangedListener(this)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -137,10 +138,6 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
-
-        // it's important to set this listener last, otherwise if the activity is recreated the listener will fire
-        // before we've had a chance to initialize the bottom nav fragments (resulting in a crash)
-        navController.addOnDestinationChangedListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
