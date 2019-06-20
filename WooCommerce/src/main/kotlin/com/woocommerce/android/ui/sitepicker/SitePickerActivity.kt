@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
-import android.text.style.ForegroundColorSpan
+import android.text.method.LinkMovementMethod
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListen
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.util.CrashUtils
+import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
@@ -491,23 +492,25 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
 
-        // Build and configure the error message and make the text view clickable
-        // to refresh the app.
-        val siteName = name.takeIf { !it.isNullOrEmpty() } ?: url
-        val refreshAppText = getString(R.string.login_refresh_app)
-        val notWooMessage = getString(R.string.login_not_woo_store, siteName, refreshAppText)
-
-        val spannable = SpannableString(notWooMessage)
-        spannable.setSpan(
-                ForegroundColorSpan(resources.getColor(R.color.wc_purple)),
-                (notWooMessage.length - refreshAppText.length),
-                notWooMessage.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
         with(no_stores_view) {
-            setText(spannable, TextView.BufferType.SPANNABLE)
+            // Build and configure the error message and make part of the message
+            // clickable. When clicked, we'll fetch a fresh copy of the active site from the API.
+            val siteName = name.takeIf { !it.isNullOrEmpty() } ?: url
+            val refreshAppText = getString(R.string.login_refresh_app)
+            val notWooMessage = getString(R.string.login_not_woo_store, siteName, refreshAppText)
 
-            // TODO AMANDA: make clickable
+            val spannable = SpannableString(notWooMessage)
+            spannable.setSpan(
+                    WooClickableSpan {
+                        // TODO AMANDA: Fetch fresh site info from API
+                        Toast.makeText(this@SitePickerActivity, "Amanda Test", Toast.LENGTH_LONG).show()
+                    },
+                    (notWooMessage.length - refreshAppText.length),
+                    notWooMessage.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            setText(spannable, TextView.BufferType.SPANNABLE)
+            movementMethod = LinkMovementMethod.getInstance()
         }
 
         with(button_try_another) {
