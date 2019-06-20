@@ -502,6 +502,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             val spannable = SpannableString(notWooMessage)
             spannable.setSpan(
                     WooClickableSpan {
+                        AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
+
                         // TODO AMANDA: Fetch fresh site info from API
                         Toast.makeText(this@SitePickerActivity, "Amanda Test", Toast.LENGTH_LONG).show()
                     },
