@@ -308,14 +308,13 @@ class NotifsListFragment : TopLevelFragment(),
                 AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
                 AnalyticsTracker.KEY_ALREADY_READ to notification.read))
 
-        // If the notification is pending moderation, override the status to display in
-        // the detail view.
+        // If the notification is pending moderation, override the status to display in the detail view.
         val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
-        val tempStates = if (isPendingModeration) pendingModerationNewStatus else null
+        val tempStatus = if (isPendingModeration) pendingModerationNewStatus else null
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
                 notification.remoteNoteId,
                 notification.getCommentId(),
-                tempStates
+                tempStatus
         )
         showOptionsMenu(false)
         findNavController().navigate(action)
