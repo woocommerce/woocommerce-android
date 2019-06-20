@@ -5,11 +5,16 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextUtils
+import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
@@ -486,8 +491,24 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
 
+        // Build and configure the error message and make the text view clickable
+        // to refresh the app.
         val siteName = name.takeIf { !it.isNullOrEmpty() } ?: url
-        no_stores_view.text = getString(R.string.login_not_woo_store, siteName)
+        val refreshAppText = getString(R.string.login_refresh_app)
+        val notWooMessage = getString(R.string.login_not_woo_store, siteName, refreshAppText)
+
+        val spannable = SpannableString(notWooMessage)
+        spannable.setSpan(
+                ForegroundColorSpan(resources.getColor(R.color.wc_purple)),
+                (notWooMessage.length - refreshAppText.length),
+                notWooMessage.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        with(no_stores_view) {
+            setText(spannable, TextView.BufferType.SPANNABLE)
+
+            // TODO AMANDA: make clickable
+        }
 
         with(button_try_another) {
             visibility = View.VISIBLE
