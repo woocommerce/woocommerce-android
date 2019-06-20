@@ -1,5 +1,6 @@
 2.2
 -----
+* Fixed a bug where the notifications list would be empty after logging out and back into app
 
 2.1
 -----
