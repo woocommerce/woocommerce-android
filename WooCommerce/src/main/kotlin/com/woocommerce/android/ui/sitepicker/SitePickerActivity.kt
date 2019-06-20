@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
@@ -231,6 +230,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun showStoreList(wcSites: List<SiteModel>) {
+        progressDialog?.takeIf { it.isShowing }?.dismiss()
+
         if (deferLoadingSitesIntoView) {
             if (wcSites.isNotEmpty()) {
                 hasConnectedStores = true
@@ -245,7 +246,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
 
             loginSiteUrl?.let { processLoginSite(it) }
-
             return
         }
 
@@ -254,7 +254,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
         )
 
-        progressDialog?.takeIf { it.isShowing }?.dismiss()
         site_picker_root.visibility = View.VISIBLE
 
         if (wcSites.isEmpty()) {
@@ -413,7 +412,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         presenter.getSiteModelByUrl(url)?.let { site ->
             if (!site.hasWooCommerce) {
                 // Show not woo store message view.
-                showSiteNotWooStore(site.url, site.name)
+                showSiteNotWooStore(site)
             } else {
                 // We have a pre-validation woo store. Attempt to just
                 // login with this store directly.
@@ -484,10 +483,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * SignIn M1: The user the user submitted during login belongs
      * to a site that does not have WooCommerce installed.
      */
-    override fun showSiteNotWooStore(url: String, name: String?) {
+    override fun showSiteNotWooStore(site: SiteModel) {
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
-                mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
+                mapOf(AnalyticsTracker.KEY_URL to site.url,
+                        AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
@@ -495,7 +495,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         with(no_stores_view) {
             // Build and configure the error message and make part of the message
             // clickable. When clicked, we'll fetch a fresh copy of the active site from the API.
-            val siteName = name.takeIf { !it.isNullOrEmpty() } ?: url
+            val siteName = site.name.takeIf { !it.isNullOrEmpty() } ?: site.url
             val refreshAppText = getString(R.string.login_refresh_app)
             val notWooMessage = getString(R.string.login_not_woo_store, siteName, refreshAppText)
 
@@ -504,8 +504,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                     WooClickableSpan {
                         AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
 
-                        // TODO AMANDA: Fetch fresh site info from API
-                        Toast.makeText(this@SitePickerActivity, "Amanda Test", Toast.LENGTH_LONG).show()
+                        progressDialog?.takeIf { !it.isShowing }?.dismiss()
+                        progressDialog = ProgressDialog.show(
+                                this@SitePickerActivity,
+                                null,
+                                getString(R.string.login_refresh_app_progress))
+                        presenter.fetchUpdatedSiteFromAPI(site)
                     },
                     (notWooMessage.length - refreshAppText.length),
                     notWooMessage.length,

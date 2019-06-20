@@ -110,6 +110,7 @@
     <string name="login_try_another_account">Try another account</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="login_refresh_app">refresh the app</string>
+    <string name="login_refresh_app_progress">Checking for WooCommerce...</string>
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
     <string name="login_jetpack_view_instructions">View instructions</string>
