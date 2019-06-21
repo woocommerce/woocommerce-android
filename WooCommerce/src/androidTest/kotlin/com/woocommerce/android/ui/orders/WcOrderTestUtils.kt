@@ -165,6 +165,7 @@ object WcOrderTestUtils {
         shippingAddress1: String = "",
         shippingCountry: String = "",
         billingPhone: String = "",
+        billingEmail: String = "",
         products: String = MULTIPLE_PRODUCTS,
         orderStatus: String = "completed",
         shippingTotal: String = "12",
@@ -189,7 +190,7 @@ object WcOrderTestUtils {
             this.shippingAddress1 = shippingAddress1
             this.shippingCountry = shippingCountry
             this.billingPostcode = billingPostalCode
-            billingEmail = "test@testing.com"
+            this.billingEmail = billingEmail
             this.billingPhone = billingPhone
             number = "1"
             status = "pending"
