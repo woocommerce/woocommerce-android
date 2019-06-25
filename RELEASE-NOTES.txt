@@ -1,6 +1,7 @@
 2.2
 -----
 * Fixed a bug where the notifications list would be empty after logging out and back into app
+* Added pull to refresh support for Order Detail page
 
 2.1
 -----
