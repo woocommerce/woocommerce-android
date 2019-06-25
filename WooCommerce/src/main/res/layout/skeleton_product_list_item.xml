@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:paddingBottom="@dimen/settings_padding"
+    android:paddingEnd="@dimen/margin_large"
+    android:paddingStart="@dimen/margin_large"
+    android:paddingTop="@dimen/settings_padding">
+
+    <View
+        android:id="@+id/product_gravatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:background="@drawable/skeleton_background"/>
+
+    <View
+        android:layout_width="200dp"
+        android:layout_height="@dimen/skeleton_default_text_height"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_toEndOf="@+id/product_gravatar"
+        android:background="@drawable/skeleton_background"/>
+
+    <View
+        android:layout_width="128dp"
+        android:layout_height="@dimen/skeleton_default_text_height"
+        android:layout_alignBottom="@id/product_gravatar"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:layout_toEndOf="@+id/product_gravatar"
+        android:background="@drawable/skeleton_background"/>
+
+</RelativeLayout>
