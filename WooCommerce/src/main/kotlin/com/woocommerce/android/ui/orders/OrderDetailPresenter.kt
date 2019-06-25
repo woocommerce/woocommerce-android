@@ -204,7 +204,9 @@ class OrderDetailPresenter @Inject constructor(
                 fetchOrder(it.remoteOrderId)
             } else {
                 // Load cached order detail from the db
-                loadOrderDetailFromDb(it.getIdentifier())
+                orderView?.showOrderDetail(it, isFreshData = false)
+                loadOrderNotes()
+                loadOrderShipmentTrackings()
             }
         }
     }
@@ -302,11 +304,12 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : ${event.error.message}")
                 orderView?.showLoadOrderError()
             } else {
-                orderModel = orderStore.getOrderByIdentifier(orderIdentifier!!)
+                orderModel = loadOrderDetailFromDb(orderIdentifier!!)
                 orderModel?.let { order ->
                     orderView?.showSkeleton(false)
                     orderView?.showOrderDetail(order, isFreshData = true)
                     loadOrderNotes()
+                    loadOrderShipmentTrackings()
                 } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
@@ -358,7 +361,7 @@ class OrderDetailPresenter @Inject constructor(
 
                 // Successfully marked order status changed
                 orderModel?.let {
-                    orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
+                    orderModel = loadOrderDetailFromDb(it.getIdentifier())
                 }
                 orderView?.markOrderStatusChangedSuccess()
             }
