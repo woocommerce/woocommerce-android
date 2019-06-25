@@ -75,11 +75,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             if (billingAddrFull.trim().isEmpty()) {
                 customerInfo_billingLabel.visibility = View.GONE
                 customerInfo_billingAddr.visibility = View.GONE
-                customerInfo_divider2.visibility = View.GONE
+                customerInfo_divider.visibility = View.GONE
             } else {
                 customerInfo_billingLabel.visibility = View.VISIBLE
                 customerInfo_billingAddr.visibility = View.VISIBLE
-                customerInfo_divider2.visibility = View.VISIBLE
                 customerInfo_billingAddr.text = billingAddrFull
             }
 
@@ -87,12 +86,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             if (!order.billingPhone.isEmpty()) {
                 customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
                 customerInfo_phone.visibility = View.VISIBLE
+                customerInfo_divider2.visibility = View.VISIBLE
                 customerInfo_callOrMessageBtn.visibility = View.VISIBLE
                 customerInfo_callOrMessageBtn.setOnClickListener {
                     showCallOrMessagePopup(order)
                 }
             } else {
                 customerInfo_phone.visibility = View.GONE
+                customerInfo_divider2.visibility = View.GONE
                 customerInfo_callOrMessageBtn.visibility = View.GONE
             }
 
