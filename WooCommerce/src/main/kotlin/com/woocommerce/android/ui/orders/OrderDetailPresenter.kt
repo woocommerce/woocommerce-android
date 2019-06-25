@@ -115,7 +115,7 @@ class OrderDetailPresenter @Inject constructor(
         if (orderIdentifier.isNotEmpty()) {
             orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
-                orderView?.showOrderDetail(order)
+                orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
@@ -198,8 +198,19 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
+    override fun refreshOrderDetail() {
+        orderModel?.let {
+            if (networkStatus.isConnected()) {
+                fetchOrder(it.remoteOrderId)
+            } else {
+                // Load cached order detail from the db
+                loadOrderDetailFromDb(it.getIdentifier())
+            }
+        }
+    }
+
     override fun fetchOrder(remoteOrderId: Long) {
-        orderView?.showLoadOrderProgress(true)
+        orderView?.showSkeleton(true)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
     }
@@ -293,8 +304,8 @@ class OrderDetailPresenter @Inject constructor(
             } else {
                 orderModel = orderStore.getOrderByIdentifier(orderIdentifier!!)
                 orderModel?.let { order ->
-                    orderView?.showLoadOrderProgress(false)
-                    orderView?.showOrderDetail(order)
+                    orderView?.showSkeleton(false)
+                    orderView?.showOrderDetail(order, isFreshData = true)
                     loadOrderNotes()
                 } ?: orderView?.showLoadOrderError()
             }
