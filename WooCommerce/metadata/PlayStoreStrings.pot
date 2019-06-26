@@ -11,17 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_021"
+msgid ""
+"2.1:\n"
+"* Smoother sign-in: the sign in flow is completely revamped, with new help screens and documentation to help you log in successfully.\n"
+"* Better order management: Now you can add and delete shipment tracking information on an order.\n"
+"* Bugs, squashed: We fixed a bug that caused the title of the current screen to update incorrectly as you moved around the app.\n"
+msgstr ""
+
 msgctxt "release_note_020"
 msgid ""
 "2.0:\n"
 "* We’ve made stability improvements.\n"
-msgstr ""
-
-msgctxt "release_note_019"
-msgid ""
-"1.9:\n"
-"* The orders list screen now displays the date of every order.\n"
-"* Sometimes you’d re-open the app and it would display the wrong title. Unhelpful! That’s fixed.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

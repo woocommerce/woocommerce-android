@@ -50,6 +50,19 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     @Rule
     @JvmField var activityTestRule = MainActivityTestRule()
 
+    val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
+
+    private fun verifyShippingInfoDisplayedCorrectly() {
+        val shippingName = appContext.getString(
+                R.string.customer_full_name,
+                mockWCOrderModel.shippingFirstName, mockWCOrderModel.shippingLastName
+        )
+        val shippingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getShippingAddress())
+        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.shippingCountry)
+        val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
+    }
+
     @Before
     override fun setup() {
         super.setup()
@@ -80,10 +93,14 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     @Test
     fun verifyOrderDetailCardViewPopulatedSuccessfully() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta",
-                billingCountry = "USA"
-        )
+        mockWCOrderModel.shippingFirstName = "Ann"
+        mockWCOrderModel.shippingLastName = "Moore"
+        mockWCOrderModel.shippingAddress1 = "Nigagra Falls"
+        mockWCOrderModel.shippingCountry = "USA"
+        mockWCOrderModel.billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
+        mockWCOrderModel.billingLastName = "Murthy"
+        mockWCOrderModel.billingFirstName = "Anitaa"
+        mockWCOrderModel.billingCountry = "USA"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
@@ -108,8 +125,9 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
                 withText(appContext.getString(R.string.orderdetail_billing_details))
         ))
 
-        // verify that the customer shipping details is displayed
+        // verify that the customer shipping details is displayed and text is correct
         onView(withId(R.id.customerInfo_shippingAddr)).check(matches(isDisplayed()))
+        verifyShippingInfoDisplayedCorrectly()
 
         // verify that the billing view is condensed and load more button is visible
         onView(withId(R.id.customerInfo_morePanel)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
@@ -122,10 +140,14 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     @Test
     fun verifyOrderDetailCardViewShowBillingViewPopulatedSuccessfully() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingAddress1 = "Ramada Plaza, 450 Capitol",
-                billingCountry = "USA"
-        )
+        mockWCOrderModel.shippingFirstName = "Ann"
+        mockWCOrderModel.shippingLastName = "Moore"
+        mockWCOrderModel.shippingAddress1 = "Nigagra Falls"
+        mockWCOrderModel.shippingCountry = "USA"
+        mockWCOrderModel.billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
+        mockWCOrderModel.billingLastName = "Murthy"
+        mockWCOrderModel.billingFirstName = "Anitaa"
+        mockWCOrderModel.billingCountry = "USA"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
@@ -134,6 +156,10 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // click on Show Billing button
         onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo())
+
+        // verify that the customer billing details is displayed
+        onView(withId(R.id.customerInfo_billingAddr)).check(matches(isDisplayed()))
 
         // verify that the billing view is expanded and load more button is visible
         onView(withId(R.id.customerInfo_morePanel)).check(matches(withEffectiveVisibility(VISIBLE)))
@@ -141,17 +167,6 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         onView(withId(R.id.customerInfo_viewMore)).check(matches(
                 withText(appContext.getString(R.string.orderdetail_hide_billing))
         ))
-
-        // verify that billing details is displayed
-        onView(withId(R.id.customerInfo_billingAddr)).check(matches(isDisplayed()))
-
-        // verify that the customer email is displayed
-        onView(withId(R.id.customerInfo_emailAddr)).perform(WCMatchers.scrollTo()).check(matches(isDisplayed()))
-        onView(withId(R.id.customerInfo_emailBtn)).perform(WCMatchers.scrollTo()).check(matches(isDisplayed()))
-
-        // since the customer info phone is empty, the view should not be displayed
-        onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(GONE)))
 
         // click on Hide Billing button
         onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
@@ -165,69 +180,54 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     }
 
     @Test
-    fun verifyOrderDetailCardViewBillingMatchesShippingPopulatedSuccessfully() {
+    fun verifyOrderDetailCardViewWithOnlyShippingPopulatedSuccessfully() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta",
-                billingCountry = "USA"
-        )
+        mockWCOrderModel.shippingFirstName = "Ann"
+        mockWCOrderModel.shippingLastName = "Moore"
+        mockWCOrderModel.shippingAddress1 = "Nigagra Falls"
+        mockWCOrderModel.shippingCountry = "USA"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
-        // check if order customer info card shipping details matches this format:
-        // Anitaa Murthy
-        // 60, Fast lane, Chicago,
-        // USA
-        val billingName = appContext.getString(
-                R.string.customer_full_name,
-                mockWCOrderModel.billingFirstName, mockWCOrderModel.billingLastName
-        )
-        val billingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getBillingAddress())
-        val billingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.billingCountry)
+        // verify that the billing section is hidden since billing details not available
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
 
-        // Assumes that the name, address and country info is available
-        val billingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(billingAddrFull)))
-
-        // Note: the shipping address should match the billing address
-        onView(withId(R.id.customerInfo_billingAddr)).check(matches(withText(billingAddrFull)))
+        verifyShippingInfoDisplayedCorrectly()
     }
 
     @Test
-    fun verifyOrderDetailCardViewWithSeparateBillingPopulatedSuccessfully() {
+    fun verifyOrderDetailCardViewWithNoShippingBillingInfoPopulatedSuccessfully() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta",
-                billingCountry = "USA",
-                shippingFirstName = "Anitaa",
-                shippingLastName = "Murthy",
-                shippingAddress1 = "1234, Abs avenue",
-                shippingCountry = "USA"
-        )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
-        // check if order customer info card shipping details matches this format:
-        // Anitaa Murthy
-        // 60, Fast lane, Chicago,
-        // USA
-        val shippingName = appContext.getString(
-                R.string.customer_full_name,
-                mockWCOrderModel.shippingFirstName, mockWCOrderModel.shippingLastName
-        )
-        val shippingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getShippingAddress())
-        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.shippingCountry)
+        // verify that the billing section is hidden since billing details not available
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
 
-        // Assumes that the shipping name, address and country info is available
-        // & is different from the billing address
-        val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
+        // no shipping available so displays empty text
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(
+                appContext.getString(R.string.orderdetail_empty_shipping_address)
+        )))
+    }
+
+    @Test
+    fun verifyOrderDetailCardViewWithBillingAddressPopulatedSuccessfully() {
+        // add mock data to order detail screen
+        mockWCOrderModel.billingFirstName = "Jane"
+        mockWCOrderModel.billingLastName = "Masterson"
+        mockWCOrderModel.billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
+        mockWCOrderModel.billingCountry = "USA"
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // Assumes that the billing name, address and country info is available
         // & is different from the shipping address
@@ -239,16 +239,25 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.billingCountry)
         val billingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(withText(billingAddrFull)))
+
+        // verify that billing phone section is not displayed
+        onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(GONE)))
+
+        // verify that billing email section is not displayed
+        onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
     }
 
     @Test
-    fun verifyOrderDetailCardViewWithShippingForDifferentLocalePopulatedSuccessfully() {
+    fun verifyOrderDetailCardViewWithOnlyBillingPopulatedSuccessfully() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingAddress1 = "29, Kuppam Beach Road",
-                billingCountry = "India",
-                billingPostalCode = "600041"
-        )
+        mockWCOrderModel.billingFirstName = "Jane"
+        mockWCOrderModel.billingLastName = "Masterson"
+        mockWCOrderModel.billingAddress1 = "29, Kuppam Beach Road"
+        mockWCOrderModel.billingCountry = "India"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
@@ -268,49 +277,97 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // Assumes that the name, address and country info is available
         val billingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(billingAddrFull)))
+        onView(withId(R.id.customerInfo_billingAddr)).check(matches(withText(billingAddrFull)))
+
+        // no shipping available so hide section
+        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_shippingLabel)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
     }
 
     @Test
     fun verifyOrderDetailCardViewWithBillingPhonePopulatedSuccessfully() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingPhone = "9962789522"
-        )
+        mockWCOrderModel.billingPhone = "9962789522"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
-        // click on Show Billing button
-        onView(withId(R.id.customerInfo_viewMore)).perform(click())
-
         // since the customer info phone is NOT empty, the view should be displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(VISIBLE)))
+        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_phone)).check(matches(
                 withText(PhoneUtils.formatPhone(mockWCOrderModel.billingPhone))
         ))
+
+        // verify that billing email section is not displayed
+        onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
+
+        // verify that billing address section is not displayed
+        onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_billingAddr)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+
+        // no shipping available so hide section
+        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_shippingLabel)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun verifyOrderDetailCardViewWithBillingEmailPopulatedSuccessfully() {
+        // add mock data to order detail screen
+        mockWCOrderModel.billingEmail = "test@testing.com"
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify the billing phone section is not displayed
+        onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(GONE)))
+
+        // verify that billing email section is displayed
+        onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(VISIBLE)))
+        onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(VISIBLE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(VISIBLE)))
+
+        // verify that billing address section is not displayed
+        onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_billingAddr)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+
+        // no shipping available so hide section
+        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_shippingLabel)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
     }
 
     @Test
     fun verifyOrderDetailCardViewWithBillingPhoneForDifferentLocalePopulatedSuccessfully() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingPhone = "07911123456"
-        )
+        mockWCOrderModel.billingFirstName = "Jane"
+        mockWCOrderModel.billingLastName = "Masterson"
+        mockWCOrderModel.billingPhone = "07911123456"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
-        // click on Show Billing button
-        onView(withId(R.id.customerInfo_viewMore)).perform(click())
-
         // since the customer info phone is NOT empty, the view should be displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(VISIBLE)))
+        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_phone)).check(matches(
                 withText(PhoneUtils.formatPhone(mockWCOrderModel.billingPhone))
@@ -332,17 +389,14 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     @Test
     fun verifyDisplayPopupForCorrectPhoneNumber() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingPhone = "9962789422"
-        )
+        mockWCOrderModel.billingFirstName = "Jane"
+        mockWCOrderModel.billingLastName = "Masterson"
+        mockWCOrderModel.billingPhone = "07911123456"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
-
-        // click on Show Billing button
-        onView(withId(R.id.customerInfo_viewMore)).perform(click())
 
         // click on the call or message button
         onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(WCMatchers.scrollTo(), click())
@@ -363,17 +417,14 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     @Test
     fun verifyDisplayPopupAndCallForCorrectPhoneNumber() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingPhone = "9962789422"
-        )
+        mockWCOrderModel.billingFirstName = "Jane"
+        mockWCOrderModel.billingLastName = "Masterson"
+        mockWCOrderModel.billingPhone = "07911123456"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
-
-        // click on Show Billing button
-        onView(withId(R.id.customerInfo_viewMore)).perform(click())
 
         // click on the call or message button
         onView(withId(R.id.customerInfo_callOrMessageBtn)).perform(WCMatchers.scrollTo(), click())
@@ -391,9 +442,15 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     @Test
     fun verifyDisplayPopupAndMessageForCorrectPhoneNumber() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                billingPhone = "9962789422"
-        )
+        mockWCOrderModel.shippingFirstName = "Ann"
+        mockWCOrderModel.shippingLastName = "Moore"
+        mockWCOrderModel.shippingAddress1 = "Nigagra Falls"
+        mockWCOrderModel.shippingCountry = "USA"
+        mockWCOrderModel.billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
+        mockWCOrderModel.billingLastName = "Murthy"
+        mockWCOrderModel.billingFirstName = "Anitaa"
+        mockWCOrderModel.billingCountry = "USA"
+        mockWCOrderModel.billingPhone = "07911123456"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
@@ -401,7 +458,7 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // click on Show Billing button
-        onView(withId(R.id.customerInfo_viewMore)).perform(click())
+        onView(withId(R.id.customerInfo_viewMore)).perform(WCMatchers.scrollTo(), click())
 
         // click on the call or message button. Since the view might not be visible, scrollTo()
         // is used to this ensures that the view is displayed before proceeding to the click() action
@@ -420,15 +477,14 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
     @Test
     fun verifyEmailCustomerWithCorrectEmail() {
         // add mock data to order detail screen
-        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
+        mockWCOrderModel.billingFirstName = "Jane"
+        mockWCOrderModel.billingLastName = "Masterson"
+        mockWCOrderModel.billingEmail = "test1@testing.com"
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
         onView(ViewMatchers.withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
-
-        // click on Show Billing button
-        onView(withId(R.id.customerInfo_viewMore)).perform(click())
 
         // click on the Email icon
         onView(withId(R.id.customerInfo_emailBtn)).perform(WCMatchers.scrollTo(), click())
