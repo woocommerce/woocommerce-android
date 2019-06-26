@@ -24,6 +24,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashUtils
+import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.PackageUtils.PACKAGE_VERSION_CODE_DEFAULT
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
@@ -50,7 +52,6 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
-import org.wordpress.android.util.PackageUtils
 import javax.inject.Inject
 
 open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceInjector, ApplicationLifecycleListener {
@@ -223,7 +224,10 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
         } else if (oldVersionCode < versionCode) {
             AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
         }
-        AppPrefs.setLastAppVersionCode(versionCode)
+
+        if (versionCode != PACKAGE_VERSION_CODE_DEFAULT) {
+            AppPrefs.setLastAppVersionCode(versionCode)
+        }
     }
 
     @Suppress("unused")
