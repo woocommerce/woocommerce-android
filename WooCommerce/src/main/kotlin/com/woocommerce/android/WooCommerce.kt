@@ -73,6 +73,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
     private var connectionReceiverRegistered = false
 
+    private var accountLogoutEventRegistered = false
+
     protected open val component: AppComponent by lazy {
         DaggerAppComponent.builder()
                 .application(this)
@@ -230,17 +232,22 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (!accountStore.hasAccessToken()) {
-            // Logged out
-            AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
+            if (!accountLogoutEventRegistered) {
+                // Logged out
+                AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
 
-            // Reset analytics
-            AnalyticsTracker.flush()
-            AnalyticsTracker.clearAllData()
-            CrashUtils.resetAccountAndSite()
-            zendeskHelper.reset()
+                // Reset analytics
+                AnalyticsTracker.flush()
+                AnalyticsTracker.clearAllData()
+                CrashUtils.resetAccountAndSite()
+                zendeskHelper.reset()
 
-            // Wipe user-specific preferences
-            AppPrefs.reset()
+                // Wipe user-specific preferences
+                AppPrefs.reset()
+
+                // set the variable as true to avoid sending duplicate events for the same action
+                accountLogoutEventRegistered = true
+            }
         } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
             // make sure local usage tracking matches the account setting
             val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
