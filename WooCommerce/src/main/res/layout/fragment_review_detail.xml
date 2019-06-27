@@ -54,6 +54,7 @@
                     android:layout_marginEnd="@dimen/margin_medium"
                     android:layout_marginStart="@dimen/margin_extra_large"
                     android:layout_weight="1"
+                    android:textAlignment="viewStart"
                     android:textAppearance="@style/Woo.TextAppearance.Medium"
                     tools:text="Left Handed Candlestick"/>
 
@@ -92,6 +93,7 @@
                 android:id="@+id/review_user_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
                 android:layout_marginEnd="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_extra_large"
                 android:layout_marginTop="@dimen/margin_extra_large"
@@ -135,6 +137,7 @@
                 android:layout_marginEnd="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_extra_large"
                 android:layout_marginTop="@dimen/margin_extra_large"
+                android:textAlignment="viewStart"
                 android:textAppearance="@style/Woo.TextAppearance"
                 app:layout_constraintBottom_toTopOf="@+id/review_trash"
                 app:layout_constraintEnd_toEndOf="parent"
