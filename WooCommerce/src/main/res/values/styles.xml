@@ -64,6 +64,7 @@
     <style name="Woo.TextAppearance" parent="android:TextAppearance.DeviceDefault">
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="Woo.TextAppearance.Bold">
@@ -371,7 +372,6 @@
 
     <style name="Woo.Settings.LabelWithButton" parent="Woo.Settings.Label">
         <item name="android:paddingBottom">@dimen/margin_small</item>
-        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="Woo.Settings.Button" parent="Woo.Button">
@@ -390,7 +390,6 @@
         <item name="android:paddingEnd">@dimen/settings_padding</item>
         <item name="android:paddingBottom">@dimen/settings_padding</item>
         <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="Woo.Settings.Icon">
