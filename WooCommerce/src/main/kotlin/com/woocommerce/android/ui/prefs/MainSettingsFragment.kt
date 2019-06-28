@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.android.support.AndroidSupportInjection
@@ -110,6 +111,11 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         textPrivacySettings.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
+        }
+
+        textFeatureRequests.setOnClickListener {
+            // TODO: add event for tracking feature request
+            context?.let { ChromeCustomTabUtils.launchUrl(it, getString(R.string.app_feature_request_link)) }
         }
 
         textAbout.setOnClickListener {
