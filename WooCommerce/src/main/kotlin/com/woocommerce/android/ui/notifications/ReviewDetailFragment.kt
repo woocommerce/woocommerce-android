@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -17,13 +19,11 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.canMarkAsSpam
 import com.woocommerce.android.extensions.canModerate
 import com.woocommerce.android.extensions.canTrash
-import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getConvertedTimestamp
 import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.TopLevelFragmentView
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
@@ -31,6 +31,7 @@ import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
+import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
@@ -42,23 +43,7 @@ import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContract.View {
-    companion object {
-        const val TAG = "ReviewDetailFragment"
-        const val FIELD_REMOTE_NOTIF_ID = "notif-remote-id"
-        const val FIELD_REMOTE_COMMENT_ID = "remote-comment-id"
-        const val FIELD_COMMENT_STATUS_OVERRIDE = "status-override"
-
-        fun newInstance(notification: NotificationModel, tempStatus: String? = null): ReviewDetailFragment {
-            val args = Bundle()
-            args.putLong(FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
-            args.putLong(FIELD_REMOTE_COMMENT_ID, notification.getCommentId())
-            tempStatus?.let { args.putString(FIELD_COMMENT_STATUS_OVERRIDE, tempStatus) }
-
-            val fragment = ReviewDetailFragment()
-            fragment.arguments = args
-            return fragment
-        }
-    }
+    class OnRequestModerateReviewEvent(val remoteNoteId: Long, val comment: CommentModel, val newStatus: CommentStatus)
 
     @Inject lateinit var presenter: ReviewDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -73,6 +58,8 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
     private var remoteProductId: Long = 0L
     private var runOnStartFunc: (() -> Unit)? = null
     private var productIconSize: Int = 0
+
+    private val navArgs: ReviewDetailFragmentArgs by navArgs()
 
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
         AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
@@ -108,12 +95,10 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        arguments?.let {
-            remoteNoteId = it.getLong(FIELD_REMOTE_NOTIF_ID)
-            remoteCommentId = it.getLong(FIELD_REMOTE_COMMENT_ID)
-            commentStatusOverride = it.getString(FIELD_COMMENT_STATUS_OVERRIDE, null)?.let {
-                CommentStatus.fromString(it)
-            }
+        remoteNoteId = navArgs.remoteNoteId
+        remoteCommentId = navArgs.remoteCommentId
+        commentStatusOverride = navArgs.tempStatus?.let {
+            CommentStatus.fromString(it)
         }
 
         presenter.loadNotificationDetail(remoteNoteId, remoteCommentId)
@@ -262,20 +247,11 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
     }
 
     private fun processCommentModeration(newStatus: CommentStatus) {
-        parentFragment?.let { listener ->
-            if (listener is ReviewActionListener) {
-                presenter.comment?.let {
-                    listener.moderateComment(remoteNoteId, it, newStatus)
-                }
-
-                // Close this fragment
-                (parentFragment as? TopLevelFragmentView)?.closeCurrentChildFragment()
-            } else {
-                WooLog.e(NOTIFICATIONS, "$TAG - ParentFragment must implement ReviewActionListener to " +
-                        "moderate product review notifications!")
-
-                uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
-            }
+        // post an event to tell the notification list to moderate this comment then close this fragment
+        presenter.comment?.let { comment ->
+            val event = OnRequestModerateReviewEvent(remoteNoteId, comment, newStatus)
+            EventBus.getDefault().post(event)
+            findNavController().popBackStack()
         }
     }
 

@@ -6,9 +6,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -23,13 +29,17 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
+import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -43,6 +53,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -52,7 +63,9 @@ class MainActivity : AppCompatActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
         FragmentScrollListener,
-        MainNavigationView.MainNavigationListener,
+        MainNavigationRouter,
+        MainBottomNavigationView.MainNavigationListener,
+        NavController.OnDestinationChangedListener,
         WCPromoDialog.PromoDialogListener {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
@@ -82,7 +95,9 @@ class MainActivity : AppCompatActivity(),
     @Inject lateinit var selectedSite: SelectedSite
 
     private var isBottomNavShowing = true
-    private lateinit var bottomNavView: MainNavigationView
+    private var previousDestinationId: Int? = null
+    private lateinit var bottomNavView: MainBottomNavigationView
+    private lateinit var navController: NavController
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var loginProgressDialog: ProgressDialog? = null
@@ -97,6 +112,9 @@ class MainActivity : AppCompatActivity(),
 
         presenter.takeView(this)
         bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+
+        navController = findNavController(R.id.nav_host_fragment_main)
+        navController.addOnDestinationChangedListener(this)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -161,29 +179,137 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    /**
-     * Send the onBackPressed request to the current active fragment to pop any
-     * child fragments it may have on its back stack.
-     *
-     * Currently prevents the user from hitting back and exiting the app.
-     */
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        with(bottomNavView.activeFragment) {
-            if (isAdded && childFragmentManager.backStackEntryCount > 0) {
-                // go no further if active fragment doesn't allow back press - we use this so fragments can
-                // provide confirmation before discarding the current action, such as adding an order note
-                val fragment = childFragmentManager.findFragmentById(R.id.container)
-                if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
+        if (!isAtNavigationRoot()) {
+            // go no further if active fragment doesn't allow back press - we use this so fragments can
+            // provide confirmation before discarding the current action, such as adding an order note
+            getActiveChildFragment()?.let { fragment ->
+                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
                     return
                 }
-                childFragmentManager.popBackStack()
-                return
             }
+            navController.navigateUp()
+            return
         }
 
         super.onBackPressed()
+    }
+
+    /**
+     * Returns true if the navigation controller is showing the root fragment (ie: a top level fragment is showing)
+     */
+    override fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
+
+    /**
+     * Return true if one of the nav component fragments is showing (the opposite of the above)
+     */
+    override fun isChildFragmentShowing() = !isAtNavigationRoot()
+
+    /**
+     * Navigates to the root fragment so only the top level fragment is showing
+     */
+    private fun navigateToRoot() {
+        if (!isAtNavigationRoot()) {
+            navController.popBackStack(R.id.rootFragment, false)
+        }
+    }
+
+    /**
+     * Returns the current top level fragment (ie: the one showing in the bottom nav)
+     */
+    private fun getActiveTopLevelFragment(): TopLevelFragment? {
+        val tag = when (bottomNavView.currentPosition) {
+            DASHBOARD -> DashboardFragment.TAG
+            ORDERS -> OrderListFragment.TAG
+            NOTIFICATIONS -> NotifsListFragment.TAG
+        }
+        return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
+    }
+
+    /**
+     * Returns the fragment currently shown by the navigation component, or null if we're at the root
+     */
+    private fun getActiveChildFragment(): Fragment? {
+        return if (isChildFragmentShowing()) {
+            val navHostFragment = supportFragmentManager.primaryNavigationFragment
+            navHostFragment?.childFragmentManager?.fragments?.get(0)
+        } else {
+            null
+        }
+    }
+
+    /**
+     * The current fragment in the nav controller has changed
+     */
+    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+        val isAtRoot = isAtNavigationRoot()
+
+        // go no further if this is the initial navigation to the root fragment
+        if (isAtRoot && previousDestinationId == null) {
+            previousDestinationId = destination.id
+            return
+        }
+
+        // show/hide the top level fragment container depending on whether we're at the root
+        if (isAtRoot) {
+            container.visibility = View.VISIBLE
+        } else {
+            container.visibility = View.INVISIBLE
+        }
+
+        // make sure the correct up icon appears
+        val showUpIcon: Boolean
+        val showCrossIcon: Boolean
+        val showBottomNav: Boolean
+        if (isAtRoot) {
+            showUpIcon = false
+            showCrossIcon = false
+            showBottomNav = true
+        } else {
+            showUpIcon = true
+            showCrossIcon = when (destination.id) {
+                R.id.productDetailFragment,
+                R.id.addOrderShipmentTrackingFragment,
+                R.id.addOrderNoteFragment -> {
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+            showBottomNav = when (destination.id) {
+                R.id.addOrderShipmentTrackingFragment,
+                R.id.addOrderNoteFragment -> {
+                    false
+                }
+                else -> {
+                    true
+                }
+            }
+        }
+        supportActionBar?.let { actionBar ->
+            actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
+            @DrawableRes val icon = if (showCrossIcon) {
+                R.drawable.ic_gridicons_cross_white_24dp
+            } else {
+                R.drawable.ic_back_white_24dp
+            }
+            actionBar.setHomeAsUpIndicator(icon)
+        }
+
+        if (showBottomNav) {
+            showBottomNav()
+        } else {
+            hideBottomNav()
+        }
+
+        if (isAtRoot) {
+            getActiveTopLevelFragment()?.onReturnedFromChildFragment()
+        }
+
+        previousDestinationId = destination.id
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -316,15 +442,18 @@ class MainActivity : AppCompatActivity(),
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_SELECTED
-            ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_SELECTED
-            NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
+            DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_SELECTED
+            ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
+            NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        // if were not at the root, clear the nav controller's backstack
+        if (!isAtNavigationRoot()) {
+            navigateToRoot()
+        }
 
-        // Update the unseen notifications badge visiblility
+        // Update the unseen notifications badge visibility
         if (navPos == NOTIFICATIONS) {
             NotificationHandler.removeAllNotificationsFromSystemBar(this)
         }
@@ -332,11 +461,18 @@ class MainActivity : AppCompatActivity(),
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            BottomNavigationPosition.DASHBOARD -> AnalyticsTracker.Stat.MAIN_TAB_DASHBOARD_RESELECTED
-            BottomNavigationPosition.ORDERS -> AnalyticsTracker.Stat.MAIN_TAB_ORDERS_RESELECTED
-            BottomNavigationPosition.NOTIFICATIONS -> AnalyticsTracker.Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
+            DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
+            ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
+            NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
+
+        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
+        if (isAtNavigationRoot()) {
+            getActiveTopLevelFragment()?.scrollToTop()
+        } else {
+            navigateToRoot()
+        }
     }
     // endregion
 
@@ -347,7 +483,7 @@ class MainActivity : AppCompatActivity(),
         if (savedInstanceState != null) {
             restoreSavedInstanceState(savedInstanceState)
         } else if (openedFromPush) {
-            // Opened from a push notificaton
+            // Opened from a push notification
             //
             // Reset this flag now that it's being processed
             intent.removeExtra(FIELD_OPENED_FROM_PUSH)
@@ -413,7 +549,7 @@ class MainActivity : AppCompatActivity(),
             when (it.getWooType()) {
                 NEW_ORDER -> {
                     it.getRemoteOrderId()?.let { orderId ->
-                        (fragment as? NotifsListFragment)?.openOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
+                        showOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
                     }
                 }
                 PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
@@ -424,8 +560,19 @@ class MainActivity : AppCompatActivity(),
 
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
-        val fragment = bottomNavView.getFragment(bottomNavView.currentPosition)
-        fragment.openProductDetail(remoteProductId)
+        val action = ProductDetailFragmentDirections.actionGlobalProductDetailFragment(remoteProductId)
+        navController.navigate(action)
+    }
+
+    override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
+        // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
+        // detail fragment and then show a new one
+        if (markComplete) {
+            navController.popBackStack(R.id.orderDetailFragment, true)
+        }
+        val orderId = OrderIdentifier(localSiteId, remoteOrderId)
+        val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
+        navController.navigate(action)
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
