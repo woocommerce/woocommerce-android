@@ -110,6 +110,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
             }
         } else {
+            // Called from settings to change site.
             site_picker_root.setBackgroundColor(
                     ContextCompat.getColor(this, R.color.white))
 
@@ -128,6 +129,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                     resources.getDimensionPixelSize(R.dimen.margin_large),
                     resources.getDimensionPixelSize(R.dimen.margin_extra_large),
                     resources.getDimensionPixelSize(R.dimen.margin_large))
+
+            // Display the primary (purple) button with the label "Continue"
+            with(button_primary) {
+                visibility = View.VISIBLE
+                text = getString(R.string.continue_button)
+            }
         }
 
         presenter.takeView(this)
@@ -237,12 +244,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 hasConnectedStores = true
 
                 // Make "show connected stores" visible to the user
-                button_continue.visibility = View.VISIBLE
+                button_secondary.visibility = View.VISIBLE
             } else {
                 hasConnectedStores = false
 
                 // Hide "show connected stores"
-                button_continue.visibility = View.GONE
+                button_secondary.visibility = View.GONE
             }
 
             loginSiteUrl?.let { processLoginSite(it) }
@@ -275,15 +282,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         siteAdapter.siteList = wcSites
         siteAdapter.selectedSiteId = selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
 
-        button_continue.text = getString(R.string.continue_button)
-        button_continue.isEnabled = true
-        button_continue.setOnClickListener {
+        button_secondary.text = getString(R.string.continue_button)
+        button_secondary.isEnabled = true
+        button_secondary.setOnClickListener {
             presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
         }
     }
 
     override fun onSiteClick(siteId: Long) {
-        button_continue.isEnabled = true
+        button_primary.isEnabled = true
     }
 
     override fun siteSelected(site: SiteModel, isAutoLogin: Boolean) {
@@ -341,7 +348,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // re-select the previous site, if there was one
         siteAdapter.selectedSiteId = currentSite?.siteId ?: 0L
-        button_continue.isEnabled = siteAdapter.selectedSiteId != 0L
+        button_secondary.isEnabled = siteAdapter.selectedSiteId != 0L
 
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
@@ -371,9 +378,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 else AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
         no_stores_view.setCompoundDrawablesWithIntrinsicBounds(null, noStoresImage, null, null)
 
-        button_continue.text = getString(R.string.login_with_a_different_account)
-        button_continue.isEnabled = true
-        button_continue.setOnClickListener {
+        button_secondary.text = getString(R.string.login_with_a_different_account)
+        button_secondary.isEnabled = true
+        button_secondary.setOnClickListener {
             presenter.logout()
         }
     }
@@ -455,7 +462,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
         }
 
-        with(button_try_another) {
+        with(button_primary) {
             visibility = View.VISIBLE
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
@@ -464,7 +471,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_continue) {
+        with(button_secondary) {
             text = getString(R.string.login_view_connected_stores)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
@@ -519,7 +526,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        with(button_try_another) {
+        with(button_primary) {
             visibility = View.VISIBLE
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
@@ -528,7 +535,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_continue) {
+        with(button_secondary) {
             text = getString(R.string.login_view_connected_stores)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
