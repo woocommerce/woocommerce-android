@@ -249,6 +249,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             loginSiteUrl?.let { processLoginSite(it) }
             return
         }
+        // Hide "show connected stores" button now that we're displaying
+        // the store list.
+        button_secondary.visibility = View.GONE
 
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_STORES_SHOWN,
