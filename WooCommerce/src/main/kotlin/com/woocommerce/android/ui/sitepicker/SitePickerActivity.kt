@@ -110,7 +110,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
             }
         } else {
-            // Called from settings to change site.
+            // Opened from settings to change active store.
             site_picker_root.setBackgroundColor(
                     ContextCompat.getColor(this, R.color.white))
 
@@ -129,12 +129,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                     resources.getDimensionPixelSize(R.dimen.margin_large),
                     resources.getDimensionPixelSize(R.dimen.margin_extra_large),
                     resources.getDimensionPixelSize(R.dimen.margin_large))
-
-            // Display the primary (purple) button with the label "Continue"
-            with(button_primary) {
-                visibility = View.VISIBLE
-                text = getString(R.string.continue_button)
-            }
         }
 
         presenter.takeView(this)
@@ -463,7 +457,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         with(button_primary) {
-            visibility = View.VISIBLE
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
 
@@ -527,7 +520,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         with(button_primary) {
-            visibility = View.VISIBLE
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
 
