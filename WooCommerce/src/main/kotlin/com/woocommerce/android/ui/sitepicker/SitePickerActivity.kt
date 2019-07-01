@@ -279,9 +279,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         siteAdapter.siteList = wcSites
         siteAdapter.selectedSiteId = selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
 
-        button_secondary.text = getString(R.string.continue_button)
-        button_secondary.isEnabled = true
-        button_secondary.setOnClickListener {
+        button_primary.text = getString(R.string.continue_button)
+        button_primary.isEnabled = true
+        button_primary.setOnClickListener {
             presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
         }
     }
@@ -345,7 +345,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // re-select the previous site, if there was one
         siteAdapter.selectedSiteId = currentSite?.siteId ?: 0L
-        button_secondary.isEnabled = siteAdapter.selectedSiteId != 0L
+        button_primary.isEnabled = siteAdapter.selectedSiteId != 0L
 
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
@@ -375,9 +375,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 else AppCompatResources.getDrawable(this, R.drawable.ic_woo_no_store)
         no_stores_view.setCompoundDrawablesWithIntrinsicBounds(null, noStoresImage, null, null)
 
-        button_secondary.text = getString(R.string.login_with_a_different_account)
-        button_secondary.isEnabled = true
-        button_secondary.setOnClickListener {
+        button_primary.text = getString(R.string.login_try_another_account)
+        button_primary.isEnabled = true
+        button_primary.setOnClickListener {
             presenter.logout()
         }
     }
@@ -468,13 +468,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         with(button_secondary) {
-            text = getString(R.string.login_view_connected_stores)
-            setOnClickListener {
-                AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
-
-                showConnectedSites()
-            }
             visibility = if (hasConnectedStores) {
+                text = getString(R.string.login_view_connected_stores)
+
+                setOnClickListener {
+                    AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    showConnectedSites()
+                }
+
                 View.VISIBLE
             } else {
                 View.GONE
@@ -531,13 +532,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         with(button_secondary) {
-            text = getString(R.string.login_view_connected_stores)
-            setOnClickListener {
-                AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
-
-                showConnectedSites()
-            }
             visibility = if (hasConnectedStores) {
+                text = getString(R.string.login_view_connected_stores)
+
+                setOnClickListener {
+                    AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    showConnectedSites()
+                }
+
                 View.VISIBLE
             } else {
                 View.GONE
