@@ -202,11 +202,6 @@ class OrderDetailPresenter @Inject constructor(
         orderModel?.let {
             if (networkStatus.isConnected()) {
                 fetchOrder(it.remoteOrderId)
-            } else {
-                // Load cached order detail from the db
-                orderView?.showOrderDetail(it, isFreshData = false)
-                loadOrderNotes()
-                loadOrderShipmentTrackings()
             }
         }
     }
