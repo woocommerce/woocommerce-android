@@ -146,7 +146,7 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
         } else {
             // Populate the Customer Information Card
             orderFulfill_customerInfo.visibility = View.VISIBLE
-            orderFulfill_customerInfo.initView(order, false)
+            orderFulfill_customerInfo.initView(order, true)
         }
 
         orderFulfill_btnComplete.setOnClickListener(this)
