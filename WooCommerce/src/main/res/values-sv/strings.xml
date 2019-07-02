@@ -288,7 +288,6 @@ Language: sv_SE
     <string name="login_jetpack_view_instructions">Visa anvisningar</string>
     <string name="login_jetpack_required_msg">För att använda appen WooCommerce måste du ställa in tillägget Jetpack på dni webbplats</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
-    <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera tillägget WooCommerce på din webbplats och starta om appen för att fortsätta.</string>
     <string name="login_try_another_account">Prova med ett annat konto</string>
     <string name="login_not_connected_to_account">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
     <string name="login">Logga in</string>

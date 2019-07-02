@@ -288,7 +288,6 @@ Language: tr
     <string name="login_jetpack_view_instructions">Talimatları görüntüle</string>
     <string name="login_jetpack_required_msg">WooCommerce uygulamasını kullanmak için sitenize Jetpack eklentisini kurmanız gerekir</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
-    <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Sitenize WooCommerce eklentisini yükleyin ve devam etmek için bu uygulamayı yenileyin.</string>
     <string name="login_try_another_account">Farklı bir hesap deneyin</string>
     <string name="login_not_connected_to_account">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
     <string name="login">Oturum aç</string>
