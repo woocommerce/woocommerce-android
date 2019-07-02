@@ -13,42 +13,48 @@
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_marginTop="@dimen/margin_large"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/default_padding"
-        android:paddingTop="@dimen/default_padding">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="@dimen/text_extra_large"
-                android:layout_marginEnd="@dimen/list_item_padding_intra_h"
-                android:layout_weight="4"
-                android:background="@drawable/skeleton_background"/>
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="@dimen/text_extra_large"
-                android:layout_weight="1"
-                android:background="@drawable/skeleton_background"/>
-
-        </LinearLayout>
+        android:orientation="vertical">
 
         <View
-            android:layout_width="100dp"
-            android:layout_height="@dimen/text_extra_large"
+            android:layout_width="180dp"
+            android:layout_height="@dimen/text_large"
             android:layout_marginBottom="@dimen/margin_medium"
             android:layout_marginTop="8dp"
             android:background="@drawable/skeleton_background"/>
+
+        <View
+            android:layout_width="200dp"
+            android:layout_height="@dimen/text_medium"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:background="@drawable/skeleton_background"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_large">
+
+            <View
+                android:layout_width="100dp"
+                android:layout_height="@dimen/text_medium"
+                android:layout_marginEnd="@dimen/list_item_padding_intra_h"
+                android:background="@drawable/skeleton_background"/>
+
+
+            <View
+                android:layout_width="24dp"
+                android:layout_height="25dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/ic_edit_pencil"
+                android:backgroundTint="@color/skeleton_color"/>
+
+        </RelativeLayout>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="12dp"
+        android:layout_height="15dp"
         android:layout_marginBottom="@dimen/margin_large"
         android:layout_marginTop="@dimen/margin_large"
         android:background="@color/list_divider"/>
@@ -58,7 +64,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="12dp"
+        android:layout_height="15dp"
         android:layout_marginBottom="@dimen/margin_large"
         android:layout_marginTop="@dimen/margin_large"
         android:background="@color/list_divider"/>
@@ -75,51 +81,15 @@
 
         <View
             android:layout_width="120dp"
-            android:layout_height="@dimen/text_extra_large"
+            android:layout_height="@dimen/text_large"
             android:layout_marginBottom="@dimen/margin_medium"
             android:layout_marginTop="8dp"
             android:background="@drawable/skeleton_background"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="@dimen/text_extra_large"
+            android:layout_height="@dimen/text_large"
             android:layout_marginEnd="@dimen/list_item_padding_intra_h"
             android:background="@drawable/skeleton_background"/>
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="12dp"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_large"
-        android:background="@color/list_divider"/>
-
-    <!-- group four - order customer shipping card -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_large"
-        android:layout_marginStart="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_large"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/default_padding"
-        android:paddingTop="@dimen/default_padding">
-
-        <View
-            android:layout_width="120dp"
-            android:layout_height="@dimen/text_extra_large"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/skeleton_background"/>
-
-        <View
-            android:layout_width="250dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="@dimen/list_item_padding_intra_h"
-            android:layout_weight="4"
-            android:background="@drawable/skeleton_background"/>
-
-    </LinearLayout>
-
 </LinearLayout>
