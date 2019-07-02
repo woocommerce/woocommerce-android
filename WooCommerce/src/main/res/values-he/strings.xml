@@ -288,7 +288,6 @@ Language: he_IL
     <string name="login_jetpack_view_instructions">לעיון בהוראות</string>
     <string name="login_jetpack_required_msg">כדי להשתמש באפליקציה של Woocommerce עליך להגדיר את התוסף של Jetpack באתר שלך</string>
     <string name="login_view_connected_stores">להצגת החנויות המחוברות</string>
-    <string name="login_not_woo_store">נראה שהאתר %1$s אינו אתר של WooCommerce. יש להתקין את התוסף של Woocommerce באתר שלך ולאחר מכן לרענן את האפליקציה כדי להמשיך.</string>
     <string name="login_try_another_account">יש לנסות חשבון אחר</string>
     <string name="login_not_connected_to_account">נראה ששם המשתמש %1$s מחובר לחשבון אחר ב-WordPress.com.</string>
     <string name="login">התחברות</string>
