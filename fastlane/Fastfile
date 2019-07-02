@@ -114,7 +114,10 @@ lane :localize_libs do | options |
     {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id"]}
   ]
 
-  an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: libraries_strings_path)
+  if (an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: libraries_strings_path)) then
+    UI.important("Your #{main_strings_path} has changed.")
+    UI.input("Please, review the changes, commit them and press return to continue.")
+  end
 end
 
 ########################################################################
