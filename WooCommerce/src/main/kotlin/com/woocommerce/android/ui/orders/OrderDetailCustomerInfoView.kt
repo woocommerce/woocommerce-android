@@ -20,7 +20,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         View.inflate(context, R.layout.order_detail_customer_info, this)
     }
 
-    fun initView(order: WCOrderModel, shippingOnly: Boolean) {
+    fun initView(
+        order: WCOrderModel,
+        shippingOnly: Boolean,
+        billingOnly: Boolean = false
+    ) {
         // Populate Shipping & Billing information
         val billingName = context
                 .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
@@ -39,7 +43,15 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             return
         }
 
-        if (!isShippingInfoEmpty) {
+        if (billingOnly || isShippingInfoEmpty) {
+            // if no shipping address available, hide the shipping section and disable read more button
+            customerInfo_divider.visibility = View.GONE
+            customerInfo_shippingAddr.visibility = View.GONE
+            customerInfo_shippingLabel.visibility = View.GONE
+            customerInfo_morePanel.visibility = View.VISIBLE
+            formatViewAsShippingOnly()
+            customerInfo_viewMore.setOnCheckedChangeListener(null)
+        } else {
             // display shipping section if available. Enable the read more button here
             val shippingName = context
                     .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
@@ -57,14 +69,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                     customerInfo_morePanel.visibility = View.GONE
                 }
             }
-        } else {
-            // if no shipping address available, hide the shipping section and disable read more button
-            customerInfo_divider.visibility = View.GONE
-            customerInfo_shippingAddr.visibility = View.GONE
-            customerInfo_shippingLabel.visibility = View.GONE
-            customerInfo_morePanel.visibility = View.VISIBLE
-            formatViewAsShippingOnly()
-            customerInfo_viewMore.setOnCheckedChangeListener(null)
         }
 
         // if only shipping is to be displayed or if billing details are not available, hide the billing section

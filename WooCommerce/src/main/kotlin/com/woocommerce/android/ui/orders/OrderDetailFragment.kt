@@ -190,14 +190,11 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
                     productListener = this
             )
 
-            // check if product is a virtual product. If it is, hide the shipping details card
-            if (presenter.isVirtualProduct(order.getLineItemList())) {
-                orderDetail_customerInfo.visibility = View.GONE
-            } else {
-                // Populate the Customer Information Card
-                orderDetail_customerInfo.visibility = View.VISIBLE
-                orderDetail_customerInfo.initView(order, false)
-            }
+            // check if product is a virtual product. If it is, hide only the shipping details card
+            orderDetail_customerInfo.initView(
+                    order = order,
+                    shippingOnly = false,
+                    billingOnly = presenter.isVirtualProduct(order.getLineItemList()))
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
