@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dashboard_refresh_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/default_window_background">
 
-    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
-        android:id="@+id/dashboard_refresh_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/default_window_background">
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -51,12 +50,14 @@
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
-    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
 
-    <com.woocommerce.android.widgets.WCEmptyView
-        android:id="@+id/empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
-</FrameLayout>
+    </FrameLayout>
+
+</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
