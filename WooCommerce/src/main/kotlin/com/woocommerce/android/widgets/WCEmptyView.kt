@@ -2,13 +2,10 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
@@ -63,8 +60,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         @StringRes messageId: Int,
         showImage: Boolean = true,
         showShareButton: Boolean = true,
-        showStats: Boolean = false)
-    {
+        showStats: Boolean = false
+    ) {
         showNoCustomersImage = showImage
         checkOrientation()
 
