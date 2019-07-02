@@ -11,7 +11,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationApiResponse
-import org.wordpress.android.fluxc.store.SiteStore
 import java.io.UnsupportedEncodingException
 import java.util.zip.DataFormatException
 import java.util.zip.Inflater
@@ -27,13 +26,11 @@ object NotificationsUtils {
     /**
      * Builds a [NotificationModel] from a push notification bundle.
      */
-    fun buildNotificationModelFromBundle(siteStore: SiteStore, data: Bundle): NotificationModel? {
+    fun buildNotificationModelFromBundle(data: Bundle): NotificationModel? {
         return data.getString(NotificationHandler.PUSH_ARG_NOTE_FULL_DATA)?.let {
             getNotificationJsonFromBase64EncodedData(it)?.let { json ->
             val apiResponse = Gson().fromJson(json.toString(), NotificationApiResponse::class.java)
-            val remoteSiteId = NotificationApiResponse.getRemoteSiteId(apiResponse) ?: 0
-            val localSiteId = siteStore.getLocalIdForRemoteSiteId(remoteSiteId)
-            NotificationApiResponse.notificationResponseToNotificationModel(apiResponse, localSiteId)
+            NotificationApiResponse.notificationResponseToNotificationModel(apiResponse)
         } }
     }
 
