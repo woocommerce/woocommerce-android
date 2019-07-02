@@ -211,21 +211,23 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     private fun trackStartupAnalytics() {
         // Track app upgrade and install
         val versionCode = PackageUtils.getVersionCode(this)
-
         val oldVersionCode = AppPrefs.getLastAppVersionCode()
 
-        if (oldVersionCode == versionCode) {
-            return
-        }
-
         if (oldVersionCode == 0) {
-            // Track application installed if there isn't old version code
             AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
-        } else if (oldVersionCode < versionCode) {
-            AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
-        }
 
-        if (versionCode != PACKAGE_VERSION_CODE_DEFAULT) {
+            // Store the current app version code to SharedPrefs, even if the value is -1
+            // to prevent duplicate install events being called
+            AppPrefs.setLastAppVersionCode(versionCode)
+        } else if (oldVersionCode < versionCode) {
+            // Track upgrade event only if oldVersionCode is not -1, to prevent
+            // duplicate upgrade events being called
+            if (oldVersionCode > PACKAGE_VERSION_CODE_DEFAULT) {
+                AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+            }
+
+            // store the latest version code to SharedPrefs, only if the value
+            // is greater than the stored version code
             AppPrefs.setLastAppVersionCode(versionCode)
         }
     }
