@@ -288,7 +288,6 @@ Language: ja_JP
     <string name="login_jetpack_view_instructions">手順を表示</string>
     <string name="login_jetpack_required_msg">WooCommerce アプリを使用するには、サイトに Jetpack プラグインを設定する必要があります。</string>
     <string name="login_view_connected_stores">連携ストアを表示</string>
-    <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。サイトに WooCommerce プラグインをインストールし、アプリを再読み込みして続行してください。</string>
     <string name="login_try_another_account">別のアカウントでお試しください</string>
     <string name="login_not_connected_to_account">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
     <string name="login">ログイン</string>
