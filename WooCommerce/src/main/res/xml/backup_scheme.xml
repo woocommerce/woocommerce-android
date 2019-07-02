@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
   <include domain="sharedpref" path="com.woocommerce.android_preferences.xml"/>
+  <exclude domain="sharedpref" path="com.woocommerce.android_deletable_preferences.xml"/>
 </full-backup-content>
