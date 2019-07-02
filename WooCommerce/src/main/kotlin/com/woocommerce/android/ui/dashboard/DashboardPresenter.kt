@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.FetchVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -204,6 +205,10 @@ class DashboardPresenter @Inject constructor(
                 } else {
                     val hasNoOrders = event.rowsAffected == 0
                     dashboardView?.showEmptyView(hasNoOrders)
+
+                    // fetch visitor stats for the empty view
+                    val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), DAYS, forced = true)
+                    dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
                 }
             }
             FETCH_ORDERS_COUNT -> {

@@ -21,12 +21,15 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.hide
+import com.woocommerce.android.util.show
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
@@ -210,6 +213,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showVisitorStats(visits)
         }
+
+        if (granularity == DAYS) {
+            empty_view.updateVisitorCount(visits)
+        }
     }
 
     override fun showVisitorStatsError(granularity: StatsGranularity) {
@@ -305,6 +312,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
+        if (show) {
+            empty_view.show(R.string.waiting_for_customers, showStats = true)
+            scroll_view.hide()
+        } else {
+            scroll_view.show()
+            empty_view.hide()
+        }
     }
 }
