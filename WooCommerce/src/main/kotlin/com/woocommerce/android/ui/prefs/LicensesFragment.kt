@@ -20,7 +20,7 @@ class LicensesFragment : androidx.fragment.app.Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        webView.loadUrl("file:///android_asset/licenses.html")
+        webView.loadUrl("file:///android_res/raw/licenses.html")
     }
 
     override fun onResume() {
