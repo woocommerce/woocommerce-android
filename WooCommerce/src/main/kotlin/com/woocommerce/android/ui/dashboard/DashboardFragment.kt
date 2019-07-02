@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -46,6 +47,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
+
+    // If false, the fragment will refresh its data when it's visible on onHiddenChanged
+    // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
+    private var isStatsRefreshed: Boolean = false
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -120,6 +125,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         if (isActive && !deferInit) {
+            isStatsRefreshed = true
             refreshDashboard(forced = this.isRefreshPending)
         }
     }
@@ -133,8 +139,18 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onHiddenChanged(hidden)
 
         // silently refresh if this fragment is no longer hidden
-        if (!isHidden) {
+        if (!isHidden && !isStatsRefreshed) {
             refreshDashboard(forced = false)
+        } else {
+            isStatsRefreshed = false
+        }
+    }
+
+    override fun onReturnedFromChildFragment() {
+        // If this fragment is now visible and we've deferred loading stats due to it not
+        // being visible - go ahead and load the stats.
+        if (!deferInit) {
+            refreshDashboard(forced = this.isRefreshPending)
         }
     }
 
@@ -153,15 +169,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
         outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
-    }
-
-    override fun onBackStackChanged() {
-        super.onBackStackChanged()
-        // If this fragment is now visible and we've deferred loading stats due to it not
-        // being visible - go ahead and load the stats.
-        if (isActive && !deferInit) {
-            refreshDashboard(forced = this.isRefreshPending)
-        }
     }
 
     override fun showStats(
@@ -281,7 +288,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
-        openProductDetail(topEarner.id)
+        (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
     }
 
     override fun hideUnfilledOrdersCard() {

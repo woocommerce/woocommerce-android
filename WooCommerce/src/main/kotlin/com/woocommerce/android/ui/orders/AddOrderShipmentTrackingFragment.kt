@@ -10,7 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -19,7 +19,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.DateUtils
-import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_shipment_tracking.*
@@ -27,12 +26,11 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import java.util.Calendar
 import javax.inject.Inject
+import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
 class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOrderShipmentTrackingContract.View,
         AddOrderTrackingProviderActionListener, BackPressListener {
     companion object {
-        const val TAG = "AddOrderShipmentTrackingFragment"
-        const val FIELD_ORDER_IDENTIFIER = "order-identifier"
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
         const val FIELD_ORDER_TRACKING_DATE_SHIPPED = "order-tracking-date-shipped"
         const val FIELD_ORDER_TRACKING_PROVIDER = "order-tracking-provider"
@@ -40,22 +38,6 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
         const val FIELD_IS_CUSTOM_PROVIDER = "is-custom-provider"
         const val FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME = "order-tracking-custom-provider-name"
         const val FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL = "order-tracking-custom-provider-url"
-
-        fun newInstance(
-            orderIdentifier: OrderIdentifier,
-            orderTrackingProvider: String,
-            isCustomProvider: Boolean
-        ): AddOrderShipmentTrackingFragment {
-            val args = Bundle().also {
-                it.putString(FIELD_ORDER_IDENTIFIER, orderIdentifier)
-                it.putString(FIELD_ORDER_TRACKING_PROVIDER, orderTrackingProvider)
-                it.putBoolean(FIELD_IS_CUSTOM_PROVIDER, isCustomProvider)
-            }
-
-            val fragment = AddOrderShipmentTrackingFragment()
-            fragment.arguments = args
-            return fragment
-        }
     }
 
     @Inject lateinit var networkStatus: NetworkStatus
@@ -69,6 +51,8 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var providerListPickerDialog: AddOrderTrackingProviderListFragment? = null
 
+    private val navArgs: AddOrderShipmentTrackingFragmentArgs by navArgs()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -81,9 +65,6 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        activity?.let {
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-        }
         return inflater.inflate(R.layout.fragment_add_shipment_tracking, container, false)
     }
 
@@ -92,8 +73,9 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
 
         activity?.title = getString(R.string.order_shipment_tracking_toolbar_title)
 
+        orderId = navArgs.orderId
+
         if (savedInstanceState != null) {
-            orderId = savedInstanceState.getString(FIELD_ORDER_IDENTIFIER) ?: ""
             isSelectedProviderCustom = savedInstanceState.getBoolean(FIELD_IS_CUSTOM_PROVIDER, false)
             addTracking_number.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_NUMBER, ""))
             addTracking_date.text = savedInstanceState.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED)
@@ -107,16 +89,14 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
                 confirmDiscard()
             }
         } else {
-            orderId = arguments?.getString(FIELD_ORDER_IDENTIFIER) ?: ""
-            isSelectedProviderCustom = arguments?.getBoolean(FIELD_IS_CUSTOM_PROVIDER, false) ?: false
-            val dateShipped = arguments?.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED)?.let { it }
-                    ?: FluxCDateUtils.getCurrentDateString()
+            isSelectedProviderCustom = navArgs.isCustomProvider
+            val dateShipped = FluxCDateUtils.getCurrentDateString()
             displayFormatDateShippedText(dateShipped)
         }
 
         val selectedCarrierName = savedInstanceState?.let {
             savedInstanceState.getString(FIELD_ORDER_TRACKING_PROVIDER)
-        } ?: arguments?.getString(FIELD_ORDER_TRACKING_PROVIDER)?.let { it } ?: ""
+        } ?: navArgs.orderTrackingProvider
         if (isCustomProvider()) {
             addTracking_custom_provider_name.setText(selectedCarrierName)
             addTracking_editCarrier.text = getString(R.string.order_shipment_tracking_custom_provider_section_name)
@@ -261,7 +241,6 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(FIELD_ORDER_IDENTIFIER, orderId)
         outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         outState.putString(FIELD_ORDER_TRACKING_NUMBER, addTracking_number.text.toString())
         outState.putString(FIELD_ORDER_TRACKING_DATE_SHIPPED, addTracking_date.text.toString())
