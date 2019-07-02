@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
@@ -114,7 +115,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         }
 
         textFeatureRequests.setOnClickListener {
-            // TODO: add event for tracking feature request
+            AnalyticsTracker.track(SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED)
             context?.let { ChromeCustomTabUtils.launchUrl(it, getString(R.string.app_feature_request_link)) }
         }
 
