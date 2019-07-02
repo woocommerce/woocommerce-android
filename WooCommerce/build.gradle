@@ -17,7 +17,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-allopen'
 apply plugin: 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
 apply plugin: 'io.sentry.android.gradle'
-
+apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 repositories {
     maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
@@ -43,8 +43,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "2.1-rc-2"
-        versionCode 61
+        versionName "2.1"
+        versionCode 62
 
         minSdkVersion 21
         targetSdkVersion 28
@@ -111,8 +111,8 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.browser:browser:1.0.0"
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.0.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.0.0'
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
     implementation('org.wordpress:utils:1.22') {
         exclude group: "com.mcxiaoke.volley"
@@ -177,7 +177,7 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:1.0.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
-    implementation (group: 'com.zendesk', name: 'support', version: '2.3.1') {
+    implementation(group: 'com.zendesk', name: 'support', version: '2.3.1') {
         exclude group: 'com.google.dagger'
     }
 }
@@ -216,18 +216,18 @@ android.buildTypes.all { buildType ->
 }
 
 task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask) {
-   repositoryOwner = "woocommerce";
-   repositoryName = "woocommerce-android"
-   pullRequestId = System.properties['GITHUB_PULLREQUESTID']
-   username = System.properties['GITHUB_USERNAME']
-   password = System.properties['GITHUB_PASSWORD']
-   oAuth2Token = System.properties['GITHUB_OAUTH2TOKEN']
-   gitHubUrl = "https://api.github.com/"
-   createCommentWithAllSingleFileComments = false
-   createSingleFileComments = true
-   commentOnlyChangedContent = true
-   minSeverity = se.bjurr.violations.lib.model.SEVERITY.INFO //ERROR, INFO, WARN
-   commentTemplate = """
+    repositoryOwner = "woocommerce";
+    repositoryName = "woocommerce-android"
+    pullRequestId = System.properties['GITHUB_PULLREQUESTID']
+    username = System.properties['GITHUB_USERNAME']
+    password = System.properties['GITHUB_PASSWORD']
+    oAuth2Token = System.properties['GITHUB_OAUTH2TOKEN']
+    gitHubUrl = "https://api.github.com/"
+    createCommentWithAllSingleFileComments = false
+    createSingleFileComments = true
+    commentOnlyChangedContent = true
+    minSeverity = se.bjurr.violations.lib.model.SEVERITY.INFO //ERROR, INFO, WARN
+    commentTemplate = """
 **Reporter**: {{violation.reporter}}{{#violation.rule}}\n
 **Rule**: {{violation.rule}}{{/violation.rule}}
 **Severity**: {{violation.severity}}
@@ -235,9 +235,9 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
 **Source**: {{violation.source}}{{/violation.source}}
 {{violation.message}}
 """
-   violations = [
-    ["CHECKSTYLE", ".", ".*/build/.*\\.xml\$", "Checkstyle"]
-   ]
+    violations = [
+            ["CHECKSTYLE", ".", ".*/build/.*\\.xml\$", "Checkstyle"]
+    ]
 }
 
 def checkGradlePropertiesFile() {

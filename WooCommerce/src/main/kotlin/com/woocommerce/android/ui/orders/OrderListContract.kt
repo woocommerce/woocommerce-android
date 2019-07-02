@@ -27,7 +27,7 @@ interface OrderListContract {
         fun loadShipmentTrackingProviders(order: WCOrderModel)
     }
 
-    interface View : BaseView<Presenter>, OrdersViewRouter {
+    interface View : BaseView<Presenter> {
         var isRefreshPending: Boolean
         var isSearching: Boolean
         var isRefreshing: Boolean
@@ -38,6 +38,8 @@ interface OrderListContract {
         fun refreshFragmentState()
         fun showLoadOrdersError()
         fun showNoConnectionError()
+
+        fun showOrderDetail(order: WCOrderModel)
 
         fun submitSearch(query: String)
         fun submitSearchDelayed(query: String)
