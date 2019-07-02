@@ -1,4 +1,4 @@
-2.2
+2.3
 -----
 * Fixed a bug where the notifications list would be empty after logging out and back into app
 * Added a "refresh app" option to the sign in flow to check for updates to the selected site
