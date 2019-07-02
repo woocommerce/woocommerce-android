@@ -409,14 +409,16 @@ class MainActivity : AppCompatActivity(),
         val navPos = BottomNavigationPosition.NOTIFICATIONS.position
         bottom_nav.active(navPos)
 
-        (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {
-            when (it.getWooType()) {
+        (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let { note ->
+            when (note.getWooType()) {
                 NEW_ORDER -> {
-                    it.getRemoteOrderId()?.let { orderId ->
-                        (fragment as? NotifsListFragment)?.openOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
+                    note.getRemoteOrderId()?.let { orderId ->
+                        selectedSite.getIfExists()?.let { site ->
+                            (fragment as? NotifsListFragment)?.openOrderDetail(site.id, orderId, note.remoteNoteId)
+                        }
                     }
                 }
-                PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
+                PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(note)
                 else -> { /* do nothing */ }
             }
         }
