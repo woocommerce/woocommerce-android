@@ -548,14 +548,16 @@ class MainActivity : AppCompatActivity(),
         val navPos = BottomNavigationPosition.NOTIFICATIONS.position
         bottom_nav.active(navPos)
 
-        (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let {
-            when (it.getWooType()) {
+        (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let { note ->
+            when (note.getWooType()) {
                 NEW_ORDER -> {
-                    it.getRemoteOrderId()?.let { orderId ->
-                        showOrderDetail(it.localSiteId, orderId, it.remoteNoteId)
+                    selectedSite.getIfExists()?.let { site ->
+                        note.getRemoteOrderId()?.let { orderId ->
+                            showOrderDetail(site.id, orderId, note.remoteNoteId)
+                        }
                     }
                 }
-                PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(it)
+                PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(note)
                 else -> { /* do nothing */ }
             }
         }

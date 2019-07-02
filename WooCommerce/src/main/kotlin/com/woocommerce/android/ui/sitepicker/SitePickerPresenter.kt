@@ -64,6 +64,11 @@ class SitePickerPresenter @Inject constructor(
         dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
     }
 
+    override fun fetchUpdatedSiteFromAPI(site: SiteModel) {
+        view?.showSkeleton(true)
+        dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(site))
+    }
+
     override fun loadSites() {
         val wcSites = wooCommerceStore.getWooCommerceSites()
         view?.showStoreList(wcSites)

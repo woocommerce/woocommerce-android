@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="jetpack_view_instructions_link" translatable="false">https://docs.woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app/</string>
+    <string name="app_feature_request_link" translatable="false">http://ideas.woocommerce.com/forums/133476-woocommerce?category_id=84283</string>
 </resources>
