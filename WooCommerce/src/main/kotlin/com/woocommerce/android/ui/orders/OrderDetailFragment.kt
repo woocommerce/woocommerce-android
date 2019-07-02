@@ -123,11 +123,21 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
             scrollUpChild = scrollView
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.ORDER_DETAIL_PULLED_TO_REFRESH)
-
-                orderRefreshLayout.isRefreshing = false
                 if (!isRefreshPending) {
-                    isRefreshPending = true
-                    presenter.refreshOrderDetail()
+                    // if undo snackbar is displayed, dismiss it and initiate request
+                    // to change order status or delete shipment tracking
+                    // once that is processed, initiate order detail refresh
+                    when {
+                        deleteOrderShipmentTrackingSnackbar?.isShownOrQueued == true -> {
+                            deleteOrderShipmentTrackingSnackbar?.dismiss()
+                            deleteOrderShipmentTrackingSnackbar = null
+                        }
+                        changeOrderStatusSnackbar?.isShownOrQueued == true -> {
+                            changeOrderStatusSnackbar?.dismiss()
+                            changeOrderStatusSnackbar = null
+                        }
+                        else -> refreshOrderDetail(true)
+                    }
                 }
             }
         }
@@ -288,6 +298,14 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     override fun refreshOrderStatus() {
         presenter.orderModel?.let {
             setOrderStatus(it.status)
+        }
+    }
+
+    override fun refreshOrderDetail(displaySkeleton: Boolean) {
+        orderRefreshLayout.isRefreshing = false
+        if (!isRefreshPending) {
+            isRefreshPending = true
+            presenter.refreshOrderDetail(displaySkeleton)
         }
     }
 

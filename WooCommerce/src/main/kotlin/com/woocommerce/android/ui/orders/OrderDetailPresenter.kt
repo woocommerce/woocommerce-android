@@ -119,7 +119,7 @@ class OrderDetailPresenter @Inject constructor(
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
-            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId)
+            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
 
@@ -198,16 +198,16 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    override fun refreshOrderDetail() {
+    override fun refreshOrderDetail(displaySkeleton: Boolean) {
         orderModel?.let {
             if (networkStatus.isConnected()) {
-                fetchOrder(it.remoteOrderId)
+                fetchOrder(it.remoteOrderId, displaySkeleton)
             }
         }
     }
 
-    override fun fetchOrder(remoteOrderId: Long) {
-        orderView?.showSkeleton(true)
+    override fun fetchOrder(remoteOrderId: Long, displaySkeleton: Boolean) {
+        orderView?.showSkeleton(displaySkeleton)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
     }
@@ -360,6 +360,9 @@ class OrderDetailPresenter @Inject constructor(
                 }
                 orderView?.markOrderStatusChangedSuccess()
             }
+
+            // if order detail refresh is pending, call refresh order detail
+            orderView?.refreshOrderDetail()
         } else if (event.causeOfChange == POST_ORDER_NOTE) {
             if (event.isError) {
                 AnalyticsTracker.track(
@@ -388,6 +391,9 @@ class OrderDetailPresenter @Inject constructor(
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()
             }
+
+            // if order detail refresh is pending, call refresh order detail
+            orderView?.refreshOrderDetail()
         } else if (event.causeOfChange == ADD_ORDER_SHIPMENT_TRACKING) {
             if (event.isError) {
                 AnalyticsTracker.track(
