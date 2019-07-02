@@ -68,7 +68,7 @@ class NotificationHandler @Inject constructor(
         const val PUSH_TYPE_COMMENT = "c"
         const val PUSH_TYPE_NEW_ORDER = "store_order"
 
-        @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
+        @Synchronized fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
 
         @Synchronized fun clearNotifications() {
             ACTIVE_NOTIFICATIONS_MAP.clear()
