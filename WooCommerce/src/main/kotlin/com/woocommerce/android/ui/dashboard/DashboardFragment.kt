@@ -48,6 +48,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
 
+    // If false, the fragment will refresh its data when it's visible on onHiddenChanged
+    // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
+    private var isStatsRefreshed: Boolean = false
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -121,6 +125,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
 
         if (isActive && !deferInit) {
+            isStatsRefreshed = true
             refreshDashboard(forced = this.isRefreshPending)
         }
     }
@@ -134,8 +139,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onHiddenChanged(hidden)
 
         // silently refresh if this fragment is no longer hidden
-        if (!isHidden) {
+        if (!isHidden && !isStatsRefreshed) {
             refreshDashboard(forced = false)
+        } else {
+            isStatsRefreshed = false
         }
     }
 

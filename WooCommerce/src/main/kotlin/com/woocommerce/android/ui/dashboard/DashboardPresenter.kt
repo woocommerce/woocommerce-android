@@ -13,7 +13,6 @@ import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
@@ -225,11 +224,6 @@ class DashboardPresenter @Inject constructor(
                     dashboardView?.showUnfilledOrdersCard(count)
                 } ?: dashboardView?.hideUnfilledOrdersCard()
             }
-            else -> {
-                if (!event.isError && !isIgnoredOrderEvent(event.causeOfChange)) {
-                    dashboardView?.refreshDashboard(forced = false)
-                }
-            }
         }
     }
 
@@ -244,14 +238,5 @@ class DashboardPresenter @Inject constructor(
                 }
             }
         }
-    }
-
-    /**
-     * Use this function to add [OnOrderChanged] events that should be ignored.
-     */
-    private fun isIgnoredOrderEvent(actionType: WCOrderAction?): Boolean {
-        return actionType == null ||
-                actionType == WCOrderAction.FETCH_ORDER_NOTES ||
-                actionType == WCOrderAction.POST_ORDER_NOTE
     }
 }
