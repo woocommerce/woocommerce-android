@@ -291,14 +291,14 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun openOrderDetail(notification: NotificationModel) {
-        notification.getRemoteOrderId()?.let {
+        notification.getRemoteOrderId()?.let { remoteOrderId ->
             AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                     AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
                     AnalyticsTracker.KEY_ALREADY_READ to notification.read))
             showOptionsMenu(false)
             (activity as? MainNavigationRouter)?.showOrderDetail(
                     selectedSite.get().id,
-                    it,
+                    remoteOrderId,
                     notification.remoteNoteId
             )
         } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
