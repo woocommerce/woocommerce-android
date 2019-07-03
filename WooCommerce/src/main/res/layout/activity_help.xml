@@ -29,7 +29,7 @@
 
                 <TextView
                     style="@style/Woo.Settings.Caption"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/support_subtitle"/>
 
@@ -151,6 +151,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="center"
+        android:textAlignment="gravity"
         android:paddingBottom="@dimen/margin_extra_large"
         android:paddingTop="@dimen/margin_extra_large"
         tools:text="Version"/>

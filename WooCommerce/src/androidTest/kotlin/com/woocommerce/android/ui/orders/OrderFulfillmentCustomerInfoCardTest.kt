@@ -49,10 +49,10 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
     @Test
     fun verifyCustomerInfoCardPopulatedSuccessfully() {
         // Set Order fulfillment with mock data
-        mockWCOrderModel.billingFirstName = "Anitaa"
-        mockWCOrderModel.billingLastName = "Murthy"
-        mockWCOrderModel.billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
-        mockWCOrderModel.billingCountry = "USA"
+        mockWCOrderModel.shippingFirstName = "Anitaa"
+        mockWCOrderModel.shippingLastName = "Murthy"
+        mockWCOrderModel.shippingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
+        mockWCOrderModel.shippingCountry = "USA"
         activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
@@ -81,91 +81,6 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
 
         // check if customer info card shipping details matches this format:
-        val billingName = appContext.getString(
-                R.string.customer_full_name,
-                mockWCOrderModel.billingFirstName, mockWCOrderModel.billingLastName
-        )
-        val billingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getBillingAddress())
-        val billingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.billingCountry)
-
-        // Assumes that the shipping name, address and country info is available
-        val shippingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
-    }
-
-    @Test
-    fun verifyCustomerInfoCardViewWithLongNamePopulatedSuccessfully() {
-        // Set Order fulfillment with mock data
-        mockWCOrderModel.billingFirstName = "Itsareallylongfirstname"
-        mockWCOrderModel.billingLastName = "Itsareallylonglastname"
-        mockWCOrderModel.billingAddress1 = "Its a really long address to see how it is handled in UI. More to comehere"
-        mockWCOrderModel.billingCountry = "India"
-        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel)
-
-        // click on the first order in the list and check if redirected to order detail
-        onView(withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
-
-        // click on Order Fulfill button to redirect to Order Fulfillment
-        onView(withId(R.id.productList_btnFulfill)).perform(click())
-
-        // check if customer info card shipping details matches this format:
-        val billingName = appContext.getString(
-                R.string.customer_full_name,
-                mockWCOrderModel.billingFirstName, mockWCOrderModel.billingLastName
-        )
-        val billingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getBillingAddress())
-        val billingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.billingCountry)
-
-        // Assumes that the shipping name, address and country info is available
-        val shippingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
-    }
-
-    @Test
-    fun verifyCustomerInfoCardWithNoBillingAddressPopulatedSuccessfully() {
-        // Set Order fulfillment with mock data
-        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel)
-
-        // click on the first order in the list and check if redirected to order detail
-        onView(withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
-
-        // click on Order Fulfill button to redirect to Order Fulfillment
-        onView(withId(R.id.productList_btnFulfill)).perform(click())
-
-        // check if customer info card shipping details matches this format:
-        val shippingName = appContext.getString(
-                R.string.customer_full_name,
-                mockWCOrderModel.billingFirstName, mockWCOrderModel.billingLastName
-        )
-        val shippingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getBillingAddress())
-        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.billingCountry)
-
-        // Assumes that the shipping name, address and country info is available
-        var shippingAddrFull = if (!shippingName.trim().isBlank()) "$shippingName\n" else ""
-        if (!shippingAddr.isBlank()) shippingAddrFull += "$shippingAddr\n"
-        if (!shippingCountry.isBlank()) shippingAddrFull += shippingCountry
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
-    }
-
-    @Test
-    fun verifyCustomerInfoCardWithSeparateShippingAddressPopulatedSuccessfully() {
-        // Set Order fulfillment with mock data
-        mockWCOrderModel.shippingFirstName = "Anitaa"
-        mockWCOrderModel.shippingLastName = "Murthy"
-        mockWCOrderModel.shippingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
-        mockWCOrderModel.shippingCountry = "USA"
-        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel)
-
-        // click on the first order in the list and check if redirected to order detail
-        onView(withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
-
-        // click on Order Fulfill button to redirect to Order Fulfillment
-        onView(withId(R.id.productList_btnFulfill)).perform(click())
-
-        // check if customer info card shipping details matches this format:
         val shippingName = appContext.getString(
                 R.string.customer_full_name,
                 mockWCOrderModel.shippingFirstName, mockWCOrderModel.shippingLastName
@@ -174,9 +89,59 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         val shippingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.shippingCountry)
 
         // Assumes that the shipping name, address and country info is available
-        var shippingAddrFull = if (!shippingName.trim().isBlank()) "$shippingName\n" else ""
-        if (!shippingAddr.isBlank()) shippingAddrFull += "$shippingAddr\n"
-        if (!shippingCountry.isBlank()) shippingAddrFull += shippingCountry
+        val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
         onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
+
+        // verify that the billing section is hidden
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardViewWithLongNamePopulatedSuccessfully() {
+        // Set Order fulfillment with mock data
+        mockWCOrderModel.shippingFirstName = "Itsareallylongfirstname"
+        mockWCOrderModel.shippingLastName = "Itsareallylonglastname"
+        mockWCOrderModel.shippingAddress1 = "Its a really long address to see how it is handled in UI. More to comehere"
+        mockWCOrderModel.shippingCountry = "India"
+        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Order Fulfill button to redirect to Order Fulfillment
+        onView(withId(R.id.productList_btnFulfill)).perform(click())
+
+        val shippingName = appContext.getString(
+                R.string.customer_full_name,
+                mockWCOrderModel.shippingFirstName, mockWCOrderModel.shippingLastName
+        )
+        val shippingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getShippingAddress())
+        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.shippingCountry)
+
+        // Assumes that the shipping name, address and country info is available
+        val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
+
+        // verify that the billing section is hidden
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardWithNoShippingAddressPopulatedSuccessfully() {
+        // Set Order fulfillment with mock data
+        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Order Fulfill button to redirect to Order Fulfillment
+        onView(withId(R.id.productList_btnFulfill)).perform(click())
+
+        // no shipping available so displays empty text
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(
+                appContext.getString(R.string.orderdetail_empty_shipping_address)
+        )))
     }
 }

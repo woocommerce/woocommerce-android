@@ -155,6 +155,8 @@ object WcOrderTestUtils {
     fun generateOrderDetail(
         dateCreatedString: String = "",
         note: String = "",
+        billingFirstName: String = "",
+        billingLastName: String = "",
         billingAddress1: String = "",
         billingCountry: String = "",
         billingPostalCode: String = "",
@@ -163,6 +165,7 @@ object WcOrderTestUtils {
         shippingAddress1: String = "",
         shippingCountry: String = "",
         billingPhone: String = "",
+        billingEmail: String = "",
         products: String = MULTIPLE_PRODUCTS,
         orderStatus: String = "completed",
         shippingTotal: String = "12",
@@ -175,8 +178,8 @@ object WcOrderTestUtils {
         refundTotal: Double = 0.00
     ): WCOrderModel {
         return WCOrderModel(2).apply {
-            billingFirstName = "Jane"
-            billingLastName = "Masterson"
+            this.billingFirstName = billingFirstName
+            this.billingLastName = billingLastName
             this.billingAddress1 = billingAddress1
             this.billingCountry = billingCountry
             this.currency = currency
@@ -187,7 +190,7 @@ object WcOrderTestUtils {
             this.shippingAddress1 = shippingAddress1
             this.shippingCountry = shippingCountry
             this.billingPostcode = billingPostalCode
-            billingEmail = "test@testing.com"
+            this.billingEmail = billingEmail
             this.billingPhone = billingPhone
             number = "1"
             status = "pending"
