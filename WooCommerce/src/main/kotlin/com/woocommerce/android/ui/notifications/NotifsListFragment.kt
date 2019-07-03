@@ -277,18 +277,8 @@ class NotifsListFragment : TopLevelFragment(),
                 }
             }
             NEW_ORDER -> {
-                notification.getRemoteOrderId()?.let {
-                    AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
-                            AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
-                            AnalyticsTracker.KEY_ALREADY_READ to notification.read))
-                    showOptionsMenu(false)
-                    (activity as? MainNavigationRouter)?.showOrderDetail(
-                            selectedSite.get().id,
-                            it,
-                            notification.remoteNoteId
-                    )
-                } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
-                    showLoadNotificationDetailError()
+                if (!notifsRefreshLayout.isRefreshing) {
+                    openOrderDetail(notification)
                 }
             }
             UNKNOWN -> {
@@ -300,6 +290,22 @@ class NotifsListFragment : TopLevelFragment(),
         AppRatingDialog.incrementInteractions()
     }
 
+    override fun openOrderDetail(notification: NotificationModel) {
+        notification.getRemoteOrderId()?.let {
+            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
+                    AnalyticsTracker.KEY_ALREADY_READ to notification.read))
+            showOptionsMenu(false)
+            (activity as? MainNavigationRouter)?.showOrderDetail(
+                    selectedSite.get().id,
+                    it,
+                    notification.remoteNoteId
+            )
+        } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
+            showLoadNotificationDetailError()
+        }
+    }
+
     override fun openReviewDetail(notification: NotificationModel) {
         AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                 AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
@@ -308,8 +314,8 @@ class NotifsListFragment : TopLevelFragment(),
         // If the notification is pending moderation, override the status to display in the detail view.
         val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
         val tempStatus = if (isPendingModeration) pendingModerationNewStatus else null
-        (activity as? MainNavigationRouter)?.showReviewDetail(notification, tempStatus)
         showOptionsMenu(false)
+        (activity as? MainNavigationRouter)?.showReviewDetail(notification, tempStatus)
     }
 
     override fun scrollToTop() {
