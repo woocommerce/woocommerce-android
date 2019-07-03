@@ -59,8 +59,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/default_window_background"
-        android:gravity="center" android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toTopOf="@+id/empty_view_stats_row">
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@+id/empty_view_stats_row">
 
         <ImageView
             android:id="@+id/empty_view_image"
