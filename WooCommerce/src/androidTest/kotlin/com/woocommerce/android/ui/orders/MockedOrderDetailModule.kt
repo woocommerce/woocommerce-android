@@ -101,7 +101,7 @@ abstract class MockedOrderDetailModule {
                     NotificationStore(
                             mock(), mockContext,
                             NotificationRestClient(mockContext, mockDispatcher, mock(), mock(), mock()),
-                            NotificationSqlUtils(FormattableContentMapper(Gson())), mock())
+                            NotificationSqlUtils(FormattableContentMapper(Gson())))
             ))
 
             /*
