@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -19,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
-import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.onScrollDown
@@ -310,13 +308,8 @@ class NotifsListFragment : TopLevelFragment(),
         // If the notification is pending moderation, override the status to display in the detail view.
         val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
         val tempStatus = if (isPendingModeration) pendingModerationNewStatus else null
-        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-                notification.remoteNoteId,
-                notification.getCommentId(),
-                tempStatus
-        )
+        (activity as? MainNavigationRouter)?.showReviewDetail(notification, tempStatus)
         showOptionsMenu(false)
-        findNavController().navigate(action)
     }
 
     override fun scrollToTop() {
