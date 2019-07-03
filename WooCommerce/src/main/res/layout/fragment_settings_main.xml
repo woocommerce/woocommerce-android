@@ -128,6 +128,19 @@
             style="@style/Woo.Settings.Divider"/>
 
         <!--
+            Feature Requests
+        -->
+        <TextView
+            android:id="@+id/textFeatureRequests"
+            style="@style/Woo.Settings.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/feature_requests"/>
+
+        <View
+            style="@style/Woo.Settings.Divider"/>
+
+        <!--
             About
         -->
         <TextView

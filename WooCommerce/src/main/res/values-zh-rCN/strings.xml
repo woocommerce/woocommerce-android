@@ -288,7 +288,6 @@ Language: zh_CN
     <string name="login_jetpack_view_instructions">查看说明</string>
     <string name="login_jetpack_required_msg">要使用 WooCommerce 应用程序，您需要在您的站点上设置 Jetpack 插件</string>
     <string name="login_view_connected_stores">查看连接的商店</string>
-    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 站点。在您的站点上安装 WooCommerce 插件，然后刷新此应用程序以继续。</string>
     <string name="login_try_another_account">试试其他帐户</string>
     <string name="login_not_connected_to_account">%1$s 似乎连接了其他 WordPress.com 帐户。</string>
     <string name="login">登录</string>

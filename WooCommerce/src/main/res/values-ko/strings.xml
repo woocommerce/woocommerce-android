@@ -288,7 +288,6 @@ Language: ko_KR
     <string name="login_jetpack_view_instructions">지침 보기</string>
     <string name="login_jetpack_required_msg">WooCommerce 앱을 사용하려면 사이트에서 Jetpack 플러그인을 설정해야 합니다.</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
-    <string name="login_not_woo_store">%1$s은(는) WooCommerce 사이트가 아닌 것 같습니다. 계속하려면 사이트에 WooCommerce 플러그인을 설치한 다음 이 앱을 새로 고치세요.</string>
     <string name="login_try_another_account">다른 계정 사용해 보기</string>
     <string name="login_not_connected_to_account">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
     <string name="login">로그인</string>

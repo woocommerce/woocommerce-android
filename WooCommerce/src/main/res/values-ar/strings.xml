@@ -288,7 +288,6 @@ Language: ar
     <string name="login_jetpack_view_instructions">عرض الإرشادات</string>
     <string name="login_jetpack_required_msg">لاستخدام تطبيق WooCommerce الذي تحتاج إليه لإعداد إضافة Jetpack على موقعك</string>
     <string name="login_view_connected_stores">عرض المتاجر المتصلة</string>
-    <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. يمكنك تثبيت إضافة WooCommerce على موقعك ثم تحديث هذا التطبيق للاستمرار.</string>
     <string name="login_try_another_account">تجربة حساب آخر</string>
     <string name="login_not_connected_to_account">يبدو أنَّ %1$s متصل بحساب وردبرس.كوم مختلف.</string>
     <string name="login">تسجيل الدخول</string>
