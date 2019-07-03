@@ -12,16 +12,14 @@ object PackageUtils {
     /**
      * Return true if Debug build. false otherwise.
      */
-    fun isDebugBuild(): Boolean {
-        return BuildConfig.DEBUG
-    }
+    fun isDebugBuild() = BuildConfig.DEBUG
 
     private fun getPackageInfo(context: Context): PackageInfo? {
-        try {
+        return try {
             val manager = context.packageManager
-            return manager.getPackageInfo(context.packageName, 0)
+            manager.getPackageInfo(context.packageName, 0)
         } catch (e: PackageManager.NameNotFoundException) {
-            return null
+            null
         }
     }
 
@@ -38,8 +36,5 @@ object PackageUtils {
     /**
      * Return version name, or the string "0" if it can't be read
      */
-    fun getVersionName(context: Context): String {
-        val packageInfo = getPackageInfo(context)
-        return packageInfo?.versionName ?: "0"
-    }
+    fun getVersionName(context: Context) = getPackageInfo(context)?.versionName ?: "0"
 }
