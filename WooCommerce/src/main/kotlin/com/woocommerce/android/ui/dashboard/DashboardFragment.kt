@@ -83,6 +83,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     dashboard_refresh_layout.isRefreshing = false
                     refreshDashboard(forced = true)
                 }
+                scrollUpChild = scroll_view
             }
         }
         return view
