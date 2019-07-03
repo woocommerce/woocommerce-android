@@ -1,6 +1,7 @@
 2.3
 -----
 * Added option to request for new features right from the app in the Settings page
+* Added visitor stats to stores with no orders
 
 2.2
 -----
