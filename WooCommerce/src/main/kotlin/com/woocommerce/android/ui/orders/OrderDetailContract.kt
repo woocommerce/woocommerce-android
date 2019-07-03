@@ -59,5 +59,6 @@ interface OrderDetailContract {
         fun showDeleteTrackingErrorSnack()
         fun showAddShipmentTrackingSnack()
         fun showAddAddShipmentTrackingErrorSnack()
+        fun refreshCustomerInfoCard(order: WCOrderModel)
     }
 }

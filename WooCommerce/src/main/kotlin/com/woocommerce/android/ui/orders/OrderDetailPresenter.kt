@@ -226,7 +226,7 @@ class OrderDetailPresenter @Inject constructor(
             return false
         }
 
-        return productModels.filter { !it.virtual }.count() == 0
+        return productModels.filter { !it.virtual }.isEmpty()
     }
 
     override fun doChangeOrderStatus(newStatus: String) {
@@ -485,6 +485,10 @@ class OrderDetailPresenter @Inject constructor(
         // product was just fetched, show its image
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
             orderView?.refreshProductImages()
+            // Refresh the customer info section, once the product information becomes available
+            orderModel?.let {
+                orderView?.refreshCustomerInfoCard(it)
+            }
         }
     }
 
