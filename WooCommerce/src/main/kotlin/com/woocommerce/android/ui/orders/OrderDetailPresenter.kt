@@ -219,8 +219,10 @@ class OrderDetailPresenter @Inject constructor(
             return false
         }
 
+        // verify that the lineitem product is in the local cache and
+        // that the product count in the local cache matches the lineItem count.
         val productModels = productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-        if (productModels.isNullOrEmpty()) {
+        if (productModels.isNullOrEmpty() && productModels.count() != remoteProductIds.count()) {
             return false
         }
 
