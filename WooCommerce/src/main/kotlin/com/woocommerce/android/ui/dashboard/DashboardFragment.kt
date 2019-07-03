@@ -35,6 +35,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         const val STATE_KEY_TAB_STATS = "tab-stats-state"
         const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
+        const val STATE_KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
         fun newInstance() = DashboardFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
@@ -47,6 +48,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
+    private var unfilledOrderCount = 0
 
     // If false, the fragment will refresh its data when it's visible on onHiddenChanged
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
@@ -92,6 +94,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
             dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
+
+            // if unfilled orders card was previously showing, make it visible so it doesn't
+            // re-animate in every time the fragment is restored
+            unfilledOrderCount = bundle.getInt(STATE_KEY_UNFILLED_ORDER_COUNT)
+            if (unfilledOrderCount > 0) {
+                dashboard_unfilled_orders.visibility = View.VISIBLE
+                showUnfilledOrdersCard(unfilledOrderCount)
+            }
         }
 
         presenter.takeView(this)
@@ -167,6 +177,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
+        outState.putInt(STATE_KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
         outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
     }
@@ -292,12 +303,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun hideUnfilledOrdersCard() {
+        unfilledOrderCount = 0
         if (dashboard_unfilled_orders.visibility == View.VISIBLE) {
             WooAnimUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)
         }
     }
 
     override fun showUnfilledOrdersCard(count: Int) {
+        unfilledOrderCount = count
         dashboard_unfilled_orders.updateOrdersCount(count)
         if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
