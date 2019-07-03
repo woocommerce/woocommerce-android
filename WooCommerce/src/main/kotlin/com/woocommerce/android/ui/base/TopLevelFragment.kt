@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.base
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import com.woocommerce.android.ui.main.MainNavigationRouter
 
 /**
@@ -23,10 +20,4 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
                 false
             }
         }
-
-    final override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) = onCreateFragmentView(inflater, container, savedInstanceState)
 }

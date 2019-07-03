@@ -12,16 +12,6 @@ interface TopLevelFragmentView : BaseFragmentView {
     var isActive: Boolean
 
     /**
-     * Inflate the fragment view and return to be added to the parent
-     * container.
-     */
-    fun onCreateFragmentView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View?
-
-    /**
      * Refresh this top-level fragment data and reset its state.
      */
     fun refreshFragmentState()

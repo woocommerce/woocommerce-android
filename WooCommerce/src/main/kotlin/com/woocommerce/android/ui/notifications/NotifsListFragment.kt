@@ -97,7 +97,7 @@ class NotifsListFragment : TopLevelFragment(),
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
