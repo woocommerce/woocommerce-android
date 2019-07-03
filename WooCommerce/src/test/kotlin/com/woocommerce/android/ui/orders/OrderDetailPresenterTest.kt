@@ -372,10 +372,10 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
 
         // call refresh order detail
-        presenter.refreshOrderDetail()
+        presenter.refreshOrderDetail(true)
 
         // verify order is not fetched from network
-        verify(presenter, times(0)).fetchOrder(any())
+        verify(presenter, times(0)).fetchOrder(any(), any())
 
         // verify order fetched from db is called
         verify(orderDetailView, times(1)).showOrderDetail(any(), any())
@@ -393,7 +393,7 @@ class OrderDetailPresenterTest {
         doReturn(true).whenever(networkStatus).isConnected()
 
         // call refresh order detail
-        presenter.refreshOrderDetail()
+        presenter.refreshOrderDetail(true)
 
         // verify skeleton view is displayed
         verify(orderDetailView, times(1)).showSkeleton(true)
@@ -424,7 +424,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
 
         // call refresh order detail
-        presenter.refreshOrderDetail()
+        presenter.refreshOrderDetail(true)
 
         // verify skeleton view is displayed
         verify(orderDetailView, times(1)).showSkeleton(true)
