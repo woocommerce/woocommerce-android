@@ -41,6 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+            android:textAlignment="viewStart"
             android:textIsSelectable="true"
             android:layout_marginBottom="@dimen/card_padding_bottom"
             tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
@@ -87,6 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/card_padding_bottom"
+                android:textAlignment="viewStart"
                 android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
                 android:textIsSelectable="true"
                 app:layout_constraintStart_toStartOf="parent"

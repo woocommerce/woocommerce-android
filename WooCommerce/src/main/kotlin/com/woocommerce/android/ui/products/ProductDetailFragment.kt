@@ -14,8 +14,8 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -45,21 +45,6 @@ import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
 class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailContract.View, RequestListener<Drawable> {
-    companion object {
-        const val TAG = "ProductDetailFragment"
-        private const val ARG_REMOTE_PRODUCT_ID = "remote_product_id"
-
-        fun newInstance(remoteProductId: Long): ProductDetailFragment {
-            val args = Bundle().also {
-                it.putLong(ARG_REMOTE_PRODUCT_ID, remoteProductId)
-            }
-
-            val fragment = ProductDetailFragment()
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -71,7 +56,6 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
 
-    private var remoteProductId = 0L
     private var productTitle = ""
     private var activityTitle = ""
     private var productImageUrl: String? = null
@@ -79,13 +63,14 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
+    val navArgs: ProductDetailFragmentArgs by navArgs()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
         activity?.let {
             activityTitle = it.title.toString()
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
         }
 
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
@@ -99,7 +84,6 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     override fun onDestroyView() {
         activity?.let {
             it.title = activityTitle
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
         }
         presenter.dropView()
         super.onDestroyView()
@@ -122,10 +106,8 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         // set the height of the gradient scrim that appears atop the image
         imageScrim.layoutParams.height = imageHeight / 3
 
-        remoteProductId = arguments?.getLong(ARG_REMOTE_PRODUCT_ID) ?: 0L
-
         presenter.takeView(this)
-        presenter.loadProductDetail(remoteProductId)
+        presenter.loadProductDetail(navArgs.remoteProductId)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -495,7 +477,7 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     }
 
     private fun shareProduct() {
-        presenter.getProduct(remoteProductId)?.let { product ->
+        presenter.getProduct(navArgs.remoteProductId)?.let { product ->
             val shareIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_SUBJECT, product.name)

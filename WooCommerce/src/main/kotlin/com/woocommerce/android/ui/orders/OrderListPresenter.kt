@@ -236,8 +236,11 @@ class OrderListPresenter @Inject constructor(
         AnalyticsTracker.track(Stat.ORDER_OPEN, mapOf(
                 AnalyticsTracker.KEY_ID to order.remoteOrderId,
                 AnalyticsTracker.KEY_STATUS to order.status))
-
-        orderView?.openOrderDetail(order)
+        orderView?.let {
+            if (!it.isRefreshing) {
+                it.showOrderDetail(order)
+            }
+        }
     }
 
     /**

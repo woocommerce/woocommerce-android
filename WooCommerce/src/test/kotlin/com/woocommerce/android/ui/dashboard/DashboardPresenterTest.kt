@@ -173,7 +173,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(1)).refreshDashboard(forced = any())
+        verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
     @Test
@@ -184,7 +184,7 @@ class DashboardPresenterTest {
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
         verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
         verify(dashboardView, times(0)).hideUnfilledOrdersCard()
-        verify(dashboardView, times(1)).refreshDashboard(forced = any())
+        verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
     @Test

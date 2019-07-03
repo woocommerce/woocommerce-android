@@ -81,6 +81,9 @@
     <color name="edit_text_text_color_highlight">@color/wc_purple_highlight</color>
     <color name="edit_text_text_hint_color">@color/wc_grey_dark</color>
 
+    <!-- Default Link Color -->
+    <color name="link_text_color">@color/wc_purple</color>
+
     <!--
         Bottom Navigation Bar
     -->

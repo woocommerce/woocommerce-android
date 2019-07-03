@@ -108,7 +108,9 @@
     <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Try another account</string>
-    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then refresh this app to continue.</string>
+    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
+    <string name="login_refresh_app">refresh the app</string>
+    <string name="login_refresh_app_progress">Checking for WooCommerce...</string>
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
     <string name="login_jetpack_view_instructions">View instructions</string>
@@ -341,6 +343,7 @@
     -->
     <string name="settings">Settings</string>
     <string name="privacy_settings">Privacy settings</string>
+    <string name="feature_requests">Feature request</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_send_stats">Collect information</string>

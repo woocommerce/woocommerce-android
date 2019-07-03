@@ -126,7 +126,7 @@ class OrderListPresenterTest {
         presenter.takeView(orderListView)
         val orderModel = WCOrderModel()
         presenter.openOrderDetail(orderModel)
-        verify(orderListView).openOrderDetail(orderModel)
+        verify(orderListView).showOrderDetail(orderModel)
     }
 
     @Test
