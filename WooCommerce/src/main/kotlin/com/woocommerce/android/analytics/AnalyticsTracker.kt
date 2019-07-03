@@ -400,6 +400,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_ORDER_FULFILL = "order_fulfill"
+        const val VALUE_NETWORK_ERROR = "Device Offline"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
