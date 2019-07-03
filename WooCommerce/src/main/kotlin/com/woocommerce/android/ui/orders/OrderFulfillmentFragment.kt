@@ -6,7 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.NestedScrollView
-import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -19,8 +20,8 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -31,30 +32,6 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import javax.inject.Inject
 
 class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
-    companion object {
-        const val TAG = "OrderFulfillmentFragment"
-        const val FIELD_ORDER_IDENTIFIER = "order-identifier"
-        const val FIELD_ORDER_NUMBER = "order-number"
-        const val FIELD_SHIPMENT_TRACKINGS_FETCHED = "is-shipment-trackings-fetched"
-
-        fun newInstance(order: WCOrderModel, isUsingCachedShipmentTrackings: Boolean = false): Fragment {
-            val args = Bundle()
-            args.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
-
-            // Use for populating the title only, not for record retrieval
-            args.putString(FIELD_ORDER_NUMBER, order.number)
-
-            // Used to check if the shipment trackings is using cache only. If shipment
-            // trackings list is already fetched from api in order detail, we can just
-            // fetch the same from local cache
-            args.putBoolean(FIELD_SHIPMENT_TRACKINGS_FETCHED, isUsingCachedShipmentTrackings)
-
-            val fragment = OrderFulfillmentFragment()
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -70,6 +47,8 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
     private var deleteOrderShipmentTrackingResponseSnackbar: Snackbar? = null
     private var deleteOrderShipmentTrackingSet = mutableSetOf<WCOrderShipmentTrackingModel>()
 
+    private val navArgs: OrderFulfillmentFragmentArgs by navArgs()
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -78,9 +57,7 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(layout.fragment_order_fulfillment, container, false)
 
-        // Set activity title
-        arguments?.getString(FIELD_ORDER_NUMBER, "").also {
-            activity?.title = getString(R.string.orderdetail_order_fulfillment, it) }
+        activity?.title = getString(R.string.orderdetail_order_fulfillment, navArgs.orderNumber)
 
         return view
     }
@@ -89,12 +66,14 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
         super.onActivityCreated(savedInstanceState)
 
         presenter.takeView(this)
-        arguments?.getString(FIELD_ORDER_IDENTIFIER, null)?.let {
-            presenter.loadOrderDetail(
-                    orderIdentifier = it,
-                    isShipmentTrackingsFetched = arguments?.getBoolean(FIELD_SHIPMENT_TRACKINGS_FETCHED) ?: false
-            )
-        }
+
+        // isUsingCachedShipmentTrackings is used to check if the shipment trackings is using cache only.
+        //  If shipment trackings list is already fetched from api in order detail, we can just
+        // fetch the same from local cache
+        presenter.loadOrderDetail(
+                navArgs.orderId,
+                navArgs.isUsingCachedShipmentTrackings
+        )
 
         scrollView.setOnScrollChangeListener {
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
@@ -220,34 +199,29 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
     }
 
     override fun fulfillOrder() {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                presenter.orderModel?.let {
-                    router.openOrderDetail(it, true)
-                }
-            }
+        presenter.orderModel?.let { order ->
+            (activity as? MainNavigationRouter)?.showOrderDetail(
+                    localSiteId = order.localSiteId,
+                    remoteOrderId = order.remoteOrderId,
+                    markComplete = true
+            )
         }
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
-        activity?.let { router ->
-            if (router is TopLevelFragmentRouter) {
-                router.showProductDetail(remoteProductId)
-            }
-        }
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
     override fun openAddOrderShipmentTrackingScreen() {
         AnalyticsTracker.track(ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                presenter.orderModel?.let {
-                    router.openAddOrderShipmentTracking(
-                            orderIdentifier = it.getIdentifier(),
+        presenter.orderModel?.let { order ->
+            val action =
+                    OrderFulfillmentFragmentDirections.actionOrderFulfillmentFragmentToAddOrderShipmentTrackingFragment(
+                            orderId = order.getIdentifier(),
                             orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
-                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
-                }
-            }
+                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom()
+                    )
+            findNavController().navigate(action)
         }
     }
 

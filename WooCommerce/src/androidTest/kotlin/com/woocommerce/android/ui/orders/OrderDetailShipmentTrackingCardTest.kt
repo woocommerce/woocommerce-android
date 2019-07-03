@@ -65,10 +65,9 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
      * offline scenarios
      */
     private fun getOrderDetailFragment(): OrderDetailFragment? {
-        val orderListFragment = activityTestRule.activity.supportFragmentManager
-                .findFragmentByTag(OrderListFragment.TAG) as? OrderListFragment
-        return orderListFragment?.childFragmentManager
-                ?.findFragmentByTag(OrderDetailFragment.TAG) as? OrderDetailFragment
+        return activityTestRule.activity.supportFragmentManager.primaryNavigationFragment?.let { navFragment ->
+            navFragment.childFragmentManager.fragments[0] as? OrderDetailFragment
+        }
     }
 
     @Before

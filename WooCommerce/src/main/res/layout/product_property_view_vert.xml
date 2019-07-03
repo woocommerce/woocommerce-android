@@ -11,6 +11,7 @@
         android:id="@+id/textPropertyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_marginStart="@dimen/product_detail_property_margin"
         android:layout_marginTop="@dimen/product_detail_property_margin"
         android:textColor="@color/wc_grey_dark"
@@ -31,6 +32,8 @@
         android:lineSpacingExtra="2dp"
         android:textColor="@color/wc_grey_medium"
         android:textSize="@dimen/text_medium"
+        android:layout_gravity="start"
+        android:textAlignment="viewStart"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"

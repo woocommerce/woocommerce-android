@@ -35,6 +35,8 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:layout_gravity="start"
+            android:textAlignment="viewStart"
             android:textColor="@color/wc_grey_medium"
             android:textSize="@dimen/text_medium"
             tools:text="textDetail"/>

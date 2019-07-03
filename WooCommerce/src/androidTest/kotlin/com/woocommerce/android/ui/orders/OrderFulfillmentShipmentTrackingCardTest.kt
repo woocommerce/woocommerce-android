@@ -59,10 +59,9 @@ class OrderFulfillmentShipmentTrackingCardTest : TestBase() {
      * offline scenarios
      */
     private fun getOrderFulfillmentFragment(): OrderFulfillmentFragment? {
-        val orderListFragment = activityTestRule.activity.supportFragmentManager
-                .findFragmentByTag(OrderListFragment.TAG) as? OrderListFragment
-        return orderListFragment?.childFragmentManager
-                ?.findFragmentByTag(OrderFulfillmentFragment.TAG) as? OrderFulfillmentFragment
+        return activityTestRule.activity.supportFragmentManager.primaryNavigationFragment?.let { navFragment ->
+            navFragment.childFragmentManager.fragments[0] as? OrderFulfillmentFragment
+        }
     }
 
     private fun setupOrderFulfillPage(isNetworkConnected: Boolean = false) {

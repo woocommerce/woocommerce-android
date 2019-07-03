@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -18,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
+import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.onScrollDown
@@ -27,9 +29,9 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.notifications.NotifsListAdapter.ItemType
 import com.woocommerce.android.ui.notifications.NotifsListAdapter.NotifsListItemDecoration
-import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -51,8 +53,8 @@ class NotifsListFragment : TopLevelFragment(),
         NotifsListAdapter.ItemDecorationListener {
     companion object {
         val TAG: String = NotifsListFragment::class.java.simpleName
-        const val STATE_KEY_LIST = "list-state"
-        const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
+        const val KEY_LIST_STATE = "list-state"
+        const val KEY_IS_REFRESH_PENDING = "is-refresh-pending"
 
         fun newInstance() = NotifsListFragment()
     }
@@ -79,15 +81,14 @@ class NotifsListFragment : TopLevelFragment(),
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
-            listState = bundle.getParcelable(OrderListFragment.STATE_KEY_LIST)
-            isRefreshPending = bundle.getBoolean(OrderListFragment.STATE_KEY_REFRESH_PENDING, false)
+            listState = bundle.getParcelable(KEY_LIST_STATE)
+            isRefreshPending = bundle.getBoolean(KEY_IS_REFRESH_PENDING, false)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_notifs_list_fragment, menu)
         menuMarkAllRead = menu?.findItem(R.id.menu_mark_all_read)
-
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -157,7 +158,7 @@ class NotifsListFragment : TopLevelFragment(),
             addItemDecoration(unreadDecoration)
             adapter = notifsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) {
                         onScrollDown()
                     } else if (dy < 0) {
@@ -198,26 +199,27 @@ class NotifsListFragment : TopLevelFragment(),
         super.onPrepareOptionsMenu(menu)
     }
 
+    /**
+     * We use this to clear the options menu when navigating to a child destination - otherwise this
+     * fragment's menu will continue to appear when the child is shown
+     */
+    private fun showOptionsMenu(show: Boolean) {
+        setHasOptionsMenu(show)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = notifsList.layoutManager?.onSaveInstanceState()
+        outState.putParcelable(KEY_LIST_STATE, listState)
+        outState.putBoolean(KEY_IS_REFRESH_PENDING, isRefreshPending)
 
-        outState.putParcelable(STATE_KEY_LIST, listState)
-        outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         super.onSaveInstanceState(outState)
     }
 
-    override fun onBackStackChanged() {
-        super.onBackStackChanged()
-
-        if (isActive) {
-            // If this fragment is now visible and we've deferred loading orders due to it not
-            // being visible - go ahead and load the orders.
-            presenter.loadNotifs(forceRefresh = this.isRefreshPending)
-        } else {
-            // If this fragment is no longer visible, dismiss the pending notification
-            // moderation so it can be processed immediately.
-            changeCommentStatusSnackbar?.dismiss()
-        }
+    override fun onReturnedFromChildFragment() {
+        // If this fragment is now visible and we've deferred loading orders due to it not
+        // being visible - go ahead and load the orders.
+        presenter.loadNotifs(forceRefresh = this.isRefreshPending)
+        showOptionsMenu(true)
         updateMarkAllReadMenuItem()
     }
 
@@ -281,8 +283,12 @@ class NotifsListFragment : TopLevelFragment(),
                     AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                             AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
                             AnalyticsTracker.KEY_ALREADY_READ to notification.read))
-
-                    openOrderDetail(selectedSite.get().id, it, notification.remoteNoteId)
+                    showOptionsMenu(false)
+                    (activity as? MainNavigationRouter)?.showOrderDetail(
+                            selectedSite.get().id,
+                            it,
+                            notification.remoteNoteId
+                    )
                 } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
                     showLoadNotificationDetailError()
                 }
@@ -301,32 +307,16 @@ class NotifsListFragment : TopLevelFragment(),
                 AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
                 AnalyticsTracker.KEY_ALREADY_READ to notification.read))
 
-        // If the notification is pending moderation, override the status to display in
-        // the detail view.
+        // If the notification is pending moderation, override the status to display in the detail view.
         val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
-
-        val tag = ReviewDetailFragment.TAG
-        getFragmentFromBackStack(tag)?.let { frag ->
-            val args = frag.arguments ?: Bundle()
-
-            args.putLong(ReviewDetailFragment.FIELD_REMOTE_NOTIF_ID, notification.remoteNoteId)
-
-            // Reset any existing comment status overrides
-            args.remove(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE)
-
-            // Add comment status override if needed
-            if (isPendingModeration) {
-                pendingModerationNewStatus?.let {
-                    args.putString(ReviewDetailFragment.FIELD_COMMENT_STATUS_OVERRIDE, it)
-                }
-            }
-            frag.arguments = args
-            popToState(tag)
-        } ?: if (isPendingModeration) {
-            loadChildFragment(ReviewDetailFragment.newInstance(notification, pendingModerationNewStatus), tag)
-        } else {
-            loadChildFragment(ReviewDetailFragment.newInstance(notification), tag)
-        }
+        val tempStatus = if (isPendingModeration) pendingModerationNewStatus else null
+        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
+                notification.remoteNoteId,
+                notification.getCommentId(),
+                tempStatus
+        )
+        showOptionsMenu(false)
+        findNavController().navigate(action)
     }
 
     override fun scrollToTop() {
