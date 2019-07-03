@@ -2,12 +2,8 @@ package com.woocommerce.android.ui.base
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import kotlinx.android.synthetic.main.fragment_parent.*
 
 /**
  * The main fragments hosted by the bottom bar should extend this class
@@ -32,18 +28,5 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val layout: FrameLayout = inflater.inflate(R.layout.fragment_parent,
-                container, false) as FrameLayout
-        val view: View? = onCreateFragmentView(inflater, layout, savedInstanceState)
-        view?.let {
-            layout.addView(view)
-        }
-        return layout
-    }
-
-    override fun onDestroyView() {
-        container.removeAllViews()
-        super.onDestroyView()
-    }
+    ) = onCreateFragmentView(inflater, container, savedInstanceState)
 }
