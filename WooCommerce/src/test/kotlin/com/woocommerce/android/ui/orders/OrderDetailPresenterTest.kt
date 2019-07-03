@@ -374,15 +374,10 @@ class OrderDetailPresenterTest {
         // call refresh order detail
         presenter.refreshOrderDetail(true)
 
-        // verify order is not fetched from network
+        // verify order detail/order notes/shipment trackings is not fetched from network
         verify(presenter, times(0)).fetchOrder(any(), any())
-
-        // verify order fetched from db is called
-        verify(orderDetailView, times(1)).showOrderDetail(any(), any())
-
-        // verify order notes/shipment trackings is fetched from db
-        verify(presenter, times(1)).loadOrderNotes()
-        verify(presenter, times(1)).loadOrderShipmentTrackings()
+        verify(presenter, times(0)).loadOrderNotes()
+        verify(presenter, times(0)).loadOrderShipmentTrackings()
     }
 
     @Test
