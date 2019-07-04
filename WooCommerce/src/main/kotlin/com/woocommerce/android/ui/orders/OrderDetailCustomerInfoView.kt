@@ -39,8 +39,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         }
 
         // show shipping section only for non virtual products or if shipping info available
-        val showShipping = !billingOnly && !isShippingInfoEmpty
-        showShippingSection(order, showShipping)
+        val hideShipping = billingOnly || isShippingInfoEmpty
+        initShippingSection(order, hideShipping)
 
         // if only shipping is to be displayed or if billing details are not available, hide the billing section
         if (shippingOnly || isBillingInfoEmpty) {
@@ -91,8 +91,15 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         }
     }
 
-    fun showShippingSection(order: WCOrderModel, show: Boolean) {
-        if (show) {
+    fun initShippingSection(order: WCOrderModel, hide: Boolean) {
+        if (hide) {
+            customerInfo_divider.visibility = View.GONE
+            customerInfo_shippingAddr.visibility = View.GONE
+            customerInfo_shippingLabel.visibility = View.GONE
+            customerInfo_morePanel.visibility = View.VISIBLE
+            formatViewAsShippingOnly()
+            customerInfo_viewMore.setOnCheckedChangeListener(null)
+        } else {
             val shippingName = context
                     .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
 
@@ -109,13 +116,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                     customerInfo_morePanel.visibility = View.GONE
                 }
             }
-        } else {
-            customerInfo_divider.visibility = View.GONE
-            customerInfo_shippingAddr.visibility = View.GONE
-            customerInfo_shippingLabel.visibility = View.GONE
-            customerInfo_morePanel.visibility = View.VISIBLE
-            formatViewAsShippingOnly()
-            customerInfo_viewMore.setOnCheckedChangeListener(null)
         }
     }
 

@@ -184,8 +184,8 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
     override fun refreshCustomerInfoCard(order: WCOrderModel) {
         // hide the shipping details if products in an order is virtual
-        val showShipping = !presenter.isVirtualProduct(order.getLineItemList())
-        orderDetail_customerInfo.showShippingSection(order, showShipping)
+        val hideShipping = presenter.isVirtualProduct(order.getLineItemList())
+        orderDetail_customerInfo.initShippingSection(order, hideShipping)
     }
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
