@@ -370,7 +370,7 @@ class MainActivity : AppCompatActivity(),
                 intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)
 
                 // Send track event for the zendesk notification id
-                val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
+                val remoteNoteId = intent.getIntExtra(FIELD_REMOTE_NOTE_ID, 0)
                 NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
 
                 // Remove single notification from the system bar
