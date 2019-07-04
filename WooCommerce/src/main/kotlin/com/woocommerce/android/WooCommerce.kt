@@ -235,7 +235,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
-        if (!accountStore.hasAccessToken()) {
+        val isLoggedOut = event.causeOfChange == null && event.error == null
+        if (!accountStore.hasAccessToken() && isLoggedOut) {
             // Logged out
             AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
 
