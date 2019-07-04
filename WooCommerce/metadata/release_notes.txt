@@ -1,2 +1,2 @@
-* Fixed a bug where the notifications list would be empty after logging out and back into app.
-* Improved how the order detail screen displays if there is no shipping or billing info.
+* Fixed a bug where the notifications list didn’t display anything after you logged out and back into the app.
+* Improved how the order detail screen displays when there’s no shipping or billing info.
