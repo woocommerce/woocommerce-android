@@ -24,6 +24,7 @@
             android:id="@+id/alertAction_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
             android:layout_marginTop="@dimen/card_item_padding_intra_h"
             android:text="@string/dashboard_fulfill_orders_msg"/>
 

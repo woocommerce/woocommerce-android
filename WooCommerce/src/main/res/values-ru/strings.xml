@@ -288,7 +288,6 @@ Language: ru
     <string name="login_jetpack_view_instructions">Открыть инструкции</string>
     <string name="login_jetpack_required_msg">Чтобы использовать приложение WooCommerce необходимо настроить плагин Jetpack на своем сайте.</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
-    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт и обновите страницу в приложении, чтобы продолжить.</string>
     <string name="login_try_another_account">Используйте другую учётную запись</string>
     <string name="login_not_connected_to_account">Похоже, что %1$s подключен к другой учетной записи WordPress.com.</string>
     <string name="login">Войти</string>

@@ -36,7 +36,6 @@ import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
@@ -48,7 +47,6 @@ import javax.inject.Singleton
 
 @Singleton
 class NotificationHandler @Inject constructor(
-    private val siteStore: SiteStore,
     private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
     private val dispatcher: Dispatcher
 ) {
@@ -70,7 +68,7 @@ class NotificationHandler @Inject constructor(
         const val PUSH_TYPE_COMMENT = "c"
         const val PUSH_TYPE_NEW_ORDER = "store_order"
 
-        @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
+        @Synchronized fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
 
         @Synchronized fun clearNotifications() {
             ACTIVE_NOTIFICATIONS_MAP.clear()
@@ -223,7 +221,7 @@ class NotificationHandler @Inject constructor(
 
         // Build notification from message data, save to the database, and send request to
         // fetch the actual notification from the api.
-        NotificationsUtils.buildNotificationModelFromBundle(siteStore, data)?.let {
+        NotificationsUtils.buildNotificationModelFromBundle(data)?.let {
             // Save temporary notification to the database.
             dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(it))
 

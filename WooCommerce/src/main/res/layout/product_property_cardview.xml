@@ -17,11 +17,7 @@
             android:id="@+id/cardCaptionText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/product_detail_property_margin"
-            android:layout_marginTop="@dimen/product_detail_property_margin"
-            android:textColor="@color/wc_purple"
-            android:textSize="@dimen/text_medium"
-            android:textStyle="bold"
+            style="@style/Woo.Settings.Caption"
             android:visibility="gone"
             tools:text="cardCaptionText"
             tools:visibility="visible"/>

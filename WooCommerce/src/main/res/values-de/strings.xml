@@ -288,7 +288,6 @@ Language: de
     <string name="login_jetpack_view_instructions">Anweisungen anzeigen</string>
     <string name="login_jetpack_required_msg">Um die WooCommerce-App zu nutzen, musst du das Jetpack-Plugin auf deiner Website einrichten.</string>
     <string name="login_view_connected_stores">Verbundene Shops anzeigen</string>
-    <string name="login_not_woo_store">%1$s ist offenbar keine WooCommerce-Website. Installiere das WooCommerce-Plugin auf deiner Website und aktualisiere diese App, um fortzufahren.</string>
     <string name="login_try_another_account">Mit einem anderen Konto probieren</string>
     <string name="login_not_connected_to_account">%1$s ist offenbar mit einem anderen WordPress.com-Konto verbunden.</string>
     <string name="login">Anmelden</string>
