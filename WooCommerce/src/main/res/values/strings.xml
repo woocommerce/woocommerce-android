@@ -206,6 +206,7 @@
     <string name="orderdetail_change_order_status">Click to change order status</string>
     <string name="orderdetail_track_shipment">Track shipment</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
+    <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="order_fulfill_order">Fulfill Order</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>

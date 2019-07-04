@@ -73,15 +73,17 @@ class OrderListPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean) {
+    override fun loadOrders(filterByStatus: String?, forceRefresh: Boolean, isFirstRun: Boolean) {
+        // Seed orders list with whatever we have in the db
+        fetchAndLoadOrdersFromDb(filterByStatus, isForceRefresh = false, isFirstRun = isFirstRun)
+
         if (networkStatus.isConnected() && forceRefresh) {
+            // Refresh the orders from the API
             orderListState = OrderListState.LOADING
             orderView?.showEmptyView(false)
-            orderView?.showSkeleton(true)
+            orderView?.showLoading(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
-        } else {
-            fetchAndLoadOrdersFromDb(filterByStatus, isForceRefresh = false)
         }
     }
 
@@ -157,7 +159,7 @@ class OrderListPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
-        orderView?.showSkeleton(false)
+        orderView?.showLoading(false)
         when (event.causeOfChange) {
             FETCH_ORDERS -> {
                 if (event.isError) {
@@ -215,7 +217,7 @@ class OrderListPresenter @Inject constructor(
         orderListState = OrderListState.IDLE
     }
 
-    @Suppress
+    @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
         isRefreshingOrderStatusOptions = false
@@ -236,7 +238,7 @@ class OrderListPresenter @Inject constructor(
                 AnalyticsTracker.KEY_STATUS to order.status))
         orderView?.let {
             if (!it.isRefreshing) {
-                it.openOrderDetail(order)
+                it.showOrderDetail(order)
             }
         }
     }
@@ -259,7 +261,7 @@ class OrderListPresenter @Inject constructor(
      * @param orderStatusFilter If not null, only pull orders whose status matches this filter. Default null.
      * @param isForceRefresh True if orders were refreshed from the API, else false.
      */
-    override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean) {
+    override fun fetchAndLoadOrdersFromDb(orderStatusFilter: String?, isForceRefresh: Boolean, isFirstRun: Boolean) {
         val orders = fetchOrdersFromDb(orderStatusFilter, isForceRefresh)
         orderView?.let { view ->
             val currentOrders = removeFutureOrders(orders)
@@ -272,10 +274,10 @@ class OrderListPresenter @Inject constructor(
                 // so passing the first order in the order list
                 loadShipmentTrackingProviders(currentOrders[0])
             } else {
-                if (!networkStatus.isConnected()) {
-                    // if the device is offline with no cached orders to display, show the loading
-                    // indicator until a successful online refresh.
-                    view.showSkeleton(true)
+                if (!networkStatus.isConnected() || isFirstRun) {
+                    // if the device is offline or has not yet been initialized and has no cached orders to display,
+                    // show the loading indicator until a successful online refresh.
+                    view.showLoading(true)
                 } else {
                     view.showEmptyView(true)
                 }

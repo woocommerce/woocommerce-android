@@ -1,10 +1,16 @@
+2.3
+-----
+ 
 2.2
 -----
+* Fixed a bug where the notifications list would be empty after logging out and back into app
 
 2.1
 -----
 * The sign in flow has been completely revamped with new help screens and documentation to help users successfully login to the app.
+* The orders list will now populate with cached data while it attempts to fetch fresh orders from the API.
 * Fixed a bug where the title of the current view may not update appropriately when navigating the app.
+* Shipping address and billing address will only be displayed it is is available.
 * Added support for adding and deleting shipment tracking information on an order.
 
 2.0

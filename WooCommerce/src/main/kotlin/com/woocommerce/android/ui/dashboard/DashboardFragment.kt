@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -138,6 +139,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun onReturnedFromChildFragment() {
+        // If this fragment is now visible and we've deferred loading stats due to it not
+        // being visible - go ahead and load the stats.
+        if (!deferInit) {
+            refreshDashboard(forced = this.isRefreshPending)
+        }
+    }
+
     override fun onStop() {
         errorSnackbar?.dismiss()
         super.onStop()
@@ -153,15 +162,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
         outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
-    }
-
-    override fun onBackStackChanged() {
-        super.onBackStackChanged()
-        // If this fragment is now visible and we've deferred loading stats due to it not
-        // being visible - go ahead and load the stats.
-        if (isActive && !deferInit) {
-            refreshDashboard(forced = this.isRefreshPending)
-        }
     }
 
     override fun showStats(
@@ -281,7 +281,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
-        openProductDetail(topEarner.id)
+        (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
     }
 
     override fun hideUnfilledOrdersCard() {

@@ -24,9 +24,24 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <FrameLayout
-            android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
+
+            <!-- container for top level fragments -->
+            <FrameLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <!-- container for child fragments in the nav graph -->
+            <fragment
+                android:id="@+id/nav_host_fragment_main"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph_main"/>
+        </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.woocommerce.android.ui.network.OfflineStatusBarView
@@ -38,7 +53,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <com.woocommerce.android.ui.main.MainNavigationView
+    <com.woocommerce.android.ui.main.MainBottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

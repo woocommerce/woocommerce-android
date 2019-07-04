@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
@@ -73,15 +74,34 @@ class OrderListPresenterTest {
     }
 
     @Test
-    fun `Displays the no orders list view correctly`() {
+    fun `Displays loading skeleton then no orders list view correctly on first run`() {
         presenter.takeView(orderListView)
-        presenter.loadOrders(forceRefresh = true)
+        presenter.loadOrders(forceRefresh = true, isFirstRun = true)
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersPayload>>())
 
         // OnOrderChanged callback from FluxC should trigger the appropriate UI update
         doReturn(noOrders).whenever(orderStore).getOrdersForSite(any())
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView).showEmptyView(true)
+        verify(orderListView, times(1)).showEmptyView(true)
+        verify(orderListView, times(2)).showLoading(true)
+    }
+
+    @Test
+    fun `Displays loading indicator then orders when cached orders present`() {
+        presenter.takeView(orderListView)
+        doReturn(orders).whenever(orderStore).getOrdersForSite(any())
+        presenter.loadOrders(forceRefresh = true, isFirstRun = false)
+
+        // This is called twice, once for fetching orders, then again for shipment tracking
+        // the payload type in `any<Action<FetchOrdersPayload>>` does not actually get evaluated.
+        // The only thing this confirms is the type of `Action`
+        verify(dispatcher, times(2)).dispatch(any<Action<FetchOrdersPayload>>())
+
+        // OnOrderChanged callback from FluxC should trigger the appropriate UI update
+        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
+        verify(orderListView, atLeastOnce()).showEmptyView(false)
+        verify(orderListView, never()).showEmptyView(true)
+        verify(orderListView, times(1)).showLoading(true)
     }
 
     @Test
@@ -106,7 +126,7 @@ class OrderListPresenterTest {
         presenter.takeView(orderListView)
         val orderModel = WCOrderModel()
         presenter.openOrderDetail(orderModel)
-        verify(orderListView).openOrderDetail(orderModel)
+        verify(orderListView).showOrderDetail(orderModel)
     }
 
     @Test
@@ -178,17 +198,17 @@ class OrderListPresenterTest {
 
         // mock a network status change
         presenter.loadMoreOrders(null)
-        verify(presenter, times(0)).fetchAndLoadOrdersFromDb(any(), any())
+        verify(presenter, never()).fetchAndLoadOrdersFromDb(null, false)
     }
 
     @Test
     fun `Show and hide order list skeleton correctly`() {
         presenter.takeView(orderListView)
         presenter.loadOrders("processing", forceRefresh = true)
-        verify(orderListView, times(1)).showSkeleton(true)
+        verify(orderListView, times(1)).showLoading(true)
 
         presenter.onOrderChanged(OnOrderChanged(orders.size).apply { causeOfChange = FETCH_ORDERS })
-        verify(orderListView, times(1)).showSkeleton(false)
+        verify(orderListView, times(1)).showLoading(false)
     }
 
     @Test
