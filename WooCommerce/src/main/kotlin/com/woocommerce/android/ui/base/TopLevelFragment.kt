@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_parent.*
 /**
  * The main fragments hosted by the bottom bar should extend this class
  */
-abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFragmentView {
+abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
     /**
      * The extending class may use this variable to defer a part of its
      * normal initialization until manually requested.
@@ -42,21 +42,8 @@ abstract class TopLevelFragment : androidx.fragment.app.Fragment(), TopLevelFrag
         return layout
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (!hidden) {
-            updateActivityTitle()
-        }
-    }
-
     override fun onDestroyView() {
         container.removeAllViews()
         super.onDestroyView()
-    }
-
-    fun updateActivityTitle() {
-        if (isActive) {
-            activity?.title = getFragmentTitle()
-        }
     }
 }

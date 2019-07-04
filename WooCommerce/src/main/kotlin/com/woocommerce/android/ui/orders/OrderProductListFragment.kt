@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.android.support.AndroidSupportInjection
@@ -20,7 +21,7 @@ import kotlinx.android.synthetic.main.order_detail_product_list.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import javax.inject.Inject
 
-class OrderProductListFragment : androidx.fragment.app.Fragment(), OrderProductListContract.View {
+class OrderProductListFragment : BaseFragment(), OrderProductListContract.View {
     @Inject lateinit var presenter: OrderProductListContract.Presenter
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var productImageMap: ProductImageMap
@@ -33,12 +34,10 @@ class OrderProductListFragment : androidx.fragment.app.Fragment(), OrderProductL
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.fragment_order_product_list, container, false)
-
-        activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, navArgs.orderNumber)
-
-        return view
+        return inflater.inflate(R.layout.fragment_order_product_list, container, false)
     }
+
+    override fun getFragmentTitle(): String = getString(R.string.orderdetail_orderstatus_ordernum, navArgs.orderNumber)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

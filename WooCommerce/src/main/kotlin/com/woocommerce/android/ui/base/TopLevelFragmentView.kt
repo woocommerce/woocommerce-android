@@ -8,7 +8,7 @@ import android.view.ViewGroup
 /**
  * Special interface for top-level fragments hosted by the bottom bar.
  */
-interface TopLevelFragmentView {
+interface TopLevelFragmentView : BaseFragmentView {
     var isActive: Boolean
 
     /**
@@ -20,12 +20,6 @@ interface TopLevelFragmentView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View?
-
-    /**
-     * Return the title that should appear in the action bar while this fragment is
-     * visible.
-     */
-    fun getFragmentTitle(): String
 
     /**
      * Refresh this top-level fragment data and reset its state.
