@@ -242,13 +242,12 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // verify that billing phone section is not displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(GONE)))
 
         // verify that billing email section is not displayed
         onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
     }
 
     @Test
@@ -298,7 +297,7 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // since the customer info phone is NOT empty, the view should be displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(VISIBLE)))
-        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(VISIBLE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_phone)).check(matches(
                 withText(PhoneUtils.formatPhone(mockWCOrderModel.billingPhone))
@@ -307,12 +306,12 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // verify that billing email section is not displayed
         onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
 
         // verify that billing address section is not displayed
         onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
 
         // no shipping available so hide section
         onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
@@ -333,18 +332,18 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // verify the billing phone section is not displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(GONE)))
 
         // verify that billing email section is displayed
         onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(VISIBLE)))
-        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(VISIBLE)))
 
         // verify that billing address section is not displayed
         onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
 
         // no shipping available so hide section
         onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))

@@ -51,24 +51,26 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                 customerInfo_billingLabel.visibility = View.GONE
                 customerInfo_billingAddr.visibility = View.GONE
                 customerInfo_divider.visibility = View.GONE
+                customerInfo_divider2.visibility = View.GONE
             } else {
                 customerInfo_billingLabel.visibility = View.VISIBLE
                 customerInfo_billingAddr.visibility = View.VISIBLE
                 customerInfo_billingAddr.text = billingAddrFull
+                customerInfo_divider2.visibility = View.VISIBLE
             }
 
             // display phone only if available, otherwise, hide the view
             if (!order.billingPhone.isEmpty()) {
                 customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
                 customerInfo_phone.visibility = View.VISIBLE
-                customerInfo_divider2.visibility = View.VISIBLE
+                customerInfo_divider3.visibility = View.VISIBLE
                 customerInfo_callOrMessageBtn.visibility = View.VISIBLE
                 customerInfo_callOrMessageBtn.setOnClickListener {
                     showCallOrMessagePopup(order)
                 }
             } else {
                 customerInfo_phone.visibility = View.GONE
-                customerInfo_divider2.visibility = View.GONE
+                customerInfo_divider3.visibility = View.GONE
                 customerInfo_callOrMessageBtn.visibility = View.GONE
             }
 
@@ -77,7 +79,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                 customerInfo_emailAddr.text = order.billingEmail
                 customerInfo_emailAddr.visibility = View.VISIBLE
                 customerInfo_emailBtn.visibility - View.VISIBLE
-                customerInfo_divider3.visibility = View.VISIBLE
                 customerInfo_emailBtn.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
                     OrderCustomerHelper.createEmail(context, order, order.billingEmail)
@@ -86,7 +87,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             } else {
                 customerInfo_emailAddr.visibility = View.GONE
                 customerInfo_emailBtn.visibility = View.GONE
-                customerInfo_divider3.visibility = View.GONE
             }
         }
     }
