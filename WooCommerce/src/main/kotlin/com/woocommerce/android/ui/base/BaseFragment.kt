@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.base
 
 import android.content.Context
-import android.os.Bundle
 
 /**
  * All top level fragments and child fragments should extend this class to provide a consistent method
