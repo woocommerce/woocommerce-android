@@ -540,4 +540,16 @@
         <item name="android:src">@drawable/delete_button_bg</item>
     </style>
 
+    <!--
+        Product Detail
+    -->
+    <style name="Woo.TextView.Caption">
+        <item name="android:paddingTop">@dimen/default_padding</item>
+        <item name="android:paddingStart">?dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?dialogPreferredPadding</item>
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
 </resources>

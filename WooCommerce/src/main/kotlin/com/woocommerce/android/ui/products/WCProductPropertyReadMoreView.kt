@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.TextView
@@ -54,9 +55,11 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
     }
 
     private fun showFullContent(caption: String, content: String) {
+        val message = TextView(ContextThemeWrapper(context, R.style.Woo_TextView_Caption))
+        message.text = content
         AlertDialog.Builder(context)
                 .setTitle(caption)
-                .setMessage(content)
+                .setView(message)
                 .setCancelable(true)
                 .setPositiveButton(android.R.string.ok) { dialog, _ ->
                     dialog.dismiss()
