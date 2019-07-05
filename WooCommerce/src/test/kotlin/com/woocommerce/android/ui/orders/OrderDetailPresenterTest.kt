@@ -366,21 +366,6 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Request order detail refresh when no network available`() {
-        doReturn(order).whenever(presenter).orderModel
-        doReturn(false).whenever(networkStatus).isConnected()
-        presenter.takeView(orderDetailView)
-
-        // call refresh order detail
-        presenter.refreshOrderDetail(true)
-
-        // verify order detail/order notes/shipment trackings is not fetched from network
-        verify(presenter, times(0)).fetchOrder(any(), any())
-        verify(presenter, times(0)).loadOrderNotes()
-        verify(presenter, times(0)).loadOrderShipmentTrackings()
-    }
-
-    @Test
     fun `Request order detail refresh when network available - success`() {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(presenter).orderModel
