@@ -2,6 +2,7 @@ package com.woocommerce.android
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
@@ -50,11 +51,11 @@ object AppPrefs {
     }
 
     fun getLastAppVersionCode(): Int {
-        return getInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
+        return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
     }
 
     fun setLastAppVersionCode(versionCode: Int) {
-        setInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
+        setDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
     }
 
     fun setSupportEmail(email: String?) {
@@ -185,5 +186,24 @@ object AppPrefs {
 
     private fun remove(key: PrefKey) {
         getPreferences().edit().remove(key.toString()).apply()
+    }
+
+    /**
+     * Methods used to store values in SharedPreferences that are not backed up
+     * when app is installed/uninstalled. Currently, only used for storing appVersionCode.
+     * We might want to migrate this to it's own class if we are to use this for other
+     * attributes as well.
+     */
+    private fun getDeletableInt(key: PrefKey, default: Int = 0) =
+            PreferenceUtils.getInt(getDeleteablePreferences(), key.toString(), default)
+
+    private fun setDeletableInt(key: PrefKey, value: Int) =
+            PreferenceUtils.setInt(getDeleteablePreferences(), key.toString(), value)
+
+    private fun getDeleteablePreferences(): SharedPreferences {
+        return context.getSharedPreferences(
+                "${context.packageName}_deletable_preferences",
+                Context.MODE_PRIVATE
+        )
     }
 }
