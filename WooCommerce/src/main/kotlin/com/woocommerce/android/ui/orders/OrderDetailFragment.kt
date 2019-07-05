@@ -304,6 +304,10 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     override fun refreshOrderDetail(displaySkeleton: Boolean) {
         orderRefreshLayout.isRefreshing = false
         if (!isRefreshPending) {
+            if (!networkStatus.isConnected()) {
+                uiMessageResolver.showOfflineSnack()
+                return
+            }
             isRefreshPending = true
             presenter.refreshOrderDetail(displaySkeleton)
         }

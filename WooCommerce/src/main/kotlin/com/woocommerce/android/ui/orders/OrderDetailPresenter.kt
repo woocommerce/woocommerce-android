@@ -200,9 +200,7 @@ class OrderDetailPresenter @Inject constructor(
 
     override fun refreshOrderDetail(displaySkeleton: Boolean) {
         orderModel?.let {
-            if (networkStatus.isConnected()) {
-                fetchOrder(it.remoteOrderId, displaySkeleton)
-            }
+            fetchOrder(it.remoteOrderId, displaySkeleton)
         }
     }
 
