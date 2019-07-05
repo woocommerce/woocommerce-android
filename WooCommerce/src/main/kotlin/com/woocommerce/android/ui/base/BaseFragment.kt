@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.base
 
 import android.content.Context
+import android.os.Bundle
 
 /**
  * All top level fragments and child fragments should extend this class to provide a consistent method
@@ -14,8 +15,20 @@ abstract class BaseFragment : androidx.fragment.app.Fragment(), BaseFragmentView
         }
     }
 
+    /*
+     * First we use onAttach() to set the title as soon as possible...
+     */
     override fun onAttach(context: Context?) {
         super.onAttach(context)
+        updateActivityTitle()
+    }
+
+    /*
+     * ...then set the title in onActivityCreated() for fragments whose title depends on loaded
+     * data (for example, product detail sets the title to the product name)
+     */
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         updateActivityTitle()
     }
 
