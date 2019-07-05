@@ -1,3 +1,2 @@
-* Smoother sign-in: the sign in flow is completely revamped, with new help screens and documentation to help you log in successfully.
-* Better order management: Now you can add and delete shipment tracking information on an order.
-* Bugs, squashed: We fixed a bug that caused the title of the current screen to update incorrectly as you moved around the app.
+* Fixed a bug where the notifications list didn’t display anything after you logged out and back into the app.
+* Improved how the order detail screen displays when there’s no shipping or billing info.
