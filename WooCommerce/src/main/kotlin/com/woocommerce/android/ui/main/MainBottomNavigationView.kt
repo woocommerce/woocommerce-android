@@ -17,6 +17,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
+import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 
@@ -55,12 +57,12 @@ class MainBottomNavigationView @JvmOverloads constructor(
         val menuView = getChildAt(0) as BottomNavigationMenuView
         val inflater = LayoutInflater.from(context)
 
-        val ordersItemView = menuView.getChildAt(BottomNavigationPosition.ORDERS.position) as BottomNavigationItemView
+        val ordersItemView = menuView.getChildAt(ORDERS.position) as BottomNavigationItemView
         ordersBadgeView = inflater.inflate(R.layout.order_badge_view, menuView, false)
         ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.setBackgroundResource(R.drawable.badge_orders)
         ordersItemView.addView(ordersBadgeView)
 
-        val notifsItemView = menuView.getChildAt(BottomNavigationPosition.NOTIFICATIONS.position) as BottomNavigationItemView
+        val notifsItemView = menuView.getChildAt(NOTIFICATIONS.position) as BottomNavigationItemView
         notifsBadgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
         notifsItemView.addView(notifsBadgeView)
 
