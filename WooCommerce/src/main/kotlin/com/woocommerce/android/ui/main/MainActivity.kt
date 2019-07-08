@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity(),
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
 
-        bottomNavView.showOrderBadge(10) // TODO remove
+        presenter.fetchUnfilledOrderCount()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -443,6 +443,14 @@ class MainActivity : AppCompatActivity(),
         if (!show) {
             NotificationHandler.removeAllNotificationsFromSystemBar(this)
         }
+    }
+
+    override fun showOrderBadge(count: Int) {
+        bottomNavView.showOrderBadge(count)
+    }
+
+    override fun hideOrderBadge() {
+        bottomNavView.showOrderBadge(0)
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {

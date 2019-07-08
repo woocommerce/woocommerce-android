@@ -6,16 +6,20 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
@@ -24,6 +28,8 @@ import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -35,6 +41,7 @@ class MainPresenter @Inject constructor(
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
     private val notificationStore: NotificationStore,
+    private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
@@ -74,6 +81,11 @@ class MainPresenter @Inject constructor(
         // Fetch a fresh list of order status options
         dispatcher.dispatch(WCOrderActionBuilder
                 .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site)))
+    }
+
+    override fun fetchUnfilledOrderCount() {
+        val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
+        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
     }
 
     @Suppress("unused")
@@ -129,6 +141,25 @@ class MainPresenter @Inject constructor(
             // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
             mainView?.updateSelectedSite()
             isHandlingMagicLink = false
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderChanged(event: OnOrderChanged) {
+        when (event.causeOfChange) {
+            FETCH_ORDERS_COUNT -> {
+                if (event.isError) {
+                    WooLog.e(
+                            WooLog.T.ORDERS,
+                            "Error fetching a count of orders waiting to be fulfilled: ${event.error.message}"
+                    )
+                    mainView?.hideOrderBadge()
+                    return
+                }
+
+                mainView?.showOrderBadge(event.rowsAffected)
+            }
         }
     }
 
