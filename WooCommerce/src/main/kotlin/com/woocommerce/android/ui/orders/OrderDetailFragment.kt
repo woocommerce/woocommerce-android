@@ -510,6 +510,12 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     private fun showOrderStatusSelector() {
+        // If the device is offline, alert the user with a snack and exit (do not show order status selector).
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
         presenter.orderModel?.let { order ->
             val orderStatusOptions = presenter.getOrderStatusOptions()
             val orderStatus = order.status
