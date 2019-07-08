@@ -6,6 +6,7 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
@@ -28,7 +29,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private lateinit var navAdapter: NavAdapter
     private lateinit var fragmentManager: androidx.fragment.app.FragmentManager
     private lateinit var listener: MainNavigationListener
-    private lateinit var badgeView: View
+    private lateinit var notifsBadgeView: View
+    private lateinit var ordersBadgeView: View
 
     companion object {
         private var previousNavPos: BottomNavigationPosition? = null
@@ -49,12 +51,18 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         navAdapter = NavAdapter()
 
-        // set up the bottom bar
+        // set up the bottom bar and add the badge views
         val menuView = getChildAt(0) as BottomNavigationMenuView
         val inflater = LayoutInflater.from(context)
-        val itemView = menuView.getChildAt(BottomNavigationPosition.NOTIFICATIONS.position) as BottomNavigationItemView
-        badgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
-        itemView.addView(badgeView)
+
+        val ordersItemView = menuView.getChildAt(BottomNavigationPosition.ORDERS.position) as BottomNavigationItemView
+        ordersBadgeView = inflater.inflate(R.layout.order_badge_view, menuView, false)
+        ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.setBackgroundResource(R.drawable.badge_orders)
+        ordersItemView.addView(ordersBadgeView)
+
+        val notifsItemView = menuView.getChildAt(BottomNavigationPosition.NOTIFICATIONS.position) as BottomNavigationItemView
+        notifsBadgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
+        notifsItemView.addView(notifsBadgeView)
 
         assignNavigationListeners(true)
 
@@ -79,9 +87,24 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     fun showNotificationBadge(show: Boolean) {
-        with(badgeView) {
+        with(notifsBadgeView) {
             if (show && visibility != View.VISIBLE) {
                 WooAnimUtils.fadeIn(this, Duration.MEDIUM)
+            } else if (!show && visibility == View.VISIBLE) {
+                WooAnimUtils.fadeOut(this, Duration.MEDIUM)
+            }
+        }
+    }
+
+    fun showOrderBadge(count: Int) {
+        with(ordersBadgeView) {
+            val show = count > 0
+            if (show) {
+                val label = if (count > 9) "9+" else count.toString()
+                findViewById<TextView>(R.id.textOrderCount)?.setText(label)
+                if (visibility != View.VISIBLE) {
+                    WooAnimUtils.fadeIn(this, Duration.MEDIUM)
+                }
             } else if (!show && visibility == View.VISIBLE) {
                 WooAnimUtils.fadeOut(this, Duration.MEDIUM)
             }

@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/badge"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
@@ -16,5 +15,5 @@
         android:layout_marginEnd="@dimen/notification_badge_offset"
         android:layout_marginTop="@dimen/notification_badge_offset"
         android:importantForAccessibility="no"
-        app:srcCompat="@drawable/notification_badge"/>
+        app:srcCompat="@drawable/badge_notifs"/>
 </FrameLayout>
