@@ -256,19 +256,6 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
                     AnalyticsTracker.KEY_FROM to order.status,
                     AnalyticsTracker.KEY_TO to newStatus))
 
-            // If not connected, exit the process immediately and alert
-            // the user. Track as a failure so tracks data makes sense.
-            if (!networkStatus.isConnected()) {
-                AnalyticsTracker.track(
-                        Stat.ORDER_STATUS_CHANGE_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to AnalyticsTracker.VALUE_NETWORK_ERROR,
-                        AnalyticsTracker.KEY_ERROR_DESC to ""))
-
-                uiMessageResolver.showOfflineSnack()
-                return
-            }
-
             previousOrderStatus = order.status
             order.status = newStatus
 
