@@ -46,6 +46,9 @@ import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
 class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, RequestListener<Drawable> {
+    companion object {
+        const val KEY_PRODUCT_TITLE = "product_title"
+    }
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -68,6 +71,10 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        savedInstanceState?.let {
+            productTitle = it.getString(KEY_PRODUCT_TITLE)
+            updateActivityTitle()
+        }
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
@@ -100,6 +107,11 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
 
         presenter.takeView(this)
         presenter.loadProductDetail(navArgs.remoteProductId)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_PRODUCT_TITLE, productTitle)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
