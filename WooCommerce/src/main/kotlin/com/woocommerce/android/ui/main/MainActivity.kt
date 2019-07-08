@@ -141,8 +141,6 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
-
-        presenter.fetchUnfilledOrderCount()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -154,6 +152,7 @@ class MainActivity : AppCompatActivity(),
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
         updateNotificationBadge()
+        presenter.fetchUnfilledOrderCount()
 
         checkConnection()
     }

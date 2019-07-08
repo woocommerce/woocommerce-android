@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.main
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -157,6 +159,11 @@ class MainPresenter @Inject constructor(
                     mainView?.hideOrderBadge()
                     return
                 }
+
+                // TODO: May want to change the name of this stat
+                AnalyticsTracker.track(
+                        Stat.DASHBOARD_UNFULFILLED_ORDERS_LOADED,
+                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0)))
 
                 mainView?.showOrderBadge(event.rowsAffected)
             }
