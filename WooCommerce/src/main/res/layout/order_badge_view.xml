@@ -13,12 +13,10 @@
         android:layout_gravity="top|center_horizontal"
         android:layout_marginStart="@dimen/notification_badge_offset"
         android:layout_marginTop="@dimen/notification_badge_offset"
-        android:paddingBottom="@dimen/margin_extra_small"
         android:paddingEnd="@dimen/margin_small"
         android:paddingStart="@dimen/margin_small"
-        android:paddingTop="@dimen/margin_extra_small"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_small"
+        android:textSize="@dimen/text_medium"
         tools:background="@drawable/badge_orders"
         tools:text="9+" />
 
