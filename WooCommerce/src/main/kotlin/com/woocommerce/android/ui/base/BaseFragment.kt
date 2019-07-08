@@ -33,15 +33,16 @@ abstract class BaseFragment : androidx.fragment.app.Fragment(), BaseFragmentView
     }
 
     fun updateActivityTitle() {
-        if (shouldUpdateActivityTitle()) {
+        // if this is a top level fragment, only update the title if it's the active bottom nav fragment
+        (this as? TopLevelFragment)?.let {
+            if (it.isActive) {
+                activity?.title = getFragmentTitle()
+            }
+        }
+
+        // otherwise this is a child fragment so update the title if it's showing
+        if (isAdded && !isHidden) {
             activity?.title = getFragmentTitle()
         }
-    }
-
-    private fun shouldUpdateActivityTitle(): Boolean {
-        (this as? TopLevelFragment)?.let {
-            return it.isActive
-        }
-        return isAdded && !isHidden
     }
 }
