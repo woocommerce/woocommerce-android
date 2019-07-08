@@ -33,8 +33,15 @@ abstract class BaseFragment : androidx.fragment.app.Fragment(), BaseFragmentView
     }
 
     fun updateActivityTitle() {
-        if (isAdded && !isHidden) {
+        if (shouldUpdateActivityTitle()) {
             activity?.title = getFragmentTitle()
         }
+    }
+
+    private fun shouldUpdateActivityTitle(): Boolean {
+        (this as? TopLevelFragment)?.let {
+            return it.isActive
+        }
+        return isAdded && !isHidden
     }
 }

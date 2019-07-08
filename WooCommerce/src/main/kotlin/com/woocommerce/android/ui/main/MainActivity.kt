@@ -204,7 +204,13 @@ class MainActivity : AppCompatActivity(),
     /**
      * Returns true if the navigation controller is showing the root fragment (ie: a top level fragment is showing)
      */
-    override fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
+    override fun isAtNavigationRoot(): Boolean {
+        return if (::navController.isInitialized) {
+            navController.currentDestination?.id == R.id.rootFragment
+        } else {
+            true
+        }
+    }
 
     /**
      * Return true if one of the nav component fragments is showing (the opposite of the above)
