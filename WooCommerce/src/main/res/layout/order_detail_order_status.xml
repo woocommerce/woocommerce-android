@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/orderStatus_orderNum"
@@ -23,7 +24,7 @@
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
         tools:text="Created today at 9:51 AM"/>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/orderStatus_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,7 +41,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:contentDescription="@string/orderstatus_contentDesc"/>
+            android:contentDescription="@string/orderstatus_contentDesc"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -48,7 +51,9 @@
             android:focusable="false"
             android:clickable="false"
             android:importantForAccessibility="no"
-            android:background="@drawable/ic_edit_pencil"/>
-    </LinearLayout>
+            android:background="@drawable/ic_edit_pencil"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
 

@@ -9,41 +9,28 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_order_note.*
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContract.View, BackPressListener {
+class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
-        private const val FIELD_ORDER_IDENTIFIER = "order-identifier"
-        private const val FIELD_ORDER_NUMBER = "order-number"
         private const val FIELD_NOTE_TEXT = "note_text"
         private const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
-
-        fun newInstance(order: WCOrderModel): AddOrderNoteFragment {
-            val args = Bundle().also {
-                it.putString(FIELD_ORDER_IDENTIFIER, order.getIdentifier())
-                it.putString(FIELD_ORDER_NUMBER, order.number)
-            }
-
-            val fragment = AddOrderNoteFragment()
-            fragment.arguments = args
-            return fragment
-        }
     }
 
     @Inject lateinit var presenter: AddOrderNoteContract.Presenter
@@ -55,6 +42,8 @@ class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContr
     private var isConfirmingDiscard = false
     private var shouldShowDiscardDialog = true
 
+    private val navArgs: AddOrderNoteFragmentArgs by navArgs()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -62,9 +51,6 @@ class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContr
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        activity?.let {
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
-        }
         return inflater.inflate(R.layout.fragment_add_order_note, container, false)
     }
 
@@ -76,8 +62,8 @@ class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContr
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        orderId = arguments?.getString(FIELD_ORDER_IDENTIFIER) ?: ""
-        orderNumber = arguments?.getString(FIELD_ORDER_NUMBER) ?: ""
+        orderId = navArgs.orderId
+        orderNumber = navArgs.orderNumber
 
         savedInstanceState?.let { state ->
             addNote_switch.isChecked = state.getBoolean(FIELD_IS_CUSTOMER_NOTE)
@@ -117,6 +103,8 @@ class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContr
         presenter.takeView(this)
     }
 
+    override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, navArgs.orderNumber)
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -124,7 +112,6 @@ class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContr
 
     override fun onDestroyView() {
         activity?.let {
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
             ActivityUtils.hideKeyboard(it)
         }
         presenter.dropView()

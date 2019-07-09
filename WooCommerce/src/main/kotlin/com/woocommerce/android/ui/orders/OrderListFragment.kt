@@ -24,6 +24,7 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderListAdapter.OnLoadMoreListener
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -150,17 +151,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     private fun shouldShowFilterMenuItem(): Boolean {
+        var isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
         return when {
-            !isAdded -> false
+            !isActive -> false
             (isShowingAllOrders() && empty_view.visibility == View.VISIBLE) -> false
-            (childFragmentManager.backStackEntryCount > 0) -> false
+            (isChildShowing) -> false
             else -> true
         }
     }
 
     private fun shouldShowSearchMenuItem(): Boolean {
+        var isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
         return when {
-            (childFragmentManager.backStackEntryCount > 0) -> false
+            (isChildShowing) -> false
             else -> true
         }
     }
@@ -272,28 +275,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         super.onSaveInstanceState(outState)
     }
 
-    override fun onBackStackChanged() {
-        super.onBackStackChanged()
-
-        // If this fragment is now visible and we've deferred loading orders due to it not
-        // being visible - go ahead and load the orders.
-        if (isActive) {
-            refreshOptionsMenu()
-            if (isSearching) {
-                searchMenuItem?.expandActionView()
-                searchView?.setQuery(searchQuery, false)
-            } else {
-                presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
-            }
-            enableSearchListeners()
-        } else {
-            // disable the search listeners until we return to this fragment - otherwise the query text
-            // will fire with an empty string and the collapse event will fire as we leave this fragment
-            disableSearchListeners()
-            refreshOptionsMenu()
-        }
-    }
-
     override fun onDestroyView() {
         disableSearchListeners()
         presenter.dropView()
@@ -305,13 +286,28 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
-        // silently refresh if this fragment is no longer hidden
-        if (!hidden) {
+        if (hidden) {
+            disableSearchListeners()
+        } else {
+            enableSearchListeners()
+
+            // silently refresh if this fragment is no longer hidden
             if (isSearching) {
                 presenter.searchOrders(searchQuery)
             } else {
                 presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
             }
+        }
+    }
+
+    override fun onReturnedFromChildFragment() {
+        showOptionsMenu(true)
+
+        if (isSearching) {
+            searchMenuItem?.expandActionView()
+            searchView?.setQuery(searchQuery, false)
+        } else {
+            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
         }
     }
 
@@ -355,9 +351,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             isRefreshPending = false
         }
 
-        // Update the toolbar title
         if (isActive) {
-            activity?.title = getFragmentTitle()
+            updateActivityTitle()
         }
     }
 
@@ -449,6 +444,23 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         ordersAdapter.setOrderStatusOptions(orderStatusOptions)
     }
 
+    /**
+     * We use this to clear the options menu when navigating to a child destination - otherwise this
+     * fragment's menu will continue to appear when the child is shown
+     */
+    private fun showOptionsMenu(show: Boolean) {
+        setHasOptionsMenu(show)
+        if (show) {
+            refreshOptionsMenu()
+        }
+    }
+
+    override fun showOrderDetail(order: WCOrderModel) {
+        disableSearchListeners()
+        showOptionsMenu(false)
+        (activity as? MainNavigationRouter)?.showOrderDetail(order.localSiteId, order.remoteOrderId)
+    }
+
     // region Filtering
     private fun showFilterDialog() {
         val orderStatusOptions = presenter.getOrderStatusOptions()
@@ -470,7 +482,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             ordersAdapter.clearAdapterData()
             presenter.loadOrders(orderStatusFilter, true)
 
-            activity?.title = getFragmentTitle()
+            updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
         }
     }
@@ -556,7 +568,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             searchQuery = ""
             isSearching = false
             disableSearchListeners()
-            activity?.title = getFragmentTitle()
+            updateActivityTitle()
             searchMenuItem?.collapseActionView()
             presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
         }

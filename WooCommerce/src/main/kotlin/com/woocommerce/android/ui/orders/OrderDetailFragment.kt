@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -18,56 +21,26 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.TopLevelFragmentRouter
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
+class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
     companion object {
-        const val TAG = "OrderDetailFragment"
-        const val FIELD_ORDER_IDENTIFIER = "order-identifier"
-        const val FIELD_MARK_COMPLETE = "mark-order-complete"
-        const val FIELD_REMOTE_NOTE_ID = "remote-notification-id"
-
-        fun newInstance(
-            orderId: OrderIdentifier,
-            remoteNoteId: Long? = null,
-            markComplete: Boolean = false
-        ): androidx.fragment.app.Fragment {
-            val args = Bundle()
-            args.putString(FIELD_ORDER_IDENTIFIER, orderId)
-
-            // True if order fulfillment requested, else false
-            args.putBoolean(FIELD_MARK_COMPLETE, markComplete)
-
-            // If opened from a notification, add the remote_note_id
-            remoteNoteId?.let { args.putLong(FIELD_REMOTE_NOTE_ID, it) }
-
-            val fragment = OrderDetailFragment()
-            fragment.arguments = args
-            return fragment
-        }
-
-        fun newInstance(
-            localSiteId: Int,
-            remoteOrderId: Long,
-            remoteNoteId: Long? = null,
-            markComplete: Boolean = false
-        ): androidx.fragment.app.Fragment {
-            val orderIdentifier = OrderIdentifier(localSiteId, remoteOrderId)
-            return newInstance(orderIdentifier, remoteNoteId, markComplete)
-        }
+        const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
+        const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
@@ -85,6 +58,9 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
     private var orderStatusSelector: OrderStatusSelectorDialog? = null
 
+    override var isRefreshPending: Boolean = false
+    private val skeletonView = SkeletonView()
+
     /**
      * Keep track of the deleted [WCOrderShipmentTrackingModel] in case
      * the request to server fails, we need to display an error message
@@ -94,9 +70,19 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     private var deleteOrderShipmentTrackingResponseSnackbar: Snackbar? = null
     private var deleteOrderShipmentTrackingSet = mutableSetOf<WCOrderShipmentTrackingModel>()
 
+    private val navArgs: OrderDetailFragmentArgs by navArgs()
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        savedInstanceState?.let { bundle ->
+            isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -108,25 +94,63 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
         presenter.takeView(this)
 
-        arguments?.let {
-            val markComplete = it.getBoolean(FIELD_MARK_COMPLETE, false)
-            it.remove(FIELD_MARK_COMPLETE)
+        // The navArgs tell us if we should mark the order complete, but we only want to do that once. We can't
+        // change the navArgs since they're read-only so we set ARG_DID_MARK_COMPLETE instead.
+        val didMarkComplete = arguments?.getBoolean(ARG_DID_MARK_COMPLETE) ?: false
+        val markComplete = navArgs.markComplete && !didMarkComplete
+        if (markComplete) {
+            arguments = Bundle().also { it.putBoolean(ARG_DID_MARK_COMPLETE, true) }
+        }
 
-            val orderIdentifier = it.getString(FIELD_ORDER_IDENTIFIER) as OrderIdentifier
-            presenter.loadOrderDetail(orderIdentifier, markComplete)
+        val orderIdentifier = navArgs.orderId
+        presenter.loadOrderDetail(orderIdentifier, markComplete)
 
-            val remoteNoteId = it.getLong(FIELD_REMOTE_NOTE_ID, 0)
-            activity?.let { ctx ->
-                if (remoteNoteId > 0) {
-                    presenter.markOrderNotificationRead(ctx, remoteNoteId)
+        val remoteNoteId = navArgs.remoteNoteId
+        activity?.let { ctx ->
+            if (remoteNoteId > 0) {
+                presenter.markOrderNotificationRead(ctx, remoteNoteId)
+            }
+        }
+
+        orderRefreshLayout?.apply {
+            activity?.let { activity ->
+                setColorSchemeColors(
+                        ContextCompat.getColor(activity, R.color.colorPrimary),
+                        ContextCompat.getColor(activity, R.color.colorAccent),
+                        ContextCompat.getColor(activity, R.color.colorPrimaryDark)
+                )
+            }
+            // Set the scrolling view in the custom SwipeRefreshLayout
+            scrollUpChild = scrollView
+            setOnRefreshListener {
+                AnalyticsTracker.track(Stat.ORDER_DETAIL_PULLED_TO_REFRESH)
+                if (!isRefreshPending) {
+                    // if undo snackbar is displayed, dismiss it and initiate request
+                    // to change order status or delete shipment tracking
+                    // once that is processed, initiate order detail refresh
+                    when {
+                        deleteOrderShipmentTrackingSnackbar?.isShownOrQueued == true -> {
+                            deleteOrderShipmentTrackingSnackbar?.dismiss()
+                            deleteOrderShipmentTrackingSnackbar = null
+                        }
+                        changeOrderStatusSnackbar?.isShownOrQueued == true -> {
+                            changeOrderStatusSnackbar?.dismiss()
+                            changeOrderStatusSnackbar = null
+                        }
+                        else -> refreshOrderDetail(true)
+                    }
                 }
             }
         }
 
-        scrollView.setOnScrollChangeListener {
-            _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+        scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             if (scrollY > oldScrollY) onScrollDown() else if (scrollY < oldScrollY) onScrollUp()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -166,10 +190,12 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
         super.onDestroyView()
     }
 
-    override fun showOrderDetail(order: WCOrderModel?) {
+    override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number)
+
+    override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {
         order?.let {
             // set the title to the order number
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it.number)
+            updateActivityTitle()
 
             // Populate the Order Status Card
             val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
@@ -202,6 +228,10 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
             } else {
                 orderDetail_customerNote.visibility = View.VISIBLE
                 orderDetail_customerNote.initView(order)
+            }
+
+            if (isFreshData) {
+                isRefreshPending = false
             }
         }
     }
@@ -239,27 +269,24 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                router.openOrderFulfillment(order, presenter.isShipmentTrackingsFetched)
-            }
-        }
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderFulfillmentFragment(
+                order.getIdentifier(),
+                order.number,
+                presenter.isShipmentTrackingsFetched
+        )
+        findNavController().navigate(action)
     }
 
     override fun openOrderProductList(order: WCOrderModel) {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                router.openOrderProductList(order)
-            }
-        }
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderProductListFragment(
+                order.getIdentifier(),
+                order.number
+        )
+        findNavController().navigate(action)
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
-        activity?.let { router ->
-            if (router is TopLevelFragmentRouter) {
-                router.showProductDetail(remoteProductId)
-            }
-        }
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
     override fun setOrderStatus(newStatus: String) {
@@ -274,6 +301,18 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     override fun refreshOrderStatus() {
         presenter.orderModel?.let {
             setOrderStatus(it.status)
+        }
+    }
+
+    override fun refreshOrderDetail(displaySkeleton: Boolean) {
+        orderRefreshLayout.isRefreshing = false
+        if (!isRefreshPending) {
+            if (!networkStatus.isConnected()) {
+                uiMessageResolver.showOfflineSnack()
+                return
+            }
+            isRefreshPending = true
+            presenter.refreshOrderDetail(displaySkeleton)
         }
     }
 
@@ -350,14 +389,15 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
         }
     }
 
-    // TODO: replace progress bar with a skeleton
-    override fun showLoadOrderProgress(show: Boolean) {
-        loadingProgress.visibility = if (show) View.VISIBLE else View.GONE
-        orderDetail_container.visibility = if (show) View.GONE else View.VISIBLE
+    override fun showSkeleton(show: Boolean) {
+        when (show) {
+            true -> skeletonView.show(orderDetail_container, R.layout.skeleton_order_detail, delayed = true)
+            false -> skeletonView.hide()
+        }
     }
 
     override fun showLoadOrderError() {
-        loadingProgress.visibility = View.GONE
+        showSkeleton(false)
         uiMessageResolver.showSnack(R.string.order_error_fetch_generic)
 
         if (isStateSaved) {
@@ -368,11 +408,11 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     override fun showAddOrderNoteScreen(order: WCOrderModel) {
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                router.openAddOrderNote(order)
-            }
-        }
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToAddOrderNoteFragment(
+                order.getIdentifier(),
+                order.number
+        )
+        findNavController().navigate(action)
     }
 
     override fun showAddOrderNoteErrorSnack() {
@@ -468,15 +508,13 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
     override fun openAddOrderShipmentTrackingScreen() {
         AnalyticsTracker.track(ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED)
-        parentFragment?.let { router ->
-            if (router is OrdersViewRouter) {
-                presenter.orderModel?.let {
-                    router.openAddOrderShipmentTracking(
-                            orderIdentifier = it.getIdentifier(),
-                            orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
-                            isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom())
-                }
-            }
+        presenter.orderModel?.let { order ->
+            val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToAddOrderShipmentTrackingFragment(
+                    orderId = order.getIdentifier(),
+                    orderTrackingProvider = AppPrefs.getSelectedShipmentTrackingProviderName(),
+                    isCustomProvider = AppPrefs.getIsSelectedShipmentTrackingProviderCustom()
+            )
+            findNavController().navigate(action)
         }
     }
 

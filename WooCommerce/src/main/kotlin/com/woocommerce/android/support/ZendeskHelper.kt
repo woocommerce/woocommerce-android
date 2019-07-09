@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.zendesk.logger.Logger
@@ -23,7 +24,6 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
-import org.wordpress.android.util.PackageUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
 import zendesk.commonui.UiConfig

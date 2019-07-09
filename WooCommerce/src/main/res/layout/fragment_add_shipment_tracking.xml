@@ -5,14 +5,14 @@
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context="com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/snack_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_window_background"
-        android:orientation="vertical">
+        android:background="@color/default_window_background">
 
         <LinearLayout
             android:id="@+id/addTracking_editContainer"

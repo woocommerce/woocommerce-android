@@ -17,7 +17,8 @@ interface OrderDetailContract {
         var isUsingCachedShipmentTrackings: Boolean
         var isShipmentTrackingsFetched: Boolean
         var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?
-        fun fetchOrder(remoteOrderId: Long)
+        fun refreshOrderDetail(displaySkeleton: Boolean = false)
+        fun fetchOrder(remoteOrderId: Long, displaySkeleton: Boolean = false)
         fun loadOrderDetailFromDb(orderIdentifier: OrderIdentifier): WCOrderModel?
         fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean)
         fun loadOrderNotes()
@@ -36,7 +37,10 @@ interface OrderDetailContract {
 
     interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener,
             OrderShipmentTrackingActionListener {
-        fun showOrderDetail(order: WCOrderModel?)
+        var isRefreshPending: Boolean
+
+        fun showSkeleton(show: Boolean)
+        fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderNotesSkeleton(show: Boolean)
         fun showAddOrderNoteScreen(order: WCOrderModel)
@@ -49,8 +53,8 @@ interface OrderDetailContract {
         fun showOrderStatusChangedError()
         fun markOrderStatusChangedSuccess()
         fun markOrderStatusChangedFailed()
-        fun showLoadOrderProgress(show: Boolean)
         fun showLoadOrderError()
+        fun refreshOrderDetail(displaySkeleton: Boolean = false)
         fun refreshOrderStatus()
         fun refreshProductImages()
         fun undoDeletedTrackingOnError(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?)

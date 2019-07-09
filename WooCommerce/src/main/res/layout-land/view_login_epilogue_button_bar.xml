@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frame_bottom"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,19 +11,20 @@
     android:orientation="horizontal">
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_try_another"
+        android:id="@+id/button_secondary"
         android:theme="@style/Woo.Button.White"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:visibility="gone"
-        android:text="@string/login_try_another_account"/>
+        android:text="@string/login_view_connected_stores"
+        tools:visibility="visible"/>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_continue"
+        android:id="@+id/button_primary"
         style="@style/Woo.Button.Purple"
         android:layout_width="0sp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/continue_button"/>
+        android:text="@string/login_try_another_account"/>
 </LinearLayout>
