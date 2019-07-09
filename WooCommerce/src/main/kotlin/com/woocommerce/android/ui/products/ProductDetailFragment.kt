@@ -58,7 +58,6 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var productTitle = ""
-    private var activityTitle = ""
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
@@ -69,11 +68,6 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        activity?.let {
-            activityTitle = it.title.toString()
-        }
-
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
@@ -83,9 +77,6 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
     }
 
     override fun onDestroyView() {
-        activity?.let {
-            it.title = activityTitle
-        }
         presenter.dropView()
         super.onDestroyView()
     }
