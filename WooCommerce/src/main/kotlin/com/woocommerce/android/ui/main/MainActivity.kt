@@ -114,10 +114,11 @@ class MainActivity : AppCompatActivity(),
         setSupportActionBar(toolbar as Toolbar)
 
         presenter.takeView(this)
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         navController = findNavController(R.id.nav_host_fragment_main)
         navController.addOnDestinationChangedListener(this)
+
+        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -203,7 +204,13 @@ class MainActivity : AppCompatActivity(),
     /**
      * Returns true if the navigation controller is showing the root fragment (ie: a top level fragment is showing)
      */
-    override fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
+    override fun isAtNavigationRoot(): Boolean {
+        return if (::navController.isInitialized) {
+            navController.currentDestination?.id == R.id.rootFragment
+        } else {
+            true
+        }
+    }
 
     /**
      * Return true if one of the nav component fragments is showing (the opposite of the above)
@@ -309,7 +316,10 @@ class MainActivity : AppCompatActivity(),
         }
 
         if (isAtRoot) {
-            getActiveTopLevelFragment()?.onReturnedFromChildFragment()
+            getActiveTopLevelFragment()?.let {
+                it.updateActivityTitle()
+                it.onReturnedFromChildFragment()
+            }
         }
 
         previousDestinationId = destination.id

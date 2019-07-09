@@ -21,6 +21,7 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
@@ -35,7 +36,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
+class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
@@ -189,10 +190,12 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
         super.onDestroyView()
     }
 
+    override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number)
+
     override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {
         order?.let {
             // set the title to the order number
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it.number)
+            updateActivityTitle()
 
             // Populate the Order Status Card
             val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
