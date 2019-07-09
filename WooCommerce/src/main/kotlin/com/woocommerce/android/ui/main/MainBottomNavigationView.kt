@@ -29,7 +29,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
 ) : BottomNavigationView(context, attrs, defStyleAttr),
         OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
     private lateinit var navAdapter: NavAdapter
-    private lateinit var fragmentManager: androidx.fragment.app.FragmentManager
+    private lateinit var fragmentManager: FragmentManager
     private lateinit var listener: MainNavigationListener
     private lateinit var notifsBadgeView: View
     private lateinit var ordersBadgeView: View
@@ -47,7 +47,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         get() = findNavigationPositionById(selectedItemId)
         set(navPos) = updateCurrentPosition(navPos)
 
-    fun init(fm: androidx.fragment.app.FragmentManager, listener: MainNavigationListener) {
+    fun init(fm: FragmentManager, listener: MainNavigationListener) {
         this.fragmentManager = fm
         this.listener = listener
 
@@ -99,17 +99,21 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     fun showOrderBadge(count: Int) {
-        with(ordersBadgeView) {
-            val show = count > 0
-            if (show) {
-                val label = if (count > 9) "9+" else count.toString()
-                findViewById<TextView>(R.id.textOrderCount)?.setText(label)
-                if (visibility != View.VISIBLE) {
-                    WooAnimUtils.fadeIn(this, Duration.MEDIUM)
-                }
-            } else if (!show && visibility == View.VISIBLE) {
-                WooAnimUtils.fadeOut(this, Duration.MEDIUM)
-            }
+        if (count <= 0) {
+            hideOrderBadge()
+            return
+        }
+
+        val label = if (count > 9) "9+" else count.toString()
+        ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.setText(label)
+        if (ordersBadgeView.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(ordersBadgeView, Duration.MEDIUM)
+        }
+    }
+
+    fun hideOrderBadge() {
+        if (ordersBadgeView.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(ordersBadgeView, Duration.MEDIUM)
         }
     }
 

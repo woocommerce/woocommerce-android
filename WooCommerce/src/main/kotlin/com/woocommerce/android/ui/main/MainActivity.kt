@@ -459,7 +459,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun hideOrderBadge() {
-        bottomNavView.showOrderBadge(0)
+        bottomNavView.hideOrderBadge()
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
