@@ -15,9 +15,9 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
-import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
@@ -61,7 +61,7 @@ class MainPresenterTest {
                 )
         )
         mainPresenter.takeView(mainContractView)
-
+        doReturn(SiteModel()).whenever(selectedSite).get()
         actionCaptor = argumentCaptor()
     }
 
@@ -144,7 +144,7 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Hides orders card on error correctly`() {
+    fun `Hides orders badge on error correctly`() {
         val totalOrders = 25
         val filter = CoreOrderStatus.PROCESSING.value
         mainPresenter.takeView(mainContractView)

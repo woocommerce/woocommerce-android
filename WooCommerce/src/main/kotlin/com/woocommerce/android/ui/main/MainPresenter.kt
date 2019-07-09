@@ -165,7 +165,11 @@ class MainPresenter @Inject constructor(
                         Stat.DASHBOARD_UNFULFILLED_ORDERS_LOADED,
                         mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0)))
 
-                mainView?.showOrderBadge(event.rowsAffected)
+                if (event.rowsAffected > 0) {
+                    mainView?.showOrderBadge(event.rowsAffected)
+                } else {
+                    mainView?.hideOrderBadge()
+                }
             }
         }
     }
