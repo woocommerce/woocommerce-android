@@ -1,10 +1,13 @@
 2.3
 -----
+ 
 * Added option to request for new features right from the app in the Settings page
+* The unfilled order count doesn't re-animate in every time the dashboard is restored or refreshed
 
 2.2
 -----
 * Fixed a bug where the notifications list would be empty after logging out and back into app
+* Added pull to refresh support for Order Detail page
 * Added a "refresh app" option to the sign in flow to check for updates to the selected site
 
 2.1

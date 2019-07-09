@@ -21,6 +21,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         APPLICATION_CLOSED(siteless = true),
         APPLICATION_INSTALLED(siteless = true),
         APPLICATION_UPGRADED(siteless = true),
+        APPLICATION_VERSION_CHECK_FAILED(siteless = true),
         BACK_PRESSED(siteless = true),
         VIEW_SHOWN(siteless = true),
 
@@ -133,6 +134,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_STATUS_CHANGE_FAILED,
         ORDER_STATUS_CHANGE_SUCCESS,
         ORDER_STATUS_CHANGE_UNDO,
+        ORDER_DETAIL_PULLED_TO_REFRESH,
         ORDER_DETAIL_ADD_NOTE_BUTTON_TAPPED,
         ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED,
         ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED,
@@ -395,6 +397,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOURCE = "source"
         const val KEY_URL = "url"
         const val KEY_HAS_CONNECTED_STORES = "has_connected_stores"
+        const val KEY_LAST_KNOWN_VERSION_CODE = "last_known_version_code"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
