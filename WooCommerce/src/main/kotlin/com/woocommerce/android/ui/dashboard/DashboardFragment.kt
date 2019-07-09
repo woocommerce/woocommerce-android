@@ -59,7 +59,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
