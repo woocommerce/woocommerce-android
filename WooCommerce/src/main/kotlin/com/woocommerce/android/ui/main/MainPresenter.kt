@@ -179,7 +179,11 @@ class MainPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationsUnseenChangeEvent) {
-        mainView?.showNotificationBadge(event.hasUnseen)
+        if (event.hasUnseen) {
+            mainView?.showNotificationBadge()
+        } else {
+            mainView?.hideNotificationBadge()
+        }
     }
 
     /**

@@ -151,8 +151,9 @@ class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
         updateNotificationBadge()
-        presenter.fetchUnfilledOrderCount()
+        updateOrderBadge()
 
         checkConnection()
     }
@@ -433,15 +434,24 @@ class MainActivity : AppCompatActivity(),
 
     // region Bottom Navigation
     override fun updateNotificationBadge() {
-        showNotificationBadge(AppPrefs.getHasUnseenNotifs())
+        if (AppPrefs.getHasUnseenNotifs()) {
+            showNotificationBadge()
+        } else {
+            hideNotificationBadge()
+        }
     }
 
-    override fun showNotificationBadge(show: Boolean) {
-        bottomNavView.showNotificationBadge(show)
+    override fun hideNotificationBadge() {
+        bottomNavView.showNotificationBadge(false)
+        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+    }
 
-        if (!show) {
-            NotificationHandler.removeAllNotificationsFromSystemBar(this)
-        }
+    override fun showNotificationBadge() {
+        bottomNavView.showNotificationBadge(true)
+    }
+
+    override fun updateOrderBadge() {
+        presenter.fetchUnfilledOrderCount()
     }
 
     override fun showOrderBadge(count: Int) {
