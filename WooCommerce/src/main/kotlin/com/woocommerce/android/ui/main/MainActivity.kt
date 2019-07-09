@@ -82,6 +82,7 @@ class MainActivity : AppCompatActivity(),
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
         const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
         const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
+        const val FIELD_OPENED_FROM_ZENDESK = "opened-from-zendesk"
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -513,6 +514,23 @@ class MainActivity : AppCompatActivity(),
 
                 // User clicked on a group of notifications. Just show the notifications tab.
                 bottomNavView.currentPosition = NOTIFICATIONS
+            } else if (intent.getBooleanExtra(FIELD_OPENED_FROM_ZENDESK, false)) {
+                // Reset this flag now that it's being processed
+                intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)
+
+                // Send track event for the zendesk notification id
+                val remoteNoteId = intent.getIntExtra(FIELD_REMOTE_NOTE_ID, 0)
+                NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
+
+                // Remove single notification from the system bar
+                NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
+
+                // leave the Main activity showing the Dashboard tab, so when the user comes back from Help & Support,
+                // the app is in the right section
+                bottomNavView.currentPosition = DASHBOARD
+
+                // launch 'Tickets' page of Zendesk
+                startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
             } else {
                 // Check for a notification ID - if one is present, open notification
                 val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
@@ -523,7 +541,6 @@ class MainActivity : AppCompatActivity(),
                     // Remove single notification from the system bar
                     NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
 
-                    // Open the detail view for this notification
                     showNotificationDetail(remoteNoteId)
                 } else {
                     // Send analytics for viewing all notifications
