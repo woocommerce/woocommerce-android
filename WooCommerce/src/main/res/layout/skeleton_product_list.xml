@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:paddingEnd="@dimen/margin_large"
+        android:paddingStart="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_large"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="@dimen/text_large"
+            android:background="@drawable/skeleton_background"/>
+
+        <View
+            android:layout_width="80dp"
+            android:layout_height="@dimen/text_large"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/skeleton_background"/>
+    </RelativeLayout>
+
+    <include layout="@layout/skeleton_product_list_item"/>
+
+    <include layout="@layout/skeleton_product_list_item"/>
+
+    <include layout="@layout/skeleton_product_list_item"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/settings_padding"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_large"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="120dp"
+            android:layout_height="@dimen/text_large"
+            android:layout_gravity="end"
+            android:layout_marginStart="@dimen/settings_padding"
+            android:layout_marginTop="@dimen/settings_padding"
+            android:background="@drawable/skeleton_background"/>
+
+    </LinearLayout>
+
+</LinearLayout>

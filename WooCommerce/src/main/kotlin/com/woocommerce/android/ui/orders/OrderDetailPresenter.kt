@@ -115,11 +115,11 @@ class OrderDetailPresenter @Inject constructor(
         if (orderIdentifier.isNotEmpty()) {
             orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
-                orderView?.showOrderDetail(order)
+                orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
-            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId)
+            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
 
@@ -198,8 +198,14 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    override fun fetchOrder(remoteOrderId: Long) {
-        orderView?.showLoadOrderProgress(true)
+    override fun refreshOrderDetail(displaySkeleton: Boolean) {
+        orderModel?.let {
+            fetchOrder(it.remoteOrderId, displaySkeleton)
+        }
+    }
+
+    override fun fetchOrder(remoteOrderId: Long, displaySkeleton: Boolean) {
+        orderView?.showSkeleton(displaySkeleton)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
     }
@@ -291,11 +297,12 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : ${event.error.message}")
                 orderView?.showLoadOrderError()
             } else {
-                orderModel = orderStore.getOrderByIdentifier(orderIdentifier!!)
+                orderModel = loadOrderDetailFromDb(orderIdentifier!!)
                 orderModel?.let { order ->
-                    orderView?.showLoadOrderProgress(false)
-                    orderView?.showOrderDetail(order)
+                    orderView?.showSkeleton(false)
+                    orderView?.showOrderDetail(order, isFreshData = true)
                     loadOrderNotes()
+                    loadOrderShipmentTrackings()
                 } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
@@ -347,10 +354,13 @@ class OrderDetailPresenter @Inject constructor(
 
                 // Successfully marked order status changed
                 orderModel?.let {
-                    orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
+                    orderModel = loadOrderDetailFromDb(it.getIdentifier())
                 }
                 orderView?.markOrderStatusChangedSuccess()
             }
+
+            // if order detail refresh is pending, call refresh order detail
+            orderView?.refreshOrderDetail()
         } else if (event.causeOfChange == POST_ORDER_NOTE) {
             if (event.isError) {
                 AnalyticsTracker.track(
@@ -379,6 +389,9 @@ class OrderDetailPresenter @Inject constructor(
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()
             }
+
+            // if order detail refresh is pending, call refresh order detail
+            orderView?.refreshOrderDetail()
         } else if (event.causeOfChange == ADD_ORDER_SHIPMENT_TRACKING) {
             if (event.isError) {
                 AnalyticsTracker.track(

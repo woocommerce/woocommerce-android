@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.FragmentScrollListener
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.push.NotificationHandler
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
+import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -53,6 +55,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -111,10 +114,11 @@ class MainActivity : AppCompatActivity(),
         setSupportActionBar(toolbar as Toolbar)
 
         presenter.takeView(this)
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         navController = findNavController(R.id.nav_host_fragment_main)
         navController.addOnDestinationChangedListener(this)
+
+        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -200,7 +204,13 @@ class MainActivity : AppCompatActivity(),
     /**
      * Returns true if the navigation controller is showing the root fragment (ie: a top level fragment is showing)
      */
-    override fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
+    override fun isAtNavigationRoot(): Boolean {
+        return if (::navController.isInitialized) {
+            navController.currentDestination?.id == R.id.rootFragment
+        } else {
+            true
+        }
+    }
 
     /**
      * Return true if one of the nav component fragments is showing (the opposite of the above)
@@ -544,7 +554,6 @@ class MainActivity : AppCompatActivity(),
         showBottomNav()
         bottomNavView.currentPosition = NOTIFICATIONS
 
-        val fragment = bottomNavView.getFragment(NOTIFICATIONS)
         val navPos = BottomNavigationPosition.NOTIFICATIONS.position
         bottom_nav.active(navPos)
 
@@ -557,7 +566,7 @@ class MainActivity : AppCompatActivity(),
                         }
                     }
                 }
-                PRODUCT_REVIEW -> (fragment as? NotifsListFragment)?.openReviewDetail(note)
+                PRODUCT_REVIEW -> showReviewDetail(note)
                 else -> { /* do nothing */ }
             }
         }
@@ -566,6 +575,16 @@ class MainActivity : AppCompatActivity(),
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
         val action = ProductDetailFragmentDirections.actionGlobalProductDetailFragment(remoteProductId)
+        navController.navigate(action)
+    }
+
+    override fun showReviewDetail(notification: NotificationModel, tempStatus: String?) {
+        showBottomNav()
+        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
+                notification.remoteNoteId,
+                notification.getCommentId(),
+                tempStatus
+        )
         navController.navigate(action)
     }
 
