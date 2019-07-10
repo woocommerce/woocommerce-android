@@ -76,7 +76,9 @@ class MainActivity : AppCompatActivity(),
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
-        private const val STATE_KEY_POSITION = "key-position"
+
+        private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
+        private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
@@ -100,6 +102,8 @@ class MainActivity : AppCompatActivity(),
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
+    private var unfilledOrderCount: Int = 0
+
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
@@ -173,16 +177,20 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
-        // Store the current bottom bar navigation position.
-        outState?.putInt(STATE_KEY_POSITION, bottomNavView.currentPosition.id)
+        outState?.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
+        outState?.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         super.onSaveInstanceState(outState)
     }
 
     private fun restoreSavedInstanceState(savedInstanceState: Bundle?) {
-        // Restore the current navigation position
         savedInstanceState?.also {
-            val id = it.getInt(STATE_KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
+            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, BottomNavigationPosition.DASHBOARD.id)
             bottomNavView.restoreSelectedItemState(id)
+
+            val count = it.getInt(KEY_UNFILLED_ORDER_COUNT)
+            if (count > 0) {
+                showOrderBadge(count)
+            }
         }
     }
 
@@ -466,10 +474,12 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showOrderBadge(count: Int) {
+        unfilledOrderCount = count
         bottomNavView.showOrderBadge(count)
     }
 
     override fun hideOrderBadge() {
+        unfilledOrderCount = 0
         bottomNavView.hideOrderBadge()
     }
 

@@ -99,7 +99,6 @@ class MainPresenterTest {
         verify(mainContractView).updateSelectedSite()
     }
 
-
     @Test
     fun `Requests orders to fulfill count correctly`() {
         mainPresenter.takeView(mainContractView)
