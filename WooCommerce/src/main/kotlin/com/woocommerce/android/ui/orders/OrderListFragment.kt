@@ -174,7 +174,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -351,9 +351,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             isRefreshPending = false
         }
 
-        // Update the toolbar title
         if (isActive) {
-            activity?.title = getFragmentTitle()
+            updateActivityTitle()
         }
     }
 
@@ -483,7 +482,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             ordersAdapter.clearAdapterData()
             presenter.loadOrders(orderStatusFilter, true)
 
-            activity?.title = getFragmentTitle()
+            updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
         }
     }
@@ -569,7 +568,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             searchQuery = ""
             isSearching = false
             disableSearchListeners()
-            activity?.title = getFragmentTitle()
+            updateActivityTitle()
             searchMenuItem?.collapseActionView()
             presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
         }

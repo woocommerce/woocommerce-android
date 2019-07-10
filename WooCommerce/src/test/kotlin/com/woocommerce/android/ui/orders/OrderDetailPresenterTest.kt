@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_SINGLE_ORDER
 import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
@@ -28,6 +29,7 @@ import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchSingleOrderPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
@@ -73,7 +75,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any())
+        verify(orderDetailView).showOrderDetail(any(), any())
     }
 
     @Test
@@ -376,7 +378,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         assertTrue(presenter.isVirtualProduct(order.getLineItemList()))
     }
@@ -390,7 +392,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
     }
@@ -409,7 +411,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
     }
@@ -421,7 +423,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         verify(productStore, times(0)).getProductsByRemoteIds(any(), any())
         assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
@@ -435,8 +437,65 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any())
+        verify(orderDetailView).showOrderDetail(any(), any())
 
         assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Request order detail refresh when network available - success`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(order.getIdentifier()).whenever(presenter).orderIdentifier
+        doReturn(true).whenever(networkStatus).isConnected()
+
+        // call refresh order detail
+        presenter.refreshOrderDetail(true)
+
+        // verify skeleton view is displayed
+        verify(orderDetailView, times(1)).showSkeleton(true)
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchSingleOrderPayload>>())
+
+        // mock success response
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = FETCH_SINGLE_ORDER
+        })
+
+        // verify skeleton view is no longer displayed
+        verify(orderDetailView, times(1)).showSkeleton(false)
+
+        // verify order fetched from db is called
+        verify(presenter).loadOrderDetailFromDb(any())
+        verify(orderDetailView, times(1)).showOrderDetail(order, true)
+
+        // verify order notes/shipment trackings is fetched
+        verify(presenter, times(1)).loadOrderNotes()
+        verify(presenter, times(1)).loadOrderShipmentTrackings()
+    }
+
+    @Test
+    fun `Request order detail refresh when network available - error`() {
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        // call refresh order detail
+        presenter.refreshOrderDetail(true)
+
+        // verify skeleton view is displayed
+        verify(orderDetailView, times(1)).showSkeleton(true)
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchSingleOrderPayload>>())
+
+        // mock success response
+        presenter.onOrderChanged(OnOrderChanged(0).apply {
+            causeOfChange = FETCH_SINGLE_ORDER
+            error = OrderError()
+        })
+
+        // verify error snack is displayed
+        verify(orderDetailView, times(1)).showLoadOrderError()
     }
 }

@@ -229,6 +229,13 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
             // store the latest version code to SharedPrefs, only if the value
             // is greater than the stored version code
             AppPrefs.setLastAppVersionCode(versionCode)
+        } else if (versionCode == PACKAGE_VERSION_CODE_DEFAULT) {
+            // we are not able to read the current app version code
+            // track this event along with the last stored version code
+            AnalyticsTracker.track(
+                    Stat.APPLICATION_VERSION_CHECK_FAILED,
+                    mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
+            )
         }
     }
 

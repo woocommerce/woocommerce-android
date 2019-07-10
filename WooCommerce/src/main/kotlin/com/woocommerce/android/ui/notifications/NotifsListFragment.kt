@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -19,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
-import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.onScrollDown
@@ -97,7 +95,7 @@ class NotifsListFragment : TopLevelFragment(),
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -279,18 +277,8 @@ class NotifsListFragment : TopLevelFragment(),
                 }
             }
             NEW_ORDER -> {
-                notification.getRemoteOrderId()?.let {
-                    AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
-                            AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
-                            AnalyticsTracker.KEY_ALREADY_READ to notification.read))
-                    showOptionsMenu(false)
-                    (activity as? MainNavigationRouter)?.showOrderDetail(
-                            selectedSite.get().id,
-                            it,
-                            notification.remoteNoteId
-                    )
-                } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
-                    showLoadNotificationDetailError()
+                if (!notifsRefreshLayout.isRefreshing) {
+                    openOrderDetail(notification)
                 }
             }
             UNKNOWN -> {
@@ -302,6 +290,22 @@ class NotifsListFragment : TopLevelFragment(),
         AppRatingDialog.incrementInteractions()
     }
 
+    override fun openOrderDetail(notification: NotificationModel) {
+        notification.getRemoteOrderId()?.let { remoteOrderId ->
+            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
+                    AnalyticsTracker.KEY_ALREADY_READ to notification.read))
+            showOptionsMenu(false)
+            (activity as? MainNavigationRouter)?.showOrderDetail(
+                    selectedSite.get().id,
+                    remoteOrderId,
+                    notification.remoteNoteId
+            )
+        } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
+            showLoadNotificationDetailError()
+        }
+    }
+
     override fun openReviewDetail(notification: NotificationModel) {
         AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                 AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
@@ -310,13 +314,8 @@ class NotifsListFragment : TopLevelFragment(),
         // If the notification is pending moderation, override the status to display in the detail view.
         val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
         val tempStatus = if (isPendingModeration) pendingModerationNewStatus else null
-        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-                notification.remoteNoteId,
-                notification.getCommentId(),
-                tempStatus
-        )
         showOptionsMenu(false)
-        findNavController().navigate(action)
+        (activity as? MainNavigationRouter)?.showReviewDetail(notification, tempStatus)
     }
 
     override fun scrollToTop() {
