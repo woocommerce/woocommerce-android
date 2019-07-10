@@ -24,6 +24,7 @@ import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
@@ -42,7 +43,7 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
-class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContract.View {
+class ReviewDetailFragment : BaseFragment(), ReviewDetailContract.View {
     class OnRequestModerateReviewEvent(val remoteNoteId: Long, val comment: CommentModel, val newStatus: CommentStatus)
 
     @Inject lateinit var presenter: ReviewDetailContract.Presenter
@@ -78,12 +79,7 @@ class ReviewDetailFragment : androidx.fragment.app.Fragment(), ReviewDetailContr
         return inflater.inflate(R.layout.fragment_review_detail, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Set the page title
-        activity?.title = getString(R.string.wc_review_title)
-    }
+    override fun getFragmentTitle() = getString(R.string.wc_review_title)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

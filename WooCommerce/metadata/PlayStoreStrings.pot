@@ -69,7 +69,7 @@ msgstr ""
 #. No specified characters limit here, but try to keep as short as the source one. 
 msgctxt "app_store_screenshot-1_b"
 msgid ""
-"Made with\n"
+"Made with 💜\n"
 "at Automattic"
 msgstr ""
 
