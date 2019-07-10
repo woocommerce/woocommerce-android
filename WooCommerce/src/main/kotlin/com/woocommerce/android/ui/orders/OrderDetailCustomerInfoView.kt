@@ -91,8 +91,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         }
     }
 
+    fun isShippingAvailable(order: WCOrderModel) =
+            AddressUtils.getEnvelopeAddress(order.getShippingAddress()).isNotEmpty()
+
     fun initShippingSection(order: WCOrderModel, hide: Boolean) {
-        if (hide) {
+        if (!isShippingAvailable(order) || hide) {
             customerInfo_divider.visibility = View.GONE
             customerInfo_shippingAddr.visibility = View.GONE
             customerInfo_shippingLabel.visibility = View.GONE
@@ -102,7 +105,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         } else {
             val shippingName = context
                     .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
-
             val shippingAddr = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
             val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
             val shippingAddrFull = getFullAddress(shippingName, shippingAddr, shippingCountry)

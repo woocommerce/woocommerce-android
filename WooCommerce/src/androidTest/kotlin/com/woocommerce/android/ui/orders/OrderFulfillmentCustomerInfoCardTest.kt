@@ -145,10 +145,8 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         // click on Order Fulfill button to redirect to Order Fulfillment
         onView(withId(R.id.productList_btnFulfill)).perform(click())
 
-        // no shipping available so displays empty text
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(
-                appContext.getString(R.string.orderdetail_empty_shipping_address)
-        )))
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderFulfill_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
     }
 
     @Test
@@ -168,9 +166,10 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
     }
 
     @Test
-    fun verifyCustomerInfoCardDisplayedProductNotVirtual() {
+    fun verifyCustomerInfoCardDisplayedWhenProductNotVirtualButShippingAvailable() {
         // Set Order fulfillment with mock data
-        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel, isVirtualProduct = false)
+        mockWCOrderModel.shippingAddress1 = "404, Fake street"
+        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel, isVirtualProduct = false)
 
         // click on the first order in the list and check if redirected to order detail
         onView(withId(R.id.ordersList))
@@ -181,5 +180,21 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
 
         // verify that the customer info card is hidden
         onView(withId(R.id.orderFulfill_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardHiddenWhenProductNotVirtualButShippingNotAvailable() {
+        // Set Order fulfillment with mock data
+        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel, isVirtualProduct = false)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Order Fulfill button to redirect to Order Fulfillment
+        onView(withId(R.id.productList_btnFulfill)).perform(click())
+
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderFulfill_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
     }
 }
