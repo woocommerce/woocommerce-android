@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
+import android.text.method.ScrollingMovementMethod
 import android.util.AttributeSet
 import android.view.ContextThemeWrapper
 import android.view.View
@@ -56,6 +57,7 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
 
     private fun showFullContent(caption: String, content: String) {
         val message = TextView(ContextThemeWrapper(context, R.style.Woo_TextView_Caption))
+        message.movementMethod = ScrollingMovementMethod()
         message.text = content
         AlertDialog.Builder(context)
                 .setTitle(caption)
