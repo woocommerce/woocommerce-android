@@ -3,6 +3,7 @@
  
 * Added option to request for new features right from the app in the Settings page
 * The unfilled order count doesn't re-animate in every time the dashboard is restored or refreshed
+* Login now works properly for sites with redirects
 
 2.2
 -----
