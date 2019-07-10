@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.AnalyticsUtils
@@ -24,7 +25,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContract.View, BackPressListener {
+class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         private const val FIELD_NOTE_TEXT = "note_text"
@@ -101,6 +102,8 @@ class AddOrderNoteFragment : androidx.fragment.app.Fragment(), AddOrderNoteContr
 
         presenter.takeView(this)
     }
+
+    override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, navArgs.orderNumber)
 
     override fun onResume() {
         super.onResume()

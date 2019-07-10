@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <!-- group one - order status item -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_large"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="180dp"
+            android:layout_height="@dimen/text_large"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/skeleton_background"/>
+
+        <View
+            android:layout_width="200dp"
+            android:layout_height="@dimen/text_medium"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:background="@drawable/skeleton_background"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_large">
+
+            <View
+                android:layout_width="100dp"
+                android:layout_height="@dimen/text_medium"
+                android:layout_marginEnd="@dimen/list_item_padding_intra_h"
+                android:background="@drawable/skeleton_background"/>
+
+
+            <View
+                android:layout_width="24dp"
+                android:layout_height="25dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/ic_edit_pencil"
+                android:backgroundTint="@color/skeleton_color"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_large"
+        android:background="@color/list_divider"/>
+
+    <!-- group two - order product list -->
+    <include layout="@layout/skeleton_product_list"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_large"
+        android:background="@color/list_divider"/>
+
+    <!-- group three - order customer notes card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_large"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/margin_large"
+        android:paddingTop="@dimen/margin_large">
+
+        <View
+            android:layout_width="120dp"
+            android:layout_height="@dimen/text_large"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/skeleton_background"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/text_large"
+            android:layout_marginEnd="@dimen/list_item_padding_intra_h"
+            android:background="@drawable/skeleton_background"/>
+    </LinearLayout>
+</LinearLayout>
