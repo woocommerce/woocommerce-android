@@ -43,6 +43,7 @@ import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import java.util.ArrayList
 import javax.inject.Inject
+import kotlin.text.RegexOption.IGNORE_CASE
 
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
         HasSupportFragmentInjector, LoginJetpackRequiredListener, LoginEmailHelpDialogFragment.Listener {
@@ -271,10 +272,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 
-    override fun gotConnectedSiteInfo(siteAddress: String, hasJetpack: Boolean) {
+    override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
-        // logs into the app.
-        AppPrefs.setLoginSiteAddress(siteAddress)
+        // logs into the app. If the redirect url is available, use that as the preferred url. Strip the
+        // protocol from this url string prior to saving to AppPrefs since it's not needed and may cause issues
+        // when attempting to match the url to the authenticated account later in the login process.
+        val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+        AppPrefs.setLoginSiteAddress((redirectUrl ?: siteAddress).replaceFirst(protocolRegex, ""))
 
         if (hasJetpack) {
             val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
