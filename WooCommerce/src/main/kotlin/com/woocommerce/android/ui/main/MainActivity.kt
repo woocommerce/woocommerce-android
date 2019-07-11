@@ -147,6 +147,10 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
+
+        // TODO remove
+        showNotificationBadge()
+        showOrderBadge(4)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -442,7 +446,7 @@ class MainActivity : AppCompatActivity(),
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
-        val host = if (uri != null && uri.host != null) uri.host else ""
+        val host = uri?.host ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
@@ -461,7 +465,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun hideNotificationBadge() {
-        bottomNavView.showNotificationBadge(false)
+        // TODO bottomNavView.showNotificationBadge(false)
         NotificationHandler.removeAllNotificationsFromSystemBar(this)
     }
 

@@ -17,7 +17,7 @@
         android:paddingStart="@dimen/margin_small_medium"
         android:textColor="@color/white"
         android:textSize="@dimen/text_medium"
-        tools:background="@drawable/badge_orders"
+        tools:background="@drawable/badge"
         tools:text="9+" />
 
 </FrameLayout>
