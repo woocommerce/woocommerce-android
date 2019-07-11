@@ -567,7 +567,6 @@ Language: es
     <string name="settings_third_party_policy_header">Política de terceros</string>
     <string name="settings_cookie_policy_header">Política de cookies</string>
     <string name="settings_privacy_policy_header">Política de privacidad</string>
-    <string name="settings_footer">Con mucho cariño, por la gente de Automattic</string>
     <string name="settings_tracking">Utilizamos otras herramientas de seguimiento, algunas de terceros. Obtén información sobre ellas y cómo controlarlas.</string>
     <string name="settings_privacy_policy">Lee la política de privacidad</string>
     <string name="settings_privacy_detail">Esta información nos ayuda a mejorar nuestros productos, adaptar el marketing que recibes, personalizar tu experiencia de WooCommerce y mucho más, tal como se detalla en nuestra política de privacidad.</string>
