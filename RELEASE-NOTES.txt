@@ -3,6 +3,7 @@
  
 * Added option to request for new features right from the app in the Settings page
 * The unfilled order count doesn't re-animate in every time the dashboard is restored or refreshed
+* Added option to view our hiring page right from the app in the Settings page
 
 2.2
 -----
