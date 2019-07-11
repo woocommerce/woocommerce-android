@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.widgets.BadgedItemDecoration.ItemType
+import com.woocommerce.android.widgets.BadgedItemDecoration.ItemType.UNBADGED
 import com.woocommerce.android.widgets.FlowLayout
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
@@ -17,6 +20,7 @@ import kotlinx.android.synthetic.main.order_list_header.view.*
 import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
@@ -207,6 +211,61 @@ class OrderListAdapter @Inject constructor(
             }
             return DateUtils.formatDateTime(context, date.time, flags)
         } ?: return null
+    }
+
+    /**
+     * Return true if the item at the passed position is a header
+     *
+     * @param position position of the item in the recycler
+     */
+    private fun isHeaderAtRecyclerPosition(position: Int): Boolean {
+        var currentPos = 0
+        val sections = sectionsMap
+
+        for ((_, section) in sections) {
+            val sectionTotal = section.sectionItemsTotal
+
+            // check if position is in this section
+            if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
+                if (section.hasHeader() && position == currentPos) {
+                    return true
+                }
+            }
+
+            currentPos += sectionTotal
+        }
+
+        return false
+    }
+
+    /**
+     * Returns the type of item at the passed position for use so the badged item decoration
+     * can badge unfulfilled orders
+     *
+     * @param position position of the item in the recycler
+     */
+    fun getItemTypeAtRecyclerPosition(position: Int): ItemType {
+        if (isHeaderAtRecyclerPosition(position)) {
+            return ItemType.HEADER
+        }
+
+        var currentPos = 0
+        for (order in orderList) {
+            if (isHeaderAtRecyclerPosition(currentPos)) {
+                currentPos++
+            }
+            if (currentPos == position) {
+                return if (order.status.equals(CoreOrderStatus.PROCESSING.value, true)) {
+                    ItemType.BADGED
+                } else {
+                    UNBADGED
+                }
+            }
+            currentPos++
+        }
+
+        WooLog.w(WooLog.T.NOTIFICATIONS, "Failed to get item type at notifs recycler position $position")
+        return ItemType.UNBADGED
     }
 
     /**

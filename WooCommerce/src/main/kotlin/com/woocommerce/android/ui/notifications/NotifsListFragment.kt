@@ -138,8 +138,7 @@ class NotifsListFragment : TopLevelFragment(),
 
         notifsAdapter.setListListener(this)
 
-        val unreadDecoration = BadgedItemDecoration(activity as Context)
-        unreadDecoration.setListener(this)
+        val unreadDecoration = BadgedItemDecoration(activity as Context, this)
 
         notifsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)

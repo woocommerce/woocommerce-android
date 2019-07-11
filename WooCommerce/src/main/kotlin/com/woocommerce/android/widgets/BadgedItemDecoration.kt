@@ -15,7 +15,8 @@ import org.wordpress.android.util.DisplayUtils
  * Item decoration for recycler views which supports "badging," which simply shows a vertical
  * purple bar to the left to indicate unread notifs or unfilled orders
  */
-class BadgedItemDecoration(context: Context) : DividerItemDecoration(context, HORIZONTAL) {
+class BadgedItemDecoration(context: Context, val decorListener: ItemDecorationListener) :
+        DividerItemDecoration(context, HORIZONTAL) {
     interface ItemDecorationListener {
         fun getItemTypeAtPosition(position: Int): ItemType
     }
@@ -28,12 +29,7 @@ class BadgedItemDecoration(context: Context) : DividerItemDecoration(context, HO
 
     private val dividerWidth = DisplayUtils.dpToPx(context, 3).toFloat()
 
-    private var decorListener: ItemDecorationListener? = null
     private val bounds = Rect()
-
-    fun setListener(listener: ItemDecorationListener?) {
-        decorListener = listener
-    }
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         for (i in 0 until parent.childCount - 1) {
@@ -41,7 +37,7 @@ class BadgedItemDecoration(context: Context) : DividerItemDecoration(context, HO
             val position = child?.let { parent.getChildAdapterPosition(it) }
                     ?: SectionedRecyclerViewAdapter.INVALID_POSITION
             if (position != SectionedRecyclerViewAdapter.INVALID_POSITION) {
-                val itemType = decorListener?.getItemTypeAtPosition(position) ?: ItemType.UNBADGED
+                val itemType = decorListener.getItemTypeAtPosition(position)
                 /*
                  * note that we have to draw the indicator for all items rather than just badged ones
                  * in order to paint over recycled cells that have a previously-drawn indicator

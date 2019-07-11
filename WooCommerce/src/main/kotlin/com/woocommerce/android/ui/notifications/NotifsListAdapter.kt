@@ -201,7 +201,8 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
     }
 
     /**
-     * Returns the type of item at the passed position
+     * Returns the type of item at the passed position for use so the badged item decoration
+     * can badge unread items
      *
      * @param position position of the item in the recycler
      */
@@ -221,7 +222,7 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
             currentPos++
         }
 
-        WooLog.w(T.NOTIFICATIONS, "Failed to get item type at recycler position $position")
+        WooLog.w(T.NOTIFICATIONS, "Failed to get item type at notifs recycler position $position")
         return ItemType.UNBADGED
     }
 

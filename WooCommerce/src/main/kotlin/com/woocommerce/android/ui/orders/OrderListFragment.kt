@@ -26,6 +26,9 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderListAdapter.OnLoadMoreListener
+import com.woocommerce.android.widgets.BadgedItemDecoration
+import com.woocommerce.android.widgets.BadgedItemDecoration.ItemDecorationListener
+import com.woocommerce.android.widgets.BadgedItemDecoration.ItemType
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
@@ -35,8 +38,11 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
-        OrderStatusSelectorDialog.OrderStatusDialogListener, OnQueryTextListener, OnActionExpandListener,
-        OnLoadMoreListener {
+        OrderStatusSelectorDialog.OrderStatusDialogListener,
+        OnQueryTextListener,
+        OnActionExpandListener,
+        OnLoadMoreListener,
+        ItemDecorationListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
         const val STATE_KEY_LIST = "list-state"
@@ -232,11 +238,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                 androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
         )
 
+        // set the badged decoration for this list
+        val unfilledDecoration = BadgedItemDecoration(activity as Context, this)
+
         ordersList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(true)
             addItemDecoration(ordersDividerDecoration)
+            addItemDecoration(unfilledDecoration)
             adapter = ordersAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
@@ -310,6 +320,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
         }
     }
+
+    /**
+     * Used by the badged item decoration to badge unfilled orders
+     */
+    override fun getItemTypeAtPosition(position: Int): ItemType =
+            ordersAdapter.getItemTypeAtRecyclerPosition(position)
 
     override fun setLoadingMoreIndicator(active: Boolean) {
         load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
