@@ -3,6 +3,7 @@
  
 * Added option to request for new features right from the app in the Settings page
 * The unfulfilled order count has been removed from the dashboard and is now shown as a badge on the order list
+* Added "Copy tracking number" to the tracking popup menu in order detail
 * Login now works properly for sites with redirects
 
 2.2
