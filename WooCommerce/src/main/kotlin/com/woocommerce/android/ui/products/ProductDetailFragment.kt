@@ -531,14 +531,18 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         isFirstResource: Boolean
     ): Boolean {
         productImageUrl?.let { imageUrl ->
-            productDetail_image.setOnClickListener {
-                AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                ImageViewerActivity.show(
-                        activity!!,
-                        imageUrl,
-                        title = productTitle,
-                        sharedElement = productDetail_image
-                )
+            // this is added to avoid nullPointerException when user clicks the back button exactly when this method
+            // is called. In that case, the productDetail_image will be null.
+            productDetail_image?.let { imageView ->
+                imageView.setOnClickListener {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+                    ImageViewerActivity.show(
+                            activity!!,
+                            imageUrl,
+                            title = productTitle,
+                            sharedElement = imageView
+                    )
+                }
             }
         }
         return false
