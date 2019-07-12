@@ -252,7 +252,7 @@ class NotifsListFragment : TopLevelFragment(),
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.notifications)
+    override fun getFragmentTitle() = getString(R.string.review_notifications)
 
     override fun refreshFragmentState() {
         isRefreshPending = true

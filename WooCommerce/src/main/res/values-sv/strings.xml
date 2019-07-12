@@ -680,7 +680,7 @@ Language: sv_SE
     <string name="date_timeframe_older_two_days">Äldre än 2 dagar</string>
     <string name="date_timeframe_yesterday">Igår</string>
     <string name="date_timeframe_today">Idag</string>
-    <string name="notifications">Aviseringar</string>
+    <string name="review_notifications">Aviseringar</string>
     <string name="products">Produkter</string>
     <string name="discard">Kasta bort</string>
     <string name="this_year">Detta år</string>
