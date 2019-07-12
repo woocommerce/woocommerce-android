@@ -567,7 +567,6 @@ Language: zh_TW
     <string name="settings_third_party_policy_header">第三方政策</string>
     <string name="settings_cookie_policy_header">Cookie 政策</string>
     <string name="settings_privacy_policy_header">隱私權政策</string>
-    <string name="settings_footer">由 Automattic 成員深情打造</string>
     <string name="settings_tracking">我們會使用其他的追蹤工具，包括由第三方所提供的追蹤工具。瞭解相關資訊及其控制方式。</string>
     <string name="settings_privacy_policy">閱讀隱私權政策</string>
     <string name="settings_privacy_detail">這類資訊有助我們改善產品、提供與你更加相關的行銷活動、帶來量身打造的 WooCommerce 使用體驗；若要瞭解更多詳細內容，請參閱我們的隱私權政策</string>

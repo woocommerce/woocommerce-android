@@ -567,7 +567,6 @@ Language: id
     <string name="settings_third_party_policy_header">Kebijakan Pihak Ketiga</string>
     <string name="settings_cookie_policy_header">Kebijakan Cookie</string>
     <string name="settings_privacy_policy_header">Kebijakan Privasi</string>
-    <string name="settings_footer">Dibuat dengan penuh cinta oleh Automattic</string>
     <string name="settings_tracking">Kami menggunakan alat pelacakan lainnya, termasuk beberapa dari pihak ketiga. Baca tentang hal ini dan cara mengontrolnya.</string>
     <string name="settings_privacy_policy">Baca kebijakan privasi</string>
     <string name="settings_privacy_detail">Informasi ini membantu kami menyempurnakan produk, membuat pemasaran kepada Anda jadi lebih relevan, menyesuaikan pengalaman WooCommerce Anda, dan lainnya seperti yang dijelaskan dalam kebijakan privasi kami</string>
