@@ -74,7 +74,7 @@ class OrderListAdapter @Inject constructor(
 
         // we want to retain the sorted list of orders so we can correctly match them by position
         // in getItemTypeAtRecyclerPosition
-        with (orderList) {
+        with(orderList) {
             clear()
             addAll(listToday)
             addAll(listYesterday)
