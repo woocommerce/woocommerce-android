@@ -567,7 +567,6 @@ Language: ja_JP
     <string name="settings_third_party_policy_header">サードパーティのポリシー</string>
     <string name="settings_cookie_policy_header">Cookie ポリシー</string>
     <string name="settings_privacy_policy_header">個人情報保護方針</string>
-    <string name="settings_footer">Automattic が愛情込めて作成</string>
     <string name="settings_tracking">サードパーティのものを含め、他の追跡ツールを使用します。それらについての詳細と設定方法についてお読みください。</string>
     <string name="settings_privacy_policy">個人情報保護方針を読む</string>
     <string name="settings_privacy_detail">この情報は、製品を改善し、マーケティングをより関連性の高いものとし、WooCommerce の利用をパーソナライズするのに役立ちます。詳しくは、個人情報保護方針をご覧ください</string>
