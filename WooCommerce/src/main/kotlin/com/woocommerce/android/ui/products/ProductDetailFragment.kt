@@ -77,6 +77,8 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
     }
 
     override fun onDestroyView() {
+        // hide the skeleton view if fragment is destroyed
+        skeletonView.hide()
         presenter.dropView()
         super.onDestroyView()
     }
