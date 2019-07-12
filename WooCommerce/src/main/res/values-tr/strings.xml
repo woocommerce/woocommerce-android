@@ -567,7 +567,6 @@ Language: tr
     <string name="settings_third_party_policy_header">Üçüncü Taraf Politikası</string>
     <string name="settings_cookie_policy_header">Tanımlama Bilgisi Politikası</string>
     <string name="settings_privacy_policy_header">Gizlilik Politikası</string>
-    <string name="settings_footer">Automattic tarafından sevgiyle yapıldı</string>
     <string name="settings_tracking">Üçüncü taraflara ait olanlar dahil diğer izleme araçlarını kullanıyoruz. Bunlar ve nasıl kontrol edilecekleri hakkında bilgi alın.</string>
     <string name="settings_privacy_policy">Gizlilik politikasını okuyun</string>
     <string name="settings_privacy_detail">Bu bilgi ürünlerimizi iyileştirmemize, size daha uygun pazarlama yapmamıza, WooCommerce deneyiminizi kişiselleştirmemize ve gizlilik politikamızda belirtildiği gibi daha fazlasına yardımcı olur.</string>

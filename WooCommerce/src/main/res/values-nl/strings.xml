@@ -567,7 +567,6 @@ Language: nl
     <string name="settings_third_party_policy_header">Beleid van derden</string>
     <string name="settings_cookie_policy_header">Cookiebeleid</string>
     <string name="settings_privacy_policy_header">Privacybeleid</string>
-    <string name="settings_footer">Met liefde gemaakt door Automattic</string>
     <string name="settings_tracking">We gebruiken ook andere tracking-tools, waaronder een aantal van derden. Bekijk meer informatie over deze tools en hoe je ze kunt beheren.</string>
     <string name="settings_privacy_policy">Privacybeleid lezen</string>
     <string name="settings_privacy_detail">Deze informatie helpt ons onze producten te verbeteren, marketing relevanter te maken en de WooCommerce-ervaring op je af te stemmen. Je vindt hierover meer informatie in ons privacybeleid.</string>

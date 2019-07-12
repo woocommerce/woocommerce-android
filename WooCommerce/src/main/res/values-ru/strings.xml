@@ -567,7 +567,6 @@ Language: ru
     <string name="settings_third_party_policy_header">Политика сторонней организации</string>
     <string name="settings_cookie_policy_header">Политика использования файлов cookie</string>
     <string name="settings_privacy_policy_header">Политика конфиденциальности</string>
-    <string name="settings_footer">Сделано с любовью компанией Automattic</string>
     <string name="settings_tracking">Мы используем и другие средства сбора информации, в том числе средства сторонних разработчиков. Ознакомьтесь с этими средствами и способами управления ими.</string>
     <string name="settings_privacy_policy">Ознакомьтесь с политикой конфиденциальности</string>
     <string name="settings_privacy_detail">Эти сведения помогают нам улучшать продукты, предлагать более полезную рекламу, настраивать WooCommerce согласно вашим предпочтениям и решать другие задачи. Дополнительную информацию см. в политике конфиденциальности</string>
