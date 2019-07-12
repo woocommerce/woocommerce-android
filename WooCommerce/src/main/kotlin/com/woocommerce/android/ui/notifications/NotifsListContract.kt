@@ -27,7 +27,6 @@ interface NotifsListContract {
         fun refreshFragmentState()
         fun showSkeleton(show: Boolean)
         fun showEmptyView(show: Boolean)
-        fun openOrderDetail(notification: NotificationModel)
         fun openReviewDetail(notification: NotificationModel)
         fun visuallyMarkNotificationsAsRead()
         fun showMarkAllNotificationsReadError()

@@ -12,9 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.extensions.getMessageSnippet
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.extensions.getTitleSnippet
@@ -344,10 +342,6 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
             itemHolder.rating.visibility = View.GONE
 
             when (notif.getWooType()) {
-                NEW_ORDER -> {
-                    itemHolder.icon.setImageResource(R.drawable.ic_cart)
-                    itemHolder.desc.maxLines = Int.MAX_VALUE
-                }
                 PRODUCT_REVIEW -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_comment)
                     itemHolder.desc.maxLines = 2
@@ -361,7 +355,7 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
                         }
                     }
                 }
-                UNKNOWN -> WooLog.e(
+                else -> WooLog.e(
                         NOTIFICATIONS,
                         "Unsupported woo notification type: ${notif.type} | ${notif.subtype}")
             }
