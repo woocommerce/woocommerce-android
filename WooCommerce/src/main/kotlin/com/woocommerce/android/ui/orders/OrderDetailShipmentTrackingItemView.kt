@@ -27,6 +27,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
     }
 
     private var listener: OrderShipmentTrackingActionListener? = null
+    private lateinit var uiMessageResolver: UIMessageResolver
 
     fun initView(
         item: WCOrderShipmentTrackingModel,
@@ -35,6 +36,8 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         shipmentTrackingActionListener: OrderShipmentTrackingActionListener?
     ) {
         this.listener = shipmentTrackingActionListener
+        this.uiMessageResolver = uiMessageResolver
+
         tracking_type.text = item.trackingProvider
         tracking_number.text = item.trackingNumber
         tracking_dateShipped.text = context.getString(
@@ -42,16 +45,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
                 DateUtils.getLocalizedLongDateString(context, item.dateShipped))
 
         tracking_copyNumber.setOnClickListener {
-            try {
-                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.primaryClip = ClipData.newPlainText(
-                        context.getString(R.string.order_shipment_tracking_number),
-                        item.trackingNumber)
-                uiMessageResolver.showSnack(R.string.order_shipment_tracking_number_clipboard)
-            } catch (e: Exception) {
-                WooLog.e(WooLog.T.UTILS, e)
-                uiMessageResolver.showSnack(R.string.error_copy_to_clipboard)
-            }
+            copyTrackingNumber(item)
         }
 
         if (isOrderDetail) {
@@ -87,6 +81,11 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
             }
         }
 
+        popup.menu.findItem(R.id.menu_copy_tracking)?.setOnMenuItemClickListener {
+            copyTrackingNumber(item)
+            true
+        }
+
         popup.menu.findItem(R.id.menu_delete_shipment)?.setOnMenuItemClickListener {
             listener?.deleteOrderShipmentTracking(item)
             AppRatingDialog.incrementInteractions()
@@ -94,5 +93,18 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         }
 
         popup.show()
+    }
+
+    fun copyTrackingNumber(item: WCOrderShipmentTrackingModel) {
+        try {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.primaryClip = ClipData.newPlainText(
+                    context.getString(R.string.order_shipment_tracking_number),
+                    item.trackingNumber)
+            uiMessageResolver.showSnack(R.string.order_shipment_tracking_number_clipboard)
+        } catch (e: Exception) {
+            WooLog.e(WooLog.T.UTILS, e)
+            uiMessageResolver.showSnack(R.string.error_copy_to_clipboard)
+        }
     }
 }

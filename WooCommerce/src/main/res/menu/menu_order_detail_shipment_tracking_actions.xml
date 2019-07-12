@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/menu_copy_tracking"
+        android:title="@string/orderdetail_copy_tracking_number"/>
+
+    <item
         android:id="@+id/menu_track_shipment"
         android:visible="false"
         android:title="@string/orderdetail_track_shipment"/>
