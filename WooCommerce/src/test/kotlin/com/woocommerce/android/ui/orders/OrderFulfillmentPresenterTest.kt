@@ -91,6 +91,7 @@ class OrderFulfillmentPresenterTest {
 
         // order shipment tracking is already fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), true)
+        presenter.loadOrderShipmentTrackings()
 
         // fetch order shipment trackings
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
@@ -111,6 +112,7 @@ class OrderFulfillmentPresenterTest {
 
         // order shipment tracking is not fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), false)
+        presenter.loadOrderShipmentTrackings()
 
         // fetch order shipment trackings
         assertFalse(presenter.isShipmentTrackingsFetched)
@@ -138,6 +140,7 @@ class OrderFulfillmentPresenterTest {
 
         // order shipment tracking is not fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), false)
+        presenter.loadOrderShipmentTrackings()
 
         // fetch order shipment trackings
         assertFalse(presenter.isShipmentTrackingsFetched)
@@ -163,6 +166,7 @@ class OrderFulfillmentPresenterTest {
         presenter.takeView(view)
 
         presenter.loadOrderDetail(order.getIdentifier(), true)
+        presenter.loadOrderShipmentTrackings()
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
         verify(presenter, times(0)).fetchShipmentTrackingsFromApi(any())
     }

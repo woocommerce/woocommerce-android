@@ -70,7 +70,6 @@ class OrderFulfillmentPresenter @Inject constructor(
             orderModel = getOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 view.showOrderDetail(order)
-                loadOrderShipmentTrackings()
             }
         }
     }
