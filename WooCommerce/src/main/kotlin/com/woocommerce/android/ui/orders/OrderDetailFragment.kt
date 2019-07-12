@@ -216,8 +216,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     productListener = this
             )
 
-            // Populate the Customer Information Card
-            orderDetail_customerInfo.initView(order, false)
+            // check if product is a virtual product. If it is, hide only the shipping details card
+            orderDetail_customerInfo.initView(
+                    order = order,
+                    shippingOnly = false,
+                    billingOnly = presenter.isVirtualProduct(order.getLineItemList()))
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
@@ -234,6 +237,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 isRefreshPending = false
             }
         }
+    }
+
+    override fun refreshCustomerInfoCard(order: WCOrderModel) {
+        // hide the shipping details if products in an order is virtual
+        val hideShipping = presenter.isVirtualProduct(order.getLineItemList())
+        orderDetail_customerInfo.initShippingSection(order, hideShipping)
     }
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {

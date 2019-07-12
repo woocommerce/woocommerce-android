@@ -1,5 +1,6 @@
 2.3
 -----
+* Fixed a bug where the shipping/billing details for a virtual order was being displayed.
  
 * Added option to request for new features right from the app in the Settings page
 * The unfilled order count doesn't re-animate in every time the dashboard is restored or refreshed
