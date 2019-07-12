@@ -34,8 +34,8 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
-import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
@@ -147,10 +147,6 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
-
-        // TODO remove
-        showNotificationBadge()
-        showOrderBadge(4)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -602,10 +598,6 @@ class MainActivity : AppCompatActivity(),
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()
-        bottomNavView.currentPosition = REVIEWS
-
-        val navPos = BottomNavigationPosition.REVIEWS.position
-        bottom_nav.active(navPos)
 
         (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let { note ->
             when (note.getWooType()) {
@@ -630,6 +622,11 @@ class MainActivity : AppCompatActivity(),
 
     override fun showReviewDetail(notification: NotificationModel, tempStatus: String?) {
         showBottomNav()
+        bottomNavView.currentPosition = REVIEWS
+
+        val navPos = BottomNavigationPosition.REVIEWS.position
+        bottom_nav.active(navPos)
+
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
                 notification.remoteNoteId,
                 notification.getCommentId(),
@@ -639,6 +636,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
+        bottomNavView.currentPosition = ORDERS
+
+        val navPos = BottomNavigationPosition.ORDERS.position
+        bottom_nav.active(navPos)
+
         // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
         // detail fragment and then show a new one
         if (markComplete) {
