@@ -680,7 +680,7 @@ Language: id
     <string name="date_timeframe_older_two_days">Lebih dari 2 hari</string>
     <string name="date_timeframe_yesterday">Kemarin</string>
     <string name="date_timeframe_today">Hari Ini</string>
-    <string name="notifications">Pemberitahuan</string>
+    <string name="review_notifications">Pemberitahuan</string>
     <string name="products">Produk</string>
     <string name="discard">Batal</string>
     <string name="this_year">Tahun Ini</string>

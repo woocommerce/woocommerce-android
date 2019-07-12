@@ -49,7 +49,7 @@ class MainNavigationTest : TestBase() {
     fun pressingBackAfterBottomNavOptionChangeExitsApp() {
         // Verify switching bottom bar tabs does not retain a back stack.
         // Switch from the default dashboard tab to the notifications tab
-        onView(withId(R.id.notifications)).perform(click())
+        onView(withId(R.id.reviews)).perform(click())
 
         // Clicking back should not switch back to the previous tab, it should
         // exit the app.
@@ -96,11 +96,11 @@ class MainNavigationTest : TestBase() {
         activityTestRule.activity.showBottomNav()
 
         // Select the notifications bottom bar option
-        onView(withId(R.id.notifications)).perform(click())
+        onView(withId(R.id.reviews)).perform(click())
 
         // Verify the toolbar title has changed to Notifications
         onView(withId(R.id.toolbar)).check(matches(
-                WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.notifications)))))
+                WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.review_notifications)))))
     }
 
     @Test
@@ -109,7 +109,7 @@ class MainNavigationTest : TestBase() {
         activityTestRule.activity.showBottomNav()
 
         // Switch away from the default selected dashboard option
-        onView(withId(R.id.notifications)).perform(click())
+        onView(withId(R.id.reviews)).perform(click())
 
         // Select the dashboard bottom bar option
         onView(withId(R.id.dashboard)).perform(click())

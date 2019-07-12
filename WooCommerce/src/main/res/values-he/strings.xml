@@ -680,7 +680,7 @@ Language: he_IL
     <string name="date_timeframe_older_two_days">בן יותר מיומיים</string>
     <string name="date_timeframe_yesterday">אתמול</string>
     <string name="date_timeframe_today">היום</string>
-    <string name="notifications">הודעות</string>
+    <string name="review_notifications">הודעות</string>
     <string name="products">מוצרים</string>
     <string name="discard">הסתר</string>
     <string name="this_year">השנה</string>
