@@ -461,7 +461,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun hideNotificationBadge() {
-        // TODO bottomNavView.showNotificationBadge(false)
+        bottomNavView.showNotificationBadge(false)
         NotificationHandler.removeAllNotificationsFromSystemBar(this)
     }
 
