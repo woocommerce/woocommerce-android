@@ -54,9 +54,11 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
     }
 
     private fun showFullContent(caption: String, content: String) {
+        val customView = View.inflate(context, R.layout.view_alert_dialog, null)
+        customView.findViewById<TextView>(R.id.product_purchase_note).text = content
         AlertDialog.Builder(context)
                 .setTitle(caption)
-                .setMessage(content)
+                .setView(customView)
                 .setCancelable(true)
                 .setPositiveButton(android.R.string.ok) { dialog, _ ->
                     dialog.dismiss()
