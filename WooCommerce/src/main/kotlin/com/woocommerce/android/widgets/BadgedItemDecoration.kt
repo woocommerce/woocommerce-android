@@ -44,7 +44,7 @@ class BadgedItemDecoration(context: Context, val decorListener: ItemDecorationLi
                  */
                 val colorId = when (itemType) {
                     ItemType.HEADER -> R.color.list_header_bg
-                    ItemType.BADGED -> R.color.wc_purple
+                    ItemType.BADGED -> R.color.wc_green
                     else -> R.color.list_item_bg
                 }
 
