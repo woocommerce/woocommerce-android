@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -208,6 +209,30 @@ class OrderDetailPresenter @Inject constructor(
         orderView?.showSkeleton(displaySkeleton)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
+    }
+
+    /**
+     * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
+     * and if product exists in the local cache.
+     */
+    override fun isVirtualProduct(lineItems: List<LineItem>): Boolean {
+        if (lineItems.isNullOrEmpty()) {
+            return false
+        }
+
+        val remoteProductIds: List<Long> = lineItems.filter { it.productId != null }.map { it.productId!! }
+        if (remoteProductIds.isNullOrEmpty()) {
+            return false
+        }
+
+        // verify that the lineitem product is in the local cache and
+        // that the product count in the local cache matches the lineItem count.
+        val productModels = productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+        if (productModels.isNullOrEmpty() || productModels.count() != remoteProductIds.count()) {
+            return false
+        }
+
+        return productModels.filter { !it.virtual }.isEmpty()
     }
 
     override fun doChangeOrderStatus(newStatus: String) {
@@ -473,6 +498,10 @@ class OrderDetailPresenter @Inject constructor(
         // product was just fetched, show its image
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
             orderView?.refreshProductImages()
+            // Refresh the customer info section, once the product information becomes available
+            orderModel?.let {
+                orderView?.refreshCustomerInfoCard(it)
+            }
         }
     }
 
