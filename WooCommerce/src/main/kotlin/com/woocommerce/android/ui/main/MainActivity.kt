@@ -147,10 +147,6 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
-
-        // TODO remove
-        showNotificationBadge()
-        showOrderBadge(4)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -465,7 +461,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun hideNotificationBadge() {
-        // TODO bottomNavView.showNotificationBadge(false)
+        bottomNavView.showNotificationBadge(false)
         NotificationHandler.removeAllNotificationsFromSystemBar(this)
     }
 
