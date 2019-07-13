@@ -15,5 +15,5 @@
         android:layout_marginStart="@dimen/notification_badge_offset"
         android:layout_marginTop="@dimen/notification_badge_offset"
         android:importantForAccessibility="no"
-        app:srcCompat="@drawable/badge"/>
+        app:srcCompat="@drawable/badge_notifs"/>
 </FrameLayout>
