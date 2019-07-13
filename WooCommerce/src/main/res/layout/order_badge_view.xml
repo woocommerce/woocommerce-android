@@ -6,18 +6,22 @@
     android:visibility="gone"
     tools:visibility="visible">
 
+    <!--
+        note that the SP text size is on purpose to avoid having the text overlap the badge
+        if the user adjusted the device's text size
+    -->
     <TextView
         android:id="@+id/textOrderCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
         android:layout_marginStart="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_small_medium"
-        android:paddingEnd="@dimen/margin_small_medium"
-        android:paddingStart="@dimen/margin_small_medium"
+        android:layout_marginTop="@dimen/margin_small"
+        android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_medium"
-        tools:background="@drawable/badge"
+        android:textSize="9dp"
+        android:textStyle="bold"
+        tools:background="@drawable/badge_orders"
         tools:text="9+" />
 
 </FrameLayout>

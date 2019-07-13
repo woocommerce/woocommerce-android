@@ -59,7 +59,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         val ordersItemView = menuView.getChildAt(ORDERS.position) as BottomNavigationItemView
         ordersBadgeView = inflater.inflate(R.layout.order_badge_view, menuView, false)
-        ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.setBackgroundResource(R.drawable.badge)
+        ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.setBackgroundResource(R.drawable.badge_orders)
         ordersItemView.addView(ordersBadgeView)
 
         val notifsItemView = menuView.getChildAt(REVIEWS.position) as BottomNavigationItemView
