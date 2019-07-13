@@ -17,11 +17,11 @@
         android:layout_gravity="top|center_horizontal"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_marginTop="@dimen/margin_small"
+        android:background="@drawable/badge_orders"
         android:gravity="center"
         android:textColor="@color/white"
         android:textSize="9dp"
         android:textStyle="bold"
-        tools:background="@drawable/badge_orders"
         tools:text="9+" />
 
 </FrameLayout>
