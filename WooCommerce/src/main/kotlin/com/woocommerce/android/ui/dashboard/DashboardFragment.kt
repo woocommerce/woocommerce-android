@@ -114,7 +114,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
         dashboard_top_earners.initView(
-                dashboard_top_earners.activeGranularity,
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
@@ -179,7 +178,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putInt(STATE_KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
-        outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
+        outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_stats.activeGranularity)
     }
 
     override fun showStats(
@@ -203,14 +202,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
-        if (dashboard_top_earners.activeGranularity == granularity) {
+        if (dashboard_stats.activeGranularity == granularity) {
             dashboard_top_earners.showErrorView(false)
             dashboard_top_earners.updateView(topEarnerList)
         }
     }
 
     override fun showTopEarnersError(granularity: StatsGranularity) {
-        if (dashboard_top_earners.activeGranularity == granularity) {
+        if (dashboard_stats.activeGranularity == granularity) {
             dashboard_top_earners.updateView(emptyList())
             dashboard_top_earners.showErrorView(true)
             showErrorSnack()
@@ -268,7 +267,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     dashboard_stats.clearChartData()
                 }
                 presenter.loadStats(dashboard_stats.activeGranularity, forced)
-                presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
+                presenter.loadTopEarnerStats(dashboard_stats.activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
             }
@@ -291,6 +290,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onRequestLoadStats(period: StatsGranularity) {
         dashboard_stats.showErrorView(false)
         presenter.loadStats(period)
+        dashboard_top_earners.loadTopEarnerStats(period)
     }
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {

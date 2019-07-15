@@ -8,16 +8,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_top_earners.view.*
@@ -36,59 +33,39 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
     }
     var tabStateStats: Serializable? = null // Save the current position of top earners tab view
 
-    var activeGranularity: StatsGranularity = DEFAULT_STATS_GRANULARITY
-        get() {
-            return topEarners_tab_layout.getTabAt(topEarners_tab_layout.selectedTabPosition)?.let {
-                it.tag as StatsGranularity
-            } ?: tabStateStats?.let { it as StatsGranularity } ?: DEFAULT_STATS_GRANULARITY
-        }
-
     private lateinit var selectedSite: SelectedSite
+    private lateinit var listener: DashboardStatsListener
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
     private var skeletonView = SkeletonView()
 
     fun initView(
-        period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: DashboardStatsListener,
         selectedSite: SelectedSite,
         formatCurrencyForDisplay: FormatCurrencyRounded
     ) {
+        this.listener = listener
         this.selectedSite = selectedSite
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
 
         topEarners_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
         topEarners_recycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
+    }
 
-        StatsGranularity.values().forEach { granularity ->
-            val tab = topEarners_tab_layout.newTab().apply {
-                setText(getTabTitleResForGranularity(granularity))
-                tag = granularity
-            }
-            topEarners_tab_layout.addTab(tab)
+    /**
+     * Load top earners stats when tab is selected in [DashboardStatsView]
+     */
+    fun loadTopEarnerStats(granularity: StatsGranularity) {
+        // Track range change
+        AnalyticsTracker.track(
+                Stat.DASHBOARD_TOP_PERFORMERS_DATE,
+                mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase()))
 
-            // Start with the given time period selected
-            if (granularity == period) {
-                tab.select()
-            }
-        }
-
-        topEarners_tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                // Track range change
-                AnalyticsTracker.track(
-                        Stat.DASHBOARD_TOP_PERFORMERS_DATE,
-                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
-
-                topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
-                showEmptyView(false)
-                showErrorView(false)
-                listener.onRequestLoadTopEarnerStats(tab.tag as StatsGranularity)
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
+        topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
+        showEmptyView(false)
+        showErrorView(false)
+        listener.onRequestLoadTopEarnerStats(granularity)
     }
 
     fun showSkeleton(show: Boolean) {
@@ -112,16 +89,6 @@ class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Att
         showEmptyView(false)
         topEarners_error.visibility = if (show) View.VISIBLE else View.GONE
         topEarners_recycler.visibility = if (show) View.GONE else View.VISIBLE
-    }
-
-    @StringRes
-    private fun getTabTitleResForGranularity(granularity: StatsGranularity): Int {
-        return when (granularity) {
-            StatsGranularity.DAYS -> R.string.today
-            StatsGranularity.WEEKS -> R.string.this_week
-            StatsGranularity.MONTHS -> R.string.this_month
-            StatsGranularity.YEARS -> R.string.this_year
-        }
     }
 
     class TopEarnersViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -6,17 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/topEarners_tab_layout"
-        style="@style/Woo.TabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/list_divider"/>
-
     <TextView
         android:id="@+id/topEarners_title"
         style="@style/Woo.TextAppearance.Title.Bold"
