@@ -15,7 +15,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS_V4
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
@@ -25,10 +25,11 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsV4Payload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
+import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsV4Changed
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -93,12 +94,12 @@ class DashboardPresenter @Inject constructor(
             statsForceRefresh[granularity.ordinal] = false
             dashboardView?.showChartSkeleton(true)
         }
-        val statsPayload = FetchOrderStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
-        dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsAction(statsPayload))
+
+        // fetch order stats
+        fetchOrderStats(granularity, forced = forceRefresh)
 
         // fetch visitor stats
-        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced = forceRefresh)
-        dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
+        fetchVisitorStats(granularity, forced = forceRefresh)
     }
 
     override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
@@ -113,12 +114,33 @@ class DashboardPresenter @Inject constructor(
             dashboardView?.showTopEarnersSkeleton(true)
         }
 
+        // fetch top earners stats
+        fetchTopEarnerStats(granularity, forced = forceRefresh)
+    }
+
+    override fun fetchOrderStats(granularity: StatsGranularity, forced: Boolean) {
+        val statsPayload = FetchOrderStatsV4Payload(selectedSite.get(), granularity, forced = forced)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchOrderStatsV4Action(statsPayload))
+    }
+
+    override fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean) {
+        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced = forced)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
+    }
+
+    override fun fetchTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
         val payload = FetchTopEarnersStatsPayload(
-                selectedSite.get(), granularity, NUM_TOP_EARNERS, forced = forceRefresh)
+                selectedSite.get(), granularity, NUM_TOP_EARNERS, forced = forced)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
     }
 
-    override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
+    override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+
+    override fun getRevenueStats(granularity: StatsGranularity, startDate: String, endDate: String) =
+            wcStatsStore.getRevenueStatsV4(selectedSite.get(), granularity, startDate, endDate)
+
+    override fun getOrderStats(granularity: StatsGranularity, startDate: String, endDate: String) =
+            wcStatsStore.getOrderStatsV4(selectedSite.get(), granularity, startDate, endDate)
 
     override fun fetchUnfilledOrderCount(forced: Boolean) {
         if (!networkStatus.isConnected()) {
@@ -145,25 +167,6 @@ class DashboardPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
         when (event.causeOfChange) {
-            FETCH_ORDER_STATS -> {
-                dashboardView?.showChartSkeleton(false)
-                if (event.isError) {
-                    WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
-                    dashboardView?.showStatsError(event.granularity)
-                    return
-                }
-
-                // Track fresh data load
-                AnalyticsTracker.track(
-                        Stat.DASHBOARD_MAIN_STATS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
-
-                val revenueStats = wcStatsStore.getRevenueStats(selectedSite.get(), event.granularity)
-                val orderStats = wcStatsStore.getOrderStats(selectedSite.get(), event.granularity)
-
-                dashboardView?.showStats(revenueStats, orderStats, event.granularity)
-            }
-
             FETCH_VISITOR_STATS -> {
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
@@ -190,6 +193,33 @@ class DashboardPresenter @Inject constructor(
                     mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
 
             dashboardView?.showTopEarners(event.topEarners, event.granularity)
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWCStatsV4Changed(event: OnWCStatsV4Changed) {
+        when (event.causeOfChange) {
+            FETCH_ORDER_STATS_V4 -> {
+                dashboardView?.showChartSkeleton(false)
+                if (event.isError) {
+                    WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
+                    dashboardView?.showStatsError(event.granularity)
+                    return
+                }
+
+                // Track fresh data load
+                AnalyticsTracker.track(
+                        Stat.DASHBOARD_MAIN_STATS_LOADED,
+                        mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
+
+                // if the api response is successful, then we can safely assume that the startDate and endDate of
+                // the event will not be null
+                val revenueStats = getRevenueStats(event.granularity, event.startDate!!, event.endDate!!)
+                val orderStats = getOrderStats(event.granularity, event.startDate!!, event.endDate!!)
+
+                dashboardView?.showStats(revenueStats, orderStats, event.granularity)
+            }
         }
     }
 

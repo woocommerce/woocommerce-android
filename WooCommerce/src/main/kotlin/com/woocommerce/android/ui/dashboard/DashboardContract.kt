@@ -12,13 +12,18 @@ interface DashboardContract {
         fun getStatsCurrency(): String?
         fun fetchUnfilledOrderCount(forced: Boolean = false)
         fun fetchHasOrders()
+        fun fetchOrderStats(granularity: StatsGranularity, forced: Boolean)
+        fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean)
+        fun fetchTopEarnerStats(granularity: StatsGranularity, forced: Boolean)
+        fun getRevenueStats(granularity: StatsGranularity, startDate: String, endDate: String): Map<String, Double>
+        fun getOrderStats(granularity: StatsGranularity, startDate: String, endDate: String): Map<String, Long>
     }
 
     interface View : BaseView<Presenter> {
         var isRefreshPending: Boolean
 
         fun refreshDashboard(forced: Boolean = false)
-        fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Int>, granularity: StatsGranularity)
+        fun showStats(revenueStats: Map<String, Double>, salesStats: Map<String, Long>, granularity: StatsGranularity)
         fun showStatsError(granularity: StatsGranularity)
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
         fun showTopEarnersError(granularity: StatsGranularity)

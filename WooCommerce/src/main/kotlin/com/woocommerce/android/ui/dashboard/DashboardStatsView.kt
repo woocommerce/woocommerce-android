@@ -33,7 +33,6 @@ import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
-import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.io.Serializable
 import java.util.ArrayList
@@ -256,7 +255,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         chart.highlightValue(null)
     }
 
-    fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
+    fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Long>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
 
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
@@ -357,30 +356,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
-        val barEntries = when (activeGranularity) {
-            StatsGranularity.DAYS,
-            StatsGranularity.WEEKS,
-            StatsGranularity.MONTHS -> {
-                chartRevenueStats = revenueStats
-                chartRevenueStats.values.mapIndexed { index, value ->
-                    BarEntry((index + 1).toFloat(), value.toFloat())
-                }
-            }
-            StatsGranularity.YEARS -> {
-                // Clean up leading empty years and start from first year with non-zero sales
-                // (but always include current year)
-                val modifiedRevenueStats = revenueStats.toMutableMap()
-                for (entry in revenueStats) {
-                    if (entry.value != 0.0 || entry.key == revenueStats.keys.last()) {
-                        break
-                    }
-                    modifiedRevenueStats.remove(entry.key)
-                }
-                chartRevenueStats = modifiedRevenueStats
-                chartRevenueStats.map { BarEntry(it.key.toFloat(), it.value.toFloat()) }
-            }
+        chartRevenueStats = revenueStats
+        val barEntries = chartRevenueStats.values.mapIndexed { index, value ->
+            BarEntry((index + 1).toFloat(), value.toFloat())
         }
-
         return BarDataSet(barEntries, "")
     }
 
@@ -468,21 +447,20 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         fun getStartValue(): String {
             val dateString = chartRevenueStats.keys.first()
             return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
-                StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(dateString)
-                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
-                StatsGranularity.YEARS -> dateString
+                StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
+                StatsGranularity.WEEKS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.MONTHS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
             }
         }
 
         fun getEndValue(): String {
             val dateString = chartRevenueStats.keys.last()
             return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
-                StatsGranularity.WEEKS ->
-                    SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
-                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
-                StatsGranularity.YEARS -> dateString
+                StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
+                StatsGranularity.WEEKS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.MONTHS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
             }
         }
     }

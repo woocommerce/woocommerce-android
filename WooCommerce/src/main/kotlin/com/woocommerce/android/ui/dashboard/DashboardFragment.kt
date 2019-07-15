@@ -184,7 +184,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun showStats(
         revenueStats: Map<String, Double>,
-        salesStats: Map<String, Int>,
+        salesStats: Map<String, Long>,
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
