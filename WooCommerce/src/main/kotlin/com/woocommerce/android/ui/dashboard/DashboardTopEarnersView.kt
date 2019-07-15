@@ -24,14 +24,12 @@ import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
-import java.io.Serializable
 
 class DashboardTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.dashboard_top_earners, this)
     }
-    var tabStateStats: Serializable? = null // Save the current position of top earners tab view
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var listener: DashboardStatsListener

@@ -18,7 +18,6 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -34,7 +33,6 @@ import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.util.DateTimeUtils
-import java.io.Serializable
 import java.util.ArrayList
 import java.util.Date
 
@@ -48,17 +46,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
 
-    var tabStateStats: Serializable? = null // Save the current position of stats tab view
-
-    val activeGranularity: StatsGranularity
-        get() {
-            return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
-                it.tag as StatsGranularity
-            } ?: tabStateStats?.let { it as StatsGranularity } ?: DEFAULT_STATS_GRANULARITY
-        }
-
+    private lateinit var activeGranularity: StatsGranularity
     private lateinit var selectedSite: SelectedSite
-
+    private lateinit var listener: DashboardStatsListener
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
     private var chartRevenueStats = mapOf<String, Double>()
@@ -93,37 +83,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         selectedSite: SelectedSite,
         formatCurrencyForDisplay: FormatCurrencyRounded
     ) {
+        this.listener = listener
         this.selectedSite = selectedSite
+        this.activeGranularity = period
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
-
-        StatsGranularity.values().forEach { granularity ->
-            val tab = tab_layout.newTab().apply {
-                setText(getStringForGranularity(granularity))
-                tag = granularity
-            }
-            tab_layout.addTab(tab)
-
-            // Start with the given time period selected
-            if (granularity == period) {
-                tab.select()
-            }
-        }
-
-        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                // Track range change
-                AnalyticsTracker.track(
-                        Stat.DASHBOARD_MAIN_STATS_DATE,
-                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
-
-                isRequestingStats = true
-                listener.onRequestLoadStats(tab.tag as StatsGranularity)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
 
         initChart()
 
@@ -132,6 +95,17 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             updateRecencyMessage()
             lastUpdatedHandler?.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
         }
+    }
+
+    fun loadDashboardStats(granularity: StatsGranularity) {
+        this.activeGranularity = granularity
+        // Track range change
+        AnalyticsTracker.track(
+                Stat.DASHBOARD_MAIN_STATS_DATE,
+                mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase()))
+
+        isRequestingStats = true
+        listener.onRequestLoadStats(granularity)
     }
 
     override fun onVisibilityChanged(changedView: View?, visibility: Int) {

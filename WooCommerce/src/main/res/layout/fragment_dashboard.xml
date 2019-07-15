@@ -1,62 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dashboardStats_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.woocommerce.android.ui.dashboard.DashboardFragment">
 
-    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
-        android:id="@+id/dashboard_refresh_layout"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="false">
+
+        <!-- Single tab for all stats -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            style="@style/Woo.TabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_window_background">
+        android:background="@color/default_window_background"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scroll_view"
+        <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+            android:id="@+id/dashboard_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:descendantFocusability="blocksDescendants"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
-                <!-- Order stats -->
-                <com.woocommerce.android.ui.dashboard.DashboardStatsView
-                    android:id="@+id/dashboard_stats"
-                    style="@style/Woo.Card"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"/>
+                    android:animateLayoutChanges="true"
+                    android:descendantFocusability="blocksDescendants"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:orientation="vertical">
 
-                <!-- Orders waiting fulfillment -->
-                <com.woocommerce.android.ui.dashboard.DashboardUnfilledOrdersCard
-                    android:id="@+id/dashboard_unfilled_orders"
-                    style="@style/Woo.Card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    tools:visibility="visible"/>
+                    <!-- Order stats -->
+                    <com.woocommerce.android.ui.dashboard.DashboardStatsView
+                        android:id="@+id/dashboard_stats"
+                        style="@style/Woo.Stats.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"/>
 
-                <!-- Top earner stats -->
-                <com.woocommerce.android.ui.dashboard.DashboardTopEarnersView
-                    android:id="@+id/dashboard_top_earners"
-                    style="@style/Woo.Card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:orientation="vertical"/>
+                    <!-- Orders waiting fulfillment -->
+                    <com.woocommerce.android.ui.dashboard.DashboardUnfilledOrdersCard
+                        android:id="@+id/dashboard_unfilled_orders"
+                        style="@style/Woo.Stats.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:visibility="visible"/>
 
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+                    <!-- Top earner stats -->
+                    <com.woocommerce.android.ui.dashboard.DashboardTopEarnersView
+                        android:id="@+id/dashboard_top_earners"
+                        style="@style/Woo.Stats.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"/>
 
-    <com.woocommerce.android.widgets.WCEmptyView
-        android:id="@+id/empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
 
-</FrameLayout>
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

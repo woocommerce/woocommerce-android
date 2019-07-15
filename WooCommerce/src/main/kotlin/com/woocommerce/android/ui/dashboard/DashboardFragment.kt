@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -27,13 +28,13 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.io.Serializable
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         const val STATE_KEY_TAB_STATS = "tab-stats-state"
-        const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         const val STATE_KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
         fun newInstance() = DashboardFragment()
@@ -53,6 +54,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     // If false, the fragment will refresh its data when it's visible on onHiddenChanged
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
     private var isStatsRefreshed: Boolean = false
+
+    private var tabStateStats: Serializable? = null // Save the current position of stats tab view
+    private val activeGranularity: StatsGranularity
+        get() {
+            return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
+                it.tag as StatsGranularity
+            } ?: tabStateStats?.let { it as StatsGranularity } ?: DEFAULT_STATS_GRANULARITY
+        }
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -91,9 +100,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onActivityCreated(savedInstanceState)
 
         savedInstanceState?.let { bundle ->
+            tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
-            dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
-            dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
 
             // if unfilled orders card was previously showing, make it visible so it doesn't
             // re-animate in every time the fragment is restored
@@ -108,8 +116,21 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
+        StatsGranularity.values().forEach { granularity ->
+            val tab = tab_layout.newTab().apply {
+                setText(dashboard_stats.getStringForGranularity(granularity))
+                tag = granularity
+            }
+            tab_layout.addTab(tab)
+
+            // Start with the given time period selected
+            if (granularity == activeGranularity) {
+                tab.select()
+            }
+        }
+
         dashboard_stats.initView(
-                dashboard_stats.activeGranularity,
+                activeGranularity,
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
@@ -132,6 +153,17 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 onScrollUp()
             }
         }
+
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                dashboard_stats.loadDashboardStats(activeGranularity)
+                dashboard_top_earners.loadTopEarnerStats(activeGranularity)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
 
         if (isActive && !deferInit) {
             isStatsRefreshed = true
@@ -177,8 +209,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putInt(STATE_KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
-        outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
-        outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_stats.activeGranularity)
+        outState.putSerializable(STATE_KEY_TAB_STATS, activeGranularity)
     }
 
     override fun showStats(
@@ -187,14 +218,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             dashboard_stats.showErrorView(false)
             dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
         }
     }
 
     override fun showStatsError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             showStats(emptyMap(), emptyMap(), granularity)
             dashboard_stats.showErrorView(true)
             showErrorSnack()
@@ -202,14 +233,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             dashboard_top_earners.showErrorView(false)
             dashboard_top_earners.updateView(topEarnerList)
         }
     }
 
     override fun showTopEarnersError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             dashboard_top_earners.updateView(emptyList())
             dashboard_top_earners.showErrorView(true)
             showErrorSnack()
@@ -217,13 +248,13 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             dashboard_stats.showVisitorStats(visits)
         }
     }
 
     override fun showVisitorStatsError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             dashboard_stats.showVisitorStatsError()
         }
     }
@@ -266,8 +297,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     dashboard_stats.clearLabelValues()
                     dashboard_stats.clearChartData()
                 }
-                presenter.loadStats(dashboard_stats.activeGranularity, forced)
-                presenter.loadTopEarnerStats(dashboard_stats.activeGranularity, forced)
+                presenter.loadStats(activeGranularity, forced)
+                presenter.loadTopEarnerStats(activeGranularity, forced)
                 presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
             }
@@ -290,7 +321,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onRequestLoadStats(period: StatsGranularity) {
         dashboard_stats.showErrorView(false)
         presenter.loadStats(period)
-        dashboard_top_earners.loadTopEarnerStats(period)
     }
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
