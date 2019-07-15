@@ -28,13 +28,12 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import java.io.Serializable
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
-        const val STATE_KEY_TAB_STATS = "tab-stats-state"
+        const val STATE_KEY_TAB_POSITION = "tab-stats-position"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         const val STATE_KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
         fun newInstance() = DashboardFragment()
@@ -55,12 +54,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
     private var isStatsRefreshed: Boolean = false
 
-    private var tabStateStats: Serializable? = null // Save the current position of stats tab view
+    private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
     private val activeGranularity: StatsGranularity
         get() {
-            return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
+            return tab_layout.getTabAt(tabStatsPosition)?.let {
                 it.tag as StatsGranularity
-            } ?: tabStateStats?.let { it as StatsGranularity } ?: DEFAULT_STATS_GRANULARITY
+            } ?: DEFAULT_STATS_GRANULARITY
         }
 
     override fun onAttach(context: Context?) {
@@ -100,7 +99,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onActivityCreated(savedInstanceState)
 
         savedInstanceState?.let { bundle ->
-            tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
+            tabStatsPosition = bundle.getInt(STATE_KEY_TAB_POSITION)
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
 
             // if unfilled orders card was previously showing, make it visible so it doesn't
@@ -156,6 +155,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
+                tabStatsPosition = tab.position
                 dashboard_stats.loadDashboardStats(activeGranularity)
                 dashboard_top_earners.loadTopEarnerStats(activeGranularity)
             }
@@ -209,7 +209,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putInt(STATE_KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
-        outState.putSerializable(STATE_KEY_TAB_STATS, activeGranularity)
+        outState.putInt(STATE_KEY_TAB_POSITION, tab_layout.selectedTabPosition)
     }
 
     override fun showStats(
