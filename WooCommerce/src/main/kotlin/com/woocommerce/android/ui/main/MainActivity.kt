@@ -442,7 +442,7 @@ class MainActivity : AppCompatActivity(),
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
-        val host = uri?.host ?: ""
+        val host = uri?.host?.let { it } ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 

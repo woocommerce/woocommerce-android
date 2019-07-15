@@ -104,8 +104,8 @@
         Order: status tag background colors
     -->
     <color name="orderStatus_processing_text">@color/tagView_text</color>
-    <color name="orderStatus_processing_bg">@color/wc_purple_highlight</color>
-    <color name="orderStatus_processing_border">@color/wc_purple_status</color>
+    <color name="orderStatus_processing_bg">@color/wc_green_lightest</color>
+    <color name="orderStatus_processing_border">@color/wc_green_light</color>
 
     <color name="orderStatus_pending_text">@color/tagView_text</color>
     <color name="orderStatus_pending_bg">@color/wc_green_lightest</color>
