@@ -1,3 +1,6 @@
+2.4
+-----
+ 
 2.3
 -----
 * Fixed a bug where the shipping/billing details for a virtual order was being displayed.
