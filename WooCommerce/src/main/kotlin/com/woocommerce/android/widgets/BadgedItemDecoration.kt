@@ -13,7 +13,7 @@ import org.wordpress.android.util.DisplayUtils
 
 /**
  * Item decoration for recycler views which supports "badging," which simply shows a vertical
- * purple bar to the left to indicate unread notifs or unfilled orders
+ * green bar to the left to indicate unread notifs
  */
 class BadgedItemDecoration(context: Context, val decorListener: ItemDecorationListener) :
         DividerItemDecoration(context, HORIZONTAL) {
