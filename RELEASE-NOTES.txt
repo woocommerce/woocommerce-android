@@ -1,6 +1,7 @@
 2.4
 -----
- 
+* The Notifications tab has been replaced by Reviews 
+
 2.3
 -----
 * Fixed a bug where the shipping/billing details for a virtual order was being displayed.
