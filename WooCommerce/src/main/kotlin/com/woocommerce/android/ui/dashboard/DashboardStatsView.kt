@@ -366,10 +366,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     @StringRes
     fun getStringForGranularity(timeframe: StatsGranularity): Int {
         return when (timeframe) {
-            StatsGranularity.DAYS -> R.string.dashboard_stats_granularity_days
-            StatsGranularity.WEEKS -> R.string.dashboard_stats_granularity_weeks
-            StatsGranularity.MONTHS -> R.string.dashboard_stats_granularity_months
-            StatsGranularity.YEARS -> R.string.dashboard_stats_granularity_years
+            StatsGranularity.DAYS -> R.string.today
+            StatsGranularity.WEEKS -> R.string.this_week
+            StatsGranularity.MONTHS -> R.string.this_month
+            StatsGranularity.YEARS -> R.string.this_year
         }
     }
 
