@@ -118,7 +118,16 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
         }
 
         // Populate the Customer Information Card
-        orderFulfill_customerInfo.initView(order, true)
+        // check if product is a virtual product. If it is, hide the shipping details card
+        val hideShipping = presenter.isVirtualProduct(order.getLineItemList()) ||
+                !orderFulfill_customerInfo.isShippingAvailable(order)
+        if (hideShipping) {
+            orderFulfill_customerInfo.visibility = View.GONE
+        } else {
+            // Populate the Customer Information Card
+            orderFulfill_customerInfo.visibility = View.VISIBLE
+            orderFulfill_customerInfo.initView(order, true)
+        }
 
         orderFulfill_btnComplete.setOnClickListener(this)
     }

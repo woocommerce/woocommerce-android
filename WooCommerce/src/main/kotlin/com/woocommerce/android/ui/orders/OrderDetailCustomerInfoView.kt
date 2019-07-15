@@ -20,14 +20,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         View.inflate(context, R.layout.order_detail_customer_info, this)
     }
 
-    fun initView(order: WCOrderModel, shippingOnly: Boolean) {
+    fun initView(
+        order: WCOrderModel,
+        shippingOnly: Boolean,
+        billingOnly: Boolean = false
+    ) {
         // Populate Shipping & Billing information
-        val billingName = context
-                .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
-        val billingAddr = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
-        val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
-        val billingAddrFull = getFullAddress(billingName, billingAddr, billingCountry)
-
+        val billingAddrFull = getBillingInformation(order)
         val isShippingInfoEmpty = !order.hasSeparateShippingDetails()
         val isBillingInfoEmpty = billingAddrFull.trim().isEmpty() &&
                 order.billingEmail.isEmpty() && order.billingPhone.isEmpty()
@@ -39,11 +38,73 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             return
         }
 
-        if (!isShippingInfoEmpty) {
-            // display shipping section if available. Enable the read more button here
+        // show shipping section only for non virtual products or if shipping info available
+        val hideShipping = billingOnly || isShippingInfoEmpty
+        initShippingSection(order, hideShipping)
+
+        // if only shipping is to be displayed or if billing details are not available, hide the billing section
+        if (shippingOnly || isBillingInfoEmpty) {
+            formatViewAsShippingOnly()
+        } else {
+            // if billing address is available, populte billing info, if not available, hide the address view
+            if (billingAddrFull.trim().isEmpty()) {
+                customerInfo_billingLabel.visibility = View.GONE
+                customerInfo_billingAddr.visibility = View.GONE
+                customerInfo_divider.visibility = View.GONE
+                customerInfo_divider2.visibility = View.GONE
+            } else {
+                customerInfo_billingLabel.visibility = View.VISIBLE
+                customerInfo_billingAddr.visibility = View.VISIBLE
+                customerInfo_billingAddr.text = billingAddrFull
+                customerInfo_divider2.visibility = View.VISIBLE
+            }
+
+            // display phone only if available, otherwise, hide the view
+            if (!order.billingPhone.isEmpty()) {
+                customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
+                customerInfo_phone.visibility = View.VISIBLE
+                customerInfo_divider3.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.setOnClickListener {
+                    showCallOrMessagePopup(order)
+                }
+            } else {
+                customerInfo_phone.visibility = View.GONE
+                customerInfo_divider3.visibility = View.GONE
+                customerInfo_callOrMessageBtn.visibility = View.GONE
+            }
+
+            // display email address info only if available, otherwise, hide the view
+            if (!order.billingEmail.isEmpty()) {
+                customerInfo_emailAddr.text = order.billingEmail
+                customerInfo_emailAddr.visibility = View.VISIBLE
+                customerInfo_emailBtn.visibility - View.VISIBLE
+                customerInfo_emailBtn.setOnClickListener {
+                    AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
+                    OrderCustomerHelper.createEmail(context, order, order.billingEmail)
+                    AppRatingDialog.incrementInteractions()
+                }
+            } else {
+                customerInfo_emailAddr.visibility = View.GONE
+                customerInfo_emailBtn.visibility = View.GONE
+            }
+        }
+    }
+
+    fun isShippingAvailable(order: WCOrderModel) =
+            AddressUtils.getEnvelopeAddress(order.getShippingAddress()).isNotEmpty()
+
+    fun initShippingSection(order: WCOrderModel, hide: Boolean) {
+        if (!isShippingAvailable(order) || hide) {
+            customerInfo_divider.visibility = View.GONE
+            customerInfo_shippingAddr.visibility = View.GONE
+            customerInfo_shippingLabel.visibility = View.GONE
+            customerInfo_morePanel.visibility = View.VISIBLE
+            formatViewAsShippingOnly()
+            customerInfo_viewMore.setOnCheckedChangeListener(null)
+        } else {
             val shippingName = context
                     .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
-
             val shippingAddr = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
             val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
             val shippingAddrFull = getFullAddress(shippingName, shippingAddr, shippingCountry)
@@ -57,63 +118,15 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
                     customerInfo_morePanel.visibility = View.GONE
                 }
             }
-        } else {
-            // if no shipping address available, hide the shipping section and disable read more button
-            customerInfo_divider.visibility = View.GONE
-            customerInfo_shippingAddr.visibility = View.GONE
-            customerInfo_shippingLabel.visibility = View.GONE
-            customerInfo_morePanel.visibility = View.VISIBLE
-            formatViewAsShippingOnly()
-            customerInfo_viewMore.setOnCheckedChangeListener(null)
         }
+    }
 
-        // if only shipping is to be displayed or if billing details are not available, hide the billing section
-        if (shippingOnly || isBillingInfoEmpty) {
-            formatViewAsShippingOnly()
-        } else {
-            // if billing address is available, populte billing info, if not available, hide the address view
-            if (billingAddrFull.trim().isEmpty()) {
-                customerInfo_billingLabel.visibility = View.GONE
-                customerInfo_billingAddr.visibility = View.GONE
-                customerInfo_divider.visibility = View.GONE
-            } else {
-                customerInfo_billingLabel.visibility = View.VISIBLE
-                customerInfo_billingAddr.visibility = View.VISIBLE
-                customerInfo_billingAddr.text = billingAddrFull
-            }
-
-            // display phone only if available, otherwise, hide the view
-            if (!order.billingPhone.isEmpty()) {
-                customerInfo_phone.text = PhoneUtils.formatPhone(order.billingPhone)
-                customerInfo_phone.visibility = View.VISIBLE
-                customerInfo_divider2.visibility = View.VISIBLE
-                customerInfo_callOrMessageBtn.visibility = View.VISIBLE
-                customerInfo_callOrMessageBtn.setOnClickListener {
-                    showCallOrMessagePopup(order)
-                }
-            } else {
-                customerInfo_phone.visibility = View.GONE
-                customerInfo_divider2.visibility = View.GONE
-                customerInfo_callOrMessageBtn.visibility = View.GONE
-            }
-
-            // display email address info only if available, otherwise, hide the view
-            if (!order.billingEmail.isEmpty()) {
-                customerInfo_emailAddr.text = order.billingEmail
-                customerInfo_emailAddr.visibility = View.VISIBLE
-                customerInfo_emailBtn.visibility - View.VISIBLE
-                customerInfo_divider3.visibility = View.VISIBLE
-                customerInfo_emailBtn.setOnClickListener {
-                    AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
-                    OrderCustomerHelper.createEmail(context, order, order.billingEmail)
-                    AppRatingDialog.incrementInteractions()
-                }
-            } else {
-                customerInfo_emailAddr.visibility = View.GONE
-                customerInfo_emailBtn.visibility = View.GONE
-                customerInfo_divider3.visibility = View.GONE
-            }
-        }
+    private fun getBillingInformation(order: WCOrderModel): String {
+        val billingName = context
+                .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
+        val billingAddr = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
+        val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
+        return getFullAddress(billingName, billingAddr, billingCountry)
     }
 
     private fun getFullAddress(name: String, address: String, country: String): String {
