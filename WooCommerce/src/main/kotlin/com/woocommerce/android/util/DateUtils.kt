@@ -206,4 +206,23 @@ object DateUtils {
      * Formats a date object and returns it in the format of yyyy-MM-dd
      */
     fun getYearMonthDayStringFromDate(date: Date): String = yyyyMMddFormat.format(date)
+
+    /**
+     * Given an ISO8601 date of format YYYY-MM-DD hh, returns the hour String in ("hh") format.
+     *
+     * For example, given 2019-07-15 13 returns "1pm", and given 2019-07-28 01 returns "1am".
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getShortHourString(iso8601Date: String): String {
+        return try {
+            val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", Locale.ROOT)
+            val targetFormat = SimpleDateFormat("hha", Locale.ROOT)
+            val date = originalFormat.parse(iso8601Date)
+            targetFormat.format(date).toLowerCase().trimStart('0')
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd H: $iso8601Date")
+        }
+    }
 }

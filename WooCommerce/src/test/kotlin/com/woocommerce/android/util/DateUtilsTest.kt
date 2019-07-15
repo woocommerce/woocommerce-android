@@ -122,4 +122,38 @@ class DateUtilsTest {
             DateUtils.getDateString("")
         }
     }
+
+    @Test
+    fun `getShortHourString() returns correct values`() {
+        assertEquals("12am", DateUtils.getShortHourString("2019-05-09 00"))
+        assertEquals("12pm", DateUtils.getShortHourString("2019-05-09 12"))
+        assertEquals("1am", DateUtils.getShortHourString("2018-12-31 01"))
+        assertEquals("5am", DateUtils.getShortHourString("2019-07-15 05"))
+        assertEquals("2pm", DateUtils.getShortHourString("2019-01-01 14"))
+        assertEquals("11pm", DateUtils.getShortHourString("2019-02-28 23"))
+        assertEquals("4pm", DateUtils.getShortHourString("2019-02-28 16"))
+        assertEquals("9am", DateUtils.getShortHourString("2019-02-28 09"))
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getShortHourString("Dec 30 2018")
+        }
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getShortHourString("2019-12-31")
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getShortHourString("-07-41")
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getShortHourString("")
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getShortHourString("5am")
+        }
+    }
 }
