@@ -1,5 +1,6 @@
 2.4
 -----
+* Added a new date bar to the Stats page to better communicate the date range of the data displayed.
  
 2.3
 -----
