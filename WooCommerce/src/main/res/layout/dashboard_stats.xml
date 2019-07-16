@@ -19,6 +19,22 @@
         android:background="@color/list_divider"
         app:srcCompat="@drawable/list_divider"/>
 
+    <!-- Date bar -->
+    <TextView
+        android:id="@+id/dashboard_date_range_value"
+        style="@style/Woo.Stats.Date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        tools:text="June 30-Jul 06"/>
+
+    <FrameLayout
+        android:id="@+id/tab_layout_divider_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/list_divider"
+        app:srcCompat="@drawable/list_divider"/>
+
     <LinearLayout
         android:id="@+id/label_layout"
         android:layout_width="match_parent"
