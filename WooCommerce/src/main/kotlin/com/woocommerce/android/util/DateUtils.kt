@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
+import org.wordpress.android.fluxc.utils.DateUtils.getCalendarInstance
 import org.wordpress.android.util.DateTimeUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
@@ -206,4 +207,17 @@ object DateUtils {
      * Formats a date object and returns it in the format of yyyy-MM-dd
      */
     fun getYearMonthDayStringFromDate(date: Date): String = yyyyMMddFormat.format(date)
+
+    /**
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in short month ("MMM d, YYYY") format.
+     *
+     * For example, given 2018-07-03 returns "Jul 3, 2018", and given 2018-07-28 returns "Jul 28, 2018".
+     */
+    fun getShortDisplayDateString(dateString: String?): String? {
+        return dateString?.let {
+            val calendar = getCalendarInstance(dateString)
+            val month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())
+            String.format("%s %s", month, calendar.get(Calendar.DATE))
+        }
+    }
 }
