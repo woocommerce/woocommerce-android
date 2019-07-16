@@ -78,6 +78,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             // up before the chart data is added once the request completes
             if (value) {
                 clearLabelValues()
+                clearDateRangeValues()
                 chart.setNoDataText(null)
                 chart.clear()
             } else {
@@ -328,6 +329,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private fun updateDateRangeView() {
         dashboard_date_range_value.text = String.format("%s – %s", getStartValue(), getEndValue())
+    }
+
+    private fun clearDateRangeValues() {
+        dashboard_date_range_value.text = ""
     }
 
     fun clearLabelValues() {
