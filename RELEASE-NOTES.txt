@@ -2,6 +2,8 @@
 -----
 * The Notifications tab has been replaced by Reviews 
 
+* The unfulfilled order count has been removed from the dashboard and is now shown as a badge on the order list
+ 
 2.3
 -----
 * Fixed a bug where the shipping/billing details for a virtual order was being displayed.

@@ -7,7 +7,7 @@
     tools:visibility="visible">
 
     <!--
-       note that the SP text size is on purpose to avoid having the text overlap the badge
+       note that the DP text size is on purpose to avoid having the text overlap the badge
        if the user adjusted the device's text size
    -->
     <TextView

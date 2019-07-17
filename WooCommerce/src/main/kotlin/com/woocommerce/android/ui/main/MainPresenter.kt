@@ -5,6 +5,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
@@ -14,6 +16,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
@@ -32,6 +35,7 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -161,7 +165,6 @@ class MainPresenter @Inject constructor(
                     return
                 }
 
-                // TODO: May want to change the name of this stat
                 AnalyticsTracker.track(
                         Stat.DASHBOARD_UNFULFILLED_ORDERS_LOADED,
                         mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0)))
@@ -172,8 +175,8 @@ class MainPresenter @Inject constructor(
                     mainView?.hideOrderBadge()
                 }
             }
-            UPDATE_ORDER_STATUS -> {
-                // an order's status has changed so re-check the unfilled orders count
+            FETCH_ORDERS, UPDATE_ORDER_STATUS -> {
+                // we just fetched the order list or an order's status changed, so re-check the unfilled orders count
                 WooLog.d(WooLog.T.ORDERS, "Order status changed, re-checking unfilled orders count")
                 fetchUnfilledOrderCount()
             }
@@ -193,6 +196,17 @@ class MainPresenter @Inject constructor(
             mainView?.showNotificationBadge()
         } else {
             mainView?.hideNotificationBadge()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: NotificationReceivedEvent) {
+        // a new order notification came in so update the unfilled order count and fetch the order list
+        if (event.channel == NEW_ORDER) {
+            fetchUnfilledOrderCount()
+            val payload = FetchOrdersPayload(selectedSite.get())
+            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         }
     }
 

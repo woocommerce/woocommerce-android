@@ -12,10 +12,10 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerVi
 import org.wordpress.android.util.DisplayUtils
 
 /**
- * Item decoration for recycler views which supports "badging," which simply shows a vertical
- * green bar to the left to indicate unread notifs
+ * Item decoration for recycler views which simply shows a vertical green bar to the left to
+ * indicate unread items (such as unread notifications)
  */
-class BadgedItemDecoration(context: Context, val decorListener: ItemDecorationListener) :
+class UnreadItemDecoration(context: Context, val decorListener: ItemDecorationListener) :
         DividerItemDecoration(context, HORIZONTAL) {
     interface ItemDecorationListener {
         fun getItemTypeAtPosition(position: Int): ItemType
@@ -23,8 +23,8 @@ class BadgedItemDecoration(context: Context, val decorListener: ItemDecorationLi
 
     enum class ItemType {
         HEADER,
-        BADGED,
-        UNBADGED
+        UNREAD,
+        READ
     }
 
     private val dividerWidth = DisplayUtils.dpToPx(context, 3).toFloat()
@@ -39,12 +39,12 @@ class BadgedItemDecoration(context: Context, val decorListener: ItemDecorationLi
             if (position != SectionedRecyclerViewAdapter.INVALID_POSITION) {
                 val itemType = decorListener.getItemTypeAtPosition(position)
                 /*
-                 * note that we have to draw the indicator for all items rather than just badged ones
+                 * note that we have to draw the indicator for all items rather than just unread ones
                  * in order to paint over recycled cells that have a previously-drawn indicator
                  */
                 val colorId = when (itemType) {
                     ItemType.HEADER -> R.color.list_header_bg
-                    ItemType.BADGED -> R.color.wc_green
+                    ItemType.UNREAD -> R.color.wc_green
                     else -> R.color.list_item_bg
                 }
 
