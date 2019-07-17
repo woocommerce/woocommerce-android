@@ -36,6 +36,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     companion object {
         private var previousNavPos: BottomNavigationPosition? = null
+        private const val BADGE_LABEL_OVER_NINE = "9+"
     }
 
     interface MainNavigationListener {
@@ -103,7 +104,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
             return
         }
 
-        val label = if (count > 9) "9+" else count.toString()
+        val label = if (count > 9) BADGE_LABEL_OVER_NINE else count.toString()
         ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.text = label
         if (ordersBadgeView.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(ordersBadgeView, Duration.MEDIUM)
