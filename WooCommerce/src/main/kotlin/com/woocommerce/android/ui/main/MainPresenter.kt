@@ -5,6 +5,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
@@ -193,6 +195,15 @@ class MainPresenter @Inject constructor(
             mainView?.showNotificationBadge()
         } else {
             mainView?.hideNotificationBadge()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: NotificationReceivedEvent) {
+        // a new order notification came in so update the unfilled order count
+        if (event.channel == NEW_ORDER) {
+            fetchUnfilledOrderCount()
         }
     }
 

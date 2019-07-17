@@ -178,13 +178,15 @@ class NotificationHandler @Inject constructor(
 
     class NotificationsUnseenChangeEvent(var hasUnseen: Boolean)
 
+    class NotificationReceivedEvent(var channel: NotificationChannelType)
+
     /**
      * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
      * necessary because once a channel is created we can't change it, and if we delete the channel and re-create
      * it then it will be re-created with the same settings it previously had (ie: we can't simply have a single
      * channel for orders and add/remove the sound from it)
      */
-    private enum class NotificationChannelType {
+    enum class NotificationChannelType {
         OTHER,
         REVIEW,
         NEW_ORDER,
@@ -276,6 +278,7 @@ class NotificationHandler @Inject constructor(
         showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
 
         setHasUnseenNotifications(true)
+        EventBus.getDefault().post(NotificationReceivedEvent(noteType))
     }
 
     /**
