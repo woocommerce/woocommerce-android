@@ -111,8 +111,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         DASHBOARD_MAIN_STATS_LOADED,
         DASHBOARD_TOP_PERFORMERS_DATE,
         DASHBOARD_TOP_PERFORMERS_LOADED,
-        // TODO: rename this once iOS removes the "unfilled orders" card
-        DASHBOARD_UNFULFILLED_ORDERS_LOADED,
 
         // -- Orders List
         ORDERS_LIST_FILTER,
@@ -248,6 +246,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
 
         // -- Other
+        UNFULFILLED_ORDERS_LOADED,
         TOP_EARNER_PRODUCT_TAPPED
     }
     // endregion
