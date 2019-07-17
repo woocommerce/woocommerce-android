@@ -380,7 +380,7 @@ class OrderDetailPresenterTest {
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
 
-        assertTrue(presenter.isVirtualProduct(order.getLineItemList()))
+        assertTrue(presenter.isVirtualProduct(order))
     }
 
     @Test
@@ -394,7 +394,7 @@ class OrderDetailPresenterTest {
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
 
-        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+        assertFalse(presenter.isVirtualProduct(order))
     }
 
     @Test
@@ -413,7 +413,7 @@ class OrderDetailPresenterTest {
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
 
-        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+        assertFalse(presenter.isVirtualProduct(order))
     }
 
     @Test
@@ -426,7 +426,7 @@ class OrderDetailPresenterTest {
         verify(orderDetailView).showOrderDetail(any(), any())
 
         verify(productStore, times(0)).getProductsByRemoteIds(any(), any())
-        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+        assertFalse(presenter.isVirtualProduct(order))
     }
 
     @Test
@@ -439,7 +439,7 @@ class OrderDetailPresenterTest {
         presenter.loadOrderDetail(orderIdentifier, false)
         verify(orderDetailView).showOrderDetail(any(), any())
 
-        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+        assertFalse(presenter.isVirtualProduct(order))
     }
 
     @Test
