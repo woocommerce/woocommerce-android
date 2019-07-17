@@ -104,7 +104,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         }
 
         val label = if (count > 9) "9+" else count.toString()
-        ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.setText(label)
+        ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.text = label
         if (ordersBadgeView.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(ordersBadgeView, Duration.MEDIUM)
         }
