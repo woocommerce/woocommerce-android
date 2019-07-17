@@ -161,7 +161,6 @@ class MainPresenter @Inject constructor(
                     return
                 }
 
-                // TODO: May want to change the name of this stat
                 AnalyticsTracker.track(
                         Stat.DASHBOARD_UNFULFILLED_ORDERS_LOADED,
                         mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0)))
