@@ -34,8 +34,8 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
-import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
@@ -244,7 +244,7 @@ class MainActivity : AppCompatActivity(),
         val tag = when (bottomNavView.currentPosition) {
             DASHBOARD -> DashboardFragment.TAG
             ORDERS -> OrderListFragment.TAG
-            NOTIFICATIONS -> NotifsListFragment.TAG
+            REVIEWS -> NotifsListFragment.TAG
         }
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
@@ -487,7 +487,7 @@ class MainActivity : AppCompatActivity(),
         val stat = when (navPos) {
             DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
-            NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
+            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -497,7 +497,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         // Update the unseen notifications badge visibility
-        if (navPos == NOTIFICATIONS) {
+        if (navPos == REVIEWS) {
             NotificationHandler.removeAllNotificationsFromSystemBar(this)
         }
     }
@@ -506,7 +506,7 @@ class MainActivity : AppCompatActivity(),
         val stat = when (navPos) {
             DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
-            NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
+            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -542,7 +542,7 @@ class MainActivity : AppCompatActivity(),
                 NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                 // User clicked on a group of notifications. Just show the notifications tab.
-                bottomNavView.currentPosition = NOTIFICATIONS
+                bottomNavView.currentPosition = REVIEWS
             } else if (intent.getBooleanExtra(FIELD_OPENED_FROM_ZENDESK, false)) {
                 // Reset this flag now that it's being processed
                 intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)
@@ -579,7 +579,7 @@ class MainActivity : AppCompatActivity(),
                     NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                     // Just open the notifications tab
-                    bottomNavView.currentPosition = NOTIFICATIONS
+                    bottomNavView.currentPosition = REVIEWS
                 }
             }
         } else {
@@ -598,10 +598,6 @@ class MainActivity : AppCompatActivity(),
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()
-        bottomNavView.currentPosition = NOTIFICATIONS
-
-        val navPos = BottomNavigationPosition.NOTIFICATIONS.position
-        bottom_nav.active(navPos)
 
         (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let { note ->
             when (note.getWooType()) {
@@ -626,6 +622,11 @@ class MainActivity : AppCompatActivity(),
 
     override fun showReviewDetail(notification: NotificationModel, tempStatus: String?) {
         showBottomNav()
+        bottomNavView.currentPosition = REVIEWS
+
+        val navPos = BottomNavigationPosition.REVIEWS.position
+        bottom_nav.active(navPos)
+
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
                 notification.remoteNoteId,
                 notification.getCommentId(),
@@ -635,6 +636,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
+        bottomNavView.currentPosition = ORDERS
+
+        val navPos = BottomNavigationPosition.ORDERS.position
+        bottom_nav.active(navPos)
+
         if (markComplete) {
             // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
             // detail fragment and then show a new one
