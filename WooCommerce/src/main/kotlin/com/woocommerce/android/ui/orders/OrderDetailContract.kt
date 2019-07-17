@@ -33,7 +33,7 @@ interface OrderDetailContract {
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
         fun refreshOrderStatusOptions()
         fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
-        fun isVirtualProduct(lineItems: List<WCOrderModel.LineItem>): Boolean
+        fun isVirtualProduct(order: WCOrderModel): Boolean
     }
 
     interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener,
