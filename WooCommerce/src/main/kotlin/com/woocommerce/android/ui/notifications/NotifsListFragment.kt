@@ -31,8 +31,8 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.AppRatingDialog
-import com.woocommerce.android.widgets.BadgedItemDecoration
-import com.woocommerce.android.widgets.BadgedItemDecoration.ItemDecorationListener
+import com.woocommerce.android.widgets.UnreadItemDecoration
+import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter.Companion.INVALID_POSITION
 import dagger.android.support.AndroidSupportInjection
@@ -138,7 +138,7 @@ class NotifsListFragment : TopLevelFragment(),
 
         notifsAdapter.setListListener(this)
 
-        val unreadDecoration = BadgedItemDecoration(activity as Context, this)
+        val unreadDecoration = UnreadItemDecoration(activity as Context, this)
 
         notifsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
@@ -451,7 +451,7 @@ class NotifsListFragment : TopLevelFragment(),
     /**
      * Determines whether to show the unread indicator item decoration for the passed position
      */
-    override fun getItemTypeAtPosition(position: Int): BadgedItemDecoration.ItemType {
+    override fun getItemTypeAtPosition(position: Int): UnreadItemDecoration.ItemType {
         return notifsAdapter.getItemTypeAtRecyclerPosition(position)
     }
 }

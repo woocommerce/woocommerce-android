@@ -24,7 +24,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.applyTransform
-import com.woocommerce.android.widgets.BadgedItemDecoration.ItemType
+import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
@@ -217,13 +217,13 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
                 currentPos++
             }
             if (currentPos == position) {
-                return if (notif.read) ItemType.UNBADGED else ItemType.BADGED
+                return if (notif.read) ItemType.READ else ItemType.UNREAD
             }
             currentPos++
         }
 
         WooLog.w(T.NOTIFICATIONS, "Failed to get item type at notifs recycler position $position")
-        return ItemType.UNBADGED
+        return ItemType.READ
     }
 
     /**
