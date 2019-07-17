@@ -118,7 +118,7 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
         }
 
         // check if product is a virtual product
-        val isVirtualProduct = presenter.isVirtualProduct(order.getLineItemList())
+        val isVirtualProduct = presenter.isVirtualProduct(order)
 
         // Populate the Customer Information Card
         // hide shipping card if product is virtual or if no shipping address is available
