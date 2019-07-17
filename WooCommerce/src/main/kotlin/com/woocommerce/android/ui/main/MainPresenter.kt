@@ -14,6 +14,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
@@ -171,8 +172,8 @@ class MainPresenter @Inject constructor(
                     mainView?.hideOrderBadge()
                 }
             }
-            UPDATE_ORDER_STATUS -> {
-                // an order's status has changed so re-check the unfilled orders count
+            FETCH_ORDERS, UPDATE_ORDER_STATUS -> {
+                // we just fetched the order list or an order's status changed, so re-check the unfilled orders count
                 WooLog.d(WooLog.T.ORDERS, "Order status changed, re-checking unfilled orders count")
                 fetchUnfilledOrderCount()
             }

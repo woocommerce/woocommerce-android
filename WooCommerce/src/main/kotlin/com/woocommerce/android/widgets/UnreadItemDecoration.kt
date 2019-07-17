@@ -12,8 +12,8 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerVi
 import org.wordpress.android.util.DisplayUtils
 
 /**
- * Item decoration for recycler views which which simply shows a vertical
- * green bar to the left to indicate unread notifs
+ * Item decoration for recycler views which simply shows a vertical green bar to the left to
+ * indicate unread items (such as unread notifications)
  */
 class UnreadItemDecoration(context: Context, val decorListener: ItemDecorationListener) :
         DividerItemDecoration(context, HORIZONTAL) {
