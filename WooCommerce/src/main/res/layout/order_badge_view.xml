@@ -22,6 +22,6 @@
         android:textColor="@color/white"
         android:textSize="9dp"
         android:textStyle="bold"
-        tools:text="9+" />
+        tools:text="99+" />
 
 </FrameLayout>
