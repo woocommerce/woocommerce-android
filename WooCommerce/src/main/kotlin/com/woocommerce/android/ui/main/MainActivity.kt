@@ -635,11 +635,17 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
-        // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
-        // detail fragment and then show a new one
         if (markComplete) {
+            // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
+            // detail fragment and then show a new one
             navController.popBackStack(R.id.orderDetailFragment, true)
+
+            // immediately update the order badge to reflect the change
+            if (unfilledOrderCount > 0) {
+                showOrderBadge(unfilledOrderCount - 1)
+            }
         }
+
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigate(action)
