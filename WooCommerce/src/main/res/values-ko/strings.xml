@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-28 09:55:05+0000
+Translation-Revision-Date: 2019-07-11 00:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="orderdetail_empty_shipping_address">주소가 지정되지 않았습니다.</string>
     <string name="login_need_help_finding_connected_email">연결한 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="enter_wordpress_site">이 주소의 웹사이트는 워드프레스 사이트가 아닙니다. 워드프레스에서 연결하려면 사이트에 워드프레스가 설치되어 있어야 합니다.</string>
     <string name="enter_email_for_site">%1$s에 연결하려면 워드프레스닷컴에 로그인하세요.</string>
@@ -567,7 +568,6 @@ Language: ko_KR
     <string name="settings_third_party_policy_header">타사 정책</string>
     <string name="settings_cookie_policy_header">쿠키 정책</string>
     <string name="settings_privacy_policy_header">개인정보 보호정책</string>
-    <string name="settings_footer">많은 사랑을 받는 Automattic 제품</string>
     <string name="settings_tracking">워드프레스는 타사 제품을 포함한 다른 추적 도구를 사용합니다. 이 도구에 대해 읽고 제어하는 방법에 대해 알아보세요.</string>
     <string name="settings_privacy_policy">개인정보 보호정책 읽기</string>
     <string name="settings_privacy_detail">이 정보는 개인정보 보호정책에 명시된 바와 같이 제품을 개선하고, 더 관련성 높은 마케팅을 제공하며, 우커머스 환경을 개인 설정하는 데 도움을 줍니다.</string>
