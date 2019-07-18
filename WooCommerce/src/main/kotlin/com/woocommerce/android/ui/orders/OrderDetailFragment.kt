@@ -23,6 +23,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -220,7 +221,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             orderDetail_customerInfo.initView(
                     order = order,
                     shippingOnly = false,
-                    billingOnly = presenter.isVirtualProduct(order.getLineItemList()))
+                    billingOnly = presenter.isVirtualProduct(order))
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
@@ -241,7 +242,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun refreshCustomerInfoCard(order: WCOrderModel) {
         // hide the shipping details if products in an order is virtual
-        val hideShipping = presenter.isVirtualProduct(order.getLineItemList())
+        val hideShipping = presenter.isVirtualProduct(order)
         orderDetail_customerInfo.initShippingSection(order, hideShipping)
     }
 
@@ -354,6 +355,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
                 // User canceled the action to change the order status
                 changeOrderStatusCanceled = true
+
+                // if the fulfilled status was undone, tell the main activity to update the unfilled order badge
+                if (newStatus == CoreOrderStatus.COMPLETED.value ||
+                        newStatus == CoreOrderStatus.PROCESSING.value ||
+                        previousOrderStatus == CoreOrderStatus.COMPLETED.value ||
+                        previousOrderStatus == CoreOrderStatus.PROCESSING.value) {
+                    (activity as? MainActivity)?.updateOrderBadge(true)
+                }
 
                 presenter.orderModel?.let { order ->
                     previousOrderStatus?.let { status ->
