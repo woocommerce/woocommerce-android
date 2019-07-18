@@ -35,7 +35,9 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
-        OrderStatusSelectorDialog.OrderStatusDialogListener, OnQueryTextListener, OnActionExpandListener,
+        OrderStatusSelectorDialog.OrderStatusDialogListener,
+        OnQueryTextListener,
+        OnActionExpandListener,
         OnLoadMoreListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
