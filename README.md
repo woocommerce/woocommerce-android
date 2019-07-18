@@ -158,10 +158,10 @@ Usage docs can be found here: [docs.woocommerce.com][woo-docs]
 
 General usage and development questions:
 
-* [WooCommerce Slack Community](https://woocommerce.com/community-slack/)
+* [WooCommerce Slack Community][wc-slack]
 * [WordPress.org Forums](https://wordpress.org/support/plugin/woocommerce)
 * [The WooCommerce Help and Share Facebook group][woo-facebook]
-* Say hello on our [Slack](https://make.wordpress.org/chat/) channel: #mobile
+* Say hello on our [Slack][wc-slack] channel: #mobile
 
 ## License
 
@@ -187,3 +187,4 @@ be covered by a different license compatible with the GPLv2.
 [wp-app]: https://play.google.com/store/apps/details?id=org.wordpress.android
 [wp-com-apps]: https://developer.wordpress.com/apps/
 [wp-fluxc]: https://github.com/wordpress-mobile/WordPress-FluxC-Android
+[wc-slack]: https://woocommerce.com/community-slack/
