@@ -29,6 +29,7 @@ sentry.properties
 
 # Local configuration file (sdk path, etc)
 local.properties
+.markdownlint.json
 
 # IntelliJ/Android Studio project files
 *.iml
