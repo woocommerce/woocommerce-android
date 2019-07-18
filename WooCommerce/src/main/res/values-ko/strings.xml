@@ -289,7 +289,6 @@ Language: ko_KR
     <string name="login_jetpack_view_instructions">지침 보기</string>
     <string name="login_jetpack_required_msg">WooCommerce 앱을 사용하려면 사이트에서 Jetpack 플러그인을 설정해야 합니다.</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
-    <string name="login_not_woo_store">%1$s은(는) WooCommerce 사이트가 아닌 것 같습니다. 계속하려면 사이트에 WooCommerce 플러그인을 설치한 다음 이 앱을 새로 고치세요.</string>
     <string name="login_try_another_account">다른 계정 사용해 보기</string>
     <string name="login_not_connected_to_account">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
     <string name="login">로그인</string>
@@ -569,7 +568,6 @@ Language: ko_KR
     <string name="settings_third_party_policy_header">타사 정책</string>
     <string name="settings_cookie_policy_header">쿠키 정책</string>
     <string name="settings_privacy_policy_header">개인정보 보호정책</string>
-    <string name="settings_footer">많은 사랑을 받는 Automattic 제품</string>
     <string name="settings_tracking">워드프레스는 타사 제품을 포함한 다른 추적 도구를 사용합니다. 이 도구에 대해 읽고 제어하는 방법에 대해 알아보세요.</string>
     <string name="settings_privacy_policy">개인정보 보호정책 읽기</string>
     <string name="settings_privacy_detail">이 정보는 개인정보 보호정책에 명시된 바와 같이 제품을 개선하고, 더 관련성 높은 마케팅을 제공하며, 우커머스 환경을 개인 설정하는 데 도움을 줍니다.</string>

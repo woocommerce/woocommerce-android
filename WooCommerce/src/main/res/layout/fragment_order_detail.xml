@@ -1,87 +1,88 @@
-<androidx.core.widget.NestedScrollView
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
+    android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_window_background"
     tools:context="com.woocommerce.android.ui.orders.OrderDetailFragment">
 
-    <FrameLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:background="@color/default_window_background">
 
-        <ProgressBar
-            android:id="@+id/loadingProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:visibility="gone"
-            android:layout_marginTop="@dimen/margin_large"/>
-
-        <LinearLayout
-            android:id="@+id/orderDetail_container"
+        <!-- The FrameLayout is needed to display the skeleton view dynamically -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <!-- Order Status -->
-            <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
-                android:id="@+id/orderDetail_orderStatus"
-                style="@style/Woo.Card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <!-- Product List -->
-            <com.woocommerce.android.ui.orders.OrderDetailProductListView
-                android:id="@+id/orderDetail_productList"
-                style="@style/Woo.Card.List"
+            <LinearLayout
+                android:id="@+id/orderDetail_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:contentDescription="@string/products"/>
+                android:orientation="vertical"
+                tools:ignore="UselessParent">
 
-            <!-- Customer Note -->
-            <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
-                android:id="@+id/orderDetail_customerNote"
-                style="@style/Woo.Card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <!-- Order Status -->
+                <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
+                    android:id="@+id/orderDetail_orderStatus"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <!-- Customer Info -->
-            <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
-                android:id="@+id/orderDetail_customerInfo"
-                style="@style/Woo.Card.Expandable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <!-- Product List -->
+                <com.woocommerce.android.ui.orders.OrderDetailProductListView
+                    android:id="@+id/orderDetail_productList"
+                    style="@style/Woo.Card.List"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:contentDescription="@string/products"/>
 
-            <!-- Payments -->
-            <com.woocommerce.android.ui.orders.OrderDetailPaymentView
-                android:id="@+id/orderDetail_paymentInfo"
-                style="@style/Woo.Card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:focusable="true"/>
+                <!-- Customer Note -->
+                <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
+                    android:id="@+id/orderDetail_customerNote"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <!-- Shipment Tracking -->
-            <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
-                android:id="@+id/orderDetail_shipmentList"
-                style="@style/Woo.Card.List"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingBottom="0dp"
-                android:contentDescription="@string/order_shipment_tracking_section_cd"
-                android:visibility="gone"
-                tools:visibility="visible"/>
+                <!-- Customer Info -->
+                <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
+                    android:id="@+id/orderDetail_customerInfo"
+                    style="@style/Woo.Card.Expandable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <!-- Order Notes -->
-            <com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView
-                android:id="@+id/orderDetail_noteList"
-                style="@style/Woo.Card.List"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-    </FrameLayout>
-</androidx.core.widget.NestedScrollView>
+                <!-- Payments -->
+                <com.woocommerce.android.ui.orders.OrderDetailPaymentView
+                    android:id="@+id/orderDetail_paymentInfo"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:focusable="true"/>
+
+                <!-- Shipment Tracking -->
+                <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
+                    android:id="@+id/orderDetail_shipmentList"
+                    style="@style/Woo.Card.List"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:contentDescription="@string/order_shipment_tracking_section_cd"
+                    android:paddingBottom="0dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+
+                <!-- Order Notes -->
+                <com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView
+                    android:id="@+id/orderDetail_noteList"
+                    style="@style/Woo.Card.List"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
+</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

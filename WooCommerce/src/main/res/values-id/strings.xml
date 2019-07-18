@@ -289,7 +289,6 @@ Language: id
     <string name="login_jetpack_view_instructions">Lihat instruksi</string>
     <string name="login_jetpack_required_msg">Untuk menggunakan aplikasi WooCommerce, Anda perlu menyiapkan plugin Jetpack di situs Anda</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
-    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu segarkan aplikasi ini untuk melanjutkan.</string>
     <string name="login_try_another_account">Coba akun lain</string>
     <string name="login_not_connected_to_account">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
     <string name="login">Login</string>
@@ -569,7 +568,6 @@ Language: id
     <string name="settings_third_party_policy_header">Kebijakan Pihak Ketiga</string>
     <string name="settings_cookie_policy_header">Kebijakan Cookie</string>
     <string name="settings_privacy_policy_header">Kebijakan Privasi</string>
-    <string name="settings_footer">Dibuat dengan penuh cinta oleh Automattic</string>
     <string name="settings_tracking">Kami menggunakan alat pelacakan lainnya, termasuk beberapa dari pihak ketiga. Baca tentang hal ini dan cara mengontrolnya.</string>
     <string name="settings_privacy_policy">Baca kebijakan privasi</string>
     <string name="settings_privacy_detail">Informasi ini membantu kami menyempurnakan produk, membuat pemasaran kepada Anda jadi lebih relevan, menyesuaikan pengalaman WooCommerce Anda, dan lainnya seperti yang dijelaskan dalam kebijakan privasi kami</string>

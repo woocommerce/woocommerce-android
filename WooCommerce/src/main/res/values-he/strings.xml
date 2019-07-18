@@ -289,7 +289,6 @@ Language: he_IL
     <string name="login_jetpack_view_instructions">לעיון בהוראות</string>
     <string name="login_jetpack_required_msg">כדי להשתמש באפליקציה של Woocommerce עליך להגדיר את התוסף של Jetpack באתר שלך</string>
     <string name="login_view_connected_stores">להצגת החנויות המחוברות</string>
-    <string name="login_not_woo_store">נראה שהאתר %1$s אינו אתר של WooCommerce. יש להתקין את התוסף של Woocommerce באתר שלך ולאחר מכן לרענן את האפליקציה כדי להמשיך.</string>
     <string name="login_try_another_account">יש לנסות חשבון אחר</string>
     <string name="login_not_connected_to_account">נראה ששם המשתמש %1$s מחובר לחשבון אחר ב-WordPress.com.</string>
     <string name="login">התחברות</string>
@@ -569,7 +568,6 @@ Language: he_IL
     <string name="settings_third_party_policy_header">מדיניות של צד שלישי</string>
     <string name="settings_cookie_policy_header">מדיניות קובצי ה-Cookie</string>
     <string name="settings_privacy_policy_header">מדיניות פרטיות</string>
-    <string name="settings_footer">נוצר באהבה על ידי Automattic</string>
     <string name="settings_tracking">אנחנו משתמשים בכלים נוספים למעקב, כולל כלים של צד שלישי. אפשר לקרוא פרטים על אלו ועל אופן השליטה בהם.</string>
     <string name="settings_privacy_policy">עיון במדיניות פרטיות</string>
     <string name="settings_privacy_detail">המידע הזה עוזר לנו לשפר את המוצרים שלנו, להציג שיווק רלוונטי יותר, לספק לך חוויית שימוש אישית ב-WooCommerce ועוד, כפי שמפורט במדיניות הפרטיות שלנו</string>

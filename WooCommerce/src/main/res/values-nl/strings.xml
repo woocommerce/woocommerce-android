@@ -289,7 +289,6 @@ Language: nl
     <string name="login_jetpack_view_instructions">Instructies bekijken</string>
     <string name="login_jetpack_required_msg">Om de WooCommerce-app te kunnen gebruiken, moet je de Jetpack-plugin op je site installeren</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
-    <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is. Installeer de WooCommerce-plugin op je site en vernieuw vervolgens deze app om door te gaan.</string>
     <string name="login_try_another_account">Een ander account proberen</string>
     <string name="login_not_connected_to_account">Het lijkt erop dat %1$s is verbonden met een ander WordPress.com-account.</string>
     <string name="login">Inloggen</string>
@@ -569,7 +568,6 @@ Language: nl
     <string name="settings_third_party_policy_header">Beleid van derden</string>
     <string name="settings_cookie_policy_header">Cookiebeleid</string>
     <string name="settings_privacy_policy_header">Privacybeleid</string>
-    <string name="settings_footer">Met liefde gemaakt door Automattic</string>
     <string name="settings_tracking">We gebruiken ook andere tracking-tools, waaronder een aantal van derden. Bekijk meer informatie over deze tools en hoe je ze kunt beheren.</string>
     <string name="settings_privacy_policy">Privacybeleid lezen</string>
     <string name="settings_privacy_detail">Deze informatie helpt ons onze producten te verbeteren, marketing relevanter te maken en de WooCommerce-ervaring op je af te stemmen. Je vindt hierover meer informatie in ons privacybeleid.</string>

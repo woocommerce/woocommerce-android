@@ -36,7 +36,6 @@ import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
@@ -48,7 +47,6 @@ import javax.inject.Singleton
 
 @Singleton
 class NotificationHandler @Inject constructor(
-    private val siteStore: SiteStore,
     private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
     private val dispatcher: Dispatcher
 ) {
@@ -57,6 +55,10 @@ class NotificationHandler @Inject constructor(
 
         private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
         private const val PUSH_NOTIFICATION_ID = 10000
+
+        // All Zendesk push notifications will show the same notification, so hopefully this will be a unique ID
+        private const val ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
+
         const val GROUP_NOTIFICATION_ID = 30000
         private const val MAX_INBOX_ITEMS = 5
 
@@ -70,7 +72,7 @@ class NotificationHandler @Inject constructor(
         const val PUSH_TYPE_COMMENT = "c"
         const val PUSH_TYPE_NEW_ORDER = "store_order"
 
-        @Synchronized fun hasNotifications() = !ACTIVE_NOTIFICATIONS_MAP.isEmpty()
+        @Synchronized fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
 
         @Synchronized fun clearNotifications() {
             ACTIVE_NOTIFICATIONS_MAP.clear()
@@ -185,7 +187,7 @@ class NotificationHandler @Inject constructor(
     private enum class NotificationChannelType {
         OTHER,
         REVIEW,
-        NEW_ORDER
+        NEW_ORDER,
     }
 
     @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
@@ -223,7 +225,7 @@ class NotificationHandler @Inject constructor(
 
         // Build notification from message data, save to the database, and send request to
         // fetch the actual notification from the api.
-        NotificationsUtils.buildNotificationModelFromBundle(siteStore, data)?.let {
+        NotificationsUtils.buildNotificationModelFromBundle(data)?.let {
             // Save temporary notification to the database.
             dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(it))
 
@@ -553,5 +555,26 @@ class NotificationHandler @Inject constructor(
             // see https://github.com/woocommerce/woocommerce-android/issues/920
             WooLog.e(T.NOTIFS, e)
         }
+    }
+
+    /**
+     * Shows a notification stating that the user has a reply pending from Zendesk. Since Zendesk always sends a
+     * notification with the same title and message, we use our own localized messaging. For the same reason,
+     * we use a static push notification ID. Tapping on the notification will open the `My Tickets` page.
+     */
+    fun handleZendeskNotification(context: Context) {
+        val title = context.getString(R.string.support_push_notification_title)
+        val message = context.getString(R.string.support_push_notification_message)
+
+        val resultIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
+            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, ZENDESK_PUSH_NOTIFICATION_ID)
+            putExtra(MainActivity.FIELD_OPENED_FROM_ZENDESK, true)
+        }
+
+        // Build the new notification, add group to support wearable stacking
+        val builder = getNotificationBuilder(context, OTHER, title, message)
+        showNotificationForBuilder(builder, context, resultIntent, ZENDESK_PUSH_NOTIFICATION_ID)
     }
 }

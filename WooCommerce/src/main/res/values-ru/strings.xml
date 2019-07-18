@@ -289,7 +289,6 @@ Language: ru
     <string name="login_jetpack_view_instructions">Открыть инструкции</string>
     <string name="login_jetpack_required_msg">Чтобы использовать приложение WooCommerce необходимо настроить плагин Jetpack на своем сайте.</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
-    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт и обновите страницу в приложении, чтобы продолжить.</string>
     <string name="login_try_another_account">Используйте другую учётную запись</string>
     <string name="login_not_connected_to_account">Похоже, что %1$s подключен к другой учетной записи WordPress.com.</string>
     <string name="login">Войти</string>
@@ -569,7 +568,6 @@ Language: ru
     <string name="settings_third_party_policy_header">Политика сторонней организации</string>
     <string name="settings_cookie_policy_header">Политика использования файлов cookie</string>
     <string name="settings_privacy_policy_header">Политика конфиденциальности</string>
-    <string name="settings_footer">Сделано с любовью компанией Automattic</string>
     <string name="settings_tracking">Мы используем и другие средства сбора информации, в том числе средства сторонних разработчиков. Ознакомьтесь с этими средствами и способами управления ими.</string>
     <string name="settings_privacy_policy">Ознакомьтесь с политикой конфиденциальности</string>
     <string name="settings_privacy_detail">Эти сведения помогают нам улучшать продукты, предлагать более полезную рекламу, настраивать WooCommerce согласно вашим предпочтениям и решать другие задачи. Дополнительную информацию см. в политике конфиденциальности</string>

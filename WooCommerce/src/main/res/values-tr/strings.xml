@@ -289,7 +289,6 @@ Language: tr
     <string name="login_jetpack_view_instructions">Talimatları görüntüle</string>
     <string name="login_jetpack_required_msg">WooCommerce uygulamasını kullanmak için sitenize Jetpack eklentisini kurmanız gerekir</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
-    <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Sitenize WooCommerce eklentisini yükleyin ve devam etmek için bu uygulamayı yenileyin.</string>
     <string name="login_try_another_account">Farklı bir hesap deneyin</string>
     <string name="login_not_connected_to_account">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
     <string name="login">Oturum aç</string>
@@ -569,7 +568,6 @@ Language: tr
     <string name="settings_third_party_policy_header">Üçüncü Taraf Politikası</string>
     <string name="settings_cookie_policy_header">Tanımlama Bilgisi Politikası</string>
     <string name="settings_privacy_policy_header">Gizlilik Politikası</string>
-    <string name="settings_footer">Automattic tarafından sevgiyle yapıldı</string>
     <string name="settings_tracking">Üçüncü taraflara ait olanlar dahil diğer izleme araçlarını kullanıyoruz. Bunlar ve nasıl kontrol edilecekleri hakkında bilgi alın.</string>
     <string name="settings_privacy_policy">Gizlilik politikasını okuyun</string>
     <string name="settings_privacy_detail">Bu bilgi ürünlerimizi iyileştirmemize, size daha uygun pazarlama yapmamıza, WooCommerce deneyiminizi kişiselleştirmemize ve gizlilik politikamızda belirtildiği gibi daha fazlasına yardımcı olur.</string>
