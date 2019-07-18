@@ -31,6 +31,6 @@ interface MainContract {
         fun updateNotificationBadge()
         fun hideOrderBadge()
         fun showOrderBadge(count: Int)
-        fun updateOrderBadge()
+        fun updateOrderBadge(hideCountUntilComplete: Boolean)
     }
 }

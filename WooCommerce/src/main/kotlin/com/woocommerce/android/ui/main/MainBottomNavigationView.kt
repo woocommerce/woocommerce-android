@@ -33,6 +33,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private lateinit var listener: MainNavigationListener
     private lateinit var notifsBadgeView: View
     private lateinit var ordersBadgeView: View
+    private lateinit var ordersBadgeTextView: TextView
 
     companion object {
         private var previousNavPos: BottomNavigationPosition? = null
@@ -61,6 +62,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         val ordersItemView = menuView.getChildAt(ORDERS.position) as BottomNavigationItemView
         ordersBadgeView = inflater.inflate(R.layout.order_badge_view, menuView, false)
+        ordersBadgeTextView = ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)
         ordersItemView.addView(ordersBadgeView)
 
         val notifsItemView = menuView.getChildAt(NOTIFICATIONS.position) as BottomNavigationItemView
@@ -106,9 +108,18 @@ class MainBottomNavigationView @JvmOverloads constructor(
         }
 
         val label = if (count > ORDER_BADGE_MAX) ORDER_BADGE_MAX_LABEL else count.toString()
-        ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)?.text = label
+        ordersBadgeTextView.text = label
         if (ordersBadgeView.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(ordersBadgeView, Duration.MEDIUM)
+        }
+    }
+
+    /**
+     * If the order badge is showing, hide the TextView which shows the order count
+     */
+    fun hideOrderBadgeCount() {
+        if (ordersBadgeView.visibility == View.VISIBLE) {
+            ordersBadgeTextView.text = null
         }
     }
 

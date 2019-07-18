@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity(),
         AnalyticsTracker.trackViewShown(this)
 
         updateNotificationBadge()
-        updateOrderBadge()
+        updateOrderBadge(false)
 
         checkConnection()
     }
@@ -469,7 +469,10 @@ class MainActivity : AppCompatActivity(),
         bottomNavView.showNotificationBadge(true)
     }
 
-    override fun updateOrderBadge() {
+    override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
+        if (hideCountUntilComplete) {
+            bottomNavView.hideOrderBadgeCount()
+        }
         presenter.fetchUnfilledOrderCount()
     }
 

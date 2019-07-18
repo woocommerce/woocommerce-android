@@ -23,6 +23,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -362,6 +363,10 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     }
                     previousOrderStatus = null
                 }
+
+                // tell the main activity to update the order badge to make sure it shows an
+                // accurate unfilled order count
+                (activity as? MainActivity)?.updateOrderBadge(true)
             }
 
             // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
