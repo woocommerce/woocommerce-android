@@ -5,7 +5,7 @@
 Jetpack-powered WooCommerce Android app codenamed Dervish. If you're just looking to install WooCommerce for Android, you can find
 it on [Google Play][woo-app]. If you're a developer wanting to contribute, read on.
 
-## Contents ##
+## Contents
 
 * [Setup Instructions](#setup-instructions)
 * [Build & Test](#build--test)
@@ -16,50 +16,52 @@ it on [Google Play][woo-app]. If you're a developer wanting to contribute, read 
   * [Using ktlint](#using-ktlint)
   * [Google Configuration](#google-configuration)
 * [Security](#security)
-* [Need Help?](#need-help)
+* [Help & Support](#help--support)
 * [License](#license)
 
-
-## Setup Instructions ##
+## Setup Instructions
 
 1. Make sure you've installed [Android Studio][studio].
-2. Clone this repository in the folder of your preference, and then enter that folder:
-```
-$ git clone https://github.com/woocommerce/woocommerce-android.git
-$ cd woocommerce-android
-```
+1. Clone this repository in the folder of your preference, and then enter that folder:
 
-3. Generate the developer oauth2 tokens. These values get copied into the main `gradle.properties` file in the next step. See the [OAuth2 Authentication](#oauth2-authentication) section for details.
-4. Generate the `gradle.properties` file for this app:
-```
-$ cp ./gradle.properties-example ./gradle.properties
-```
+    ```bash
+    $ git clone https://github.com/woocommerce/woocommerce-android.git
+    $ cd woocommerce-android
+    ```
 
-5. Generate the `gradle.properties` file for the [Login Library][login-lib] dependency:
-```
-$ cp ./libs/login/gradle.properties-example ./libs/login/gradle.properties
-```
+1. Generate the developer oauth2 tokens. These values get copied into the main `gradle.properties` file in the next step. See the [OAuth2 Authentication](#oauth2-authentication) section for details.
+1. Generate the `gradle.properties` file for this app:
 
-6. Open and modify the newly created `gradle.properties` files. See the [Configuration Files](#configuration-files) section for a breakdown of the properties.
-7. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
-8. Go to Tools → AVD Manager and create an emulated device.
-9. Run.
+    ```bash
+    $ cp ./gradle.properties-example ./gradle.properties
+    ```
 
-## Build & Test ##
+1. Generate the `gradle.properties` file for the [Login Library][login-lib] dependency:
+
+    ```bash
+    $ cp ./libs/login/gradle.properties-example ./libs/login/gradle.properties
+    ```
+
+1. Open and modify the newly created `gradle.properties` files. See the [Configuration Files](#configuration-files) section for a breakdown of the properties.
+1. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
+1. Go to Tools → AVD Manager and create an emulated device.
+1. Run.
+
+## Build & Test
 
 To build, install, and test the project from the command line:
+
+```bash
+$ ./gradlew assembleVanillaDebug                          # assemble the debug .apk
+$ ./gradlew installVanillaDebug                           # install the debug apk if you have an
+                                                          # emulator or a device connected
+$ ./gradlew :WooCommerce:testVanillaDebugUnitTest         # assemble, install and run unit tests
+$ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install and run Android tests
 ```
-    $ ./gradlew assembleVanillaDebug                          # assemble the debug .apk
-    $ ./gradlew installVanillaDebug                           # install the debug apk if you have an
-                                                              # emulator or a device connected
-    $ ./gradlew :WooCommerce:testVanillaDebugUnitTest         # assemble, install and run unit tests
-    $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install and run Android tests
-```
 
-## Project Overview ##
+## Project Overview
 
-
-### OAuth2 Authentication ##
+### OAuth2 Authentication
 
 The WooCommerce for Android app connects to stores via WordPress.com APIs so if a WooCommerce store is not hosted on WordPress.com, it will require the [Jetpack plugin][jetpack] to setup a common interface for communicating with a self-hosted store. In order to use these APIs, you will need a client ID and a client secret key. These details will be
 used to authenticate your application and verify that the API calls being
@@ -68,7 +70,7 @@ applications with our [WordPress.com applications manager][wp-com-apps].
 
 When creating your application, you should select "**Native client**" for the application type.
 The "**Website URL**", "**Redirect URLs**", and "**Javascript Origins**" fields are required but not used for
-the mobile apps. Just use "**https://localhost**".
+the mobile apps. Just use "**[https://localhost](https://localhost)**".
 
 Once you've created your application in the [applications manager][wp-com-apps], you'll
 need to edit the `./gradle.properties` file and change the
@@ -89,8 +91,9 @@ builds when using a WordPress.com account with 2-factor authentication enabled.
 
 Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
-### Configuration Files ##
-#### Main `gradle.properties`:
+### Configuration Files
+
+#### Main `gradle.properties`
 
 | Property                   | Description |
 |:---------------------------|:------------|
@@ -103,6 +106,7 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 | wc.sentry.dsn              | Used for Sentry integration. Can be ignored.|
 
 #### Login library `gradle.properties`
+
 | Property                   | Description |
 |:---------------------------|:------------|
 | wp.debug.wpcom_login_email |Optional: used to autofill email during login on debug build only|
@@ -110,9 +114,9 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 |wp.debug.wpcom_login_password|Optional: used to autofill password during login on debug build only|
 |wp.debug.wpcom_website_url|Optional: used to autofill store url during login on debug build only|
 
-### Setting up Checkstyle ##
+### Setting up Checkstyle
 
-The woocommerce-android project uses [Checkstyle][checkstyle]. You can run checkstyle using `./gradlew checkstyle`.  You can also view errors and warnings in realtime with the Checkstyle plugin.  When importing the project into Android Studio, Checkstyle should be set up automatically.  If it is not, follow the steps below.
+The woocommerce-android project uses [Checkstyle][checkstyle]. You can run checkstyle using `./gradlew checkstyle`. You can also view errors and warnings in realtime with the Checkstyle plugin.  When importing the project into Android Studio, Checkstyle should be set up automatically. If it is not, follow the steps below.
 
 You can install the CheckStyle-IDEA plugin in Android Studio here:
 
@@ -124,11 +128,11 @@ Once installed, you can configure the plugin here:
 
 From there, add and enable the configuration file for woocommerce-android, located at [config/checkstyle.xml](https://github.com/woocommerce/woocommerce-android/blob/develop/config/checkstyle.xml).
 
-### Using ktlint ##
+### Using ktlint
 
 The woocommerce-android project uses [ktlint][ktlint] for Kotlin linting. You can run ktlint using `./gradlew ktlint`, and you can also run `./gradlew ktlintFormat` for auto-formatting. There is no IDEA plugin (like Checkstyle's) at this time.
 
-### Google Configuration ##
+### Google Configuration
 
 Google Sign-In is only available for WordPress.com accounts through the [official app][woo-app].
 Contributors can build and run the app without issue, but Google Sign-In will always fail.
@@ -148,7 +152,7 @@ If you happen to find a security vulnerability, we would appreciate you letting 
 * [FluxC Library (Github)][wp-fluxc]
 * [Login Library (Github)][login-lib]
 
-## Need Help? ##
+## Help & Support
 
 Usage docs can be found here: [docs.woocommerce.com][woo-docs]
 
@@ -159,7 +163,7 @@ General usage and development questions:
 * [The WooCommerce Help and Share Facebook group][woo-facebook]
 * Say hello on our [Slack](https://make.wordpress.org/chat/) channel: #mobile
 
-## License ##
+## License
 
 WooCommerce for Android is an Open Source project covered by the
 [GNU General Public License version 2](LICENSE). Note: code
