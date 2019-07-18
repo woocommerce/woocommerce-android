@@ -356,6 +356,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 // User canceled the action to change the order status
                 changeOrderStatusCanceled = true
 
+                // if the fulfilled status was undone, tell the main activity to update the unfilled order badge
+                if (newStatus == CoreOrderStatus.COMPLETED.value ||
+                        newStatus == CoreOrderStatus.PROCESSING.value ||
+                        previousOrderStatus == CoreOrderStatus.COMPLETED.value ||
+                        previousOrderStatus == CoreOrderStatus.PROCESSING.value) {
+                    (activity as? MainActivity)?.updateOrderBadge(true)
+                }
+
                 presenter.orderModel?.let { order ->
                     previousOrderStatus?.let { status ->
                         order.status = status
@@ -363,10 +371,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     }
                     previousOrderStatus = null
                 }
-
-                // tell the main activity to update the order badge to make sure it shows an
-                // accurate unfilled order count
-                (activity as? MainActivity)?.updateOrderBadge(true)
             }
 
             // Callback listens for the snackbar to be dismissed. If the swiped to dismiss, or it
