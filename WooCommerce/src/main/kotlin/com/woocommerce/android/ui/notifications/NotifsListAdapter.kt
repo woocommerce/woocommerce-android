@@ -201,8 +201,8 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
     }
 
     /**
-     * Returns the type of item at the passed position for use so the badged item decoration
-     * can badge unread items
+     * Returns the type of item at the passed position for use so the item decoration
+     * can draw a bar beside unread items
      *
      * @param position position of the item in the recycler
      */
