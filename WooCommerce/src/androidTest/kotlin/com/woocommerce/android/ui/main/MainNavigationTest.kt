@@ -95,7 +95,7 @@ class MainNavigationTest : TestBase() {
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
 
-        // Select the revies bottom bar option
+        // Select the reviews bottom bar option
         onView(withId(R.id.reviews)).perform(click())
 
         // Verify the toolbar title has changed to Reviews
