@@ -1,2 +1,3 @@
-* Fixed a bug where the notifications list didn’t display anything after you logged out and back into the app.
-* Improved how the order detail screen displays when there’s no shipping or billing info.
+* Have an idea for a new feature? Request it right from your Settings page.
+* There’s a “Copy tracking number” link in the tracking popup menu in the order details, so sharing tracking info is easier.
+* Bug squashing: We fixed a problem that caused virtual orders to display shipping details, and sites with redirects can now log in without issue.
