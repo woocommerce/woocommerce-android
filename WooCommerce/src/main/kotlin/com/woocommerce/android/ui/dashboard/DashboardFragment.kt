@@ -15,17 +15,13 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.WooAnimUtils.Duration
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
@@ -35,7 +31,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         const val STATE_KEY_TAB_STATS = "tab-stats-state"
         const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-        const val STATE_KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
         fun newInstance() = DashboardFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
@@ -48,7 +43,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
-    private var unfilledOrderCount = 0
 
     // If false, the fragment will refresh its data when it's visible on onHiddenChanged
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
@@ -59,7 +53,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -94,14 +88,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
             dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
-
-            // if unfilled orders card was previously showing, make it visible so it doesn't
-            // re-animate in every time the fragment is restored
-            unfilledOrderCount = bundle.getInt(STATE_KEY_UNFILLED_ORDER_COUNT)
-            if (unfilledOrderCount > 0) {
-                dashboard_unfilled_orders.visibility = View.VISIBLE
-                showUnfilledOrdersCard(unfilledOrderCount)
-            }
         }
 
         presenter.takeView(this)
@@ -118,12 +104,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
-
-        dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
-            override fun onViewOrdersClicked() {
-                (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
-            }
-        })
 
         scroll_view.setOnScrollChangeListener {
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
@@ -177,7 +157,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putInt(STATE_KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
         outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
     }
@@ -269,7 +248,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 }
                 presenter.loadStats(dashboard_stats.activeGranularity, forced)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
-                presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
             }
             else -> isRefreshPending = true
@@ -284,10 +262,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_top_earners.showSkeleton(show)
     }
 
-    override fun showUnfilledOrdersSkeleton(show: Boolean) {
-        dashboard_unfilled_orders.showSkeleton(show)
-    }
-
     override fun onRequestLoadStats(period: StatsGranularity) {
         dashboard_stats.showErrorView(false)
         presenter.loadStats(period)
@@ -300,21 +274,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
         (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
-    }
-
-    override fun hideUnfilledOrdersCard() {
-        unfilledOrderCount = 0
-        if (dashboard_unfilled_orders.visibility == View.VISIBLE) {
-            WooAnimUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)
-        }
-    }
-
-    override fun showUnfilledOrdersCard(count: Int) {
-        unfilledOrderCount = count
-        dashboard_unfilled_orders.updateOrdersCount(count)
-        if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
-            WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
-        }
     }
 
     override fun showEmptyView(show: Boolean) {

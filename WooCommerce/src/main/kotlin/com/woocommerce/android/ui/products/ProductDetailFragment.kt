@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
@@ -44,7 +45,7 @@ import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 
-class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailContract.View, RequestListener<Drawable> {
+class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, RequestListener<Drawable> {
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -57,7 +58,6 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var productTitle = ""
-    private var activityTitle = ""
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
@@ -68,11 +68,6 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        activity?.let {
-            activityTitle = it.title.toString()
-        }
-
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
@@ -82,9 +77,8 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     }
 
     override fun onDestroyView() {
-        activity?.let {
-            it.title = activityTitle
-        }
+        // hide the skeleton view if fragment is destroyed
+        skeletonView.hide()
         presenter.dropView()
         super.onDestroyView()
     }
@@ -140,6 +134,8 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         }
     }
 
+    override fun getFragmentTitle() = productTitle
+
     override fun showProduct(product: WCProductModel) {
         if (!isAdded) return
 
@@ -156,7 +152,7 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
             }
         }
 
-        activity?.title = productTitle
+        updateActivityTitle()
 
         isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
 
@@ -537,14 +533,18 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         isFirstResource: Boolean
     ): Boolean {
         productImageUrl?.let { imageUrl ->
-            productDetail_image.setOnClickListener {
-                AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                ImageViewerActivity.show(
-                        activity!!,
-                        imageUrl,
-                        title = productTitle,
-                        sharedElement = productDetail_image
-                )
+            // this is added to avoid nullPointerException when user clicks the back button exactly when this method
+            // is called. In that case, the productDetail_image will be null.
+            productDetail_image?.let { imageView ->
+                imageView.setOnClickListener {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+                    ImageViewerActivity.show(
+                            activity!!,
+                            imageUrl,
+                            title = productTitle,
+                            sharedElement = imageView
+                    )
+                }
             }
         }
         return false

@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -209,6 +210,14 @@ class OrderDetailPresenter @Inject constructor(
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
     }
+
+    /**
+     * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
+     * and if product exists in the local cache.
+     */
+    override fun isVirtualProduct(order: WCOrderModel) = isVirtualProduct(
+            selectedSite.get(), order.getLineItemList(), productStore
+    )
 
     override fun doChangeOrderStatus(newStatus: String) {
         if (!networkStatus.isConnected()) {
@@ -473,6 +482,10 @@ class OrderDetailPresenter @Inject constructor(
         // product was just fetched, show its image
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
             orderView?.refreshProductImages()
+            // Refresh the customer info section, once the product information becomes available
+            orderModel?.let {
+                orderView?.refreshCustomerInfoCard(it)
+            }
         }
     }
 

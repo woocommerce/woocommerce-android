@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 07:54:56+0000
+Translation-Revision-Date: 2019-07-09 07:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="orderdetail_empty_shipping_address">Keine Adresse angegeben.</string>
     <string name="login_need_help_finding_connected_email">Benötigst du Hilfe bei der Suche nach der E-Mail-Adresse, mit der du dich verbunden hast?</string>
     <string name="enter_wordpress_site">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
     <string name="enter_email_for_site">Melde dich bei WordPress.com an, um dich mit %1$s zu verbinden.</string>
@@ -567,7 +568,6 @@ Language: de
     <string name="settings_third_party_policy_header">Drittanbieter-Erklärung</string>
     <string name="settings_cookie_policy_header">Cookie-Richtlinie</string>
     <string name="settings_privacy_policy_header">Datenschutzerklärung</string>
-    <string name="settings_footer">Von Automattic entwickelt</string>
     <string name="settings_tracking">Wir verwenden andere Tools zum Tracking, darunter auch solche von Drittanbietern. Hier erhältst du weitere Informationen und Tipps, wie du sie kontrollierst.</string>
     <string name="settings_privacy_policy">Datenschutzerklärung lesen</string>
     <string name="settings_privacy_detail">Diese Informationen helfen uns dabei, unsere Produkte zu verbessern, Marketing besser auf dich zuzuschneiden, deine Erfahrung mit WooCommerce zu personalisieren und mehr. All das kannst du auch in unserer Datenschutzerklärung nachlesen.</string>

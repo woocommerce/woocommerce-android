@@ -19,6 +19,7 @@ interface OrderFulfillmentContract {
         fun getShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel>
         fun markOrderComplete()
         fun deleteOrderShipmentTracking(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel)
+        fun isVirtualProduct(order: WCOrderModel): Boolean
     }
 
     interface View : BaseView<Presenter>, OrderProductActionListener, OrderShipmentTrackingActionListener {

@@ -55,6 +55,10 @@ class NotificationHandler @Inject constructor(
 
         private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
         private const val PUSH_NOTIFICATION_ID = 10000
+
+        // All Zendesk push notifications will show the same notification, so hopefully this will be a unique ID
+        private const val ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
+
         const val GROUP_NOTIFICATION_ID = 30000
         private const val MAX_INBOX_ITEMS = 5
 
@@ -174,16 +178,18 @@ class NotificationHandler @Inject constructor(
 
     class NotificationsUnseenChangeEvent(var hasUnseen: Boolean)
 
+    class NotificationReceivedEvent(var channel: NotificationChannelType)
+
     /**
      * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
      * necessary because once a channel is created we can't change it, and if we delete the channel and re-create
      * it then it will be re-created with the same settings it previously had (ie: we can't simply have a single
      * channel for orders and add/remove the sound from it)
      */
-    private enum class NotificationChannelType {
+    enum class NotificationChannelType {
         OTHER,
         REVIEW,
-        NEW_ORDER
+        NEW_ORDER,
     }
 
     @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
@@ -272,6 +278,7 @@ class NotificationHandler @Inject constructor(
         showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
 
         setHasUnseenNotifications(true)
+        EventBus.getDefault().post(NotificationReceivedEvent(noteType))
     }
 
     /**
@@ -551,5 +558,26 @@ class NotificationHandler @Inject constructor(
             // see https://github.com/woocommerce/woocommerce-android/issues/920
             WooLog.e(T.NOTIFS, e)
         }
+    }
+
+    /**
+     * Shows a notification stating that the user has a reply pending from Zendesk. Since Zendesk always sends a
+     * notification with the same title and message, we use our own localized messaging. For the same reason,
+     * we use a static push notification ID. Tapping on the notification will open the `My Tickets` page.
+     */
+    fun handleZendeskNotification(context: Context) {
+        val title = context.getString(R.string.support_push_notification_title)
+        val message = context.getString(R.string.support_push_notification_message)
+
+        val resultIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
+            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, ZENDESK_PUSH_NOTIFICATION_ID)
+            putExtra(MainActivity.FIELD_OPENED_FROM_ZENDESK, true)
+        }
+
+        // Build the new notification, add group to support wearable stacking
+        val builder = getNotificationBuilder(context, OTHER, title, message)
+        showNotificationForBuilder(builder, context, resultIntent, ZENDESK_PUSH_NOTIFICATION_ID)
     }
 }
