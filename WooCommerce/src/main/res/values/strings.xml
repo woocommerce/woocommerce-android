@@ -207,6 +207,7 @@
     <string name="orderdetail_addnote_contentdesc">Add an order note</string>
     <string name="orderdetail_change_order_status">Click to change order status</string>
     <string name="orderdetail_track_shipment">Track shipment</string>
+    <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="order_fulfill_order">Fulfill Order</string>
@@ -351,7 +352,8 @@
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
-    <string name="settings_footer">Made with love by Automattic</string>
+    <string name="settings_footer">Made with love by Automattic. %1$s</string>
+    <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>

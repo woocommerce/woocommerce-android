@@ -76,12 +76,15 @@ class MainActivity : AppCompatActivity(),
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
-        private const val STATE_KEY_POSITION = "key-position"
+
+        private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
+        private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
         const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
         const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
+        const val FIELD_OPENED_FROM_ZENDESK = "opened-from-zendesk"
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -99,6 +102,8 @@ class MainActivity : AppCompatActivity(),
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
+    private var unfilledOrderCount: Int = 0
+
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
@@ -114,10 +119,11 @@ class MainActivity : AppCompatActivity(),
         setSupportActionBar(toolbar as Toolbar)
 
         presenter.takeView(this)
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         navController = findNavController(R.id.nav_host_fragment_main)
         navController.addOnDestinationChangedListener(this)
+
+        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -151,7 +157,9 @@ class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
         updateNotificationBadge()
+        updateOrderBadge(false)
 
         checkConnection()
     }
@@ -169,16 +177,20 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
-        // Store the current bottom bar navigation position.
-        outState?.putInt(STATE_KEY_POSITION, bottomNavView.currentPosition.id)
+        outState?.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
+        outState?.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         super.onSaveInstanceState(outState)
     }
 
     private fun restoreSavedInstanceState(savedInstanceState: Bundle?) {
-        // Restore the current navigation position
         savedInstanceState?.also {
-            val id = it.getInt(STATE_KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
+            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, BottomNavigationPosition.DASHBOARD.id)
             bottomNavView.restoreSelectedItemState(id)
+
+            val count = it.getInt(KEY_UNFILLED_ORDER_COUNT)
+            if (count > 0) {
+                showOrderBadge(count)
+            }
         }
     }
 
@@ -203,7 +215,13 @@ class MainActivity : AppCompatActivity(),
     /**
      * Returns true if the navigation controller is showing the root fragment (ie: a top level fragment is showing)
      */
-    override fun isAtNavigationRoot(): Boolean = navController.currentDestination?.id == R.id.rootFragment
+    override fun isAtNavigationRoot(): Boolean {
+        return if (::navController.isInitialized) {
+            navController.currentDestination?.id == R.id.rootFragment
+        } else {
+            true
+        }
+    }
 
     /**
      * Return true if one of the nav component fragments is showing (the opposite of the above)
@@ -309,7 +327,10 @@ class MainActivity : AppCompatActivity(),
         }
 
         if (isAtRoot) {
-            getActiveTopLevelFragment()?.onReturnedFromChildFragment()
+            getActiveTopLevelFragment()?.let {
+                it.updateActivityTitle()
+                it.onReturnedFromChildFragment()
+            }
         }
 
         previousDestinationId = destination.id
@@ -421,7 +442,7 @@ class MainActivity : AppCompatActivity(),
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
-        val host = if (uri != null && uri.host != null) uri.host else ""
+        val host = uri?.host?.let { it } ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
@@ -432,15 +453,37 @@ class MainActivity : AppCompatActivity(),
 
     // region Bottom Navigation
     override fun updateNotificationBadge() {
-        showNotificationBadge(AppPrefs.getHasUnseenNotifs())
+        if (AppPrefs.getHasUnseenNotifs()) {
+            showNotificationBadge()
+        } else {
+            hideNotificationBadge()
+        }
     }
 
-    override fun showNotificationBadge(show: Boolean) {
-        bottomNavView.showNotificationBadge(show)
+    override fun hideNotificationBadge() {
+        bottomNavView.showNotificationBadge(false)
+        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+    }
 
-        if (!show) {
-            NotificationHandler.removeAllNotificationsFromSystemBar(this)
+    override fun showNotificationBadge() {
+        bottomNavView.showNotificationBadge(true)
+    }
+
+    override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
+        if (hideCountUntilComplete) {
+            bottomNavView.hideOrderBadgeCount()
         }
+        presenter.fetchUnfilledOrderCount()
+    }
+
+    override fun showOrderBadge(count: Int) {
+        unfilledOrderCount = count
+        bottomNavView.showOrderBadge(count)
+    }
+
+    override fun hideOrderBadge() {
+        unfilledOrderCount = 0
+        bottomNavView.hideOrderBadge()
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
@@ -503,6 +546,23 @@ class MainActivity : AppCompatActivity(),
 
                 // User clicked on a group of notifications. Just show the notifications tab.
                 bottomNavView.currentPosition = NOTIFICATIONS
+            } else if (intent.getBooleanExtra(FIELD_OPENED_FROM_ZENDESK, false)) {
+                // Reset this flag now that it's being processed
+                intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)
+
+                // Send track event for the zendesk notification id
+                val remoteNoteId = intent.getIntExtra(FIELD_REMOTE_NOTE_ID, 0)
+                NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
+
+                // Remove single notification from the system bar
+                NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
+
+                // leave the Main activity showing the Dashboard tab, so when the user comes back from Help & Support,
+                // the app is in the right section
+                bottomNavView.currentPosition = DASHBOARD
+
+                // launch 'Tickets' page of Zendesk
+                startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
             } else {
                 // Check for a notification ID - if one is present, open notification
                 val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
@@ -513,7 +573,6 @@ class MainActivity : AppCompatActivity(),
                     // Remove single notification from the system bar
                     NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
 
-                    // Open the detail view for this notification
                     showNotificationDetail(remoteNoteId)
                 } else {
                     // Send analytics for viewing all notifications
@@ -579,11 +638,17 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
-        // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
-        // detail fragment and then show a new one
         if (markComplete) {
+            // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
+            // detail fragment and then show a new one
             navController.popBackStack(R.id.orderDetailFragment, true)
+
+            // immediately update the order badge to reflect the change
+            if (unfilledOrderCount > 0) {
+                showOrderBadge(unfilledOrderCount - 1)
+            }
         }
+
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigate(action)

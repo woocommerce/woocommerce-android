@@ -21,7 +21,9 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -35,7 +37,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContract.View, OrderDetailNoteListener,
+class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
@@ -189,10 +191,12 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
         super.onDestroyView()
     }
 
+    override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number)
+
     override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {
         order?.let {
             // set the title to the order number
-            activity?.title = getString(R.string.orderdetail_orderstatus_ordernum, it.number)
+            updateActivityTitle()
 
             // Populate the Order Status Card
             val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
@@ -213,8 +217,11 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
                     productListener = this
             )
 
-            // Populate the Customer Information Card
-            orderDetail_customerInfo.initView(order, false)
+            // check if product is a virtual product. If it is, hide only the shipping details card
+            orderDetail_customerInfo.initView(
+                    order = order,
+                    shippingOnly = false,
+                    billingOnly = presenter.isVirtualProduct(order))
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
@@ -231,6 +238,12 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
                 isRefreshPending = false
             }
         }
+    }
+
+    override fun refreshCustomerInfoCard(order: WCOrderModel) {
+        // hide the shipping details if products in an order is virtual
+        val hideShipping = presenter.isVirtualProduct(order)
+        orderDetail_customerInfo.initShippingSection(order, hideShipping)
     }
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
@@ -342,6 +355,14 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
 
                 // User canceled the action to change the order status
                 changeOrderStatusCanceled = true
+
+                // if the fulfilled status was undone, tell the main activity to update the unfilled order badge
+                if (newStatus == CoreOrderStatus.COMPLETED.value ||
+                        newStatus == CoreOrderStatus.PROCESSING.value ||
+                        previousOrderStatus == CoreOrderStatus.COMPLETED.value ||
+                        previousOrderStatus == CoreOrderStatus.PROCESSING.value) {
+                    (activity as? MainActivity)?.updateOrderBadge(true)
+                }
 
                 presenter.orderModel?.let { order ->
                     previousOrderStatus?.let { status ->
@@ -577,6 +598,12 @@ class OrderDetailFragment : androidx.fragment.app.Fragment(), OrderDetailContrac
     }
 
     private fun showOrderStatusSelector() {
+        // If the device is offline, alert the user with a snack and exit (do not show order status selector).
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
         presenter.orderModel?.let { order ->
             val orderStatusOptions = presenter.getOrderStatusOptions()
             val orderStatus = order.status

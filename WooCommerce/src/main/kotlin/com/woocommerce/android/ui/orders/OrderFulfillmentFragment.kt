@@ -20,6 +20,7 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
@@ -31,7 +32,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import javax.inject.Inject
 
-class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillmentContract.View, View.OnClickListener {
+class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, View.OnClickListener {
     @Inject lateinit var presenter: OrderFulfillmentContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -55,12 +56,10 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(layout.fragment_order_fulfillment, container, false)
-
-        activity?.title = getString(R.string.orderdetail_order_fulfillment, navArgs.orderNumber)
-
-        return view
+        return inflater.inflate(layout.fragment_order_fulfillment, container, false)
     }
+
+    override fun getFragmentTitle() = getString(R.string.orderdetail_order_fulfillment, navArgs.orderNumber)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -118,8 +117,24 @@ class OrderFulfillmentFragment : androidx.fragment.app.Fragment(), OrderFulfillm
             orderFulfill_customerNote.initView(order)
         }
 
+        // check if product is a virtual product
+        val isVirtualProduct = presenter.isVirtualProduct(order)
+
         // Populate the Customer Information Card
-        orderFulfill_customerInfo.initView(order, true)
+        // hide shipping card if product is virtual or if no shipping address is available
+        val hideShipping = isVirtualProduct || !orderFulfill_customerInfo.isShippingAvailable(order)
+        if (hideShipping) {
+            orderFulfill_customerInfo.visibility = View.GONE
+        } else {
+            // Populate the Customer Information Card
+            orderFulfill_customerInfo.visibility = View.VISIBLE
+            orderFulfill_customerInfo.initView(order, true)
+        }
+
+        // load shipment tracking card only if product is NOT virtual
+        if (!isVirtualProduct) {
+            presenter.loadOrderShipmentTrackings()
+        }
 
         orderFulfill_btnComplete.setOnClickListener(this)
     }

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-07-01 08:54:04+0000
+Translation-Revision-Date: 2019-07-11 00:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="orderdetail_empty_shipping_address">アドレスが指定されていません。</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
     <string name="enter_email_for_site">WordPress.com でログインして、%1$s に接続してください</string>
@@ -567,7 +568,6 @@ Language: ja_JP
     <string name="settings_third_party_policy_header">サードパーティのポリシー</string>
     <string name="settings_cookie_policy_header">Cookie ポリシー</string>
     <string name="settings_privacy_policy_header">個人情報保護方針</string>
-    <string name="settings_footer">Automattic が愛情込めて作成</string>
     <string name="settings_tracking">サードパーティのものを含め、他の追跡ツールを使用します。それらについての詳細と設定方法についてお読みください。</string>
     <string name="settings_privacy_policy">個人情報保護方針を読む</string>
     <string name="settings_privacy_detail">この情報は、製品を改善し、マーケティングをより関連性の高いものとし、WooCommerce の利用をパーソナライズするのに役立ちます。詳しくは、個人情報保護方針をご覧ください</string>

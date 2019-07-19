@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 08:54:51+0000
+Translation-Revision-Date: 2019-07-09 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="orderdetail_empty_shipping_address">Nessun indirizzo specificato</string>
     <string name="login_need_help_finding_connected_email">Ti serve aiuto per trovare l\'e-mail con cui ti sei collegato?</string>
     <string name="enter_wordpress_site">Il sito web su questo indirizzo non è un sito WordPress. Per poterci collegare a esso, il sito deve avere WordPress installato.</string>
     <string name="enter_email_for_site">Accedi con WordPress.com per collegarti a %1$s</string>
@@ -567,7 +568,6 @@ Language: it
     <string name="settings_third_party_policy_header">Politica sulla privacy di terze parti</string>
     <string name="settings_cookie_policy_header">Politica sui cookie</string>
     <string name="settings_privacy_policy_header">Politica sulla privacy</string>
-    <string name="settings_footer">Creato con amore da Automattic</string>
     <string name="settings_tracking">Utilizziamo altri strumenti di tracciamento, inclusi alcuni di terze parti. Leggi le informazioni sugli strumenti e come utilizzarli.</string>
     <string name="settings_privacy_policy">Leggi la politica sulla privacy</string>
     <string name="settings_privacy_detail">Questa informazione ci aiuta a migliorare i nostri prodotti, a rendere il marketing più mirato, a personalizzare la tua esperienza su WooCommerce e molto altro come descritto in dettaglio nostra politica sulla privacy</string>
