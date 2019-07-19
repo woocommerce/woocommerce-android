@@ -122,4 +122,26 @@ class DateUtilsTest {
             DateUtils.getDateString("")
         }
     }
+
+    @Test
+    fun `getShortMonthYearString() returns correct values`() {
+        assertEquals("May 2019", DateUtils.getShortMonthYearString("2019-05"))
+        assertEquals("Dec 2018", DateUtils.getShortMonthYearString("2018-12"))
+        assertEquals("Jan 2019", DateUtils.getShortMonthYearString("2019-01"))
+        assertEquals("Feb 2019", DateUtils.getShortMonthYearString("2019-02"))
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getShortMonthYearString("Dec 30 2018")
+        }
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getShortMonthYearString("")
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            DateUtils.getShortMonthYearString("22")
+        }
+    }
 }

@@ -169,6 +169,23 @@ object DateUtils {
     }
 
     /**
+     * Given a date of format YYYY-MM, returns the corresponding short month format.
+     *
+     * For example, given 2018-07, returns "Jul 2018".
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getShortMonthYearString(iso8601Month: String): String {
+        return try {
+            val (year, month) = iso8601Month.split("-")
+            "${shortMonths[month.toInt() - 1]} $year"
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format yyyy-MM: $iso8601Month")
+        }
+    }
+
+    /**
      * Given a date of format YYYY-MM, returns whether it's on a weekend
      *
      * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.

@@ -328,7 +328,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun updateDateRangeView() {
-        dashboard_date_range_value.text = String.format("%s – %s", getStartValue(), getEndValue())
+        dashboard_date_range_value.text = String.format("%s – %s", getStartDateValue(), getEndDateValue())
     }
 
     private fun clearDateRangeValues() {
@@ -398,23 +398,23 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         return BarDataSet(barEntries, "")
     }
 
-    private fun getStartValue(): String {
+    private fun getStartDateValue(): String {
         val dateString = chartRevenueStats.keys.first()
         return when (activeGranularity) {
             StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
             StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(dateString)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
+            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(dateString)
             StatsGranularity.YEARS -> dateString
         }
     }
 
-    private fun getEndValue(): String {
+    private fun getEndDateValue(): String {
         val dateString = chartRevenueStats.keys.last()
         return when (activeGranularity) {
             StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
             StatsGranularity.WEEKS ->
                 SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
+            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(dateString)
             StatsGranularity.YEARS -> dateString
         }
     }
@@ -497,6 +497,27 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 axis.mEntries.first() -> getStartValue()
                 axis.mEntries.max() -> getEndValue()
                 else -> ""
+            }
+        }
+
+        fun getStartValue(): String {
+            val dateString = chartRevenueStats.keys.first()
+            return when (activeGranularity) {
+                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(dateString)
+                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
+                StatsGranularity.YEARS -> dateString
+            }
+        }
+
+        fun getEndValue(): String {
+            val dateString = chartRevenueStats.keys.last()
+            return when (activeGranularity) {
+                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.WEEKS ->
+                    SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
+                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
+                StatsGranularity.YEARS -> dateString
             }
         }
     }
