@@ -11,6 +11,25 @@ ENV["PROJECT_NAME"]="WooCommerce"
 ENV["PROJECT_ROOT_FOLDER"]="./"
 ENV["validate_translations"]="buildVanillaRelease"
 
+SUPPORTED_LOCALES = [
+  { glotpress: "ar", google_play: "ar",  promo_config: {}},
+  { glotpress: "de", google_play: "de-DE",  promo_config: {} },
+  { glotpress: "es", google_play: "es-ES",  promo_config: {} },
+  { glotpress: "fr", google_play: "fr-FR",  promo_config: {} },
+  { glotpress: "he", google_play: "iw-IL",  promo_config: {} },
+  { glotpress: "id", google_play: "id",  promo_config: {} },
+  { glotpress: "it", google_play: "it-IT",  promo_config: {} },
+  { glotpress: "ja", google_play: "ja-JP",  promo_config: {} },
+  { glotpress: "ko", google_play: "ko-KR",  promo_config: {} },
+  { glotpress: "nl", google_play: "nl-NL",  promo_config: {} },
+  { glotpress: "pt-br", google_play: "pt-BR",  promo_config: {} },
+  { glotpress: "ru", google_play: "ru-RU",  promo_config: {} },
+  { glotpress: "sv", google_play: "sv-SE",  promo_config: {} },
+  { glotpress: "tr", google_play: "tr-TR",  promo_config: {} },
+  { glotpress: "zh-cn", google_play: "zh-CN",  promo_config: {} },
+  { glotpress: "zh-tw", google_play: "zh-TW",  promo_config: {} },
+].freeze
+
 ########################################################################
 # Release Lanes
 ########################################################################  
@@ -135,7 +154,18 @@ end
   desc "Updates store metadata and runs the release checks"
   lane :finalize_release do | options |
     android_finalize_prechecks(options)
-    android_update_metadata(options) unless android_current_branch_is_hotfix
+    hotfix = android_current_branch_is_hotfix
+    android_update_metadata(options) unless hotfix
+    android_bump_version_final_release() unless hotfix
+    version = android_get_release_version() unless hotfix
+    download_metadata_strings(version: version["name"], build_number: version["code"]) unless hotfix
+    android_tag_build(tag_alpha: false)
+
+    # Wrap up
+    removebranchprotection(repository:GHHELPER_REPO, branch: "release/#{version["name"]}")
+    setfrozentag(repository:GHHELPER_REPO, milestone: version["name"], freeze: false)
+    close_milestone(repository:GHHELPER_REPO, milestone: version["name"])
+    create_new_milestone(repository:GHHELPER_REPO)
   end
 
   #####################################################################################
@@ -231,6 +261,41 @@ lane :localize_libs do | options |
   end
 end
 
+#####################################################################################
+  # download_metadata_string 
+  # -----------------------------------------------------------------------------------
+  # This lane downloads the translated metadata (release notes,
+  # app store strings, title, etc.) from GlotPress and updates the local files
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane download_metadata_string build_number:<build_number> version:<version>
+  #
+  # Example:
+  # fastlane download_metadata_string build_number:573 version:10.3
+  #####################################################################################
+  desc "Downloads translated metadata from GlotPress"
+  lane :download_metadata_strings do |options| 
+    values = options[:version].split('.')
+    files = {
+      "release_note_#{values[0].to_s.rjust(2, "0")}#{values[1]}" => {desc: "changelogs/#{options[:build_number]}.txt", max_size: 0},
+      play_store_promo: {desc:"short_description.txt", max_size: 80},
+      play_store_desc: {desc:"full_description.txt", max_size: 0},
+      play_store_app_title: {desc:"title.txt", max_size: 50}
+    }
+
+    delete_old_changelogs(build: options[:build_number])
+    download_path=Dir.pwd + "/metadata/android"
+    gp_downloadmetadata(project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/", 
+      target_files: files, 
+      locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
+      source_locale: "en-US",
+      download_path: download_path)
+    
+    android_create_xml_release_notes(download_path: download_path, build_number: "#{options[:build_number]}", locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]})
+    add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
+    sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
+  end 
+
 ########################################################################
 # Helper Lanes
 ########################################################################  
@@ -276,26 +341,44 @@ end
   end
 
   #####################################################################################
-# Private lanes
-#####################################################################################
-private_lane :extract_universal_apk do | options |
-  bundle_path=options[:bundle_path]
-  apk_path=options[:apk_path]
-  temp_dir = Dir.mktmpdir()
+  # Private lanes
+  #####################################################################################
+  private_lane :delete_old_changelogs do | options |
+    Dir.glob("./metadata/android/*/").each do | folder |
+      Dir["#{folder}changelogs/*"].each do | file |
+        File.delete(file) if Integer(File.basename(file, ".*")) < Integer(options[:build]) rescue puts "Cannot delete file #{file}"
+      end
+    end
+  end
 
-  command = "source ./tools/gradle-functions.sh"
-  command << "&& bundletool build-apks --bundle=\"#{bundle_path}\" \\
-  --output=\"#{temp_dir}/universal.apks\" \\
-  --mode=universal \\
-  --ks=\"$(get_gradle_property gradle.properties storeFile)\" \\
-  --ks-pass=\"pass:$(get_gradle_property gradle.properties storePassword)\" \\
-  --ks-key-alias=\"$(get_gradle_property gradle.properties keyAlias)\" \\
-  --key-pass=\"pass:$(get_gradle_property gradle.properties keyPassword)\""
-  sh(command)
+  private_lane :add_us_release_notes do | options |
+    en_release_notes_path  = Dir.pwd + "/.." + "/WooCommerce/metadata/release_notes.txt"
+    File.open(options[:relese_notes_path], "a") { |f| 
+      f.puts("<en-US>")
+      f.puts("#{options[:version_name]}:")
+      f.puts(File.open(en_release_notes_path).read)
+      f.puts("/<en-US>")
+    }
+  end
 
-  sh("unzip \"#{temp_dir}/universal.apks\" -d \"#{temp_dir}\"")
-  FileUtils.cp_r("#{temp_dir}/universal.apk", "#{apk_path}", remove_destination: true)  
-  FileUtils.rm_rf("#{temp_dir}")
-end
+  private_lane :extract_universal_apk do | options |
+    bundle_path=options[:bundle_path]
+    apk_path=options[:apk_path]
+    temp_dir = Dir.mktmpdir()
+
+    command = "source ./tools/gradle-functions.sh"
+    command << "&& bundletool build-apks --bundle=\"#{bundle_path}\" \\
+    --output=\"#{temp_dir}/universal.apks\" \\
+    --mode=universal \\
+    --ks=\"$(get_gradle_property gradle.properties storeFile)\" \\
+    --ks-pass=\"pass:$(get_gradle_property gradle.properties storePassword)\" \\
+    --ks-key-alias=\"$(get_gradle_property gradle.properties keyAlias)\" \\
+    --key-pass=\"pass:$(get_gradle_property gradle.properties keyPassword)\""
+    sh(command)
+
+    sh("unzip \"#{temp_dir}/universal.apks\" -d \"#{temp_dir}\"")
+    FileUtils.cp_r("#{temp_dir}/universal.apk", "#{apk_path}", remove_destination: true)  
+    FileUtils.rm_rf("#{temp_dir}")
+  end
 
 end
