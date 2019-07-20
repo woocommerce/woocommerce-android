@@ -1,8 +1,8 @@
 # How to Contribute
 
-First off, thank you for contributing! We're excited to collaborate with you! 🎉
+We have a very small team of dedicated developers on this project, so keeping the project manageable and stable limits our ability to accept new contributors. We are not seeking new contributers at this time, but some small contributions are welcome.
 
-The following is a set of guidelines for the many ways you can join our collective effort.
+If you’ve found a security problem, please follow our bug bounty program.
 
 Before anything else, please take a moment to read our [Code of Conduct](CODE-OF-CONDUCT.md). We expect all participants, from full-timers to occasional tinkerers, to uphold it.
 
