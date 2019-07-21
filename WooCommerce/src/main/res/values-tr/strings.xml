@@ -680,7 +680,7 @@ Language: tr
     <string name="date_timeframe_older_two_days">2 günden eski</string>
     <string name="date_timeframe_yesterday">Dün</string>
     <string name="date_timeframe_today">Bugün</string>
-    <string name="notifications">Bildirimler</string>
+    <string name="review_notifications">Bildirimler</string>
     <string name="products">Ürünler</string>
     <string name="discard">Vazgeç</string>
     <string name="this_year">Bu Yıl</string>

@@ -680,7 +680,7 @@ Language: it
     <string name="date_timeframe_older_two_days">Più vecchie di 2 giorni</string>
     <string name="date_timeframe_yesterday">Ieri</string>
     <string name="date_timeframe_today">Oggi</string>
-    <string name="notifications">Notifiche</string>
+    <string name="review_notifications">Notifiche</string>
     <string name="products">Prodotti</string>
     <string name="discard">Rimuovi</string>
     <string name="this_year">Quest\'anno</string>

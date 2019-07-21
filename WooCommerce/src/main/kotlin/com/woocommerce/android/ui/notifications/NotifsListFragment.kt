@@ -15,10 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
-import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
@@ -213,8 +210,8 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun onReturnedFromChildFragment() {
-        // If this fragment is now visible and we've deferred loading orders due to it not
-        // being visible - go ahead and load the orders.
+        // If this fragment is now visible and we've deferred loading notifs due to it not
+        // being visible - go ahead and load them
         presenter.loadNotifs(forceRefresh = this.isRefreshPending)
         showOptionsMenu(true)
         updateMarkAllReadMenuItem()
@@ -252,7 +249,7 @@ class NotifsListFragment : TopLevelFragment(),
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.notifications)
+    override fun getFragmentTitle() = getString(R.string.review_notifications)
 
     override fun refreshFragmentState() {
         isRefreshPending = true
@@ -275,34 +272,13 @@ class NotifsListFragment : TopLevelFragment(),
                     openReviewDetail(notification)
                 }
             }
-            NEW_ORDER -> {
-                if (!notifsRefreshLayout.isRefreshing) {
-                    openOrderDetail(notification)
-                }
-            }
-            UNKNOWN -> {
+            else -> {
                 WooLog.e(NOTIFICATIONS, "Unknown notification type!")
                 showLoadNotificationDetailError()
             }
         }
 
         AppRatingDialog.incrementInteractions()
-    }
-
-    override fun openOrderDetail(notification: NotificationModel) {
-        notification.getRemoteOrderId()?.let { remoteOrderId ->
-            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
-                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
-                    AnalyticsTracker.KEY_ALREADY_READ to notification.read))
-            showOptionsMenu(false)
-            (activity as? MainNavigationRouter)?.showOrderDetail(
-                    selectedSite.get().id,
-                    remoteOrderId,
-                    notification.remoteNoteId
-            )
-        } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
-            showLoadNotificationDetailError()
-        }
     }
 
     override fun openReviewDetail(notification: NotificationModel) {
@@ -352,7 +328,7 @@ class NotifsListFragment : TopLevelFragment(),
             val actionListener = View.OnClickListener {
                 AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
 
-                // User canceled the action to change the order status
+                // User canceled the action to change the status
                 changeCommentStatusCanceled = true
 
                 // Add the notification back to the list

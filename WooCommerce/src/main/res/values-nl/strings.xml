@@ -680,7 +680,7 @@ Language: nl
     <string name="date_timeframe_older_two_days">Ouder dan 2 dagen</string>
     <string name="date_timeframe_yesterday">Gisteren</string>
     <string name="date_timeframe_today">Vandaag</string>
-    <string name="notifications">Meldingen</string>
+    <string name="review_notifications">Meldingen</string>
     <string name="products">Producten</string>
     <string name="discard">Verwijder</string>
     <string name="this_year">Dit jaar</string>
