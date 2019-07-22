@@ -105,6 +105,8 @@ ext {
     multidexVersion = '1.0.3'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.1.1'
+    coroutinesVersion = '1.2.2'
+    archComponentsVersion = '2.0.0'
 }
 
 tasks.getByPath('WooCommerce:preBuild').dependsOn installGitHooks
