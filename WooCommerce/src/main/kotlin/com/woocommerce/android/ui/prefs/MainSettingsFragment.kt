@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_B
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -88,6 +89,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             val spannable = SpannableString(settingsFooterText)
             spannable.setSpan(
                     WooClickableSpan {
+                        AnalyticsTracker.track(SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED)
                         ChromeCustomTabUtils.launchUrl(context, getString(R.string.settings_hiring_link))
                     },
                     (settingsFooterText.length - hiringText.length),
