@@ -76,7 +76,9 @@ object WCMatchers {
             public override fun matchesSafely(view: FlowLayout): Boolean {
                 val child = view.getChildAt(0)
                 return if (child != null && child is TextView) {
-                    ContextCompat.getColor(context, color) == (child.background as GradientDrawable).color.defaultColor
+                    (child.background as GradientDrawable).color?.let { bgColor ->
+                        ContextCompat.getColor(context, color) == bgColor.defaultColor
+                    } ?: false
                 } else false
             }
 
