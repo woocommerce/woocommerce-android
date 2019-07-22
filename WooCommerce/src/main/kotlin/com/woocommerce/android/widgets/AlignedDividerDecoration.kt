@@ -93,7 +93,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
         }
     }
 
-    private fun drawForVertical(canvas: Canvas, parent: androidx.recyclerview.widget.RecyclerView) {
+    private fun drawForVertical(canvas: Canvas, parent: RecyclerView) {
         val adjustedChildCount = parent.childCount - 2
         val isRtl = ViewCompat.getLayoutDirection(parent) == ViewCompat.LAYOUT_DIRECTION_RTL
         (0..adjustedChildCount)
@@ -121,7 +121,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
                 }
     }
 
-    private fun drawForHorizontal(canvas: Canvas, parent: androidx.recyclerview.widget.RecyclerView) {
+    private fun drawForHorizontal(canvas: Canvas, parent: RecyclerView) {
         val adjustedChildCount = parent.childCount - 2
         (0..adjustedChildCount)
                 .map { parent.getChildAt(it) }

@@ -40,7 +40,7 @@ private fun addLinkListener(strBuilder: SpannableStringBuilder, span: ClickableS
             // Call the original onClick function for the span
             span.onClick(widget)
             // Also call the custom callback function we were given
-            widget?.let { onLinkClicked(this) }
+            widget.let { onLinkClicked(this) }
         }
     }
 
