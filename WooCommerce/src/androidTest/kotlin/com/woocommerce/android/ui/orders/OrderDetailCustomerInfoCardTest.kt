@@ -52,6 +52,17 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
     val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
 
+    private fun verifyShippingInfoDisplayedCorrectly() {
+        val shippingName = appContext.getString(
+                R.string.customer_full_name,
+                mockWCOrderModel.shippingFirstName, mockWCOrderModel.shippingLastName
+        )
+        val shippingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getShippingAddress())
+        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.shippingCountry)
+        val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
+    }
+
     @Before
     override fun setup() {
         super.setup()
@@ -231,13 +242,12 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // verify that billing phone section is not displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(GONE)))
 
         // verify that billing email section is not displayed
         onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
     }
 
     @Test
@@ -287,7 +297,7 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // since the customer info phone is NOT empty, the view should be displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(VISIBLE)))
-        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(VISIBLE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_phone)).check(matches(
                 withText(PhoneUtils.formatPhone(mockWCOrderModel.billingPhone))
@@ -296,12 +306,12 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         // verify that billing email section is not displayed
         onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
 
         // verify that billing address section is not displayed
         onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
 
         // no shipping available so hide section
         onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
@@ -322,18 +332,18 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // verify the billing phone section is not displayed
         onView(withId(R.id.customerInfo_phone)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_callOrMessageBtn)).check(matches(withEffectiveVisibility(GONE)))
 
         // verify that billing email section is displayed
         onView(withId(R.id.customerInfo_emailAddr)).check(matches(withEffectiveVisibility(VISIBLE)))
         onView(withId(R.id.customerInfo_emailBtn)).check(matches(withEffectiveVisibility(VISIBLE)))
-        onView(withId(R.id.customerInfo_divider3)).check(matches(withEffectiveVisibility(VISIBLE)))
 
         // verify that billing address section is not displayed
         onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_billingAddr)).check(matches(withEffectiveVisibility(GONE)))
         onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_divider2)).check(matches(withEffectiveVisibility(GONE)))
 
         // no shipping available so hide section
         onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
@@ -484,14 +494,73 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         )))
     }
 
-    private fun verifyShippingInfoDisplayedCorrectly() {
-        val shippingName = appContext.getString(
+    @Test
+    fun verifyCustomerInfoCardShippingHiddenWhenProductVirtual() {
+        // add mock data to order detail screen
+        mockWCOrderModel.shippingFirstName = "Ann"
+        mockWCOrderModel.shippingLastName = "Moore"
+        mockWCOrderModel.shippingAddress1 = "Nigagra Falls"
+        mockWCOrderModel.shippingCountry = "USA"
+        mockWCOrderModel.billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
+        mockWCOrderModel.billingLastName = "Murthy"
+        mockWCOrderModel.billingFirstName = "Anitaa"
+        mockWCOrderModel.billingCountry = "USA"
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel, isVirtualProduct = true)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // check if order customer info card shipping details matches this format:
+        // Anitaa Murthy
+        // 29, Kuppam Beach Road,
+        // India, 600041
+        val billingName = appContext.getString(
                 R.string.customer_full_name,
-                mockWCOrderModel.shippingFirstName, mockWCOrderModel.shippingLastName
+                mockWCOrderModel.billingFirstName, mockWCOrderModel.billingLastName
         )
-        val shippingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getShippingAddress())
-        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.shippingCountry)
-        val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
+        val billingAddr = AddressUtils.getEnvelopeAddress(mockWCOrderModel.getBillingAddress())
+        val billingCountry = AddressUtils.getCountryLabelByCountryCode(mockWCOrderModel.billingCountry)
+
+        // Assumes that the name, address and country info is available
+        val billingAddrFull = "$billingName\n$billingAddr\n$billingCountry"
+        onView(withId(R.id.customerInfo_billingAddr)).check(matches(withText(billingAddrFull)))
+
+        // virtual product so shipping should be hidden, even if available
+        onView(withId(R.id.customerInfo_divider)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_shippingLabel)).check(matches(withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardDisplayedProductNotVirtual() {
+        // add mock data to order detail screen
+        // add mock data to order detail screen
+        mockWCOrderModel.shippingFirstName = "Ann"
+        mockWCOrderModel.shippingLastName = "Moore"
+        mockWCOrderModel.shippingAddress1 = "Nigagra Falls"
+        mockWCOrderModel.shippingCountry = "USA"
+        mockWCOrderModel.billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
+        mockWCOrderModel.billingLastName = "Murthy"
+        mockWCOrderModel.billingFirstName = "Anitaa"
+        mockWCOrderModel.billingCountry = "USA"
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel, isVirtualProduct = false)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify that the customer info card is not hidden
+        // verify that the customer shipping details is displayed and text is correct
+        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(isDisplayed()))
+        verifyShippingInfoDisplayedCorrectly()
+
+        // verify that the billing view is condensed and load more button is visible
+        onView(withId(R.id.customerInfo_morePanel)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(isNotChecked()))
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(
+                withText(appContext.getString(R.string.orderdetail_show_billing))
+        ))
     }
 }

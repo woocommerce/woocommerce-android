@@ -85,7 +85,6 @@ class NotifsListPresenter @Inject constructor(
     override fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean) {
         val notifs = notificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
-                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
                 filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
         if (notifs.size > 0) {
             view?.showEmptyView(false)
@@ -106,7 +105,6 @@ class NotifsListPresenter @Inject constructor(
         if (networkStatus.isConnected()) {
             val unreadNotifs = notificationStore.getNotificationsForSite(
                     site = selectedSite.get(),
-                    filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
                     filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString())).filter { !it.read }
             if (unreadNotifs.isNotEmpty()) {
                 val payload = MarkNotificationsReadPayload(unreadNotifs)
@@ -133,7 +131,6 @@ class NotifsListPresenter @Inject constructor(
     override fun hasUnreadNotifs(): Boolean {
         return notificationStore.hasUnreadNotificationsForSite(
                 site = selectedSite.get(),
-                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
                 filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString())
         )
     }

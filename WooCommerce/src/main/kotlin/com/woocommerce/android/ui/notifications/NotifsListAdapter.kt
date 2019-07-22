@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.notifications
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.PorterDuff
-import android.graphics.Rect
 import android.graphics.drawable.LayerDrawable
 import android.os.Build
 import android.view.View
@@ -12,13 +9,10 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
 import com.woocommerce.android.extensions.getMessageSnippet
 import com.woocommerce.android.extensions.getRating
 import com.woocommerce.android.extensions.getTitleSnippet
@@ -28,6 +22,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.applyTransform
+import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
@@ -36,7 +31,6 @@ import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.util.DateTimeUtils
-import org.wordpress.android.util.DisplayUtils
 import java.util.Date
 import java.util.HashSet
 import javax.inject.Inject
@@ -45,16 +39,6 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
     private var starTintColor: Int = 0
     init {
         starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
-    }
-
-    enum class ItemType {
-        HEADER,
-        UNREAD_NOTIF,
-        READ_NOTIF
-    }
-
-    interface ItemDecorationListener {
-        fun getItemTypeAtPosition(position: Int): ItemType
     }
 
     interface ReviewListListener {
@@ -215,7 +199,8 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
     }
 
     /**
-     * Returns the type of item at the passed position
+     * Returns the type of item at the passed position for use so the item decoration
+     * can draw a bar beside unread items
      *
      * @param position position of the item in the recycler
      */
@@ -230,13 +215,13 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
                 currentPos++
             }
             if (currentPos == position) {
-                return if (notif.read) ItemType.READ_NOTIF else ItemType.UNREAD_NOTIF
+                return if (notif.read) ItemType.READ else ItemType.UNREAD
             }
             currentPos++
         }
 
-        WooLog.w(T.NOTIFICATIONS, "Failed to get item type at recycler position $position")
-        return ItemType.READ_NOTIF
+        WooLog.w(T.NOTIFICATIONS, "Failed to get item type at notifs recycler position $position")
+        return ItemType.READ
     }
 
     /**
@@ -357,10 +342,6 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
             itemHolder.rating.visibility = View.GONE
 
             when (notif.getWooType()) {
-                NEW_ORDER -> {
-                    itemHolder.icon.setImageResource(R.drawable.ic_cart)
-                    itemHolder.desc.maxLines = Int.MAX_VALUE
-                }
                 PRODUCT_REVIEW -> {
                     itemHolder.icon.setImageResource(R.drawable.ic_comment)
                     itemHolder.desc.maxLines = 2
@@ -374,7 +355,7 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
                         }
                     }
                 }
-                UNKNOWN -> WooLog.e(
+                else -> WooLog.e(
                         NOTIFICATIONS,
                         "Unsupported woo notification type: ${notif.type} | ${notif.subtype}")
             }
@@ -411,49 +392,5 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.orderListHeader
-    }
-
-    class NotifsListItemDecoration(context: Context) : DividerItemDecoration(
-            context,
-            androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL
-    ) {
-        private val dividerWidth = DisplayUtils.dpToPx(context, 3).toFloat()
-
-        private var decorListener: ItemDecorationListener? = null
-        private val bounds = Rect()
-
-        fun setListener(listener: ItemDecorationListener?) {
-            decorListener = listener
-        }
-
-        override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-            for (i in 0 until parent.childCount - 1) {
-                val child = parent.getChildAt(i)
-                val position = child?.let { parent.getChildAdapterPosition(it) } ?: INVALID_POSITION
-                if (position != INVALID_POSITION) {
-                    val itemType = decorListener?.getItemTypeAtPosition(position) ?: ItemType.READ_NOTIF
-                    /*
-                     * note that we have to draw the indicator for all items rather than just unread notifs
-                     * in order to paint over recycled cells that have a previously-drawn indicator
-                     */
-                    val colorId = when (itemType) {
-                        ItemType.HEADER -> R.color.list_header_bg
-                        ItemType.UNREAD_NOTIF -> R.color.wc_green
-                        else -> R.color.list_item_bg
-                    }
-
-                    val paint = Paint()
-                    paint.color = ContextCompat.getColor(parent.context, colorId)
-
-                    parent.getDecoratedBoundsWithMargins(child, bounds)
-                    val top = bounds.top.toFloat()
-                    val bottom = (bounds.bottom + Math.round(child.translationY)).toFloat()
-                    val left = bounds.left.toFloat()
-                    val right = left + dividerWidth
-
-                    canvas.drawRect(left, top, right, bottom, paint)
-                }
-            }
-        }
     }
 }

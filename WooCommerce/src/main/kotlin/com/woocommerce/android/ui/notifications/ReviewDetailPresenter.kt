@@ -140,7 +140,7 @@ class ReviewDetailPresenter @Inject constructor(
             // We only care about logging an error
             if (event.changedNotificationLocalIds.contains(it.noteId)) {
                 if (event.isError) {
-                    WooLog.e(NOTIFICATIONS, "$TAG - Error marking new order notification as read!")
+                    WooLog.e(NOTIFICATIONS, "$TAG - Error marking new review notification as read!")
                 }
             }
         }

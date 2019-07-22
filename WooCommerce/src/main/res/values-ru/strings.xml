@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 09:54:06+0000
+Translation-Revision-Date: 2019-07-09 09:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="orderdetail_empty_shipping_address">Адрес не указан.</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
     <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключить %1$s</string>
@@ -567,7 +568,6 @@ Language: ru
     <string name="settings_third_party_policy_header">Политика сторонней организации</string>
     <string name="settings_cookie_policy_header">Политика использования файлов cookie</string>
     <string name="settings_privacy_policy_header">Политика конфиденциальности</string>
-    <string name="settings_footer">Сделано с любовью компанией Automattic</string>
     <string name="settings_tracking">Мы используем и другие средства сбора информации, в том числе средства сторонних разработчиков. Ознакомьтесь с этими средствами и способами управления ими.</string>
     <string name="settings_privacy_policy">Ознакомьтесь с политикой конфиденциальности</string>
     <string name="settings_privacy_detail">Эти сведения помогают нам улучшать продукты, предлагать более полезную рекламу, настраивать WooCommerce согласно вашим предпочтениям и решать другие задачи. Дополнительную информацию см. в политике конфиденциальности</string>
@@ -680,7 +680,7 @@ Language: ru
     <string name="date_timeframe_older_two_days">Больше двух дней назад</string>
     <string name="date_timeframe_yesterday">Вчера</string>
     <string name="date_timeframe_today">Сегодня</string>
-    <string name="notifications">Уведомления</string>
+    <string name="review_notifications">Уведомления</string>
     <string name="products">Товары</string>
     <string name="discard">Отменить</string>
     <string name="this_year">В этом году</string>

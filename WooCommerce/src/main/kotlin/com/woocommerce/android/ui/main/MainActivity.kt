@@ -34,8 +34,8 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
-import com.woocommerce.android.ui.main.BottomNavigationPosition.NOTIFICATIONS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
@@ -76,7 +76,9 @@ class MainActivity : AppCompatActivity(),
 
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
-        private const val STATE_KEY_POSITION = "key-position"
+
+        private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
+        private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
@@ -100,6 +102,8 @@ class MainActivity : AppCompatActivity(),
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
+    private var unfilledOrderCount: Int = 0
+
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
@@ -153,7 +157,9 @@ class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
         updateNotificationBadge()
+        updateOrderBadge(false)
 
         checkConnection()
     }
@@ -171,16 +177,20 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
-        // Store the current bottom bar navigation position.
-        outState?.putInt(STATE_KEY_POSITION, bottomNavView.currentPosition.id)
+        outState?.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
+        outState?.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         super.onSaveInstanceState(outState)
     }
 
     private fun restoreSavedInstanceState(savedInstanceState: Bundle?) {
-        // Restore the current navigation position
         savedInstanceState?.also {
-            val id = it.getInt(STATE_KEY_POSITION, BottomNavigationPosition.DASHBOARD.id)
+            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, BottomNavigationPosition.DASHBOARD.id)
             bottomNavView.restoreSelectedItemState(id)
+
+            val count = it.getInt(KEY_UNFILLED_ORDER_COUNT)
+            if (count > 0) {
+                showOrderBadge(count)
+            }
         }
     }
 
@@ -234,7 +244,7 @@ class MainActivity : AppCompatActivity(),
         val tag = when (bottomNavView.currentPosition) {
             DASHBOARD -> DashboardFragment.TAG
             ORDERS -> OrderListFragment.TAG
-            NOTIFICATIONS -> NotifsListFragment.TAG
+            REVIEWS -> NotifsListFragment.TAG
         }
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
@@ -432,7 +442,7 @@ class MainActivity : AppCompatActivity(),
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
-        val host = if (uri != null && uri.host != null) uri.host else ""
+        val host = uri?.host?.let { it } ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
@@ -443,22 +453,44 @@ class MainActivity : AppCompatActivity(),
 
     // region Bottom Navigation
     override fun updateNotificationBadge() {
-        showNotificationBadge(AppPrefs.getHasUnseenNotifs())
+        if (AppPrefs.getHasUnseenNotifs()) {
+            showNotificationBadge()
+        } else {
+            hideNotificationBadge()
+        }
     }
 
-    override fun showNotificationBadge(show: Boolean) {
-        bottomNavView.showNotificationBadge(show)
+    override fun hideNotificationBadge() {
+        bottomNavView.showNotificationBadge(false)
+        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+    }
 
-        if (!show) {
-            NotificationHandler.removeAllNotificationsFromSystemBar(this)
+    override fun showNotificationBadge() {
+        bottomNavView.showNotificationBadge(true)
+    }
+
+    override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
+        if (hideCountUntilComplete) {
+            bottomNavView.hideOrderBadgeCount()
         }
+        presenter.fetchUnfilledOrderCount()
+    }
+
+    override fun showOrderBadge(count: Int) {
+        unfilledOrderCount = count
+        bottomNavView.showOrderBadge(count)
+    }
+
+    override fun hideOrderBadge() {
+        unfilledOrderCount = 0
+        bottomNavView.hideOrderBadge()
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
-            NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
+            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -468,7 +500,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         // Update the unseen notifications badge visibility
-        if (navPos == NOTIFICATIONS) {
+        if (navPos == REVIEWS) {
             NotificationHandler.removeAllNotificationsFromSystemBar(this)
         }
     }
@@ -477,7 +509,7 @@ class MainActivity : AppCompatActivity(),
         val stat = when (navPos) {
             DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
-            NOTIFICATIONS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
+            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -513,7 +545,7 @@ class MainActivity : AppCompatActivity(),
                 NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                 // User clicked on a group of notifications. Just show the notifications tab.
-                bottomNavView.currentPosition = NOTIFICATIONS
+                bottomNavView.currentPosition = REVIEWS
             } else if (intent.getBooleanExtra(FIELD_OPENED_FROM_ZENDESK, false)) {
                 // Reset this flag now that it's being processed
                 intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)
@@ -550,7 +582,7 @@ class MainActivity : AppCompatActivity(),
                     NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                     // Just open the notifications tab
-                    bottomNavView.currentPosition = NOTIFICATIONS
+                    bottomNavView.currentPosition = REVIEWS
                 }
             }
         } else {
@@ -569,10 +601,6 @@ class MainActivity : AppCompatActivity(),
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()
-        bottomNavView.currentPosition = NOTIFICATIONS
-
-        val navPos = BottomNavigationPosition.NOTIFICATIONS.position
-        bottom_nav.active(navPos)
 
         (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let { note ->
             when (note.getWooType()) {
@@ -597,6 +625,11 @@ class MainActivity : AppCompatActivity(),
 
     override fun showReviewDetail(notification: NotificationModel, tempStatus: String?) {
         showBottomNav()
+        bottomNavView.currentPosition = REVIEWS
+
+        val navPos = BottomNavigationPosition.REVIEWS.position
+        bottom_nav.active(navPos)
+
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
                 notification.remoteNoteId,
                 notification.getCommentId(),
@@ -606,11 +639,22 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
-        // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
-        // detail fragment and then show a new one
+        bottomNavView.currentPosition = ORDERS
+
+        val navPos = BottomNavigationPosition.ORDERS.position
+        bottom_nav.active(navPos)
+
         if (markComplete) {
+            // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
+            // detail fragment and then show a new one
             navController.popBackStack(R.id.orderDetailFragment, true)
+
+            // immediately update the order badge to reflect the change
+            if (unfilledOrderCount > 0) {
+                showOrderBadge(unfilledOrderCount - 1)
+            }
         }
+
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigate(action)

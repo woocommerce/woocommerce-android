@@ -38,6 +38,7 @@ abstract class MockedOrderDetailModule {
     @Module
     companion object {
         private var order: WCOrderModel? = null
+        private var isVirtualProduct: Boolean = false
         private var isNetworkConnected: Boolean = false
         private var onOrderChanged: OnOrderChanged? = null
         private var orderStatus: WCOrderStatusModel? = null
@@ -50,6 +51,10 @@ abstract class MockedOrderDetailModule {
 
         fun setNetworkConnected(isNetworkConnected: Boolean) {
             this.isNetworkConnected = isNetworkConnected
+        }
+
+        fun setIsVirtualProduct(isVirtualProduct: Boolean) {
+            this.isVirtualProduct = isVirtualProduct
         }
 
         fun setOrderStatus(orderStatus: WCOrderStatusModel) {
@@ -96,7 +101,7 @@ abstract class MockedOrderDetailModule {
                     NotificationStore(
                             mock(), mockContext,
                             NotificationRestClient(mockContext, mockDispatcher, mock(), mock(), mock()),
-                            NotificationSqlUtils(FormattableContentMapper(Gson())), mock())
+                            NotificationSqlUtils(FormattableContentMapper(Gson())))
             ))
 
             /*
@@ -106,6 +111,7 @@ abstract class MockedOrderDetailModule {
             doNothing().whenever(mockedOrderDetailPresenter).requestShipmentTrackingsFromApi(any())
             doNothing().whenever(mockedOrderDetailPresenter).requestOrderNotesFromApi(any())
             doReturn(SiteModel()).whenever(mockSelectedSite).get()
+            doReturn(isVirtualProduct).whenever(mockedOrderDetailPresenter).isVirtualProduct(any())
             doReturn(isNetworkConnected).whenever(mockNetworkStatus).isConnected()
             doReturn(order).whenever(mockedOrderDetailPresenter).loadOrderDetailFromDb(any())
             doReturn(orderStatus).whenever(mockedOrderDetailPresenter).getOrderStatusForStatusKey(any())

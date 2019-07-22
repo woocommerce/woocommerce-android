@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -30,12 +31,14 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
 class OrderFulfillmentPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus
@@ -67,7 +70,6 @@ class OrderFulfillmentPresenter @Inject constructor(
             orderModel = getOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 view.showOrderDetail(order)
-                loadOrderShipmentTrackings()
             }
         }
     }
@@ -116,6 +118,14 @@ class OrderFulfillmentPresenter @Inject constructor(
             orderView?.showOrderShipmentTrackings(trackings)
         }
     }
+
+    /**
+     * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
+     * and if product exists in the local cache.
+     */
+    override fun isVirtualProduct(order: WCOrderModel) = isVirtualProduct(
+            selectedSite.get(), order.getLineItemList(), productStore
+    )
 
     override fun markOrderComplete() {
         orderView?.let { view ->

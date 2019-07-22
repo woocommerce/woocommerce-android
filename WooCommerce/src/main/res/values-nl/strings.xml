@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-28 12:54:04+0000
+Translation-Revision-Date: 2019-07-09 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="orderdetail_empty_shipping_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
     <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met %1$s</string>
@@ -567,7 +568,6 @@ Language: nl
     <string name="settings_third_party_policy_header">Beleid van derden</string>
     <string name="settings_cookie_policy_header">Cookiebeleid</string>
     <string name="settings_privacy_policy_header">Privacybeleid</string>
-    <string name="settings_footer">Met liefde gemaakt door Automattic</string>
     <string name="settings_tracking">We gebruiken ook andere tracking-tools, waaronder een aantal van derden. Bekijk meer informatie over deze tools en hoe je ze kunt beheren.</string>
     <string name="settings_privacy_policy">Privacybeleid lezen</string>
     <string name="settings_privacy_detail">Deze informatie helpt ons onze producten te verbeteren, marketing relevanter te maken en de WooCommerce-ervaring op je af te stemmen. Je vindt hierover meer informatie in ons privacybeleid.</string>
@@ -680,7 +680,7 @@ Language: nl
     <string name="date_timeframe_older_two_days">Ouder dan 2 dagen</string>
     <string name="date_timeframe_yesterday">Gisteren</string>
     <string name="date_timeframe_today">Vandaag</string>
-    <string name="notifications">Meldingen</string>
+    <string name="review_notifications">Meldingen</string>
     <string name="products">Producten</string>
     <string name="discard">Verwijder</string>
     <string name="this_year">Dit jaar</string>

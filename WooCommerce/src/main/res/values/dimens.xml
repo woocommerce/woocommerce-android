@@ -127,7 +127,6 @@
          Notifications
      -->
     <dimen name="notification_badge_sz">12dp</dimen>
-    <dimen name="notification_badge_offset">6dp</dimen>
 
     <!--
         Offline Status Bar

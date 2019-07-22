@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 15:54:06+0000
+Translation-Revision-Date: 2019-07-09 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="orderdetail_empty_shipping_address">Aucune adresse spécifiée.</string>
     <string name="login_need_help_finding_connected_email">Besoin d\'aide pour trouver l\'adresse e-mail avec laquelle vous vous êtes connecté ?</string>
     <string name="enter_wordpress_site">Le site Web à cette adresse n\'est pas un site WordPress. WordPress doit être installé sur le site pour que nous puissions nous y connecter.</string>
     <string name="enter_email_for_site">Connectez-vous à WordPress.com pour accéder à %1$s</string>
@@ -566,7 +567,6 @@ Language: fr
     <string name="settings_third_party_policy_header">Politique de tiers</string>
     <string name="settings_cookie_policy_header">Politique relative aux cookies</string>
     <string name="settings_privacy_policy_header">Politique de confidentialité</string>
-    <string name="settings_footer">Conçu avec amour par Automattic</string>
     <string name="settings_tracking">Nous utilisons d’autres outils de suivi, notamment des outils provenant de tiers. Découvrez-les et apprenez à les contrôler.</string>
     <string name="settings_privacy_policy">Lire la politique de confidentialité</string>
     <string name="settings_privacy_detail">Ces informations nous permettent d’améliorer nos produits, de mieux cibler nos campagnes marketing, de personnaliser votre expérience WooCommerce et plus encore, comme indiqué dans notre politique de confidentialité</string>
@@ -679,7 +679,7 @@ Language: fr
     <string name="date_timeframe_older_two_days">Il y a plus de 2 jours</string>
     <string name="date_timeframe_yesterday">Hier</string>
     <string name="date_timeframe_today">Aujourd’hui</string>
-    <string name="notifications">Notifications</string>
+    <string name="review_notifications">Notifications</string>
     <string name="products">Produits</string>
     <string name="discard">Rejeter</string>
     <string name="this_year">Cette année</string>

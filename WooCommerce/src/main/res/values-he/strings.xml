@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 08:54:52+0000
+Translation-Revision-Date: 2019-07-09 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="orderdetail_empty_shipping_address">לא צוינה כתובת.</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
     <string name="enter_email_for_site">עליך להתחבר אל WordPress.com כדי להתחבר אל %1$s</string>
@@ -567,7 +568,6 @@ Language: he_IL
     <string name="settings_third_party_policy_header">מדיניות של צד שלישי</string>
     <string name="settings_cookie_policy_header">מדיניות קובצי ה-Cookie</string>
     <string name="settings_privacy_policy_header">מדיניות פרטיות</string>
-    <string name="settings_footer">נוצר באהבה על ידי Automattic</string>
     <string name="settings_tracking">אנחנו משתמשים בכלים נוספים למעקב, כולל כלים של צד שלישי. אפשר לקרוא פרטים על אלו ועל אופן השליטה בהם.</string>
     <string name="settings_privacy_policy">עיון במדיניות פרטיות</string>
     <string name="settings_privacy_detail">המידע הזה עוזר לנו לשפר את המוצרים שלנו, להציג שיווק רלוונטי יותר, לספק לך חוויית שימוש אישית ב-WooCommerce ועוד, כפי שמפורט במדיניות הפרטיות שלנו</string>
@@ -680,7 +680,7 @@ Language: he_IL
     <string name="date_timeframe_older_two_days">בן יותר מיומיים</string>
     <string name="date_timeframe_yesterday">אתמול</string>
     <string name="date_timeframe_today">היום</string>
-    <string name="notifications">הודעות</string>
+    <string name="review_notifications">הודעות</string>
     <string name="products">מוצרים</string>
     <string name="discard">הסתר</string>
     <string name="this_year">השנה</string>
