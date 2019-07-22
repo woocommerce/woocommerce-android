@@ -388,7 +388,7 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.notifs_empty_message) else empty_view.hide()
+        if (show) empty_view.show(R.string.reviews_empty_message) else empty_view.hide()
     }
     /**
      * Only show the "mark all read" menu item when this fragment is active and there are unread notifs
