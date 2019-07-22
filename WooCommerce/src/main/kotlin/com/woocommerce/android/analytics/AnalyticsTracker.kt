@@ -2,7 +2,7 @@ package com.woocommerce.android.analytics
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.TracksClient
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
@@ -456,7 +456,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The view to be tracked
          */
         fun trackViewShown(view: Any) {
-            AnalyticsTracker.track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
+            track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
         }
 
         /**
@@ -464,7 +464,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The active view when event was fired
          */
         fun trackBackPressed(view: Any) {
-            AnalyticsTracker.track(BACK_PRESSED, mapOf(KEY_CONTEXT to view::class.java.simpleName))
+            track(BACK_PRESSED, mapOf(KEY_CONTEXT to view::class.java.simpleName))
         }
 
         fun flush() {

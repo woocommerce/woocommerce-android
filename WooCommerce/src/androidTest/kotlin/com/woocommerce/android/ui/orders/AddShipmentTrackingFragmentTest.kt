@@ -113,8 +113,8 @@ class AddShipmentTrackingFragmentTest : TestBase() {
 
         // select a date from the dialog
         onView(withClassName(equalTo(DatePicker::class.java.name)))
-                .perform(PickerActions.setDate(calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH) + 1, 2))
+                .perform(PickerActions.setDate(calendar.get(YEAR),
+                        calendar.get(MONTH) + 1, 2))
 
         // click on ok button inside dialog
         onView(withId(android.R.id.button1)).perform(click())
@@ -122,7 +122,7 @@ class AddShipmentTrackingFragmentTest : TestBase() {
         // verify that the date selected is displayed correctly
         onView(withId(R.id.addTracking_date)).check(matches(withText(
                 DateUtils.getLocalizedLongDateString(appContext,
-                        "${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.MONTH) + 1}-02")
+                        "${calendar.get(YEAR)}-${calendar.get(MONTH) + 1}-02")
         )))
     }
 
@@ -146,7 +146,7 @@ class AddShipmentTrackingFragmentTest : TestBase() {
         // select a date from the dialog
         onView(withClassName(equalTo(DatePicker::class.java.name)))
                 .perform(PickerActions.setDate(
-                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, 2
+                        calendar.get(YEAR), calendar.get(MONTH) + 1, 2
                 ))
 
         // click on cancel button inside dialog

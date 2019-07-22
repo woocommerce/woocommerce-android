@@ -163,7 +163,7 @@ object WCMatchers {
                 description.appendText("with number of items: $itemsCount")
             }
 
-            override fun matchesSafely(recyclerView: androidx.recyclerview.widget.RecyclerView): Boolean {
+            override fun matchesSafely(recyclerView: RecyclerView): Boolean {
                 val adapter = recyclerView.adapter as? SectionedRecyclerViewAdapter
                 return adapter?.getSectionTotal() == itemsCount
             }
