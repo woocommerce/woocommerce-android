@@ -42,7 +42,7 @@ We do our best to respond quickly to all pull requests. If you don't get a respo
 ### Development Practices
 
 <!--TODO-->
-Have look at the [Coding Style Guide](https://github.com/woocommerce/woocommerce-android/wiki/Coding-Style) to learn how to format your code so it passes the convention and quality checks like the rest of the project. The [Wiki](https://github.com/woocommerce/woocommerce-android/wiki) contains all the development guides like [what a good pull request looks like](https://github.com/woocommerce/woocommerce-android/wiki/Pull-Request-Guidelines), and [how to use String and Drawable resources](https://github.com/woocommerce/woocommerce-android/wiki/Using-Android-Resources).
+Have a look at the [Coding Style Guide](https://github.com/woocommerce/woocommerce-android/wiki/Coding-Style) to learn how to format your code so it passes the convention and quality checks like the rest of the project. The [Wiki](https://github.com/woocommerce/woocommerce-android/wiki) contains all the development guides like [what a good pull request looks like](https://github.com/woocommerce/woocommerce-android/wiki/Pull-Request-Guidelines), and [how to use String and Drawable resources](https://github.com/woocommerce/woocommerce-android/wiki/Using-Android-Resources).
 
 ## Getting in Touch
 
