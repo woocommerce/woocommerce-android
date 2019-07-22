@@ -84,7 +84,7 @@
     <!--
         Login Library Overrides
     -->
-    <string name="enter_site_address" content_override="true">Enter the address of your WooCommerce store you\'d like to connect.</string>
+    <string name="enter_site_address" content_override="true">Enter the address of the WooCommerce store you\'d like to connect.</string>
 
     <!--
         Login View
