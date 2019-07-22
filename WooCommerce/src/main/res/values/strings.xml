@@ -579,7 +579,7 @@
     <!-- Other -->
     <string name="shared_element_transition" translatable="false">shared_element</string>
     <string name="error_loading_image">Unable to load image</string>
-    <string name="login_invalid_site_url">The site address you entered is invalid. Please re-enter it.</string>
+    <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 
