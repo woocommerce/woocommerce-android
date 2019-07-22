@@ -74,7 +74,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
         }
         val attrs = intArrayOf(android.R.attr.listDivider)
         val a = ctx.obtainStyledAttributes(attrs)
-        setDrawable(a.getDrawable(0))
+        a.getDrawable(0)?.let { setDrawable(it) }
         a.recycle()
     }
     lateinit var divider: Drawable
