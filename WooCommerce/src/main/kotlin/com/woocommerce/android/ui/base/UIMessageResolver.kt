@@ -23,6 +23,25 @@ interface UIMessageResolver {
     val snackbarRoot: ViewGroup
 
     /**
+     * Create and return a snackbar displaying the provided message and a RESTART button.
+     *
+     * @param [stringResId] The string resource id of the base message
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [actionListener] Listener to handle the restart button click event
+     */
+    fun getRestartSnack(
+        @StringRes stringResId: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionListener: OnClickListener
+    ): Snackbar {
+        return getSnackbarWithAction(
+                snackbarRoot,
+                snackbarRoot.context.getString(stringResId, *stringArgs),
+                snackbarRoot.context.getString(R.string.restart),
+                actionListener)
+    }
+
+    /**
      * Create and return a snackbar displaying the provided message and a RETRY button.
      *
      * @param [stringResId] The string resource id of the base message
