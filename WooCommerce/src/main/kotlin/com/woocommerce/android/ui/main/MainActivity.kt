@@ -149,7 +149,7 @@ class MainActivity : AppUpgradeActivity(),
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
 
-        // check for any new app updates
+        // check for any new app updates only after the user has logged into the app
         checkForAppUpdates()
     }
 

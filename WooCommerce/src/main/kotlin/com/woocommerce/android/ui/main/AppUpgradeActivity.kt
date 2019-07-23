@@ -14,6 +14,7 @@ import com.google.android.play.core.install.model.ActivityResult
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.util.WooLog
 
@@ -33,6 +34,11 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
     private val inAppUpdateType = BuildConfig.IN_APP_UPDATE_TYPE.toInt()
 
     private var appUpdateStarted: Boolean = false
+
+    /**
+     * The latest app version code that is available for download
+     */
+    private var appUpdateVersionCode: Int? = null
 
     /**
      * Listener that is passed to the calling activity, if the update has failed for some reason.
@@ -69,7 +75,9 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
                 //  handle user's rejection
                 Activity.RESULT_CANCELED -> {
                     appUpdateStarted = false
-                    // TODO: store the user's preference in SharedPrefs and don't show the upgrade dialog again
+                    // Store the current available app version code to note that the user has cancelled this update.
+                    // This will ensure that the update dialog is not displayed again for this version
+                    appUpdateVersionCode?.let { AppPrefs.setCancelledAppVersionCode(it) }
                 }
                 //  handle update failure
                 ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> showAppUpdateFailedSnack(updateFailedActionListener)
@@ -100,6 +108,12 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
      * Method is called from the child activity to check if there are any app updates pending.
      * This will display either [AppUpdateType.FLEXIBLE] or [AppUpdateType.IMMEDIATE] dialog to the user,
      * if there is a new app update.
+     *
+     * The reason this is called from the child activity and not from this activity, is to provide control
+     * to the calling activity when to display the update dialog.
+     *
+     * If an update is available and supported, and only if the user has not cancelled the update for this current,
+     * the update dialog will be displayed
      */
     internal fun checkForAppUpdates() {
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
@@ -107,17 +121,25 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
                 UpdateAvailability.UPDATE_AVAILABLE -> {
                     // Checks that the platform will allow the specified type of update
                     if (appUpdateInfo.isUpdateTypeAllowed(inAppUpdateType)) {
-                        if (isAppUpdateImmediate()) {
-                            // initiate immediate update flow
-                            requestAppUpdate(appUpdateInfo)
-                        } else if (isAppUpdateFlexible()) {
-                            // Before starting an update, register a listener for updates.
-                            // initiate flexible update flow
-                            appUpdateManager.registerListener(this)
-                            requestAppUpdate(appUpdateInfo)
+                        // Display the upgrade dialog only if the user has not cancelled the upgrade for this version.
+                        // This is checked by getting the current available app version code and checking
+                        // if this version > that the stored app version code.
+                        val availableAppVersionCode = appUpdateInfo.availableVersionCode()
+                        val storedAppVersionCode = AppPrefs.getCancelledAppVersionCode()
+                        if (availableAppVersionCode > storedAppVersionCode) {
+                            if (isAppUpdateImmediate()) {
+                                // initiate immediate update flow
+                                requestAppUpdate(appUpdateInfo)
+                            } else if (isAppUpdateFlexible()) {
+                                // Before starting an update, register a listener for updates.
+                                // initiate flexible update flow
+                                appUpdateManager.registerListener(this)
+                                requestAppUpdate(appUpdateInfo)
+                            }
                         }
                         // the app update process has started
                         appUpdateStarted = true
+                        appUpdateVersionCode = availableAppVersionCode
                     }
                 }
                 UpdateAvailability.UPDATE_NOT_AVAILABLE -> {
