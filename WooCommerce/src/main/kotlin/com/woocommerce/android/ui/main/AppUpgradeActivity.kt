@@ -33,8 +33,6 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
      */
     private val inAppUpdateType = BuildConfig.IN_APP_UPDATE_TYPE.toInt()
 
-    private var appUpdateStarted: Boolean = false
-
     /**
      * The latest app version code that is available for download
      */
@@ -68,13 +66,22 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
         handleAppUpdateOnResumed()
     }
 
+    override fun onStart() {
+        super.onStart()
+        appUpdateManager.registerListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        appUpdateManager.unregisterListener(this)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_IN_APP_UPDATE) {
             when (resultCode) {
                 //  handle user's rejection
                 Activity.RESULT_CANCELED -> {
-                    appUpdateStarted = false
                     // Store the current available app version code to note that the user has cancelled this update.
                     // This will ensure that the update dialog is not displayed again for this version
                     appUpdateVersionCode?.let { AppPrefs.setCancelledAppVersionCode(it) }
@@ -92,8 +99,7 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
             InstallStatus.DOWNLOADED -> {
                 // After the update is downloaded, show a notification
                 // and request user confirmation to restart the app.
-                appUpdateManager.unregisterListener(this)
-                showAppUpdateSuccessSnack(updateSuccessActionListener)
+                handleFlexibleUpdateSuccess()
             }
             InstallStatus.FAILED -> {
                 // App update failed for some reason. This could happen due to network
@@ -119,7 +125,8 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
             when (appUpdateInfo.updateAvailability()) {
                 UpdateAvailability.UPDATE_AVAILABLE -> {
-                    // Checks that the platform will allow the specified type of update
+                    // Checks that the platform will allow the specified type of update. This will always return false
+                    // if there is no internet
                     if (appUpdateInfo.isUpdateTypeAllowed(inAppUpdateType)) {
                         // Display the upgrade dialog only if the user has not cancelled the upgrade for this version.
                         // This is checked by getting the current available app version code and checking
@@ -130,23 +137,29 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
                             if (isAppUpdateImmediate()) {
                                 // initiate immediate update flow
                                 requestAppUpdate(appUpdateInfo)
-                            } else if (isAppUpdateFlexible()) {
+                            } else {
                                 // Before starting an update, register a listener for updates.
                                 // initiate flexible update flow
-                                appUpdateManager.registerListener(this)
                                 requestAppUpdate(appUpdateInfo)
                             }
                         }
-                        // the app update process has started
-                        appUpdateStarted = true
                         appUpdateVersionCode = availableAppVersionCode
                     }
                 }
                 UpdateAvailability.UPDATE_NOT_AVAILABLE -> {
                     WooLog.v(WooLog.T.UTILS, "App update not available")
                 }
+                UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
+                    // If the app download initiated by the user is in progress and it is a fexible install,
+                    // and if the download is completed, we need to inform the user to manually restart the app,
+                    // in order to install the update. This is only true for FLEXIBLE updates so we need to check
+                    // if the AppUpdateType is FLEXIBLE before proceeding
+                    if (isAppUpdateFlexible() && appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                            handleFlexibleUpdateSuccess()
+                        }
+                    }
+                }
             }
-        }
     }
 
     /**
@@ -154,11 +167,6 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
      * started and if so, verify that the UI is updated accordingly
      */
     private fun handleAppUpdateOnResumed() {
-        // Check if the app update process has started.
-        // If not, there is no point in checking if app update is available, so do nothing
-        if (!appUpdateStarted) {
-            return
-        }
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
             when (appUpdateInfo.updateAvailability()) {
                 UpdateAvailability.UPDATE_AVAILABLE -> {
@@ -169,8 +177,7 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
                     // app.
                     if (isAppUpdateFlexible() && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
                         if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
-                            // display a Snackbar here to ask the user to manually restart the app
-                            showAppUpdateSuccessSnack(updateSuccessActionListener)
+                            handleFlexibleUpdateSuccess()
                         }
                     }
                 }
@@ -203,5 +210,10 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
                 this,
                 REQUEST_CODE_IN_APP_UPDATE
         )
+    }
+
+    private fun handleFlexibleUpdateSuccess() {
+        appUpdateManager.unregisterListener(this)
+        showAppUpdateSuccessSnack(updateSuccessActionListener)
     }
 }
