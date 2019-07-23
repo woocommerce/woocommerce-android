@@ -35,8 +35,8 @@
     <string name="hide_details">Hide Details</string>
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
-    <string name="restart">Restart</string>
-    <string name="update_downloaded">App update is completed. Tap to restart</string>
+    <string name="install">Install</string>
+    <string name="update_downloaded">Woo has downloaded an update</string>
     <string name="update_failed">App update failed. Tap to retry</string>
     <string name="continue_button">Continue</string>
     <string name="refresh_button">Refresh</string>

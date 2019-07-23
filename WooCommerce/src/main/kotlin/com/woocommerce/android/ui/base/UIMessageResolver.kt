@@ -34,10 +34,10 @@ interface UIMessageResolver {
         vararg stringArgs: String = arrayOf(),
         actionListener: OnClickListener
     ): Snackbar {
-        return getSnackbarWithAction(
+        return getIndefiniteSnackbarWithAction(
                 snackbarRoot,
                 snackbarRoot.context.getString(stringResId, *stringArgs),
-                snackbarRoot.context.getString(R.string.restart),
+                snackbarRoot.context.getString(R.string.install),
                 actionListener)
     }
 
