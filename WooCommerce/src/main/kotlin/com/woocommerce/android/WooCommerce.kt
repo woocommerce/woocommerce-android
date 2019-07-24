@@ -74,7 +74,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
     private var connectionReceiverRegistered = false
 
-    protected open val component: AppComponent by lazy {
+    open val component: AppComponent by lazy {
         DaggerAppComponent.builder()
                 .application(this)
                 .build()
@@ -82,6 +82,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
+
+        @JvmStatic lateinit var instance: WooCommerce
     }
 
     /**
@@ -100,6 +102,8 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
 
     override fun onCreate() {
         super.onCreate()
+
+        instance = this
 
         // Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
         // https://github.com/woocommerce/woocommerce-android/issues/817

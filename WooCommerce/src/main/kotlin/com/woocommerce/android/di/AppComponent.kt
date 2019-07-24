@@ -4,6 +4,7 @@ import android.app.Application
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
+import com.woocommerce.android.ui.orders.OrderDetailPaymentView
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -34,6 +35,8 @@ import javax.inject.Singleton
         SupportModule::class])
 interface AppComponent : AndroidInjector<WooCommerce> {
     override fun inject(app: WooCommerce)
+
+    fun inject(paymentInfoView: OrderDetailPaymentView)
 
     // Allows us to inject the application without having to instantiate any modules, and provides the Application
     // in the app graph
