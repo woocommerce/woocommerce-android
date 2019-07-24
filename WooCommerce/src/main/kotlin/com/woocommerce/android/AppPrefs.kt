@@ -43,7 +43,9 @@ object AppPrefs {
         // Play cha-ching sound on new order notifications
         NOTIFS_ORDERS_CHA_CHING_ENABLED,
         // Number of times the "mark all notifications read" icon was tapped
-        NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN
+        NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN,
+        // The app update for this version was cancelled by the user
+        CANCELLED_APP_VERSION_CODE,
     }
 
     fun init(context: Context) {
@@ -56,6 +58,14 @@ object AppPrefs {
 
     fun setLastAppVersionCode(versionCode: Int) {
         setDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
+    }
+
+    fun getCancelledAppVersionCode(): Int {
+        return getDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE)
+    }
+
+    fun setCancelledAppVersionCode(versionCode: Int) {
+        setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
     }
 
     fun setSupportEmail(email: String?) {

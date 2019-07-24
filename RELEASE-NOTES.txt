@@ -2,6 +2,7 @@
 -----
 * The Notifications tab has been replaced by Reviews 
 * The unfulfilled order count has been removed from the dashboard and is now shown as a badge on the order list
+* Added support to update the app without even going to the play store.
  
 2.3
 -----

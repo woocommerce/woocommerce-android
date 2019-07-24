@@ -22,6 +22,26 @@ interface UIMessageResolver {
     val snackbarRoot: ViewGroup
 
     /**
+     * Create and return a snackbar displaying a message to restart the app once the in app update has been
+     * successfully installed
+     *
+     * @param [stringResId] The string resource id of the base message
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [actionListener] Listener to handle the install button click event
+     */
+    fun getRestartSnack(
+        @StringRes stringResId: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionListener: View.OnClickListener
+    ): Snackbar {
+        return getIndefiniteSnackbarWithAction(
+                snackbarRoot,
+                snackbarRoot.context.getString(stringResId, *stringArgs),
+                snackbarRoot.context.getString(R.string.install),
+                actionListener)
+    }
+
+    /**
      * Create and return a snackbar displaying the provided message and a RETRY button.
      *
      * @param [stringResId] The string resource id of the base message
