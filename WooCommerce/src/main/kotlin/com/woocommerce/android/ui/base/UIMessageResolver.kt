@@ -32,7 +32,7 @@ interface UIMessageResolver {
     fun getRestartSnack(
         @StringRes stringResId: Int,
         vararg stringArgs: String = arrayOf(),
-        actionListener: OnClickListener
+        actionListener: View.OnClickListener
     ): Snackbar {
         return getIndefiniteSnackbarWithAction(
                 snackbarRoot,
