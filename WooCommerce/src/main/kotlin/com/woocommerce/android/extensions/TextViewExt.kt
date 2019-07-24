@@ -36,11 +36,11 @@ fun TextView.setHtmlText(html: String, onLinkClicked: OnLinkClicked? = null) {
 
 private fun addLinkListener(strBuilder: SpannableStringBuilder, span: ClickableSpan, onLinkClicked: OnLinkClicked) {
     val newSpan = object : ClickableSpan() {
-        override fun onClick(widget: View?) {
+        override fun onClick(widget: View) {
             // Call the original onClick function for the span
             span.onClick(widget)
             // Also call the custom callback function we were given
-            widget?.let { onLinkClicked(this) }
+            widget.let { onLinkClicked(this) }
         }
     }
 

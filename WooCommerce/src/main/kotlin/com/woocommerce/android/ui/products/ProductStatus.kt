@@ -26,7 +26,7 @@ enum class ProductStatus {
     companion object {
         fun fromString(status: String): ProductStatus? {
             val statusLC = status.toLowerCase()
-            ProductStatus.values().forEach { value ->
+            values().forEach { value ->
                 if (value.toString().toLowerCase() == statusLC) return value
             }
             return null

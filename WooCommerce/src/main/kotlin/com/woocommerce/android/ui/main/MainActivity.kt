@@ -95,7 +95,7 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
@@ -362,7 +362,7 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
