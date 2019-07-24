@@ -3,7 +3,7 @@ package com.woocommerce.android
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
 
@@ -60,7 +60,7 @@ object AppPrefs {
 
     fun setSupportEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
-            setString(DeletablePrefKey.SUPPORT_EMAIL, email!!)
+            setString(DeletablePrefKey.SUPPORT_EMAIL, email)
         } else {
             remove(DeletablePrefKey.SUPPORT_EMAIL)
         }
@@ -170,8 +170,11 @@ object AppPrefs {
     private fun setInt(key: PrefKey, value: Int) =
             PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
-    private fun getString(key: PrefKey, defaultValue: String = "") =
-            PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue)
+    private fun getString(key: PrefKey, defaultValue: String = ""): String {
+        return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue)?.let {
+            it
+        } ?: defaultValue
+    }
 
     private fun setString(key: PrefKey, value: String) =
             PreferenceUtils.setString(getPreferences(), key.toString(), value)

@@ -98,9 +98,9 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
     fun copyTrackingNumber(item: WCOrderShipmentTrackingModel) {
         try {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.primaryClip = ClipData.newPlainText(
+            clipboard.setPrimaryClip(ClipData.newPlainText(
                     context.getString(R.string.order_shipment_tracking_number),
-                    item.trackingNumber)
+                    item.trackingNumber))
             uiMessageResolver.showSnack(R.string.order_shipment_tracking_number_clipboard)
         } catch (e: Exception) {
             WooLog.e(WooLog.T.UTILS, e)

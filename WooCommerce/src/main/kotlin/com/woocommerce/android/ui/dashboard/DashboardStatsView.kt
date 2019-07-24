@@ -32,7 +32,6 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.io.Serializable
@@ -135,7 +134,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
     }
 
-    override fun onVisibilityChanged(changedView: View?, visibility: Int) {
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
         super.onVisibilityChanged(changedView, visibility)
         if (visibility == View.VISIBLE) {
             updateRecencyMessage()
@@ -232,7 +231,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         // get the date for this entry
         val dateindex = barEntry.x.toInt()
-        val date = if (activeGranularity == YEARS) dateindex.toString() else
+        val date = if (activeGranularity == StatsGranularity.YEARS) dateindex.toString() else
             chartRevenueStats.keys.elementAt(dateindex - 1)
         val formattedDate = when (activeGranularity) {
             StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)

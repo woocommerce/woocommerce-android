@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.base
 
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
@@ -32,7 +31,7 @@ interface UIMessageResolver {
     fun getUndoSnack(
         @StringRes stringResId: Int,
         vararg stringArgs: String = arrayOf(),
-        actionListener: OnClickListener
+        actionListener: View.OnClickListener
     ): Snackbar {
         return getSnackbarWithAction(
                 snackbarRoot,
@@ -51,7 +50,7 @@ interface UIMessageResolver {
     fun getRetrySnack(
         @StringRes stringResId: Int,
         vararg stringArgs: String = arrayOf(),
-        actionListener: OnClickListener
+        actionListener: View.OnClickListener
     ): Snackbar {
         return getIndefiniteSnackbarWithAction(
                 snackbarRoot,
@@ -101,6 +100,6 @@ interface UIMessageResolver {
         view: View,
         msg: String,
         actionString: String,
-        actionListener: OnClickListener
+        actionListener: View.OnClickListener
     ) = Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAction(actionString, actionListener)
 }

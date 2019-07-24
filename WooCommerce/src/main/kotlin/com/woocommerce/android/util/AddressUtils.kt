@@ -54,7 +54,8 @@ object AddressUtils {
         return getAddressData(address).takeIf { it.postalCountry != null }?.let {
             val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
             try {
-                formatInterpreter.getEnvelopeAddress(it).joinToString(System.getProperty("line.separator"))
+                val separator = System.getProperty("line.separator") ?: ""
+                formatInterpreter.getEnvelopeAddress(it).joinToString(separator)
             } catch (e: NullPointerException) {
                 // in rare cases getEnvelopeAddress() will throw a NPE due to invalid region data
                 // see https://github.com/woocommerce/woocommerce-android/issues/509
