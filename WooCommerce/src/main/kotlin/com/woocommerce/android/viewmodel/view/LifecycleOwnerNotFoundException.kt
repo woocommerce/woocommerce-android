@@ -1,3 +1,3 @@
-package com.woocommerce.android.viewmodel
+package com.woocommerce.android.viewmodel.view
 
 class LifecycleOwnerNotFoundException : Exception()

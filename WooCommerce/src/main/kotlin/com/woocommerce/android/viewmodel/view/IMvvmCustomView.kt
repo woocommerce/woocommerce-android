@@ -1,4 +1,4 @@
-package com.woocommerce.android.viewmodel
+package com.woocommerce.android.viewmodel.view
 
 import androidx.lifecycle.LifecycleOwner
 
