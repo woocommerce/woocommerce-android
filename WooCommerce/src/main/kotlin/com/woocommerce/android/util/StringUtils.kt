@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Patterns
 import androidx.annotation.StringRes
 import org.wordpress.android.fluxc.model.SiteModel
+import java.io.IOException
 
 object StringUtils {
     private const val ONE_MILLION = 1000000
@@ -109,5 +110,20 @@ object StringUtils {
             WooLog.d(WooLog.T.UTILS, "Unable to find a valid country name for country code: $storeCountry")
         }
         return null
+    }
+
+    /**
+     * Given a raw HTML file, returns the url for the file
+     */
+    fun getRawFileUrl(context: Context, rawId: Int): String {
+        return try {
+            val inputStream = context.resources.openRawResource(rawId)
+            val buffer = ByteArray(inputStream.available())
+            inputStream.read(buffer)
+            inputStream.close()
+            String(buffer)
+        } catch (e: IOException) {
+            ""
+        }
     }
 }

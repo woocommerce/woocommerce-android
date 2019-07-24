@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.fragment_licenses.*
 
 class LicensesFragment : androidx.fragment.app.Fragment() {
@@ -20,7 +21,10 @@ class LicensesFragment : androidx.fragment.app.Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        webView.loadUrl("file:///android_res/raw/licenses.html")
+        context?.let {
+            val prompt = StringUtils.getRawFileUrl(it, R.raw.licenses)
+            webView.loadData(prompt, "text/html", "utf-8")
+        }
     }
 
     override fun onResume() {
