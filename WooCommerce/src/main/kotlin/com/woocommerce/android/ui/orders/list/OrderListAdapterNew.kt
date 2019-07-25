@@ -23,15 +23,16 @@ import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
 
-private const val VIEW_TYPE_ORDER_ITEM = 0
-private const val VIEW_TYPE_SECTION_HEADER = 2
-private const val VIEW_TYPE_LOADING = 1
-
 class OrderListAdapterNew(
     val currencyFormatter: CurrencyFormatter,
     var activeOrderStatusMap: Map<String, WCOrderStatusModel>,
     val onItemSelected: (remoteOrderId: Long) -> Unit
 ) : PagedListAdapter<OrderListItemUIType, ViewHolder>(OrderListDiffItemCallback) {
+    companion object {
+        private const val VIEW_TYPE_ORDER_ITEM = 0
+        private const val VIEW_TYPE_SECTION_HEADER = 2
+        private const val VIEW_TYPE_LOADING = 1
+    }
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is OrderListItemUI -> VIEW_TYPE_ORDER_ITEM
@@ -58,18 +59,22 @@ class OrderListAdapterNew(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        if (holder is OrderItemUIViewHolder) {
-            assert(item is OrderListItemUI) {
-                "If we are presenting WCOrderItemUIViewHolder, the item has to be of type WCOrderListUIItem " +
-                        "for position: $position"
+        when(holder) {
+            is OrderItemUIViewHolder -> {
+                assert(item is OrderListItemUI) {
+                    "If we are presenting WCOrderItemUIViewHolder, the item has to be of type WCOrderListUIItem " +
+                            "for position: $position"
+                }
+                holder.onBind((item as OrderListItemUI))
             }
-            holder.onBind((item as OrderListItemUI))
-        } else if (holder is SectionHeaderViewHolder) {
-            assert(item is SectionHeader) {
-                "If we are presenting SectionHeaderViewHolder, the item has to be of type SectionHeader " +
-                        "for position: $position"
+            is SectionHeaderViewHolder -> {
+                assert(item is SectionHeader) {
+                    "If we are presenting SectionHeaderViewHolder, the item has to be of type SectionHeader " +
+                            "for position: $position"
+                }
+                holder.onBind((item as SectionHeader))
             }
-            holder.onBind((item as SectionHeader))
+            else -> {}
         }
     }
 
