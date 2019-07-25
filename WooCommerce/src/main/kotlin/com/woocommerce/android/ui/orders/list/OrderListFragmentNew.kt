@@ -42,7 +42,11 @@ import javax.inject.Inject
 class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         OrderStatusSelectorDialog.OrderStatusDialogListener {
     companion object {
-        const val TAG: String = "OrderListFragment"
+        const val TAG: String = "OrderListFragmentNew"
+        const val STATE_KEY_LIST = "list-state"
+        const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
+        const val STATE_KEY_SEARCH_QUERY = "search-query"
+        const val STATE_KEY_IS_SEARCHING = "is_searching"
 
         fun newInstance(orderStatusFilter: String? = null) =
             OrderListFragmentNew().apply { this.orderStatusFilter = orderStatusFilter }
@@ -58,10 +62,8 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private var orderFilterDialog: OrderStatusSelectorDialog? = null
 
-    override var isRefreshPending = true
-    override var isRefreshing: Boolean
-        get() = orderRefreshLayout.isRefreshing
-        set(_) {}
+    override var isRefreshPending = false // not used.
+    override var isRefreshing = false // not used.
     override var isSearching: Boolean = false
 
     private var listState: Parcelable? = null // Save the state of the recycler view
@@ -83,8 +85,12 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         super.onCreate(savedInstanceState)
 
         setHasOptionsMenu(true)
-
-        // FIXME: State
+        savedInstanceState?.let { bundle ->
+            listState = bundle.getParcelable(STATE_KEY_LIST)
+            orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
+            isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
+            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
+        }
     }
 
     override fun onCreateView(
@@ -107,13 +113,12 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                 setOnRefreshListener {
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
 
-                    if (!isRefreshPending) {
-                        isRefreshPending = true
-                        if (isSearching) {
-                            // FIXME: Search
-                        } else {
-                            pagedListWrapper?.fetchFirstPage()
-                        }
+                    orderRefreshLayout.isRefreshing = false
+
+                    if (isSearching) {
+                        // FIXME: Search
+                    } else {
+                        pagedListWrapper?.fetchFirstPage()
                     }
                 }
             }
@@ -154,18 +159,10 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         }
 
         presenter.takeView(this)
-
         empty_view.setSiteToShare(selectedSite.get(), Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
-        if (isActive && !deferInit) {
-            val orderListDescriptor = presenter.generateListDescriptor(orderStatusFilter, "")
-            loadList(orderListDescriptor)
-        }
-
-        listState?.let {
-            ordersList.layoutManager?.onRestoreInstanceState(listState)
-            listState = null
-        }
+        val orderListDescriptor = presenter.generateListDescriptor(orderStatusFilter, "")
+        loadList(orderListDescriptor)
     }
 
     override fun onResume() {
@@ -179,6 +176,17 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         // If the order filter dialog is visible, close it
         orderFilterDialog?.dismiss()
         orderFilterDialog = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        val listState = ordersList.layoutManager?.onSaveInstanceState()
+
+        outState.putParcelable(STATE_KEY_LIST, listState)
+        outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
+        outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
+        outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroyView() {
@@ -203,9 +211,15 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             if (isSearching) {
                 // FIXME: Search
             } else {
-                // FIXME: load orders
+                pagedListWrapper?.fetchFirstPage()
             }
         }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        // FIXME: Filtering
     }
 
     // region Options menu
@@ -223,12 +237,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     override fun onPrepareOptionsMenu(menu: Menu?) {
         refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-        // FIXME: Filtering
     }
 
     /**
@@ -264,7 +272,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     private fun shouldShowFilterMenuItem(): Boolean {
-        var isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
+        val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
         return when {
             !isActive -> false
             (isShowingAllOrders() && empty_view.visibility == View.VISIBLE) -> false
@@ -274,7 +282,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     private fun shouldShowSearchMenuItem(): Boolean {
-        var isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
+        val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
         return when {
             (isChildShowing) -> false
             else -> true
@@ -306,14 +314,11 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun refreshFragmentState() {
-        isRefreshPending = true
-        if (isActive) {
-            if (isSearching) {
-                // FIXME: Search
+        if (isSearching) {
+            // FIXME: Search
 //                presenter.searchOrders(searchQuery)
-            } else {
-                pagedListWrapper?.fetchFirstPage()
-            }
+        } else {
+            pagedListWrapper?.fetchFirstPage()
         }
     }
 
@@ -327,9 +332,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         if (isSearching) {
             searchMenuItem?.expandActionView()
             searchView?.setQuery(searchQuery, false)
-        } else {
-            // FIXME: Is this needed now? Does the list automatically update if the db is changed?
-//            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
         }
     }
 
@@ -363,7 +365,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                 }
             }
             empty_view.show(messageId, showImage, showShareButton)
-            isRefreshPending = false
         } else {
             empty_view.hide()
         }
@@ -377,6 +378,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
+        // So the order status can be matched to the appropriate label
         ordersAdapter.setOrderStatusOptions(orderStatusOptions)
     }
 
@@ -410,8 +412,16 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             })
             wrapper.data.observe(this, Observer {
                 it?.let { orderListData ->
-                    ordersAdapter.submitList(orderListData)
-                    isRefreshPending = false
+                    if (orderListData.isNotEmpty()) {
+                        showEmptyView(false)
+                        ordersAdapter.submitList(orderListData)
+                        listState?.let {
+                            ordersList.layoutManager?.onRestoreInstanceState(listState)
+                            listState = null
+                        }
+                    } else {
+                        showEmptyView(true)
+                    }
                 }
             })
         }
