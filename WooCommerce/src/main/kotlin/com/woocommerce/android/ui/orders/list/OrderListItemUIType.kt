@@ -52,13 +52,13 @@ sealed class OrderListItemUIType {
         }
 
         if (this is OrderListItemUI && other is OrderListItemUI) {
-            if (remoteOrderId != other.remoteOrderId
-                    || orderNumber != other.orderNumber
-                    || orderName != other.orderName
-                    || orderTotal != other.orderTotal
-                    || status != other.status
-                    || dateCreated != other.dateCreated
-                    || currencyCode != other.currencyCode) {
+            if (remoteOrderId != other.remoteOrderId ||
+                    orderNumber != other.orderNumber ||
+                    orderName != other.orderName ||
+                    orderTotal != other.orderTotal ||
+                    status != other.status ||
+                    dateCreated != other.dateCreated ||
+                    currencyCode != other.currencyCode) {
                 return false
             }
         }
