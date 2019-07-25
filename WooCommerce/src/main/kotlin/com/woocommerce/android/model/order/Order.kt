@@ -1,7 +1,5 @@
 package com.woocommerce.android.model.order
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -9,7 +7,6 @@ import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
-@Parcelize
 data class Order(
     val remoteOrderId: Long,
     val number: String,
@@ -31,8 +28,7 @@ data class Order(
     val billingAddress: OrderAddress,
     val shippingAddress: OrderAddress,
     val items: List<Item>
-) : Parcelable {
-    @Parcelize
+) {
     data class Item(
         val productId: Long,
         val name: String,
@@ -42,7 +38,7 @@ data class Order(
         val totalTax: BigDecimal,
         val total: BigDecimal,
         val variationId: Long
-    ) : Parcelable
+    )
 }
 
 fun WCOrderModel.toAppModel(): Order {

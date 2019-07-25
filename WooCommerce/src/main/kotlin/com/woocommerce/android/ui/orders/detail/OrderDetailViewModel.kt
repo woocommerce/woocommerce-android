@@ -10,8 +10,10 @@ import javax.inject.Named
 class OrderDetailViewModel
 @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    val paymentInfoViewModel: OrderDetailPaymentViewModel
+    private val paymentInfoViewModel: OrderDetailPaymentViewModel
 ) : ScopedViewModel(mainDispatcher) {
+    val paymentInfoData = paymentInfoViewModel.data
+
     fun updatePaymentInfo(order: Order) {
         paymentInfoViewModel.update(order)
     }

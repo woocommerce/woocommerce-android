@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -104,11 +105,19 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         val nonNullActivity = checkNotNull(activity)
 
 //        initializeViews(savedInstanceState)
-        initializeViewModels(nonNullActivity)
+        initializeViewModels()
     }
 
-    private fun initializeViewModels(activity: FragmentActivity) {
+    private fun initializeViewModels() {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(OrderDetailViewModel::class.java)
+
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.paymentInfoData.observe(this, Observer {
+            orderDetail_paymentInfo.updateView(it)
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
