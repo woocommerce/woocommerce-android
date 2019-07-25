@@ -4,7 +4,6 @@ import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 
@@ -45,7 +44,7 @@ interface OrderListContractNew {
 
         fun showEmptyView(show: Boolean)
         fun refreshFragmentState()
-        fun showOrderDetail(order: WCOrderModel)
+        fun showOrderDetail(remoteOrderId: Long)
 
         fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>)
     }

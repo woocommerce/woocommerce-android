@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusSelectorDialog
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
@@ -34,7 +35,6 @@ import kotlinx.android.synthetic.main.fragment_order_list.orderRefreshLayout
 import kotlinx.android.synthetic.main.fragment_order_list.ordersList
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import javax.inject.Inject
@@ -49,11 +49,12 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     @Inject lateinit var presenter: OrderListContractNew.Presenter
-    @Inject lateinit var ordersAdapter: OrderListAdapterNew
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    private lateinit var ordersAdapter: OrderListAdapterNew
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private var orderFilterDialog: OrderStatusSelectorDialog? = null
 
@@ -62,7 +63,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         get() = orderRefreshLayout.isRefreshing
         set(_) {}
     override var isSearching: Boolean = false
-    private var isFetchingFirstPage = false
 
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null
@@ -132,7 +132,9 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
 
         // Get cached order status options and prime the adapter
         val orderStatusOptions = presenter.getOrderStatusOptions()
-        ordersAdapter.setOrderStatusOptions(orderStatusOptions)
+        ordersAdapter = OrderListAdapterNew(currencyFormatter, orderStatusOptions) {
+            showOrderDetail(it)
+        }
 
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -367,11 +369,11 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         }
     }
 
-    override fun showOrderDetail(order: WCOrderModel) {
+    override fun showOrderDetail(remoteOrderId: Long) {
         // FIXME: Search
 //        disableSearchListeners()
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showOrderDetail(order.localSiteId, order.remoteOrderId)
+        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
     }
 
     override fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
