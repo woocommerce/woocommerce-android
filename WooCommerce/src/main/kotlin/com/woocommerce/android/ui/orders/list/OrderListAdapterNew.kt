@@ -12,11 +12,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.OrderStatusTag
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_list_item.view.*
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
 import javax.inject.Inject
 
@@ -27,6 +30,8 @@ private const val VIEW_TYPE_LOADING = 1
 class OrderListAdapterNew @Inject constructor(
     val currencyFormatter: CurrencyFormatter
 ) : PagedListAdapter<OrderListItemUIType, ViewHolder>(OrderListDiffItemCallback) {
+    private var activeOrderStatusMap: Map<String, WCOrderStatusModel> = emptyMap()
+
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is OrderListItemUI -> VIEW_TYPE_ORDER_ITEM
@@ -68,6 +73,13 @@ class OrderListAdapterNew @Inject constructor(
         }
     }
 
+    fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
+        if (orderStatusOptions.keys != activeOrderStatusMap.keys) {
+            this.activeOrderStatusMap = orderStatusOptions
+            notifyDataSetChanged()
+        }
+    }
+
     /**
      * Returns the order date formatted as a date string, or null if the date is missing or invalid.
      * Note that the year is not shown when it's the same as the current one
@@ -83,7 +95,7 @@ class OrderListAdapterNew @Inject constructor(
         } ?: return null
     }
 
-    inner class OrderItemUIViewHolder(
+    private inner class OrderItemUIViewHolder(
         @LayoutRes layout: Int,
         parentView: ViewGroup
     ) : RecyclerView.ViewHolder(LayoutInflater.from(parentView.context).inflate(layout, parentView, false)) {
@@ -92,6 +104,7 @@ class OrderListAdapterNew @Inject constructor(
         private val orderNameView = itemView.orderName
         private val orderTotalView = itemView.orderTotal
         private val orderTagList = itemView.orderTags
+
         fun onBind(orderItemUI: OrderListItemUI) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
@@ -99,6 +112,30 @@ class OrderListAdapterNew @Inject constructor(
             orderNumView.text = orderItemUI.orderNumber
             orderNameView.text = orderItemUI.orderName
             orderTotalView.text = currencyFormatter.formatCurrency(orderItemUI.orderTotal, orderItemUI.currencyCode)
+
+            // clear existing tags and add new ones
+            orderTagList.removeAllViews()
+            processTagView(orderItemUI.status, this)
+        }
+
+        /**
+         * Converts the order status label into an [OrderStatusTag], creates the associated [TagView],
+         * and add it to the holder. No need to trim the label text since this is done in [OrderStatusTag]
+         */
+        private fun processTagView(status: String, holder: OrderItemUIViewHolder) {
+            val orderStatus = activeOrderStatusMap[status]
+                    ?: createTempOrderStatus(status)
+            val orderTag = OrderStatusTag(orderStatus)
+            val tagView = TagView(holder.itemView.context)
+            tagView.tag = orderTag
+            holder.orderTagList.addView(tagView)
+        }
+
+        private fun createTempOrderStatus(status: String): WCOrderStatusModel {
+            return WCOrderStatusModel().apply {
+                statusKey = status
+                label = status
+            }
         }
     }
 

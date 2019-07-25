@@ -130,6 +130,10 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                 DividerItemDecoration.VERTICAL
         )
 
+        // Get cached order status options and prime the adapter
+        val orderStatusOptions = presenter.getOrderStatusOptions()
+        ordersAdapter.setOrderStatusOptions(orderStatusOptions)
+
         ordersList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
@@ -371,7 +375,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
-        // FIXME: Order Status Mapping
+        ordersAdapter.setOrderStatusOptions(orderStatusOptions)
     }
 
     private fun loadList(descriptor: WCOrderListDescriptor) {
@@ -394,8 +398,13 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                     load_more_progressbar?.visibility = if (isLoadingMore) View.VISIBLE else View.GONE
                 }
             })
-            wrapper.isFetchingFirstPage.observe(this, Observer {
-                orderRefreshLayout?.isRefreshing = it == true
+            wrapper.isFetchingFirstPage.observe(this, Observer { isFetchingFirstPage ->
+                orderRefreshLayout?.isRefreshing = isFetchingFirstPage == true
+
+                // Fetch order status options as well
+                if (isFetchingFirstPage) {
+                    presenter.refreshOrderStatusOptions()
+                }
             })
             wrapper.data.observe(this, Observer {
                 it?.let { orderListData ->

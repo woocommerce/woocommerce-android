@@ -86,9 +86,7 @@ class OrderListPresenterNew @Inject constructor(
         }
     }
 
-    override fun isOrderStatusOptionsRefreshing(): Boolean {
-        return isRefreshingOrderStatusOptions
-    }
+    override fun isOrderStatusOptionsRefreshing() = isRefreshingOrderStatusOptions
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
