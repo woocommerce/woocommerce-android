@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
+import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.ui.orders.OrderStatusTag
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
@@ -150,9 +151,7 @@ class OrderListAdapterNew(
     ) : RecyclerView.ViewHolder(LayoutInflater.from(parentView.context).inflate(layout, parentView, false)) {
         private val titleView: TextView = itemView.findViewById(R.id.orderListHeader)
         fun onBind(header: SectionHeader) {
-            // FIXME: Add logic to convert raw headers into localized labels
-
-            titleView.text = header.title.name
+            titleView.setText(TimeGroup.valueOf(header.title.name).labelRes)
         }
     }
 }
