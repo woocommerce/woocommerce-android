@@ -21,17 +21,16 @@ import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
-import javax.inject.Inject
 
 private const val VIEW_TYPE_ORDER_ITEM = 0
 private const val VIEW_TYPE_SECTION_HEADER = 2
 private const val VIEW_TYPE_LOADING = 1
 
-class OrderListAdapterNew @Inject constructor(
-    val currencyFormatter: CurrencyFormatter
+class OrderListAdapterNew(
+    val currencyFormatter: CurrencyFormatter,
+    var activeOrderStatusMap: Map<String, WCOrderStatusModel>,
+    val onItemSelected: (remoteOrderId: Long) -> Unit
 ) : PagedListAdapter<OrderListItemUIType, ViewHolder>(OrderListDiffItemCallback) {
-    private var activeOrderStatusMap: Map<String, WCOrderStatusModel> = emptyMap()
-
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is OrderListItemUI -> VIEW_TYPE_ORDER_ITEM
@@ -116,6 +115,10 @@ class OrderListAdapterNew @Inject constructor(
             // clear existing tags and add new ones
             orderTagList.removeAllViews()
             processTagView(orderItemUI.status, this)
+
+            this.itemView.setOnClickListener {
+                onItemSelected(orderItemUI.remoteOrderId.value)
+            }
         }
 
         /**
