@@ -35,6 +35,7 @@ import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.helpers.WCMatchers.withRecyclerView
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
+import com.woocommerce.android.ui.main.getOrderDetailFragment
 import com.woocommerce.android.util.DateUtils
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers
@@ -59,16 +60,6 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
     private val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail()
     private val mockShipmentTrackingList = WcOrderTestUtils.generateOrderShipmentTrackings()
-
-    /**
-     * Helper method to update the network status for the current fragment to test
-     * offline scenarios
-     */
-    private fun getOrderDetailFragment(): OrderDetailFragment? {
-        return activityTestRule.activity.supportFragmentManager.primaryNavigationFragment?.let { navFragment ->
-            navFragment.childFragmentManager.fragments[0] as? OrderDetailFragment
-        }
-    }
 
     @Before
     override fun setup() {
@@ -322,7 +313,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
                 .perform(WCMatchers.scrollTo(), click())
 
         // mock network not available
-        val orderDetailFragment = getOrderDetailFragment()
+        val orderDetailFragment = activityTestRule.getOrderDetailFragment()
         doReturn(false).whenever(orderDetailFragment?.networkStatus)?.isConnected()
 
         // click on the popup menu item "Delete shipment"
@@ -401,7 +392,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
 
         // mock api success response
-        val orderDetailFragment = getOrderDetailFragment()
+        val orderDetailFragment = activityTestRule.getOrderDetailFragment()
         val onOrderChangedSuccessResponse = OnOrderChanged(1).apply {
             causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
         }
@@ -446,7 +437,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         Assert.assertSame(mockShipmentTrackingList.size - 1, recyclerView.adapter?.itemCount)
 
         // mock api success response
-        val orderDetailFragment = getOrderDetailFragment()
+        val orderDetailFragment = activityTestRule.getOrderDetailFragment()
         val onOrderChangedErrorResponse = OnOrderChanged(1).apply {
             causeOfChange = DELETE_ORDER_SHIPMENT_TRACKING
             error = OrderError()
