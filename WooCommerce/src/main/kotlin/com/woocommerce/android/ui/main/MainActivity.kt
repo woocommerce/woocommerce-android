@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
+import com.woocommerce.android.ui.orders.list.OrderListFragmentNew
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
@@ -243,7 +244,7 @@ class MainActivity : AppCompatActivity(),
     private fun getActiveTopLevelFragment(): TopLevelFragment? {
         val tag = when (bottomNavView.currentPosition) {
             DASHBOARD -> DashboardFragment.TAG
-            ORDERS -> OrderListFragment.TAG
+            ORDERS -> OrderListFragmentNew.TAG
             REVIEWS -> NotifsListFragment.TAG
         }
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
