@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/ordersContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,8 +18,7 @@
             android:id="@+id/ordersView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            tools:visibility="gone">
+            android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/ordersList"
@@ -38,9 +37,10 @@
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/margin_large"
             android:visibility="gone"
             tools:visibility="visible"/>
-    </FrameLayout>
+    </RelativeLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
