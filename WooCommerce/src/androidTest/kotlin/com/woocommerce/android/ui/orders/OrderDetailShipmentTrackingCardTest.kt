@@ -187,15 +187,19 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnTrack))
                 .perform(WCMatchers.scrollTo(), click())
 
-        // verify that since the first item in the shipment tracking list has a tracking link, the popup item count = 2
+        // verify that since the first item in the shipment tracking list has a tracking link, the popup item count = 3
         onView(ViewMatchers.isAssignableFrom(ListView::class.java))
-                .check(matches(WCMatchers.withItemCount(2)))
+                .check(matches(WCMatchers.withItemCount(3)))
 
-        // verify that the popup menu is displayed & the first item in the list is Track shipment
+        // verify that the popup menu is displayed & the first item in the list is Copy shipment
+        onView(withText(appContext.getString(R.string.orderdetail_copy_tracking_number)))
+                .inRoot(RootMatchers.isPlatformPopup()).check(matches(ViewMatchers.isDisplayed()))
+
+        // verify that the popup menu is displayed & the second item in the list is Track shipment
         onView(withText(appContext.getString(R.string.orderdetail_track_shipment)))
                 .inRoot(RootMatchers.isPlatformPopup()).check(matches(ViewMatchers.isDisplayed()))
 
-        // verify that the popup menu is displayed & the second item in the list is Delete shipment
+        // verify that the popup menu is displayed & the third item in the list is Delete shipment
         onView(withText(appContext.getString(R.string.orderdetail_delete_tracking)))
                 .inRoot(RootMatchers.isPlatformPopup()).check(matches(ViewMatchers.isDisplayed()))
     }
@@ -217,9 +221,13 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
 
         // verify that since the first item in the shipment tracking list has a tracking link, the popup item count = 2
         onView(ViewMatchers.isAssignableFrom(ListView::class.java))
-                .check(matches(WCMatchers.withItemCount(1)))
+                .check(matches(WCMatchers.withItemCount(2)))
 
-        // verify that the popup menu is displayed & the first item in the list is Delete shipment
+        // verify that the popup menu is displayed & the first item in the list is Copy tracking number
+        onView(withText(appContext.getString(R.string.orderdetail_copy_tracking_number)))
+                .inRoot(RootMatchers.isPlatformPopup()).check(matches(ViewMatchers.isDisplayed()))
+
+        // verify that the popup menu is displayed & the second item in the list is Delete shipment
         onView(withText(appContext.getString(R.string.orderdetail_delete_tracking)))
                 .inRoot(RootMatchers.isPlatformPopup()).check(matches(ViewMatchers.isDisplayed()))
     }
@@ -235,7 +243,7 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         onView(withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
-        // verify that the Hamburger icon button for first item is clicked and popup is opened
+        // verify that the Hamburger icon button for second item is clicked and popup is opened
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnTrack))
                 .perform(WCMatchers.scrollTo(), click())
 
@@ -244,13 +252,10 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
                 .inRoot(RootMatchers.isPlatformPopup()).perform(click())
 
         // check if webview intent is opened for the given url
-        Intents.intended(
-                CoreMatchers.allOf(
+        Intents.intended(CoreMatchers.allOf(
                         IntentMatchers.hasAction(Intent.ACTION_VIEW), IntentMatchers.hasData(
-                        mockShipmentTrackingList[0].trackingLink
-                )
-                )
-        )
+                        mockShipmentTrackingList[0].trackingLink)
+                ))
     }
 
     @Test
@@ -267,6 +272,32 @@ class OrderDetailShipmentTrackingCardTest : TestBase() {
         // click on the shipment tracking item - this should copy the text to clipboard
         onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_copyNumber))
                 .perform(WCMatchers.scrollTo(), click())
+
+        // tests are failing in devices below api 27 when getting clipboard text without handler
+        Handler(Looper.getMainLooper()).post {
+            val clipboardText = WCHelperUtils.getClipboardText(appContext)
+            Assert.assertEquals(mockShipmentTrackingList[0].trackingNumber, clipboardText)
+        }
+    }
+
+    @Test
+    fun verifyShipmentTrackingItemPopupItemClickCopiesToClipboard() {
+        activityTestRule.setOrderDetailWithMockData(
+                order = mockWCOrderModel,
+                orderShipmentTrackings = mockShipmentTrackingList
+        )
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // verify that the Hamburger icon button for first item is clicked and popup is opened
+        onView(withRecyclerView(R.id.shipmentTrack_items).atPositionOnView(0, R.id.tracking_btnTrack))
+                .perform(WCMatchers.scrollTo(), click())
+
+        // click on the popup menu item "Track shipment"
+        onView(withText(appContext.getString(R.string.orderdetail_copy_tracking_number)))
+                .inRoot(RootMatchers.isPlatformPopup()).perform(click())
 
         // tests are failing in devices below api 27 when getting clipboard text without handler
         Handler(Looper.getMainLooper()).post {
