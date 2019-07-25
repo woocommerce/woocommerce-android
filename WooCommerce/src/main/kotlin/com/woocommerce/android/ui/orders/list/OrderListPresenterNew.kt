@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -11,7 +12,10 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
@@ -22,7 +26,8 @@ class OrderListPresenterNew @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val listStore: ListStore
 ) : OrderListContractNew.Presenter {
     companion object {
         private val TAG: String = OrderListPresenter::class.java.simpleName
@@ -41,6 +46,23 @@ class OrderListPresenterNew @Inject constructor(
         orderView = null
         dispatcher.unregister(this)
         ConnectionChangeReceiver.getEventBus().unregister(this)
+    }
+
+    override fun generatePageWrapper(
+        descriptor: WCOrderListDescriptor,
+        lifecycle: Lifecycle
+    ): PagedListWrapper<OrderListItemUIType> {
+        return listStore.getList(
+                listDescriptor = descriptor,
+                dataSource = OrderListItemDataSource(dispatcher, orderStore, lifecycle),
+                lifecycle = lifecycle)
+    }
+
+    override fun generateListDescriptor(orderStatusFilter: String?, orderSearchQuery: String?): WCOrderListDescriptor {
+        return WCOrderListDescriptor(
+                site = selectedSite.get(),
+                statusFilter = orderStatusFilter,
+                searchQuery = orderSearchQuery)
     }
 
     override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {

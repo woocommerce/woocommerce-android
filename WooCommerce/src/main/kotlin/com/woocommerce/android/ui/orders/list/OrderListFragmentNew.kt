@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,8 +33,10 @@ import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.orderRefreshLayout
 import kotlinx.android.synthetic.main.fragment_order_list.ordersList
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import javax.inject.Inject
 
 class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
@@ -50,6 +53,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
 
+    private var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private var orderFilterDialog: OrderStatusSelectorDialog? = null
 
@@ -58,6 +62,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         get() = orderRefreshLayout.isRefreshing
         set(_) {}
     override var isSearching: Boolean = false
+    private var isFetchingFirstPage = false
 
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null
@@ -102,14 +107,12 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                 setOnRefreshListener {
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
 
-                    orderRefreshLayout.isRefreshing = false
-
                     if (!isRefreshPending) {
                         isRefreshPending = true
                         if (isSearching) {
                             // FIXME: Search
                         } else {
-                            // FIXME: load orders
+                            pagedListWrapper?.fetchFirstPage()
                         }
                     }
                 }
@@ -149,7 +152,8 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         empty_view.setSiteToShare(selectedSite.get(), Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
         if (isActive && !deferInit) {
-            // FIXME: load orders
+            val orderListDescriptor = presenter.generateListDescriptor(orderStatusFilter, "")
+            loadList(orderListDescriptor)
         }
 
         listState?.let {
@@ -158,17 +162,17 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     override fun onPause() {
         super.onPause()
 
         // If the order filter dialog is visible, close it
         orderFilterDialog?.dismiss()
         orderFilterDialog = null
-    }
-
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onDestroyView() {
@@ -302,8 +306,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                 // FIXME: Search
 //                presenter.searchOrders(searchQuery)
             } else {
-                // FIXME: Load fresh orders
-//                presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+                pagedListWrapper?.fetchFirstPage()
             }
         }
     }
@@ -319,7 +322,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             searchMenuItem?.expandActionView()
             searchView?.setQuery(searchQuery, false)
         } else {
-            // FIXME: load orders
+            // FIXME: Is this needed now? Does the list automatically update if the db is changed?
 //            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
         }
     }
@@ -369,6 +372,38 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
 
     override fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
         // FIXME: Order Status Mapping
+    }
+
+    private fun loadList(descriptor: WCOrderListDescriptor) {
+        pagedListWrapper?.apply {
+            val lifecycleOwner = this@OrderListFragmentNew
+            data.removeObservers(lifecycleOwner)
+            isLoadingMore.removeObservers(lifecycleOwner)
+            isFetchingFirstPage.removeObservers(lifecycleOwner)
+            listError.removeObservers(lifecycleOwner)
+            isEmpty.removeObservers(lifecycleOwner)
+        }
+
+        pagedListWrapper = presenter.generatePageWrapper(descriptor, lifecycle).also { wrapper ->
+            /*
+             * Set observers for various changes in state
+             */
+            wrapper.fetchFirstPage()
+            wrapper.isLoadingMore.observe(this, Observer {
+                it?.let { isLoadingMore ->
+                    load_more_progressbar?.visibility = if (isLoadingMore) View.VISIBLE else View.GONE
+                }
+            })
+            wrapper.isFetchingFirstPage.observe(this, Observer {
+                orderRefreshLayout?.isRefreshing = it == true
+            })
+            wrapper.data.observe(this, Observer {
+                it?.let { orderListData ->
+                    ordersAdapter.submitList(orderListData)
+                    isRefreshPending = false
+                }
+            })
+        }
     }
 
     private fun isShowingAllOrders(): Boolean {

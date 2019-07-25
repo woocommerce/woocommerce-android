@@ -134,17 +134,5 @@ private val OrderListDiffItemCallback = object : DiffUtil.ItemCallback<OrderList
         return false
     }
 
-    override fun areContentsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType): Boolean {
-        if (oldItem is SectionHeader && newItem is SectionHeader) {
-            return oldItem.title == newItem.title
-        }
-        if (oldItem is LoadingItem && newItem is LoadingItem) {
-            return oldItem.remoteId == newItem.remoteId
-        }
-        if (oldItem is OrderListItemUI && newItem is OrderListItemUI) {
-            // AS is lying, it's not actually smart casting, so we have to do it :sigh:
-            return (oldItem as OrderListItemUI) == (newItem as OrderListItemUI)
-        }
-        return false
-    }
+    override fun areContentsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType) = oldItem == newItem
 }

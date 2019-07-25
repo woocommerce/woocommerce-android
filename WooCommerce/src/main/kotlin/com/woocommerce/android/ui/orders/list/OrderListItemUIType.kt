@@ -37,4 +37,35 @@ sealed class OrderListItemUIType {
         val dateCreated: String,
         val currencyCode: String
     ) : OrderListItemUIType()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+
+        if (javaClass != other?.javaClass) return false
+
+        if (this is SectionHeader && other is SectionHeader) {
+            return this.title == other.title
+        }
+
+        if (this is LoadingItem && other is LoadingItem) {
+            return this.remoteId == other.remoteId
+        }
+
+        if (this is OrderListItemUI && other is OrderListItemUI) {
+            if (remoteOrderId != other.remoteOrderId
+                    || orderNumber != other.orderNumber
+                    || orderName != other.orderName
+                    || orderTotal != other.orderTotal
+                    || status != other.status
+                    || dateCreated != other.dateCreated
+                    || currencyCode != other.currencyCode) {
+                return false
+            }
+        }
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 }
