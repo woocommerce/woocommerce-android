@@ -412,9 +412,12 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                     presenter.refreshOrderStatusOptions()
                 }
             })
+            var firstRunComplete = false
+            var dataObserverAdded = false
             wrapper.data.observe(this, Observer {
                 it?.let { orderListData ->
                     if (orderListData.isNotEmpty()) {
+                        // Tell the presenter to fetch shipment tracking providers
                         ordersAdapter.submitList(orderListData)
                         listState?.let {
                             ordersList.layoutManager?.onRestoreInstanceState(listState)
@@ -429,15 +432,16 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                      * result is just the total of records in the db. If a new install, it
                      * will be zero.
                      */
-                    if (isListDataInit) {
+                    if (firstRunComplete && !dataObserverAdded) {
                         wrapper.isEmpty.observe(this, Observer { it2 ->
                             it2?.let { empty ->
                                 showEmptyView(empty)
                             }
                         })
+                        dataObserverAdded = true
                     }
 
-                    isListDataInit = true
+                    firstRunComplete = true
                 }
             })
         }
