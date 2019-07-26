@@ -303,7 +303,22 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     override fun onOrderStatusSelected(orderStatus: String?) {
         orderStatusFilter = orderStatus
 
-        // FIXME: Filtering
+        if (isAdded) {
+            AnalyticsTracker.track(
+                    Stat.ORDERS_LIST_FILTER,
+                    mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
+            )
+
+            // FIXME: Search - clear results
+
+            val descriptor = WCOrderListDescriptor(
+                    site = selectedSite.get(),
+                    statusFilter = orderStatus)
+            loadList(descriptor)
+
+            updateActivityTitle()
+            searchMenuItem?.isVisible = shouldShowSearchMenuItem()
+        }
     }
     // endregion
 
