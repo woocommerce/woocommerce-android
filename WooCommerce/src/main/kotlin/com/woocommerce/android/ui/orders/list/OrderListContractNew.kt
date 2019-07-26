@@ -35,6 +35,10 @@ interface OrderListContractNew {
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
         fun refreshOrderStatusOptions()
         fun isOrderStatusOptionsRefreshing(): Boolean
+
+        // Shipment tracking
+        var isShipmentTrackingProviderFetched: Boolean
+        fun loadShipmentTrackingProviders()
     }
 
     interface View : BaseView<Presenter> {

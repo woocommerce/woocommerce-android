@@ -417,7 +417,9 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             wrapper.data.observe(this, Observer {
                 it?.let { orderListData ->
                     if (orderListData.isNotEmpty()) {
-                        // Tell the presenter to fetch shipment tracking providers
+                        // Tell the presenter to load shipment tracking providers
+                        presenter.loadShipmentTrackingProviders()
+
                         ordersAdapter.submitList(orderListData)
                         listState?.let {
                             ordersList.layoutManager?.onRestoreInstanceState(listState)
