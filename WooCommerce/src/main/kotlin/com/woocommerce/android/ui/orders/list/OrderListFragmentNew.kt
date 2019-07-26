@@ -446,6 +446,12 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                     firstRunComplete = true
                 }
             })
+            wrapper.listError.observe(this, Observer {
+                it?.let {
+                    // Display an error message
+                    showLoadOrdersError()
+                }
+            })
         }
     }
 
@@ -462,5 +468,9 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         if (show) {
             refreshOptionsMenu()
         }
+    }
+
+    private fun showLoadOrdersError() {
+        uiMessageResolver.getSnack(R.string.orderlist_error_fetch_generic).show()
     }
 }
