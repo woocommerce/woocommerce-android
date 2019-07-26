@@ -2,17 +2,19 @@ package com.woocommerce.android.model.order
 
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
 data class Order(
+    val identifier: OrderIdentifier,
     val remoteOrderId: Long,
     val number: String,
     val localSiteId: Int,
-    val dateCreated: Date?,
-    val dateModified: Date?,
+    val dateCreated: Date,
+    val dateModified: Date,
     val status: CoreOrderStatus,
     val total: BigDecimal,
     val totalTax: BigDecimal,
@@ -44,11 +46,12 @@ data class Order(
 
 fun WCOrderModel.toAppModel(): Order {
     return Order(
+        OrderIdentifier(this),
         this.remoteOrderId,
         this.number,
         this.localSiteId,
-        DateTimeUtils.dateUTCFromIso8601(this.dateCreated),
-        DateTimeUtils.dateUTCFromIso8601(this.dateModified),
+        DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
+        DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
         CoreOrderStatus.fromValue(this.status) ?: CoreOrderStatus.PENDING,
         this.total.toBigDecimalOrNull() ?: BigDecimal.ZERO,
         this.totalTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
