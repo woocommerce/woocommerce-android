@@ -4,6 +4,14 @@
     style="@style/Woo.OrderList.Item"
     android:orientation="vertical">
 
+    <View
+        android:layout_width="58dp"
+        android:layout_height="@dimen/text_large"
+        android:layout_marginEnd="@dimen/list_item_padding_intra_h"
+        android:layout_marginTop="8dp"
+        android:layout_weight="4"
+        android:background="@drawable/skeleton_background" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

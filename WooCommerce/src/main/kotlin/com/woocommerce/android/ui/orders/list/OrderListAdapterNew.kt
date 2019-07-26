@@ -46,7 +46,8 @@ class OrderListAdapterNew(
         return when (viewType) {
             VIEW_TYPE_ORDER_ITEM -> OrderItemUIViewHolder(R.layout.order_list_item, parent)
             VIEW_TYPE_LOADING -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.skeleton_order_list_item, parent, false)
+                val view = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.skeleton_order_list_item_auto, parent, false)
                 LoadingViewHolder(view)
             }
             VIEW_TYPE_SECTION_HEADER -> SectionHeaderViewHolder(R.layout.order_list_header, parent)
