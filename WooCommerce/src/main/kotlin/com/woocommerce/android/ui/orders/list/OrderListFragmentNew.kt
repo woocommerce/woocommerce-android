@@ -320,7 +320,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             // FIXME: Search
 //                presenter.searchOrders(searchQuery)
         } else {
-            pagedListWrapper?.fetchFirstPage()
+            pagedListWrapper?.invalidateData()
         }
     }
 
