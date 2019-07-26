@@ -59,7 +59,7 @@ class OrderListAdapterNew(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        when(holder) {
+        when (holder) {
             is OrderItemUIViewHolder -> {
                 assert(item is OrderListItemUI) {
                     "If we are presenting WCOrderItemUIViewHolder, the item has to be of type WCOrderListUIItem " +

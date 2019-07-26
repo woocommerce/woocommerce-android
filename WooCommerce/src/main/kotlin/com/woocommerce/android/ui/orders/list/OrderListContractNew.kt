@@ -42,6 +42,7 @@ interface OrderListContractNew {
         var isSearching: Boolean
         var isRefreshing: Boolean
 
+        fun showSkeleton(show: Boolean)
         fun showEmptyView(show: Boolean)
         fun refreshFragmentState()
         fun showOrderDetail(remoteOrderId: Long)

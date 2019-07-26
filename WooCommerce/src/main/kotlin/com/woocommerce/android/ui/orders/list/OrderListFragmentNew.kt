@@ -66,6 +66,11 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     override var isRefreshing = false // not used.
     override var isSearching: Boolean = false
 
+    /**
+     * Hack to ignore the first time the `pagedListWrapper.data` event is fired so as
+     * not to show the `empty_view` erroneously.
+     */
+    private var isListDataInit = false
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null
     private var filterMenuItem: MenuItem? = null
@@ -370,6 +375,14 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         }
     }
 
+    override fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(ordersView, R.layout.skeleton_order_list, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
+    }
+
     override fun showOrderDetail(remoteOrderId: Long) {
         // FIXME: Search
 //        disableSearchListeners()
@@ -383,6 +396,8 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     private fun loadList(descriptor: WCOrderListDescriptor) {
+        showSkeleton(true)
+
         pagedListWrapper?.apply {
             val lifecycleOwner = this@OrderListFragmentNew
             data.removeObservers(lifecycleOwner)
@@ -413,15 +428,31 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             wrapper.data.observe(this, Observer {
                 it?.let { orderListData ->
                     if (orderListData.isNotEmpty()) {
-                        showEmptyView(false)
+                        showSkeleton(false)
                         ordersAdapter.submitList(orderListData)
                         listState?.let {
                             ordersList.layoutManager?.onRestoreInstanceState(listState)
                             listState = null
                         }
-                    } else {
-                        showEmptyView(true)
                     }
+
+                    /*
+                     * Intentionally skip the first data result before setting up the
+                     * listener for the empty event which controls whether or not we
+                     * show the empty view. The first time the list is fetched, the data
+                     * result is just the total of records in the db. If a new install, it
+                     * will be zero.
+                     */
+                    if (isListDataInit) {
+                        wrapper.isEmpty.observe(this, Observer { it2 ->
+                            it2?.let { empty ->
+                                showEmptyView(empty)
+                                showSkeleton(false)
+                            }
+                        })
+                    }
+
+                    isListDataInit = true
                 }
             })
         }
