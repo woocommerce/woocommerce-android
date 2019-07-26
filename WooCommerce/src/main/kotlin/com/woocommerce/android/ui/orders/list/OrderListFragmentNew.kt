@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusSelectorDialog
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.orderRefreshLayout
@@ -78,8 +77,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var searchQuery: String = ""
-
-    private val skeletonView = SkeletonView()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -375,14 +372,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         }
     }
 
-    override fun showSkeleton(show: Boolean) {
-        if (show) {
-            skeletonView.show(ordersView, R.layout.skeleton_order_list, delayed = true)
-        } else {
-            skeletonView.hide()
-        }
-    }
-
     override fun showOrderDetail(remoteOrderId: Long) {
         // FIXME: Search
 //        disableSearchListeners()
@@ -396,8 +385,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     private fun loadList(descriptor: WCOrderListDescriptor) {
-        showSkeleton(true)
-
         pagedListWrapper?.apply {
             val lifecycleOwner = this@OrderListFragmentNew
             data.removeObservers(lifecycleOwner)
@@ -428,7 +415,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             wrapper.data.observe(this, Observer {
                 it?.let { orderListData ->
                     if (orderListData.isNotEmpty()) {
-                        showSkeleton(false)
                         ordersAdapter.submitList(orderListData)
                         listState?.let {
                             ordersList.layoutManager?.onRestoreInstanceState(listState)
@@ -447,7 +433,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                         wrapper.isEmpty.observe(this, Observer { it2 ->
                             it2?.let { empty ->
                                 showEmptyView(empty)
-                                showSkeleton(false)
                             }
                         })
                     }
