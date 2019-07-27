@@ -50,6 +50,17 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
     }
 
     /**
+     * Formats the amount for display based on the WooCommerce site settings.
+     *
+     * @param amount the value to be formatted
+     * @param currencyCode the ISO 4217 currency code to use for formatting
+     * @return the formatted value for display
+     */
+    fun formatCurrency(amount: BigDecimal, currencyCode: String, applyDecimalFormatting: Boolean = true): String {
+        return formatCurrency(amount.toString(), currencyCode, applyDecimalFormatting)
+    }
+
+    /**
      * Formats a raw amount for display based on the WooCommerce site settings, rounding the values to the nearest int.
      *
      * Additionally, if the value is a thousand or more, we return it rounded to the nearest tenth
@@ -91,6 +102,6 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
      * @return a function which, given an amount as a BigDecimal, returns the String formatted for display as a currency
      */
     fun buildBigDecimalFormatter(currencyCode: String) = { amount: BigDecimal ->
-        formatCurrency(amount.toString(), currencyCode, true)
+        formatCurrency(amount, currencyCode, true)
     }
 }
