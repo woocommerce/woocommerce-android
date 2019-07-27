@@ -22,15 +22,6 @@ interface OrderListContractNew {
             lifecycle: Lifecycle
         ): PagedListWrapper<OrderListItemUIType>
 
-        /**
-         * Generates and returns a [WCOrderListDescriptor] with the parameters to be used for
-         * fetching and displaying orders.
-         *
-         * @param orderStatusFilter The order status filter to filter orders by for display
-         * @param orderSearchQuery The search query to use to find matching orders for display
-         */
-        fun generateListDescriptor(orderStatusFilter: String?, orderSearchQuery: String? = ""): WCOrderListDescriptor
-
         // Order status methods
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
         fun refreshOrderStatusOptions()

@@ -64,13 +64,6 @@ class OrderListPresenterNew @Inject constructor(
                 lifecycle = lifecycle)
     }
 
-    override fun generateListDescriptor(orderStatusFilter: String?, orderSearchQuery: String?): WCOrderListDescriptor {
-        return WCOrderListDescriptor(
-                site = selectedSite.get(),
-                statusFilter = orderStatusFilter,
-                searchQuery = orderSearchQuery)
-    }
-
     override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
         val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
         return if (options.isEmpty()) {

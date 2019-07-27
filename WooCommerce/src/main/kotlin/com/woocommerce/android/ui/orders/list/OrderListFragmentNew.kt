@@ -2,15 +2,18 @@ package com.woocommerce.android.ui.orders.list
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -36,16 +39,19 @@ import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
-        OrderStatusSelectorDialog.OrderStatusDialogListener {
+        OrderStatusSelectorDialog.OrderStatusDialogListener, OnQueryTextListener, OnActionExpandListener {
     companion object {
         const val TAG: String = "OrderListFragmentNew"
         const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
+
+        private const val SEARCH_TYPING_DELAY_MS = 500L
 
         fun newInstance(orderStatusFilter: String? = null) =
             OrderListFragmentNew().apply { this.orderStatusFilter = orderStatusFilter }
@@ -63,20 +69,16 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
 
     override var isRefreshPending = false // not used.
     override var isRefreshing = false // not used.
-    override var isSearching: Boolean = false
 
-    /**
-     * Hack to ignore the first time the `pagedListWrapper.data` event is fired so as
-     * not to show the `empty_view` erroneously.
-     */
-    private var isListDataInit = false
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null
     private var filterMenuItem: MenuItem? = null
 
+    override var isSearching: Boolean = false
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var searchQuery: String = ""
+    private val searchHandler = Handler()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -116,12 +118,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
 
                     orderRefreshLayout.isRefreshing = false
-
-                    if (isSearching) {
-                        // FIXME: Search
-                    } else {
-                        pagedListWrapper?.fetchFirstPage()
-                    }
+                    pagedListWrapper?.fetchFirstPage()
                 }
             }
         }
@@ -163,7 +160,13 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         presenter.takeView(this)
         empty_view.setSiteToShare(selectedSite.get(), Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
-        val orderListDescriptor = presenter.generateListDescriptor(orderStatusFilter, "")
+        val orderListDescriptor = WCOrderListDescriptor(
+                site = selectedSite.get(),
+                statusFilter = orderStatusFilter,
+                searchQuery = searchQuery)
+        if (isSearching) {
+            rebuildSearchView()
+        }
         loadList(orderListDescriptor)
     }
 
@@ -192,11 +195,11 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun onDestroyView() {
-        // FIXME: Search
-
         presenter.dropView()
 
-        // FIXME: Filtering
+        disableSearchListeners()
+        searchView = null
+        filterMenuItem = null
 
         super.onDestroyView()
     }
@@ -205,23 +208,11 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         super.onHiddenChanged(hidden)
 
         if (hidden) {
-            // FIXME: SEARCH
+            disableSearchListeners()
         } else {
-            // FIXME: Search
-
-            // silently refresh if this fragment is no longer hidden
-            if (isSearching) {
-                // FIXME: Search
-            } else {
-                pagedListWrapper?.fetchFirstPage()
-            }
+            enableSearchListeners()
+            pagedListWrapper?.invalidateData()
         }
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-        // FIXME: Filtering
     }
 
     // region Options menu
@@ -234,11 +225,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         searchView = searchMenuItem?.actionView as SearchView?
 
         super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        refreshOptionsMenu()
-        super.onPrepareOptionsMenu(menu)
     }
 
     /**
@@ -266,7 +252,9 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                 true
             }
             R.id.menu_search -> {
-                // FIXME: SEARCH
+                AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
+                clearOrderList()
+                enableSearchListeners()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -309,7 +297,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                     mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
             )
 
-            // FIXME: Search - clear results
+            closeSearchView()
 
             val descriptor = WCOrderListDescriptor(
                     site = selectedSite.get(),
@@ -331,12 +319,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun refreshFragmentState() {
-        if (isSearching) {
-            // FIXME: Search
-//                presenter.searchOrders(searchQuery)
-        } else {
-            pagedListWrapper?.invalidateData()
-        }
+        pagedListWrapper?.invalidateData()
     }
 
     override fun scrollToTop() {
@@ -347,8 +330,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         showOptionsMenu(true)
 
         if (isSearching) {
-            searchMenuItem?.expandActionView()
-            searchView?.setQuery(searchQuery, false)
+            rebuildSearchView()
         }
     }
 
@@ -388,8 +370,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun showOrderDetail(remoteOrderId: Long) {
-        // FIXME: Search
-//        disableSearchListeners()
+        disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
     }
@@ -440,6 +421,10 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                             ordersList.layoutManager?.onRestoreInstanceState(listState)
                             listState = null
                         }
+
+                        if (isSearching) {
+                            ActivityUtils.hideKeyboard(activity)
+                        }
                     }
 
                     /*
@@ -488,4 +473,114 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     private fun showLoadOrdersError() {
         uiMessageResolver.getSnack(R.string.orderlist_error_fetch_generic).show()
     }
+
+    private fun clearOrderList() {
+        ordersAdapter.submitList(null)
+    }
+
+    // region search
+    override fun onQueryTextSubmit(query: String): Boolean {
+        handleNewSearchRequest(query)
+        ActivityUtils.hideKeyboard(activity)
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        if (newText.length > 2) {
+            submitSearchDelayed(newText)
+        } else if (newText.isEmpty()) {
+            clearOrderList()
+        }
+        showEmptyView(false)
+        return true
+    }
+
+    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+        isSearching = true
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+        closeSearchView()
+        val descriptor = WCOrderListDescriptor(site = selectedSite.get())
+        loadList(descriptor)
+        return true
+    }
+
+    /**
+     * Submit the search after a brief delay unless the query has changed - this is used to
+     * perform a search while the user is typing
+     */
+    private fun submitSearchDelayed(query: String) {
+        searchHandler.postDelayed({
+            searchView?.let {
+                // submit the search if the searchView's query still matches the passed query
+                if (query == it.query.toString()) handleNewSearchRequest(query)
+            }
+        }, SEARCH_TYPING_DELAY_MS)
+    }
+
+    /**
+     * Only fired while the user is actively typing in the search
+     * field.
+     */
+    private fun handleNewSearchRequest(query: String) {
+        AnalyticsTracker.track(
+                Stat.ORDERS_LIST_FILTER,
+                mapOf(AnalyticsTracker.KEY_SEARCH to query))
+
+        searchQuery = query
+        submitSearchQuery(searchQuery)
+    }
+
+    /**
+     * Loads a new list with the search query. This can be called while the
+     * user is interacting with the search component, or to reload the
+     * view state.
+     */
+    private fun submitSearchQuery(query: String) {
+        val descriptor = WCOrderListDescriptor(
+                site = selectedSite.get(),
+                statusFilter = null,
+                searchQuery = query)
+        loadList(descriptor)
+    }
+
+    /**
+     * Return to the non-search order view
+     */
+    private fun closeSearchView() {
+        if (isSearching) {
+            showEmptyView(false)
+
+            searchQuery = ""
+            isSearching = false
+            disableSearchListeners()
+            searchMenuItem?.collapseActionView()
+            updateActivityTitle()
+        }
+    }
+
+    private fun rebuildSearchView() {
+        // To prevent a timing issue that's causing the search bar
+        // to not be expanded when returning from order detail.
+        searchHandler.postDelayed({
+            val expanded = searchMenuItem?.expandActionView() ?: false
+            if (expanded) {
+                searchView?.setQuery(searchQuery, false)
+            }
+            enableSearchListeners()
+        }, 200L)
+    }
+
+    private fun disableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(null)
+        searchView?.setOnQueryTextListener(null)
+    }
+
+    private fun enableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(this)
+        searchView?.setOnQueryTextListener(this)
+    }
+    // endregion
 }
