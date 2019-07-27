@@ -640,10 +640,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
-        bottomNavView.currentPosition = ORDERS
-
-        val navPos = BottomNavigationPosition.ORDERS.position
-        bottom_nav.active(navPos)
+        if (bottomNavView.currentPosition != ORDERS) {
+            bottomNavView.currentPosition = ORDERS
+            val navPos = BottomNavigationPosition.ORDERS.position
+            bottom_nav.active(navPos)
+        }
 
         if (markComplete) {
             // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
