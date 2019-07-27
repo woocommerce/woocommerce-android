@@ -1,6 +1,5 @@
 package com.woocommerce.android.di
 
-import com.woocommerce.android.ui.orders.detail.OrderDetailViewModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.viewmodel.ViewModelKey
 
@@ -12,11 +11,11 @@ import dagger.multibindings.IntoMap
 
 @Module
 internal abstract class ViewModelModule {
-    @ActivityScope
-    @Binds
-    @IntoMap
-    @ViewModelKey(OrderDetailViewModel::class)
-    internal abstract fun pluginOrderDetailViewModel(viewModel: OrderDetailViewModel): ViewModel
+//    @ActivityScope
+//    @Binds
+//    @IntoMap
+//    @ViewModelKey(OrderDetailViewModel::class)
+//    internal abstract fun pluginOrderDetailViewModel(viewModel: OrderDetailViewModel): ViewModel
 
     @Binds
     internal abstract fun provideViewModelFactory(viewModelFactory: ViewModelFactory): ViewModelProvider.Factory
