@@ -15,7 +15,9 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.navigation.fragment.navArgs
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -28,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -39,13 +42,15 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
+import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.math.max
+import androidx.navigation.fragment.navArgs
 
-class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, RequestListener<Drawable> {
+class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -53,9 +58,12 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         PurchaseDetails
     }
 
-    @Inject lateinit var presenter: ProductDetailContract.Presenter
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
+
+    private lateinit var viewModel: ProductDetailViewModel
 
     private var productTitle = ""
     private var productImageUrl: String? = null
@@ -63,7 +71,7 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
-    val navArgs: ProductDetailFragmentArgs by navArgs()
+    private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -79,13 +87,48 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
-        presenter.dropView()
         super.onDestroyView()
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initializeViewModel()
+    }
+
+    private fun initializeViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java)
+
+        setupObservers()
+
+        viewModel.start(navArgs.remoteProductId)
+    }
+
+    private fun setupObservers() {
+        viewModel.isSkeletonShown.observe(this, Observer {
+            showSkeleton(it)
+        })
+
+        viewModel.product.observe(this, Observer {
+            showProduct(it)
+        })
+
+        viewModel.shareProduct.observe(this, Observer {
+            shareProduct(it)
+        })
+
+        viewModel.showSnackbarMessage.observe(this, Observer {
+            uiMessageResolver.showSnack(it)
+        })
+
+        viewModel.exit.observe(this, Observer {
+            activity?.onBackPressed()
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -99,9 +142,6 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
 
         // set the height of the gradient scrim that appears atop the image
         imageScrim.layoutParams.height = imageHeight / 3
-
-        presenter.takeView(this)
-        presenter.loadProductDetail(navArgs.remoteProductId)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -113,19 +153,14 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         return when {
             item?.itemId == R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
-                shareProduct()
+                viewModel.onShareButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    override fun showFetchProductError() {
-        uiMessageResolver.showSnack(R.string.product_detail_fetch_product_error)
-        activity?.onBackPressed()
-    }
-
-    override fun showSkeleton(show: Boolean) {
+    private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
             skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageHeight
@@ -136,15 +171,15 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
 
     override fun getFragmentTitle() = productTitle
 
-    override fun showProduct(product: WCProductModel) {
+    private fun showProduct(product: Product) {
         if (!isAdded) return
 
-        productTitle = when (ProductType.fromString(product.type)) {
+        productTitle = when (product.type) {
             EXTERNAL -> getString(R.string.product_name_external, product.name)
             GROUPED -> getString(R.string.product_name_grouped, product.name)
             VARIABLE -> getString(R.string.product_name_variable, product.name)
             else -> {
-                if (product.virtual) {
+                if (product.isVirtual) {
                     getString(R.string.product_name_virtual, product.name)
                 } else {
                     product.name
@@ -154,13 +189,13 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
 
         updateActivityTitle()
 
-        isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
+        isVariation = product.type == ProductType.VARIATION
 
-        val imageUrl = product.getFirstImageUrl()
+        val imageUrl = product.firstImageUrl
         if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(activity!!)
             val height = DisplayUtils.getDisplayPixelHeight(activity!!)
-            val imageSize = Math.max(width, height)
+            val imageSize = max(width, height)
             productImageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
             GlideApp.with(activity!!)
                     .load(productImageUrl)
@@ -175,7 +210,7 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         }
 
         // show status badge for unpublished products
-        ProductStatus.fromString(product.status)?.let { status ->
+        product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
                 frameStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toString(activity!!)
@@ -187,7 +222,7 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         addPurchaseDetailsCard(product)
     }
 
-    private fun addPrimaryCard(product: WCProductModel) {
+    private fun addPrimaryCard(product: Product) {
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
         // we don't show total sales for variations because they're always zero
@@ -222,26 +257,24 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         )
     }
 
-    private fun addPricingAndInventoryCard(product: WCProductModel) {
+    private fun addPricingAndInventoryCard(product: Product) {
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.price.isNotEmpty() ||
-                product.salePrice.isNotEmpty() ||
-                product.taxClass.isNotEmpty()
+        val hasPricingInfo = product.price != null && product.salePrice != null || product.taxClass.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
 
         if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
-            if (product.salePrice.isNotEmpty()) {
+            if (product.salePrice != null) {
                 val group = mapOf(
-                        Pair(getString(R.string.product_regular_price), presenter.formatCurrency(product.regularPrice)),
-                        Pair(getString(R.string.product_sale_price), presenter.formatCurrency(product.salePrice))
+                        Pair(getString(R.string.product_regular_price), viewModel.formatCurrency(product.regularPrice ?: BigDecimal.ZERO)),
+                        Pair(getString(R.string.product_sale_price), viewModel.formatCurrency(product.salePrice))
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
                 addPropertyView(
                         pricingCard,
                         R.string.product_price,
-                        presenter.formatCurrency(product.price),
+                        viewModel.formatCurrency(product.price ?: BigDecimal.ZERO),
                         LinearLayout.VERTICAL
                 )
             }
@@ -251,7 +284,7 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         if (product.manageStock) {
             val group = mapOf(
                     Pair(getString(R.string.product_stock_status), stockStatusToDisplayString(product.stockStatus)),
-                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorders)),
+                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorderStatus)),
                     Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
@@ -261,12 +294,12 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         }
     }
 
-    private fun addPurchaseDetailsCard(product: WCProductModel) {
-        val hasLength = product.length.isNotEmpty()
-        val hasWidth = product.width.isNotEmpty()
-        val hasHeight = product.height.isNotEmpty()
+    private fun addPurchaseDetailsCard(product: Product) {
+        val hasLength = product.length > 0
+        val hasWidth = product.width > 0
+        val hasHeight = product.height > 0
 
-        val dimensionUnit = presenter.getDimensionUnit()
+        val dimensionUnit = viewModel.getDimensionUnit()
         val propertySize = if (hasLength && hasWidth && hasHeight) {
             "${product.length} x ${product.width} x ${product.height} $dimensionUnit"
         } else if (hasWidth && hasHeight) {
@@ -275,8 +308,8 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
             ""
         }
 
-        val weightUnit = presenter.getWeightUnit()
-        val weight = if (product.weight.isNotEmpty()) "${product.weight}$weightUnit" else ""
+        val weightUnit = viewModel.getWeightUnit()
+        val weight = if (product.weight > 0) "${product.weight}$weightUnit" else ""
 
         val shippingGroup = mapOf(
                 Pair(getString(R.string.product_weight), weight),
@@ -285,8 +318,7 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         )
         addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
 
-        if (product.downloadable) {
-            val count = product.getDownloadableFiles().size.toString()
+        if (product.isDownloadable) {
             val limit = if (product.downloadLimit > 0) String.format(
                     getString(R.string.product_download_limit_count),
                     product.downloadLimit
@@ -297,7 +329,7 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
             ) else ""
 
             val downloadGroup = mapOf(
-                    Pair(getString(R.string.product_downloadable_files), count),
+                    Pair(getString(R.string.product_downloadable_files), product.fileCount.toString()),
                     Pair(getString(R.string.product_download_limit), limit),
                     Pair(getString(R.string.product_download_expiry), expiry)
             )
@@ -472,42 +504,34 @@ class ProductDetailFragment : BaseFragment(), ProductDetailContract.View, Reques
         productDetail_container.addView(divider)
     }
 
-    private fun shareProduct() {
-        presenter.getProduct(navArgs.remoteProductId)?.let { product ->
-            val shareIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_SUBJECT, product.name)
-                putExtra(Intent.EXTRA_TEXT, product.permalink)
-                type = "text/plain"
-            }
-            val title = resources.getText(R.string.product_share_dialog_title)
-            startActivity(Intent.createChooser(shareIntent, title))
+    private fun shareProduct(product: Product) {
+        val shareIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_SUBJECT, product.name)
+            putExtra(Intent.EXTRA_TEXT, product.permalink)
+            type = "text/plain"
         }
+        val title = resources.getText(R.string.product_share_dialog_title)
+        startActivity(Intent.createChooser(shareIntent, title))
     }
 
     /**
      * returns the product's stock status formatted for display
      */
-    private fun stockStatusToDisplayString(stockStatus: String?): String {
-        return stockStatus?.let {
-            when (it) {
-                "instock" -> getString(R.string.product_stock_status_instock)
-                "outofstock" -> getString(R.string.product_stock_status_out_of_stock)
-                "onbackorder" -> getString(R.string.product_stock_status_on_backorder)
-                else -> stockStatus
-            }
-        } ?: ""
+    private fun stockStatusToDisplayString(status: ProductStockStatus): String {
+        return if (status.stringResource != 0) {
+            getString(status.stringResource)
+        } else {
+            status.value
+        }
     }
 
-    private fun backordersToDisplayString(backorders: String?): String {
-        return backorders?.let {
-            when (it) {
-                "no" -> getString(R.string.product_backorders_no)
-                "yes" -> getString(R.string.product_backorders_yes)
-                "notify" -> getString(R.string.product_backorders_notify)
-                else -> backorders
-            }
-        } ?: ""
+    private fun backordersToDisplayString(status: ProductBackorderStatus): String {
+        return if (status.stringResource != 0) {
+            getString(status.stringResource)
+        } else {
+            status.value
+        }
     }
 
     /**
