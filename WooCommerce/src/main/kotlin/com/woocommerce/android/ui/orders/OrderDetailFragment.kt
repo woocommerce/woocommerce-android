@@ -7,10 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
@@ -23,7 +19,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
-import com.woocommerce.android.model.order.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -31,7 +26,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
-import com.woocommerce.android.ui.orders.detail.OrderDetailViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -50,14 +44,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var presenter: OrderDetailContract.Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var productImageMap: ProductImageMap
-
-    private lateinit var viewModel: OrderDetailViewModel
 
     private var changeOrderStatusCanceled: Boolean = false
     private var changeOrderStatusSnackbar: Snackbar? = null
@@ -97,27 +88,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_order_detail, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val nonNullActivity = checkNotNull(activity)
-
-//        initializeViews(savedInstanceState)
-        initializeViewModels()
-    }
-
-    private fun initializeViewModels() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(OrderDetailViewModel::class.java)
-
-        setupObservers()
-    }
-
-    private fun setupObservers() {
-        viewModel.paymentInfoData.observe(this, Observer {
-            orderDetail_paymentInfo.updateView(it)
-        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -254,7 +224,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     billingOnly = presenter.isVirtualProduct(order))
 
             // Populate the Payment Information Card
-            viewModel.updatePaymentInfo(it.toAppModel())
+            orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
 
             // Check for customer note, show if available
             if (order.customerNote.isEmpty()) {
@@ -334,7 +304,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         orderDetail_orderStatus.updateStatus(orderStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, this)
-            viewModel.updatePaymentInfo(it.toAppModel())
+            orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency))
         }
     }
 
