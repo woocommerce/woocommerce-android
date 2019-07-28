@@ -162,7 +162,7 @@ dependencies {
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
-    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation("androidx.arch.core:core-testing:$archComponentsVersion", {
@@ -177,7 +177,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
-    androidTestImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
 
