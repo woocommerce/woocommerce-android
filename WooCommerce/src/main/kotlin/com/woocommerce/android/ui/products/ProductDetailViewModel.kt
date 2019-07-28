@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,6 +24,7 @@ class ProductDetailViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val productRepository: ProductRepository,
+    private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
@@ -85,12 +87,17 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private suspend fun fetchProduct(remoteProductId: Long){
-        val fetchedProduct = productRepository.fetchProduct(remoteProductId)
-        if (fetchedProduct != null) {
-            _product.value = fetchedProduct
+        if (networkStatus.isConnected()) {
+            val fetchedProduct = productRepository.fetchProduct(remoteProductId)
+            if (fetchedProduct != null) {
+                _product.value = fetchedProduct
+            } else {
+                _showSnackbarMessage.value = R.string.product_detail_fetch_product_error
+                _exit.call()
+            }
         } else {
-            _showSnackbarMessage.value = R.string.product_detail_fetch_product_error
-            _exit.call()
+            _showSnackbarMessage.value = R.string.offline_error
+            _isSkeletonShown.value = false
         }
     }
 
