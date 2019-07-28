@@ -164,6 +164,12 @@ dependencies {
     testImplementation "junit:junit:4.12"
     testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation("androidx.arch.core:core-testing:$archComponentsVersion", {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+    })
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
