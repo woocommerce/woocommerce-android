@@ -5,14 +5,18 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
+import java.util.Date
 
 data class Product(
+    val remoteId: Long,
     val name: String,
     val type: ProductType,
     val status: ProductStatus?,
     val stockStatus: ProductStockStatus,
     val backorderStatus: ProductBackorderStatus,
+    val dateCreated: Date,
     val firstImageUrl: String?,
     val totalSales: Int,
     val reviewsAllowed: Boolean,
@@ -42,11 +46,13 @@ data class Product(
 
 fun WCProductModel.toAppModel(): Product {
     return Product(
+        this.remoteProductId,
         this.name,
         ProductType.fromString(this.type),
         ProductStatus.fromString(this.status),
         ProductStockStatus.fromString(this.stockStatus),
         ProductBackorderStatus.fromString(this.backorders),
+        DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
         this.getFirstImageUrl(),
         this.totalSales,
         this.reviewsAllowed,
