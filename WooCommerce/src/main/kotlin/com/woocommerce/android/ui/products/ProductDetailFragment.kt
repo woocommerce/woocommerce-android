@@ -266,7 +266,9 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice != null) {
                 val group = mapOf(
-                        Pair(getString(R.string.product_regular_price), viewModel.formatCurrency(product.regularPrice ?: BigDecimal.ZERO)),
+                        Pair(getString(R.string.product_regular_price),
+                                viewModel.formatCurrency(product.regularPrice ?: BigDecimal.ZERO)
+                        ),
                         Pair(getString(R.string.product_sale_price), viewModel.formatCurrency(product.salePrice))
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)

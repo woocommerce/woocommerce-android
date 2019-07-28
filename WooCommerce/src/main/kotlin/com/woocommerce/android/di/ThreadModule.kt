@@ -3,7 +3,6 @@ package com.woocommerce.android.di
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.wordpress.android.util.helpers.Debouncer
 import javax.inject.Named

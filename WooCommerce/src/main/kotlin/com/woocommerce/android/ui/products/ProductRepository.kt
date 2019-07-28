@@ -21,7 +21,7 @@ class ProductRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
-){
+) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
     }

@@ -86,7 +86,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchProduct(remoteProductId: Long){
+    private suspend fun fetchProduct(remoteProductId: Long) {
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {

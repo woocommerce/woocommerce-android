@@ -2,7 +2,6 @@ package com.woocommerce.android.viewmodel
 
 import javax.inject.Inject
 import javax.inject.Provider
-import javax.inject.Singleton
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
@@ -23,8 +22,7 @@ class ViewModelFactory
         }
         if (creator == null) {
             throw IllegalArgumentException(
-                    "View model not found [" + viewModelClass
-                            + "]. Have you added corresponding method into the ViewModelModule."
+                "View model not found [$viewModelClass]. Have you added corresponding method into the ViewModelModule."
             )
         }
         return creator.get() as T
