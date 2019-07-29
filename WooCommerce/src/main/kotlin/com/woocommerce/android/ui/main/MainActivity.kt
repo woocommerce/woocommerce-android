@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
+import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -648,20 +650,36 @@ class MainActivity : AppUpgradeActivity(),
         val navPos = BottomNavigationPosition.ORDERS.position
         bottom_nav.active(navPos)
 
-        if (markComplete) {
-            // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
-            // detail fragment and then show a new one
-            navController.popBackStack(R.id.orderDetailFragment, true)
+        val orderId = OrderIdentifier(localSiteId, remoteOrderId)
+        val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(
+                orderId,
+                remoteNoteId,
+                markComplete
+        )
 
+        if (markComplete) {
             // immediately update the order badge to reflect the change
             if (unfilledOrderCount > 0) {
                 showOrderBadge(unfilledOrderCount - 1)
             }
-        }
 
-        val orderId = OrderIdentifier(localSiteId, remoteOrderId)
-        val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
-        navController.navigate(action)
+            // if we're marking the order as complete, we need to pop the backstack to the existing order
+            // detail fragment and tell it to load the updated order
+            if (navController.popBackStack(R.id.orderDetailFragment, false)) {
+                // hack alert: we have to wait for the navController to execute the transaction, otherwise
+                // the active child fragment may be the order fulfillment fragment
+                Handler().postDelayed({
+                    (getActiveChildFragment() as? OrderDetailFragment)?.presenter?.loadOrderDetail(
+                            orderId,
+                            true
+                    )
+                }, 100)
+            } else {
+                navController.navigate(action)
+            }
+        } else {
+            navController.navigate(action)
+        }
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
