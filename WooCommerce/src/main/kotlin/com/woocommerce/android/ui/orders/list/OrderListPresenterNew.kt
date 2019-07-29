@@ -144,7 +144,7 @@ class OrderListPresenterNew @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderShipmentProviderChanged(event: OnOrderShipmentProvidersChanged) {
         if (event.isError) {
-            WooLog.e(WooLog.T.ORDERS, "${TAG} - Error fetching shipment tracking providers : ${event.error.message}")
+            WooLog.e(WooLog.T.ORDERS, "$TAG - Error fetching shipment tracking providers : ${event.error.message}")
         } else {
             AnalyticsTracker.track(Stat.ORDER_TRACKING_PROVIDERS_LOADED)
             isShipmentTrackingProviderFetched = true

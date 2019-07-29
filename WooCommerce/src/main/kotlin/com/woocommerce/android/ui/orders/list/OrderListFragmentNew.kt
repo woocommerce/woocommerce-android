@@ -370,6 +370,9 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun showOrderDetail(remoteOrderId: Long) {
+        // Load order shipment tracking providers if it hasn't been done already.
+        presenter.loadShipmentTrackingProviders()
+
         disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
@@ -413,9 +416,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             wrapper.data.observe(this, Observer {
                 it?.let { orderListData ->
                     if (orderListData.isNotEmpty()) {
-                        // Tell the presenter to load shipment tracking providers
-                        presenter.loadShipmentTrackingProviders()
-
                         ordersAdapter.submitList(orderListData)
                         listState?.let {
                             ordersList.layoutManager?.onRestoreInstanceState(listState)
