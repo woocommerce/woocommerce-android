@@ -59,9 +59,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     }
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var networkStatus: NetworkStatus
 
     private lateinit var viewModel: ProductDetailViewModel
 
