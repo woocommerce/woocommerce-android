@@ -38,6 +38,8 @@ abstract class MockedActivityBindingModule {
             MockedOrderFulfillmentModule::class,
             NotifsListModule::class,
             ReviewDetailModule::class,
+            ViewModelModule::class,
+            ThreadModule::class,
             MockedProductDetailModule::class,
             MockedAddOrderShipmentTrackingModule::class,
             MockedAddOrderTrackingProviderListModule::class))
