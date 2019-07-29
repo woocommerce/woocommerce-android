@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -69,6 +70,8 @@ class OrderDetailPresenter @Inject constructor(
     companion object {
         private val TAG: String = OrderDetailPresenter::class.java.simpleName
     }
+
+    class MarkOrderCompleteEvent(val orderId: OrderIdentifier)
 
     override var orderModel: WCOrderModel? = null
     override var orderIdentifier: OrderIdentifier? = null
@@ -452,6 +455,14 @@ class OrderDetailPresenter @Inject constructor(
                 }
             }
         }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onEventMainThread(event: MarkOrderCompleteEvent) {
+        // this event is posted by the main activity after the user chooses to fulfill an order
+        EventBus.getDefault().removeStickyEvent(event)
+        loadOrderDetail(event.orderId, true)
     }
 
     @SuppressWarnings("unused")

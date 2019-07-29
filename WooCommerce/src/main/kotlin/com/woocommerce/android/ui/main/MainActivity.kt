@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -39,8 +38,8 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
-import com.woocommerce.android.ui.orders.OrderDetailFragment
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
+import com.woocommerce.android.ui.orders.OrderDetailPresenter.MarkOrderCompleteEvent
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
@@ -57,6 +56,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -664,16 +664,9 @@ class MainActivity : AppUpgradeActivity(),
             }
 
             // if we're marking the order as complete, we need to pop the backstack to the existing order
-            // detail fragment and tell it to load the updated order
+            // detail and fire an event to tell its presenter to mark it complete
             if (navController.popBackStack(R.id.orderDetailFragment, false)) {
-                // hack alert: we have to wait for the navController to execute the transaction, otherwise
-                // the active child fragment may be the order fulfillment fragment
-                Handler().postDelayed({
-                    (getActiveChildFragment() as? OrderDetailFragment)?.presenter?.loadOrderDetail(
-                            orderId,
-                            true
-                    )
-                }, 100)
+                EventBus.getDefault().postSticky(MarkOrderCompleteEvent(orderId))
             } else {
                 navController.navigate(action)
             }
