@@ -289,7 +289,6 @@ Language: ar
     <string name="login_jetpack_view_instructions">عرض الإرشادات</string>
     <string name="login_jetpack_required_msg">لاستخدام تطبيق WooCommerce الذي تحتاج إليه لإعداد إضافة Jetpack على موقعك</string>
     <string name="login_view_connected_stores">عرض المتاجر المتصلة</string>
-    <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. يمكنك تثبيت إضافة WooCommerce على موقعك ثم تحديث هذا التطبيق للاستمرار.</string>
     <string name="login_try_another_account">تجربة حساب آخر</string>
     <string name="login_not_connected_to_account">يبدو أنَّ %1$s متصل بحساب وردبرس.كوم مختلف.</string>
     <string name="login">تسجيل الدخول</string>
@@ -569,7 +568,6 @@ Language: ar
     <string name="settings_third_party_policy_header">سياسة الطرف الثالث</string>
     <string name="settings_cookie_policy_header">سياسة ملفات تعريف الارتباط</string>
     <string name="settings_privacy_policy_header">سياسة الخصوصية</string>
-    <string name="settings_footer">صُنع بحب بواسطة Automattic</string>
     <string name="settings_tracking">نستخدم أدوات تعقب أخرى، بما في ذلك بعض الأدوات التي تنتمي إلى أطراف ثالثة. اقرأ عن هذه الأدوات وكيفية التحكم فيها.</string>
     <string name="settings_privacy_policy">قراءة سياسة الخصوصية</string>
     <string name="settings_privacy_detail">تساعدنا هذه المعلومات على تحسين منتجاتنا، وجعل التسويق أكثر ملاءمة لك، وتخصيص تجربة WooCommerce، والمزيد كما يرد بالتفصيل في سياسة الخصوصية لدينا.</string>

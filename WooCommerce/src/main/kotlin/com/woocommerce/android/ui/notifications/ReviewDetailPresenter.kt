@@ -58,7 +58,7 @@ class ReviewDetailPresenter @Inject constructor(
     override fun loadNotificationDetail(noteId: Long, commentId: Long) {
         view?.let {
             // Attempt to load notification from the database
-            val noteIdSet = NoteIdSet(-1, noteId, selectedSite.get().id)
+            val noteIdSet = NoteIdSet(-1, noteId, selectedSite.get().siteId)
 
             // Verify there is a valid comment ID for this notification. If not,
             // show an error.

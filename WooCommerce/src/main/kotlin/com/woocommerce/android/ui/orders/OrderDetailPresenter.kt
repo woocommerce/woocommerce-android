@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -115,11 +116,11 @@ class OrderDetailPresenter @Inject constructor(
         if (orderIdentifier.isNotEmpty()) {
             orderModel = loadOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
-                orderView?.showOrderDetail(order)
+                orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
-            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId)
+            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
 
@@ -198,10 +199,40 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    override fun fetchOrder(remoteOrderId: Long) {
-        orderView?.showLoadOrderProgress(true)
+    override fun refreshOrderDetail(displaySkeleton: Boolean) {
+        orderModel?.let {
+            fetchOrder(it.remoteOrderId, displaySkeleton)
+        }
+    }
+
+    override fun fetchOrder(remoteOrderId: Long, displaySkeleton: Boolean) {
+        orderView?.showSkeleton(displaySkeleton)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
+    }
+
+    /**
+     * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
+     * and if product exists in the local cache.
+     */
+    override fun isVirtualProduct(lineItems: List<LineItem>): Boolean {
+        if (lineItems.isNullOrEmpty()) {
+            return false
+        }
+
+        val remoteProductIds: List<Long> = lineItems.filter { it.productId != null }.map { it.productId!! }
+        if (remoteProductIds.isNullOrEmpty()) {
+            return false
+        }
+
+        // verify that the lineitem product is in the local cache and
+        // that the product count in the local cache matches the lineItem count.
+        val productModels = productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+        if (productModels.isNullOrEmpty() || productModels.count() != remoteProductIds.count()) {
+            return false
+        }
+
+        return productModels.filter { !it.virtual }.isEmpty()
     }
 
     override fun doChangeOrderStatus(newStatus: String) {
@@ -291,11 +322,12 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : ${event.error.message}")
                 orderView?.showLoadOrderError()
             } else {
-                orderModel = orderStore.getOrderByIdentifier(orderIdentifier!!)
+                orderModel = loadOrderDetailFromDb(orderIdentifier!!)
                 orderModel?.let { order ->
-                    orderView?.showLoadOrderProgress(false)
-                    orderView?.showOrderDetail(order)
+                    orderView?.showSkeleton(false)
+                    orderView?.showOrderDetail(order, isFreshData = true)
                     loadOrderNotes()
+                    loadOrderShipmentTrackings()
                 } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
@@ -347,10 +379,13 @@ class OrderDetailPresenter @Inject constructor(
 
                 // Successfully marked order status changed
                 orderModel?.let {
-                    orderModel = orderStore.getOrderByIdentifier(it.getIdentifier())
+                    orderModel = loadOrderDetailFromDb(it.getIdentifier())
                 }
                 orderView?.markOrderStatusChangedSuccess()
             }
+
+            // if order detail refresh is pending, call refresh order detail
+            orderView?.refreshOrderDetail()
         } else if (event.causeOfChange == POST_ORDER_NOTE) {
             if (event.isError) {
                 AnalyticsTracker.track(
@@ -379,6 +414,9 @@ class OrderDetailPresenter @Inject constructor(
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
                 orderView?.markTrackingDeletedOnSuccess()
             }
+
+            // if order detail refresh is pending, call refresh order detail
+            orderView?.refreshOrderDetail()
         } else if (event.causeOfChange == ADD_ORDER_SHIPMENT_TRACKING) {
             if (event.isError) {
                 AnalyticsTracker.track(
@@ -460,6 +498,10 @@ class OrderDetailPresenter @Inject constructor(
         // product was just fetched, show its image
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
             orderView?.refreshProductImages()
+            // Refresh the customer info section, once the product information becomes available
+            orderModel?.let {
+                orderView?.refreshCustomerInfoCard(it)
+            }
         }
     }
 

@@ -16,6 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.DateUtils
@@ -28,7 +29,7 @@ import java.util.Calendar
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
-class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOrderShipmentTrackingContract.View,
+class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackingContract.View,
         AddOrderTrackingProviderActionListener, BackPressListener {
     companion object {
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
@@ -68,10 +69,10 @@ class AddOrderShipmentTrackingFragment : androidx.fragment.app.Fragment(), AddOr
         return inflater.inflate(R.layout.fragment_add_shipment_tracking, container, false)
     }
 
+    override fun getFragmentTitle() = getString(R.string.order_shipment_tracking_toolbar_title)
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        activity?.title = getString(R.string.order_shipment_tracking_toolbar_title)
 
         orderId = navArgs.orderId
 

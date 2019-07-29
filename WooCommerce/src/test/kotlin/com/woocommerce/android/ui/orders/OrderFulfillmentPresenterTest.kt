@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -21,10 +22,12 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_SHIPMENT_TRA
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -32,6 +35,7 @@ class OrderFulfillmentPresenterTest {
     private val view: OrderFulfillmentContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
+    private val productStore: WCProductStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val uiMessageResolver: UIMessageResolver = mock()
     private val networkStatus: NetworkStatus = mock()
@@ -42,7 +46,7 @@ class OrderFulfillmentPresenterTest {
     @Before
     fun setup() {
         presenter = spy(OrderFulfillmentPresenter(
-                dispatcher, orderStore, selectedSite, uiMessageResolver, networkStatus
+                dispatcher, orderStore, productStore, selectedSite, uiMessageResolver, networkStatus
         ))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
@@ -281,5 +285,78 @@ class OrderFulfillmentPresenterTest {
 
         // ensure that success snack message is displayed
         verify(view, times(1)).markTrackingDeletedOnSuccess()
+    }
+
+    @Test
+    fun `Verify product is virtual for a single product in an order`() {
+        order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290")))
+        val products = listOf(WCProductModel(1).apply { virtual = true })
+        doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(view)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(order.getIdentifier())
+        verify(view).showOrderDetail(any())
+
+        assertTrue(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Verify product is not virtual for a single product in an order`() {
+        order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290")))
+        val products = listOf(WCProductModel(1))
+        doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(view)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(order.getIdentifier())
+        verify(view).showOrderDetail(any())
+
+        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Verify product is not virtual for multiple products in an order`() {
+        order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290"), mapOf("product_id" to "291")))
+
+        val products = listOf(
+                WCProductModel(1).apply { virtual = false },
+                WCProductModel(2).apply { virtual = false },
+                WCProductModel(3).apply { virtual = true }
+        )
+        doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(view)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(order.getIdentifier())
+        verify(view).showOrderDetail(any())
+
+        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Verify product is not virtual for empty products in an order`() {
+        doReturn(emptyList<WCProductModel>()).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(view)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(order.getIdentifier())
+        verify(view).showOrderDetail(any())
+
+        verify(productStore, times(0)).getProductsByRemoteIds(any(), any())
+        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Verify product is not virtual for empty productIds in an order`() {
+        order.lineItems = Gson().toJson(listOf(mapOf(), mapOf(), mapOf("product_id" to null)))
+        doReturn(emptyList<WCProductModel>()).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(view)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(order.getIdentifier())
+        verify(view).showOrderDetail(any())
+
+        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
     }
 }

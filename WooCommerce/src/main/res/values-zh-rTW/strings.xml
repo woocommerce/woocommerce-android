@@ -289,7 +289,6 @@ Language: zh_TW
     <string name="login_jetpack_view_instructions">查看說明</string>
     <string name="login_jetpack_required_msg">若要使用 WooCommerce 應用程式，你需要在你的網站上設定 Jetpack 外掛程式</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
-    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 網站。在你的網站上安裝 WooCommerce 外掛程式，然後重新整理此應用程式以繼續。</string>
     <string name="login_try_another_account">嘗試其他帳號</string>
     <string name="login_not_connected_to_account">%1$s 似乎已經連結至不同的 WordPress.com 帳號。</string>
     <string name="login">登入</string>
@@ -569,7 +568,6 @@ Language: zh_TW
     <string name="settings_third_party_policy_header">第三方政策</string>
     <string name="settings_cookie_policy_header">Cookie 政策</string>
     <string name="settings_privacy_policy_header">隱私權政策</string>
-    <string name="settings_footer">由 Automattic 成員深情打造</string>
     <string name="settings_tracking">我們會使用其他的追蹤工具，包括由第三方所提供的追蹤工具。瞭解相關資訊及其控制方式。</string>
     <string name="settings_privacy_policy">閱讀隱私權政策</string>
     <string name="settings_privacy_detail">這類資訊有助我們改善產品、提供與你更加相關的行銷活動、帶來量身打造的 WooCommerce 使用體驗；若要瞭解更多詳細內容，請參閱我們的隱私權政策</string>

@@ -289,7 +289,6 @@ Language: pt_BR
     <string name="login_jetpack_view_instructions">Visualizar instruções</string>
     <string name="login_jetpack_required_msg">Para usar o aplicativo WooCommerce, será preciso configurar o plugin do Jetpack no seu site</string>
     <string name="login_view_connected_stores">Visualizar lojas conectadas</string>
-    <string name="login_not_woo_store">Parece que %1$s não é um site do WooCommerce. Instale o plugin do WooCommerce no seu site e atualize o aplicativo para continuar.</string>
     <string name="login_try_another_account">Tente outra conta</string>
     <string name="login_not_connected_to_account">Parece que %1$s está conectado(a) a uma conta diferente do WordPress.com.</string>
     <string name="login">Fazer login</string>
@@ -569,7 +568,6 @@ Language: pt_BR
     <string name="settings_third_party_policy_header">Política de terceiros</string>
     <string name="settings_cookie_policy_header">Política de cookies</string>
     <string name="settings_privacy_policy_header">Política de Privacidade</string>
-    <string name="settings_footer">Feito com amor pela Automattic</string>
     <string name="settings_tracking">Utilizamos outras ferramentas de controle, incluindo algumas de terceiros. Leia sobre elas e sobre como controlá-las.</string>
     <string name="settings_privacy_policy">Leia a política de privacidade</string>
     <string name="settings_privacy_detail">Essas informações nos ajudam a aprimorar os nossos produtos, tornar o marketing enviado a você mais relevante, personalizar sua experiência com o WooCommerce e muito mais, conforme detalhado na nossa política de privacidade</string>

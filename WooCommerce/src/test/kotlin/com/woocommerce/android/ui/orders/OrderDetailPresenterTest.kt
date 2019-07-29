@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_SINGLE_ORDER
 import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
@@ -21,15 +23,19 @@ import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchSingleOrderPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class OrderDetailPresenterTest {
     private val orderDetailView: OrderDetailContract.View = mock()
@@ -69,7 +75,7 @@ class OrderDetailPresenterTest {
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
         presenter.loadOrderDetail(orderIdentifier, false)
-        verify(orderDetailView).showOrderDetail(any())
+        verify(orderDetailView).showOrderDetail(any(), any())
     }
 
     @Test
@@ -361,5 +367,135 @@ class OrderDetailPresenterTest {
 
         // verify shipment trackings is loaded from db
         verify(presenter, times(1)).loadShipmentTrackingsFromDb()
+    }
+
+    @Test
+    fun `Verify product is virtual for a single product in an order`() {
+        order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290")))
+        val products = listOf(WCProductModel(1).apply { virtual = true })
+        doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(orderDetailView).showOrderDetail(any(), any())
+
+        assertTrue(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Verify product is not virtual for a single product in an order`() {
+        order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290")))
+        val products = listOf(WCProductModel(1))
+        doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(orderDetailView).showOrderDetail(any(), any())
+
+        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Verify product is not virtual for multiple products in an order`() {
+        order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290"), mapOf("product_id" to "291")))
+
+        val products = listOf(
+                WCProductModel(1).apply { virtual = false },
+                WCProductModel(2).apply { virtual = false },
+                WCProductModel(3).apply { virtual = true }
+        )
+        doReturn(products).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(orderDetailView).showOrderDetail(any(), any())
+
+        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Verify product is not virtual for empty products in an order`() {
+        doReturn(emptyList<WCProductModel>()).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(orderDetailView).showOrderDetail(any(), any())
+
+        verify(productStore, times(0)).getProductsByRemoteIds(any(), any())
+        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Verify product is not virtual for empty productIds in an order`() {
+        order.lineItems = Gson().toJson(listOf(mapOf(), mapOf(), mapOf("product_id" to null)))
+        doReturn(emptyList<WCProductModel>()).whenever(productStore).getProductsByRemoteIds(any(), any())
+
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
+        presenter.loadOrderDetail(orderIdentifier, false)
+        verify(orderDetailView).showOrderDetail(any(), any())
+
+        assertFalse(presenter.isVirtualProduct(order.getLineItemList()))
+    }
+
+    @Test
+    fun `Request order detail refresh when network available - success`() {
+        presenter.takeView(orderDetailView)
+        doReturn(order).whenever(presenter).orderModel
+        doReturn(order.getIdentifier()).whenever(presenter).orderIdentifier
+        doReturn(true).whenever(networkStatus).isConnected()
+
+        // call refresh order detail
+        presenter.refreshOrderDetail(true)
+
+        // verify skeleton view is displayed
+        verify(orderDetailView, times(1)).showSkeleton(true)
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchSingleOrderPayload>>())
+
+        // mock success response
+        presenter.onOrderChanged(OnOrderChanged(1).apply {
+            causeOfChange = FETCH_SINGLE_ORDER
+        })
+
+        // verify skeleton view is no longer displayed
+        verify(orderDetailView, times(1)).showSkeleton(false)
+
+        // verify order fetched from db is called
+        verify(presenter).loadOrderDetailFromDb(any())
+        verify(orderDetailView, times(1)).showOrderDetail(order, true)
+
+        // verify order notes/shipment trackings is fetched
+        verify(presenter, times(1)).loadOrderNotes()
+        verify(presenter, times(1)).loadOrderShipmentTrackings()
+    }
+
+    @Test
+    fun `Request order detail refresh when network available - error`() {
+        doReturn(order).whenever(presenter).orderModel
+        presenter.takeView(orderDetailView)
+
+        // call refresh order detail
+        presenter.refreshOrderDetail(true)
+
+        // verify skeleton view is displayed
+        verify(orderDetailView, times(1)).showSkeleton(true)
+
+        // ensure that dispatcher is invoked
+        verify(dispatcher, times(1)).dispatch(any<Action<FetchSingleOrderPayload>>())
+
+        // mock success response
+        presenter.onOrderChanged(OnOrderChanged(0).apply {
+            causeOfChange = FETCH_SINGLE_ORDER
+            error = OrderError()
+        })
+
+        // verify error snack is displayed
+        verify(orderDetailView, times(1)).showLoadOrderError()
     }
 }
