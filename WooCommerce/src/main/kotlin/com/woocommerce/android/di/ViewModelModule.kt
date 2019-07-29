@@ -15,7 +15,7 @@ internal abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(ProductDetailViewModel::class)
-    internal abstract fun pluginOrderDetailViewModel(viewModel: ProductDetailViewModel): ViewModel
+    internal abstract fun pluginProductDetailViewModel(viewModel: ProductDetailViewModel): ViewModel
 
     @Binds
     internal abstract fun provideViewModelFactory(viewModelFactory: ViewModelFactory): ViewModelProvider.Factory
