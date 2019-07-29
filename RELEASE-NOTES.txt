@@ -1,3 +1,6 @@
+2.5
+-----
+ 
 2.4
 -----
 * The Notifications tab has been replaced by Reviews 
