@@ -151,7 +151,7 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
-    private data class Parameters(
+    data class Parameters(
         val currencyCode: String?,
         val weightUnit: String?,
         val dimensionUnit: String?
