@@ -20,7 +20,7 @@ object AppPrefs {
     private enum class DeletablePrefKey : PrefKey {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
-        IS_USING_V3_API,
+        IS_USING_V4_API,
         HAS_UNSEEN_NOTIFS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
@@ -94,9 +94,9 @@ object AppPrefs {
         remove(DeletablePrefKey.SUPPORT_NAME)
     }
 
-    fun isUsingV3Api() = getBoolean(DeletablePrefKey.IS_USING_V3_API, false)
+    fun isUsingV4Api() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
 
-    fun setIsUsingV3Api() = setBoolean(DeletablePrefKey.IS_USING_V3_API, true)
+    fun setIsUsingV4Api(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
 
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds
