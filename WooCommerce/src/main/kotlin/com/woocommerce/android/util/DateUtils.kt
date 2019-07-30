@@ -207,7 +207,6 @@ object DateUtils {
      */
     fun getYearMonthDayStringFromDate(date: Date): String = yyyyMMddFormat.format(date)
 
-
     /**
      * Given an ISO8601 date of format YYYY-MM-DD hh, returns the hour String in ("hh") format.
      *

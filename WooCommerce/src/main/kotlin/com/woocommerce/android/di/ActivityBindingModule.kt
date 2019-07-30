@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
+import com.woocommerce.android.ui.mystore.MyStoreModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
@@ -33,6 +34,7 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = arrayOf(
             MainModule::class,
             DashboardModule::class,
+            MyStoreModule::class,
             OrderListModule::class,
             OrderDetailModule::class,
             OrderProductListModule::class,
