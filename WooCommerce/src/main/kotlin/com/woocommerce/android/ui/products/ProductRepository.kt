@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_LOADED
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
@@ -17,6 +18,7 @@ import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
+@OpenClassOnDebug
 class ProductRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,

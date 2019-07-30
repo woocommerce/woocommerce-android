@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -19,6 +20,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Named
 
+@OpenClassOnDebug
 class ProductDetailViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val wooCommerceStore: WooCommerceStore,
@@ -107,10 +109,10 @@ class ProductDetailViewModel @Inject constructor(
         } ?: amount.toString()
     }
 
-    private fun getSiteSettings(): WCSettingsModel? =
+    fun getSiteSettings(): WCSettingsModel? =
             wooCommerceStore.getSiteSettings(selectedSite.get())
 
-    private fun getProductSiteSettings(): WCProductSettingsModel? =
+    fun getProductSiteSettings(): WCProductSettingsModel? =
             wooCommerceStore.getProductSettings(selectedSite.get())
 
     fun getWeightUnit() = weightUnit ?: ""

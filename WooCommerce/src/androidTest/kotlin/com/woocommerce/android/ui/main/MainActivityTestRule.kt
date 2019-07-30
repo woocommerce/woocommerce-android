@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
 import com.woocommerce.android.ui.products.MockedProductDetailModule
+import com.woocommerce.android.ui.products.MockedViewModelModule
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
@@ -131,6 +132,6 @@ class MainActivityTestRule : ActivityTestRule<MainActivity>(MainActivity::class.
     fun setOrderProductDetailWithMockData(
         product: WCProductModel
     ) {
-        MockedProductDetailModule.setMockProduct(product)
+        MockedViewModelModule.setMockProduct(product)
     }
 }
