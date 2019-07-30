@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.capture
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -32,7 +30,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductRepository = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
-        on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "CZK${i.arguments.first()}" }
+        on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
 
     private val product = ProductTestUtils.generateProduct()

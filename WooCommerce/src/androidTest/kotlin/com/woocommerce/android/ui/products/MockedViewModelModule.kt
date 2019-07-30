@@ -4,7 +4,6 @@ import android.content.Context
 
 import androidx.lifecycle.ViewModelProvider
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -12,14 +11,11 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.utils.WCSiteUtils
+import com.woocommerce.android.util.CurrencyFormatter
 import dagger.Module
 import dagger.Provides
-import org.wordpress.android.fluxc.Dispatcher
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooCommerceRestClient
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @Module
@@ -34,28 +30,27 @@ internal abstract class MockedViewModelModule {
 
         @JvmStatic
         @Provides
-        fun provideViewModelFactory(): ViewModelProvider.Factory {
-            val mockDispatcher = mock<Dispatcher>()
-            val mockContext = mock<Context>()
-            val mockSelectedSite = mock<SelectedSite>()
+        fun provideViewModelFactory(
+            currencyFormatter: CurrencyFormatter,
+            wcStore: WooCommerceStore,
+            site: SelectedSite
+        ): ViewModelProvider.Factory {
             val mockNetworkStatus = mock<NetworkStatus>()
             val mockProductRepository = mock<ProductRepository>()
-            val mockWcStore = WooCommerceStore(
-                    mockContext,
-                    mockDispatcher,
-                    WooCommerceRestClient(mockContext, mockDispatcher, mock(), mock(), mock())
-            )
 
-            val mockedProductDetailViewModel = spy(ProductDetailViewModel(
-                    Dispatchers.Main, mockWcStore,
-                    mockSelectedSite, mockProductRepository, mockNetworkStatus, mock()
-            ))
+            val mockedProductDetailViewModel = spy(
+                    ProductDetailViewModel(
+                            Dispatchers.Main,
+                            wcStore,
+                            site,
+                            mockProductRepository,
+                            mockNetworkStatus,
+                            currencyFormatter
+                    )
+            )
 
             doReturn(product?.toAppModel()).whenever(mockProductRepository).getProduct(any())
             doReturn(true).whenever(mockNetworkStatus).isConnected()
-            doReturn(WCSiteUtils.generateSiteSettings()).whenever(mockedProductDetailViewModel).getSiteSettings()
-            doReturn(WcProductTestUtils.generateProductSettings())
-                    .whenever(mockedProductDetailViewModel).getProductSiteSettings()
 
             val mockFactory = mock<ViewModelProvider.Factory>()
 
