@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -13,12 +14,11 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.WCProductSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.math.roundToInt
 
 @OpenClassOnDebug
 class ProductDetailViewModel @Inject constructor(
@@ -30,12 +30,12 @@ class ProductDetailViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteProductId = 0L
-    private var currencyCode: String? = null
-    private var weightUnit: String? = null
-    private var dimensionUnit: String? = null
 
-    private val _product = MutableLiveData<Product>()
-    val product: LiveData<Product> = _product
+    private val product = MutableLiveData<Product>()
+    private val parameters = MutableLiveData<Parameters>()
+
+    private val _productData = MediatorLiveData<ProductWithParameters>()
+    val productData: LiveData<ProductWithParameters> = _productData
 
     private val _isSkeletonShown = MutableLiveData<Boolean>()
     val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
@@ -48,6 +48,19 @@ class ProductDetailViewModel @Inject constructor(
 
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
+
+    init {
+        _productData.addSource(product) { prod ->
+            parameters.value?.let { params ->
+                _productData.value = combineData(prod, params)
+            }
+        }
+        _productData.addSource(parameters) { params ->
+            product.value?.let {  prod ->
+                _productData.value = combineData(prod, params)
+            }
+        }
+    }
 
     fun start(remoteProductId: Long) {
         loadProduct(remoteProductId)
@@ -64,11 +77,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun loadProduct(remoteProductId: Long) {
-        getSiteSettings()?.let { currencyCode = it.currencyCode }
-        getProductSiteSettings()?.let { settings ->
-            weightUnit = settings.weightUnit
-            dimensionUnit = settings.dimensionUnit
-        }
+        loadParameters()
 
         val shouldFetch = remoteProductId != this.remoteProductId
         this.remoteProductId = remoteProductId
@@ -76,7 +85,7 @@ class ProductDetailViewModel @Inject constructor(
         launch {
             val productInDb = productRepository.getProduct(remoteProductId)
             if (productInDb != null) {
-                _product.value = productInDb
+                product.value = productInDb
                 if (shouldFetch) {
                     fetchProduct(remoteProductId)
                 }
@@ -88,11 +97,19 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    private fun loadParameters() {
+        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
+            return@let Pair(settings.weightUnit, settings.dimensionUnit)
+        } ?: Pair(null, null)
+        parameters.value = Parameters(currencyCode, weightUnit, dimensionUnit)
+    }
+
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
-                _product.value = fetchedProduct
+                product.value = fetchedProduct
             } else {
                 _showSnackbarMessage.value = R.string.product_detail_fetch_product_error
                 _exit.call()
@@ -103,18 +120,49 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun formatCurrency(amount: BigDecimal): String {
+    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
         return currencyCode?.let {
-            currencyFormatter.formatCurrency(amount, it)
+            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
         } ?: amount.toString()
     }
 
-    fun getSiteSettings(): WCSettingsModel? =
-            wooCommerceStore.getSiteSettings(selectedSite.get())
+    private fun combineData(product: Product, parameters: Parameters): ProductWithParameters {
+        val weight = if (product.weight > 0) "${product.weight.roundToInt()}${parameters.weightUnit ?: ""}" else ""
 
-    fun getProductSiteSettings(): WCProductSettingsModel? =
-            wooCommerceStore.getProductSettings(selectedSite.get())
+        val hasLength = product.length > 0
+        val hasWidth = product.width > 0
+        val hasHeight = product.height > 0
+        val unit = parameters.dimensionUnit ?: ""
+        val size = if (hasLength && hasWidth && hasHeight) {
+            "${product.length.roundToInt()} x ${product.width.roundToInt()} x ${product.height.roundToInt()} $unit"
+        } else if (hasWidth && hasHeight) {
+            "${product.width.roundToInt()} x ${product.height.roundToInt()} $unit"
+        } else {
+            ""
+        }.trim()
 
-    fun getWeightUnit() = weightUnit ?: ""
-    fun getDimensionUnit() = dimensionUnit ?: ""
+        return ProductWithParameters(
+                product,
+                weight,
+                size,
+                formatCurrency(product.price, parameters.currencyCode),
+                formatCurrency(product.salePrice, parameters.currencyCode),
+                formatCurrency(product.regularPrice, parameters.currencyCode)
+        )
+    }
+
+    private data class Parameters(
+        val currencyCode: String?,
+        val weightUnit: String?,
+        val dimensionUnit: String?
+    )
+
+    data class ProductWithParameters(
+        val product: Product,
+        val weightWithUnits: String,
+        val sizeWithUnits: String,
+        val priceWithCurrency: String,
+        val salePriceWithCurrency: String,
+        val regularPriceWithCurrency: String
+    )
 }

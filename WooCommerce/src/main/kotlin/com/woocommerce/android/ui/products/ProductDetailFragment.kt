@@ -31,7 +31,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
@@ -45,10 +44,10 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
-import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.math.max
 import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 
 class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     private enum class DetailCard {
@@ -112,7 +111,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             showSkeleton(it)
         })
 
-        viewModel.product.observe(this, Observer {
+        viewModel.productData.observe(this, Observer {
             showProduct(it)
         })
 
@@ -169,9 +168,10 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     override fun getFragmentTitle() = productTitle
 
-    private fun showProduct(product: Product) {
+    private fun showProduct(productData: ProductWithParameters) {
         if (!isAdded) return
 
+        val product = productData.product
         productTitle = when (product.type) {
             EXTERNAL -> getString(R.string.product_name_external, product.name)
             GROUPED -> getString(R.string.product_name_grouped, product.name)
@@ -215,12 +215,14 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             }
         }
 
-        addPrimaryCard(product)
-        addPricingAndInventoryCard(product)
-        addPurchaseDetailsCard(product)
+        addPrimaryCard(productData)
+        addPricingAndInventoryCard(productData)
+        addPurchaseDetailsCard(productData)
     }
 
-    private fun addPrimaryCard(product: Product) {
+    private fun addPrimaryCard(productData: ProductWithParameters) {
+        val product = productData.product
+
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
         // we don't show total sales for variations because they're always zero
@@ -255,7 +257,9 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         )
     }
 
-    private fun addPricingAndInventoryCard(product: Product) {
+    private fun addPricingAndInventoryCard(productData: ProductWithParameters) {
+        val product = productData.product
+
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
         val hasPricingInfo = product.price != null && product.salePrice != null || product.taxClass.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
@@ -264,19 +268,12 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
             if (product.salePrice != null) {
                 val group = mapOf(
-                        Pair(getString(R.string.product_regular_price),
-                                viewModel.formatCurrency(product.regularPrice ?: BigDecimal.ZERO)
-                        ),
-                        Pair(getString(R.string.product_sale_price), viewModel.formatCurrency(product.salePrice))
+                        Pair(getString(R.string.product_regular_price), productData.regularPriceWithCurrency),
+                        Pair(getString(R.string.product_sale_price), productData.salePriceWithCurrency)
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
-                addPropertyView(
-                        pricingCard,
-                        R.string.product_price,
-                        viewModel.formatCurrency(product.price ?: BigDecimal.ZERO),
-                        LinearLayout.VERTICAL
-                )
+                addPropertyView(pricingCard, R.string.product_price, productData.priceWithCurrency, LinearLayout.VERTICAL)
             }
         }
 
@@ -294,26 +291,12 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
     }
 
-    private fun addPurchaseDetailsCard(product: Product) {
-        val hasLength = product.length > 0
-        val hasWidth = product.width > 0
-        val hasHeight = product.height > 0
-
-        val dimensionUnit = viewModel.getDimensionUnit()
-        val propertySize = if (hasLength && hasWidth && hasHeight) {
-            "${product.length} x ${product.width} x ${product.height} $dimensionUnit"
-        } else if (hasWidth && hasHeight) {
-            "${product.width} x ${product.height} $dimensionUnit"
-        } else {
-            ""
-        }
-
-        val weightUnit = viewModel.getWeightUnit()
-        val weight = if (product.weight > 0) "${product.weight}$weightUnit" else ""
+    private fun addPurchaseDetailsCard(productData: ProductWithParameters) {
+        val product = productData.product
 
         val shippingGroup = mapOf(
-                Pair(getString(R.string.product_weight), weight),
-                Pair(getString(R.string.product_size), propertySize),
+                Pair(getString(R.string.product_weight), productData.weightWithUnits),
+                Pair(getString(R.string.product_size), productData.sizeWithUnits),
                 Pair(getString(R.string.product_shipping_class), product.shippingClass)
         )
         addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
