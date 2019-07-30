@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.capture
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -8,9 +10,9 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.test
@@ -19,18 +21,32 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCProductSettingsModel
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 
 class ProductDetailViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductRepository = mock()
-    private val currencyFormatter: CurrencyFormatter = mock()
+    private val currencyFormatter: CurrencyFormatter = mock {
+        on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "CZK${i.arguments.first()}" }
+    }
 
     private val product = ProductTestUtils.generateProduct()
     private val productRemoteId = product.remoteId
     private lateinit var viewModel: ProductDetailViewModel
+
+    private val productWithParameters = ProductWithParameters(
+        product,
+        "10kg",
+        "1 x 2 x 3 cm",
+        "CZK20.00",
+        "CZK10.00",
+        "CZK30.00"
+    )
 
     @Before
     fun setup() {
@@ -44,23 +60,32 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         currencyFormatter
                 )
         )
-        // Use a dummy selected site
+        val prodSettings = WCProductSettingsModel(0).apply {
+            dimensionUnit = "cm"
+            weightUnit = "kg"
+        }
+        val siteSettings = mock<WCSettingsModel> {
+            on(it.currencyCode).thenReturn("CZK")
+        }
+
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(prodSettings).whenever(wooCommerceStore).getProductSettings(any())
+        doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
     }
 
     @Test
     fun `Displays the product detail view correctly`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        var observedProduct: Product? = null
-        viewModel.product.observeForever { observedProduct = it }
+        var productData: ProductWithParameters? = null
+        viewModel.productData.observeForever { productData = it }
 
-        assertThat(observedProduct).isNull()
+        assertThat(productData).isNull()
 
         viewModel.start(productRemoteId)
 
-        assertThat(observedProduct).isEqualTo(product)
+        assertThat(productData).isEqualTo(productWithParameters)
     }
 
     @Test
