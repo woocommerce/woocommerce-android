@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import org.wordpress.android.fluxc.model.WCProductModel
 
 @Module
 abstract class MockedProductDetailModule {

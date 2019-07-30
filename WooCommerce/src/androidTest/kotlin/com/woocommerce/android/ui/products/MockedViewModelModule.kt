@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
-
 import androidx.lifecycle.ViewModelProvider
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn

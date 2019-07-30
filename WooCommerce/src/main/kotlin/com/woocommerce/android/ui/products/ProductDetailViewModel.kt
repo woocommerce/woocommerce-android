@@ -56,7 +56,7 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
         _productData.addSource(parameters) { params ->
-            product.value?.let {  prod ->
+            product.value?.let { prod ->
                 _productData.value = combineData(prod, params)
             }
         }

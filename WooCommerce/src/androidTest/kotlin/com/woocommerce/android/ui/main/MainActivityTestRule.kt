@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.orders.MockedOrderFulfillmentModule
 import com.woocommerce.android.ui.orders.MockedOrderListModule
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
-import com.woocommerce.android.ui.products.MockedProductDetailModule
 import com.woocommerce.android.ui.products.MockedViewModelModule
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel

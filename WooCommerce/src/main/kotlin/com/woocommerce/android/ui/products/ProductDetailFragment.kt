@@ -273,7 +273,12 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
-                addPropertyView(pricingCard, R.string.product_price, productData.priceWithCurrency, LinearLayout.VERTICAL)
+                addPropertyView(
+                        pricingCard,
+                        R.string.product_price,
+                        productData.priceWithCurrency,
+                        LinearLayout.VERTICAL
+                )
             }
         }
 
