@@ -316,6 +316,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // Preemptively also update the site settings so we have them available sooner
         presenter.updateWooSiteSettings(site)
+
+        // also check if the site supports the new v4 revenue stats api changes
+        presenter.fetchRevenueStatsAvailability(site)
     }
 
     /**

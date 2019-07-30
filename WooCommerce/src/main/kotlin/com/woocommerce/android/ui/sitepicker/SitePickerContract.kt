@@ -19,6 +19,7 @@ interface SitePickerContract {
         fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel>
         fun verifySiteApiVersion(site: SiteModel)
         fun updateWooSiteSettings(site: SiteModel)
+        fun fetchRevenueStatsAvailability(site: SiteModel)
         fun getSiteModelByUrl(url: String): SiteModel?
     }
 
