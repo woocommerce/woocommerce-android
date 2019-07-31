@@ -78,9 +78,6 @@ class MyStoreFragment : TopLevelFragment(),
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
-                    // check for new revenue stats availability
-                    (activity as? MainActivity)?.fetchRevenueStatsAvailability(selectedSite.get())
-
                     MyStorePresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
                     refreshMyStoreStats(forced = true)
@@ -222,6 +219,10 @@ class MyStoreFragment : TopLevelFragment(),
         }
         errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
         errorSnackbar?.show()
+    }
+
+    override fun updateStatsAvailabilityError() {
+        (activity as? MainActivity)?.updateStatsView(false)
     }
 
     override fun getFragmentTitle(): String {

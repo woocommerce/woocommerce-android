@@ -23,6 +23,7 @@ interface MyStoreContract {
         fun refreshMyStoreStats(forced: Boolean = false)
         fun showStats(revenueStatsModel: WCRevenueStatsModel?, granularity: StatsGranularity)
         fun showStatsError(granularity: StatsGranularity)
+        fun updateStatsAvailabilityError()
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
         fun showTopEarnersError(granularity: StatsGranularity)
         fun showVisitorStats(visits: Int, granularity: StatsGranularity)

@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.FetchVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
+import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -151,7 +152,13 @@ class MyStorePresenter @Inject constructor(
                 dashboardView?.showChartSkeleton(false)
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
-                    dashboardView?.showStatsError(event.granularity)
+                    // display a different error snackbar if the error type is not "plugin not active", since
+                    // this error is already being handled by the activity class
+                    if (event.error.type == PLUGIN_NOT_ACTIVE) {
+                        dashboardView?.updateStatsAvailabilityError()
+                    } else {
+                        dashboardView?.showStatsError(event.granularity)
+                    }
                     return
                 }
 
