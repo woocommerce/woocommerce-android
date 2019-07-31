@@ -5,6 +5,13 @@ import javax.inject.Provider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
+/**
+ * {@link Factory} implementation, which creates a {@link ViewModel}, which has an empty constructor. The factory instance
+ * can be supplied to a {@link ViewModelProvider} to create a ViewModel instance scoped to a lifecycle of a fragment or
+ * an activity.
+ *
+ * Ex: ViewModelProviders.of(view, factoryInstance).get(SampleViewModel::class.java)
+ */
 class ViewModelFactory
 @Inject constructor(
     private val mViewModelsMap: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
