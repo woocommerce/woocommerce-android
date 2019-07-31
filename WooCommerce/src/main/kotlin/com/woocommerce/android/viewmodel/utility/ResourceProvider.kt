@@ -10,20 +10,11 @@ import javax.inject.Singleton
 
 @Singleton
 class ResourceProvider @Inject constructor(private val context: Context) {
-    fun getString(@StringRes resourceId: Int): String {
-        return context.getString(resourceId)
-    }
+    fun getString(@StringRes resourceId: Int) = context.getString(resourceId)
 
-    fun getString(@StringRes resourceId: Int, vararg formatArgs: Any): String {
-        return context.getString(resourceId, *formatArgs)
-    }
+    fun getString(@StringRes resourceId: Int, vararg formatArgs: Any) = context.getString(resourceId, *formatArgs)
 
-    fun getColor(@ColorRes resourceId: Int): Int {
-        return ContextCompat.getColor(context, resourceId)
-    }
+    fun getColor(@ColorRes resourceId: Int) = ContextCompat.getColor(context, resourceId)
 
-    fun getDimensionPixelSize(@DimenRes dimen: Int): Int {
-        val resources = context.resources
-        return resources.getDimensionPixelSize(dimen)
-    }
+    fun getDimensionPixelSize(@DimenRes dimen: Int) = context.resources.getDimensionPixelSize(dimen)
 }

@@ -45,9 +45,8 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
      * @param currencyCode the ISO 4217 currency code to use for formatting
      * @return the formatted value for display
      */
-    fun formatCurrency(rawValue: String, currencyCode: String, applyDecimalFormatting: Boolean = true): String {
-        return wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, applyDecimalFormatting)
-    }
+    fun formatCurrency(rawValue: String, currencyCode: String, applyDecimalFormatting: Boolean = true) =
+            wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, applyDecimalFormatting)
 
     /**
      * Formats the amount for display based on the WooCommerce site settings.
@@ -56,9 +55,8 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
      * @param currencyCode the ISO 4217 currency code to use for formatting
      * @return the formatted value for display
      */
-    fun formatCurrency(amount: BigDecimal, currencyCode: String, applyDecimalFormatting: Boolean = true): String {
-        return formatCurrency(amount.toString(), currencyCode, applyDecimalFormatting)
-    }
+    fun formatCurrency(amount: BigDecimal, currencyCode: String, applyDecimalFormatting: Boolean = true) =
+            formatCurrency(amount.toString(), currencyCode, applyDecimalFormatting)
 
     /**
      * Formats a raw amount for display based on the WooCommerce site settings, rounding the values to the nearest int.
