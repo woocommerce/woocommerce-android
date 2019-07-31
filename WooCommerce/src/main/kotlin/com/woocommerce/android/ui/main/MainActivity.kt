@@ -36,6 +36,8 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
+import com.woocommerce.android.ui.mystore.MyStoreFragment
+import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.notifications.NotifsListFragment
 import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
@@ -55,6 +57,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -100,6 +103,7 @@ class MainActivity : AppUpgradeActivity(),
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
@@ -142,6 +146,12 @@ class MainActivity : AppUpgradeActivity(),
         if (!selectedSite.exists()) {
             updateSelectedSite()
             return
+        }
+
+        // we only have to check the new revenue stats availability
+        // if the activity is starting for the first time
+        if (savedInstanceState == null) {
+            fetchRevenueStatsAvailability(selectedSite.get())
         }
 
         initFragment(savedInstanceState)
@@ -488,6 +498,28 @@ class MainActivity : AppUpgradeActivity(),
     override fun hideOrderBadge() {
         unfilledOrderCount = 0
         bottomNavView.hideOrderBadge()
+    }
+
+    override fun fetchRevenueStatsAvailability(site: SiteModel) {
+        revenueStatsAvailabilityFetcher.fetchRevenueStatsAvailability(site)
+    }
+
+    /**
+     * Method to update the `My Store` TAB based on the revenue stats availability
+     *
+     * if revenue stats v4 support is available but we are currently displaying the v3 stats UI,
+     * display a dialog to the user with the option to unload the v3 UI and display the new stats UI
+     *
+     * if revenue stats v4 support is NOT available but we are currently displaying the v4 stats UI,
+     * display an error snackbar to the user with the option to unload the v4 and display the old stats UI
+     */
+    override fun updateStatsView(isAvailable: Boolean) {
+        val fragment = bottomNavView.getFragment(DASHBOARD)
+        if (isAvailable && fragment.tag == DashboardFragment.TAG) {
+            // TODO: display a dialog to the user with the option to unload the v3 UI and display the new stats UI
+        } else if (!isAvailable && fragment.tag == MyStoreFragment.TAG) {
+            // TODO: display an error snackbar to the user with the option to unload the v4 and display the old stats UI
+        }
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {

@@ -32,5 +32,7 @@ interface MainContract {
         fun hideOrderBadge()
         fun showOrderBadge(count: Int)
         fun updateOrderBadge(hideCountUntilComplete: Boolean)
+        fun fetchRevenueStatsAvailability(site: SiteModel)
+        fun updateStatsView(isAvailable: Boolean)
     }
 }
