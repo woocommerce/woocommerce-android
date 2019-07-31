@@ -261,7 +261,7 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         val product = productData.product
 
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.price != null && product.salePrice != null || product.taxClass.isNotEmpty()
+        val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
 
         if (hasPricingInfo) {
