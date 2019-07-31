@@ -14,15 +14,12 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrderStatsPayload
@@ -120,19 +117,6 @@ class DashboardPresenter @Inject constructor(
 
     override fun getStatsCurrency() = wcStatsStore.getStatsCurrencyForSite(selectedSite.get())
 
-    override fun fetchUnfilledOrderCount(forced: Boolean) {
-        if (!networkStatus.isConnected()) {
-            dashboardView?.isRefreshPending = true
-            return
-        }
-
-        if (forced) {
-            dashboardView?.showUnfilledOrdersSkeleton(true)
-        }
-        val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
-        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
-    }
-
     /**
      * dispatches a FETCH_HAS_ORDERS action which tells us whether this store has *ever* had any orders
      */
@@ -205,24 +189,6 @@ class DashboardPresenter @Inject constructor(
                     val hasNoOrders = event.rowsAffected == 0
                     dashboardView?.showEmptyView(hasNoOrders)
                 }
-            }
-            FETCH_ORDERS_COUNT -> {
-                dashboardView?.showUnfilledOrdersSkeleton(false)
-                if (event.isError) {
-                    WooLog.e(T.DASHBOARD,
-                            "$TAG - Error fetching a count of orders waiting to be fulfilled: ${event.error.message}")
-                    dashboardView?.hideUnfilledOrdersCard()
-                    return
-                }
-
-                // Track fresh data loaded
-                AnalyticsTracker.track(
-                        Stat.DASHBOARD_UNFULFILLED_ORDERS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0)))
-
-                event.rowsAffected.takeIf { it > 0 }?.let { count ->
-                    dashboardView?.showUnfilledOrdersCard(count)
-                } ?: dashboardView?.hideUnfilledOrdersCard()
             }
         }
     }

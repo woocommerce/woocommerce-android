@@ -79,6 +79,7 @@ google-services.json
 .settings
 .classpath
 .project
+.vscode/
 
 # Fastlane
 fastlane/README.md
@@ -90,3 +91,6 @@ fastlane/.env
 
 # Sentry
 sentry.properties
+
+# Markdown Extensions
+.markdownlint.json

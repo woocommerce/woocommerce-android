@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 10:54:06+0000
+Translation-Revision-Date: 2019-07-24 00:54:32+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="error_disabled_apis">Could not fetch settings: Some APIs are unavailable for this OAuth app ID + account combination.</string>
+    <string name="settings_hiring">We\'re hiring!</string>
+    <string name="feature_requests">Feature request</string>
+    <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
+    <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
+    <string name="login_refresh_app">refresh the app</string>
+    <string name="login_not_woo_store">Parece que %1$s no es un sitio de WooCommerce. Install the WooCommerce plugin on your site and then %2$s</string>
+    <string name="orderdetail_empty_shipping_address">No se ha indicado ninguna dirección.</string>
     <string name="login_need_help_finding_connected_email">¿Necesitas ayuda para saber la dirección de correo electrónico con la que te conectaste?</string>
     <string name="enter_wordpress_site">Esta dirección no pertenece a un sitio de WordPress. El sitio debe tener instalado WordPress para que podamos conectarnos a él.</string>
     <string name="enter_email_for_site">Accede con WordPress.com para conectarte a %1$s</string>
@@ -567,7 +575,7 @@ Language: es
     <string name="settings_third_party_policy_header">Política de terceros</string>
     <string name="settings_cookie_policy_header">Política de cookies</string>
     <string name="settings_privacy_policy_header">Política de privacidad</string>
-    <string name="settings_footer">Con mucho cariño, por la gente de Automattic</string>
+    <string name="settings_footer">Con mucho cariño, por la gente de Automattic. %1$s</string>
     <string name="settings_tracking">Utilizamos otras herramientas de seguimiento, algunas de terceros. Obtén información sobre ellas y cómo controlarlas.</string>
     <string name="settings_privacy_policy">Lee la política de privacidad</string>
     <string name="settings_privacy_detail">Esta información nos ayuda a mejorar nuestros productos, adaptar el marketing que recibes, personalizar tu experiencia de WooCommerce y mucho más, tal como se detalla en nuestra política de privacidad.</string>
@@ -680,7 +688,7 @@ Language: es
     <string name="date_timeframe_older_two_days">Con más de 2 días</string>
     <string name="date_timeframe_yesterday">Ayer</string>
     <string name="date_timeframe_today">Hoy</string>
-    <string name="notifications">Notificaciones</string>
+    <string name="review_notifications">Notificaciones</string>
     <string name="products">Productos</string>
     <string name="discard">Descartar</string>
     <string name="this_year">Este año</string>

@@ -146,7 +146,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 loginSiteUrl = url
             }
 
-            val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
+            val ids = bundle.getIntArray(STATE_KEY_SITE_ID_LIST) ?: IntArray(0)
+            val sites = presenter.getSitesForLocalIds(ids)
             if (sites.isNotEmpty()) {
                 showStoreList(sites)
             } else {

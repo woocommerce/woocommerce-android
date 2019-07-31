@@ -73,7 +73,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listener = targetFragment as AddOrderTrackingProviderActionListener
-        setStyle(androidx.fragment.app.DialogFragment.STYLE_NORMAL, R.style.AppTheme)
+        setStyle(STYLE_NORMAL, R.style.AppTheme)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

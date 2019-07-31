@@ -6,10 +6,11 @@ import android.text.TextUtils
 object PreferenceUtils {
     fun getInt(preferences: SharedPreferences, key: String, default: Int = 0): Int {
         return try {
-            val value = getString(preferences, key)
-            if (value.isEmpty()) {
-                default
-            } else Integer.parseInt(value)
+            getString(preferences, key)?.let { value ->
+                if (value.isEmpty()) {
+                    default
+                } else Integer.parseInt(value)
+            } ?: default
         } catch (e: NumberFormatException) {
             default
         }
@@ -19,7 +20,7 @@ object PreferenceUtils {
         setString(preferences, key, Integer.toString(value))
     }
 
-    fun getString(preferences: SharedPreferences, key: String, defaultValue: String = ""): String {
+    fun getString(preferences: SharedPreferences, key: String, defaultValue: String = ""): String? {
         return preferences.getString(key, defaultValue)
     }
 

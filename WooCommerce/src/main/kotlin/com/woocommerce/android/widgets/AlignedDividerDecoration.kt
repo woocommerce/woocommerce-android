@@ -74,7 +74,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
         }
         val attrs = intArrayOf(android.R.attr.listDivider)
         val a = ctx.obtainStyledAttributes(attrs)
-        setDrawable(a.getDrawable(0))
+        a.getDrawable(0)?.let { setDrawable(it) }
         a.recycle()
     }
     lateinit var divider: Drawable
@@ -93,7 +93,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
         }
     }
 
-    private fun drawForVertical(canvas: Canvas, parent: androidx.recyclerview.widget.RecyclerView) {
+    private fun drawForVertical(canvas: Canvas, parent: RecyclerView) {
         val adjustedChildCount = parent.childCount - 2
         val isRtl = ViewCompat.getLayoutDirection(parent) == ViewCompat.LAYOUT_DIRECTION_RTL
         (0..adjustedChildCount)
@@ -121,7 +121,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
                 }
     }
 
-    private fun drawForHorizontal(canvas: Canvas, parent: androidx.recyclerview.widget.RecyclerView) {
+    private fun drawForHorizontal(canvas: Canvas, parent: RecyclerView) {
         val adjustedChildCount = parent.childCount - 2
         (0..adjustedChildCount)
                 .map { parent.getChildAt(it) }

@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-27 11:54:06+0000
+Translation-Revision-Date: 2019-07-26 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="error_disabled_apis">無法擷取設定：部分 API 並不適用此 OAuth 應用程式 ID 與帳戶的組合。</string>
+    <string name="settings_hiring">We\'re hiring!</string>
+    <string name="feature_requests">Feature request</string>
+    <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
+    <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
+    <string name="login_refresh_app">refresh the app</string>
+    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 網站。Install the WooCommerce plugin on your site and then %2$s</string>
+    <string name="orderdetail_empty_shipping_address">指定任何地址</string>
     <string name="login_need_help_finding_connected_email">需要協助找出你連結的電子郵件嗎？</string>
     <string name="enter_wordpress_site">此地址的網站不是 WordPress 網站。若需要我們連結網站，網站必須安裝 WordPress。</string>
     <string name="enter_email_for_site">透過 WordPress.com 登入以連結至 %1$s</string>
@@ -567,7 +575,7 @@ Language: zh_TW
     <string name="settings_third_party_policy_header">第三方政策</string>
     <string name="settings_cookie_policy_header">Cookie 政策</string>
     <string name="settings_privacy_policy_header">隱私權政策</string>
-    <string name="settings_footer">由 Automattic 成員深情打造</string>
+    <string name="settings_footer">由 Automattic 成員深情打造。%1$s</string>
     <string name="settings_tracking">我們會使用其他的追蹤工具，包括由第三方所提供的追蹤工具。瞭解相關資訊及其控制方式。</string>
     <string name="settings_privacy_policy">閱讀隱私權政策</string>
     <string name="settings_privacy_detail">這類資訊有助我們改善產品、提供與你更加相關的行銷活動、帶來量身打造的 WooCommerce 使用體驗；若要瞭解更多詳細內容，請參閱我們的隱私權政策</string>
@@ -680,7 +688,7 @@ Language: zh_TW
     <string name="date_timeframe_older_two_days">超過 2 天</string>
     <string name="date_timeframe_yesterday">昨天</string>
     <string name="date_timeframe_today">今天</string>
-    <string name="notifications">通知</string>
+    <string name="review_notifications">通知</string>
     <string name="products">產品</string>
     <string name="discard">放棄</string>
     <string name="this_year">今年</string>

@@ -9,13 +9,11 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.notifications.NotifsListContract.View
 import com.woocommerce.android.ui.notifications.ReviewDetailFragment.OnRequestModerateReviewEvent
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.CommentAction.DELETE_COMMENT
 import org.wordpress.android.fluxc.action.CommentAction.PUSH_COMMENT
@@ -47,7 +45,7 @@ class NotifsListPresenter @Inject constructor(
     private var view: NotifsListContract.View? = null
     private var isRefreshing = false
 
-    override fun takeView(view: View) {
+    override fun takeView(view: NotifsListContract.View) {
         this.view = view
         ConnectionChangeReceiver.getEventBus().register(this)
         dispatcher.register(this)
@@ -85,7 +83,6 @@ class NotifsListPresenter @Inject constructor(
     override fun fetchAndLoadNotifsFromDb(isForceRefresh: Boolean) {
         val notifs = notificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
-                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
                 filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
         if (notifs.size > 0) {
             view?.showEmptyView(false)
@@ -106,7 +103,6 @@ class NotifsListPresenter @Inject constructor(
         if (networkStatus.isConnected()) {
             val unreadNotifs = notificationStore.getNotificationsForSite(
                     site = selectedSite.get(),
-                    filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
                     filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString())).filter { !it.read }
             if (unreadNotifs.isNotEmpty()) {
                 val payload = MarkNotificationsReadPayload(unreadNotifs)
@@ -133,7 +129,6 @@ class NotifsListPresenter @Inject constructor(
     override fun hasUnreadNotifs(): Boolean {
         return notificationStore.hasUnreadNotificationsForSite(
                 site = selectedSite.get(),
-                filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
                 filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString())
         )
     }
@@ -183,7 +178,7 @@ class NotifsListPresenter @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
         view?.showSkeleton(false)
         when (event.causeOfChange) {
@@ -225,7 +220,7 @@ class NotifsListPresenter @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onCommentChanged(event: OnCommentChanged) {
         if (event.causeOfChange == DELETE_COMMENT || event.causeOfChange == PUSH_COMMENT) onCommentModerated(event)
     }

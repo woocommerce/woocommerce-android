@@ -117,8 +117,24 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
             orderFulfill_customerNote.initView(order)
         }
 
+        // check if product is a virtual product
+        val isVirtualProduct = presenter.isVirtualProduct(order)
+
         // Populate the Customer Information Card
-        orderFulfill_customerInfo.initView(order, true)
+        // hide shipping card if product is virtual or if no shipping address is available
+        val hideShipping = isVirtualProduct || !orderFulfill_customerInfo.isShippingAvailable(order)
+        if (hideShipping) {
+            orderFulfill_customerInfo.visibility = View.GONE
+        } else {
+            // Populate the Customer Information Card
+            orderFulfill_customerInfo.visibility = View.VISIBLE
+            orderFulfill_customerInfo.initView(order, true)
+        }
+
+        // load shipment tracking card only if product is NOT virtual
+        if (!isVirtualProduct) {
+            presenter.loadOrderShipmentTrackings()
+        }
 
         orderFulfill_btnComplete.setOnClickListener(this)
     }

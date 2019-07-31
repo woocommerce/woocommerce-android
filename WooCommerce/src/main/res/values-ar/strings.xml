@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-07-01 11:54:04+0000
+Translation-Revision-Date: 2019-07-24 00:54:31+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="error_disabled_apis">Could not fetch settings: Some APIs are unavailable for this OAuth app ID + account combination.</string>
+    <string name="settings_hiring">We\'re hiring!</string>
+    <string name="feature_requests">Feature request</string>
+    <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
+    <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
+    <string name="login_refresh_app">refresh the app</string>
+    <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. Install the WooCommerce plugin on your site and then %2$s</string>
+    <string name="orderdetail_empty_shipping_address">لا يوجد عنوان محدَّد.</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
     <string name="enter_email_for_site">تسجيل الدخول باستخدام وردبرس.كوم للاتصال بـ %1$s</string>
@@ -567,7 +575,7 @@ Language: ar
     <string name="settings_third_party_policy_header">سياسة الطرف الثالث</string>
     <string name="settings_cookie_policy_header">سياسة ملفات تعريف الارتباط</string>
     <string name="settings_privacy_policy_header">سياسة الخصوصية</string>
-    <string name="settings_footer">صُنع بحب بواسطة Automattic</string>
+    <string name="settings_footer">صُنع بحب بواسطة Automattic. %1$s</string>
     <string name="settings_tracking">نستخدم أدوات تعقب أخرى، بما في ذلك بعض الأدوات التي تنتمي إلى أطراف ثالثة. اقرأ عن هذه الأدوات وكيفية التحكم فيها.</string>
     <string name="settings_privacy_policy">قراءة سياسة الخصوصية</string>
     <string name="settings_privacy_detail">تساعدنا هذه المعلومات على تحسين منتجاتنا، وجعل التسويق أكثر ملاءمة لك، وتخصيص تجربة WooCommerce، والمزيد كما يرد بالتفصيل في سياسة الخصوصية لدينا.</string>
@@ -680,7 +688,7 @@ Language: ar
     <string name="date_timeframe_older_two_days">قبل يومين</string>
     <string name="date_timeframe_yesterday">أمس</string>
     <string name="date_timeframe_today">اليوم</string>
-    <string name="notifications">التنبيهات</string>
+    <string name="review_notifications">التنبيهات</string>
     <string name="products">المنتجات</string>
     <string name="discard">تجاهل</string>
     <string name="this_year">هذا العام</string>

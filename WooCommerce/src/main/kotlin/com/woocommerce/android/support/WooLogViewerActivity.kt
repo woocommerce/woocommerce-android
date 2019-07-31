@@ -66,7 +66,7 @@ class WooLogViewerActivity : AppCompatActivity() {
     private fun copyAppLogToClipboard() {
         try {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.primaryClip = ClipData.newPlainText("AppLog", WooLog.toString())
+            clipboard.setPrimaryClip(ClipData.newPlainText("AppLog", WooLog.toString()))
             ToastUtils.showToast(this, R.string.logviewer_copied_to_clipboard)
         } catch (e: Exception) {
             WooLog.e(T.UTILS, e)

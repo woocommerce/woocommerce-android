@@ -1,8 +1,21 @@
+2.5
+-----
+* Fixed rare crash after fulfilling an order and then minimizing the app.
+
+2.4
+-----
+* The Notifications tab has been replaced by Reviews 
+* The unfulfilled order count has been removed from the dashboard and is now shown as a badge on the order list
+* Added support to update the app without even going to the play store.
+ 
 2.3
 -----
- 
+* Fixed a bug where the shipping/billing details for a virtual order was being displayed.
 * Added option to request for new features right from the app in the Settings page
 * The unfilled order count doesn't re-animate in every time the dashboard is restored or refreshed
+* Added option to view our hiring page right from the app in the Settings page
+* Added "Copy tracking number" to the tracking popup menu in order detail
+* Login now works properly for sites with redirects
 
 2.2
 -----

@@ -10,7 +10,6 @@ interface DashboardContract {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean = false)
         fun getStatsCurrency(): String?
-        fun fetchUnfilledOrderCount(forced: Boolean = false)
         fun fetchHasOrders()
     }
 
@@ -25,12 +24,9 @@ interface DashboardContract {
         fun showVisitorStats(visits: Int, granularity: StatsGranularity)
         fun showVisitorStatsError(granularity: StatsGranularity)
         fun showErrorSnack()
-        fun hideUnfilledOrdersCard()
-        fun showUnfilledOrdersCard(count: Int)
         fun showEmptyView(show: Boolean)
 
         fun showChartSkeleton(show: Boolean)
-        fun showUnfilledOrdersSkeleton(show: Boolean)
         fun showTopEarnersSkeleton(show: Boolean)
     }
 }

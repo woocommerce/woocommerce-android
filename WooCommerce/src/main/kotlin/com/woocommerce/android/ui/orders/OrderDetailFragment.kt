@@ -23,6 +23,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -99,7 +100,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         val didMarkComplete = arguments?.getBoolean(ARG_DID_MARK_COMPLETE) ?: false
         val markComplete = navArgs.markComplete && !didMarkComplete
         if (markComplete) {
-            arguments = Bundle().also { it.putBoolean(ARG_DID_MARK_COMPLETE, true) }
+            arguments?.putBoolean(ARG_DID_MARK_COMPLETE, true) ?: run {
+                arguments = Bundle().also {
+                    it.putBoolean(ARG_DID_MARK_COMPLETE, true)
+                }
+            }
         }
 
         val orderIdentifier = navArgs.orderId
@@ -216,8 +221,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     productListener = this
             )
 
-            // Populate the Customer Information Card
-            orderDetail_customerInfo.initView(order, false)
+            // check if product is a virtual product. If it is, hide only the shipping details card
+            orderDetail_customerInfo.initView(
+                    order = order,
+                    shippingOnly = false,
+                    billingOnly = presenter.isVirtualProduct(order))
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
@@ -234,6 +242,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 isRefreshPending = false
             }
         }
+    }
+
+    override fun refreshCustomerInfoCard(order: WCOrderModel) {
+        // hide the shipping details if products in an order is virtual
+        val hideShipping = presenter.isVirtualProduct(order)
+        orderDetail_customerInfo.initShippingSection(order, hideShipping)
     }
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
@@ -345,6 +359,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
                 // User canceled the action to change the order status
                 changeOrderStatusCanceled = true
+
+                // if the fulfilled status was undone, tell the main activity to update the unfilled order badge
+                if (newStatus == CoreOrderStatus.COMPLETED.value ||
+                        newStatus == CoreOrderStatus.PROCESSING.value ||
+                        previousOrderStatus == CoreOrderStatus.COMPLETED.value ||
+                        previousOrderStatus == CoreOrderStatus.PROCESSING.value) {
+                    (activity as? MainActivity)?.updateOrderBadge(true)
+                }
 
                 presenter.orderModel?.let { order ->
                     previousOrderStatus?.let { status ->
@@ -580,6 +602,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     private fun showOrderStatusSelector() {
+        // If the device is offline, alert the user with a snack and exit (do not show order status selector).
+        if (!networkStatus.isConnected()) {
+            uiMessageResolver.showOfflineSnack()
+            return
+        }
+
         presenter.orderModel?.let { order ->
             val orderStatusOptions = presenter.getOrderStatusOptions()
             val orderStatus = order.status

@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-27 10:54:07+0000
+Translation-Revision-Date: 2019-07-25 00:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="error_disabled_apis">Could not fetch settings: Some APIs are unavailable for this OAuth app ID + account combination.</string>
+    <string name="settings_hiring">We\'re hiring!</string>
+    <string name="feature_requests">Feature request</string>
+    <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
+    <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
+    <string name="login_refresh_app">refresh the app</string>
+    <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Install the WooCommerce plugin on your site and then %2$s</string>
+    <string name="orderdetail_empty_shipping_address">Adres belirtilmedi.</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
     <string name="enter_email_for_site">%1$s ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
@@ -567,7 +575,7 @@ Language: tr
     <string name="settings_third_party_policy_header">Üçüncü Taraf Politikası</string>
     <string name="settings_cookie_policy_header">Tanımlama Bilgisi Politikası</string>
     <string name="settings_privacy_policy_header">Gizlilik Politikası</string>
-    <string name="settings_footer">Automattic tarafından sevgiyle yapıldı</string>
+    <string name="settings_footer">Automattic tarafından sevgiyle yapıldı. %1$s</string>
     <string name="settings_tracking">Üçüncü taraflara ait olanlar dahil diğer izleme araçlarını kullanıyoruz. Bunlar ve nasıl kontrol edilecekleri hakkında bilgi alın.</string>
     <string name="settings_privacy_policy">Gizlilik politikasını okuyun</string>
     <string name="settings_privacy_detail">Bu bilgi ürünlerimizi iyileştirmemize, size daha uygun pazarlama yapmamıza, WooCommerce deneyiminizi kişiselleştirmemize ve gizlilik politikamızda belirtildiği gibi daha fazlasına yardımcı olur.</string>
@@ -680,7 +688,7 @@ Language: tr
     <string name="date_timeframe_older_two_days">2 günden eski</string>
     <string name="date_timeframe_yesterday">Dün</string>
     <string name="date_timeframe_today">Bugün</string>
-    <string name="notifications">Bildirimler</string>
+    <string name="review_notifications">Bildirimler</string>
     <string name="products">Ürünler</string>
     <string name="discard">Vazgeç</string>
     <string name="this_year">Bu Yıl</string>

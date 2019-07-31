@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-25 11:54:07+0000
+Translation-Revision-Date: 2019-07-28 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="error_disabled_apis">Tidak dapat memuat pengaturan: Beberapa API tidak tersedia untuk kombinasi ID aplikasi OAuth + akun ini.</string>
+    <string name="settings_hiring">Kami membuka lowongan!</string>
+    <string name="feature_requests">Permintaan fitur</string>
+    <string name="orderdetail_copy_tracking_number">Salin nomor pelacakan</string>
+    <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
+    <string name="login_refresh_app">segarkan aplikasi</string>
+    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu %2$s</string>
+    <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
     <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke %1$s</string>
@@ -567,7 +575,7 @@ Language: id
     <string name="settings_third_party_policy_header">Kebijakan Pihak Ketiga</string>
     <string name="settings_cookie_policy_header">Kebijakan Cookie</string>
     <string name="settings_privacy_policy_header">Kebijakan Privasi</string>
-    <string name="settings_footer">Dibuat dengan penuh cinta oleh Automattic</string>
+    <string name="settings_footer">Dibuat dengan penuh cinta oleh Automattic. %1$s</string>
     <string name="settings_tracking">Kami menggunakan alat pelacakan lainnya, termasuk beberapa dari pihak ketiga. Baca tentang hal ini dan cara mengontrolnya.</string>
     <string name="settings_privacy_policy">Baca kebijakan privasi</string>
     <string name="settings_privacy_detail">Informasi ini membantu kami menyempurnakan produk, membuat pemasaran kepada Anda jadi lebih relevan, menyesuaikan pengalaman WooCommerce Anda, dan lainnya seperti yang dijelaskan dalam kebijakan privasi kami</string>
@@ -680,7 +688,7 @@ Language: id
     <string name="date_timeframe_older_two_days">Lebih dari 2 hari</string>
     <string name="date_timeframe_yesterday">Kemarin</string>
     <string name="date_timeframe_today">Hari Ini</string>
-    <string name="notifications">Pemberitahuan</string>
+    <string name="review_notifications">Pemberitahuan</string>
     <string name="products">Produk</string>
     <string name="discard">Batal</string>
     <string name="this_year">Tahun Ini</string>
