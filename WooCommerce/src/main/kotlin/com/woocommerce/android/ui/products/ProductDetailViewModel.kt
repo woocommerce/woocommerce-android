@@ -127,16 +127,16 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun combineData(product: Product, parameters: Parameters): ProductWithParameters {
-        val weight = if (product.weight > 0) "${product.weight.roundToInt()}${parameters.weightUnit ?: ""}" else ""
+        val weight = if (product.weight > 0) "${format(product.weight)}${parameters.weightUnit ?: ""}" else ""
 
         val hasLength = product.length > 0
         val hasWidth = product.width > 0
         val hasHeight = product.height > 0
         val unit = parameters.dimensionUnit ?: ""
         val size = if (hasLength && hasWidth && hasHeight) {
-            "${product.length.roundToInt()} x ${product.width.roundToInt()} x ${product.height.roundToInt()} $unit"
+            "${format(product.length)} x ${format(product.width)} x ${format(product.height)} $unit"
         } else if (hasWidth && hasHeight) {
-            "${product.width.roundToInt()} x ${product.height.roundToInt()} $unit"
+            "${format(product.width)} x ${format(product.height)} $unit"
         } else {
             ""
         }.trim()
@@ -149,6 +149,15 @@ class ProductDetailViewModel @Inject constructor(
                 formatCurrency(product.salePrice, parameters.currencyCode),
                 formatCurrency(product.regularPrice, parameters.currencyCode)
         )
+    }
+
+    private fun format(number: Float): String {
+        val int = number.roundToInt()
+        return if (number != int.toFloat()) {
+            number.toString()
+        } else {
+            int.toString()
+        }
     }
 
     data class Parameters(
