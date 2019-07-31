@@ -100,7 +100,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         val didMarkComplete = arguments?.getBoolean(ARG_DID_MARK_COMPLETE) ?: false
         val markComplete = navArgs.markComplete && !didMarkComplete
         if (markComplete) {
-            arguments = Bundle().also { it.putBoolean(ARG_DID_MARK_COMPLETE, true) }
+            arguments?.putBoolean(ARG_DID_MARK_COMPLETE, true) ?: run {
+                arguments = Bundle().also {
+                    it.putBoolean(ARG_DID_MARK_COMPLETE, true)
+                }
+            }
         }
 
         val orderIdentifier = navArgs.orderId

@@ -1,3 +1,7 @@
+2.5
+-----
+* Fixed rare crash after fulfilling an order and then minimizing the app.
+
 2.4
 -----
 * The Notifications tab has been replaced by Reviews 
