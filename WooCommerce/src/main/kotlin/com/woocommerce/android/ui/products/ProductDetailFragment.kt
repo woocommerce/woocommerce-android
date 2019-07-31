@@ -99,14 +99,14 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java)
-
-        setupObservers()
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
+            setupObservers(it)
+        }
 
         viewModel.start(navArgs.remoteProductId)
     }
 
-    private fun setupObservers() {
+    private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.isSkeletonShown.observe(this, Observer {
             showSkeleton(it)
         })
