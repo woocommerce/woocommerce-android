@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.android.support.AndroidSupportInjection
@@ -71,6 +72,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
+
+                    // check for new revenue stats availability
+                    (activity as? MainActivity)?.fetchRevenueStatsAvailability(selectedSite.get())
 
                     DashboardPresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
