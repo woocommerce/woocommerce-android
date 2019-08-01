@@ -303,7 +303,8 @@ class OrderDetailPresenter @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == WCOrderAction.FETCH_SINGLE_ORDER) {
             if (event.isError || (orderIdentifier.isNullOrBlank() && pendingRemoteOrderId == null)) {
-                WooLog.e(T.ORDERS, "$TAG - Error fetching order : ${event.error.message}")
+                val message = event.error?.message ?: "empty orderIdentifier"
+                WooLog.e(T.ORDERS, "$TAG - Error fetching order : $message")
                 orderView?.showLoadOrderError()
             } else {
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
