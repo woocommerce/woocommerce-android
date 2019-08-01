@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -33,8 +34,7 @@ class MyStoreFragment : TopLevelFragment(),
         DashboardStatsListener {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
-        const val STATE_KEY_TAB_STATS = "tab-stats-state"
-        const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
+        const val STATE_KEY_TAB_POSITION = "tab-stats-position"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         fun newInstance() = MyStoreFragment()
 
@@ -52,6 +52,14 @@ class MyStoreFragment : TopLevelFragment(),
     // If false, the fragment will refresh its data when it's visible on onHiddenChanged
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
     private var isStatsRefreshed: Boolean = false
+
+    private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
+    private val activeGranularity: StatsGranularity
+        get() {
+            return tab_layout.getTabAt(tabStatsPosition)?.let {
+                it.tag as StatsGranularity
+            } ?: DEFAULT_STATS_GRANULARITY
+        }
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -91,16 +99,28 @@ class MyStoreFragment : TopLevelFragment(),
 
         savedInstanceState?.let { bundle ->
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
-            my_store_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
-            my_store_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
+            tabStatsPosition = bundle.getInt(STATE_KEY_TAB_POSITION)
         }
 
         presenter.takeView(this)
 
         empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
+        StatsGranularity.values().forEach { granularity ->
+            val tab = tab_layout.newTab().apply {
+                setText(my_store_stats.getStringForGranularity(granularity))
+                tag = granularity
+            }
+            tab_layout.addTab(tab)
+
+            // Start with the given time period selected
+            if (granularity == activeGranularity) {
+                tab.select()
+            }
+        }
+
         my_store_stats.initView(
-                my_store_stats.activeGranularity,
+                activeGranularity,
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
@@ -117,6 +137,18 @@ class MyStoreFragment : TopLevelFragment(),
                 onScrollUp()
             }
         }
+
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                tabStatsPosition = tab.position
+                my_store_stats.loadDashboardStats(activeGranularity)
+                my_store_top_earners.loadTopEarnerStats(activeGranularity)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
 
         if (isActive && !deferInit) {
             isStatsRefreshed = true
@@ -161,8 +193,7 @@ class MyStoreFragment : TopLevelFragment(),
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putSerializable(STATE_KEY_TAB_STATS, my_store_stats.activeGranularity)
-        outState.putSerializable(STATE_KEY_TAB_EARNERS, my_store_stats.activeGranularity)
+        outState.putInt(STATE_KEY_TAB_POSITION, tab_layout.selectedTabPosition)
     }
 
     override fun showStats(
@@ -170,14 +201,14 @@ class MyStoreFragment : TopLevelFragment(),
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
-        if (my_store_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             my_store_stats.showErrorView(false)
             my_store_stats.updateView(revenueStatsModel, presenter.getStatsCurrency())
         }
     }
 
     override fun showStatsError(granularity: StatsGranularity) {
-        if (my_store_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             showStats(null, granularity)
             my_store_stats.showErrorView(true)
             showErrorSnack()
@@ -185,14 +216,14 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
-        if (my_store_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             my_store_top_earners.showErrorView(false)
             my_store_top_earners.updateView(topEarnerList)
         }
     }
 
     override fun showTopEarnersError(granularity: StatsGranularity) {
-        if (my_store_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             my_store_top_earners.updateView(emptyList())
             my_store_top_earners.showErrorView(true)
             showErrorSnack()
@@ -200,13 +231,13 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
-        if (my_store_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             my_store_stats.showVisitorStats(visits)
         }
     }
 
     override fun showVisitorStatsError(granularity: StatsGranularity) {
-        if (my_store_stats.activeGranularity == granularity) {
+        if (activeGranularity == granularity) {
             my_store_stats.showVisitorStatsError()
         }
     }
@@ -253,8 +284,8 @@ class MyStoreFragment : TopLevelFragment(),
                     my_store_stats.clearLabelValues()
                     my_store_stats.clearChartData()
                 }
-                presenter.loadStats(my_store_stats.activeGranularity, forced)
-                presenter.loadTopEarnerStats(my_store_stats.activeGranularity, forced)
+                presenter.loadStats(activeGranularity, forced)
+                presenter.loadTopEarnerStats(activeGranularity, forced)
                 presenter.fetchHasOrders()
             }
             else -> isRefreshPending = true
@@ -272,7 +303,6 @@ class MyStoreFragment : TopLevelFragment(),
     override fun onRequestLoadStats(period: StatsGranularity) {
         my_store_stats.showErrorView(false)
         presenter.loadStats(period)
-        my_store_top_earners.loadTopEarnerStats(period)
     }
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {

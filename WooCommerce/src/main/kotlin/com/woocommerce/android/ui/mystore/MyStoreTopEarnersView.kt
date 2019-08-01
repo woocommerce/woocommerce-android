@@ -25,14 +25,12 @@ import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
-import java.io.Serializable
 
 class MyStoreTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.my_store_top_earners, this)
     }
-    var tabStateStats: Serializable? = null // Save the current position of top earners tab view
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var listener: DashboardStatsListener
@@ -55,7 +53,7 @@ class MyStoreTopEarnersView @JvmOverloads constructor(ctx: Context, attrs: Attri
     }
 
     /**
-     * Load top earners stats when tab is selected in [DashboardStatsView]
+     * Load top earners stats when tab is selected in [MyStoreStatsView]
      */
     fun loadTopEarnerStats(granularity: StatsGranularity) {
         // Track range change

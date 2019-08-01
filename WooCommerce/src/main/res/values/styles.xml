@@ -309,9 +309,12 @@
         <item name="tabMode">scrollable</item>
         <item name="tabTextAppearance">@style/Woo.TabLayout.Text</item>
         <item name="tabTextColor">@color/wc_grey_mid</item>
-        <item name="tabContentStart">48dp</item>
-        <item name="tabPaddingStart">40dp</item>
-        <item name="tabPaddingEnd">40dp</item>
+        <item name="tabSelectedTextColor">@color/black</item>
+        <item name="android:background">@color/card_bgColor</item>
+        <item name="android:elevation">10dp</item>
+        <item name="tabPaddingStart">25dp</item>
+        <item name="tabPaddingEnd">25dp</item>
+        <item name="tabIndicatorHeight">2.5dp</item>
     </style>
 
     <style name="Woo.TabLayout.Text" parent="TextAppearance.Design.Tab">
@@ -550,6 +553,15 @@
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <!--
+         Stats
+        -->
+    <style name="Woo.Stats.Card" parent="Woo.Card">
+        <item name="android:elevation">2dp</item>
+        <item name="android:layout_marginStart">@dimen/margin_medium</item>
+        <item name="android:layout_marginEnd">@dimen/margin_medium</item>
     </style>
 
 </resources>
