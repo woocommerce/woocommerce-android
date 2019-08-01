@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ActivityScope
+import com.woocommerce.android.extensions.getVisitorStatsStartDate
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -33,6 +34,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -123,7 +125,9 @@ class MyStorePresenter @Inject constructor(
     }
 
     override fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean) {
-        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced = forced)
+        val startDate = granularity.getVisitorStatsStartDate()
+        val endDate = DateUtils.getStartOfCurrentDay()
+        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced, startDate, endDate)
         dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
     }
 
