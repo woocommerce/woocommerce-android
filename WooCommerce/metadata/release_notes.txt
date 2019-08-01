@@ -1,3 +1,5 @@
-* Have an idea for a new feature? Request it right from your Settings page.
-* There’s a “Copy tracking number” link in the tracking popup menu in the order details, so sharing tracking info is easier.
-* Bug squashing: We fixed a problem that caused virtual orders to display shipping details, and sites with redirects can now log in without issue.
+The tab formerly known as Notifications is now Reviews. As notifications are now shown under Orders, the Notifications tab was in need of a new identity. We have cunningly renamed it ‘Reviews,’ as it now just shows reviews.
+
+The number of unfulfilled orders is gone from the dashboard and is now shown as a badge on the order list.
+
+You will be prompted to perform updates within the app, so the hassle of having to open the Play store to do so is no more.
