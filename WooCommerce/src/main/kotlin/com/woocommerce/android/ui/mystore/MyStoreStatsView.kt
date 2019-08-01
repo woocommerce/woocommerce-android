@@ -254,7 +254,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         val revenueStats = revenueStatsModel?.getIntervalList()?.map {
             it.interval!! to it.subtotals?.grossRevenue!!
         }?.toMap() ?: mapOf()
-        if (revenueStats.isEmpty()) {
+        if (revenueStats.isEmpty() || revenueStatsModel?.getTotal()?.grossRevenue?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return
