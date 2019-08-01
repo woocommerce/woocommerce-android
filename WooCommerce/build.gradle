@@ -159,6 +159,7 @@ dependencies {
     // Debug dependencies
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-3'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
