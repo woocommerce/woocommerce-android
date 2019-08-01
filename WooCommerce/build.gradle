@@ -163,8 +163,14 @@ dependencies {
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
-    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation("androidx.arch.core:core-testing:$archComponentsVersion", {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+    })
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
@@ -172,7 +178,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
-    androidTestImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
 
@@ -183,6 +189,13 @@ dependencies {
     implementation(group: 'com.zendesk', name: 'support', version: '2.3.1') {
         exclude group: 'com.google.dagger'
     }
+
+    // ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

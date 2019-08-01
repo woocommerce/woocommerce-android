@@ -34,11 +34,11 @@ class WCProductPropertyView @JvmOverloads constructor(
         }
     }
 
-    fun setRating(ratingStr: String) {
+    fun setRating(rating: Float) {
         ensureViewCreated()
 
         try {
-            ratingBar?.rating = ratingStr.toFloat()
+            ratingBar?.rating = rating
             ratingBar?.visibility = View.VISIBLE
         } catch (e: NumberFormatException) {
             WooLog.e(WooLog.T.UTILS, e)

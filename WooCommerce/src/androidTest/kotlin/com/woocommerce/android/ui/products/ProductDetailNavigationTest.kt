@@ -469,7 +469,7 @@ class ProductDetailNavigationTest : TestBase() {
     @Test
     fun verifyProductDetailPricingInfoDisplayedCorrectlyWhenSalePriceNotAvailable() {
         // inject mock data to product detail
-        mockProductModel.price = "10"
+        mockProductModel.price = "10.00"
         mockProductModel.salePrice = ""
         mockProductModel.taxClass = "2"
         mockProductModel.sku = "Blah"
@@ -489,15 +489,15 @@ class ProductDetailNavigationTest : TestBase() {
 
         // verify that the pricing card pricing text is displayed correctly
         onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
-                .check(matches(withText(mockProductModel.price)))
+                .check(matches(withText("\$${mockProductModel.price}")))
     }
 
     @Test
     fun verifyProductDetailPricingInfoDisplayedCorrectlyWhenSalePriceAvailable() {
         // inject mock data to product detail
-        mockProductModel.price = "10"
-        mockProductModel.regularPrice = "10"
-        mockProductModel.salePrice = "15"
+        mockProductModel.price = "10.00"
+        mockProductModel.regularPrice = "10.00"
+        mockProductModel.salePrice = "15.00"
         mockProductModel.taxClass = "2"
         mockProductModel.sku = "Blah"
         activityTestRule.setOrderProductDetailWithMockData(mockProductModel)
@@ -515,8 +515,8 @@ class ProductDetailNavigationTest : TestBase() {
                 .check(matches(withText(appContext.getString(R.string.product_price))))
 
         // verify that the pricing card pricing text is displayed correctly
-        val regularPrice = "${appContext.getString(R.string.product_regular_price)}: ${mockProductModel.regularPrice}"
-        val salesPrice = "${appContext.getString(R.string.product_sale_price)}: ${mockProductModel.salePrice}"
+        val regularPrice = "${appContext.getString(R.string.product_regular_price)}: \$${mockProductModel.regularPrice}"
+        val salesPrice = "${appContext.getString(R.string.product_sale_price)}: \$${mockProductModel.salePrice}"
         onView(WCMatchers.matchesWithIndex(withId(R.id.textPropertyValue), 1))
                 .check(matches(withText("$regularPrice\n$salesPrice")))
     }
