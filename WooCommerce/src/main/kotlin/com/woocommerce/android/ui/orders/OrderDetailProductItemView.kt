@@ -38,7 +38,9 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         productInfo_productTotal.visibility = viewMode
         productInfo_totalTax.visibility = viewMode
         productInfo_lblTax.visibility = viewMode
-        productInfo_name.setSingleLine(!expanded)
+
+        val maxLinesInName = if (expanded) Int.MAX_VALUE else 2
+        productInfo_name.maxLines = maxLinesInName
 
         if (item.sku.isNullOrEmpty() || !expanded) {
             productInfo_lblSku.visibility = View.GONE

@@ -35,7 +35,6 @@
         android:ellipsize="end"
         android:paddingEnd="8dp"
         android:paddingStart="0dp"
-        android:singleLine="true"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Heading"
         app:layout_constrainedWidth="true"
         app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_qty"
