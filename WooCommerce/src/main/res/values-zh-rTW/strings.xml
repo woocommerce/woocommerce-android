@@ -688,7 +688,7 @@ Language: zh_TW
     <string name="date_timeframe_older_two_days">超過 2 天</string>
     <string name="date_timeframe_yesterday">昨天</string>
     <string name="date_timeframe_today">今天</string>
-    <string name="notifications">通知</string>
+    <string name="review_notifications">通知</string>
     <string name="products">產品</string>
     <string name="discard">放棄</string>
     <string name="this_year">今年</string>

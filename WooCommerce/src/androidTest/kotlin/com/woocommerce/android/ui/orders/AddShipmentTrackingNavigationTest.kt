@@ -19,7 +19,6 @@ import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
 import org.hamcrest.Matchers
-import org.hamcrest.Matchers.equalToIgnoringCase
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -184,9 +183,15 @@ class AddShipmentTrackingNavigationTest : TestBase() {
         onView(withId(R.id.shipmentTrack_btnAddTracking)).perform(WCMatchers.scrollTo(), click())
 
         // verify toolbar title is displayed correctly
-        onView(withId(R.id.toolbar)).check(matches(WCMatchers.withToolbarTitle(equalToIgnoringCase(
-                appContext.getString(R.string.order_shipment_tracking_toolbar_title)
-        ))))
+        onView(withId(R.id.toolbar)).check(
+                matches(
+                        WCMatchers.withToolbarTitle(
+                                Matchers.equalToIgnoringCase(
+                                        appContext.getString(R.string.order_shipment_tracking_toolbar_title)
+                                )
+                        )
+                )
+        )
 
         // verify that the close buttom is displayed
         // Check that the "UP" navigation button is displayed in the toolbar

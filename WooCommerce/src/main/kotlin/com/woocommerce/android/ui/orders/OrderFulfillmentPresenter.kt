@@ -7,24 +7,22 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.OrderFulfillmentContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.action.WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -52,7 +50,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     override var isShipmentTrackingsFetched = false
     override var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel? = null
 
-    override fun takeView(view: View) {
+    override fun takeView(view: OrderFulfillmentContract.View) {
         orderView = view
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
@@ -70,7 +68,6 @@ class OrderFulfillmentPresenter @Inject constructor(
             orderModel = getOrderDetailFromDb(orderIdentifier)
             orderModel?.let { order ->
                 view.showOrderDetail(order)
-                loadOrderShipmentTrackings()
             }
         }
     }
@@ -124,25 +121,9 @@ class OrderFulfillmentPresenter @Inject constructor(
      * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
      * and if product exists in the local cache.
      */
-    override fun isVirtualProduct(lineItems: List<LineItem>): Boolean {
-        if (lineItems.isNullOrEmpty()) {
-            return false
-        }
-
-        val remoteProductIds: List<Long> = lineItems.filter { it.productId != null }.map { it.productId!! }
-        if (remoteProductIds.isNullOrEmpty()) {
-            return false
-        }
-
-        // verify that the lineitem product is in the local cache and
-        // that the product count in the local cache matches the lineItem count.
-        val productModels = productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-        if (productModels.isNullOrEmpty() || productModels.count() != remoteProductIds.count()) {
-            return false
-        }
-
-        return productModels.filter { !it.virtual }.isEmpty()
-    }
+    override fun isVirtualProduct(order: WCOrderModel) = isVirtualProduct(
+            selectedSite.get(), order.getLineItemList(), productStore
+    )
 
     override fun markOrderComplete() {
         orderView?.let { view ->
@@ -184,7 +165,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == ADD_ORDER_SHIPMENT_TRACKING) {
             if (event.isError) {

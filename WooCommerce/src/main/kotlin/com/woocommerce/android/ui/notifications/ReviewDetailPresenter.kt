@@ -6,7 +6,6 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.notifications.ReviewDetailContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import org.greenrobot.eventbus.Subscribe
@@ -45,7 +44,7 @@ class ReviewDetailPresenter @Inject constructor(
     override var notification: NotificationModel? = null
     override var comment: CommentModel? = null
 
-    override fun takeView(view: View) {
+    override fun takeView(view: ReviewDetailContract.View) {
         this.view = view
         dispatcher.register(this)
     }
@@ -140,7 +139,7 @@ class ReviewDetailPresenter @Inject constructor(
             // We only care about logging an error
             if (event.changedNotificationLocalIds.contains(it.noteId)) {
                 if (event.isError) {
-                    WooLog.e(NOTIFICATIONS, "$TAG - Error marking new order notification as read!")
+                    WooLog.e(NOTIFICATIONS, "$TAG - Error marking new review notification as read!")
                 }
             }
         }

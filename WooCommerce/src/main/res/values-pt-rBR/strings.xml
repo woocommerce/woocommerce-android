@@ -688,7 +688,7 @@ Language: pt_BR
     <string name="date_timeframe_older_two_days">Há mais de 2 dias</string>
     <string name="date_timeframe_yesterday">Ontem</string>
     <string name="date_timeframe_today">Hoje</string>
-    <string name="notifications">Notificações</string>
+    <string name="review_notifications">Notificações</string>
     <string name="products">Produtos</string>
     <string name="discard">Descartar</string>
     <string name="this_year">Este ano</string>

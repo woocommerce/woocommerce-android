@@ -46,7 +46,7 @@ class OrderProductListFragment : BaseFragment(), OrderProductListContract.View {
         presenter.loadOrderDetail(navArgs.orderId)
 
         productList_products.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0) onScrollDown() else if (dy < 0) onScrollUp()
             }
         })

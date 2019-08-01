@@ -688,7 +688,7 @@ Language: ru
     <string name="date_timeframe_older_two_days">Больше двух дней назад</string>
     <string name="date_timeframe_yesterday">Вчера</string>
     <string name="date_timeframe_today">Сегодня</string>
-    <string name="notifications">Уведомления</string>
+    <string name="review_notifications">Уведомления</string>
     <string name="products">Товары</string>
     <string name="discard">Отменить</string>
     <string name="this_year">В этом году</string>

@@ -1,7 +1,7 @@
 package com.woocommerce.android.tools
 
 import android.content.Context
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.util.PreferenceUtils

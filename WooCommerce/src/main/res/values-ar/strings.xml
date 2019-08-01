@@ -688,7 +688,7 @@ Language: ar
     <string name="date_timeframe_older_two_days">قبل يومين</string>
     <string name="date_timeframe_yesterday">أمس</string>
     <string name="date_timeframe_today">اليوم</string>
-    <string name="notifications">التنبيهات</string>
+    <string name="review_notifications">التنبيهات</string>
     <string name="products">المنتجات</string>
     <string name="discard">تجاهل</string>
     <string name="this_year">هذا العام</string>

@@ -2,7 +2,7 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.AppPrefs

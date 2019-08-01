@@ -35,7 +35,9 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
-        OrderStatusSelectorDialog.OrderStatusDialogListener, OnQueryTextListener, OnActionExpandListener,
+        OrderStatusSelectorDialog.OrderStatusDialogListener,
+        OnQueryTextListener,
+        OnActionExpandListener,
         OnLoadMoreListener {
     companion object {
         val TAG: String = OrderListFragment::class.java.simpleName
@@ -239,7 +241,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) {
                         onScrollDown()
                     } else if (dy < 0) {
