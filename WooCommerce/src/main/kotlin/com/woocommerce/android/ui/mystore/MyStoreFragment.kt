@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -42,7 +41,7 @@ class MyStoreFragment : TopLevelFragment(),
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
 
-    @Inject lateinit var presenter: Presenter
+    @Inject lateinit var presenter: MyStoreContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -92,21 +91,20 @@ class MyStoreFragment : TopLevelFragment(),
 
         savedInstanceState?.let { bundle ->
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
-            dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
-            dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
+            my_store_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
+            my_store_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
         }
 
         presenter.takeView(this)
 
         empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
-        dashboard_stats.initView(
-                dashboard_stats.activeGranularity,
+        my_store_stats.initView(
+                my_store_stats.activeGranularity,
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
-        dashboard_top_earners.initView(
-                dashboard_top_earners.activeGranularity,
+        my_store_top_earners.initView(
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
@@ -163,8 +161,8 @@ class MyStoreFragment : TopLevelFragment(),
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
-        outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
+        outState.putSerializable(STATE_KEY_TAB_STATS, my_store_stats.activeGranularity)
+        outState.putSerializable(STATE_KEY_TAB_EARNERS, my_store_stats.activeGranularity)
     }
 
     override fun showStats(
@@ -172,49 +170,49 @@ class MyStoreFragment : TopLevelFragment(),
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
-        if (dashboard_stats.activeGranularity == granularity) {
-            dashboard_stats.showErrorView(false)
-            dashboard_stats.updateView(revenueStatsModel, presenter.getStatsCurrency())
+        if (my_store_stats.activeGranularity == granularity) {
+            my_store_stats.showErrorView(false)
+            my_store_stats.updateView(revenueStatsModel, presenter.getStatsCurrency())
         }
     }
 
     override fun showStatsError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
+        if (my_store_stats.activeGranularity == granularity) {
             showStats(null, granularity)
-            dashboard_stats.showErrorView(true)
+            my_store_stats.showErrorView(true)
             showErrorSnack()
         }
     }
 
     override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
-        if (dashboard_top_earners.activeGranularity == granularity) {
-            dashboard_top_earners.showErrorView(false)
-            dashboard_top_earners.updateView(topEarnerList)
+        if (my_store_stats.activeGranularity == granularity) {
+            my_store_top_earners.showErrorView(false)
+            my_store_top_earners.updateView(topEarnerList)
         }
     }
 
     override fun showTopEarnersError(granularity: StatsGranularity) {
-        if (dashboard_top_earners.activeGranularity == granularity) {
-            dashboard_top_earners.updateView(emptyList())
-            dashboard_top_earners.showErrorView(true)
+        if (my_store_stats.activeGranularity == granularity) {
+            my_store_top_earners.updateView(emptyList())
+            my_store_top_earners.showErrorView(true)
             showErrorSnack()
         }
     }
 
     override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
-            dashboard_stats.showVisitorStats(visits)
+        if (my_store_stats.activeGranularity == granularity) {
+            my_store_stats.showVisitorStats(visits)
         }
     }
 
     override fun showVisitorStatsError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
-            dashboard_stats.showVisitorStatsError()
+        if (my_store_stats.activeGranularity == granularity) {
+            my_store_stats.showVisitorStatsError()
         }
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued() == true) {
+        if (errorSnackbar?.isShownOrQueued == true) {
             return
         }
         errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
@@ -252,11 +250,11 @@ class MyStoreFragment : TopLevelFragment(),
             isActive -> {
                 isRefreshPending = false
                 if (forced) {
-                    dashboard_stats.clearLabelValues()
-                    dashboard_stats.clearChartData()
+                    my_store_stats.clearLabelValues()
+                    my_store_stats.clearChartData()
                 }
-                presenter.loadStats(dashboard_stats.activeGranularity, forced)
-                presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
+                presenter.loadStats(my_store_stats.activeGranularity, forced)
+                presenter.loadTopEarnerStats(my_store_stats.activeGranularity, forced)
                 presenter.fetchHasOrders()
             }
             else -> isRefreshPending = true
@@ -264,20 +262,21 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showChartSkeleton(show: Boolean) {
-        dashboard_stats.showSkeleton(show)
+        my_store_stats.showSkeleton(show)
     }
 
     override fun showTopEarnersSkeleton(show: Boolean) {
-        dashboard_top_earners.showSkeleton(show)
+        my_store_top_earners.showSkeleton(show)
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
-        dashboard_stats.showErrorView(false)
+        my_store_stats.showErrorView(false)
         presenter.loadStats(period)
+        my_store_top_earners.loadTopEarnerStats(period)
     }
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
-        dashboard_top_earners.showErrorView(false)
+        my_store_top_earners.showErrorView(false)
         presenter.loadTopEarnerStats(period)
     }
 
