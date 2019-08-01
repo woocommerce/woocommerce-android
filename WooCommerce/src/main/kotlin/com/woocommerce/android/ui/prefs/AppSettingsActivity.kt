@@ -114,10 +114,13 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
 
     override fun finishLogout() {
+        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+
         val mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(mainIntent)
         setResult(Activity.RESULT_OK)
+
         close()
     }
 
