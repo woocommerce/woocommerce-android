@@ -512,6 +512,9 @@ class MainActivity : AppUpgradeActivity(),
      *
      * if revenue stats v4 support is NOT available but we are currently displaying the v4 stats UI,
      * display an error snackbar to the user with the option to unload the v4 and display the old stats UI
+     *
+     * This implementation is on hold till we can finalise on the design interaction.
+     *
      */
     override fun updateStatsView(isAvailable: Boolean) {
         val fragment = bottomNavView.getFragment(DASHBOARD)
