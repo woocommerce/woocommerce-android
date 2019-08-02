@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -159,10 +160,12 @@ class MyStorePresenter @Inject constructor(
                     // display a different error snackbar if the error type is not "plugin not active", since
                     // this error is already being handled by the activity class
                     if (event.error.type == PLUGIN_NOT_ACTIVE) {
-                        dashboardView?.updateStatsAvailabilityError()
-                    } else {
-                        dashboardView?.showStatsError(event.granularity)
+                        // TODO: handle the scenario where the plugin is deactivated but V4 UI is still displayed
+                        // Currently only updating the local cache as false
+                        AppPrefs.setIsUsingV4Api(false)
+//                        dashboardView?.updateStatsAvailabilityError()
                     }
+                    dashboardView?.showStatsError(event.granularity)
                     return
                 }
 
