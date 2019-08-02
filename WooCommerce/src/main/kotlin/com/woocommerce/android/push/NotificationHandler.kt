@@ -119,21 +119,15 @@ class NotificationHandler @Inject constructor(
          * Removes only review notifications from the system bar
          */
         @Synchronized fun removeAllReviewNotificationsFromSystemBar(context: Context) {
-            val nonReviewNotifs = HashMap<Int, Bundle>()
-            ACTIVE_NOTIFICATIONS_MAP.forEach {
-                // if this is a review we remove it otherwise add it to the list of non-review notifs
-                val type = it.value.getString(PUSH_ARG_TYPE) ?: ""
-                if (type == PUSH_TYPE_COMMENT) {
-                    val wpComNoteId = it.value.getString(PUSH_ARG_NOTE_ID) ?: ""
-                    removeNotificationWithNoteIdFromSystemBar(context, wpComNoteId)
-                } else {
-                    nonReviewNotifs.put(it.key, it.value)
+            val notificationManager = NotificationManagerCompat.from(context)
+
+            ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { entry ->
+                if (entry.value.getString(PUSH_ARG_TYPE) == PUSH_TYPE_COMMENT) {
+                    val wpComNoteId = entry.value.getString(PUSH_ARG_NOTE_ID) ?: ""
+                    notificationManager.cancel(entry.key)
+                    ACTIVE_NOTIFICATIONS_MAP.remove(entry.key)
                 }
             }
-
-            // clear the active list then add back non-review notifs
-            ACTIVE_NOTIFICATIONS_MAP.clear()
-            ACTIVE_NOTIFICATIONS_MAP.putAll(nonReviewNotifs)
 
             setHasUnseenReviewNotifss(false)
         }
