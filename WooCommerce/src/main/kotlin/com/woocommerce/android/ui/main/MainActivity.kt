@@ -461,7 +461,7 @@ class MainActivity : AppUpgradeActivity(),
     // region Bottom Navigation
     override fun updateReviewsBadge() {
         if (AppPrefs.getHasUnseenReviews()) {
-            showNotificationBadge()
+            showReviewsBadge()
         } else {
             hideReviewsBadge()
         }
@@ -472,7 +472,7 @@ class MainActivity : AppUpgradeActivity(),
         NotificationHandler.removeAllNotificationsFromSystemBar(this)
     }
 
-    override fun showNotificationBadge() {
+    override fun showReviewsBadge() {
         bottomNavView.showReviewsBadge(true)
     }
 

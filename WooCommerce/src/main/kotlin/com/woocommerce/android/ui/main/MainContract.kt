@@ -27,7 +27,7 @@ interface MainContract {
         fun hideBottomNav()
         fun showBottomNav()
         fun hideReviewsBadge()
-        fun showNotificationBadge()
+        fun showReviewsBadge()
         fun updateReviewsBadge()
         fun hideOrderBadge()
         fun showOrderBadge(count: Int)

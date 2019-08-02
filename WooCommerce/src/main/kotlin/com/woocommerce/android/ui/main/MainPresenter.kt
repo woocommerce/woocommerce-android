@@ -193,7 +193,7 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationsUnseenChangeEvent) {
         if (event.hasUnseen) {
-            mainView?.showNotificationBadge()
+            mainView?.showReviewsBadge()
         } else {
             mainView?.hideReviewsBadge()
         }
