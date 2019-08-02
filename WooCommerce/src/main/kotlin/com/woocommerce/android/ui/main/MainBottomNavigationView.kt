@@ -142,6 +142,25 @@ class MainBottomNavigationView @JvmOverloads constructor(
         listener.onNavItemReselected(navPos)
     }
 
+    /**
+     * Replaces the fragment in [DASHBOARD] based on whether the revenue stats is available.
+     * This method is not used so far and is added to support future implementations when we would need to
+     * add support for switching between the two new versions of stats
+     */
+    fun replaceMyStoreFragment() {
+        val fragment = fragmentManager.findFragment(currentPosition)
+        val tag = currentPosition.getTag()
+
+        // replace the fragment
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment, tag)
+                .show(fragment)
+                .commitAllowingStateLoss()
+
+        // update the correct fragment in the navigation adapter
+        navAdapter.replaceFragment(currentPosition, fragment)
+    }
+
     private fun updateCurrentPosition(navPos: BottomNavigationPosition, deferInit: Boolean = false) {
         assignNavigationListeners(false)
         try {
@@ -199,6 +218,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
             fragments.put(navPos.position, fragment)
             return fragment
         }
+
+        internal fun replaceFragment(navPos: BottomNavigationPosition, fragment: TopLevelFragment) =
+                fragments.put(navPos.position, fragment)
     }
     // endregion
 }

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.mystore
 
 import android.content.Context
 import android.os.Bundle
@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -16,28 +17,31 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_dashboard.*
-import kotlinx.android.synthetic.main.fragment_dashboard.view.*
+import kotlinx.android.synthetic.main.fragment_my_store.*
+import kotlinx.android.synthetic.main.fragment_my_store.view.*
+import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
-class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
+class MyStoreFragment : TopLevelFragment(),
+        MyStoreContract.View,
+        DashboardStatsListener {
     companion object {
-        val TAG: String = DashboardFragment::class.java.simpleName
-        const val STATE_KEY_TAB_STATS = "tab-stats-state"
-        const val STATE_KEY_TAB_EARNERS = "tab-earners-state"
+        val TAG: String = MyStoreFragment::class.java.simpleName
+        const val STATE_KEY_TAB_POSITION = "tab-stats-position"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-        fun newInstance() = DashboardFragment()
+        fun newInstance() = MyStoreFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
 
-    @Inject lateinit var presenter: DashboardContract.Presenter
+    @Inject lateinit var presenter: MyStoreContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -49,6 +53,14 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
     private var isStatsRefreshed: Boolean = false
 
+    private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
+    private val activeGranularity: StatsGranularity
+        get() {
+            return tab_layout.getTabAt(tabStatsPosition)?.let {
+                it.tag as StatsGranularity
+            } ?: DEFAULT_STATS_GRANULARITY
+        }
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -59,7 +71,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+        val view = inflater.inflate(R.layout.fragment_my_store, container, false)
         with(view) {
             dashboard_refresh_layout.apply {
                 activity?.let { activity ->
@@ -73,12 +85,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
-                    // check for new revenue stats availability
-                    (activity as? MainActivity)?.fetchRevenueStatsAvailability(selectedSite.get())
-
-                    DashboardPresenter.resetForceRefresh()
+                    MyStorePresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
-                    refreshDashboard(forced = true)
+                    refreshMyStoreStats(forced = true)
                 }
             }
         }
@@ -90,21 +99,32 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         savedInstanceState?.let { bundle ->
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
-            dashboard_stats.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_STATS)
-            dashboard_top_earners.tabStateStats = bundle.getSerializable(STATE_KEY_TAB_EARNERS)
+            tabStatsPosition = bundle.getInt(STATE_KEY_TAB_POSITION)
         }
 
         presenter.takeView(this)
 
         empty_view.setSiteToShare(selectedSite.get(), Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
-        dashboard_stats.initView(
-                dashboard_stats.activeGranularity,
+        StatsGranularity.values().forEach { granularity ->
+            val tab = tab_layout.newTab().apply {
+                setText(my_store_stats.getStringForGranularity(granularity))
+                tag = granularity
+            }
+            tab_layout.addTab(tab)
+
+            // Start with the given time period selected
+            if (granularity == activeGranularity) {
+                tab.select()
+            }
+        }
+
+        my_store_stats.initView(
+                activeGranularity,
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
-        dashboard_top_earners.initView(
-                dashboard_top_earners.activeGranularity,
+        my_store_top_earners.initView(
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
@@ -118,9 +138,21 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             }
         }
 
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                tabStatsPosition = tab.position
+                my_store_stats.loadDashboardStats(activeGranularity)
+                my_store_top_earners.loadTopEarnerStats(activeGranularity)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
         if (isActive && !deferInit) {
             isStatsRefreshed = true
-            refreshDashboard(forced = this.isRefreshPending)
+            refreshMyStoreStats(forced = this.isRefreshPending)
         }
     }
 
@@ -134,7 +166,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
         // silently refresh if this fragment is no longer hidden
         if (!isHidden && !isStatsRefreshed) {
-            refreshDashboard(forced = false)
+            refreshMyStoreStats(forced = false)
         } else {
             isStatsRefreshed = false
         }
@@ -144,7 +176,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         // If this fragment is now visible and we've deferred loading stats due to it not
         // being visible - go ahead and load the stats.
         if (!deferInit) {
-            refreshDashboard(forced = this.isRefreshPending)
+            refreshMyStoreStats(forced = this.isRefreshPending)
         }
     }
 
@@ -161,63 +193,65 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putSerializable(STATE_KEY_TAB_STATS, dashboard_stats.activeGranularity)
-        outState.putSerializable(STATE_KEY_TAB_EARNERS, dashboard_top_earners.activeGranularity)
+        outState.putInt(STATE_KEY_TAB_POSITION, tab_layout.selectedTabPosition)
     }
 
     override fun showStats(
-        revenueStats: Map<String, Double>,
-        salesStats: Map<String, Int>,
+        revenueStatsModel: WCRevenueStatsModel?,
         granularity: StatsGranularity
     ) {
         // Only update the order stats view if the new stats match the currently selected timeframe
-        if (dashboard_stats.activeGranularity == granularity) {
-            dashboard_stats.showErrorView(false)
-            dashboard_stats.updateView(revenueStats, salesStats, presenter.getStatsCurrency())
+        if (activeGranularity == granularity) {
+            my_store_stats.showErrorView(false)
+            my_store_stats.updateView(revenueStatsModel, presenter.getStatsCurrency())
         }
     }
 
     override fun showStatsError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
-            showStats(emptyMap(), emptyMap(), granularity)
-            dashboard_stats.showErrorView(true)
+        if (activeGranularity == granularity) {
+            showStats(null, granularity)
+            my_store_stats.showErrorView(true)
             showErrorSnack()
         }
     }
 
     override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
-        if (dashboard_top_earners.activeGranularity == granularity) {
-            dashboard_top_earners.showErrorView(false)
-            dashboard_top_earners.updateView(topEarnerList)
+        if (activeGranularity == granularity) {
+            my_store_top_earners.showErrorView(false)
+            my_store_top_earners.updateView(topEarnerList)
         }
     }
 
     override fun showTopEarnersError(granularity: StatsGranularity) {
-        if (dashboard_top_earners.activeGranularity == granularity) {
-            dashboard_top_earners.updateView(emptyList())
-            dashboard_top_earners.showErrorView(true)
+        if (activeGranularity == granularity) {
+            my_store_top_earners.updateView(emptyList())
+            my_store_top_earners.showErrorView(true)
             showErrorSnack()
         }
     }
 
     override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
-            dashboard_stats.showVisitorStats(visits)
+        if (activeGranularity == granularity) {
+            my_store_stats.showVisitorStats(visits)
         }
     }
 
     override fun showVisitorStatsError(granularity: StatsGranularity) {
-        if (dashboard_stats.activeGranularity == granularity) {
-            dashboard_stats.showVisitorStatsError()
+        if (activeGranularity == granularity) {
+            my_store_stats.showVisitorStatsError()
         }
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued() == true) {
+        if (errorSnackbar?.isShownOrQueued == true) {
             return
         }
         errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
         errorSnackbar?.show()
+    }
+
+    override fun updateStatsAvailabilityError() {
+        (activity as? MainActivity)?.updateStatsView(false)
     }
 
     override fun getFragmentTitle(): String {
@@ -236,22 +270,22 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun refreshFragmentState() {
-        DashboardPresenter.resetForceRefresh()
-        refreshDashboard(forced = false)
+        MyStorePresenter.resetForceRefresh()
+        refreshMyStoreStats(forced = false)
     }
 
-    override fun refreshDashboard(forced: Boolean) {
+    override fun refreshMyStoreStats(forced: Boolean) {
         // If this fragment is currently active, force a refresh of data. If not, set
         // a flag to force a refresh when it becomes active
         when {
             isActive -> {
                 isRefreshPending = false
                 if (forced) {
-                    dashboard_stats.clearLabelValues()
-                    dashboard_stats.clearChartData()
+                    my_store_stats.clearLabelValues()
+                    my_store_stats.clearChartData()
                 }
-                presenter.loadStats(dashboard_stats.activeGranularity, forced)
-                presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
+                presenter.loadStats(activeGranularity, forced)
+                presenter.loadTopEarnerStats(activeGranularity, forced)
                 presenter.fetchHasOrders()
             }
             else -> isRefreshPending = true
@@ -259,20 +293,20 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showChartSkeleton(show: Boolean) {
-        dashboard_stats.showSkeleton(show)
+        my_store_stats.showSkeleton(show)
     }
 
     override fun showTopEarnersSkeleton(show: Boolean) {
-        dashboard_top_earners.showSkeleton(show)
+        my_store_top_earners.showSkeleton(show)
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
-        dashboard_stats.showErrorView(false)
+        my_store_stats.showErrorView(false)
         presenter.loadStats(period)
     }
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
-        dashboard_top_earners.showErrorView(false)
+        my_store_top_earners.showErrorView(false)
         presenter.loadTopEarnerStats(period)
     }
 

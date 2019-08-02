@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/label_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/visitors_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/visitors_label"
+                style="@style/Woo.TextAppearance.Title.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/dashboard_stats_visitors"
+                tools:text="Visitors"/>
+
+            <TextView
+                android:id="@+id/visitors_value"
+                style="@style/Woo.TextAppearance.Label.XL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                tools:text="400"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/orders_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/orders_label"
+                style="@style/Woo.TextAppearance.Title.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/dashboard_stats_orders"
+                tools:text="Orders"/>
+
+            <TextView
+                android:id="@+id/orders_value"
+                style="@style/Woo.TextAppearance.Label.XL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                tools:text="10"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/revenue_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/revenue_label"
+                style="@style/Woo.TextAppearance.Title.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/dashboard_stats_revenue"/>
+
+            <TextView
+                android:id="@+id/revenue_value"
+                style="@style/Woo.TextAppearance.Label.XL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                tools:text="$1.6k"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/chart_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/chart_height">
+
+        <com.woocommerce.android.ui.dashboard.DashboardStatsBarChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ImageView
+            android:id="@+id/dashboard_stats_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/dashboard_stats_error_content_description"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_woo_error_state"
+            tools:visibility="visible"/>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/dashboard_recency_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        tools:text="dashboard_recency_text"/>
+
+</merge>
