@@ -7,7 +7,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
-import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
+import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
@@ -191,11 +191,11 @@ class MainPresenter @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationsUnseenChangeEvent) {
+    fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
         if (event.hasUnseen) {
-            mainView?.showNotificationBadge()
+            mainView?.showReviewsBadge()
         } else {
-            mainView?.hideNotificationBadge()
+            mainView?.hideReviewsBadge()
         }
     }
 

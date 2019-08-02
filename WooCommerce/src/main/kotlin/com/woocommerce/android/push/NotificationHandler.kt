@@ -13,10 +13,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
-import androidx.preference.PreferenceManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -112,7 +112,7 @@ class NotificationHandler @Inject constructor(
             val notificationManager = NotificationManagerCompat.from(context)
             notificationManager.cancelAll()
 
-            setHasUnseenNotifications(false)
+            setHasUnseenReviewNotifs(false)
         }
 
         /**
@@ -135,7 +135,7 @@ class NotificationHandler @Inject constructor(
             // If there are no notifications left, cancel the group as well and clear the unseen state
             if (!hasNotifications()) {
                 notificationManager.cancel(GROUP_NOTIFICATION_ID)
-                setHasUnseenNotifications(false)
+                setHasUnseenReviewNotifs(false)
             }
         }
 
@@ -165,18 +165,18 @@ class NotificationHandler @Inject constructor(
         }
 
         /**
-         * Called when we want to update the unseen state of notifications - changes the related
+         * Called when we want to update the unseen state of review notifs - changes the related
          * shared preference and posts an EventBus event so main activity can update the badge
          */
-        private fun setHasUnseenNotifications(hasUnseen: Boolean) {
-            if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
-                AppPrefs.setHasUnseenNotifs(hasUnseen)
-                EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))
+        private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
+            if (hasUnseen != AppPrefs.getHasUnseenReviews()) {
+                AppPrefs.setHasUnseenReviews(hasUnseen)
+                EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
             }
         }
     }
 
-    class NotificationsUnseenChangeEvent(var hasUnseen: Boolean)
+    class NotificationsUnseenReviewsEvent(var hasUnseen: Boolean)
 
     class NotificationReceivedEvent(var channel: NotificationChannelType)
 
@@ -277,7 +277,10 @@ class NotificationHandler @Inject constructor(
         // Do not need to play the sound again. We've already played it in the individual builder.
         showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
 
-        setHasUnseenNotifications(true)
+        if (noteType == REVIEW) {
+            setHasUnseenReviewNotifs(true)
+        }
+
         EventBus.getDefault().post(NotificationReceivedEvent(noteType))
     }
 

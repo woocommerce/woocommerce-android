@@ -32,7 +32,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private lateinit var navAdapter: NavAdapter
     private lateinit var fragmentManager: FragmentManager
     private lateinit var listener: MainNavigationListener
-    private lateinit var notifsBadgeView: View
+    private lateinit var reviewsBadgeView: View
     private lateinit var ordersBadgeView: View
     private lateinit var ordersBadgeTextView: TextView
 
@@ -67,9 +67,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
         ordersBadgeTextView = ordersBadgeView.findViewById(R.id.textOrderCount)
         ordersItemView.addView(ordersBadgeView)
 
-        val notifsItemView = menuView.getChildAt(REVIEWS.position) as BottomNavigationItemView
-        notifsBadgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
-        notifsItemView.addView(notifsBadgeView)
+        val reviewsItemView = menuView.getChildAt(REVIEWS.position) as BottomNavigationItemView
+        reviewsBadgeView = inflater.inflate(R.layout.notification_badge_view, menuView, false)
+        reviewsItemView.addView(reviewsBadgeView)
 
         assignNavigationListeners(true)
 
@@ -110,8 +110,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
     }
 
-    fun showNotificationBadge(show: Boolean) {
-        with(notifsBadgeView) {
+    fun showReviewsBadge(show: Boolean) {
+        with(reviewsBadgeView) {
             if (show && visibility != View.VISIBLE) {
                 WooAnimUtils.fadeIn(this, Duration.MEDIUM)
             } else if (!show && visibility == View.VISIBLE) {
