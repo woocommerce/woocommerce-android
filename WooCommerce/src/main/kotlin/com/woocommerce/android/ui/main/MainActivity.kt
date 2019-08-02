@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -149,8 +150,10 @@ class MainActivity : AppUpgradeActivity(),
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
 
-        // check for any new app updates only after the user has logged into the app
-        checkForAppUpdates()
+        // check for any new app updates only after the user has logged into the app (release builds only)
+        if (!BuildConfig.DEBUG) {
+            checkForAppUpdates()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
