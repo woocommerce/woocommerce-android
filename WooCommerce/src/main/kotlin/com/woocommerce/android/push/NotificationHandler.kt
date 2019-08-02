@@ -116,13 +116,13 @@ class NotificationHandler @Inject constructor(
         }
 
         /**
-         * Removes only review notifications from the system bar
+         * Removes only a specific type of notification from the system bar
          */
-        @Synchronized fun removeAllReviewNotifsFromSystemBar(context: Context) {
+        @Synchronized private fun removeAllNotifsOfTypeFromSystemBar(context: Context, type: String) {
             val notificationManager = NotificationManagerCompat.from(context)
 
             ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { entry ->
-                if (entry.value.getString(PUSH_ARG_TYPE) == PUSH_TYPE_COMMENT) {
+                if (entry.value.getString(PUSH_ARG_TYPE) == type) {
                     notificationManager.cancel(entry.key)
                     ACTIVE_NOTIFICATIONS_MAP.remove(entry.key)
                 }
@@ -132,7 +132,17 @@ class NotificationHandler @Inject constructor(
                 notificationManager.cancel(GROUP_NOTIFICATION_ID)
             }
 
-            setHasUnseenReviewNotifs(false)
+            if (type == PUSH_TYPE_COMMENT) {
+                setHasUnseenReviewNotifs(false)
+            }
+        }
+
+        fun removeAllReviewNotifsFromSystemBar(context: Context) {
+            removeAllNotifsOfTypeFromSystemBar(context, PUSH_TYPE_COMMENT)
+        }
+
+        fun removeAllOrderNotifsFromSystemBar(context: Context) {
+            removeAllNotifsOfTypeFromSystemBar(context, PUSH_TYPE_NEW_ORDER)
         }
 
         /**

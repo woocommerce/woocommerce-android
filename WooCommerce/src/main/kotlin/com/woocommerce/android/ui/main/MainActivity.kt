@@ -506,9 +506,10 @@ class MainActivity : AppUpgradeActivity(),
             navigateToRoot()
         }
 
-        // Update the unseen notifications badge visibility
         if (navPos == REVIEWS) {
             NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
+        } else if (navPos == ORDERS) {
+            NotificationHandler.removeAllOrderNotifsFromSystemBar(this)
         }
     }
 
