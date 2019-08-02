@@ -112,7 +112,7 @@ class NotificationHandler @Inject constructor(
             val notificationManager = NotificationManagerCompat.from(context)
             notificationManager.cancelAll()
 
-            setHasUnseenReviewNotifss(false)
+            setHasUnseenReviewNotifs(false)
         }
 
         /**
@@ -135,7 +135,7 @@ class NotificationHandler @Inject constructor(
             // If there are no notifications left, cancel the group as well and clear the unseen state
             if (!hasNotifications()) {
                 notificationManager.cancel(GROUP_NOTIFICATION_ID)
-                setHasUnseenReviewNotifss(false)
+                setHasUnseenReviewNotifs(false)
             }
         }
 
@@ -168,7 +168,7 @@ class NotificationHandler @Inject constructor(
          * Called when we want to update the unseen state of review notifs - changes the related
          * shared preference and posts an EventBus event so main activity can update the badge
          */
-        private fun setHasUnseenReviewNotifss(hasUnseen: Boolean) {
+        private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
             if (hasUnseen != AppPrefs.getHasUnseenReviews()) {
                 AppPrefs.setHasUnseenReviews(hasUnseen)
                 EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
@@ -278,7 +278,7 @@ class NotificationHandler @Inject constructor(
         showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
 
         if (noteType == REVIEW) {
-            setHasUnseenReviewNotifss(true)
+            setHasUnseenReviewNotifs(true)
         }
 
         EventBus.getDefault().post(NotificationReceivedEvent(noteType))
