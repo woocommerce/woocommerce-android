@@ -310,8 +310,17 @@
         <item name="tabTextAppearance">@style/Woo.TabLayout.Text</item>
         <item name="tabTextColor">@color/wc_grey_mid</item>
         <item name="tabSelectedTextColor">@color/black</item>
+        <item name="tabContentStart">48dp</item>
+        <item name="tabPaddingStart">40dp</item>
+        <item name="tabPaddingEnd">40dp</item>
+    </style>
+
+    <!--
+        TabLayout Style
+    -->
+    <style name="Woo.TabLayout.MyStore" parent="Woo.TabLayout">
         <item name="android:background">@color/card_bgColor</item>
-        <item name="android:elevation">10dp</item>
+        <item name="android:elevation">@dimen/tablayout_elevation</item>
         <item name="tabPaddingStart">25dp</item>
         <item name="tabPaddingEnd">25dp</item>
         <item name="tabIndicatorHeight">2.5dp</item>
@@ -559,9 +568,7 @@
          Stats
         -->
     <style name="Woo.Stats.Card" parent="Woo.Card">
-        <item name="android:elevation">2dp</item>
-        <item name="android:layout_marginStart">@dimen/margin_medium</item>
-        <item name="android:layout_marginEnd">@dimen/margin_medium</item>
+        <item name="android:layout_marginBottom">@dimen/card_item_padding_intra_h</item>
     </style>
 
 </resources>
