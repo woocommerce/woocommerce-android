@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsAvailabilityPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
+import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,10 +34,17 @@ class RevenueStatsAvailabilityFetcher @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCRevenueStatsChanged(event: OnWCRevenueStatsChanged) {
+        // The event.availability flag would be false,
+        // if there an error when fetching stats:
+        // When no internet: We could display
         if (event.causeOfChange == FETCH_REVENUE_STATS_AVAILABILITY) {
             // update the v4 stats availability to SharedPreferences
-            AppPrefs.setIsUsingV4Api(event.availability)
-            EventBus.getDefault().post(RevenueStatsAvailabilityChangeEvent(event.availability))
+            // only if there is no error OR if the error is because of plugin not available
+            // this is because we don't want to update the availability if the error response is due of network issues
+            if (!event.isError || (event.isError && event.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE)) {
+                AppPrefs.setIsUsingV4Api(event.availability)
+                EventBus.getDefault().post(RevenueStatsAvailabilityChangeEvent(event.availability))
+            }
         }
     }
 }
