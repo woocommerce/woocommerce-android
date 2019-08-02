@@ -171,13 +171,12 @@ class NotificationHandler @Inject constructor(
         private fun setHasUnseenReviewNotifss(hasUnseen: Boolean) {
             if (hasUnseen != AppPrefs.getHasUnseenReviews()) {
                 AppPrefs.setHasUnseenReviews(hasUnseen)
-                EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))
+                EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
             }
         }
     }
 
-    // TODO rename this?
-    class NotificationsUnseenChangeEvent(var hasUnseen: Boolean)
+    class NotificationsUnseenReviewsEvent(var hasUnseen: Boolean)
 
     class NotificationReceivedEvent(var channel: NotificationChannelType)
 
