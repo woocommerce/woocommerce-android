@@ -165,7 +165,7 @@ class MainActivity : AppUpgradeActivity(),
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
-        updateNotificationBadge()
+        updateReviewsBadge()
         updateOrderBadge(false)
 
         checkConnection()
@@ -459,21 +459,21 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     // region Bottom Navigation
-    override fun updateNotificationBadge() {
-        if (AppPrefs.getHasUnseenNotifs()) {
+    override fun updateReviewsBadge() {
+        if (AppPrefs.getHasUnseenReviews()) {
             showNotificationBadge()
         } else {
-            hideNotificationBadge()
+            hideReviewsBadge()
         }
     }
 
-    override fun hideNotificationBadge() {
-        bottomNavView.showNotificationBadge(false)
+    override fun hideReviewsBadge() {
+        bottomNavView.showReviewsBadge(false)
         NotificationHandler.removeAllNotificationsFromSystemBar(this)
     }
 
     override fun showNotificationBadge() {
-        bottomNavView.showNotificationBadge(true)
+        bottomNavView.showReviewsBadge(true)
     }
 
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {

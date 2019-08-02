@@ -195,7 +195,7 @@ class MainPresenter @Inject constructor(
         if (event.hasUnseen) {
             mainView?.showNotificationBadge()
         } else {
-            mainView?.hideNotificationBadge()
+            mainView?.hideReviewsBadge()
         }
     }
 
