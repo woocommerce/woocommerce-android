@@ -80,7 +80,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     private var searchQuery: String = ""
     private val searchHandler = Handler()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -216,15 +216,15 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     // region Options menu
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_order_list_fragment, menu)
-
-        filterMenuItem = menu?.findItem(R.id.menu_filter)
-
-        searchMenuItem = menu?.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView?
-
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
+
+        inflater.inflate(R.menu.menu_order_list_fragment, menu)
+
+        filterMenuItem = menu.findItem(R.id.menu_filter)
+
+        searchMenuItem = menu.findItem(R.id.menu_search)
+        searchView = searchMenuItem?.actionView as SearchView?
     }
 
     /**
@@ -244,8 +244,8 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_filter -> {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
                 showFilterDialog()
@@ -282,10 +282,12 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
 
     // region Filtering
     private fun showFilterDialog() {
-        val orderStatusOptions = presenter.getOrderStatusOptions()
-        orderFilterDialog = OrderStatusSelectorDialog
-                .newInstance(orderStatusOptions, orderStatusFilter, true, listener = this)
-                .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
+        fragmentManager?.let { fm ->
+            val orderStatusOptions = presenter.getOrderStatusOptions()
+            orderFilterDialog = OrderStatusSelectorDialog
+                    .newInstance(orderStatusOptions, orderStatusFilter, true, listener = this)
+                    .also { it.show(fm, OrderStatusSelectorDialog.TAG) }
+        }
     }
 
     override fun onOrderStatusSelected(orderStatus: String?) {
