@@ -35,6 +35,9 @@
     <string name="hide_details">Hide Details</string>
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
+    <string name="install">Install</string>
+    <string name="update_downloaded">Woo has downloaded an update</string>
+    <string name="update_failed">Woo update has failed</string>
     <string name="continue_button">Continue</string>
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
@@ -84,7 +87,7 @@
     <!--
         Login Library Overrides
     -->
-    <string name="enter_site_address" content_override="true">Enter the address of your WooCommerce store you\'d like to connect.</string>
+    <string name="enter_site_address" content_override="true">Enter the address of the WooCommerce store you\'d like to connect.</string>
 
     <!--
         Login View
@@ -337,7 +340,7 @@
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
     <string name="orders_empty_message_with_filter">No orders</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
-    <string name="notifs_empty_message">No notifications yet!</string>
+    <string name="reviews_empty_message">No reviews yet!</string>
 
     <!--
         Settings
@@ -476,7 +479,6 @@
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
     <string name="login_log_in_for_deeplink">Log in to WordPress.com to access the post.</string>
     <string name="login_log_in_for_share_intent">Log in to WordPress.com to share the content.</string>
-    <string name="login_empty_site_url">Please enter a site address</string>
     <string name="login_empty_username">Please enter a username</string>
     <string name="login_empty_password">Please enter a password</string>
     <string name="login_empty_2fa">Please enter a verification code</string>
@@ -580,7 +582,7 @@
     <!-- Other -->
     <string name="shared_element_transition" translatable="false">shared_element</string>
     <string name="error_loading_image">Unable to load image</string>
-    <string name="login_invalid_site_url">The site address you entered is invalid. Please re-enter it.</string>
+    <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 

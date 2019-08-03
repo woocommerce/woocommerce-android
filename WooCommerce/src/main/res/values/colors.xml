@@ -88,7 +88,7 @@
         Bottom Navigation Bar
     -->
     <!-- Bar Background color -->
-    <color name="bottomBar_bg">@color/wc_grey_lightest</color>
+    <color name="bottomBar_bg">@color/white</color>
     <!-- Option icon/text color when NOT selected -->
     <color name="bottomBar_fg_normal">@color/wc_grey_darker</color>
     <!-- Option icon/text color when selected -->

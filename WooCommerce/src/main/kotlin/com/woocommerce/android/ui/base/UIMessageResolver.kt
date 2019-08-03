@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.base
 
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
@@ -23,6 +22,26 @@ interface UIMessageResolver {
     val snackbarRoot: ViewGroup
 
     /**
+     * Create and return a snackbar displaying a message to restart the app once the in app update has been
+     * successfully installed
+     *
+     * @param [stringResId] The string resource id of the base message
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [actionListener] Listener to handle the install button click event
+     */
+    fun getRestartSnack(
+        @StringRes stringResId: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionListener: View.OnClickListener
+    ): Snackbar {
+        return getIndefiniteSnackbarWithAction(
+                snackbarRoot,
+                snackbarRoot.context.getString(stringResId, *stringArgs),
+                snackbarRoot.context.getString(R.string.install),
+                actionListener)
+    }
+
+    /**
      * Create and return a snackbar displaying the provided message and a RETRY button.
      *
      * @param [stringResId] The string resource id of the base message
@@ -32,7 +51,7 @@ interface UIMessageResolver {
     fun getUndoSnack(
         @StringRes stringResId: Int,
         vararg stringArgs: String = arrayOf(),
-        actionListener: OnClickListener
+        actionListener: View.OnClickListener
     ): Snackbar {
         return getSnackbarWithAction(
                 snackbarRoot,
@@ -51,7 +70,7 @@ interface UIMessageResolver {
     fun getRetrySnack(
         @StringRes stringResId: Int,
         vararg stringArgs: String = arrayOf(),
-        actionListener: OnClickListener
+        actionListener: View.OnClickListener
     ): Snackbar {
         return getIndefiniteSnackbarWithAction(
                 snackbarRoot,
@@ -101,6 +120,6 @@ interface UIMessageResolver {
         view: View,
         msg: String,
         actionString: String,
-        actionListener: OnClickListener
+        actionListener: View.OnClickListener
     ) = Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAction(actionString, actionListener)
 }

@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -44,9 +45,18 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
      * @param currencyCode the ISO 4217 currency code to use for formatting
      * @return the formatted value for display
      */
-    fun formatCurrency(rawValue: String, currencyCode: String, applyDecimalFormatting: Boolean = true): String {
-        return wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, applyDecimalFormatting)
-    }
+    fun formatCurrency(rawValue: String, currencyCode: String, applyDecimalFormatting: Boolean = true) =
+            wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, applyDecimalFormatting)
+
+    /**
+     * Formats the amount for display based on the WooCommerce site settings.
+     *
+     * @param amount the value to be formatted
+     * @param currencyCode the ISO 4217 currency code to use for formatting
+     * @return the formatted value for display
+     */
+    fun formatCurrency(amount: BigDecimal, currencyCode: String, applyDecimalFormatting: Boolean = true) =
+            formatCurrency(amount.toString(), currencyCode, applyDecimalFormatting)
 
     /**
      * Formats a raw amount for display based on the WooCommerce site settings, rounding the values to the nearest int.
@@ -78,5 +88,18 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
      */
     fun buildFormatter(currencyCode: String) = { rawValue: String? ->
         formatCurrency(rawValue ?: "0.0", currencyCode, true)
+    }
+
+    /**
+     * Utility function that returns a reduced function for formatting currencies for orders.
+     *
+     * For order objects, we generally want to show exact values, and the currency used can be set once at a global
+     * level - then the same function can be used for all the various currency fields of an order.
+     *
+     * @param currencyCode the ISO 4217 currency code to use for formatting
+     * @return a function which, given an amount as a BigDecimal, returns the String formatted for display as a currency
+     */
+    fun buildBigDecimalFormatter(currencyCode: String) = { amount: BigDecimal ->
+        formatCurrency(amount, currencyCode, true)
     }
 }

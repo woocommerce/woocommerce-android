@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -16,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -31,6 +31,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
@@ -63,7 +64,7 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(),
+class MainActivity : AppUpgradeActivity(),
         MainContract.View,
         HasSupportFragmentInjector,
         FragmentScrollListener,
@@ -96,10 +97,11 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
@@ -148,6 +150,11 @@ class MainActivity : AppCompatActivity(),
 
         // show the app rating dialog if it's time
         AppRatingDialog.showIfNeeded(this)
+
+        // check for any new app updates only after the user has logged into the app (release builds only)
+        if (!BuildConfig.DEBUG) {
+            checkForAppUpdates()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -359,7 +366,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -702,5 +709,26 @@ class MainActivity : AppCompatActivity(),
                 showSettingsScreen()
             } else -> {}
         }
+    }
+
+    /**
+     * The Flexible in app update is successful.
+     * Display a success snack bar and ask users to manually restart the app
+     */
+    override fun showAppUpdateSuccessSnack(actionListener: View.OnClickListener) {
+        uiMessageResolver.getRestartSnack(
+                stringResId = R.string.update_downloaded,
+                actionListener = actionListener)
+                .show()
+    }
+
+    /**
+     * The Flexible in app update was not successful.
+     * Display a failure snack bar and ask users to retry
+     */
+    override fun showAppUpdateFailedSnack(actionListener: View.OnClickListener) {
+        uiMessageResolver.getRetrySnack(R.string.update_failed,
+                actionListener = actionListener)
+                .show()
     }
 }

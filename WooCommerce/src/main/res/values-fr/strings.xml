@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-07-09 10:54:04+0000
+Translation-Revision-Date: 2019-07-26 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="error_disabled_apis">Could not fetch settings: Some APIs are unavailable for this OAuth app ID + account combination.</string>
+    <string name="settings_hiring">We\'re hiring!</string>
+    <string name="feature_requests">Feature request</string>
+    <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
+    <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
+    <string name="login_refresh_app">refresh the app</string>
+    <string name="login_not_woo_store">Il semblerait que %1$s ne soit pas un site WooCommerce. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="orderdetail_empty_shipping_address">Aucune adresse spécifiée.</string>
     <string name="login_need_help_finding_connected_email">Besoin d\'aide pour trouver l\'adresse e-mail avec laquelle vous vous êtes connecté ?</string>
     <string name="enter_wordpress_site">Le site Web à cette adresse n\'est pas un site WordPress. WordPress doit être installé sur le site pour que nous puissions nous y connecter.</string>
@@ -567,6 +574,7 @@ Language: fr
     <string name="settings_third_party_policy_header">Politique de tiers</string>
     <string name="settings_cookie_policy_header">Politique relative aux cookies</string>
     <string name="settings_privacy_policy_header">Politique de confidentialité</string>
+    <string name="settings_footer">Conçu avec amour par Automattic. %1$s</string>
     <string name="settings_tracking">Nous utilisons d’autres outils de suivi, notamment des outils provenant de tiers. Découvrez-les et apprenez à les contrôler.</string>
     <string name="settings_privacy_policy">Lire la politique de confidentialité</string>
     <string name="settings_privacy_detail">Ces informations nous permettent d’améliorer nos produits, de mieux cibler nos campagnes marketing, de personnaliser votre expérience WooCommerce et plus encore, comme indiqué dans notre politique de confidentialité</string>

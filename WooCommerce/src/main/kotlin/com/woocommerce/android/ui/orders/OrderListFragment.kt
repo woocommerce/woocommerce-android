@@ -241,7 +241,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             addItemDecoration(ordersDividerDecoration)
             adapter = ordersAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0) {
                         onScrollDown()
                     } else if (dy < 0) {

@@ -57,6 +57,12 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
         }
     }
 
+    override fun onDetach() {
+        super.onDetach()
+
+        listener = null
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_VIEWED)

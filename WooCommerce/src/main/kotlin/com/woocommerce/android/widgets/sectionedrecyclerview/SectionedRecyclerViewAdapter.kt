@@ -29,7 +29,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     private var viewTypeCount = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        var viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder? = null
+        var viewHolder: RecyclerView.ViewHolder? = null
 
         for (entry in sectionViewTypeNumbers) {
             if (viewType >= entry.value && viewType < entry.value + VIEW_TYPE_QTY) {
@@ -172,7 +172,7 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
         this.sectionsMap.clear()
     }
 
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         var currentPos = 0
 
         for (entry in sectionsMap) {
@@ -267,10 +267,10 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
                 }
 
                 return when (section.state) {
-                    Section.State.LOADED -> viewType + 2
-                    Section.State.LOADING -> viewType + 3
-                    Section.State.FAILED -> viewType + 4
-                    Section.State.EMPTY -> viewType + 5
+                    State.LOADED -> viewType + 2
+                    State.LOADING -> viewType + 3
+                    State.FAILED -> viewType + 4
+                    State.EMPTY -> viewType + 5
                     else -> throw IllegalStateException("Invalid state")
                 }
             }

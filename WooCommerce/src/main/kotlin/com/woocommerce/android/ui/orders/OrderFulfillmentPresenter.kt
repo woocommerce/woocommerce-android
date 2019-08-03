@@ -13,12 +13,10 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.OrderFulfillmentContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING
@@ -52,7 +50,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     override var isShipmentTrackingsFetched = false
     override var deletedOrderShipmentTrackingModel: WCOrderShipmentTrackingModel? = null
 
-    override fun takeView(view: View) {
+    override fun takeView(view: OrderFulfillmentContract.View) {
         orderView = view
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
@@ -167,7 +165,7 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         if (event.causeOfChange == ADD_ORDER_SHIPMENT_TRACKING) {
             if (event.isError) {
