@@ -22,7 +22,8 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
 
     fun updateDateRangeView(
         revenueStatsModel: WCRevenueStatsModel?,
-        granularity: StatsGranularity) {
+        granularity: StatsGranularity
+    ) {
         val startInterval = revenueStatsModel?.getIntervalList()?.first()?.interval
         val startDate = startInterval?.let { getDateValue(it, granularity) }
 

@@ -231,7 +231,6 @@ class DateUtilsTest {
         assertEquals("2019", DateUtils.getYearString("2019-02-23"))
         assertEquals("2017", DateUtils.getYearString("2017-10"))
 
-
         // Test for invalid value handling
         assertFailsWith(IllegalArgumentException::class) {
             DateUtils.getYearString("Dec 30 2018")
