@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Date bar -->
+    <TextView
+        android:id="@+id/dashboard_date_range_value"
+        style="@style/Woo.Stats.DateBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_large"
+        android:gravity="start"
+        tools:text="June 30-Jul 06"/>
+
+    <FrameLayout
+        android:id="@+id/tab_layout_divider_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/list_divider"
+        app:srcCompat="@drawable/list_divider"/>
+
+</merge>

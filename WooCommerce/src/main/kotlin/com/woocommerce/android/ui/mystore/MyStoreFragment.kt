@@ -119,6 +119,7 @@ class MyStoreFragment : TopLevelFragment(),
             }
         }
 
+        my_store_date_bar.initView()
         my_store_stats.initView(
                 activeGranularity,
                 listener = this,
@@ -141,6 +142,7 @@ class MyStoreFragment : TopLevelFragment(),
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tabStatsPosition = tab.position
+                my_store_date_bar.clearDateRangeValues()
                 my_store_stats.loadDashboardStats(activeGranularity)
                 my_store_top_earners.loadTopEarnerStats(activeGranularity)
             }
@@ -204,6 +206,7 @@ class MyStoreFragment : TopLevelFragment(),
         if (activeGranularity == granularity) {
             my_store_stats.showErrorView(false)
             my_store_stats.updateView(revenueStatsModel, presenter.getStatsCurrency())
+            my_store_date_bar.updateDateRangeView(revenueStatsModel, granularity)
         }
     }
 
@@ -283,6 +286,7 @@ class MyStoreFragment : TopLevelFragment(),
                 if (forced) {
                     my_store_stats.clearLabelValues()
                     my_store_stats.clearChartData()
+                    my_store_date_bar.clearDateRangeValues()
                 }
                 presenter.loadStats(activeGranularity, forced)
                 presenter.loadTopEarnerStats(activeGranularity, forced)
