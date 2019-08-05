@@ -139,12 +139,18 @@ class AddOrderTrackingProviderListPresenterTest {
     fun `Do not refresh shipment providers on network connected event if cached data already refreshed`() {
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        doReturn(false).whenever(networkStatus).isConnected()
         doReturn(wcOrderShipmentProviderModels).whenever(orderStore).getShipmentProvidersForSite(any())
 
         presenter.loadShipmentTrackingProviders(order.getIdentifier())
 
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(presenter, times(0)).fetchShipmentTrackingProvidersFromApi(any())
+    }
+
+    @Test
+    fun `Display error snackbar when provider list is empty`() {
+        val event = OnOrderShipmentProvidersChanged(0)
+        presenter.onOrderShipmentProviderChanged(event)
+        verify(view, times(1)).showProviderListErrorSnack(any())
     }
 }
