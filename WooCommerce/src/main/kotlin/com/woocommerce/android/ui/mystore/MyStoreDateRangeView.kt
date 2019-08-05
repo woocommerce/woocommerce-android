@@ -31,7 +31,7 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
             StatsGranularity.WEEKS -> {
                 val endInterval = revenueStatsModel?.getIntervalList()?.last()?.interval
                 val endDate = endInterval?.let { getDateValue(it, granularity) }
-                String.format("%s–%s", startDate, endDate)
+                String.format("%s – %s", startDate, endDate)
             }
             else -> {
                 startDate
