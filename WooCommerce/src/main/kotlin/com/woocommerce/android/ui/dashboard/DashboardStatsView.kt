@@ -337,7 +337,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val dateRangeString = if (startDate == endDate) {
             startDate
         } else {
-            String.format("%s–%s", startDate, endDate)
+            String.format("%s – %s", startDate, endDate)
         }
         dashboard_date_range_value.text = dateRangeString
     }
