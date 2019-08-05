@@ -14,6 +14,7 @@ import java.util.Locale
 
 object DateUtils {
     val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
+    val friendlyDayMonthDateFormat by lazy { SimpleDateFormat("EEEE, MMM d", Locale.ROOT) }
     private val weekOfYearStartingMondayFormat by lazy {
         SimpleDateFormat("yyyy-'W'ww", Locale.getDefault()).apply {
             calendar = Calendar.getInstance().apply {
@@ -88,6 +89,25 @@ object DateUtils {
             return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         } catch (e: IndexOutOfBoundsException) {
             throw IllegalArgumentException("Date string argument is not of format YYYY-MM-DD: $iso8601Date")
+        }
+    }
+
+    /**
+     * Given an ISO8601 date of format YYYY-MM-DD hh, returns the String in short month ("EEEE, MMM d") format.
+     *
+     * For example, given 2019-08-05 11 returns "Monday, Aug 5"
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getDayMonthDateString(iso8601Date: String): String {
+        return try {
+            val (dateString, _) = iso8601Date.split(" ")
+            val (year, month, day) = dateString.split("-")
+            val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+            friendlyDayMonthDateFormat.format(date)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format YYYY-MM-DD hh: $iso8601Date")
         }
     }
 
@@ -242,6 +262,40 @@ object DateUtils {
         return try {
             val (year, month) = iso8601Month.split("-")
             "${shortMonths[month.toInt() - 1]} $year"
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format yyyy-MM: $iso8601Month")
+        }
+    }
+
+    /**
+     * Given a date of format YYYY-MM-dd, returns the corresponding full month format.
+     *
+     * For example, given 2018-07-02, returns "July".
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getMonthString(iso8601Date: String): String {
+        return try {
+            val (_, month, _) = iso8601Date.split("-")
+            DateFormatSymbols().months[month.toInt() - 1]
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $iso8601Date")
+        }
+    }
+
+    /**
+     * Given a date of format YYYY-MM, returns the corresponding year format.
+     *
+     * For example, given 2018-07, returns "2018".
+     *
+     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
+     */
+    @Throws(IllegalArgumentException::class)
+    fun getYearString(iso8601Month: String): String {
+        return try {
+            val (year, month) = iso8601Month.split("-")
+            year
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format yyyy-MM: $iso8601Month")
         }
