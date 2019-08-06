@@ -291,14 +291,19 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun onOrderStatusSelected(orderStatus: String?) {
-        orderStatusFilter = orderStatus
+        if (orderStatusFilter == orderStatus) {
+            // Filter has not changed. Exit.
+            return
+        }
 
+        orderStatusFilter = orderStatus
         if (isAdded) {
             AnalyticsTracker.track(
                     Stat.ORDERS_LIST_FILTER,
                     mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
             )
 
+            clearOrderList()
             closeSearchView()
 
             val descriptor = WCOrderListDescriptor(
