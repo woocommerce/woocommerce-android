@@ -512,7 +512,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         closeSearchView()
-        val descriptor = WCOrderListDescriptor(site = selectedSite.get())
+        val descriptor = WCOrderListDescriptor(site = selectedSite.get(), statusFilter = orderStatusFilter)
         loadList(descriptor)
         return true
     }
