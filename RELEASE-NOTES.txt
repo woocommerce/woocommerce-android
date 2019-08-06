@@ -1,10 +1,11 @@
 2.5
 -----
- 
 * Fixed rare crash after fulfilling an order and then minimizing the app.
 * Product names can now wrap to two lines in order detail.
 * Bug fix: reviews tab incorrectly shows a badge when an order notification is received.
 * Bug fix: switching to the reviews tab removes order notifications.
+* Bug fix: selected site in the site picker changes back to the previous selection after sites are loaded.
+* Bug fix: Reviews tab incorrectly shows a badge when an order notification is received.
 
 2.4
 -----

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
@@ -17,8 +18,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
-import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 
@@ -55,6 +56,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.listener = listener
 
         navAdapter = NavAdapter()
+        addTopDivider()
 
         // set up the bottom bar and add the badge views
         val menuView = getChildAt(0) as BottomNavigationMenuView
@@ -62,7 +64,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         val ordersItemView = menuView.getChildAt(ORDERS.position) as BottomNavigationItemView
         ordersBadgeView = inflater.inflate(R.layout.order_badge_view, menuView, false)
-        ordersBadgeTextView = ordersBadgeView.findViewById<TextView>(R.id.textOrderCount)
+        ordersBadgeTextView = ordersBadgeView.findViewById(R.id.textOrderCount)
         ordersItemView.addView(ordersBadgeView)
 
         val reviewsItemView = menuView.getChildAt(REVIEWS.position) as BottomNavigationItemView
@@ -73,6 +75,23 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         // Default to the dashboard position
         active(DASHBOARD.position)
+    }
+
+    /**
+     * When we changed the background to white, the top shadow provided by BottomNavigationView wasn't
+     * dark enough to provide enough separation between the bar and the content above it. For this
+     * reason we add a darker top divider here.
+     */
+    private fun addTopDivider() {
+        val divider = View(context)
+        val dividerColor = ContextCompat.getColor(context, R.color.list_divider)
+        divider.setBackgroundColor(dividerColor)
+
+        val dividerHeight = resources.getDimensionPixelSize(R.dimen.bottomm_nav_top_border)
+        val dividerParams = LayoutParams(LayoutParams.MATCH_PARENT, dividerHeight)
+        divider.layoutParams = dividerParams
+
+        addView(divider)
     }
 
     fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
