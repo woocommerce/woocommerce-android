@@ -14,7 +14,6 @@ import java.util.Locale
 
 object DateUtils {
     val friendlyMonthDayFormat by lazy { SimpleDateFormat("MMM d", Locale.getDefault()) }
-    val friendlyDayMonthDateFormat by lazy { SimpleDateFormat("EEEE, MMM d", Locale.ROOT) }
     private val weekOfYearStartingMondayFormat by lazy {
         SimpleDateFormat("yyyy-'W'ww", Locale.getDefault()).apply {
             calendar = Calendar.getInstance().apply {
@@ -102,10 +101,11 @@ object DateUtils {
     @Throws(IllegalArgumentException::class)
     fun getDayMonthDateString(iso8601Date: String): String {
         return try {
+            val targetFormat = SimpleDateFormat("EEEE, MMM d", Locale.getDefault())
             val (dateString, _) = iso8601Date.split(" ")
             val (year, month, day) = dateString.split("-")
             val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-            friendlyDayMonthDateFormat.format(date)
+            targetFormat.format(date)
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format YYYY-MM-DD hh: $iso8601Date")
         }
