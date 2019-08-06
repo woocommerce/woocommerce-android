@@ -149,6 +149,7 @@ class AddOrderTrackingProviderListPresenterTest {
 
     @Test
     fun `Display error snackbar when provider list is empty`() {
+        presenter.takeView(view)
         val event = OnOrderShipmentProvidersChanged(0)
         presenter.onOrderShipmentProviderChanged(event)
         verify(view, times(1)).showProviderListErrorSnack(any())
