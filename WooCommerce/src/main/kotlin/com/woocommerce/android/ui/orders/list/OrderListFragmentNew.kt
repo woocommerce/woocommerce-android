@@ -326,7 +326,10 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun refreshFragmentState() {
-        pagedListWrapper?.invalidateData()
+        orderStatusFilter?.let {
+            // Filter is applied, so we'll want to completely reload the list.
+            pagedListWrapper?.fetchFirstPage()
+        } ?: pagedListWrapper?.invalidateData() // Just update the value the changed
     }
 
     override fun scrollToTop() {
