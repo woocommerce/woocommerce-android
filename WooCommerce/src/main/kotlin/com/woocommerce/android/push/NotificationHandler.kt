@@ -1,5 +1,6 @@
 package com.woocommerce.android.push
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
@@ -113,6 +114,41 @@ class NotificationHandler @Inject constructor(
             notificationManager.cancelAll()
 
             setHasUnseenReviewNotifs(false)
+        }
+
+        /**
+         * Removes only a specific type of notification from the system bar
+         */
+        @SuppressLint("UseSparseArrays")
+        @Synchronized private fun removeAllNotifsOfTypeFromSystemBar(context: Context, type: String) {
+            val notificationManager = NotificationManagerCompat.from(context)
+
+            val keptNotifs = HashMap<Int, Bundle>()
+            ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { entry ->
+                if (entry.value.getString(PUSH_ARG_TYPE) == type) {
+                    notificationManager.cancel(entry.key)
+                } else {
+                    keptNotifs[entry.key] = entry.value
+                }
+            }
+            ACTIVE_NOTIFICATIONS_MAP.clear()
+            ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
+
+            if (!hasNotifications()) {
+                notificationManager.cancel(GROUP_NOTIFICATION_ID)
+            }
+
+            if (type == PUSH_TYPE_COMMENT) {
+                setHasUnseenReviewNotifs(false)
+            }
+        }
+
+        fun removeAllReviewNotifsFromSystemBar(context: Context) {
+            removeAllNotifsOfTypeFromSystemBar(context, PUSH_TYPE_COMMENT)
+        }
+
+        fun removeAllOrderNotifsFromSystemBar(context: Context) {
+            removeAllNotifsOfTypeFromSystemBar(context, PUSH_TYPE_NEW_ORDER)
         }
 
         /**

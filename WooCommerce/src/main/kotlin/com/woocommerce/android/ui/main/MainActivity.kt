@@ -469,7 +469,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun hideReviewsBadge() {
         bottomNavView.showReviewsBadge(false)
-        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+        NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
     }
 
     override fun showReviewsBadge() {
@@ -506,9 +506,10 @@ class MainActivity : AppUpgradeActivity(),
             navigateToRoot()
         }
 
-        // Update the unseen notifications badge visibility
         if (navPos == REVIEWS) {
-            NotificationHandler.removeAllNotificationsFromSystemBar(this)
+            NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
+        } else if (navPos == ORDERS) {
+            NotificationHandler.removeAllOrderNotifsFromSystemBar(this)
         }
     }
 
