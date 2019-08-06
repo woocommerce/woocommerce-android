@@ -68,7 +68,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     private var orderFilterDialog: OrderStatusSelectorDialog? = null
 
     override var isRefreshPending = false // not used.
-    override var isRefreshing = false // not used.
 
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null

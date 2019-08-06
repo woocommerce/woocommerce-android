@@ -35,7 +35,6 @@ interface OrderListContractNew {
     interface View : BaseView<Presenter> {
         var isRefreshPending: Boolean
         var isSearching: Boolean
-        var isRefreshing: Boolean
 
         fun showEmptyView(show: Boolean)
         fun refreshFragmentState()
