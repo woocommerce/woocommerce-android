@@ -40,6 +40,7 @@ interface OrderListContractNew {
         fun showEmptyView(show: Boolean)
         fun refreshFragmentState()
         fun showOrderDetail(remoteOrderId: Long)
+        fun invalidateListData()
 
         fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>)
     }

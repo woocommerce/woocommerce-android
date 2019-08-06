@@ -326,6 +326,15 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun refreshFragmentState() {
+        pagedListWrapper?.fetchFirstPage() // reload the active list from scratch
+    }
+
+    /**
+     * Reload the list from the db and redraw any changes. If a filter is
+     * active, then we need to reload the list entirely to ensure any changes
+     * are properly filtered.
+     */
+    override fun invalidateListData() {
         orderStatusFilter?.let {
             // Filter is applied, so we'll want to completely reload the list.
             pagedListWrapper?.fetchFirstPage()
@@ -458,6 +467,8 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             })
             wrapper.listError.observe(this, Observer {
                 it?.let {
+                    isRefreshPending = true
+
                     // Display an error message
                     showLoadOrdersError()
                 }

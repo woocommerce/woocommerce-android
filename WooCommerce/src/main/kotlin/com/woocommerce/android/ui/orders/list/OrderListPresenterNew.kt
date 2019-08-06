@@ -135,7 +135,7 @@ class OrderListPresenterNew @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
             // A child fragment made a change that requires a data refresh.
-            UPDATE_ORDER_STATUS -> orderView?.refreshFragmentState()
+            UPDATE_ORDER_STATUS -> orderView?.invalidateListData()
             else -> {}
         }
     }
