@@ -62,6 +62,7 @@ class MainPresenterTest {
         )
         mainPresenter.takeView(mainContractView)
         doReturn(SiteModel()).whenever(selectedSite).get()
+        doReturn(true).whenever(selectedSite).exists()
         actionCaptor = argumentCaptor()
     }
 
