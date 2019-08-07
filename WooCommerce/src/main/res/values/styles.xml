@@ -571,4 +571,12 @@
         <item name="android:layout_marginBottom">@dimen/card_item_padding_intra_h</item>
     </style>
 
+    <style name="Woo.Stats.DateBar" parent="Woo.TextView">
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textColor">@color/wc_grey_darker</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:paddingTop">@dimen/margin_large</item>
+        <item name="android:paddingBottom">@dimen/margin_large</item>
+    </style>
+
 </resources>
