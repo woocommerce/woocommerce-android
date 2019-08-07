@@ -318,8 +318,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         chart.visibility = if (show) View.GONE else View.VISIBLE
     }
 
-    fun showVisitorStats(visits: Int) {
-        fadeInLabelValue(visitors_value, visits.toString())
+    fun showVisitorStats(visitorStats: Map<String, Int>) {
+        fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
     }
 
     fun showVisitorStatsError() {
