@@ -233,9 +233,9 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
+    override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            my_store_stats.showVisitorStats(visits)
+            my_store_stats.showVisitorStats(visitorStats)
         }
     }
 

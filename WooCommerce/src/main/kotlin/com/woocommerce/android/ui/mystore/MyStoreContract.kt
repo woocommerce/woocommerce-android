@@ -26,7 +26,7 @@ interface MyStoreContract {
         fun updateStatsAvailabilityError()
         fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity)
         fun showTopEarnersError(granularity: StatsGranularity)
-        fun showVisitorStats(visits: Int, granularity: StatsGranularity)
+        fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity)
         fun showVisitorStatsError(granularity: StatsGranularity)
         fun showErrorSnack()
         fun showEmptyView(show: Boolean)
