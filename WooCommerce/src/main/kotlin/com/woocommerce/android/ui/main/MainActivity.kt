@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
+import com.idescout.sql.SqlScoutServer
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -106,6 +107,8 @@ class MainActivity : AppUpgradeActivity(),
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
 
+    private lateinit var sqlScoutServer: SqlScoutServer
+
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
@@ -116,6 +119,8 @@ class MainActivity : AppUpgradeActivity(),
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        sqlScoutServer = SqlScoutServer.create(this, getPackageName())
 
         // Set the toolbar
         setSupportActionBar(toolbar as Toolbar)
@@ -163,12 +168,18 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun onResume() {
         super.onResume()
+        sqlScoutServer.resume()
         AnalyticsTracker.trackViewShown(this)
 
         updateReviewsBadge()
         updateOrderBadge(false)
 
         checkConnection()
+    }
+
+    override fun onPause() {
+        sqlScoutServer.pause()
+        super.onPause()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -179,6 +190,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     public override fun onDestroy() {
+        sqlScoutServer.destroy()
         presenter.dropView()
         super.onDestroy()
     }
