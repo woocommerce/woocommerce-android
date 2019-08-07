@@ -23,6 +23,8 @@
     <TextView
         android:id="@+id/dashboard_date_range_value"
         style="@style/Woo.Stats.DateBar"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
