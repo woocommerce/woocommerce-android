@@ -325,6 +325,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun refreshFragmentState() {
+        clearOrderList()
         pagedListWrapper?.fetchFirstPage() // reload the active list from scratch
     }
 
@@ -415,7 +416,6 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
             /*
              * Set observers for various changes in state
              */
-            wrapper.fetchFirstPage()
             wrapper.isLoadingMore.observe(this, Observer {
                 it?.let { isLoadingMore ->
                     load_more_progressbar?.visibility = if (isLoadingMore) View.VISIBLE else View.GONE
@@ -472,6 +472,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
                     showLoadOrdersError()
                 }
             })
+            wrapper.fetchFirstPage()
         }
     }
 

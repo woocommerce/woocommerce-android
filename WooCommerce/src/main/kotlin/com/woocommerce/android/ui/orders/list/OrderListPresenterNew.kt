@@ -12,12 +12,15 @@ import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATION
+import org.wordpress.android.fluxc.action.NotificationAction.UPDATE_NOTIFICATION
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
+import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
@@ -148,6 +151,21 @@ class OrderListPresenterNew @Inject constructor(
         } else {
             AnalyticsTracker.track(Stat.ORDER_TRACKING_PROVIDERS_LOADED)
             isShipmentTrackingProviderFetched = true
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onNotificationChanged(event: OnNotificationChanged) {
+        when(event.causeOfChange) {
+            FETCH_NOTIFICATION, UPDATE_NOTIFICATION -> {
+                // A notification was received by the device and the details have been fetched from the API.
+                // Refresh the orders list in case that notification was a new order notification.
+                if (!event.isError) {
+                    orderView?.refreshFragmentState()
+                }
+            }
+            else -> {}
         }
     }
 }
