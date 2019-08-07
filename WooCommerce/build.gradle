@@ -43,8 +43,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "2.4-rc-1"
-        versionCode 68
+        versionName "2.4-rc-2"
+        versionCode 69
 
         minSdkVersion 21
         targetSdkVersion 28
@@ -155,6 +155,11 @@ dependencies {
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
     implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
+
+    // For use with SqlScout, a Sqlite plugin for Android Studio
+    // https://plugins.jetbrains.com/plugin/8322-sqlscout-sqlite-support-
+    debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
+    releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
 
     // Debug dependencies
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'

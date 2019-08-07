@@ -429,8 +429,8 @@
         Notifications List
     -->
     <string name="wc_mark_all_read">Mark all as read</string>
-    <string name="wc_mark_all_read_success">All notifications marked as read</string>
-    <string name="wc_mark_all_read_error">Error marking all notifications as read</string>
+    <string name="wc_mark_all_read_success">All reviews marked as read</string>
+    <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
     <!--
         Login Library Imported Strings
     -->

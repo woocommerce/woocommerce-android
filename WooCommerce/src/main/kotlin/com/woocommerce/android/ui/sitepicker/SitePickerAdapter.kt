@@ -70,7 +70,7 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
     }
 
     /**
-     * returns true if the passed list of orders is the same as the current list
+     * returns true if the passed list of sites is the same as the current list
      */
     private fun isSameSiteList(sites: List<SiteModel>): Boolean {
         if (sites.size != siteList.size) {
