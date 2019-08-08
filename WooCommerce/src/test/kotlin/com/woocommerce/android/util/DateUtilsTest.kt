@@ -261,7 +261,7 @@ class DateUtilsTest {
         assertEquals("2019-W26", "2019W06W24".formatDateToWeeksInYear())
         assertEquals("2019-W01", "2019W01W04".formatDateToWeeksInYear())
         assertEquals("2018-W01", "2018W12W31".formatDateToWeeksInYear())
-        assertEquals("2018-W52", "2018W12W30".formatDateToWeeksInYear())
+        assertEquals("2018-W52", "2018W12W28".formatDateToWeeksInYear())
 
         // Test for invalid value handling
         assertFailsWith(IllegalArgumentException::class) {
