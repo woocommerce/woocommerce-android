@@ -19,6 +19,7 @@
     -->
     <string name="all">All</string>
     <string name="logging_in">Logging in</string>
+    <string name="loading_stores">Loading stores</string>
     <string name="signout">Log out</string>
     <string name="my_store">My store</string>
     <string name="orders">Orders</string>

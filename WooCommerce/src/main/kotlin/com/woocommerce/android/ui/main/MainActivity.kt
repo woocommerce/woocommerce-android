@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import com.idescout.sql.SqlScoutServer
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
+import com.woocommerce.android.WooWellSqlConfig
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.FragmentScrollListener
@@ -113,7 +115,7 @@ class MainActivity : AppUpgradeActivity(),
     private lateinit var navController: NavController
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
-    private var loginProgressDialog: ProgressDialog? = null
+    private var progressDialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -137,7 +139,7 @@ class MainActivity : AppUpgradeActivity(),
             if (hasMagicLinkLoginIntent()) {
                 // User has opened a magic link
                 // Trigger an account/site info fetch, and show a 'logging in...' dialog in the meantime
-                loginProgressDialog = ProgressDialog.show(this, "", getString(R.string.logging_in), true)
+                showProgressDialog(R.string.logging_in)
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
                 showLoginScreen()
@@ -146,7 +148,14 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         if (!selectedSite.exists()) {
-            updateSelectedSite()
+            // fetch the site list if the site doesn't exist due to a db downgrade, otherwise
+            // show the site picker so the user can choose a site
+            if (WooWellSqlConfig.wasDatabaseDowngraded && NetworkUtils.isNetworkAvailable(this)) {
+                presenter.fetchSitesAfterDowngrade()
+                WooWellSqlConfig.wasDatabaseDowngraded = false
+            } else {
+                showSitePickerScreen()
+            }
             return
         }
 
@@ -159,6 +168,15 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+    }
+
+    override fun hideProgressDialog() {
+        progressDialog?.apply { if (isShowing) { cancel() } }
+    }
+
+    override fun showProgressDialog(@StringRes stringId: Int) {
+        hideProgressDialog()
+        progressDialog = ProgressDialog.show(this, "", getString(stringId), true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -431,7 +449,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun updateSelectedSite() {
-        loginProgressDialog?.apply { if (isShowing) { cancel() } }
+        hideProgressDialog()
 
         if (!selectedSite.exists()) {
             showSitePickerScreen()
