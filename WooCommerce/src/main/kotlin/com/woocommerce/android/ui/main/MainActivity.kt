@@ -146,15 +146,16 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
+        // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
+        // which we don't want in this situation
+        if (AppPrefs.getDatabaseDowngraded()) {
+            presenter.fetchSitesAfterDowngrade()
+            AppPrefs.setDatabaseDowngraded(false)
+            return
+        }
+
         if (!selectedSite.exists()) {
-            // fetch the site list if the site doesn't exist due to a db downgrade, otherwise
-            // show the site picker so the user can choose a site
-            if (AppPrefs.getDatabaseDowngraded()) {
-                presenter.fetchSitesAfterDowngrade()
-                AppPrefs.setDatabaseDowngraded(false)
-            } else {
-                showSitePickerScreen()
-            }
+            showSitePickerScreen()
             return
         }
 
