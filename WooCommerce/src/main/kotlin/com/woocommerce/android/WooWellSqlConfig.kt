@@ -7,12 +7,11 @@ import android.graphics.PorterDuff
 import android.view.Gravity
 import android.widget.TextView
 import android.widget.Toast
+import com.woocommerce.android.util.PackageUtils
 import com.yarolegovich.wellsql.WellTableManager
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
-import org.wordpress.android.util.PackageUtils
-import java.util.Locale
 
 class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig.ADDON_WOOCOMMERCE) {
     /**
@@ -22,10 +21,7 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig
      * cases where a beta build with a DB downgrade was released, resulting in a lot of crashes.
      */
     override fun onDowngrade(db: SQLiteDatabase?, helper: WellTableManager?, oldVersion: Int, newVersion: Int) {
-        val versionName = PackageUtils.getVersionName(context).toLowerCase(Locale.ROOT)
-        val isBetaOrDebug = BuildConfig.DEBUG || versionName.contains("beta") || versionName.contains("rc")
-
-        if (isBetaOrDebug) {
+        if (PackageUtils.isDebugBuild() || PackageUtils.isBetaBuild(context)) {
             // note: don't call super() here because it throws an exception
             AppLog.w(T.DB, "Resetting database due to downgrade from version $oldVersion to $newVersion")
 
