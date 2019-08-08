@@ -19,7 +19,6 @@ import com.idescout.sql.SqlScoutServer
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
-import com.woocommerce.android.WooWellSqlConfig
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.FragmentScrollListener
@@ -150,9 +149,9 @@ class MainActivity : AppUpgradeActivity(),
         if (!selectedSite.exists()) {
             // fetch the site list if the site doesn't exist due to a db downgrade, otherwise
             // show the site picker so the user can choose a site
-            if (WooWellSqlConfig.wasDatabaseDowngraded) {
+            if (AppPrefs.getDatabaseDowngraded()) {
                 presenter.fetchSitesAfterDowngrade()
-                WooWellSqlConfig.wasDatabaseDowngraded = false
+                AppPrefs.setDatabaseDowngraded(false)
             } else {
                 showSitePickerScreen()
             }
