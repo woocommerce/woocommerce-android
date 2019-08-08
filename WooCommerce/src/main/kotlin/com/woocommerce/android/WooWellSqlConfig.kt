@@ -22,12 +22,12 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, ADDON_WOOCOMM
      * build with a DB downgrade was released, resulting in a lot of crashes.
      */
     override fun onDowngrade(db: SQLiteDatabase?, helper: WellTableManager?, oldVersion: Int, newVersion: Int) {
-        if (PackageUtils.isDebugBuild() || PackageUtils.isBetaBuild(context)) {
+        if (BuildConfig.DEBUG || PackageUtils.isBetaBuild(context)) {
             // note: don't call super() here because it throws an exception
             AppLog.w(T.DB, "Resetting database due to downgrade from version $oldVersion to $newVersion")
 
             // for debug builds, alert the dev to the downgrade
-            if (PackageUtils.isDebugBuild()) {
+            if (BuildConfig.DEBUG) {
                 val toast = Toast.makeText(
                         context,
                         R.string.database_downgraded,
@@ -43,10 +43,5 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, ADDON_WOOCOMM
         } else {
             super.onDowngrade(db, helper, oldVersion, newVersion)
         }
-    }
-
-    // TODO: remove this - it's just for testing
-    override fun getDbVersion(): Int {
-        return 988
     }
 }

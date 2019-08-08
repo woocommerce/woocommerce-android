@@ -158,6 +158,7 @@ class MainPresenter @Inject constructor(
             isFetchingSitesAfterDowngrade = false
             mainView?.hideProgressDialog()
             mainView?.updateSelectedSite()
+            return
         }
 
         if (event.isError) {

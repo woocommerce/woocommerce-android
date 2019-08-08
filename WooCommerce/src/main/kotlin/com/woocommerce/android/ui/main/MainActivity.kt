@@ -150,7 +150,7 @@ class MainActivity : AppUpgradeActivity(),
         if (!selectedSite.exists()) {
             // fetch the site list if the site doesn't exist due to a db downgrade, otherwise
             // show the site picker so the user can choose a site
-            if (WooWellSqlConfig.wasDatabaseDowngraded && NetworkUtils.isNetworkAvailable(this)) {
+            if (WooWellSqlConfig.wasDatabaseDowngraded) {
                 presenter.fetchSitesAfterDowngrade()
                 WooWellSqlConfig.wasDatabaseDowngraded = false
             } else {
