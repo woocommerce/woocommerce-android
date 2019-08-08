@@ -18,6 +18,8 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -40,7 +42,7 @@ import java.util.ArrayList
 import java.util.Date
 
 class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener {
+    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener, OnChartValueSelectedListener {
     init {
         View.inflate(context, R.layout.my_store_stats, this)
     }
@@ -55,7 +57,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
+    private var revenueStatsModel: WCRevenueStatsModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
+    private var chartOrderStats = mapOf<String, Long>()
+    private var chartVisitorStats = mapOf<String, Int>()
     private var chartCurrencyCode: String? = null
 
     private var skeletonView = SkeletonView()
@@ -178,7 +183,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 valueFormatter = IAxisValueFormatter { value, _ ->
                     // Only use non-zero values for the axis
                     value.toDouble().takeIf { it > 0 }?.let {
-                        formatCurrencyForDisplay(it, chartCurrencyCode.orEmpty())
+                        getFormattedRevenueValue(it)
                     }.orEmpty()
                 }
             }
@@ -192,7 +197,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             setPinchZoom(false)
             isScaleXEnabled = false
             isScaleYEnabled = false
-            isDragEnabled = false
+            isDragEnabled = true
 
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
         }
@@ -204,6 +209,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         markerView.chartView = chart
         markerView.captionListener = this
         chart.marker = markerView
+        chart.setOnChartValueSelectedListener(this)
     }
 
     /**
@@ -213,22 +219,49 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         val barEntry = entry as BarEntry
 
         // get the date for this entry
-        val dateindex = barEntry.x.toInt()
-        val date = if (activeGranularity == StatsGranularity.YEARS) dateindex.toString() else
-            chartRevenueStats.keys.elementAt(dateindex - 1)
-        val formattedDate = when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
-            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthString(date)
-            StatsGranularity.YEARS -> date
-        }
+        val date = getDateFromIndex(barEntry.x.toInt())
+        val formattedDate = getEntryValue(date)
 
         // get the revenue for this entry
-        val revenue = barEntry.y.toDouble()
-        val formattedRevenue = formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
+        val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
 
         // show the date and revenue on separate lines
         return formattedDate + "\n" + formattedRevenue
+    }
+
+    /**
+     * Called when nothing has been selected or an "un-select" has been made.
+     */
+    override fun onNothingSelected() {
+        // update the total values of the chart here
+        updateChartView()
+        showVisitorStats(chartVisitorStats)
+
+        // TODO: update date bar when unselected
+    }
+
+    override fun onValueSelected(e: Entry?, h: Highlight?) {
+        val barEntry = e as BarEntry
+
+        // display the revenue for this entry
+        val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
+        revenue_value.text = formattedRevenue
+
+        // display the order count for this entry
+        val date = getDateFromIndex(barEntry.x.toInt())
+        val orderValue = chartOrderStats[date]?.toInt() ?: 0
+        orders_value.text = orderValue.toString()
+
+        // display the visitor count for this entry only if the text is NOT empty
+        val visitorValue = getFormattedVisitorValue(date)
+        if (visitorValue.isEmpty()) {
+            visitors_layout.visibility = View.GONE
+        } else {
+            visitors_layout.visibility = View.VISIBLE
+            visitors_value.text = visitorValue
+        }
+
+        // TODO: update the date bar
     }
 
     /**
@@ -239,22 +272,66 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     }
 
     fun updateView(revenueStatsModel: WCRevenueStatsModel?, currencyCode: String?) {
+        this.revenueStatsModel = revenueStatsModel
         chartCurrencyCode = currencyCode
 
+        this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
+            it.interval!! to it.subtotals?.grossRevenue!!
+        }?.toMap() ?: mapOf()
+
+        this.chartOrderStats = revenueStatsModel?.getIntervalList()?.map {
+            it.interval!! to it.subtotals?.ordersCount!!
+        }?.toMap() ?: mapOf()
+
+        updateChartView()
+    }
+
+    fun showErrorView(show: Boolean) {
+        isRequestingStats = false
+        dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
+        chart.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    fun showVisitorStats(visitorStats: Map<String, Int>) {
+        this.chartVisitorStats = visitorStats
+        if (visitors_layout.visibility == View.GONE) {
+            visitors_layout.visibility = View.VISIBLE
+        }
+        fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
+    }
+
+    fun showVisitorStatsError() {
+        fadeInLabelValue(visitors_value, "?")
+    }
+
+    fun clearLabelValues() {
+        val color = ContextCompat.getColor(context, R.color.skeleton_color)
+        visitors_value.setTextColor(color)
+        revenue_value.setTextColor(color)
+        orders_value.setTextColor(color)
+
+        visitors_value.setText(R.string.emdash)
+        revenue_value.setText(R.string.emdash)
+        orders_value.setText(R.string.emdash)
+    }
+
+    fun clearChartData() {
+        chart.data?.clearValues()
+    }
+
+    private fun updateChartView() {
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
 
         val grossRevenue = revenueStatsModel?.getTotal()?.grossRevenue ?: 0.0
-        val revenue = formatCurrencyForDisplay(grossRevenue, currencyCode.orEmpty())
+        val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
 
         val orderCount = revenueStatsModel?.getTotal()?.ordersCount ?: 0
         val orders = orderCount.toString()
+
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        val revenueStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to it.subtotals?.grossRevenue!!
-        }?.toMap() ?: mapOf()
-        if (revenueStats.isEmpty() || revenueStatsModel?.getTotal()?.grossRevenue?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.grossRevenue?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return
@@ -262,11 +339,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
         val barColors = ArrayList<Int>()
         val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
-        for (entry in revenueStats) {
+        for (entry in chartRevenueStats) {
             barColors.add(normalColor)
         }
 
-        val dataSet = generateBarDataSet(revenueStats).apply {
+        val dataSet = generateBarDataSet(chartRevenueStats).apply {
             colors = barColors
             setDrawValues(false)
             isHighlightEnabled = true
@@ -295,38 +372,18 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         isRequestingStats = false
     }
 
-    fun showErrorView(show: Boolean) {
-        isRequestingStats = false
-        dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
-        chart.visibility = if (show) View.GONE else View.VISIBLE
-    }
+    private fun getFormattedRevenueValue(revenue: Double) =
+            formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
 
-    fun showVisitorStats(visitorStats: Map<String, Int>) {
-        fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
-    }
+    private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
-    fun showVisitorStatsError() {
-        fadeInLabelValue(visitors_value, "?")
-    }
-
-    fun clearLabelValues() {
-        val color = ContextCompat.getColor(context, R.color.skeleton_color)
-        visitors_value.setTextColor(color)
-        revenue_value.setTextColor(color)
-        orders_value.setTextColor(color)
-
-        visitors_value.setText(R.string.emdash)
-        revenue_value.setText(R.string.emdash)
-        orders_value.setText(R.string.emdash)
-    }
-
-    fun clearChartData() {
-        chart.data?.clearValues()
-    }
+    private fun getFormattedVisitorValue(date: String) =
+            if (activeGranularity == StatsGranularity.DAYS) "" else
+                chartVisitorStats[date]?.toString() ?: "0"
 
     private fun fadeInLabelValue(view: TextView, value: String) {
         // do nothing if value hasn't changed
-        if (view.text.toString().equals(value)) {
+        if (view.text.toString() == value) {
             return
         }
 
@@ -380,6 +437,15 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             lastUpdatedHandler?.postDelayed(lastUpdatedRunnable,
                     UPDATE_DELAY_TIME_MS
             )
+        }
+    }
+
+    private fun getEntryValue(dateString: String): String {
+        return when (activeGranularity) {
+            StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
+            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayString(dateString)
+            StatsGranularity.MONTHS -> DateUtils.getShortMonthDayString(dateString)
+            StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
         }
     }
 
@@ -438,14 +504,5 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         fun getStartValue() = getEntryValue(chartRevenueStats.keys.first())
 
         fun getEndValue() = getEntryValue(chartRevenueStats.keys.last())
-
-        fun getEntryValue(dateString: String): String {
-            return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
-                StatsGranularity.WEEKS -> DateUtils.getShortMonthDayString(dateString)
-                StatsGranularity.MONTHS -> DateUtils.getShortMonthDayString(dateString)
-                StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
-            }
-        }
     }
 }
