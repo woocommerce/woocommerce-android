@@ -18,10 +18,15 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.formatDateToYearMonth
+import com.woocommerce.android.extensions.formatDateToYear
+import com.woocommerce.android.extensions.formatDateToWeeksInYear
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.ui.dashboard.DashboardStatsMarkerView.RequestMarkerCaptionListener
@@ -39,7 +44,7 @@ import java.util.ArrayList
 import java.util.Date
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener {
+    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener, OnChartValueSelectedListener {
     init {
         View.inflate(context, R.layout.dashboard_stats, this)
     }
@@ -62,6 +67,8 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
     private var chartRevenueStats = mapOf<String, Double>()
+    private var chartOrderStats = mapOf<String, Int>()
+    private var chartVisitorStats = mapOf<String, Int>()
     private var chartCurrencyCode: String? = null
 
     private var skeletonView = SkeletonView()
@@ -199,7 +206,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 valueFormatter = IAxisValueFormatter { value, _ ->
                     // Only use non-zero values for the axis
                     value.toDouble().takeIf { it > 0 }?.let {
-                        formatCurrencyForDisplay(it, chartCurrencyCode.orEmpty())
+                        getFormattedRevenueValue(it)
                     }.orEmpty()
                 }
             }
@@ -213,7 +220,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             setPinchZoom(false)
             isScaleXEnabled = false
             isScaleYEnabled = false
-            isDragEnabled = false
+            isDragEnabled = true
 
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
         }
@@ -222,6 +229,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         markerView.chartView = chart
         markerView.captionListener = this
         chart.marker = markerView
+        chart.setOnChartValueSelectedListener(this)
     }
 
     /**
@@ -231,9 +239,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         val barEntry = entry as BarEntry
 
         // get the date for this entry
-        val dateindex = barEntry.x.toInt()
-        val date = if (activeGranularity == StatsGranularity.YEARS) dateindex.toString() else
-            chartRevenueStats.keys.elementAt(dateindex - 1)
+        val date = getDateFromIndex(barEntry.x.toInt())
         val formattedDate = when (activeGranularity) {
             StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
             StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
@@ -242,11 +248,35 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         }
 
         // get the revenue for this entry
-        val revenue = barEntry.y.toDouble()
-        val formattedRevenue = formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
+        val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
 
         // show the date and revenue on separate lines
         return formattedDate + "\n" + formattedRevenue
+    }
+
+    /**
+     * Called when nothing has been selected or an "un-select" has been made.
+     */
+    override fun onNothingSelected() {
+        // update the total values of the chart here
+        updateChartView()
+        fadeInLabelValue(visitors_value, chartVisitorStats.values.sum().toString())
+    }
+
+    override fun onValueSelected(e: Entry?, h: Highlight?) {
+        val barEntry = e as BarEntry
+
+        // display the revenue for this entry
+        revenue_value.text = getFormattedRevenueValue(barEntry.y.toDouble())
+
+        // display the order count for this entry
+        val date = getDateFromIndex(barEntry.x.toInt())
+        val orderValue = chartOrderStats.getValue(date)
+        orders_value.text = orderValue.toString()
+
+        // display the visitor count for this entry
+        val visitorValue = getFormattedVisitorValue(date)
+        visitors_value.text = visitorValue
     }
 
     /**
@@ -258,15 +288,36 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
         chartCurrencyCode = currencyCode
+        chartRevenueStats = revenueStats
+        chartOrderStats = orderStats
 
+        updateChartView()
+    }
+
+    fun showErrorView(show: Boolean) {
+        isRequestingStats = false
+        dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
+        chart.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    fun showVisitorStats(visitorStats: Map<String, Int>) {
+        chartVisitorStats = getFormattedVisitorStats(visitorStats)
+        fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
+    }
+
+    fun showVisitorStatsError() {
+        fadeInLabelValue(visitors_value, "?")
+    }
+
+    private fun updateChartView() {
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
 
-        val revenue = formatCurrencyForDisplay(revenueStats.values.sum(), currencyCode.orEmpty())
-        val orders = orderStats.values.sum().toString()
+        val revenue = getFormattedRevenueValue(chartRevenueStats.values.sum())
+        val orders = chartOrderStats.values.sum().toString()
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        if (revenueStats.isEmpty()) {
+        if (chartRevenueStats.isEmpty()) {
             clearLastUpdated()
             isRequestingStats = false
             return
@@ -274,11 +325,11 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         val barColors = ArrayList<Int>()
         val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
-        for (entry in revenueStats) {
+        for (entry in chartRevenueStats) {
             barColors.add(normalColor)
         }
 
-        val dataSet = generateBarDataSet(revenueStats).apply {
+        val dataSet = generateBarDataSet(chartRevenueStats).apply {
             colors = barColors
             setDrawValues(false)
             isHighlightEnabled = true
@@ -312,18 +363,31 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         isRequestingStats = false
     }
 
-    fun showErrorView(show: Boolean) {
-        isRequestingStats = false
-        dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
-        chart.visibility = if (show) View.GONE else View.VISIBLE
-    }
+    private fun getFormattedRevenueValue(revenue: Double) =
+            formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
 
-    fun showVisitorStats(visitorStats: Map<String, Int>) {
-        fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
-    }
+    private fun getDateFromIndex(dateIndex: Int) =
+            if (activeGranularity == StatsGranularity.YEARS) dateIndex.toString() else
+                chartRevenueStats.keys.elementAt(dateIndex - 1)
 
-    fun showVisitorStatsError() {
-        fadeInLabelValue(visitors_value, "?")
+    private fun getFormattedVisitorValue(date: String) = chartVisitorStats[date]?.toString() ?: "0"
+
+    /**
+     * Method to format the incoming visitor stats data
+     * The [visitorStats] map keys are in a different date format compared to [chartRevenueStats] map date format.
+     * To add scrubbing interaction, we are converting the [visitorStats] date format to [chartRevenueStats] date format
+     * [StatsGranularity.WEEKS] visitor stats date format (yyyy'W'MM'W'dd) to yyyy-'W'MM
+     * [StatsGranularity.MONTHS] visitor stats date format (yyyy-MM-dd) to yyyy-MM
+     * [StatsGranularity.WEEKS] visitor stats date format (yyyy-MM-dd) to yyyy
+     * [StatsGranularity.DAYS] format is the same for both
+     */
+    private fun getFormattedVisitorStats(visitorStats: Map<String, Int>) = visitorStats.mapKeys {
+        when (activeGranularity) {
+            StatsGranularity.DAYS -> it.key
+            StatsGranularity.WEEKS -> it.key.formatDateToWeeksInYear()
+            StatsGranularity.MONTHS -> it.key.formatDateToYearMonth()
+            StatsGranularity.YEARS -> it.key.formatDateToYear()
+        }
     }
 
     /**
