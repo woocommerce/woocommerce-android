@@ -30,7 +30,7 @@ class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig
 
             val toast = Toast.makeText(
                     context,
-                    "Database downgraded, recreating tables and loading stores",
+                    R.string.database_downgraded,
                     Toast.LENGTH_LONG
             )
             toast.view?.let { view ->
