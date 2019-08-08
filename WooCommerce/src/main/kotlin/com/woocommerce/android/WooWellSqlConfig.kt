@@ -13,7 +13,7 @@ import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 
-class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, WellSqlConfig.ADDON_WOOCOMMERCE) {
+class WooWellSqlConfig(context: Context?) : WellSqlConfig(context, ADDON_WOOCOMMERCE) {
     /**
      * Detect when the database is downgraded in debug and beta builds so we can recreate all the tables and
      * show a toast about the downgrade. The initial purpose of this was to avoid the hassle of devs switching
