@@ -7,11 +7,12 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
-import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenChangeEvent
+import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher.RevenueStatsAvailabilityChangeEvent
+import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -55,6 +56,7 @@ class MainPresenter @Inject constructor(
     private var mainView: MainContract.View? = null
 
     private var isHandlingMagicLink: Boolean = false
+    private var pendingUnfilledOrderCountCheck: Boolean = false
 
     override fun takeView(view: MainContract.View) {
         mainView = view
@@ -92,8 +94,13 @@ class MainPresenter @Inject constructor(
     }
 
     override fun fetchUnfilledOrderCount() {
-        val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
-        dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
+        if (selectedSite.exists()) {
+            pendingUnfilledOrderCountCheck = false
+            val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
+            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
+        } else {
+            pendingUnfilledOrderCountCheck = true
+        }
     }
 
     @Suppress("unused")
@@ -192,11 +199,11 @@ class MainPresenter @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationsUnseenChangeEvent) {
+    fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
         if (event.hasUnseen) {
-            mainView?.showNotificationBadge()
+            mainView?.showReviewsBadge()
         } else {
-            mainView?.hideNotificationBadge()
+            mainView?.hideReviewsBadge()
         }
     }
 
@@ -225,5 +232,11 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: RevenueStatsAvailabilityChangeEvent) {
         mainView?.updateStatsView(event.available)
+    }
+
+    fun onEventMainThread(event: SelectedSiteChangedEvent) {
+        if (pendingUnfilledOrderCountCheck) {
+            fetchUnfilledOrderCount()
+        }
     }
 }
