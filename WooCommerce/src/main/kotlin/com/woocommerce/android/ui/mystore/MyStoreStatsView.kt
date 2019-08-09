@@ -241,7 +241,8 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         }
         fadeInLabelValue(visitors_value, chartVisitorStats.values.sum().toString())
 
-        // TODO: update date bar when unselected
+        // update date bar when unselected
+        listener.onChartValueUnSelected(revenueStatsModel, activeGranularity)
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -265,7 +266,8 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             visitors_value.text = visitorValue
         }
 
-        // TODO: update the date bar
+        // update the date bar
+        listener.onChartValueSelected(date, activeGranularity)
     }
 
     /**

@@ -56,7 +56,7 @@ fun String.formatDateToFriendlyDayHour(): String {
 fun String.formatDateToFriendlyLongMonthYear(): String {
     return try {
         val (year, month, _) = this.split("-")
-        "$year›${DateFormatSymbols().months[month.toInt() - 1]}"
+        "$year › ${DateFormatSymbols().months[month.toInt() - 1]}"
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }

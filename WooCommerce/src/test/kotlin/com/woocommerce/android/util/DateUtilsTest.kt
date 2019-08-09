@@ -347,13 +347,13 @@ class DateUtilsTest {
 
     @Test
     fun `formatDateToFriendlyLongMonth() returns correct values`() {
-        assertEquals("2019›August", "2019-08-02".formatDateToFriendlyLongMonthYear())
-        assertEquals("2019›January", "2019-01-02".formatDateToFriendlyLongMonthYear())
-        assertEquals("2019›June", "2019-06-04".formatDateToFriendlyLongMonthYear())
-        assertEquals("2019›September", "2019-09-11".formatDateToFriendlyLongMonthYear())
-        assertEquals("2018›December", "2018-12-22".formatDateToFriendlyLongMonthYear())
-        assertEquals("2018›November", "2018-11-12".formatDateToFriendlyLongMonthYear())
-        assertEquals("2018›August", "2018-08".formatDateToFriendlyLongMonthYear())
+        assertEquals("2019 › August", "2019-08-02".formatDateToFriendlyLongMonthYear())
+        assertEquals("2019 › January", "2019-01-02".formatDateToFriendlyLongMonthYear())
+        assertEquals("2019 › June", "2019-06-04".formatDateToFriendlyLongMonthYear())
+        assertEquals("2019 › September", "2019-09-11".formatDateToFriendlyLongMonthYear())
+        assertEquals("2018 › December", "2018-12-22".formatDateToFriendlyLongMonthYear())
+        assertEquals("2018 › November", "2018-11-12".formatDateToFriendlyLongMonthYear())
+        assertEquals("2018 › August", "2018-08".formatDateToFriendlyLongMonthYear())
 
         // Test for invalid value handling
         assertFailsWith(IllegalArgumentException::class) {
@@ -376,12 +376,12 @@ class DateUtilsTest {
 
     @Test
     fun `formatDateToDayHour() returns correct values`() {
-        assertEquals("Thursday, Aug 08›7am", "2019-08-08 07".formatDateToFriendlyDayHour())
-        assertEquals("Thursday, Aug 08›11pm", "2019-08-08 23".formatDateToFriendlyDayHour())
-        assertEquals("Wednesday, Jan 02›12am", "2019-01-02 00".formatDateToFriendlyDayHour())
-        assertEquals("Tuesday, Jun 04›1am", "2019-06-04 01".formatDateToFriendlyDayHour())
-        assertEquals("Monday, Sep 09›1pm", "2019-09-09 13".formatDateToFriendlyDayHour())
-        assertEquals("Saturday, Dec 22›5pm", "2018-12-22 17".formatDateToFriendlyDayHour())
+        assertEquals("Thursday, Aug 08 › 7am", "2019-08-08 07".formatDateToFriendlyDayHour())
+        assertEquals("Thursday, Aug 08 › 11pm", "2019-08-08 23".formatDateToFriendlyDayHour())
+        assertEquals("Wednesday, Jan 02 › 12am", "2019-01-02 00".formatDateToFriendlyDayHour())
+        assertEquals("Tuesday, Jun 04 › 1am", "2019-06-04 01".formatDateToFriendlyDayHour())
+        assertEquals("Monday, Sep 09 › 1pm", "2019-09-09 13".formatDateToFriendlyDayHour())
+        assertEquals("Saturday, Dec 22 › 5pm", "2018-12-22 17".formatDateToFriendlyDayHour())
 
         // Test for invalid value handling
         assertFailsWith(IllegalArgumentException::class) {

@@ -318,6 +318,14 @@ class MyStoreFragment : TopLevelFragment(),
         (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
     }
 
+    override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
+        my_store_date_bar.updateDateViewOnScrubbing(dateString, period)
+    }
+
+    override fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {
+        my_store_date_bar.updateDateRangeView(revenueStatsModel, period)
+    }
+
     override fun showEmptyView(show: Boolean) {
         if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
     }

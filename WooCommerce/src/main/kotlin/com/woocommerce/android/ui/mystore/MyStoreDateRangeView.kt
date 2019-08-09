@@ -5,6 +5,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
+import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
+import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.my_store_date_bar.view.*
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -20,6 +23,14 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
         clearDateRangeValues()
     }
 
+    /**
+     * Method to update the date value for a given [revenueStatsModel] based on the [granularity]
+     * This is used to display the date bar when the **stats tab is loaded**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08
+     * [StatsGranularity.WEEKS] would be Aug 4 - Aug 08
+     * [StatsGranularity.MONTHS] would be August
+     * [StatsGranularity.YEARS] would be 2019
+     */
     fun updateDateRangeView(
         revenueStatsModel: WCRevenueStatsModel?,
         granularity: StatsGranularity
@@ -44,6 +55,31 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
         dashboard_date_range_value.text = ""
     }
 
+    /**
+     * Method to update the date value for a given [dateString] based on the [activeGranularity]
+     * This is used to display the date bar when the **scrubbing interaction is taking place**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08›7am
+     * [StatsGranularity.WEEKS] would be August 08
+     * [StatsGranularity.MONTHS] would be August›08
+     * [StatsGranularity.YEARS] would be 2019›August
+     */
+    fun updateDateViewOnScrubbing(dateString: String, activeGranularity: StatsGranularity) {
+        dashboard_date_range_value.text = when (activeGranularity) {
+            StatsGranularity.DAYS -> dateString.formatDateToFriendlyDayHour()
+            StatsGranularity.WEEKS -> dateString.formatDateToFriendlyLongMonthDate()
+            StatsGranularity.MONTHS -> dateString.formatDateToFriendlyLongMonthDate()
+            StatsGranularity.YEARS -> dateString.formatDateToFriendlyLongMonthYear()
+        }
+    }
+
+    /**
+     * Method to get the date value for a given [dateString] based on the [activeGranularity]
+     * This is used to populate the date bar when the **stats tab is loaded**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08
+     * [StatsGranularity.WEEKS] would be Aug 4
+     * [StatsGranularity.MONTHS] would be August
+     * [StatsGranularity.YEARS] would be 2019
+     */
     private fun getDateValue(
         dateString: String,
         activeGranularity: StatsGranularity
