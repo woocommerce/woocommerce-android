@@ -24,6 +24,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.dashboard.DashboardStatsMarkerView
@@ -235,7 +236,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     override fun onNothingSelected() {
         // update the total values of the chart here
         updateChartView()
-        showVisitorStats(chartVisitorStats)
+        if (visitors_layout.visibility == View.GONE) {
+            visitors_layout.visibility = View.VISIBLE
+        }
+        fadeInLabelValue(visitors_value, chartVisitorStats.values.sum().toString())
 
         // TODO: update date bar when unselected
     }
@@ -293,10 +297,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     }
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
-        this.chartVisitorStats = visitorStats
-        if (visitors_layout.visibility == View.GONE) {
-            visitors_layout.visibility = View.VISIBLE
-        }
+        chartVisitorStats = getFormattedVisitorStats(visitorStats)
         fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
     }
 
@@ -380,6 +381,20 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     private fun getFormattedVisitorValue(date: String) =
             if (activeGranularity == StatsGranularity.DAYS) "" else
                 chartVisitorStats[date]?.toString() ?: "0"
+
+    /**
+     * Method to format the incoming visitor stats data
+     * The [visitorStats] map keys are in a different date format compared to [chartRevenueStats] map date format.
+     * To add scrubbing interaction, we are converting the [visitorStats] date format to [chartRevenueStats] date format
+     * [StatsGranularity.WEEKS] format is the same for both
+     * [StatsGranularity.MONTHS] format is the same for both
+     * [StatsGranularity.YEARS] visitor stats date format (yyyy-MM-dd) to yyyy-MM
+     * [StatsGranularity.DAYS] format is the same for both
+     */
+    private fun getFormattedVisitorStats(visitorStats: Map<String, Int>) =
+            if (activeGranularity == StatsGranularity.YEARS) visitorStats.mapKeys {
+                it.key.formatDateToYearMonth()
+            } else visitorStats
 
     private fun fadeInLabelValue(view: TextView, value: String) {
         // do nothing if value hasn't changed
