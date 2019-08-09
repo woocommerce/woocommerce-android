@@ -7,8 +7,6 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarEntry
 import android.view.MotionEvent
 
-
-
 /**
  * Creating a custom BarChart to fix this issue:
  * https://github.com/woocommerce/woocommerce-android/issues/1048
