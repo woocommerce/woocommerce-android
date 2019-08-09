@@ -300,6 +300,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
+        visitors_layout.visibility = View.VISIBLE
         fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
     }
 
