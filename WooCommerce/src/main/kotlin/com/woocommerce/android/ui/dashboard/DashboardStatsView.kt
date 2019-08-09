@@ -240,12 +240,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
         // get the date for this entry
         val date = getDateFromIndex(barEntry.x.toInt())
-        val formattedDate = when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
-            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthString(date)
-            StatsGranularity.YEARS -> date
-        }
+        val formattedDate = getFormattedDateValue(date)
 
         // get the revenue for this entry
         val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
@@ -261,6 +256,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         // update the total values of the chart here
         updateChartView()
         fadeInLabelValue(visitors_value, chartVisitorStats.values.sum().toString())
+
+        // update date bar when unselected
+        updateDateRangeView()
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -277,6 +275,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         // display the visitor count for this entry
         val visitorValue = getFormattedVisitorValue(date)
         visitors_value.text = visitorValue
+
+        // update date bar
+        dashboard_date_range_value.text = getFormattedDateValue(date)
     }
 
     /**
@@ -370,6 +371,21 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             if (activeGranularity == StatsGranularity.YEARS) dateIndex.toString() else
                 chartRevenueStats.keys.elementAt(dateIndex - 1)
 
+    /**
+     * Method to format the date value displayed when scrubbing or tapping of the chart takes place.
+     * [date] is formatted based on the [activeGranularity]
+     * [StatsGranularity.DAYS] format would be Aug 11
+     * [StatsGranularity.WEEKS] format would be Aug 11
+     * [StatsGranularity.MONTHS] format would be Aug 2019
+     * [StatsGranularity.YEARS] format would be 2019
+     */
+    private fun getFormattedDateValue(date: String) = when (activeGranularity) {
+        StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
+        StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
+        StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(date)
+        StatsGranularity.YEARS -> date
+    }
+
     private fun getFormattedVisitorValue(date: String) = chartVisitorStats[date]?.toString() ?: "0"
 
     /**
@@ -378,7 +394,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * To add scrubbing interaction, we are converting the [visitorStats] date format to [chartRevenueStats] date format
      * [StatsGranularity.WEEKS] visitor stats date format (yyyy'W'MM'W'dd) to yyyy-'W'MM
      * [StatsGranularity.MONTHS] visitor stats date format (yyyy-MM-dd) to yyyy-MM
-     * [StatsGranularity.WEEKS] visitor stats date format (yyyy-MM-dd) to yyyy
+     * [StatsGranularity.YEARS] visitor stats date format (yyyy-MM-dd) to yyyy
      * [StatsGranularity.DAYS] format is the same for both
      */
     private fun getFormattedVisitorStats(visitorStats: Map<String, Int>) = visitorStats.mapKeys {
