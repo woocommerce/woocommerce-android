@@ -21,7 +21,7 @@ object AppPrefs {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
         IS_USING_V4_API,
-        HAS_UNSEEN_NOTIFS,
+        HAS_UNSEEN_REVIEWS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS
@@ -126,10 +126,10 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
-    fun getHasUnseenNotifs() = getBoolean(DeletablePrefKey.HAS_UNSEEN_NOTIFS, false)
+    fun getHasUnseenReviews() = getBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, false)
 
-    fun setHasUnseenNotifs(hasUnseen: Boolean) {
-        setBoolean(DeletablePrefKey.HAS_UNSEEN_NOTIFS, hasUnseen)
+    fun setHasUnseenReviews(hasUnseen: Boolean) {
+        setBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, hasUnseen)
     }
 
     fun getNumTimesMarkAllReadSnackShown(): Int =
