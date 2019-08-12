@@ -1,0 +1,6 @@
+2.4 :
+L’onglet anciennement appelé Notifications se nomme désormais Avis. Puisque les notifications sont à présent accessibles dans Commandes, l’onglet Notification avait besoin d’une nouvelle identité. Nous l’avons astucieusement rebaptisé « Avis » puisqu’il n’affiche plus que les avis.
+
+Le nombre de commandes inachevées n’apparaît plus sur le tableau de bord. C’est désormais un badge dans la liste de commandes.
+
+Vous serez invité à effectuer des mises à jour dans l’application, il n’est donc plus nécessaire d’ouvrir le Play store.
