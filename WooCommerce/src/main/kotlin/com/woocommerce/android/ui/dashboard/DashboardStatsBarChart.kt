@@ -48,6 +48,11 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
         }
     }
 
+    /**
+     * Method added to prevent the chart's parent view i.e ScrollView
+     * from intercepting the touch events during the scrubbing interaction.
+     * Solution implemented from here: https://github.com/PhilJay/MPAndroidChart/issues/925
+     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         parent.requestDisallowInterceptTouchEvent(data != null)
         super.onTouchEvent(event)
