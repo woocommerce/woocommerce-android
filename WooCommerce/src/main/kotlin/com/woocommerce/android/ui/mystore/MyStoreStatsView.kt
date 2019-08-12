@@ -394,10 +394,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
      * [StatsGranularity.YEARS] visitor stats date format (yyyy-MM-dd) to yyyy-MM
      * [StatsGranularity.DAYS] format is the same for both
      */
-    private fun getFormattedVisitorStats(visitorStats: Map<String, Int>) =
-            if (activeGranularity == StatsGranularity.YEARS) visitorStats.mapKeys {
-                it.key.formatDateToYearMonth()
-            } else visitorStats
+    private fun getFormattedVisitorStats(visitorStats: Map<String, Int>): Map<String, Int> {
+        return if (activeGranularity == StatsGranularity.YEARS) visitorStats.mapKeys {
+            it.key.formatDateToYearMonth()
+        } else visitorStats
+    }
 
     private fun fadeInLabelValue(view: TextView, value: String) {
         // do nothing if value hasn't changed

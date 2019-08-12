@@ -379,11 +379,13 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * [StatsGranularity.MONTHS] format would be Aug 2019
      * [StatsGranularity.YEARS] format would be 2019
      */
-    private fun getFormattedDateValue(date: String) = when (activeGranularity) {
-        StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
-        StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
-        StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(date)
-        StatsGranularity.YEARS -> date
+    private fun getFormattedDateValue(date: String): String {
+        return when (activeGranularity) {
+            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
+            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
+            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(date)
+            StatsGranularity.YEARS -> date
+        }
     }
 
     private fun getFormattedVisitorValue(date: String) = chartVisitorStats[date]?.toString() ?: "0"
@@ -397,12 +399,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
      * [StatsGranularity.YEARS] visitor stats date format (yyyy-MM-dd) to yyyy
      * [StatsGranularity.DAYS] format is the same for both
      */
-    private fun getFormattedVisitorStats(visitorStats: Map<String, Int>) = visitorStats.mapKeys {
-        when (activeGranularity) {
-            StatsGranularity.DAYS -> it.key
-            StatsGranularity.WEEKS -> it.key.formatDateToWeeksInYear()
-            StatsGranularity.MONTHS -> it.key.formatDateToYearMonth()
-            StatsGranularity.YEARS -> it.key.formatDateToYear()
+    private fun getFormattedVisitorStats(visitorStats: Map<String, Int>): Map<String, Int> {
+        return visitorStats.mapKeys {
+            when (activeGranularity) {
+                StatsGranularity.DAYS -> it.key
+                StatsGranularity.WEEKS -> it.key.formatDateToWeeksInYear()
+                StatsGranularity.MONTHS -> it.key.formatDateToYearMonth()
+                StatsGranularity.YEARS -> it.key.formatDateToYear()
+            }
         }
     }
 
