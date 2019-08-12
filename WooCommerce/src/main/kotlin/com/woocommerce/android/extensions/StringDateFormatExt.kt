@@ -8,29 +8,44 @@ import java.util.Locale
 /**
  * Method to convert date string from yyyy-MM-dd format to yyyy-MM format
  */
+@Throws(IllegalArgumentException::class)
 fun String.formatDateToYearMonth(): String {
-    val (year, month, day) = this.split("-")
-    val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-    return date.formatToYYYYmm()
+    return try {
+        val (year, month, day) = this.split("-")
+        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+        date.formatToYYYYmm()
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
+    }
 }
 
 /**
  * Method to convert date string from yyyy-MM-dd format to yyyy format
  */
+@Throws(IllegalArgumentException::class)
 fun String.formatDateToYear(): String {
-    val (year, month, day) = this.split("-")
-    val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-    return date.formatToYYYY()
+    return try {
+        val (year, month, day) = this.split("-")
+        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+        date.formatToYYYY()
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
+    }
 }
 
 /**
  * Method to convert date string from yyyy'W'MM'W'dd format to yyyy-'W'MM
  * i.e. 2019W08W08 is formatted to 2019-W32
  */
+@Throws(IllegalArgumentException::class)
 fun String.formatDateToWeeksInYear(): String {
-    val (year, month, day) = this.split("W")
-    val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-    return date.formatToYYYYWmm()
+    return try {
+        val (year, month, day) = this.split("W")
+        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+        date.formatToYYYYWmm()
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Date string argument is not of format yyyy'W'MM'W'dd: $this")
+    }
 }
 
 /**

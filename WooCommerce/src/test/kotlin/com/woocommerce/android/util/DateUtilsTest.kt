@@ -7,7 +7,6 @@ import com.woocommerce.android.extensions.formatDateToWeeksInYear
 import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import org.junit.Test
-import java.lang.IndexOutOfBoundsException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -271,16 +270,16 @@ class DateUtilsTest {
             "2018W12W".formatDateToWeeksInYear()
         }
 
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "20-W12".formatDateToWeeksInYear()
         }
 
         // Test for invalid value handling
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "".formatDateToWeeksInYear()
         }
 
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "21".formatDateToWeeksInYear()
         }
     }
@@ -295,20 +294,20 @@ class DateUtilsTest {
         assertEquals("2018", "2018-11-12".formatDateToYear())
 
         // Test for invalid value handling
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "2019-08".formatDateToYear()
         }
 
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "20-W12".formatDateToYear()
         }
 
         // Test for invalid value handling
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "".formatDateToYear()
         }
 
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "21".formatDateToYear()
         }
     }
@@ -323,24 +322,24 @@ class DateUtilsTest {
         assertEquals("2018-11", "2018-11-12".formatDateToYearMonth())
 
         // Test for invalid value handling
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "2019-08".formatDateToYearMonth()
         }
 
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "2019".formatDateToYearMonth()
         }
 
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "20-W12".formatDateToYearMonth()
         }
 
         // Test for invalid value handling
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "".formatDateToYearMonth()
         }
 
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith(IllegalArgumentException::class) {
             "21".formatDateToYearMonth()
         }
     }
