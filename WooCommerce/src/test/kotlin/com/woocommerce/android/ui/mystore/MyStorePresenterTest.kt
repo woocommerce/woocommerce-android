@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_TOP_EARNERS_STATS
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
@@ -238,22 +238,22 @@ class MyStorePresenterTest {
     }
 
     @Test
-    fun `Handles FETCH_VISITOR_STATS event correctly`() {
+    fun `Handles FETCH_NEW_VISITOR_STATS event correctly`() {
         presenter.takeView(myStoreView)
 
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
-        onChanged.causeOfChange = FETCH_VISITOR_STATS
+        onChanged.causeOfChange = FETCH_NEW_VISITOR_STATS
 
         presenter.onWCStatsChanged(onChanged)
-        verify(myStoreView, times(1)).showVisitorStats(1, StatsGranularity.DAYS)
+        verify(myStoreView, times(1)).showVisitorStats(mapOf(), StatsGranularity.DAYS)
     }
 
     @Test
-    fun `Handles FETCH_VISITOR_STATS error event correctly`() {
+    fun `Handles FETCH_NEW_VISITOR_STATS error event correctly`() {
         presenter.takeView(myStoreView)
 
         val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
-        onChanged.causeOfChange = FETCH_VISITOR_STATS
+        onChanged.causeOfChange = FETCH_NEW_VISITOR_STATS
         onChanged.error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
 
         presenter.onWCStatsChanged(onChanged)

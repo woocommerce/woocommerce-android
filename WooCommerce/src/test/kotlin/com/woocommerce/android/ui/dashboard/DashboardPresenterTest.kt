@@ -240,7 +240,7 @@ class DashboardPresenterTest {
         onChanged.causeOfChange = FETCH_VISITOR_STATS
 
         presenter.onWCStatsChanged(onChanged)
-        verify(dashboardView, times(1)).showVisitorStats(1, StatsGranularity.DAYS)
+        verify(dashboardView, times(1)).showVisitorStats(mapOf(), StatsGranularity.DAYS)
     }
 
     @Test

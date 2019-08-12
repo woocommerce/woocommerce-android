@@ -155,8 +155,10 @@ class DashboardPresenter @Inject constructor(
                     return
                 }
 
-                val visits = event.rowsAffected
-                dashboardView?.showVisitorStats(visits, event.granularity)
+                val visitorStats = wcStatsStore.getVisitorStats(
+                        selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
+                )
+                dashboardView?.showVisitorStats(visitorStats, event.granularity)
             }
         }
     }

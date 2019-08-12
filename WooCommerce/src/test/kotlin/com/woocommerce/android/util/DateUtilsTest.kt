@@ -1,5 +1,9 @@
 package com.woocommerce.android.util
 
+import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
+import com.woocommerce.android.extensions.formatDateToWeeksInYear
+import com.woocommerce.android.extensions.formatDateToYear
+import com.woocommerce.android.extensions.formatDateToYearMonth
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -247,6 +251,122 @@ class DateUtilsTest {
 
         assertFailsWith(IllegalArgumentException::class) {
             DateUtils.getYearString("22")
+        }
+    }
+
+    @Test
+    fun `formatDateToWeeksInYear() returns correct values`() {
+        assertEquals("2019-W32", "2019W08W08".formatDateToWeeksInYear())
+        assertEquals("2019-W27", "2019W07W01".formatDateToWeeksInYear())
+        assertEquals("2019-W26", "2019W06W24".formatDateToWeeksInYear())
+        assertEquals("2019-W01", "2019W01W04".formatDateToWeeksInYear())
+        assertEquals("2018-W01", "2018W12W31".formatDateToWeeksInYear())
+        assertEquals("2018-W52", "2018W12W28".formatDateToWeeksInYear())
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "2018W12W".formatDateToWeeksInYear()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "20-W12".formatDateToWeeksInYear()
+        }
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "".formatDateToWeeksInYear()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "21".formatDateToWeeksInYear()
+        }
+    }
+
+    @Test
+    fun `formatDateToYear() returns correct values`() {
+        assertEquals("2019", "2019-08-02".formatDateToYear())
+        assertEquals("2019", "2019-01-02".formatDateToYear())
+        assertEquals("2019", "2019-06-04".formatDateToYear())
+        assertEquals("2019", "2019-04-11".formatDateToYear())
+        assertEquals("2018", "2018-12-22".formatDateToYear())
+        assertEquals("2018", "2018-11-12".formatDateToYear())
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "2019-08".formatDateToYear()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "20-W12".formatDateToYear()
+        }
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "".formatDateToYear()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "21".formatDateToYear()
+        }
+    }
+
+    @Test
+    fun `formatDateToYearMonth() returns correct values`() {
+        assertEquals("2019-08", "2019-08-02".formatDateToYearMonth())
+        assertEquals("2019-01", "2019-01-02".formatDateToYearMonth())
+        assertEquals("2019-06", "2019-06-04".formatDateToYearMonth())
+        assertEquals("2019-04", "2019-04-11".formatDateToYearMonth())
+        assertEquals("2018-12", "2018-12-22".formatDateToYearMonth())
+        assertEquals("2018-11", "2018-11-12".formatDateToYearMonth())
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "2019-08".formatDateToYearMonth()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "2019".formatDateToYearMonth()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "20-W12".formatDateToYearMonth()
+        }
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "".formatDateToYearMonth()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "21".formatDateToYearMonth()
+        }
+    }
+
+    @Test
+    fun `formatDateToDayHour() returns correct values`() {
+        assertEquals("Thursday, Aug 8 › 7am", "2019-08-08 07".formatDateToFriendlyDayHour())
+        assertEquals("Thursday, Aug 8 › 11pm", "2019-08-08 23".formatDateToFriendlyDayHour())
+        assertEquals("Wednesday, Jan 2 › 12am", "2019-01-02 00".formatDateToFriendlyDayHour())
+        assertEquals("Tuesday, Jun 4 › 1am", "2019-06-04 01".formatDateToFriendlyDayHour())
+        assertEquals("Monday, Sep 9 › 1pm", "2019-09-09 13".formatDateToFriendlyDayHour())
+        assertEquals("Saturday, Dec 22 › 5pm", "2018-12-22 17".formatDateToFriendlyDayHour())
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "2019".formatDateToFriendlyDayHour()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "20-W12".formatDateToFriendlyDayHour()
+        }
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "".formatDateToFriendlyDayHour()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "21".formatDateToFriendlyDayHour()
         }
     }
 }
