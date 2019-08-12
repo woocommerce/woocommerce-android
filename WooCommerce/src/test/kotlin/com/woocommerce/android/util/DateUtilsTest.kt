@@ -1,8 +1,6 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
-import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
-import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
 import com.woocommerce.android.extensions.formatDateToWeeksInYear
 import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
@@ -345,41 +343,12 @@ class DateUtilsTest {
     }
 
     @Test
-    fun `formatDateToFriendlyLongMonth() returns correct values`() {
-        assertEquals("2019 › August", "2019-08-02".formatDateToFriendlyLongMonthYear())
-        assertEquals("2019 › January", "2019-01-02".formatDateToFriendlyLongMonthYear())
-        assertEquals("2019 › June", "2019-06-04".formatDateToFriendlyLongMonthYear())
-        assertEquals("2019 › September", "2019-09-11".formatDateToFriendlyLongMonthYear())
-        assertEquals("2018 › December", "2018-12-22".formatDateToFriendlyLongMonthYear())
-        assertEquals("2018 › November", "2018-11-12".formatDateToFriendlyLongMonthYear())
-        assertEquals("2018 › August", "2018-08".formatDateToFriendlyLongMonthYear())
-
-        // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            "2019".formatDateToFriendlyLongMonthYear()
-        }
-
-        assertFailsWith(IllegalArgumentException::class) {
-            "20-W12".formatDateToFriendlyLongMonthYear()
-        }
-
-        // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            "".formatDateToFriendlyLongMonthYear()
-        }
-
-        assertFailsWith(IllegalArgumentException::class) {
-            "21".formatDateToFriendlyLongMonthYear()
-        }
-    }
-
-    @Test
     fun `formatDateToDayHour() returns correct values`() {
-        assertEquals("Thursday, Aug 08 › 7am", "2019-08-08 07".formatDateToFriendlyDayHour())
-        assertEquals("Thursday, Aug 08 › 11pm", "2019-08-08 23".formatDateToFriendlyDayHour())
-        assertEquals("Wednesday, Jan 02 › 12am", "2019-01-02 00".formatDateToFriendlyDayHour())
-        assertEquals("Tuesday, Jun 04 › 1am", "2019-06-04 01".formatDateToFriendlyDayHour())
-        assertEquals("Monday, Sep 09 › 1pm", "2019-09-09 13".formatDateToFriendlyDayHour())
+        assertEquals("Thursday, Aug 8 › 7am", "2019-08-08 07".formatDateToFriendlyDayHour())
+        assertEquals("Thursday, Aug 8 › 11pm", "2019-08-08 23".formatDateToFriendlyDayHour())
+        assertEquals("Wednesday, Jan 2 › 12am", "2019-01-02 00".formatDateToFriendlyDayHour())
+        assertEquals("Tuesday, Jun 4 › 1am", "2019-06-04 01".formatDateToFriendlyDayHour())
+        assertEquals("Monday, Sep 9 › 1pm", "2019-09-09 13".formatDateToFriendlyDayHour())
         assertEquals("Saturday, Dec 22 › 5pm", "2018-12-22 17".formatDateToFriendlyDayHour())
 
         // Test for invalid value handling
@@ -398,34 +367,6 @@ class DateUtilsTest {
 
         assertFailsWith(IllegalArgumentException::class) {
             "21".formatDateToFriendlyDayHour()
-        }
-    }
-
-    @Test
-    fun `formatDateToFriendlyLongMonthDate() returns correct values`() {
-        assertEquals("August 08", "2019-08-08".formatDateToFriendlyLongMonthDate())
-        assertEquals("February 23", "2019-02-23".formatDateToFriendlyLongMonthDate())
-        assertEquals("January 02", "2019-01-02".formatDateToFriendlyLongMonthDate())
-        assertEquals("June 04", "2019-06-04".formatDateToFriendlyLongMonthDate())
-        assertEquals("September 09", "2019-09-09".formatDateToFriendlyLongMonthDate())
-        assertEquals("December 22", "2018-12-22".formatDateToFriendlyLongMonthDate())
-
-        // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            "2019".formatDateToFriendlyLongMonthDate()
-        }
-
-        assertFailsWith(IllegalArgumentException::class) {
-            "20-W12".formatDateToFriendlyLongMonthDate()
-        }
-
-        // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            "".formatDateToFriendlyLongMonthDate()
-        }
-
-        assertFailsWith(IllegalArgumentException::class) {
-            "21".formatDateToFriendlyLongMonthDate()
         }
     }
 }
