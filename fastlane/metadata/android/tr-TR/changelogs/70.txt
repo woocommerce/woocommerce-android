@@ -1,0 +1,6 @@
+2.4:
+Daha önce Bildirimler olarak bilinen sekme artık İncelemeler olarak adlandırılıyor. Bildirimler artık Siparişler bölümünde gösterildiğinden Bildirimler sekmesi için yeni bir kimlik gerekiyordu. Bu sekme artık yalnızca incelemeleri gösterdiğinden biz de onu “İncelemeler” şekkinde yeniden adlandırmakta sakınca görmedik.
+
+Gönderilmemiş siparişlerin sayısı artık panoda değil, sipariş listesinde rozet olarak gösteriliyor.
+
+Uygulamanın içinden güncelleme gerçekleştirmeniz istendiğinden Google Play’ı açma zorunluluğu ortadan kalkıyor.

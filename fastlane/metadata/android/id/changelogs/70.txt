@@ -1,0 +1,6 @@
+2.4:
+Tab yang sebelumnya bernama Pemberitahuan kini menjadi Ulasan. Karena pemberitahuan kini ditampilkan di Pesanan, tab Pemberitahuan perlu identitas baru. Kami memberikan nama cerdik ‘Ulasan’, karena sekarang hanya menampilkan ulasan.
+
+Jumlah pesanan yang belum dipenuhi kini tidak ada di dasbor dan ditampilkan sebagai lencana di daftar pesanan.
+
+Anda akan diminta melakukan pembaruan di dalam aplikasi, jadi tak perlu lagi repot membuka Play store untuk melakukannya.
