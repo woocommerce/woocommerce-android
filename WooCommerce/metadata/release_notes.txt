@@ -1,4 +1,2 @@
-* Fixed rare crash that could occur after fulfilling an order and then minimizing the app.
+* We tracked down and fixed: a rare crash that happened after fulfilling an order and minimizing the app, a bug causing the selected site in the site picker to switch back to the previous selection, and a few UI issues with the new “Reviews” tab.
 * Product names can now wrap onto two lines in the order detail screen.
-* Fixed a bug where the selected site in the site picker would change back to the previous selection.
-* Fixed a few issues with the new Reviews tab including an incorrect badge and some problems with order notifications.
