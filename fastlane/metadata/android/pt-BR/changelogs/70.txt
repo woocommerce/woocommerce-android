@@ -1,0 +1,6 @@
+2.4:
+A guia anteriormente conhecida como Notificações agora se chama Comentários. Como as notificações agora são mostradas em Pedidos, a guia Notificações precisava de uma nova identidade. Nós a renomeamos como "Comentários", já que agora ela mostra apenas comentários.
+
+O número de pedidos não realizados não aparece mais no painel e agora é exibido como um selo na lista de pedidos.
+
+Você será solicitado a realizar atualizações dentro do aplicativo, assim não haverá mais o contratempo de ter que abrir a Play Store para isso.

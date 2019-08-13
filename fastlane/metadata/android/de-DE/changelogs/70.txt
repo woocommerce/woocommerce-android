@@ -1,0 +1,6 @@
+2.4:
+Der vormals „Benachrichtigungen“ genannte Tab heißt jetzt „Rezensionen“. Da Benachrichtigungen jetzt unter „Aufträge“ angezeigt werden, brauchte der Tab „Benachrichtigungen“ eine neue Bezeichnung. Wir haben ihn schlauerweise „Rezensionen“ genannt, da dort jetzt eben nur diese angezeigt werden.
+
+Die Anzahl nicht erfüllter Aufträge wird nicht mehr im Dashboard angezeigt, sondern als Badge in der Liste der Bestellungen.
+
+Du erhältst eine Aufforderung in der App, wenn es Zeit für ein Update ist. Du brauchst dazu also nicht mehr den Play Store zu öffnen.
