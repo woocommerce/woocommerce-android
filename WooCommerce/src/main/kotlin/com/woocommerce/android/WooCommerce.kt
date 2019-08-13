@@ -74,7 +74,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
     private var connectionReceiverRegistered = false
 
-    protected open val component: AppComponent by lazy {
+    open val component: AppComponent by lazy {
         DaggerAppComponent.builder()
                 .application(this)
                 .build()

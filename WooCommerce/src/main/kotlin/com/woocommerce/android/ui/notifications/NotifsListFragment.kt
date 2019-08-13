@@ -374,7 +374,7 @@ class NotifsListFragment : TopLevelFragment(),
      */
     override fun visuallyMarkNotificationsAsRead() {
         // Remove all active notifications from the system bar
-        context?.let { NotificationHandler.removeAllNotificationsFromSystemBar(it) }
+        context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
 
         notifsAdapter.markAllNotifsAsRead()
     }

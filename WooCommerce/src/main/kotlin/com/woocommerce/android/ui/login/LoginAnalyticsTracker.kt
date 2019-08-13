@@ -8,8 +8,8 @@ import java.util.HashMap
 import javax.inject.Singleton
 
 @Singleton
-class LoginAnalyticsTracker : LoginAnalyticsListener {
-    override fun trackAnalyticsSignIn(accountStore: AccountStore, siteStore: SiteStore, isWpcomLogin: Boolean) {
+class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteStore) : LoginAnalyticsListener {
+    override fun trackAnalyticsSignIn(isWpcomLogin: Boolean) {
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
         val properties = HashMap<String, Boolean>()
         properties["dotcom_user"] = isWpcomLogin // checkstyle ignore

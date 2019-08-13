@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.orders
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.spy
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -139,12 +139,19 @@ class AddOrderTrackingProviderListPresenterTest {
     fun `Do not refresh shipment providers on network connected event if cached data already refreshed`() {
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        doReturn(false).whenever(networkStatus).isConnected()
         doReturn(wcOrderShipmentProviderModels).whenever(orderStore).getShipmentProvidersForSite(any())
 
         presenter.loadShipmentTrackingProviders(order.getIdentifier())
 
         presenter.onEventMainThread(ConnectionChangeEvent(true))
         verify(presenter, times(0)).fetchShipmentTrackingProvidersFromApi(any())
+    }
+
+    @Test
+    fun `Display error snackbar when provider list is empty`() {
+        presenter.takeView(view)
+        val event = OnOrderShipmentProvidersChanged(0)
+        presenter.onOrderShipmentProviderChanged(event)
+        verify(view, times(1)).showProviderListErrorSnack(any())
     }
 }

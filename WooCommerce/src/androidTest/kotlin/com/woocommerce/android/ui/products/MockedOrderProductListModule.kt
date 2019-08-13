@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.spy
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.ui.orders.OrderProductListContract
 import com.woocommerce.android.ui.orders.OrderProductListFragment
