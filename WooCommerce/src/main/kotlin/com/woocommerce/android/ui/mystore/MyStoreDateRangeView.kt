@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
+import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
+import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.my_store_date_bar.view.*
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -57,7 +59,7 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
      * Method to update the date value for a given [dateString] based on the [activeGranularity]
      * This is used to display the date bar when the **scrubbing interaction is taking place**
      * [StatsGranularity.DAYS] would be Tuesday, Aug 08›7am
-     * [StatsGranularity.WEEKS] would be August 08
+     * [StatsGranularity.WEEKS] would be Aug 08
      * [StatsGranularity.MONTHS] would be August›08
      * [StatsGranularity.YEARS] would be 2019›August
      */
@@ -65,8 +67,8 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
         dashboard_date_range_value.text = when (activeGranularity) {
             StatsGranularity.DAYS -> dateString.formatDateToFriendlyDayHour()
             StatsGranularity.WEEKS -> DateUtils.getShortMonthDayString(dateString)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthDayString(dateString)
-            StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
+            StatsGranularity.MONTHS -> dateString.formatDateToFriendlyLongMonthDate()
+            StatsGranularity.YEARS -> dateString.formatDateToFriendlyLongMonthYear()
         }
     }
 
