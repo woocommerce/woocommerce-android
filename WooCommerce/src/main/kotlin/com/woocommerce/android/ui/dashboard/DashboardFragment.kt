@@ -200,9 +200,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
-    override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
+    override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
         if (dashboard_stats.activeGranularity == granularity) {
-            dashboard_stats.showVisitorStats(visits)
+            dashboard_stats.showVisitorStats(visitorStats)
         }
     }
 

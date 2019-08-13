@@ -233,9 +233,9 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    override fun showVisitorStats(visits: Int, granularity: StatsGranularity) {
+    override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            my_store_stats.showVisitorStats(visits)
+            my_store_stats.showVisitorStats(visitorStats)
         }
     }
 
@@ -316,6 +316,14 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
         (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
+    }
+
+    override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
+        my_store_date_bar.updateDateViewOnScrubbing(dateString, period)
+    }
+
+    override fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {
+        my_store_date_bar.updateDateRangeView(revenueStatsModel, period)
     }
 
     override fun showEmptyView(show: Boolean) {

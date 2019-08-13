@@ -5,7 +5,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ActivityScope
-import com.woocommerce.android.extensions.getVisitorStatsStartDate
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -18,24 +17,23 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
+import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -126,10 +124,8 @@ class MyStorePresenter @Inject constructor(
     }
 
     override fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean) {
-        val startDate = granularity.getVisitorStatsStartDate()
-        val endDate = DateUtils.getStartOfCurrentDay()
-        val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), granularity, forced, startDate, endDate)
-        dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
+        val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
+        dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
     }
 
     override fun fetchTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
@@ -185,15 +181,17 @@ class MyStorePresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
         when (event.causeOfChange) {
-            FETCH_VISITOR_STATS -> {
+            FETCH_NEW_VISITOR_STATS -> {
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
                     dashboardView?.showVisitorStatsError(event.granularity)
                     return
                 }
 
-                val visits = event.rowsAffected
-                dashboardView?.showVisitorStats(visits, event.granularity)
+                val visitorStats = wcStatsStore.getNewVisitorStats(
+                        selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
+                )
+                dashboardView?.showVisitorStats(visitorStats, event.granularity)
             }
         }
     }
