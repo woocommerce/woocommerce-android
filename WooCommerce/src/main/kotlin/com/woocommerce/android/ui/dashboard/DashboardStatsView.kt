@@ -24,12 +24,11 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.formatDateToYearMonth
-import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToWeeksInYear
+import com.woocommerce.android.extensions.formatDateToYear
+import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardFragment.Companion.DEFAULT_STATS_GRANULARITY
-import com.woocommerce.android.ui.dashboard.DashboardStatsMarkerView.RequestMarkerCaptionListener
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
@@ -44,7 +43,7 @@ import java.util.ArrayList
 import java.util.Date
 
 class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), RequestMarkerCaptionListener, OnChartValueSelectedListener {
+    : LinearLayout(ctx, attrs), OnChartValueSelectedListener {
     init {
         View.inflate(context, R.layout.dashboard_stats, this)
     }
@@ -225,28 +224,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
         }
 
-        val markerView = DashboardStatsMarkerView(context, R.layout.dashboard_stats_marker_view)
-        markerView.chartView = chart
-        markerView.captionListener = this
-        chart.marker = markerView
         chart.setOnChartValueSelectedListener(this)
-    }
-
-    /**
-     * the chart MarkerView relies on this to know what to display when the user taps a chart bar
-     */
-    override fun onRequestMarkerCaption(entry: Entry): String? {
-        val barEntry = entry as BarEntry
-
-        // get the date for this entry
-        val date = getDateFromIndex(barEntry.x.toInt())
-        val formattedDate = getFormattedDateValue(date)
-
-        // get the revenue for this entry
-        val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
-
-        // show the date and revenue on separate lines
-        return formattedDate + "\n" + formattedRevenue
     }
 
     /**
