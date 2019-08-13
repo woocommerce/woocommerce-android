@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 09:54:06+0000
+Translation-Revision-Date: 2019-08-08 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_invalid_site_url">Ange en fullständig webbplatsadress som example.com.</string>
+    <string name="reviews_empty_message">Inga omdömen än!</string>
+    <string name="review_notifications">Omdömen</string>
+    <string name="update_failed">Woo-uppdateringen misslyckades</string>
+    <string name="update_downloaded">Woo har laddat ner en uppdatering</string>
+    <string name="install">Installera</string>
+    <string name="error_disabled_apis">Det gick inte att hämta inställningarna: En del API:er är inte tillgängliga för den här OAuth app-ID + konto-kombinationen.</string>
+    <string name="settings_hiring">Vi letar efter medarbetare!</string>
+    <string name="feature_requests">Funktionsbegäran</string>
+    <string name="orderdetail_copy_tracking_number">Kopiera spårningsnummer</string>
+    <string name="login_refresh_app_progress">Kollar efter WooCommerce…</string>
+    <string name="login_refresh_app">uppdatera appen</string>
+    <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-pluginet på din webbplats och därefter %2$s</string>
+    <string name="orderdetail_empty_shipping_address">Ingen adress angiven.</string>
     <string name="login_need_help_finding_connected_email">Behöver du hjälp med att hitta e-postadressen som du använde för att ansluta?</string>
     <string name="enter_wordpress_site">Webbplatsen på den här adressen är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>
     <string name="enter_email_for_site">Logga in på WordPress.com för att ansluta till %1$s</string>
@@ -294,7 +308,6 @@ Language: sv_SE
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="notification_wpcom_username_needed">Logga in med ditt användarnamn och lösenord.</string>
     <string name="error_user_username_instead_of_email">Logga in med ditt WordPress.com användarnamn istället för din e-postadress.</string>
-    <string name="login_invalid_site_url">Den webbplatsadress som du har angett är ogiltig. Ange igen.</string>
     <string name="no_site_error">Webbplatsen på denna adress är inte en WordPress-webbplats. För att vi ska kunna ansluta till den måste webbplatsen använda WordPress.</string>
     <string name="support_help_center">Hjälpcenter</string>
     <string name="product_name_virtual">Virtuell %s</string>
@@ -370,7 +383,6 @@ Language: sv_SE
     <string name="app_rating_message">Vad kul att se dig igen! Om du gillar appen så vore det snällt om du kunde betygsätta den på Google Play Store.</string>
     <string name="app_rating_title">Gillar du Woo?</string>
     <string name="settings_selected_store">Vald butik</string>
-    <string name="notifs_empty_message">Inga meddelanden än!</string>
     <string name="orders_empty_message_with_search">Inga matchande ordrar</string>
     <string name="orders_empty_message_with_filter">Inga ordrar</string>
     <string name="waiting_for_customers_contentdesc">Väntar på kundbild</string>
@@ -513,7 +525,6 @@ Language: sv_SE
     <string name="login_empty_2fa">Skriv in en verifieringskod</string>
     <string name="login_empty_password">Skriv in ett lösenord</string>
     <string name="login_empty_username">Skriv in ett användarnamn</string>
-    <string name="login_empty_site_url">Skriv in en webbplatadress</string>
     <string name="login_log_in_for_share_intent">Logga in på WordPress.com för att dela innehållet.</string>
     <string name="login_log_in_for_deeplink">Logga in till ditt konto på WordPress.com för att nå inlägget.</string>
     <string name="login_error_while_adding_site">Ett fel inträffade när webbplatsen skulle läggas till. Felkod: %s</string>
@@ -567,7 +578,7 @@ Language: sv_SE
     <string name="settings_third_party_policy_header">Policyer från tredje part</string>
     <string name="settings_cookie_policy_header">Cookie-policy</string>
     <string name="settings_privacy_policy_header">Integritetspolicy</string>
-    <string name="settings_footer">Skapad med kärlek av Automattic</string>
+    <string name="settings_footer">Skapad med kärlek av Automattic. %1$s</string>
     <string name="settings_tracking">Vi använder andra spårningsverktyg, inklusive några från tredje part. Läs om dessa verktyg och hur du kontrollerar dem.</string>
     <string name="settings_privacy_policy">Läs integritetspolicyn</string>
     <string name="settings_privacy_detail">Denna information hjälper oss att förbättra våra produkter, se till att marknadsföringen till dig är mer relevant, anpassa din upplevelse av WooCommerce och annat som finns beskrivet i vår integritetspolicy.</string>
@@ -666,7 +677,6 @@ Language: sv_SE
     <string name="login_prologue_banner">Hantera ordrar, spåra försäljning och övervaka butiksaktivitet med varningar i realtid.</string>
     <string name="login_jetpack_required">Denna app kräver Jetpack för att ansluta till din butik.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Ange adressen till den WooCommerce-butik som du vill ansluta.</string>
     <string name="already_logged_in_wpcom">Du är redan inloggad till ditt konto hos WordPress.com. Du kan inte lägga till någon webbplats från WordPress.com som är kopplad till ett annat konto.</string>
     <string name="cant_open_url">Kan inte öppna länken</string>
     <string name="error_no_sms_app">Ingen SMS-app hittades</string>
@@ -680,7 +690,6 @@ Language: sv_SE
     <string name="date_timeframe_older_two_days">Äldre än 2 dagar</string>
     <string name="date_timeframe_yesterday">Igår</string>
     <string name="date_timeframe_today">Idag</string>
-    <string name="notifications">Aviseringar</string>
     <string name="products">Produkter</string>
     <string name="discard">Kasta bort</string>
     <string name="this_year">Detta år</string>

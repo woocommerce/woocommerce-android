@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-27 10:54:07+0000
+Translation-Revision-Date: 2019-08-07 00:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="login_invalid_site_url">Lütfen example.com gibi eksiksiz bir web sitesi adresi girin.</string>
+    <string name="reviews_empty_message">Henüz inceleme yok!</string>
+    <string name="review_notifications">İncelemeler</string>
+    <string name="update_failed">Woo güncellemesi başarısız oldu</string>
+    <string name="update_downloaded">Woo bir güncelleme indirdi</string>
+    <string name="install">Yükle</string>
+    <string name="error_disabled_apis">Ayarlar getirilemedi: Bu OAuth uygulama kimliği ve hesap birleşimi için bazı API\'ler kullanılamıyor.</string>
+    <string name="settings_hiring">Yeni çalışma arkadaşları arıyoruz!</string>
+    <string name="feature_requests">Özellik isteği</string>
+    <string name="orderdetail_copy_tracking_number">Takip numarasını kopyala</string>
+    <string name="login_refresh_app_progress">WooCommerce kontrol ediliyor…</string>
+    <string name="login_refresh_app">uygulamayı yenile</string>
+    <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Sitenize WooCommerce eklentisini yükleyin ve daha sonra %2$s</string>
+    <string name="orderdetail_empty_shipping_address">Adres belirtilmedi.</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
     <string name="enter_email_for_site">%1$s ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
@@ -294,7 +308,6 @@ Language: tr
     <string name="keep_editing">Düzenlemeye devam et</string>
     <string name="notification_wpcom_username_needed">Lütfen kullanıcı adınız ve şifrenizle oturum açın.</string>
     <string name="error_user_username_instead_of_email">E-posta adresiniz yerine lütfen WordPress.com kullanıcı adınızla oturum açın.</string>
-    <string name="login_invalid_site_url">Girdiğiniz site adresi geçersiz. Lütfen tekrar girin.</string>
     <string name="no_site_error">Bu adresteki site bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress kullanılmalıdır.</string>
     <string name="support_help_center">Yardım Merkezi</string>
     <string name="product_name_virtual">Sanal %s</string>
@@ -370,7 +383,6 @@ Language: tr
     <string name="app_rating_message">Sizi yeniden görmek çok güzel! Uygulamayı kullanıyorsanız lütfen Google Play Store üzerinden bizi değerlendirin.</string>
     <string name="app_rating_title">Woo kullanmaktan keyif aldınız mı?</string>
     <string name="settings_selected_store">Seçili mağaza</string>
-    <string name="notifs_empty_message">Henüz bildirim yok!</string>
     <string name="orders_empty_message_with_search">Eşleşen sipariş yok</string>
     <string name="orders_empty_message_with_filter">Sipariş yok</string>
     <string name="waiting_for_customers_contentdesc">Müşteri görseli bekleniyor</string>
@@ -513,7 +525,6 @@ Language: tr
     <string name="login_empty_2fa">Lütfen bir doğrulama kodu girin</string>
     <string name="login_empty_password">Lütfen bir parola girin</string>
     <string name="login_empty_username">Lütfen bir kullanıcı adı girin</string>
-    <string name="login_empty_site_url">Lütfen bir site adresi girin</string>
     <string name="login_log_in_for_share_intent">İçeriği paylaşmak için WordPress.com\'a giriş yapın.</string>
     <string name="login_log_in_for_deeplink">Bu yazıya erişmek için WordPress.com hesabınıza giriş yapın.</string>
     <string name="login_error_while_adding_site">Site eklenirken hata oluştu. Hata kodu: %s</string>
@@ -567,7 +578,7 @@ Language: tr
     <string name="settings_third_party_policy_header">Üçüncü Taraf Politikası</string>
     <string name="settings_cookie_policy_header">Tanımlama Bilgisi Politikası</string>
     <string name="settings_privacy_policy_header">Gizlilik Politikası</string>
-    <string name="settings_footer">Automattic tarafından sevgiyle yapıldı</string>
+    <string name="settings_footer">Automattic tarafından sevgiyle yapıldı. %1$s</string>
     <string name="settings_tracking">Üçüncü taraflara ait olanlar dahil diğer izleme araçlarını kullanıyoruz. Bunlar ve nasıl kontrol edilecekleri hakkında bilgi alın.</string>
     <string name="settings_privacy_policy">Gizlilik politikasını okuyun</string>
     <string name="settings_privacy_detail">Bu bilgi ürünlerimizi iyileştirmemize, size daha uygun pazarlama yapmamıza, WooCommerce deneyiminizi kişiselleştirmemize ve gizlilik politikamızda belirtildiği gibi daha fazlasına yardımcı olur.</string>
@@ -666,7 +677,6 @@ Language: tr
     <string name="login_prologue_banner">Siparişleri yönetin, satışları takip edin, gerçek zamanlı uyarılarla mağaza etkinliğini izleyin.</string>
     <string name="login_jetpack_required">Bu uygulama Jetpack\'in mağazanıza bağlanmasını gerektiriyor.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Bağlanmasını istediğiniz WooCommerce mağazasının adresini girin.</string>
     <string name="already_logged_in_wpcom">Zaten WordPress.com hesabınıza giriş yapmış durumdasınız, başka bir hesapla ilişkişi WordPress.com hesabını ekleyemezsiniz.</string>
     <string name="cant_open_url">Bağlantı açılamıyor</string>
     <string name="error_no_sms_app">SMS uygulaması bulunmadı</string>
@@ -680,7 +690,6 @@ Language: tr
     <string name="date_timeframe_older_two_days">2 günden eski</string>
     <string name="date_timeframe_yesterday">Dün</string>
     <string name="date_timeframe_today">Bugün</string>
-    <string name="notifications">Bildirimler</string>
     <string name="products">Ürünler</string>
     <string name="discard">Vazgeç</string>
     <string name="this_year">Bu Yıl</string>

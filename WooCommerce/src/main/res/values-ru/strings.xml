@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 09:54:06+0000
+Translation-Revision-Date: 2019-08-07 00:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="login_invalid_site_url">Введите адрес сайта полностью, например example.com.</string>
+    <string name="reviews_empty_message">Нет обзоров!</string>
+    <string name="review_notifications">Обзоры</string>
+    <string name="update_failed">Сбой обновления Woo</string>
+    <string name="update_downloaded">Загружено обновление Woo</string>
+    <string name="install">Установить</string>
+    <string name="error_disabled_apis">Не удалось получить параметры: некоторые API недоступны для этой пары идентификатора приложения OAuth и учетной записи.</string>
+    <string name="settings_hiring">Есть вакансии!</string>
+    <string name="feature_requests">Запрос на добавление функции</string>
+    <string name="orderdetail_copy_tracking_number">Копировать номер отслеживания</string>
+    <string name="login_refresh_app_progress">Поиск WooCommerce…</string>
+    <string name="login_refresh_app">обновите приложение</string>
+    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт, а затем %2$s.</string>
+    <string name="orderdetail_empty_shipping_address">Адрес не указан.</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
     <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключить %1$s</string>
@@ -294,7 +308,6 @@ Language: ru
     <string name="keep_editing">Продолжить редактирование</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
     <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>
-    <string name="login_invalid_site_url">The site address you entered is invalid. Please re-enter it.</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="support_help_center">Help Center</string>
     <string name="product_name_virtual">Virtual %s</string>
@@ -370,7 +383,6 @@ Language: ru
     <string name="app_rating_message">С возвращением! Если вы уже успели составить мнение о приложении, будем рады, если вы поставите ему оценку в магазине Google Play.</string>
     <string name="app_rating_title">Нравится Woo?</string>
     <string name="settings_selected_store">Выбранный магазин</string>
-    <string name="notifs_empty_message">Новых уведомлений пока нет!</string>
     <string name="orders_empty_message_with_search">Нет похожих заказов</string>
     <string name="orders_empty_message_with_filter">Заказов нет</string>
     <string name="waiting_for_customers_contentdesc">Ожидание изображения от клиента</string>
@@ -513,7 +525,6 @@ Language: ru
     <string name="login_empty_2fa">Введите проверочный код.</string>
     <string name="login_empty_password">Пожалуйста, введите пароль</string>
     <string name="login_empty_username">Введите имя пользователя</string>
-    <string name="login_empty_site_url">Введите адрес сайта.</string>
     <string name="login_log_in_for_share_intent">Войдите в WordPress.com чтобы поделиться содержимым.</string>
     <string name="login_log_in_for_deeplink">Чтобы получить доступ к записи, войдите на WordPress.com.</string>
     <string name="login_error_while_adding_site">При добавлении сайта произошла ошибка. Код ошибки: %s</string>
@@ -567,7 +578,7 @@ Language: ru
     <string name="settings_third_party_policy_header">Политика сторонней организации</string>
     <string name="settings_cookie_policy_header">Политика использования файлов cookie</string>
     <string name="settings_privacy_policy_header">Политика конфиденциальности</string>
-    <string name="settings_footer">Сделано с любовью компанией Automattic</string>
+    <string name="settings_footer">Сделано с любовью компанией Automattic. %1$s</string>
     <string name="settings_tracking">Мы используем и другие средства сбора информации, в том числе средства сторонних разработчиков. Ознакомьтесь с этими средствами и способами управления ими.</string>
     <string name="settings_privacy_policy">Ознакомьтесь с политикой конфиденциальности</string>
     <string name="settings_privacy_detail">Эти сведения помогают нам улучшать продукты, предлагать более полезную рекламу, настраивать WooCommerce согласно вашим предпочтениям и решать другие задачи. Дополнительную информацию см. в политике конфиденциальности</string>
@@ -666,7 +677,6 @@ Language: ru
     <string name="login_prologue_banner">Управляйте заказами, следите за продажами и контролируйте работу магазина с помощью уведомлений в реальном времени.</string>
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>
     <string name="already_logged_in_wpcom">Вы уже вошли в учетную запись WordPress.com. Вы не можете добавить сайт WordPress.com, привязанный к другой учетной записи.</string>
     <string name="cant_open_url">Не удаётся открыть ссылку</string>
     <string name="error_no_sms_app">Не найдено приложение для отправки SMS</string>
@@ -680,7 +690,6 @@ Language: ru
     <string name="date_timeframe_older_two_days">Больше двух дней назад</string>
     <string name="date_timeframe_yesterday">Вчера</string>
     <string name="date_timeframe_today">Сегодня</string>
-    <string name="notifications">Уведомления</string>
     <string name="products">Товары</string>
     <string name="discard">Отменить</string>
     <string name="this_year">В этом году</string>

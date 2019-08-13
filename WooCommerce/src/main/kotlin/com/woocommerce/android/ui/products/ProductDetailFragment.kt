@@ -15,7 +15,9 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.navigation.fragment.navArgs
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -28,7 +30,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
@@ -38,13 +41,15 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_detail.*
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
+import kotlin.math.max
+import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 
-class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailContract.View, RequestListener<Drawable> {
+class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -52,27 +57,22 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         PurchaseDetails
     }
 
-    @Inject lateinit var presenter: ProductDetailContract.Presenter
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var networkStatus: NetworkStatus
+
+    private lateinit var viewModel: ProductDetailViewModel
 
     private var productTitle = ""
-    private var activityTitle = ""
     private var productImageUrl: String? = null
     private var isVariation = false
     private var imageHeight = 0
     private val skeletonView = SkeletonView()
 
-    val navArgs: ProductDetailFragmentArgs by navArgs()
+    private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        activity?.let {
-            activityTitle = it.title.toString()
-        }
-
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
@@ -82,16 +82,50 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
     }
 
     override fun onDestroyView() {
-        activity?.let {
-            it.title = activityTitle
-        }
-        presenter.dropView()
+        // hide the skeleton view if fragment is destroyed
+        skeletonView.hide()
         super.onDestroyView()
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initializeViewModel()
+    }
+
+    private fun initializeViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductDetailViewModel::class.java).also {
+            setupObservers(it)
+        }
+
+        viewModel.start(navArgs.remoteProductId)
+    }
+
+    private fun setupObservers(viewModel: ProductDetailViewModel) {
+        viewModel.isSkeletonShown.observe(this, Observer {
+            showSkeleton(it)
+        })
+
+        viewModel.productData.observe(this, Observer {
+            showProduct(it)
+        })
+
+        viewModel.shareProduct.observe(this, Observer {
+            shareProduct(it)
+        })
+
+        viewModel.showSnackbarMessage.observe(this, Observer {
+            uiMessageResolver.showSnack(it)
+        })
+
+        viewModel.exit.observe(this, Observer {
+            activity?.onBackPressed()
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -105,9 +139,6 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
 
         // set the height of the gradient scrim that appears atop the image
         imageScrim.layoutParams.height = imageHeight / 3
-
-        presenter.takeView(this)
-        presenter.loadProductDetail(navArgs.remoteProductId)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -119,19 +150,14 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         return when {
             item?.itemId == R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
-                shareProduct()
+                viewModel.onShareButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    override fun showFetchProductError() {
-        uiMessageResolver.showSnack(R.string.product_detail_fetch_product_error)
-        activity?.onBackPressed()
-    }
-
-    override fun showSkeleton(show: Boolean) {
+    private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(productDetail_root, R.layout.skeleton_product_detail, delayed = true)
             skeletonView.findViewById(R.id.productImage_Skeleton)?.layoutParams?.height = imageHeight
@@ -140,15 +166,18 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         }
     }
 
-    override fun showProduct(product: WCProductModel) {
+    override fun getFragmentTitle() = productTitle
+
+    private fun showProduct(productData: ProductWithParameters) {
         if (!isAdded) return
 
-        productTitle = when (ProductType.fromString(product.type)) {
+        val product = productData.product
+        productTitle = when (product.type) {
             EXTERNAL -> getString(R.string.product_name_external, product.name)
             GROUPED -> getString(R.string.product_name_grouped, product.name)
             VARIABLE -> getString(R.string.product_name_variable, product.name)
             else -> {
-                if (product.virtual) {
+                if (product.isVirtual) {
                     getString(R.string.product_name_virtual, product.name)
                 } else {
                     product.name
@@ -156,15 +185,15 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
             }
         }
 
-        activity?.title = productTitle
+        updateActivityTitle()
 
-        isVariation = ProductType.fromString(product.type) == ProductType.VARIATION
+        isVariation = product.type == ProductType.VARIATION
 
-        val imageUrl = product.getFirstImageUrl()
+        val imageUrl = product.firstImageUrl
         if (imageUrl != null) {
             val width = DisplayUtils.getDisplayPixelWidth(activity!!)
             val height = DisplayUtils.getDisplayPixelHeight(activity!!)
-            val imageSize = Math.max(width, height)
+            val imageSize = max(width, height)
             productImageUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, 0)
             GlideApp.with(activity!!)
                     .load(productImageUrl)
@@ -179,19 +208,21 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         }
 
         // show status badge for unpublished products
-        ProductStatus.fromString(product.status)?.let { status ->
+        product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
                 frameStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toString(activity!!)
             }
         }
 
-        addPrimaryCard(product)
-        addPricingAndInventoryCard(product)
-        addPurchaseDetailsCard(product)
+        addPrimaryCard(productData)
+        addPricingAndInventoryCard(productData)
+        addPurchaseDetailsCard(productData)
     }
 
-    private fun addPrimaryCard(product: WCProductModel) {
+    private fun addPrimaryCard(productData: ProductWithParameters) {
+        val product = productData.product
+
         addPropertyView(DetailCard.Primary, R.string.product_name, productTitle, LinearLayout.VERTICAL)
 
         // we don't show total sales for variations because they're always zero
@@ -226,26 +257,26 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         )
     }
 
-    private fun addPricingAndInventoryCard(product: WCProductModel) {
+    private fun addPricingAndInventoryCard(productData: ProductWithParameters) {
+        val product = productData.product
+
         // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.price.isNotEmpty() ||
-                product.salePrice.isNotEmpty() ||
-                product.taxClass.isNotEmpty()
+        val hasPricingInfo = product.price != null || product.salePrice != null || product.taxClass.isNotEmpty()
         val pricingCard = if (hasPricingInfo) DetailCard.PricingAndInventory else DetailCard.Inventory
 
         if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
-            if (product.salePrice.isNotEmpty()) {
+            if (product.salePrice != null) {
                 val group = mapOf(
-                        Pair(getString(R.string.product_regular_price), presenter.formatCurrency(product.regularPrice)),
-                        Pair(getString(R.string.product_sale_price), presenter.formatCurrency(product.salePrice))
+                        Pair(getString(R.string.product_regular_price), productData.regularPriceWithCurrency),
+                        Pair(getString(R.string.product_sale_price), productData.salePriceWithCurrency)
                 )
                 addPropertyGroup(pricingCard, R.string.product_price, group)
             } else {
                 addPropertyView(
                         pricingCard,
                         R.string.product_price,
-                        presenter.formatCurrency(product.price),
+                        productData.priceWithCurrency,
                         LinearLayout.VERTICAL
                 )
             }
@@ -255,7 +286,7 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         if (product.manageStock) {
             val group = mapOf(
                     Pair(getString(R.string.product_stock_status), stockStatusToDisplayString(product.stockStatus)),
-                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorders)),
+                    Pair(getString(R.string.product_backorders), backordersToDisplayString(product.backorderStatus)),
                     Pair(getString(R.string.product_stock_quantity), StringUtils.formatCount(product.stockQuantity)),
                     Pair(getString(R.string.product_sku), product.sku)
             )
@@ -265,32 +296,17 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         }
     }
 
-    private fun addPurchaseDetailsCard(product: WCProductModel) {
-        val hasLength = product.length.isNotEmpty()
-        val hasWidth = product.width.isNotEmpty()
-        val hasHeight = product.height.isNotEmpty()
-
-        val dimensionUnit = presenter.getDimensionUnit()
-        val propertySize = if (hasLength && hasWidth && hasHeight) {
-            "${product.length} x ${product.width} x ${product.height} $dimensionUnit"
-        } else if (hasWidth && hasHeight) {
-            "${product.width} x ${product.height} $dimensionUnit"
-        } else {
-            ""
-        }
-
-        val weightUnit = presenter.getWeightUnit()
-        val weight = if (product.weight.isNotEmpty()) "${product.weight}$weightUnit" else ""
+    private fun addPurchaseDetailsCard(productData: ProductWithParameters) {
+        val product = productData.product
 
         val shippingGroup = mapOf(
-                Pair(getString(R.string.product_weight), weight),
-                Pair(getString(R.string.product_size), propertySize),
+                Pair(getString(R.string.product_weight), productData.weightWithUnits),
+                Pair(getString(R.string.product_size), productData.sizeWithUnits),
                 Pair(getString(R.string.product_shipping_class), product.shippingClass)
         )
         addPropertyGroup(DetailCard.PurchaseDetails, R.string.product_shipping, shippingGroup)
 
-        if (product.downloadable) {
-            val count = product.getDownloadableFiles().size.toString()
+        if (product.isDownloadable) {
             val limit = if (product.downloadLimit > 0) String.format(
                     getString(R.string.product_download_limit_count),
                     product.downloadLimit
@@ -301,7 +317,7 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
             ) else ""
 
             val downloadGroup = mapOf(
-                    Pair(getString(R.string.product_downloadable_files), count),
+                    Pair(getString(R.string.product_downloadable_files), product.fileCount.toString()),
                     Pair(getString(R.string.product_download_limit), limit),
                     Pair(getString(R.string.product_download_expiry), expiry)
             )
@@ -476,42 +492,34 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         productDetail_container.addView(divider)
     }
 
-    private fun shareProduct() {
-        presenter.getProduct(navArgs.remoteProductId)?.let { product ->
-            val shareIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_SUBJECT, product.name)
-                putExtra(Intent.EXTRA_TEXT, product.permalink)
-                type = "text/plain"
-            }
-            val title = resources.getText(R.string.product_share_dialog_title)
-            startActivity(Intent.createChooser(shareIntent, title))
+    private fun shareProduct(product: Product) {
+        val shareIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_SUBJECT, product.name)
+            putExtra(Intent.EXTRA_TEXT, product.permalink)
+            type = "text/plain"
         }
+        val title = resources.getText(R.string.product_share_dialog_title)
+        startActivity(Intent.createChooser(shareIntent, title))
     }
 
     /**
      * returns the product's stock status formatted for display
      */
-    private fun stockStatusToDisplayString(stockStatus: String?): String {
-        return stockStatus?.let {
-            when (it) {
-                "instock" -> getString(R.string.product_stock_status_instock)
-                "outofstock" -> getString(R.string.product_stock_status_out_of_stock)
-                "onbackorder" -> getString(R.string.product_stock_status_on_backorder)
-                else -> stockStatus
-            }
-        } ?: ""
+    private fun stockStatusToDisplayString(status: ProductStockStatus): String {
+        return if (status.stringResource != 0) {
+            getString(status.stringResource)
+        } else {
+            status.value
+        }
     }
 
-    private fun backordersToDisplayString(backorders: String?): String {
-        return backorders?.let {
-            when (it) {
-                "no" -> getString(R.string.product_backorders_no)
-                "yes" -> getString(R.string.product_backorders_yes)
-                "notify" -> getString(R.string.product_backorders_notify)
-                else -> backorders
-            }
-        } ?: ""
+    private fun backordersToDisplayString(status: ProductBackorderStatus): String {
+        return if (status.stringResource != 0) {
+            getString(status.stringResource)
+        } else {
+            status.value
+        }
     }
 
     /**
@@ -537,14 +545,18 @@ class ProductDetailFragment : androidx.fragment.app.Fragment(), ProductDetailCon
         isFirstResource: Boolean
     ): Boolean {
         productImageUrl?.let { imageUrl ->
-            productDetail_image.setOnClickListener {
-                AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                ImageViewerActivity.show(
-                        activity!!,
-                        imageUrl,
-                        title = productTitle,
-                        sharedElement = productDetail_image
-                )
+            // this is added to avoid nullPointerException when user clicks the back button exactly when this method
+            // is called. In that case, the productDetail_image will be null.
+            productDetail_image?.let { imageView ->
+                imageView.setOnClickListener {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+                    ImageViewerActivity.show(
+                            activity!!,
+                            imageUrl,
+                            title = productTitle,
+                            sharedElement = imageView
+                    )
+                }
             }
         }
         return false

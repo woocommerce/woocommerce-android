@@ -10,17 +10,12 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.extensions.WooNotificationType.UNKNOWN
-import com.woocommerce.android.extensions.getCommentId
-import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
@@ -30,11 +25,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.notifications.NotifsListAdapter.ItemType
-import com.woocommerce.android.ui.notifications.NotifsListAdapter.NotifsListItemDecoration
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.widgets.UnreadItemDecoration
+import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter.Companion.INVALID_POSITION
 import dagger.android.support.AndroidSupportInjection
@@ -50,7 +45,7 @@ import javax.inject.Inject
 class NotifsListFragment : TopLevelFragment(),
         NotifsListContract.View,
         NotifsListAdapter.ReviewListListener,
-        NotifsListAdapter.ItemDecorationListener {
+        ItemDecorationListener {
     companion object {
         val TAG: String = NotifsListFragment::class.java.simpleName
         const val KEY_LIST_STATE = "list-state"
@@ -97,7 +92,7 @@ class NotifsListFragment : TopLevelFragment(),
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -140,8 +135,7 @@ class NotifsListFragment : TopLevelFragment(),
 
         notifsAdapter.setListListener(this)
 
-        val unreadDecoration = NotifsListItemDecoration(activity as Context)
-        unreadDecoration.setListener(this)
+        val unreadDecoration = UnreadItemDecoration(activity as Context, this)
 
         notifsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
@@ -216,8 +210,8 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun onReturnedFromChildFragment() {
-        // If this fragment is now visible and we've deferred loading orders due to it not
-        // being visible - go ahead and load the orders.
+        // If this fragment is now visible and we've deferred loading notifs due to it not
+        // being visible - go ahead and load them
         presenter.loadNotifs(forceRefresh = this.isRefreshPending)
         showOptionsMenu(true)
         updateMarkAllReadMenuItem()
@@ -255,7 +249,7 @@ class NotifsListFragment : TopLevelFragment(),
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.notifications)
+    override fun getFragmentTitle() = getString(R.string.review_notifications)
 
     override fun refreshFragmentState() {
         isRefreshPending = true
@@ -278,22 +272,7 @@ class NotifsListFragment : TopLevelFragment(),
                     openReviewDetail(notification)
                 }
             }
-            NEW_ORDER -> {
-                notification.getRemoteOrderId()?.let {
-                    AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
-                            AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
-                            AnalyticsTracker.KEY_ALREADY_READ to notification.read))
-                    showOptionsMenu(false)
-                    (activity as? MainNavigationRouter)?.showOrderDetail(
-                            selectedSite.get().id,
-                            it,
-                            notification.remoteNoteId
-                    )
-                } ?: WooLog.e(NOTIFICATIONS, "New order notification is missing the order id!").also {
-                    showLoadNotificationDetailError()
-                }
-            }
-            UNKNOWN -> {
+            else -> {
                 WooLog.e(NOTIFICATIONS, "Unknown notification type!")
                 showLoadNotificationDetailError()
             }
@@ -310,13 +289,8 @@ class NotifsListFragment : TopLevelFragment(),
         // If the notification is pending moderation, override the status to display in the detail view.
         val isPendingModeration = pendingModerationRemoteNoteId?.let { it == notification.remoteNoteId } ?: false
         val tempStatus = if (isPendingModeration) pendingModerationNewStatus else null
-        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-                notification.remoteNoteId,
-                notification.getCommentId(),
-                tempStatus
-        )
         showOptionsMenu(false)
-        findNavController().navigate(action)
+        (activity as? MainNavigationRouter)?.showReviewDetail(notification, tempStatus)
     }
 
     override fun scrollToTop() {
@@ -354,7 +328,7 @@ class NotifsListFragment : TopLevelFragment(),
             val actionListener = View.OnClickListener {
                 AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
 
-                // User canceled the action to change the order status
+                // User canceled the action to change the status
                 changeCommentStatusCanceled = true
 
                 // Add the notification back to the list
@@ -400,7 +374,7 @@ class NotifsListFragment : TopLevelFragment(),
      */
     override fun visuallyMarkNotificationsAsRead() {
         // Remove all active notifications from the system bar
-        context?.let { NotificationHandler.removeAllNotificationsFromSystemBar(it) }
+        context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
 
         notifsAdapter.markAllNotifsAsRead()
     }
@@ -414,7 +388,7 @@ class NotifsListFragment : TopLevelFragment(),
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.notifs_empty_message) else empty_view.hide()
+        if (show) empty_view.show(R.string.reviews_empty_message) else empty_view.hide()
     }
     /**
      * Only show the "mark all read" menu item when this fragment is active and there are unread notifs
@@ -453,7 +427,7 @@ class NotifsListFragment : TopLevelFragment(),
     /**
      * Determines whether to show the unread indicator item decoration for the passed position
      */
-    override fun getItemTypeAtPosition(position: Int): ItemType {
+    override fun getItemTypeAtPosition(position: Int): UnreadItemDecoration.ItemType {
         return notifsAdapter.getItemTypeAtRecyclerPosition(position)
     }
 }

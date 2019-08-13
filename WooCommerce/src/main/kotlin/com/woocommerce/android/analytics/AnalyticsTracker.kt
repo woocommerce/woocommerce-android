@@ -2,7 +2,7 @@ package com.woocommerce.android.analytics
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.TracksClient
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
@@ -21,6 +21,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         APPLICATION_CLOSED(siteless = true),
         APPLICATION_INSTALLED(siteless = true),
         APPLICATION_UPGRADED(siteless = true),
+        APPLICATION_VERSION_CHECK_FAILED(siteless = true),
         BACK_PRESSED(siteless = true),
         VIEW_SHOWN(siteless = true),
 
@@ -110,7 +111,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         DASHBOARD_MAIN_STATS_LOADED,
         DASHBOARD_TOP_PERFORMERS_DATE,
         DASHBOARD_TOP_PERFORMERS_LOADED,
-        DASHBOARD_UNFULFILLED_ORDERS_LOADED,
 
         // -- Orders List
         ORDERS_LIST_FILTER,
@@ -133,6 +133,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_STATUS_CHANGE_FAILED,
         ORDER_STATUS_CHANGE_SUCCESS,
         ORDER_STATUS_CHANGE_UNDO,
+        ORDER_DETAIL_PULLED_TO_REFRESH,
         ORDER_DETAIL_ADD_NOTE_BUTTON_TAPPED,
         ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED,
         ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED,
@@ -195,6 +196,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED,
         SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED,
         SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED,
+        SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED,
         PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
         PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
         PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
@@ -245,6 +247,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
 
         // -- Other
+        UNFULFILLED_ORDERS_LOADED,
         TOP_EARNER_PRODUCT_TAPPED
     }
     // endregion
@@ -395,6 +398,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOURCE = "source"
         const val KEY_URL = "url"
         const val KEY_HAS_CONNECTED_STORES = "has_connected_stores"
+        const val KEY_LAST_KNOWN_VERSION_CODE = "last_known_version_code"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
@@ -452,7 +456,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The view to be tracked
          */
         fun trackViewShown(view: Any) {
-            AnalyticsTracker.track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
+            track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
         }
 
         /**
@@ -460,7 +464,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The active view when event was fired
          */
         fun trackBackPressed(view: Any) {
-            AnalyticsTracker.track(BACK_PRESSED, mapOf(KEY_CONTEXT to view::class.java.simpleName))
+            track(BACK_PRESSED, mapOf(KEY_CONTEXT to view::class.java.simpleName))
         }
 
         fun flush() {

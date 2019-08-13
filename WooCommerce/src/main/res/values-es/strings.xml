@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 10:54:06+0000
+Translation-Revision-Date: 2019-08-10 00:54:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="login_invalid_site_url">Introduce una dirección de sitio web completa, como ejemplo.com.</string>
+    <string name="reviews_empty_message">Aún no has recibido ninguna reseña</string>
+    <string name="review_notifications">Reseñas</string>
+    <string name="update_failed">No se ha podido actualizar Woo</string>
+    <string name="update_downloaded">Se ha descargado una actualización de Woo</string>
+    <string name="install">Instalar</string>
+    <string name="error_disabled_apis">No se ha podido recuperar la configuración: Algunas APIs no están disponibles para la cuenta e ID de esta aplicación OAuth.</string>
+    <string name="settings_hiring">¡Buscamos personal!</string>
+    <string name="feature_requests">Solicitud de función</string>
+    <string name="orderdetail_copy_tracking_number">Copiar número de seguimiento</string>
+    <string name="login_refresh_app_progress">Comprobando eCommerce…</string>
+    <string name="login_refresh_app">actualizar la aplicación</string>
+    <string name="login_not_woo_store">Parece que %1$s no es un sitio de WooCommerce. Instala el plugin de WooCommerce en tu sitio y luego %2$s</string>
+    <string name="orderdetail_empty_shipping_address">No se ha indicado ninguna dirección.</string>
     <string name="login_need_help_finding_connected_email">¿Necesitas ayuda para saber la dirección de correo electrónico con la que te conectaste?</string>
     <string name="enter_wordpress_site">Esta dirección no pertenece a un sitio de WordPress. El sitio debe tener instalado WordPress para que podamos conectarnos a él.</string>
     <string name="enter_email_for_site">Accede con WordPress.com para conectarte a %1$s</string>
@@ -294,7 +308,6 @@ Language: es
     <string name="keep_editing">Seguir editando</string>
     <string name="notification_wpcom_username_needed">Accede con tu nombre de usuario y tu contraseña.</string>
     <string name="error_user_username_instead_of_email">Accede con tu nombre de usuario de WordPress.com en lugar de hacerlo con tu dirección de correo electrónico.</string>
-    <string name="login_invalid_site_url">La dirección del sitio que has introducido no es válida. Vuelve a introducirla.</string>
     <string name="no_site_error">Esta dirección no pertenece a un sitio de WordPress. El sitio debe usar WordPress para que podamos conectarnos a él.</string>
     <string name="support_help_center">Centro de ayuda</string>
     <string name="product_name_virtual">%s virtual</string>
@@ -370,7 +383,6 @@ Language: es
     <string name="app_rating_message">¡Nos alegramos de volver a verte! Si estás explorando la aplicación, nos encantaría que la valoraras en Google Play Store.</string>
     <string name="app_rating_title">¿Te gusta Woo?</string>
     <string name="settings_selected_store">Tienda elegida</string>
-    <string name="notifs_empty_message">Aún no hay notificaciones</string>
     <string name="orders_empty_message_with_search">Ningún pedido coincide con tu búsqueda</string>
     <string name="orders_empty_message_with_filter">No hay ningún pedido</string>
     <string name="waiting_for_customers_contentdesc">Esperando imagen de los clientes</string>
@@ -513,7 +525,6 @@ Language: es
     <string name="login_empty_2fa">Por favor, introduce un código de verificación</string>
     <string name="login_empty_password">Por favor, introduce una contraseña</string>
     <string name="login_empty_username">Por favor, introduce un nombre de usuario</string>
-    <string name="login_empty_site_url">Por favor, introduce una dirección del sitio</string>
     <string name="login_log_in_for_share_intent">Accede a WordPress.com para compartir el contenido.</string>
     <string name="login_log_in_for_deeplink">Accede a WordPress.com para acceder a la entrada.</string>
     <string name="login_error_while_adding_site">Error al añadir el sitio. Código de error: %s</string>
@@ -567,7 +578,7 @@ Language: es
     <string name="settings_third_party_policy_header">Política de terceros</string>
     <string name="settings_cookie_policy_header">Política de cookies</string>
     <string name="settings_privacy_policy_header">Política de privacidad</string>
-    <string name="settings_footer">Con mucho cariño, por la gente de Automattic</string>
+    <string name="settings_footer">Con mucho cariño, por la gente de Automattic. %1$s</string>
     <string name="settings_tracking">Utilizamos otras herramientas de seguimiento, algunas de terceros. Obtén información sobre ellas y cómo controlarlas.</string>
     <string name="settings_privacy_policy">Lee la política de privacidad</string>
     <string name="settings_privacy_detail">Esta información nos ayuda a mejorar nuestros productos, adaptar el marketing que recibes, personalizar tu experiencia de WooCommerce y mucho más, tal como se detalla en nuestra política de privacidad.</string>
@@ -666,7 +677,6 @@ Language: es
     <string name="login_prologue_banner">Gestiona pedidos, controla las ventas y supervisa la actividad de la tienda con alertas en tiempo real.</string>
     <string name="login_jetpack_required">Esta aplicación requiere que Jetpack esté conectado a tu tienda.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Introduce la dirección de la tienda WooCommerce con la que quieras configurar la conexión.</string>
     <string name="already_logged_in_wpcom">Ya estás registrado en una cuenta de WordPress.com, no se puede agregar un sitio de WordPress.com a otra cuenta.</string>
     <string name="cant_open_url">No fue posible abrir el enlace</string>
     <string name="error_no_sms_app">No se ha encontrado ninguna aplicación de SMS.</string>
@@ -680,7 +690,6 @@ Language: es
     <string name="date_timeframe_older_two_days">Con más de 2 días</string>
     <string name="date_timeframe_yesterday">Ayer</string>
     <string name="date_timeframe_today">Hoy</string>
-    <string name="notifications">Notificaciones</string>
     <string name="products">Productos</string>
     <string name="discard">Descartar</string>
     <string name="this_year">Este año</string>

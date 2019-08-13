@@ -30,6 +30,7 @@
             <!-- container for top level fragments -->
             <FrameLayout
                 android:id="@+id/container"
+                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
@@ -58,7 +59,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/bottomBar_bg"
-        app:elevation="4dp"
+        app:elevation="8dp"
         app:itemIconTint="@drawable/selector_bottom_navbar"
         app:itemTextColor="@drawable/selector_bottom_navbar"
         app:menu="@menu/menu_bottom_bar"

@@ -1,6 +1,6 @@
 {
   "branch": "master",
-  "pinned_hash": "ded7d2f405d3e4cc012f7e1d780c463bac39b2ee",
+  "pinned_hash": "2696c6c2cffc5647225e0e57e77e5695ec8381cc",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/gradle.properties",

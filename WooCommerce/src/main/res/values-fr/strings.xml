@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 15:54:06+0000
+Translation-Revision-Date: 2019-08-08 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_invalid_site_url">Veuillez entrer une adresse de site Web complète, telle que exemple.com.</string>
+    <string name="reviews_empty_message">Pas encore d’avis !</string>
+    <string name="review_notifications">Avis</string>
+    <string name="update_failed">La mise à jour de Woo a échoué</string>
+    <string name="update_downloaded">Woo a téléchargé une mise à jour</string>
+    <string name="install">Installer</string>
+    <string name="error_disabled_apis">Impossible d’extraire les réglages : certaines API sont indisponibles pour cette combinaison d’ID d’application OAuth + compte.</string>
+    <string name="settings_hiring">Nous recrutons !</string>
+    <string name="feature_requests">Demande de fonctionnalité</string>
+    <string name="orderdetail_copy_tracking_number">Copier le numéro de suivi</string>
+    <string name="login_refresh_app_progress">Vérification de WooCommerce…</string>
+    <string name="login_refresh_app">actualiser l’application</string>
+    <string name="login_not_woo_store">Il semblerait que %1$s ne soit pas un site WooCommerce. Installez l’extension WooCommerce sur votre site, puis %2$s</string>
+    <string name="orderdetail_empty_shipping_address">Aucune adresse spécifiée.</string>
     <string name="login_need_help_finding_connected_email">Besoin d\'aide pour trouver l\'adresse e-mail avec laquelle vous vous êtes connecté ?</string>
     <string name="enter_wordpress_site">Le site Web à cette adresse n\'est pas un site WordPress. WordPress doit être installé sur le site pour que nous puissions nous y connecter.</string>
     <string name="enter_email_for_site">Connectez-vous à WordPress.com pour accéder à %1$s</string>
@@ -294,7 +308,6 @@ Language: fr
     <string name="keep_editing">Continuer à écrire</string>
     <string name="notification_wpcom_username_needed">Veuillez vous connecter avec votre nom d\'utilisateur et votre mot de passe.</string>
     <string name="error_user_username_instead_of_email">Veuillez vous connecter avec votre nom d\'utilisateur WordPress.com plutôt que votre adresse e-mail.</string>
-    <string name="login_invalid_site_url">L\'adresse du site spécifiée est non valide. Veuillez la saisir à nouveau.</string>
     <string name="no_site_error">Le site à cette adresse n\'est pas un site WordPress. Le site doit utiliser WordPress pour que nous puissions nous y connecter.</string>
     <string name="support_help_center">Centre d\'aide</string>
     <string name="product_name_virtual">%s virtuel</string>
@@ -370,7 +383,6 @@ Language: fr
     <string name="app_rating_message">C\'est un plaisir de vous revoir ! Si vous explorez l\'application, nous serions ravis de recevoir une évaluation dans Google Play Store.</string>
     <string name="app_rating_title">Vous appréciez Woo ?</string>
     <string name="settings_selected_store">Boutique sélectionnée</string>
-    <string name="notifs_empty_message">Pas encore de notification !</string>
     <string name="orders_empty_message_with_search">Aucune commande correspondante</string>
     <string name="orders_empty_message_with_filter">Aucune commande</string>
     <string name="waiting_for_customers_contentdesc">En attente de l\'image des clients</string>
@@ -512,7 +524,6 @@ Language: fr
     <string name="login_empty_2fa">Veuillez saisir votre code de vérification</string>
     <string name="login_empty_password">Veuillez saisir un mot de passe</string>
     <string name="login_empty_username">Veuillez saisir un nom d’utilisateur</string>
-    <string name="login_empty_site_url">Veuillez saisir une adresse de site</string>
     <string name="login_log_in_for_share_intent">Connectez-vous sur WordPress.com pour partager ce contenu.</string>
     <string name="login_log_in_for_deeplink">Connectez-vous à WordPress.com pour accéder à l’article.</string>
     <string name="login_error_while_adding_site">Erreur lors de l’ajout du site. Code erreur : %s</string>
@@ -566,7 +577,7 @@ Language: fr
     <string name="settings_third_party_policy_header">Politique de tiers</string>
     <string name="settings_cookie_policy_header">Politique relative aux cookies</string>
     <string name="settings_privacy_policy_header">Politique de confidentialité</string>
-    <string name="settings_footer">Conçu avec amour par Automattic</string>
+    <string name="settings_footer">Conçu avec amour par Automattic. %1$s</string>
     <string name="settings_tracking">Nous utilisons d’autres outils de suivi, notamment des outils provenant de tiers. Découvrez-les et apprenez à les contrôler.</string>
     <string name="settings_privacy_policy">Lire la politique de confidentialité</string>
     <string name="settings_privacy_detail">Ces informations nous permettent d’améliorer nos produits, de mieux cibler nos campagnes marketing, de personnaliser votre expérience WooCommerce et plus encore, comme indiqué dans notre politique de confidentialité</string>
@@ -665,7 +676,6 @@ Language: fr
     <string name="login_prologue_banner">Gérez les commandes, suivez l’évolution des ventes et surveillez l’activité de la boutique avec des alertes en temps réel.</string>
     <string name="login_jetpack_required">Cette application nécessite de connecter Jetpack à votre boutique.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Entrez l’adresse de votre boutique WooCommerce que vous aimeriez connecter.</string>
     <string name="already_logged_in_wpcom">Vous êtes déjà connecté à votre compte WordPress.com. Vous ne pouvez pas ajouter un site WordPress.com lié à un autre compte.</string>
     <string name="cant_open_url">Impossible d\'ouvrir le lien</string>
     <string name="error_no_sms_app">Application SMS introuvable</string>
@@ -679,7 +689,6 @@ Language: fr
     <string name="date_timeframe_older_two_days">Il y a plus de 2 jours</string>
     <string name="date_timeframe_yesterday">Hier</string>
     <string name="date_timeframe_today">Aujourd’hui</string>
-    <string name="notifications">Notifications</string>
     <string name="products">Produits</string>
     <string name="discard">Rejeter</string>
     <string name="this_year">Cette année</string>

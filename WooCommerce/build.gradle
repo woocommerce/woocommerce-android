@@ -43,8 +43,8 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "2.1"
-        versionCode 62
+        versionName "2.5-rc-1"
+        versionCode 72
 
         minSdkVersion 21
         targetSdkVersion 28
@@ -110,6 +110,7 @@ dependencies {
     implementation "com.google.android.material:material:1.0.0"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.browser:browser:1.0.0"
+    implementation "androidx.preference:preference:1.0.0"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
@@ -153,15 +154,28 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
     implementation "org.greenrobot:eventbus:$eventBusVersion"
+    implementation "com.google.android.play:core:$googlePlayCoreVersion"
+
+    // For use with SqlScout, a Sqlite plugin for Android Studio
+    // https://plugins.jetbrains.com/plugin/8322-sqlscout-sqlite-support-
+    debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
+    releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
 
     // Debug dependencies
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-3'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
-    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation("androidx.arch.core:core-testing:$archComponentsVersion", {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+    })
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
@@ -169,7 +183,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
-    androidTestImplementation "com.nhaarman:mockito-kotlin-kt1.1:$mockitoKotlinVersion"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
 
@@ -180,6 +194,13 @@ dependencies {
     implementation(group: 'com.zendesk', name: 'support', version: '2.3.1') {
         exclude group: 'com.google.dagger'
     }
+
+    // ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

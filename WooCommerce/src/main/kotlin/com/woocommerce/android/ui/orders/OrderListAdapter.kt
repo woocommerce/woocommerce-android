@@ -69,6 +69,16 @@ class OrderListAdapter @Inject constructor(
             }
         }
 
+        // we want to retain the sorted list of orders so we can correctly match them by their position
+        with(orderList) {
+            clear()
+            addAll(listToday)
+            addAll(listYesterday)
+            addAll(listTwoDays)
+            addAll(listWeek)
+            addAll(listMonth)
+        }
+
         if (listToday.size > 0) {
             addSection(OrderListSection(TimeGroup.GROUP_TODAY.name, listToday))
         }
@@ -90,10 +100,6 @@ class OrderListAdapter @Inject constructor(
         }
 
         notifyDataSetChanged()
-
-        // remember these orders for comparison in containsOrder() below
-        orderList.clear()
-        orderList.addAll(orders)
     }
 
     fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
@@ -187,7 +193,7 @@ class OrderListAdapter @Inject constructor(
         return 0
     }
 
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         if (position == itemCount - 1) {
             loadMoreListener?.onRequestLoadMore()
@@ -218,11 +224,11 @@ class OrderListAdapter @Inject constructor(
     ) {
         override fun getContentItemsTotal() = list.size
 
-        override fun getItemViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+        override fun getItemViewHolder(view: View): RecyclerView.ViewHolder {
             return ItemViewHolder(view)
         }
 
-        override fun onBindItemViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+        override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val order = list[position]
             val itemHolder = holder as ItemViewHolder
             val resources = itemHolder.rootView.context.applicationContext.resources
@@ -260,11 +266,11 @@ class OrderListAdapter @Inject constructor(
             }
         }
 
-        override fun getHeaderViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+        override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
             return HeaderViewHolder(view)
         }
 
-        override fun onBindHeaderViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
+        override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
             val headerViewHolder = holder as HeaderViewHolder
 
             when (TimeGroup.valueOf(title)) {

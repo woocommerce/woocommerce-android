@@ -13,6 +13,7 @@ interface MainContract {
         fun getNotificationByRemoteNoteId(remoteNoteId: Long): NotificationModel?
         fun hasMultipleStores(): Boolean
         fun selectedSiteChanged(site: SiteModel)
+        fun fetchUnfilledOrderCount()
     }
 
     interface View : BaseView<Presenter>, TopLevelFragmentRouter {
@@ -25,7 +26,11 @@ interface MainContract {
         fun updateOfflineStatusBar(isConnected: Boolean)
         fun hideBottomNav()
         fun showBottomNav()
-        fun showNotificationBadge(show: Boolean)
-        fun updateNotificationBadge()
+        fun hideReviewsBadge()
+        fun showReviewsBadge()
+        fun updateReviewsBadge()
+        fun hideOrderBadge()
+        fun showOrderBadge(count: Int)
+        fun updateOrderBadge(hideCountUntilComplete: Boolean)
     }
 }

@@ -4,16 +4,17 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
@@ -93,6 +94,7 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun onSiteChanged() {
         siteChanged = true
         setResult(RESULT_CODE_SITE_CHANGED)
+        NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
         // Display a message to the user advising notifications will only be shown
         // for the current store.
@@ -112,10 +114,13 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector
 
     override fun finishLogout() {
+        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+
         val mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(mainIntent)
         setResult(Activity.RESULT_OK)
+
         close()
     }
 

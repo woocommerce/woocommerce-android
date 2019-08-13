@@ -35,6 +35,9 @@
     <string name="hide_details">Hide Details</string>
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
+    <string name="install">Install</string>
+    <string name="update_downloaded">Woo has downloaded an update</string>
+    <string name="update_failed">Woo update has failed</string>
     <string name="continue_button">Continue</string>
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
@@ -50,7 +53,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
-    <string name="notifications">Notifications</string>
+    <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
     <string name="share_store_dialog_title">Share your store\'s URL</string>
@@ -84,7 +87,7 @@
     <!--
         Login Library Overrides
     -->
-    <string name="enter_site_address" content_override="true">Enter the address of your WooCommerce store you\'d like to connect.</string>
+    <string name="enter_site_address" content_override="true">Enter the address of the WooCommerce store you\'d like to connect.</string>
 
     <!--
         Login View
@@ -208,6 +211,7 @@
     <string name="orderdetail_addnote_contentdesc">Add an order note</string>
     <string name="orderdetail_change_order_status">Click to change order status</string>
     <string name="orderdetail_track_shipment">Track shipment</string>
+    <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="order_fulfill_order">Fulfill Order</string>
@@ -268,6 +272,7 @@
     <string name="order_shipment_tracking_provider_toolbar_title">Shipping Providers</string>
     <string name="order_shipment_tracking_provider_list_item">Selected Shipment Provider</string>
     <string name="order_shipment_tracking_provider_list_error_fetch_generic">Error fetching providers</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">No providers found</string>
     <string name="order_shipment_tracking_added">Shipment tracking added</string>
     <string name="order_shipment_tracking_error">Unable to add tracking</string>
     <string name="order_shipment_tracking_confirm_discard">Are you sure you want to discard this tracking?</string>
@@ -337,7 +342,7 @@
     <string name="waiting_for_customers_contentdesc">Waiting for customers image</string>
     <string name="orders_empty_message_with_filter">No orders</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
-    <string name="notifs_empty_message">No notifications yet!</string>
+    <string name="reviews_empty_message">No reviews yet!</string>
 
     <!--
         Settings
@@ -352,7 +357,8 @@
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
-    <string name="settings_footer">Made with love by Automattic</string>
+    <string name="settings_footer">Made with love by Automattic. %1$s</string>
+    <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
@@ -425,8 +431,8 @@
         Notifications List
     -->
     <string name="wc_mark_all_read">Mark all as read</string>
-    <string name="wc_mark_all_read_success">All notifications marked as read</string>
-    <string name="wc_mark_all_read_error">Error marking all notifications as read</string>
+    <string name="wc_mark_all_read_success">All reviews marked as read</string>
+    <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
     <!--
         Login Library Imported Strings
     -->
@@ -475,7 +481,6 @@
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
     <string name="login_log_in_for_deeplink">Log in to WordPress.com to access the post.</string>
     <string name="login_log_in_for_share_intent">Log in to WordPress.com to share the content.</string>
-    <string name="login_empty_site_url">Please enter a site address</string>
     <string name="login_empty_username">Please enter a username</string>
     <string name="login_empty_password">Please enter a password</string>
     <string name="login_empty_2fa">Please enter a verification code</string>
@@ -507,6 +512,7 @@
     <string name="cannot_add_duplicate_site">This site already exists in the app, you can\'t add it.</string>
     <string name="duplicate_site_detected">A duplicate site has been detected.</string>
     <string name="error_fetch_my_profile">Couldn\'t retrieve your profile</string>
+    <string name="error_disabled_apis">Could not fetch settings: Some APIs are unavailable for this OAuth app ID + account combination.</string>
     <string name="login_to_to_connect_jetpack">Log in to the WordPress.com account you used to connect Jetpack.</string>
     <string name="auth_required">Log in again to continue.</string>
     <string name="checking_email">Checking email</string>
@@ -578,7 +584,7 @@
     <!-- Other -->
     <string name="shared_element_transition" translatable="false">shared_element</string>
     <string name="error_loading_image">Unable to load image</string>
-    <string name="login_invalid_site_url">The site address you entered is invalid. Please re-enter it.</string>
+    <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 

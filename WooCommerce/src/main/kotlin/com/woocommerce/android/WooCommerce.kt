@@ -24,6 +24,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.CrashUtils
+import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.PackageUtils.PACKAGE_VERSION_CODE_DEFAULT
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
@@ -50,7 +52,6 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
-import org.wordpress.android.util.PackageUtils
 import javax.inject.Inject
 
 open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceInjector, ApplicationLifecycleListener {
@@ -73,7 +74,7 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
     private var connectionReceiverRegistered = false
 
-    protected open val component: AppComponent by lazy {
+    open val component: AppComponent by lazy {
         DaggerAppComponent.builder()
                 .application(this)
                 .build()
@@ -210,26 +211,39 @@ open class WooCommerce : MultiDexApplication(), HasActivityInjector, HasServiceI
     private fun trackStartupAnalytics() {
         // Track app upgrade and install
         val versionCode = PackageUtils.getVersionCode(this)
-
         val oldVersionCode = AppPrefs.getLastAppVersionCode()
 
-        if (oldVersionCode == versionCode) {
-            return
-        }
-
         if (oldVersionCode == 0) {
-            // Track application installed if there isn't old version code
             AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
+
+            // Store the current app version code to SharedPrefs, even if the value is -1
+            // to prevent duplicate install events being called
+            AppPrefs.setLastAppVersionCode(versionCode)
         } else if (oldVersionCode < versionCode) {
-            AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+            // Track upgrade event only if oldVersionCode is not -1, to prevent
+            // duplicate upgrade events being called
+            if (oldVersionCode > PACKAGE_VERSION_CODE_DEFAULT) {
+                AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+            }
+
+            // store the latest version code to SharedPrefs, only if the value
+            // is greater than the stored version code
+            AppPrefs.setLastAppVersionCode(versionCode)
+        } else if (versionCode == PACKAGE_VERSION_CODE_DEFAULT) {
+            // we are not able to read the current app version code
+            // track this event along with the last stored version code
+            AnalyticsTracker.track(
+                    Stat.APPLICATION_VERSION_CHECK_FAILED,
+                    mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
+            )
         }
-        AppPrefs.setLastAppVersionCode(versionCode)
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
-        if (!accountStore.hasAccessToken()) {
+        val isLoggedOut = event.causeOfChange == null && event.error == null
+        if (!accountStore.hasAccessToken() && isLoggedOut) {
             // Logged out
             AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
 

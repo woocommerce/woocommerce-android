@@ -12,12 +12,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.PackageUtils
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_help.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.util.PackageUtils
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -29,11 +29,11 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var selectedSite: SelectedSite
 
     private val originFromExtras by lazy {
-        (intent.extras?.get(HelpActivity.ORIGIN_KEY) as Origin?) ?: Origin.UNKNOWN
+        (intent.extras?.get(ORIGIN_KEY) as Origin?) ?: Origin.UNKNOWN
     }
 
     private val extraTagsFromExtras by lazy {
-        intent.extras?.getStringArrayList(HelpActivity.EXTRA_TAGS_KEY)
+        intent.extras?.getStringArrayList(EXTRA_TAGS_KEY)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -187,9 +187,9 @@ class HelpActivity : AppCompatActivity() {
             extraSupportTags: List<String>?
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
-            intent.putExtra(HelpActivity.ORIGIN_KEY, origin)
+            intent.putExtra(ORIGIN_KEY, origin)
             if (extraSupportTags != null && !extraSupportTags.isEmpty()) {
-                intent.putStringArrayListExtra(HelpActivity.EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
+                intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
             }
             return intent
         }

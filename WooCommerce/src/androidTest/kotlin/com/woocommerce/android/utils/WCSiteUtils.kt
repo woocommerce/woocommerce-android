@@ -17,7 +17,7 @@ object WCSiteUtils {
     fun generateSiteSettings(
         localSiteId: Int = 1,
         currencyCode: String = "USD",
-        currencyPosition: CurrencyPosition = CurrencyPosition.LEFT
+        currencyPosition: CurrencyPosition = LEFT
     ): WCSettingsModel {
         return WCSettingsModel(
                 localSiteId = localSiteId,

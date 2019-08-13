@@ -17,10 +17,13 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.helpers.WCMatchers
 import com.woocommerce.android.ui.TestBase
 import com.woocommerce.android.ui.main.MainActivityTestRule
+import com.woocommerce.android.ui.main.getOrderDetailFragment
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.equalToIgnoringCase
 import org.junit.Before
@@ -133,6 +136,10 @@ class OrderFulfillmentFragmentTest : TestBase() {
 
         // verify that fulfill button is hidden
         onView(withId(R.id.productList_btnFulfill)).check(matches(withEffectiveVisibility(GONE)))
+
+        // mock network available
+        val orderDetailFragment = activityTestRule.getOrderDetailFragment()
+        doReturn(true).whenever(orderDetailFragment?.networkStatus)?.isConnected()
 
         // verify undo snackbar is displayed and swipe to dismiss it
         onView(withId(com.google.android.material.R.id.snackbar_text))

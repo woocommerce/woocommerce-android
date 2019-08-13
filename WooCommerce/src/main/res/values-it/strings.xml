@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 08:54:51+0000
+Translation-Revision-Date: 2019-08-09 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="login_invalid_site_url">Inserisci un indirizzo di sito Web completo, come esempio.com.</string>
+    <string name="reviews_empty_message">Ancora nessuna recensione!</string>
+    <string name="review_notifications">Recensioni</string>
+    <string name="update_failed">L\'aggiornamento Woo non è riuscito</string>
+    <string name="update_downloaded">Woo ha scaricato un aggiornamento</string>
+    <string name="install">Installa</string>
+    <string name="error_disabled_apis">Impossibile recuperare le impostazioni: alcune API non sono disponibili per questa combinazione di ID app OAuth + account.</string>
+    <string name="settings_hiring">Stiamo assumendo.</string>
+    <string name="feature_requests">Richiesta di funzionalità</string>
+    <string name="orderdetail_copy_tracking_number">Copia numero di tracciabilità</string>
+    <string name="login_refresh_app_progress">Verifica di WooCommerce…</string>
+    <string name="login_refresh_app">aggiorna l\'app</string>
+    <string name="login_not_woo_store">%1$s non è un sito WooCommerce. Installa il plugin WooCommerce sul sito, quindi %2$s.</string>
+    <string name="orderdetail_empty_shipping_address">Nessun indirizzo specificato</string>
     <string name="login_need_help_finding_connected_email">Ti serve aiuto per trovare l\'e-mail con cui ti sei collegato?</string>
     <string name="enter_wordpress_site">Il sito web su questo indirizzo non è un sito WordPress. Per poterci collegare a esso, il sito deve avere WordPress installato.</string>
     <string name="enter_email_for_site">Accedi con WordPress.com per collegarti a %1$s</string>
@@ -294,7 +308,6 @@ Language: it
     <string name="keep_editing">Continua a modificare</string>
     <string name="notification_wpcom_username_needed">Accedi con i tuoi nome utente e password.</string>
     <string name="error_user_username_instead_of_email">Accedi utilizzando il tuo nome utente di WordPress.com invece del tuo indirizzo e-mail.</string>
-    <string name="login_invalid_site_url">L\'indirizzo del sito immesso non è valido. Immettilo di nuovo.</string>
     <string name="no_site_error">Il sito a questo indirizzo non è un sito WordPress. Per poterci connettere, il sito deve utilizzare WordPress.</string>
     <string name="support_help_center">Centro assistenza</string>
     <string name="product_name_virtual">%s virtuale</string>
@@ -370,7 +383,6 @@ Language: it
     <string name="app_rating_message">È un piacere rivederti. Se apprezzi l\'app, ci piacerebbe ricevere una valutazione sul Google Play Store.</string>
     <string name="app_rating_title">Ti piace Woo?</string>
     <string name="settings_selected_store">Negozio selezionato</string>
-    <string name="notifs_empty_message">Non c\'è ancora nessuna notifica.</string>
     <string name="orders_empty_message_with_search">Nessun ordine corrispondente</string>
     <string name="orders_empty_message_with_filter">Nessun ordine</string>
     <string name="waiting_for_customers_contentdesc">In attesa delle immagini dei clienti</string>
@@ -513,7 +525,6 @@ Language: it
     <string name="login_empty_2fa">Inserisci un codice di verifica</string>
     <string name="login_empty_password">Inserisci una password</string>
     <string name="login_empty_username">Inserisci un nome utente</string>
-    <string name="login_empty_site_url">Inserisci un indirizzo del sito</string>
     <string name="login_log_in_for_share_intent">Accedi a WordPress.com per condividere il contenuto.</string>
     <string name="login_log_in_for_deeplink">Accedi a WordPress.com per accedere all\'articolo.</string>
     <string name="login_error_while_adding_site">Si è verificato un errore durante l\'aggiunta del sito. Codice di errore: %s</string>
@@ -567,7 +578,7 @@ Language: it
     <string name="settings_third_party_policy_header">Politica sulla privacy di terze parti</string>
     <string name="settings_cookie_policy_header">Politica sui cookie</string>
     <string name="settings_privacy_policy_header">Politica sulla privacy</string>
-    <string name="settings_footer">Creato con amore da Automattic</string>
+    <string name="settings_footer">Creato con amore da Automattic. %1$s</string>
     <string name="settings_tracking">Utilizziamo altri strumenti di tracciamento, inclusi alcuni di terze parti. Leggi le informazioni sugli strumenti e come utilizzarli.</string>
     <string name="settings_privacy_policy">Leggi la politica sulla privacy</string>
     <string name="settings_privacy_detail">Questa informazione ci aiuta a migliorare i nostri prodotti, a rendere il marketing più mirato, a personalizzare la tua esperienza su WooCommerce e molto altro come descritto in dettaglio nostra politica sulla privacy</string>
@@ -666,7 +677,6 @@ Language: it
     <string name="login_prologue_banner">Gestisci gli ordini, traccia le vendite e monitora le attività del negozio con avvisi in tempo reale.</string>
     <string name="login_jetpack_required">Questa app richiede che Jetpack sia connesso al tuo negozio.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Immetti l\'indirizzo del negozio WooCommerce che desideri connettere.</string>
     <string name="already_logged_in_wpcom">Sei già connesso a un account WordPress.com, non puoi aggiungere un sito WordPress.com legato a un altro account.</string>
     <string name="cant_open_url">Impossibile aprire il link</string>
     <string name="error_no_sms_app">Nessuna app per SMS trovata</string>
@@ -680,7 +690,6 @@ Language: it
     <string name="date_timeframe_older_two_days">Più vecchie di 2 giorni</string>
     <string name="date_timeframe_yesterday">Ieri</string>
     <string name="date_timeframe_today">Oggi</string>
-    <string name="notifications">Notifiche</string>
     <string name="products">Prodotti</string>
     <string name="discard">Rimuovi</string>
     <string name="this_year">Quest\'anno</string>

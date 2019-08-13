@@ -5,7 +5,9 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
+import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -53,6 +55,10 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         mockWCOrderModel.shippingLastName = "Murthy"
         mockWCOrderModel.shippingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
         mockWCOrderModel.shippingCountry = "USA"
+        mockWCOrderModel.billingAddress1 = "Ramada Plaza, 450 Capitol Ave SE Atlanta"
+        mockWCOrderModel.billingLastName = "Murthy"
+        mockWCOrderModel.billingFirstName = "Anitaa"
+        mockWCOrderModel.billingCountry = "USA"
         activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel)
 
         // click on the first order in the list and check if redirected to order detail
@@ -80,6 +86,9 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         // check that the billing info is hidden
         onView(withId(R.id.customerInfo_billingLabel)).check(matches(withEffectiveVisibility(GONE)))
 
+        // verify that the billing section is hidden even if available
+        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
+
         // check if customer info card shipping details matches this format:
         val shippingName = appContext.getString(
                 R.string.customer_full_name,
@@ -91,9 +100,6 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         // Assumes that the shipping name, address and country info is available
         val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
         onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
-
-        // verify that the billing section is hidden
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
     }
 
     @Test
@@ -123,7 +129,7 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         val shippingAddrFull = "$shippingName\n$shippingAddr\n$shippingCountry"
         onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(shippingAddrFull)))
 
-        // verify that the billing section is hidden
+        // verify that the billing section is hidden, when not available
         onView(withId(R.id.customerInfo_viewMore)).check(matches(withEffectiveVisibility(GONE)))
     }
 
@@ -139,9 +145,56 @@ class OrderFulfillmentCustomerInfoCardTest : TestBase() {
         // click on Order Fulfill button to redirect to Order Fulfillment
         onView(withId(R.id.productList_btnFulfill)).perform(click())
 
-        // no shipping available so displays empty text
-        onView(withId(R.id.customerInfo_shippingAddr)).check(matches(withText(
-                appContext.getString(R.string.orderdetail_empty_shipping_address)
-        )))
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderFulfill_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardHiddenWhenProductVirtual() {
+        // Set Order fulfillment with mock data
+        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel, isVirtualProduct = true)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Order Fulfill button to redirect to Order Fulfillment
+        onView(withId(R.id.productList_btnFulfill)).perform(click())
+
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderFulfill_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardDisplayedWhenProductNotVirtualButShippingAvailable() {
+        // Set Order fulfillment with mock data
+        mockWCOrderModel.shippingAddress1 = "404, Fake street"
+        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel, isVirtualProduct = false)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Order Fulfill button to redirect to Order Fulfillment
+        onView(withId(R.id.productList_btnFulfill)).perform(click())
+
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderFulfill_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
+    }
+
+    @Test
+    fun verifyCustomerInfoCardHiddenWhenProductNotVirtualButShippingNotAvailable() {
+        // Set Order fulfillment with mock data
+        activityTestRule.setOrderFulfillmentWithMockData(mockWCOrderModel, isVirtualProduct = false)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // click on Order Fulfill button to redirect to Order Fulfillment
+        onView(withId(R.id.productList_btnFulfill)).perform(click())
+
+        // verify that the customer info card is hidden
+        onView(withId(R.id.orderFulfill_customerInfo)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
     }
 }

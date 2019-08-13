@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-28 12:54:04+0000
+Translation-Revision-Date: 2019-08-07 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="login_invalid_site_url">Voer een compleet websiteadres in, zoals example.com.</string>
+    <string name="reviews_empty_message">Nog geen beoordelingen!</string>
+    <string name="review_notifications">Beoordelingen</string>
+    <string name="update_failed">Woo-update is mislukt</string>
+    <string name="update_downloaded">Woo heeft een update gedownload</string>
+    <string name="install">Installeren</string>
+    <string name="error_disabled_apis">Instellingen ophalen mislukt: Sommige API\'s zijn niet beschikbaar voor deze combinatie van een OAuth app-ID en account.</string>
+    <string name="settings_hiring">Wij zijn op zoek naar nieuwe collega\'s!</string>
+    <string name="feature_requests">Functie-aanvraag</string>
+    <string name="orderdetail_copy_tracking_number">Volgnummer kopiëren</string>
+    <string name="login_refresh_app_progress">Controleert op WooCommerce…</string>
+    <string name="login_refresh_app">de app vernieuwen</string>
+    <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is. Installeer de WooCommerce-plug-in op je site en %2$s</string>
+    <string name="orderdetail_empty_shipping_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
     <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met %1$s</string>
@@ -294,7 +308,6 @@ Language: nl
     <string name="keep_editing">Doorgaan met bewerken</string>
     <string name="notification_wpcom_username_needed">Log in met je gebruikersnaam en wachtwoord.</string>
     <string name="error_user_username_instead_of_email">Log in met je WordPress.com-gebruikersnaam in plaats van met je e-mailadres.</string>
-    <string name="login_invalid_site_url">Het site-adres dat je hebt ingevuld, is ongeldig. Voer het opnieuw in.</string>
     <string name="no_site_error">De site op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet de site gebruikmaken van WordPress.</string>
     <string name="support_help_center">Help Center</string>
     <string name="product_name_virtual">Virtuele %s</string>
@@ -370,7 +383,6 @@ Language: nl
     <string name="app_rating_message">Goed je te weer zien! Als je deze app tof vindt, vergeet dan niet een beoordeling te geven in de Google Play Store.</string>
     <string name="app_rating_title">Wat vind je van Woo?</string>
     <string name="settings_selected_store">Geselecteerde winkel</string>
-    <string name="notifs_empty_message">Nog geen meldingen!</string>
     <string name="orders_empty_message_with_search">Geen overeenkomende bestellingen</string>
     <string name="orders_empty_message_with_filter">Geen bestellingen</string>
     <string name="waiting_for_customers_contentdesc">Wachten op klantenafbeelding</string>
@@ -513,7 +525,6 @@ Language: nl
     <string name="login_empty_2fa">Voer een verificatiecode in</string>
     <string name="login_empty_password">Voer een wachtwoord in</string>
     <string name="login_empty_username">Voer een gebruikersnaam in</string>
-    <string name="login_empty_site_url">Voer een site-adres in</string>
     <string name="login_log_in_for_share_intent">Log in op WordPress.com om inhoud te delen.</string>
     <string name="login_log_in_for_deeplink">Log in op WordPress.com om dit bericht te bekijken.</string>
     <string name="login_error_while_adding_site">Fout bij het toevoegen van site. Foutcode: %s</string>
@@ -567,7 +578,7 @@ Language: nl
     <string name="settings_third_party_policy_header">Beleid van derden</string>
     <string name="settings_cookie_policy_header">Cookiebeleid</string>
     <string name="settings_privacy_policy_header">Privacybeleid</string>
-    <string name="settings_footer">Met liefde gemaakt door Automattic</string>
+    <string name="settings_footer">Met liefde gemaakt door Automattic. %1$s</string>
     <string name="settings_tracking">We gebruiken ook andere tracking-tools, waaronder een aantal van derden. Bekijk meer informatie over deze tools en hoe je ze kunt beheren.</string>
     <string name="settings_privacy_policy">Privacybeleid lezen</string>
     <string name="settings_privacy_detail">Deze informatie helpt ons onze producten te verbeteren, marketing relevanter te maken en de WooCommerce-ervaring op je af te stemmen. Je vindt hierover meer informatie in ons privacybeleid.</string>
@@ -666,7 +677,6 @@ Language: nl
     <string name="login_prologue_banner">Beheer bestellingen, houd de verkoop bij en bewaak de winkelactiviteit met waarschuwingen in real time.</string>
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Voer het adres van je WooCommerce-winkel in als je deze wilt koppelen.</string>
     <string name="already_logged_in_wpcom">Je bent al aangemeld bij een WordPress.com-account. Je kunt geen WordPress.com-site toevoegen die is gekoppeld aan een ander account.</string>
     <string name="cant_open_url">De link kan niet worden geopend</string>
     <string name="error_no_sms_app">Er is geen app voor sms gevonden</string>
@@ -680,7 +690,6 @@ Language: nl
     <string name="date_timeframe_older_two_days">Ouder dan 2 dagen</string>
     <string name="date_timeframe_yesterday">Gisteren</string>
     <string name="date_timeframe_today">Vandaag</string>
-    <string name="notifications">Meldingen</string>
     <string name="products">Producten</string>
     <string name="discard">Verwijder</string>
     <string name="this_year">Dit jaar</string>

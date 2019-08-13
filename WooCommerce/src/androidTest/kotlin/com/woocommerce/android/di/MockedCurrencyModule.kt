@@ -1,9 +1,9 @@
 package com.woocommerce.android.di
 
 import android.content.Context
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.spy
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.WcOrderTestUtils
 import com.woocommerce.android.util.CurrencyFormatter

@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-27 11:54:06+0000
+Translation-Revision-Date: 2019-08-07 04:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="login_invalid_site_url">請輸入完整的網站位址，例如 example.com。</string>
+    <string name="reviews_empty_message">目前沒有評論！</string>
+    <string name="review_notifications">評論</string>
+    <string name="update_failed">Woo 更新失敗</string>
+    <string name="update_downloaded">Woo 已下載更新</string>
+    <string name="install">安裝</string>
+    <string name="error_disabled_apis">無法擷取設定：部分 API 並不適用此 OAuth 應用程式 ID 與帳號的組合。</string>
+    <string name="settings_hiring">人才招募中！</string>
+    <string name="feature_requests">功能要求</string>
+    <string name="orderdetail_copy_tracking_number">複製追蹤號碼</string>
+    <string name="login_refresh_app_progress">正在檢查 WooCommerce…</string>
+    <string name="login_refresh_app">重新整理應用程式</string>
+    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 網站。在網路上安裝 WooCommerce 外掛程式，然後%2$s</string>
+    <string name="orderdetail_empty_shipping_address">指定任何地址</string>
     <string name="login_need_help_finding_connected_email">需要協助找出你連結的電子郵件嗎？</string>
     <string name="enter_wordpress_site">此地址的網站不是 WordPress 網站。若需要我們連結網站，網站必須安裝 WordPress。</string>
     <string name="enter_email_for_site">透過 WordPress.com 登入以連結至 %1$s</string>
@@ -294,7 +308,6 @@ Language: zh_TW
     <string name="keep_editing">繼續編輯</string>
     <string name="notification_wpcom_username_needed">請透過你的使用者名稱和密碼登入。</string>
     <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>
-    <string name="login_invalid_site_url">你輸入的網站地址無效。請重新輸入。</string>
     <string name="no_site_error">此地址的網站不是 WordPress 網站。若需要我們連接網站，網站必須使用 WordPress。</string>
     <string name="support_help_center">說明中心</string>
     <string name="product_name_virtual">虛擬 %s</string>
@@ -370,7 +383,6 @@ Language: zh_TW
     <string name="app_rating_message">很高興再次與你見面！如果你喜歡我們的應用程式，歡迎前往 Google Play 商店幫忙評分。</string>
     <string name="app_rating_title">還喜歡 Woo 嗎？</string>
     <string name="settings_selected_store">選取的商店</string>
-    <string name="notifs_empty_message">尚未有任何通知！</string>
     <string name="orders_empty_message_with_search">沒有相符的訂單</string>
     <string name="orders_empty_message_with_filter">無訂單</string>
     <string name="waiting_for_customers_contentdesc">等待客戶圖片</string>
@@ -513,7 +525,6 @@ Language: zh_TW
     <string name="login_empty_2fa">請輸入驗證碼</string>
     <string name="login_empty_password">請輸入密碼。</string>
     <string name="login_empty_username">請輸入使用者名稱</string>
-    <string name="login_empty_site_url">請輸入網站位址</string>
     <string name="login_log_in_for_share_intent">登入 WordPress.com 以便分享內容。</string>
     <string name="login_log_in_for_deeplink">登入 WordPress.com 存取文章。</string>
     <string name="login_error_while_adding_site">新增網站時出現錯誤。錯誤代碼：%s</string>
@@ -567,7 +578,7 @@ Language: zh_TW
     <string name="settings_third_party_policy_header">第三方政策</string>
     <string name="settings_cookie_policy_header">Cookie 政策</string>
     <string name="settings_privacy_policy_header">隱私權政策</string>
-    <string name="settings_footer">由 Automattic 成員深情打造</string>
+    <string name="settings_footer">由 Automattic 成員深情打造。%1$s</string>
     <string name="settings_tracking">我們會使用其他的追蹤工具，包括由第三方所提供的追蹤工具。瞭解相關資訊及其控制方式。</string>
     <string name="settings_privacy_policy">閱讀隱私權政策</string>
     <string name="settings_privacy_detail">這類資訊有助我們改善產品、提供與你更加相關的行銷活動、帶來量身打造的 WooCommerce 使用體驗；若要瞭解更多詳細內容，請參閱我們的隱私權政策</string>
@@ -666,7 +677,6 @@ Language: zh_TW
     <string name="login_prologue_banner">透過即時警示管理訂單、追蹤銷售狀況，並監控商店活動。</string>
     <string name="login_jetpack_required">此應用程式需要 Jetpack 才能連結至你的商店。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">請輸入要連結的 WooCommerce 商店位址。</string>
     <string name="already_logged_in_wpcom">你已登入 WordPress.com 帳號，無法新增連結至其他帳號的 WordPress.com 網站。</string>
     <string name="cant_open_url">無法開啟連結</string>
     <string name="error_no_sms_app">找不到簡訊應用程式</string>
@@ -680,7 +690,6 @@ Language: zh_TW
     <string name="date_timeframe_older_two_days">超過 2 天</string>
     <string name="date_timeframe_yesterday">昨天</string>
     <string name="date_timeframe_today">今天</string>
-    <string name="notifications">通知</string>
     <string name="products">產品</string>
     <string name="discard">放棄</string>
     <string name="this_year">今年</string>

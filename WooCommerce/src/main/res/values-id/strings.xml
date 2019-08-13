@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-25 11:54:07+0000
+Translation-Revision-Date: 2019-08-08 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_invalid_site_url">Masukkan alamat situs web lengkap, seperti contoh.com.</string>
+    <string name="reviews_empty_message">Belum ada ulasan!</string>
+    <string name="review_notifications">Ulasan</string>
+    <string name="update_failed">Gagal memperbarui Woo</string>
+    <string name="update_downloaded">Woo telah mengunduh pembaruan</string>
+    <string name="install">Instal</string>
+    <string name="error_disabled_apis">Tidak dapat memuat pengaturan: Beberapa API tidak tersedia untuk kombinasi ID aplikasi OAuth + akun ini.</string>
+    <string name="settings_hiring">Kami membuka lowongan!</string>
+    <string name="feature_requests">Permintaan fitur</string>
+    <string name="orderdetail_copy_tracking_number">Salin nomor pelacakan</string>
+    <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
+    <string name="login_refresh_app">segarkan aplikasi</string>
+    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu %2$s</string>
+    <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
     <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke %1$s</string>
@@ -294,7 +308,6 @@ Language: id
     <string name="keep_editing">Lanjutkan menyunting</string>
     <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>
     <string name="error_user_username_instead_of_email">Silakan login menggunakan nama pengguna WordPress.com sebagai ganti alamat email Anda.</string>
-    <string name="login_invalid_site_url">Alamat situs yang Anda masukkan tidak valid. Harap masukkan lagi.</string>
     <string name="no_site_error">Situs di alamat ini bukan situs WordPress. Agar kami dapat menghubungkannya, situs harus menggunakan WordPress.</string>
     <string name="support_help_center">Pusat Bantuan</string>
     <string name="product_name_virtual">%s Virtual</string>
@@ -370,7 +383,6 @@ Language: id
     <string name="app_rating_message">Senang bertemu Anda lagi! Jika Anda suka aplikasi ini, kami menantikan penilaian Anda di Google Play Store.</string>
     <string name="app_rating_title">Puas dengan Woo?</string>
     <string name="settings_selected_store">Toko pilihan</string>
-    <string name="notifs_empty_message">Belum ada pemberitahuan!</string>
     <string name="orders_empty_message_with_search">Tidak ada pesanan yang sesuai</string>
     <string name="orders_empty_message_with_filter">Tidak ada pesanan</string>
     <string name="waiting_for_customers_contentdesc">Menunggu gambar pelanggan</string>
@@ -513,7 +525,6 @@ Language: id
     <string name="login_empty_2fa">Masukkan kode verifikasi</string>
     <string name="login_empty_password">Masukkan kata sandi</string>
     <string name="login_empty_username">Masukkan nama pengguna</string>
-    <string name="login_empty_site_url">Masukkan alamat situs</string>
     <string name="login_log_in_for_share_intent">Login ke WordPress.com untuk membagikan konten.</string>
     <string name="login_log_in_for_deeplink">Login ke WordPress.com untuk mengakses pos.</string>
     <string name="login_error_while_adding_site">Error saat menambahkan situs. Kode error: %s</string>
@@ -567,7 +578,7 @@ Language: id
     <string name="settings_third_party_policy_header">Kebijakan Pihak Ketiga</string>
     <string name="settings_cookie_policy_header">Kebijakan Cookie</string>
     <string name="settings_privacy_policy_header">Kebijakan Privasi</string>
-    <string name="settings_footer">Dibuat dengan penuh cinta oleh Automattic</string>
+    <string name="settings_footer">Dibuat dengan penuh cinta oleh Automattic. %1$s</string>
     <string name="settings_tracking">Kami menggunakan alat pelacakan lainnya, termasuk beberapa dari pihak ketiga. Baca tentang hal ini dan cara mengontrolnya.</string>
     <string name="settings_privacy_policy">Baca kebijakan privasi</string>
     <string name="settings_privacy_detail">Informasi ini membantu kami menyempurnakan produk, membuat pemasaran kepada Anda jadi lebih relevan, menyesuaikan pengalaman WooCommerce Anda, dan lainnya seperti yang dijelaskan dalam kebijakan privasi kami</string>
@@ -666,7 +677,6 @@ Language: id
     <string name="login_prologue_banner">Kelola pesanan, lacak penjualan, dan pantau aktivitas toko dengan pemberitahuan real-time.</string>
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Masukkan alamat toko WooCommerce yang ingin Anda hubungkan.</string>
     <string name="already_logged_in_wpcom">Anda sudah login ke akun WordPress.com, Anda tidak dapat menambahkan situs WordPress.com yang terikat ke akun lain.</string>
     <string name="cant_open_url">Tidak bisa membuka tautan</string>
     <string name="error_no_sms_app">Tidak ada aplikasi SMS</string>
@@ -680,7 +690,6 @@ Language: id
     <string name="date_timeframe_older_two_days">Lebih dari 2 hari</string>
     <string name="date_timeframe_yesterday">Kemarin</string>
     <string name="date_timeframe_today">Hari Ini</string>
-    <string name="notifications">Pemberitahuan</string>
     <string name="products">Produk</string>
     <string name="discard">Batal</string>
     <string name="this_year">Tahun Ini</string>

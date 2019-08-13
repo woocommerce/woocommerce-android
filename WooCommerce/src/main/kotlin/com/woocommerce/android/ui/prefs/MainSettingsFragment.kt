@@ -5,9 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -19,11 +24,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_B
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
+import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
@@ -74,6 +81,24 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         buttonLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
             settingsListener.onRequestLogout()
+        }
+
+        with(settingsHiring) {
+            val hiringText = getString(R.string.settings_hiring)
+            val settingsFooterText = getString(R.string.settings_footer, hiringText)
+            val spannable = SpannableString(settingsFooterText)
+            spannable.setSpan(
+                    WooClickableSpan {
+                        AnalyticsTracker.track(SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED)
+                        ChromeCustomTabUtils.launchUrl(context, getString(R.string.settings_hiring_link))
+                    },
+                    (settingsFooterText.length - hiringText.length),
+                    settingsFooterText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            setText(spannable, TextView.BufferType.SPANNABLE)
+            movementMethod = LinkMovementMethod.getInstance()
+            setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings

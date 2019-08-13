@@ -1,5 +1,6 @@
 package com.woocommerce.android.push
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
@@ -13,10 +14,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
-import android.preference.PreferenceManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -55,6 +56,10 @@ class NotificationHandler @Inject constructor(
 
         private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
         private const val PUSH_NOTIFICATION_ID = 10000
+
+        // All Zendesk push notifications will show the same notification, so hopefully this will be a unique ID
+        private const val ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
+
         const val GROUP_NOTIFICATION_ID = 30000
         private const val MAX_INBOX_ITEMS = 5
 
@@ -108,7 +113,42 @@ class NotificationHandler @Inject constructor(
             val notificationManager = NotificationManagerCompat.from(context)
             notificationManager.cancelAll()
 
-            setHasUnseenNotifications(false)
+            setHasUnseenReviewNotifs(false)
+        }
+
+        /**
+         * Removes only a specific type of notification from the system bar
+         */
+        @SuppressLint("UseSparseArrays")
+        @Synchronized private fun removeAllNotifsOfTypeFromSystemBar(context: Context, type: String) {
+            val notificationManager = NotificationManagerCompat.from(context)
+
+            val keptNotifs = HashMap<Int, Bundle>()
+            ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { entry ->
+                if (entry.value.getString(PUSH_ARG_TYPE) == type) {
+                    notificationManager.cancel(entry.key)
+                } else {
+                    keptNotifs[entry.key] = entry.value
+                }
+            }
+            ACTIVE_NOTIFICATIONS_MAP.clear()
+            ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
+
+            if (!hasNotifications()) {
+                notificationManager.cancel(GROUP_NOTIFICATION_ID)
+            }
+
+            if (type == PUSH_TYPE_COMMENT) {
+                setHasUnseenReviewNotifs(false)
+            }
+        }
+
+        fun removeAllReviewNotifsFromSystemBar(context: Context) {
+            removeAllNotifsOfTypeFromSystemBar(context, PUSH_TYPE_COMMENT)
+        }
+
+        fun removeAllOrderNotifsFromSystemBar(context: Context) {
+            removeAllNotifsOfTypeFromSystemBar(context, PUSH_TYPE_NEW_ORDER)
         }
 
         /**
@@ -131,7 +171,7 @@ class NotificationHandler @Inject constructor(
             // If there are no notifications left, cancel the group as well and clear the unseen state
             if (!hasNotifications()) {
                 notificationManager.cancel(GROUP_NOTIFICATION_ID)
-                setHasUnseenNotifications(false)
+                setHasUnseenReviewNotifs(false)
             }
         }
 
@@ -161,18 +201,20 @@ class NotificationHandler @Inject constructor(
         }
 
         /**
-         * Called when we want to update the unseen state of notifications - changes the related
+         * Called when we want to update the unseen state of review notifs - changes the related
          * shared preference and posts an EventBus event so main activity can update the badge
          */
-        private fun setHasUnseenNotifications(hasUnseen: Boolean) {
-            if (hasUnseen != AppPrefs.getHasUnseenNotifs()) {
-                AppPrefs.setHasUnseenNotifs(hasUnseen)
-                EventBus.getDefault().post(NotificationsUnseenChangeEvent(hasUnseen))
+        private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
+            if (hasUnseen != AppPrefs.getHasUnseenReviews()) {
+                AppPrefs.setHasUnseenReviews(hasUnseen)
+                EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
             }
         }
     }
 
-    class NotificationsUnseenChangeEvent(var hasUnseen: Boolean)
+    class NotificationsUnseenReviewsEvent(var hasUnseen: Boolean)
+
+    class NotificationReceivedEvent(var channel: NotificationChannelType)
 
     /**
      * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
@@ -180,10 +222,10 @@ class NotificationHandler @Inject constructor(
      * it then it will be re-created with the same settings it previously had (ie: we can't simply have a single
      * channel for orders and add/remove the sound from it)
      */
-    private enum class NotificationChannelType {
+    enum class NotificationChannelType {
         OTHER,
         REVIEW,
-        NEW_ORDER
+        NEW_ORDER,
     }
 
     @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
@@ -271,7 +313,11 @@ class NotificationHandler @Inject constructor(
         // Do not need to play the sound again. We've already played it in the individual builder.
         showGroupNotificationForBuilder(context, builder, noteType, wpComNoteId, message)
 
-        setHasUnseenNotifications(true)
+        if (noteType == REVIEW) {
+            setHasUnseenReviewNotifs(true)
+        }
+
+        EventBus.getDefault().post(NotificationReceivedEvent(noteType))
     }
 
     /**
@@ -551,5 +597,26 @@ class NotificationHandler @Inject constructor(
             // see https://github.com/woocommerce/woocommerce-android/issues/920
             WooLog.e(T.NOTIFS, e)
         }
+    }
+
+    /**
+     * Shows a notification stating that the user has a reply pending from Zendesk. Since Zendesk always sends a
+     * notification with the same title and message, we use our own localized messaging. For the same reason,
+     * we use a static push notification ID. Tapping on the notification will open the `My Tickets` page.
+     */
+    fun handleZendeskNotification(context: Context) {
+        val title = context.getString(R.string.support_push_notification_title)
+        val message = context.getString(R.string.support_push_notification_message)
+
+        val resultIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
+            putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, ZENDESK_PUSH_NOTIFICATION_ID)
+            putExtra(MainActivity.FIELD_OPENED_FROM_ZENDESK, true)
+        }
+
+        // Build the new notification, add group to support wearable stacking
+        val builder = getNotificationBuilder(context, OTHER, title, message)
+        showNotificationForBuilder(builder, context, resultIntent, ZENDESK_PUSH_NOTIFICATION_ID)
     }
 }

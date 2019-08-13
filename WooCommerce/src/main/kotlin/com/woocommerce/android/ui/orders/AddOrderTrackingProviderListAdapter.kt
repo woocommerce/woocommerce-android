@@ -120,7 +120,7 @@ class AddOrderTrackingProviderListAdapter(
 
     override fun getFilter(): Filter {
         return object : Filter() {
-            override fun performFiltering(charSequence: CharSequence): Filter.FilterResults {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString()
                 providerList = if (charString.isEmpty()) {
                     providerSearchList
@@ -135,11 +135,11 @@ class AddOrderTrackingProviderListAdapter(
                     }
                     filteredList
                 }
-                val filterResults = Filter.FilterResults()
+                val filterResults = FilterResults()
                 filterResults.values = providerList
                 return filterResults
             }
-            override fun publishResults(charSequence: CharSequence, filterResults: Filter.FilterResults) {
+            override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
                 providerList = filterResults.values as ArrayList<WCOrderShipmentProviderModel>
                 updateAdapter(providerList)
             }
@@ -161,11 +161,11 @@ class AddOrderTrackingProviderListAdapter(
     ) {
         override fun getContentItemsTotal() = list.size
 
-        override fun getItemViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+        override fun getItemViewHolder(view: View): RecyclerView.ViewHolder {
             return ItemViewHolder(view)
         }
 
-        override fun onBindItemViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+        override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val provider = list[position]
             val itemHolder = holder as ItemViewHolder
 
@@ -183,11 +183,11 @@ class AddOrderTrackingProviderListAdapter(
             }
         }
 
-        override fun getHeaderViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+        override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
             return HeaderViewHolder(view)
         }
 
-        override fun onBindHeaderViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
+        override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
             val headerViewHolder = holder as HeaderViewHolder
             headerViewHolder.title.text = country
         }

@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.site_picker_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 
 class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
-        androidx.recyclerview.widget.RecyclerView.Adapter<SiteViewHolder>() {
+        RecyclerView.Adapter<SiteViewHolder>() {
     var siteList: List<SiteModel> = ArrayList()
         set(value) {
             if (!isSameSiteList(value)) {
@@ -70,7 +70,7 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
     }
 
     /**
-     * returns true if the passed list of orders is the same as the current list
+     * returns true if the passed list of sites is the same as the current list
      */
     private fun isSameSiteList(sites: List<SiteModel>): Boolean {
         if (sites.size != siteList.size) {

@@ -34,8 +34,8 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.util.CrashUtils
+import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_site_picker.*
@@ -52,6 +52,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
         private const val KEY_LOGIN_SITE_URL = "login_site"
+        private const val KEY_CLICKED_SITE_ID = "clicked_site_id"
 
         fun showSitePickerFromLogin(context: Context) {
             val intent = Intent(context, SitePickerActivity::class.java)
@@ -75,6 +76,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     private var calledFromLogin: Boolean = false
     private var currentSite: SiteModel? = null
     private var skeletonView = SkeletonView()
+    private var clickedSiteId = 0L
 
     /**
      * Signin M1: The url the customer logged into the app with.
@@ -140,13 +142,16 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         showUserInfo()
 
         savedInstanceState?.let { bundle ->
+            clickedSiteId = bundle.getLong(KEY_CLICKED_SITE_ID)
+
             // Signin M1: If using new login M1 flow, we skip showing the store list.
             bundle.getString(KEY_LOGIN_SITE_URL)?.let { url ->
                 deferLoadingSitesIntoView = true
                 loginSiteUrl = url
             }
 
-            val sites = presenter.getSitesForLocalIds(bundle.getIntArray(STATE_KEY_SITE_ID_LIST))
+            val ids = bundle.getIntArray(STATE_KEY_SITE_ID_LIST) ?: IntArray(0)
+            val sites = presenter.getSitesForLocalIds(ids)
             if (sites.isNotEmpty()) {
                 showStoreList(sites)
             } else {
@@ -187,6 +192,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         val sitesList = siteAdapter.siteList.map { it.id }
         outState.putIntArray(STATE_KEY_SITE_ID_LIST, sitesList.toIntArray())
         outState.putBoolean(KEY_CALLED_FROM_LOGIN, calledFromLogin)
+        outState.putLong(KEY_CLICKED_SITE_ID, clickedSiteId)
 
         loginSiteUrl?.let { outState.putString(KEY_LOGIN_SITE_URL, it) }
     }
@@ -277,7 +283,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         siteAdapter.siteList = wcSites
-        siteAdapter.selectedSiteId = selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
+        siteAdapter.selectedSiteId = if (clickedSiteId > 0) {
+            clickedSiteId
+        } else {
+            selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
+        }
 
         button_primary.text = getString(R.string.continue_button)
         button_primary.isEnabled = true
@@ -287,6 +297,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun onSiteClick(siteId: Long) {
+        clickedSiteId = siteId
         button_primary.isEnabled = true
     }
 

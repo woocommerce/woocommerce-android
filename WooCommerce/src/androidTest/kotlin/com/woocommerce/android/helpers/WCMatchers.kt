@@ -76,7 +76,9 @@ object WCMatchers {
             public override fun matchesSafely(view: FlowLayout): Boolean {
                 val child = view.getChildAt(0)
                 return if (child != null && child is TextView) {
-                    ContextCompat.getColor(context, color) == (child.background as GradientDrawable).color.defaultColor
+                    (child.background as GradientDrawable).color?.let { bgColor ->
+                        ContextCompat.getColor(context, color) == bgColor.defaultColor
+                    } ?: false
                 } else false
             }
 
@@ -163,7 +165,7 @@ object WCMatchers {
                 description.appendText("with number of items: $itemsCount")
             }
 
-            override fun matchesSafely(recyclerView: androidx.recyclerview.widget.RecyclerView): Boolean {
+            override fun matchesSafely(recyclerView: RecyclerView): Boolean {
                 val adapter = recyclerView.adapter as? SectionedRecyclerViewAdapter
                 return adapter?.getSectionTotal() == itemsCount
             }

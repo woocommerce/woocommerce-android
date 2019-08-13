@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 10:54:06+0000
+Translation-Revision-Date: 2019-08-07 02:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="login_invalid_site_url">请输入完整网址（如 example.com）。</string>
+    <string name="reviews_empty_message">尚无评论！</string>
+    <string name="review_notifications">评论</string>
+    <string name="update_failed">Woo 更新失败</string>
+    <string name="update_downloaded">Woo 已下载更新</string>
+    <string name="install">安装</string>
+    <string name="error_disabled_apis">无法获取设置：一些 API 不适用于此 OAuth 应用程序 ID + 帐户组合。</string>
+    <string name="settings_hiring">我们正在招贤纳士！</string>
+    <string name="feature_requests">功能请求</string>
+    <string name="orderdetail_copy_tracking_number">复制跟踪编号</string>
+    <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
+    <string name="login_refresh_app">刷新应用程序</string>
+    <string name="login_not_woo_store">%1$s似乎不是 WooCommerce 站点。请在您的站点上安装 WooCommerce 插件，然后 %2$s</string>
+    <string name="orderdetail_empty_shipping_address">未指定地址。</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
     <string name="enter_email_for_site">登录 WordPress.com 来连接 %1$s</string>
@@ -294,7 +308,6 @@ Language: zh_CN
     <string name="keep_editing">继续编辑</string>
     <string name="notification_wpcom_username_needed">请使用您的用户名和密码登录。</string>
     <string name="error_user_username_instead_of_email">请使用您的 WordPress.com 用户名（而不是电子邮件地址）登录。</string>
-    <string name="login_invalid_site_url">您输入的站点地址无效。请重新输入。</string>
     <string name="no_site_error">此地址下的站点不是 WordPress 站点。要让我们进行连接，此站点必须使用 WordPress。</string>
     <string name="support_help_center">帮助中心</string>
     <string name="product_name_virtual">虚拟 %s</string>
@@ -370,7 +383,6 @@ Language: zh_CN
     <string name="app_rating_message">欢迎您再次到来！如果您喜欢这款应用，我们希望能够在 Google Play 商店中获得您的评分。</string>
     <string name="app_rating_title">喜欢 Woo？</string>
     <string name="settings_selected_store">已选商店</string>
-    <string name="notifs_empty_message">尚无通知！</string>
     <string name="orders_empty_message_with_search">没有匹配的订单</string>
     <string name="orders_empty_message_with_filter">无订单</string>
     <string name="waiting_for_customers_contentdesc">等待客户图片</string>
@@ -513,7 +525,6 @@ Language: zh_CN
     <string name="login_empty_2fa">请输入验证码</string>
     <string name="login_empty_password">请输入密码</string>
     <string name="login_empty_username">请输入用户名</string>
-    <string name="login_empty_site_url">请输入站点地址</string>
     <string name="login_log_in_for_share_intent">登录 WordPress.com 以分享内容。</string>
     <string name="login_log_in_for_deeplink">登录 WordPress.com 以访问此文章。</string>
     <string name="login_error_while_adding_site">添加站点时出错。错误代码：%s</string>
@@ -567,7 +578,7 @@ Language: zh_CN
     <string name="settings_third_party_policy_header">第三方政策</string>
     <string name="settings_cookie_policy_header">Cookie 政策</string>
     <string name="settings_privacy_policy_header">隐私政策</string>
-    <string name="settings_footer">Automattic 用心打造</string>
+    <string name="settings_footer">Automattic 用心打造。%1$s</string>
     <string name="settings_tracking">我们使用其他跟踪工具，其中包括来自第三方的工具。了解这些工具及其使用方法。</string>
     <string name="settings_privacy_policy">阅读隐私政策</string>
     <string name="settings_privacy_detail">此信息有助于我们改善产品、开展与您更加相关的营销活动、为您打造 WooCommerce 个性化体验等，请参阅隐私政策了解详情</string>
@@ -666,7 +677,6 @@ Language: zh_CN
     <string name="login_prologue_banner">通过实时提醒管理订单、跟踪销售情况，以及监控商店活动。</string>
     <string name="login_jetpack_required">这款应用程序需要安装 Jetpack 才能关联您的商店。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">输入您要关联的 WooCommerce 商店的地址。</string>
     <string name="already_logged_in_wpcom">您已登录 WordPress.com 帐户，不能添加被其他帐户绑定的 WordPress.com 站点。</string>
     <string name="cant_open_url">无法打开链接</string>
     <string name="error_no_sms_app">未找到任何短信应用程序</string>
@@ -680,7 +690,6 @@ Language: zh_CN
     <string name="date_timeframe_older_two_days">超过 2 天</string>
     <string name="date_timeframe_yesterday">昨天</string>
     <string name="date_timeframe_today">今天</string>
-    <string name="notifications">通知</string>
     <string name="products">产品</string>
     <string name="discard">舍弃</string>
     <string name="this_year">今年</string>

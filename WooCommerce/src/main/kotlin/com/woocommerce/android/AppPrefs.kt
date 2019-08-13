@@ -2,7 +2,8 @@ package com.woocommerce.android
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.preference.PreferenceManager
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
 
@@ -20,7 +21,7 @@ object AppPrefs {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
         IS_USING_V3_API,
-        HAS_UNSEEN_NOTIFS,
+        HAS_UNSEEN_REVIEWS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS
@@ -42,7 +43,9 @@ object AppPrefs {
         // Play cha-ching sound on new order notifications
         NOTIFS_ORDERS_CHA_CHING_ENABLED,
         // Number of times the "mark all notifications read" icon was tapped
-        NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN
+        NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN,
+        // The app update for this version was cancelled by the user
+        CANCELLED_APP_VERSION_CODE,
     }
 
     fun init(context: Context) {
@@ -50,16 +53,24 @@ object AppPrefs {
     }
 
     fun getLastAppVersionCode(): Int {
-        return getInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
+        return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
     }
 
     fun setLastAppVersionCode(versionCode: Int) {
-        setInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
+        setDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE, versionCode)
+    }
+
+    fun getCancelledAppVersionCode(): Int {
+        return getDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE)
+    }
+
+    fun setCancelledAppVersionCode(versionCode: Int) {
+        setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
     }
 
     fun setSupportEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
-            setString(DeletablePrefKey.SUPPORT_EMAIL, email!!)
+            setString(DeletablePrefKey.SUPPORT_EMAIL, email)
         } else {
             remove(DeletablePrefKey.SUPPORT_EMAIL)
         }
@@ -115,10 +126,10 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
-    fun getHasUnseenNotifs() = getBoolean(DeletablePrefKey.HAS_UNSEEN_NOTIFS, false)
+    fun getHasUnseenReviews() = getBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, false)
 
-    fun setHasUnseenNotifs(hasUnseen: Boolean) {
-        setBoolean(DeletablePrefKey.HAS_UNSEEN_NOTIFS, hasUnseen)
+    fun setHasUnseenReviews(hasUnseen: Boolean) {
+        setBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, hasUnseen)
     }
 
     fun getNumTimesMarkAllReadSnackShown(): Int =
@@ -169,8 +180,11 @@ object AppPrefs {
     private fun setInt(key: PrefKey, value: Int) =
             PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
-    private fun getString(key: PrefKey, defaultValue: String = "") =
-            PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue)
+    private fun getString(key: PrefKey, defaultValue: String = ""): String {
+        return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue)?.let {
+            it
+        } ?: defaultValue
+    }
 
     private fun setString(key: PrefKey, value: String) =
             PreferenceUtils.setString(getPreferences(), key.toString(), value)
@@ -185,5 +199,24 @@ object AppPrefs {
 
     private fun remove(key: PrefKey) {
         getPreferences().edit().remove(key.toString()).apply()
+    }
+
+    /**
+     * Methods used to store values in SharedPreferences that are not backed up
+     * when app is installed/uninstalled. Currently, only used for storing appVersionCode.
+     * We might want to migrate this to it's own class if we are to use this for other
+     * attributes as well.
+     */
+    private fun getDeletableInt(key: PrefKey, default: Int = 0) =
+            PreferenceUtils.getInt(getDeleteablePreferences(), key.toString(), default)
+
+    private fun setDeletableInt(key: PrefKey, value: Int) =
+            PreferenceUtils.setInt(getDeleteablePreferences(), key.toString(), value)
+
+    private fun getDeleteablePreferences(): SharedPreferences {
+        return context.getSharedPreferences(
+                "${context.packageName}_deletable_preferences",
+                Context.MODE_PRIVATE
+        )
     }
 }

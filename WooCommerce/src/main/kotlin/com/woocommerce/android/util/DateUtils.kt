@@ -34,8 +34,7 @@ object DateUtils {
     /**
      * Returns a string in the format of {date} at {time}.
      */
-    fun getFriendlyShortDateAtTimeString(context: Context, rawDate: String): String {
-        val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
+    fun getFriendlyShortDateAtTimeString(context: Context, date: Date): String {
         val timeGroup = TimeGroup.getTimeGroupForDate(date)
         val dateLabel = when (timeGroup) {
             TimeGroup.GROUP_TODAY -> {
@@ -50,6 +49,11 @@ object DateUtils {
         }
         val timeString = DateFormat.getTimeFormat(context).format(date.time)
         return context.getString(R.string.date_at_time, dateLabel, timeString)
+    }
+
+    fun getFriendlyShortDateAtTimeString(context: Context, rawDate: String): String {
+        val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
+        return getFriendlyShortDateAtTimeString(context, date)
     }
 
     fun getFriendlyLongDateAtTimeString(context: Context, rawDate: String): String {

@@ -15,19 +15,15 @@ import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.hide
 import com.woocommerce.android.util.show
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import javax.inject.Inject
@@ -60,7 +56,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         super.onAttach(context)
     }
 
-    override fun onCreateFragmentView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -112,12 +108,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 listener = this,
                 selectedSite = selectedSite,
                 formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
-
-        dashboard_unfilled_orders.initView(object : DashboardUnfilledOrdersCard.Listener {
-            override fun onViewOrdersClicked() {
-                (activity as? TopLevelFragmentRouter)?.showOrderList(CoreOrderStatus.PROCESSING.value)
-            }
-        })
 
         scroll_view.setOnScrollChangeListener {
             v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
@@ -266,7 +256,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 }
                 presenter.loadStats(dashboard_stats.activeGranularity, forced)
                 presenter.loadTopEarnerStats(dashboard_top_earners.activeGranularity, forced)
-                presenter.fetchUnfilledOrderCount(forced)
                 presenter.fetchHasOrders()
             }
             else -> isRefreshPending = true
@@ -281,10 +270,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         dashboard_top_earners.showSkeleton(show)
     }
 
-    override fun showUnfilledOrdersSkeleton(show: Boolean) {
-        dashboard_unfilled_orders.showSkeleton(show)
-    }
-
     override fun onRequestLoadStats(period: StatsGranularity) {
         dashboard_stats.showErrorView(false)
         presenter.loadStats(period)
@@ -297,19 +282,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
         (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
-    }
-
-    override fun hideUnfilledOrdersCard() {
-        if (dashboard_unfilled_orders.visibility == View.VISIBLE) {
-            WooAnimUtils.scaleOut(dashboard_unfilled_orders, Duration.SHORT)
-        }
-    }
-
-    override fun showUnfilledOrdersCard(count: Int) {
-        dashboard_unfilled_orders.updateOrdersCount(count)
-        if (dashboard_unfilled_orders.visibility != View.VISIBLE) {
-            WooAnimUtils.scaleIn(dashboard_unfilled_orders, Duration.MEDIUM)
-        }
     }
 
     override fun showEmptyView(show: Boolean) {

@@ -1,25 +1,23 @@
 package com.woocommerce.android.ui.dashboard
 
-import com.nhaarman.mockito_kotlin.KArgumentCaptor
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.eq
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.spy
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.KArgumentCaptor
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_ORDER_STATS
@@ -28,9 +26,7 @@ import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_VISITOR_STATS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -107,72 +103,11 @@ class DashboardPresenterTest {
     }
 
     @Test
-    fun `Requests orders to fulfill count correctly`() {
-        presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount(forced = true)
-
-        verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
-        assertEquals(WCOrderAction.FETCH_ORDERS_COUNT, actionCaptor.firstValue.type)
-
-        val payload = actionCaptor.firstValue.payload as FetchOrdersCountPayload
-        assertEquals(CoreOrderStatus.PROCESSING.value, payload.statusFilter)
-    }
-
-    @Test
-    fun `Displays orders card correctly`() {
-        val totalOrders = 25
-        val filter = CoreOrderStatus.PROCESSING.value
-        presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount(forced = true)
-        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
-
-        presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
-            causeOfChange = FETCH_ORDERS_COUNT
-            canLoadMore = true
-        })
-
-        verify(dashboardView).showUnfilledOrdersCard(totalOrders)
-    }
-
-    @Test
-    fun `Hides orders card correctly`() {
-        val totalOrders = 0
-        val filter = CoreOrderStatus.PROCESSING.value
-        presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount(forced = true)
-        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
-
-        presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
-            causeOfChange = FETCH_ORDERS_COUNT
-        })
-
-        verify(dashboardView, times(1)).hideUnfilledOrdersCard()
-    }
-
-    @Test
-    fun `Hides orders card on error correctly`() {
-        val totalOrders = 25
-        val filter = CoreOrderStatus.PROCESSING.value
-        presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount(forced = true)
-        verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
-
-        presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
-            causeOfChange = FETCH_ORDERS_COUNT
-            error = OrderError()
-        })
-
-        verify(dashboardView, times(1)).hideUnfilledOrdersCard()
-    }
-
-    @Test
     fun `Handles FETCH-ORDERS order event correctly`() {
         presenter.takeView(dashboardView)
 
         // Simulate onOrderChanged event: FETCH-ORDERS - Dashboard should refresh
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
-        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
-        verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
@@ -182,8 +117,6 @@ class DashboardPresenterTest {
 
         // Simulate onOrderChanged event: UPDATE-ORDER-STATUS - Dashboard should refresh
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
-        verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
@@ -193,8 +126,6 @@ class DashboardPresenterTest {
 
         // Simulate onOrderChanged event: FETCH-ORDER-NOTES - Dashboard should ignore
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDER_NOTES })
-        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
-        verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard(forced = true)
     }
 
@@ -207,8 +138,6 @@ class DashboardPresenterTest {
             causeOfChange = FETCH_ORDERS
             error = OrderError()
         })
-        verify(dashboardView, times(0)).showUnfilledOrdersCard(any())
-        verify(dashboardView, times(0)).hideUnfilledOrdersCard()
         verify(dashboardView, times(0)).refreshDashboard(forced = any())
     }
 
@@ -336,21 +265,6 @@ class DashboardPresenterTest {
         onChanged.causeOfChange = FETCH_ORDER_STATS
         presenter.onWCStatsChanged(onChanged)
         verify(dashboardView, times(1)).showChartSkeleton(false)
-    }
-
-    @Test
-    fun `Show and hide unfilled orders skeleton correctly`() {
-        presenter.takeView(dashboardView)
-        presenter.fetchUnfilledOrderCount(forced = true)
-        verify(dashboardView, times(1)).showUnfilledOrdersSkeleton(true)
-
-        val totalOrders = 25
-        val filter = CoreOrderStatus.PROCESSING.value
-        presenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
-            causeOfChange = FETCH_ORDERS_COUNT
-        })
-
-        verify(dashboardView, times(1)).showUnfilledOrdersSkeleton(false)
     }
 
     @Test

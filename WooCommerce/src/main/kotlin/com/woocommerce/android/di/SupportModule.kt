@@ -1,5 +1,6 @@
 package com.woocommerce.android.di
 
+import android.content.Context
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.ZendeskHelper
 import dagger.Module
@@ -13,10 +14,11 @@ class SupportModule {
     @Singleton
     @Provides
     fun provideZendeskHelper(
+        context: Context,
         accountStore: AccountStore,
         siteStore: SiteStore,
         supportHelper: SupportHelper
-    ): ZendeskHelper = ZendeskHelper(accountStore, siteStore, supportHelper)
+    ): ZendeskHelper = ZendeskHelper(context, accountStore, siteStore, supportHelper)
 
     @Singleton
     @Provides

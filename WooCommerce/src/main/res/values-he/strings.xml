@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-06-26 08:54:52+0000
+Translation-Revision-Date: 2019-08-07 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="login_invalid_site_url">יש להזין את כתובת האתר המלאה, לדוגמה example.com.</string>
+    <string name="reviews_empty_message">עוד אין ביקורות!</string>
+    <string name="review_notifications">ביקורות</string>
+    <string name="update_failed">העדכון של Woo נכשל</string>
+    <string name="update_downloaded">השירות של Woo הוריד עדכון</string>
+    <string name="install">להתקין</string>
+    <string name="error_disabled_apis">לא ניתן היה להביא את ההגדרות: חלק ממשקי ה-API לא זמינים בשילוב הנוכחי של מזהה אפליקציית OAuth ושל החשבון.</string>
+    <string name="settings_hiring">אנחנו מחפשים עובדים!</string>
+    <string name="feature_requests">בקשת תכונה</string>
+    <string name="orderdetail_copy_tracking_number">להעתקת מספר המעקב</string>
+    <string name="login_refresh_app_progress">בודק את השירות של WooCommerce…</string>
+    <string name="login_refresh_app">יש לרענן את האפליקציה</string>
+    <string name="login_not_woo_store">נראה שהאתר %1$s אינו אתר של WooCommerce. יש להתקין את התוסף של Woocommerce באתר שלך ולאחר מכן %2$s</string>
+    <string name="orderdetail_empty_shipping_address">לא צוינה כתובת.</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
     <string name="enter_email_for_site">עליך להתחבר אל WordPress.com כדי להתחבר אל %1$s</string>
@@ -294,7 +308,6 @@ Language: he_IL
     <string name="keep_editing">המשך עריכה</string>
     <string name="notification_wpcom_username_needed">עליך להיכנס באמצעות שם המשתמש והסיסמה שלך.</string>
     <string name="error_user_username_instead_of_email">יש להיכנס באמצעות שם המשתמש ב-WordPress.com במקום כתובת המייל.</string>
-    <string name="login_invalid_site_url">כתובת האתר שהזנת לא תקפה. יש להזין את הכתובת שוב.</string>
     <string name="no_site_error">כתובת האתר שהזנת אינה עבור אתר ב-WordPress. כדי שנוכל להתחבר לאתר, האתר חייב להשתמש בפלטפורמה של WordPress.</string>
     <string name="support_help_center">מרכז העזרה</string>
     <string name="product_name_virtual">%s ויזואלי</string>
@@ -370,7 +383,6 @@ Language: he_IL
     <string name="app_rating_message">שמחים לראות אותך שוב! אם אהבת את האפליקציה, נשמח לראות את הדירוג שלך בחנות Google Play.</string>
     <string name="app_rating_title">מרוצה מ-Woo?</string>
     <string name="settings_selected_store">חנויות נבחרות</string>
-    <string name="notifs_empty_message">אין עדיין הודעות!</string>
     <string name="orders_empty_message_with_search">לא נמצאו הזמנות תואמות</string>
     <string name="orders_empty_message_with_filter">אין הזמנות</string>
     <string name="waiting_for_customers_contentdesc">בהמתנה לתמונות לקוחות</string>
@@ -513,7 +525,6 @@ Language: he_IL
     <string name="login_empty_2fa">יש להזין קוד אימות</string>
     <string name="login_empty_password">יש להזין סיסמה</string>
     <string name="login_empty_username">נא להכניס שם משתמש</string>
-    <string name="login_empty_site_url">נא להזין כתובת אתר</string>
     <string name="login_log_in_for_share_intent">יש להתחבר ל-WordPress.com כדי לשתף תוכן.</string>
     <string name="login_log_in_for_deeplink">יש להתחבר ל-WordPress.com כדי לקבל גישה לפוסט זה.</string>
     <string name="login_error_while_adding_site">שגיאה אירעה במהלך הוספת האתר. קוד שגיאה: %s</string>
@@ -567,7 +578,7 @@ Language: he_IL
     <string name="settings_third_party_policy_header">מדיניות של צד שלישי</string>
     <string name="settings_cookie_policy_header">מדיניות קובצי ה-Cookie</string>
     <string name="settings_privacy_policy_header">מדיניות פרטיות</string>
-    <string name="settings_footer">נוצר באהבה על ידי Automattic</string>
+    <string name="settings_footer">נוצר באהבה על ידי Automattic. %1$s</string>
     <string name="settings_tracking">אנחנו משתמשים בכלים נוספים למעקב, כולל כלים של צד שלישי. אפשר לקרוא פרטים על אלו ועל אופן השליטה בהם.</string>
     <string name="settings_privacy_policy">עיון במדיניות פרטיות</string>
     <string name="settings_privacy_detail">המידע הזה עוזר לנו לשפר את המוצרים שלנו, להציג שיווק רלוונטי יותר, לספק לך חוויית שימוש אישית ב-WooCommerce ועוד, כפי שמפורט במדיניות הפרטיות שלנו</string>
@@ -666,7 +677,6 @@ Language: he_IL
     <string name="login_prologue_banner">ניהול הזמנות, מעקב אחר מכירות ואחר פעילות החנות באמצעות התראות בזמן אמת.</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
     <string name="at_username">‎@‎%s‎</string>
-    <string name="enter_site_address">יש להזין את הכתובת של חנות ה-WooCommerce שלך שאליה ברצונך להתחבר.</string>
     <string name="already_logged_in_wpcom">כבר התחברת לחשבון שלך ב-WordPress.com. אין באפשרותך להוסיף אתר WordPress.com שקשור לחשבון אחר.</string>
     <string name="cant_open_url">אי אפשר לפתוח את הקישור</string>
     <string name="error_no_sms_app">לא נמצאה אפליקציה של הודעות טקסט</string>
@@ -680,7 +690,6 @@ Language: he_IL
     <string name="date_timeframe_older_two_days">בן יותר מיומיים</string>
     <string name="date_timeframe_yesterday">אתמול</string>
     <string name="date_timeframe_today">היום</string>
-    <string name="notifications">הודעות</string>
     <string name="products">מוצרים</string>
     <string name="discard">הסתר</string>
     <string name="this_year">השנה</string>

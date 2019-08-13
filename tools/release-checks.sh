@@ -38,11 +38,5 @@ function printVersion() {
   echo "$BUILDFILE version $gradle_version"
 }
 
-function checkThatConfigurationFilesAreUpToDate() {
-  bundle exec fastlane run configure_validate
-  pOk
-}
-
 checkENStrings
-checkThatConfigurationFilesAreUpToDate
 printVersion
