@@ -1,3 +1,6 @@
+2.6
+-----
+ 
 2.5
 -----
 * Fixed rare crash after fulfilling an order and then minimizing the app.
