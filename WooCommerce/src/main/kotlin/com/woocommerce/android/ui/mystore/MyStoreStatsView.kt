@@ -169,9 +169,8 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 valueFormatter = StartEndDateAxisFormatter()
             }
 
-            axisLeft.isEnabled = false
-
-            with(axisRight) {
+            axisRight.isEnabled = false
+            with(axisLeft) {
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
