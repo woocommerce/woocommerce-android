@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
 import org.wordpress.android.util.BuildConfig
+import java.util.Locale
 
 object PackageUtils {
     const val PACKAGE_VERSION_CODE_DEFAULT = -1
@@ -13,6 +14,11 @@ object PackageUtils {
      * Return true if Debug build. false otherwise.
      */
     fun isDebugBuild() = BuildConfig.DEBUG
+
+    fun isBetaBuild(context: Context): Boolean {
+        val versionName = getVersionName(context).toLowerCase(Locale.ROOT)
+        return (versionName.contains("beta") || versionName.contains("rc"))
+    }
 
     private fun getPackageInfo(context: Context): PackageInfo? {
         return try {
