@@ -14,19 +14,24 @@
         android:id="@+id/empty_view_stats_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_window_background"
+        android:background="@color/white"
         android:gravity="center"
         android:orientation="vertical"
+        android:layout_marginBottom="@dimen/card_gutter"
+        style="@style/Woo.Card.List"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/todayStats_title"
-            style="@style/Woo.TextAppearance.Title.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_extra_large"
+            android:layout_marginStart="@dimen/margin_extra_large"
+            android:textSize="14sp"
+            android:textColor="@color/wc_grey_medium"
+            android:layout_gravity="left"
             android:text="@string/dashboard_stats_todays_stats"/>
 
         <View
@@ -43,25 +48,24 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_extra_large"/>
 
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            android:layout_marginStart="@dimen/margin_extra_large"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_extra_large"
-            android:background="@color/list_divider"/>
+            android:textColor="@color/wc_grey_mid"
+            android:textSize="13sp"
+            android:text="@string/dashboard_stats_updated_now"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
+        style="@style/Woo.Card.List"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_window_background"
+        android:background="@color/white"
         android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@+id/empty_view_stats_row">
+        android:orientation="vertical" app:layout_constraintTop_toBottomOf="@+id/empty_view_stats_row">
 
         <ImageView
             android:id="@+id/empty_view_image"
