@@ -19,6 +19,7 @@
     -->
     <string name="all">All</string>
     <string name="logging_in">Logging in</string>
+    <string name="loading_stores">Loading stores</string>
     <string name="signout">Log out</string>
     <string name="my_store">My store</string>
     <string name="orders">Orders</string>
@@ -66,6 +67,7 @@
     <string name="apply">Apply</string>
     <string name="error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="read_more">Read more</string>
+    <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
     <!--
         Date/Time Labels
     -->
