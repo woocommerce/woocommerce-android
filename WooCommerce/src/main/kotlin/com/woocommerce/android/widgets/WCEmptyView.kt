@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.hide
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.*
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DisplayUtils
+import java.util.Date
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private var showNoCustomersImage = true
@@ -87,6 +89,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(this, Duration.LONG)
         }
+
+        date_title.text = DateUtils.getDayOfWeekWithMonthAndDayFromDate(Date())
     }
 
     fun hide() {

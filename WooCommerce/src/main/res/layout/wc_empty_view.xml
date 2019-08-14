@@ -12,27 +12,26 @@
 
     <LinearLayout
         android:id="@+id/empty_view_stats_row"
+        style="@style/Woo.Card.List"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:gravity="center"
         android:orientation="vertical"
-        android:layout_marginBottom="@dimen/card_gutter"
-        style="@style/Woo.Card.List"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/todayStats_title"
+            android:id="@+id/date_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large"
+            android:layout_gravity="start"
             android:layout_marginStart="@dimen/margin_extra_large"
-            android:textSize="14sp"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:text="@string/dashboard_stats_todays_stats"
             android:textColor="@color/wc_grey_medium"
-            android:layout_gravity="left"
-            android:text="@string/dashboard_stats_todays_stats"/>
+            android:textSize="14sp"/>
 
         <View
             android:id="@+id/divider1"
@@ -52,9 +51,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_extra_large"
+            android:text="@string/dashboard_stats_updated_now"
             android:textColor="@color/wc_grey_mid"
-            android:textSize="13sp"
-            android:text="@string/dashboard_stats_updated_now"/>
+            android:textSize="13sp"/>
 
     </LinearLayout>
 
@@ -63,9 +62,9 @@
         style="@style/Woo.Card.List"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:background="@color/white"
-        android:gravity="center"
-        android:orientation="vertical" app:layout_constraintTop_toBottomOf="@+id/empty_view_stats_row">
+        android:gravity="center" android:orientation="vertical" app:layout_constraintTop_toBottomOf="@id/empty_view_stats_row">
 
         <ImageView
             android:id="@+id/empty_view_image"
