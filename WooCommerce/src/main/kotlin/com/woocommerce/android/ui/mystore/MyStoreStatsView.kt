@@ -5,6 +5,7 @@ import android.os.Handler
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -19,6 +20,7 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -40,7 +42,7 @@ import java.util.ArrayList
 import java.util.Date
 
 class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs), OnChartValueSelectedListener {
+    : LinearLayout(ctx, attrs), OnChartValueSelectedListener, BarChartGestureListener {
     init {
         View.inflate(context, R.layout.my_store_stats, this)
     }
@@ -200,6 +202,7 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
         }
         chart.setOnChartValueSelectedListener(this)
+        chart.onChartGestureListener = this
     }
 
     /**
@@ -240,6 +243,16 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
         // update the date bar
         listener.onChartValueSelected(date, activeGranularity)
+    }
+
+    /**
+     * Method called when a touch-gesture has ended on the chart (ACTION_UP, ACTION_CANCEL)
+     * If the touch gesture has ended, then display the entire chart data again
+     */
+    override fun onChartGestureEnd(me: MotionEvent?, lastPerformedGesture: ChartGesture?) {
+        if (lastPerformedGesture == ChartGesture.DRAG || lastPerformedGesture == ChartGesture.FLING) {
+            onNothingSelected()
+        }
     }
 
     /**
