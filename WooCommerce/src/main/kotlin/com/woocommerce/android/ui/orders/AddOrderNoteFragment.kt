@@ -149,7 +149,9 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         super.onSaveInstanceState(outState)
     }
 
-    override fun getNoteText() = addNote_editor.text.toString().trim()
+    override fun getNoteText(): String {
+        return addNote_editor?.text?.toString()?.trim() ?: ""
+    }
 
     /**
      * Prevent back press in the main activity if the user entered a note so we can confirm the discard
