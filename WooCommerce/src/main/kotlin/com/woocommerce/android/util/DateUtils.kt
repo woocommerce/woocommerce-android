@@ -241,8 +241,8 @@ object DateUtils {
     @Throws(IllegalArgumentException::class)
     fun getShortHourString(iso8601Date: String): String {
         return try {
-            val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", Locale.ROOT)
-            val targetFormat = SimpleDateFormat("hha", Locale.ROOT)
+            val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", Locale.getDefault())
+            val targetFormat = SimpleDateFormat("hha", Locale.getDefault())
             val date = originalFormat.parse(iso8601Date)
             targetFormat.format(date).toLowerCase().trimStart('0')
         } catch (e: Exception) {
