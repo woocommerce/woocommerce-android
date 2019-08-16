@@ -91,3 +91,18 @@ fun String.formatDateToFriendlyLongMonthDate(): String {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }
 }
+
+/**
+ * Method to convert month string from yyyy-MM-dd format to dd
+ * i.e. 2019-08-08 is formatted to 8
+ */
+@Throws(IllegalArgumentException::class)
+fun String.formatToDateOnly(): String {
+    return try {
+        val (year, month, day) = this.split("-")
+        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+        date.formatToDD()
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
+    }
+}

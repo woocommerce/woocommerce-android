@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
 import com.woocommerce.android.extensions.formatDateToWeeksInYear
 import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
+import com.woocommerce.android.extensions.formatToDateOnly
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -426,6 +427,34 @@ class DateUtilsTest {
 
         assertFailsWith(IllegalArgumentException::class) {
             "21".formatDateToFriendlyLongMonthDate()
+        }
+    }
+
+    @Test
+    fun `formatToDateOnly() returns correct values`() {
+        assertEquals("8", "2019-08-08".formatToDateOnly())
+        assertEquals("23", "2019-02-23".formatToDateOnly())
+        assertEquals("2", "2019-01-02".formatToDateOnly())
+        assertEquals("4", "2019-06-04".formatToDateOnly())
+        assertEquals("9", "2019-09-09".formatToDateOnly())
+        assertEquals("22", "2018-12-22".formatToDateOnly())
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "2019".formatToDateOnly()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "20-W12".formatToDateOnly()
+        }
+
+        // Test for invalid value handling
+        assertFailsWith(IllegalArgumentException::class) {
+            "".formatToDateOnly()
+        }
+
+        assertFailsWith(IllegalArgumentException::class) {
+            "21".formatToDateOnly()
         }
     }
 }
