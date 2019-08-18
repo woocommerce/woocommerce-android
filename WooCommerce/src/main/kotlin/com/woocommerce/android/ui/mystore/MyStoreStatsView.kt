@@ -25,6 +25,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
+import com.woocommerce.android.extensions.formatToMonthDateOnly
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
@@ -517,9 +518,24 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         private fun getLabelValue(dateString: String): String {
             return when (activeGranularity) {
                 StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
-                StatsGranularity.WEEKS -> dateString.formatToDateOnly()
+                StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
                 StatsGranularity.MONTHS -> dateString.formatToDateOnly()
                 StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
+            }
+        }
+
+        /**
+         * Method returns the formatted date for the [StatsGranularity.WEEKS] tab,
+         * if the date string is the first day of the month. i.e. date is equal to 1,
+         * then the formatted date would be `MM-d` format.
+         * Otherwise the formatted date would be `d` format
+         */
+        private fun getWeekLabelValue(dateString: String): String {
+            val formattedDateString = dateString.formatToDateOnly()
+            return if (formattedDateString == "1") {
+                dateString.formatToMonthDateOnly()
+            } else {
+                dateString.formatToDateOnly()
             }
         }
     }
