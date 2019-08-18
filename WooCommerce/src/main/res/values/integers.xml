@@ -2,4 +2,8 @@
 <resources>
     <integer name="anim_slide_transition">150</integer>
     <integer name="max_length_tracking_number">255</integer>
+    <integer name="stats_label_count_days">6</integer>
+    <integer name="stats_label_count_weeks">6</integer>
+    <integer name="stats_label_count_months">6</integer>
+    <integer name="stats_label_count_years">4</integer>
 </resources>
