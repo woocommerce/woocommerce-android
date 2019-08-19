@@ -26,6 +26,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.formatDateToYearMonth
+import com.woocommerce.android.extensions.formatToDateOnly
+import com.woocommerce.android.extensions.formatToMonthDateOnly
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
@@ -40,6 +42,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
 import java.util.ArrayList
 import java.util.Date
+import kotlin.math.round
 
 class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs), OnChartValueSelectedListener, BarChartGestureListener {
@@ -155,6 +158,16 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
         return context.resources.getDimensionPixelSize(resId)
     }
 
+    private fun getBarLabelCount(): Int {
+        val resId = when (activeGranularity) {
+            StatsGranularity.DAYS -> R.integer.stats_label_count_days
+            StatsGranularity.WEEKS -> R.integer.stats_label_count_weeks
+            StatsGranularity.MONTHS -> R.integer.stats_label_count_months
+            StatsGranularity.YEARS -> R.integer.stats_label_count_years
+        }
+        return context.resources.getInteger(resId)
+    }
+
     /**
      * One-time chart initialization with settings common to all granularities.
      */
@@ -165,15 +178,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
-
-                setLabelCount(2, true) // Only show first and last date
-
-                valueFormatter = StartEndDateAxisFormatter()
             }
 
-            axisLeft.isEnabled = false
-
-            with(axisRight) {
+            axisRight.isEnabled = false
+            with(axisLeft) {
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
@@ -354,6 +362,10 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             if (wasEmpty) {
                 animateY(duration)
             }
+            with(xAxis) {
+                setLabelCount(getBarLabelCount(), true)
+                valueFormatter = StartEndDateAxisFormatter()
+            }
         }
 
         hideMarker()
@@ -501,12 +513,43 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             return when (value) {
                 axis.mEntries.first() -> getStartValue()
                 axis.mEntries.max() -> getEndValue()
-                else -> ""
+                else -> getLabelValue(chartRevenueStats.keys.elementAt(round(value).toInt() - 1))
             }
         }
 
         fun getStartValue() = getEntryValue(chartRevenueStats.keys.first())
 
-        fun getEndValue() = getEntryValue(chartRevenueStats.keys.last())
+        fun getEndValue() = getLabelValue(chartRevenueStats.keys.last())
+
+        /**
+         * Displays the x-axis labels in the following format based on [StatsGranularity]
+         * [StatsGranularity.DAYS] would be 7am, 8am, 9am
+         * [StatsGranularity.WEEKS] would be Aug 31, Sept 1, 2, 3
+         * [StatsGranularity.MONTHS] would be Aug 1, 2, 3
+         * [StatsGranularity.YEARS] would be Jan, Feb, Mar
+         */
+        private fun getLabelValue(dateString: String): String {
+            return when (activeGranularity) {
+                StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
+                StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
+                StatsGranularity.MONTHS -> dateString.formatToDateOnly()
+                StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
+            }
+        }
+
+        /**
+         * Method returns the formatted date for the [StatsGranularity.WEEKS] tab,
+         * if the date string is the first day of the month. i.e. date is equal to 1,
+         * then the formatted date would be `MM-d` format.
+         * Otherwise the formatted date would be `d` format
+         */
+        private fun getWeekLabelValue(dateString: String): String {
+            val formattedDateString = dateString.formatToDateOnly()
+            return if (formattedDateString == "1") {
+                dateString.formatToMonthDateOnly()
+            } else {
+                dateString.formatToDateOnly()
+            }
+        }
     }
 }
