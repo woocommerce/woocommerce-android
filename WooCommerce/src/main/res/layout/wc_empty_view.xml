@@ -31,6 +31,7 @@
             android:layout_marginTop="@dimen/margin_extra_large"
             android:text="@string/dashboard_stats_todays_stats"
             android:textColor="@color/wc_grey_medium"
+            android:textStyle="bold"
             android:textSize="@dimen/text_medium"/>
 
         <View
