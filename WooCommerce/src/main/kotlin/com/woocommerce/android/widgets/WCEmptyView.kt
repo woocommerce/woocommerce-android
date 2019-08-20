@@ -54,6 +54,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     fun updateVisitorCount(visits: Int) {
         visitors_value.text = visits.toString()
+
+        // The empty view is only shown when there are no orders, which means the revenue is also 0
         orders_value.text = "0"
         revenue_value.text = "0"
     }
