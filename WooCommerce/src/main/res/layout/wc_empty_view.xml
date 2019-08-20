@@ -7,8 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_window_background"
-    android:orientation="vertical"
-    tools:visibility="visible">
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/empty_view_stats_row"
