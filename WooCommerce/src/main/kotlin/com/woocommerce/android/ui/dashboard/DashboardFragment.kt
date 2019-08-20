@@ -287,9 +287,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun showEmptyView(show: Boolean) {
         if (show) {
             empty_view.show(R.string.waiting_for_customers, showStats = true)
-            scroll_view.hide()
+            dashboard_view.hide()
         } else {
-            scroll_view.show()
+            dashboard_view.show()
             empty_view.hide()
         }
     }
