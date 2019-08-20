@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -54,6 +55,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
     fun init(fm: FragmentManager, listener: MainNavigationListener) {
         this.fragmentManager = fm
         this.listener = listener
+
+        // TODO for now the products tab is only shown in debug builds
+        menu.findItem(R.id.products).isVisible = BuildConfig.DEBUG
 
         navAdapter = NavAdapter()
         addTopDivider()
