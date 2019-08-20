@@ -41,6 +41,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
         private var previousNavPos: BottomNavigationPosition? = null
         private const val ORDER_BADGE_MAX = 99
         private const val ORDER_BADGE_MAX_LABEL = "$ORDER_BADGE_MAX+"
+
+        // TODO for now the products tab is only shown in debug builds
+        private val SHOULD_ENABLE_PRODUCT_LIST = BuildConfig.DEBUG
     }
 
     interface MainNavigationListener {
@@ -56,8 +59,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.fragmentManager = fm
         this.listener = listener
 
-        // TODO for now the products tab is only shown in debug builds
-        menu.findItem(R.id.products).isVisible = BuildConfig.DEBUG
+        menu.findItem(R.id.products).isVisible = SHOULD_ENABLE_PRODUCT_LIST
 
         navAdapter = NavAdapter()
         addTopDivider()
