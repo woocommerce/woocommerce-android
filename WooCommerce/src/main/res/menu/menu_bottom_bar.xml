@@ -12,6 +12,11 @@
         android:title="@string/orders"/>
 
     <item
+        android:id="@+id/products"
+        android:icon="@drawable/ic_menu_products_list"
+        android:title="@string/products"/>
+
+    <item
         android:id="@+id/reviews"
         android:icon="@drawable/ic_comment"
         android:title="@string/review_notifications"/>
