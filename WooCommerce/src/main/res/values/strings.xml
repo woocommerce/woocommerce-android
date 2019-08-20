@@ -151,7 +151,6 @@
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
     <string name="dashboard_top_earners_total_spend">Total spend</string>
     <string name="dashboard_top_earners_total_orders">Total orders: %s</string>
-    <string name="dashboard_top_earners_content_description">Product image</string>
     <string name="dashboard_top_earners_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
@@ -295,8 +294,9 @@
     <string name="notifs_detail_loading_error">Error loading notification detail</string>
 
     <!--
-        Product detail
+        Products
     -->
+    <string name="product_image_content_description">Product image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>

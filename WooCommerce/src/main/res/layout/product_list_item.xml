@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    style="@style/Woo.ListItem">
+
+    <FrameLayout
+        android:id="@+id/productImageFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:background="@drawable/picture_frame"
+        android:padding="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/productImage"
+            android:layout_width="@dimen/product_icon_sz"
+            android:layout_height="@dimen/product_icon_sz"
+            android:contentDescription="@string/product_image_content_description"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_stats_grey_min_24dp" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/productName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/list_item_padding_intra_h"
+        android:layout_marginStart="@dimen/list_item_padding_intra_h"
+        android:maxLines="2"
+        android:textAppearance="@style/Woo.TextAppearance.ListItem.Title"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/productImageFrame"
+        app:layout_constraintTop_toTopOf="@id/productImageFrame"
+        tools:text="Awesome Sauce" />
+
+    <TextView
+        android:id="@+id/productStock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
+        app:layout_constraintStart_toStartOf="@+id/productName"
+        app:layout_constraintTop_toBottomOf="@+id/productName"
+        tools:text="Out of stock" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

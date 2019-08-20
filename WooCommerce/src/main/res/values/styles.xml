@@ -100,6 +100,11 @@
         <item name="android:textSize">@dimen/text_medium</item>
     </style>
 
+    <style name="Woo.TextAppearance.Medium.Grey">
+        <item name="android:textColor">@color/wc_grey_medium</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
     <style name="Woo.TextAppearance.Medium.Purple">
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
