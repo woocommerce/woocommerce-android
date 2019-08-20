@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -116,7 +117,7 @@ class MainActivity : AppUpgradeActivity(),
     private lateinit var navController: NavController
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
-    private var loginProgressDialog: ProgressDialog? = null
+    private var progressDialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -140,7 +141,7 @@ class MainActivity : AppUpgradeActivity(),
             if (hasMagicLinkLoginIntent()) {
                 // User has opened a magic link
                 // Trigger an account/site info fetch, and show a 'logging in...' dialog in the meantime
-                loginProgressDialog = ProgressDialog.show(this, "", getString(R.string.logging_in), true)
+                showProgressDialog(R.string.logging_in)
                 getAuthTokenFromIntent()?.let { presenter.storeMagicLinkToken(it) }
             } else {
                 showLoginScreen()
@@ -148,8 +149,16 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
+        // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
+        // which we don't want in this situation
+        if (AppPrefs.getDatabaseDowngraded()) {
+            presenter.fetchSitesAfterDowngrade()
+            AppPrefs.setDatabaseDowngraded(false)
+            return
+        }
+
         if (!selectedSite.exists()) {
-            updateSelectedSite()
+            showSitePickerScreen()
             return
         }
 
@@ -168,6 +177,15 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+    }
+
+    override fun hideProgressDialog() {
+        progressDialog?.apply { if (isShowing) { cancel() } }
+    }
+
+    override fun showProgressDialog(@StringRes stringId: Int) {
+        hideProgressDialog()
+        progressDialog = ProgressDialog.show(this, "", getString(stringId), true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -436,7 +454,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun updateSelectedSite() {
-        loginProgressDialog?.apply { if (isShowing) { cancel() } }
+        hideProgressDialog()
 
         if (!selectedSite.exists()) {
             showSitePickerScreen()

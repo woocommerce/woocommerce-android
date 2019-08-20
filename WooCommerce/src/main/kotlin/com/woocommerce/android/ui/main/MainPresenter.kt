@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -57,6 +58,7 @@ class MainPresenter @Inject constructor(
 
     private var isHandlingMagicLink: Boolean = false
     private var pendingUnfilledOrderCountCheck: Boolean = false
+    private var isFetchingSitesAfterDowngrade = false
 
     override fun takeView(view: MainContract.View) {
         mainView = view
@@ -103,6 +105,12 @@ class MainPresenter @Inject constructor(
         }
     }
 
+    override fun fetchSitesAfterDowngrade() {
+        isFetchingSitesAfterDowngrade = true
+        mainView?.showProgressDialog(R.string.loading_stores)
+        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
@@ -146,6 +154,14 @@ class MainPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
+        // if we were fetching sites due to a db downgrade, tell the main activity to update
+        if (isFetchingSitesAfterDowngrade) {
+            isFetchingSitesAfterDowngrade = false
+            mainView?.hideProgressDialog()
+            mainView?.updateSelectedSite()
+            return
+        }
+
         if (event.isError) {
             // TODO: Notify the user of the problem
             isHandlingMagicLink = false

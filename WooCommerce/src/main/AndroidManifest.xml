@@ -5,6 +5,7 @@
     <!-- Normal permissions, access automatically granted to app -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <!-- Dangerous permissions, access must be requested at runtime -->
 
