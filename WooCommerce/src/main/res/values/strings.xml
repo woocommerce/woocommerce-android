@@ -336,6 +336,7 @@
     <string name="product_name_external">Affiliate %s</string>
     <string name="product_name_grouped">Grouped %s</string>
     <string name="product_name_virtual">Virtual %s</string>
+    <string name="product_list_empty">No products yet</string>
 
     <!--
         Empty list messages

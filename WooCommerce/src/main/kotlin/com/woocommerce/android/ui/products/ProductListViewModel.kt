@@ -47,6 +47,8 @@ class ProductListViewModel @Inject constructor(
 
     private fun loadProducts(offset: Int = 0) {
         launch {
+            // if this is the initial load, first get the products from the db and if there are any show them
+            // immediately, otherwise make sure the skeleton shows
             if (offset == 0) {
                 val productsInDb = productRepository.getProductList()
                 if (productsInDb.isEmpty()) {
@@ -56,7 +58,6 @@ class ProductListViewModel @Inject constructor(
                 }
             }
 
-            _isSkeletonShown.value = true // TODO - remove this
             fetchProductList()
         }
     }

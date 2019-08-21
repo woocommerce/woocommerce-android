@@ -24,6 +24,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMoreListener {
@@ -152,8 +153,18 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMo
         loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
+    private fun showEmptyView(show: Boolean) {
+        if (show) {
+            val showImage = !DisplayUtils.isLandscape(activity)
+            empty_view.show(R.string.product_list_empty, showImage)
+        } else {
+            empty_view.hide()
+        }
+    }
+
     private fun showProductList(products: List<Product>) {
         productAdapter.productList = products
+        showEmptyView(products.isEmpty())
     }
 
     override fun onProductClick(remoteProductId: Long) {
