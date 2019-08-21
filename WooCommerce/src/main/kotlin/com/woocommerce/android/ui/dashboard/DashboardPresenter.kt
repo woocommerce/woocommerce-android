@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.FetchVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -188,6 +189,10 @@ class DashboardPresenter @Inject constructor(
                 } else {
                     val hasNoOrders = event.rowsAffected == 0
                     dashboardView?.showEmptyView(hasNoOrders)
+
+                    // fetch the DAILY visitor stats for the empty view (in case a different selected granularity)
+                    val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), DAYS, forced = true)
+                    dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
                 }
             }
         }
