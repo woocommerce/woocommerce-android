@@ -282,8 +282,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         AppPrefs.setLoginSiteAddress((redirectUrl ?: siteAddress).replaceFirst(protocolRegex, ""))
 
         if (hasJetpack) {
-            val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
-            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+            showEmailLoginScreen(siteAddress)
         } else {
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
@@ -446,5 +445,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun onEmailNeedMoreHelpClicked() {
         startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
+    }
+
+    override fun showEmailLoginScreen(siteAddress: String) {
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 }

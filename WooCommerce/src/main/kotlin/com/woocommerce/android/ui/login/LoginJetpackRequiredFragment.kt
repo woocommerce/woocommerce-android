@@ -44,6 +44,7 @@ class LoginJetpackRequiredFragment : Fragment() {
     interface LoginJetpackRequiredListener {
         fun showJetpackInstructions()
         fun showWhatIsJetpackDialog()
+        fun showEmailLoginScreen(siteAddress: String)
     }
 
     private var loginListener: LoginListener? = null
@@ -97,7 +98,7 @@ class LoginJetpackRequiredFragment : Fragment() {
                     WooClickableSpan {
                         // TODO TRACKS
 
-                        // TODO proceed to next screen
+                        jetpackLoginListener?.showEmailLoginScreen(siteAddress.orEmpty())
                     },
                     (jetpackInstalledText.length - signInText.length),
                     jetpackInstalledText.length,
