@@ -616,7 +616,6 @@ Language: ko_KR
     <string name="orderdetail_customer_provided_note">고객이 남긴 메모</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">결제 - 환불됨</string>
-    <string name="orderdetail_net">새 합계</string>
     <string name="orderdetail_refunded">환불됨</string>
     <string name="orderdetail_payment_summary_onhold">%s 대기 중인 결제</string>
     <string name="orderdetail_payment_summary_completed">%2$s을(를) 통해 %1$s 결제 받음</string>

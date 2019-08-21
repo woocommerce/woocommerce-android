@@ -616,7 +616,6 @@ Language: ru
     <string name="orderdetail_customer_provided_note">Примечание клиента</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Оплата — возвращено</string>
-    <string name="orderdetail_net">Новый итог</string>
     <string name="orderdetail_refunded">Средства возвращены</string>
     <string name="orderdetail_payment_summary_onhold">Ожидание оплаты за %s</string>
     <string name="orderdetail_payment_summary_completed">Платёж в размере %1$s получен через %2$s</string>

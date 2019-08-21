@@ -616,7 +616,6 @@ Language: nl
     <string name="orderdetail_customer_provided_note">Bericht van klant</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Betaling - Terugbetaald</string>
-    <string name="orderdetail_net">Nieuw totaalaantal</string>
     <string name="orderdetail_refunded">Terugbetaald</string>
     <string name="orderdetail_payment_summary_onhold">Betaling in de wacht voor %s</string>
     <string name="orderdetail_payment_summary_completed">Betaling van %1$s ontvangen via %2$s</string>

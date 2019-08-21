@@ -616,7 +616,6 @@ Language: ja_JP
     <string name="orderdetail_customer_provided_note">顧客提供メモ</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">支払い - 返金済み</string>
-    <string name="orderdetail_net">新しい合計</string>
     <string name="orderdetail_refunded">返金済み</string>
     <string name="orderdetail_payment_summary_onhold">%s 待ちの支払い</string>
     <string name="orderdetail_payment_summary_completed">%1$s の支払いを %2$s から受領しました</string>

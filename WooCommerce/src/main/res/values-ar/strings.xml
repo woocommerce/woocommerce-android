@@ -616,7 +616,6 @@ Language: ar
     <string name="orderdetail_customer_provided_note">الملاحظة المقدمة إلى العميل</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">الدفع - تم استرداد المبلغ</string>
-    <string name="orderdetail_net">الإجمالي الجديد</string>
     <string name="orderdetail_refunded">تم رد المبلغ</string>
     <string name="orderdetail_payment_summary_onhold">المبلغ بانتظار %s</string>
     <string name="orderdetail_payment_summary_completed">تم استلام المبلغ %1$s عبر %2$s</string>
