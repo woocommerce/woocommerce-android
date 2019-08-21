@@ -62,7 +62,13 @@ class ProductListAdapter(
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = productList[position]
-        holder.txtProductName.text = product.name
+
+        val productName = if (product.name.isEmpty()) {
+            context.getString(R.string.untitled)
+        } else {
+            product.name
+        }
+        holder.txtProductName.text = productName
 
         if (product.manageStock) {
             holder.txtProductStock.visibility = View.VISIBLE
