@@ -2,12 +2,16 @@ package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -15,6 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.widgets.WooClickableSpan
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
 import org.wordpress.android.login.LoginListener
 
@@ -81,6 +86,25 @@ class LoginJetpackRequiredFragment : Fragment() {
         btn_what_is_jetpack.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
             jetpackLoginListener?.showWhatIsJetpackDialog()
+        }
+
+        // Already have Jetpack? Sign in button setup
+        with(txt_signin_jetpack) {
+            val signInText = getString(R.string.login_sign_in)
+            val jetpackInstalledText = getString(R.string.login_jetpack_installed_sign_in, signInText)
+            val spannable = SpannableString(jetpackInstalledText)
+            spannable.setSpan(
+                    WooClickableSpan {
+                        // TODO TRACKS
+
+                        // TODO proceed to next screen
+                    },
+                    (jetpackInstalledText.length - signInText.length),
+                    jetpackInstalledText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            setText(spannable, TextView.BufferType.SPANNABLE)
+            movementMethod = LinkMovementMethod.getInstance()
         }
     }
 

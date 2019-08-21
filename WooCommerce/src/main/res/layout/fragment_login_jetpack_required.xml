@@ -13,7 +13,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -47,7 +48,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/btn_jetpack_instructions"
                 app:layout_constraintStart_toStartOf="@+id/btn_jetpack_instructions"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.41000003"/>
+                app:layout_constraintVertical_bias="0.48000002" />
 
             <Button
                 android:id="@+id/btn_jetpack_instructions"
@@ -71,9 +72,29 @@
                 android:layout_marginStart="45dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/login_jetpack_what_is"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_jetpack_instructions" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_jetpack_instructions"
+                app:layout_constraintVertical_bias="0.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/btn_jetpack_sign_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="8dp">
+
+        <TextView
+            android:id="@+id/txt_signin_jetpack"
+            style="@style/Woo.Login.JetpackRequired.SignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="14dp"
+            android:text="@string/login_jetpack_installed_sign_in"
+            tools:text="Already have Jetpack? Sign in" />
+    </FrameLayout>
 </LinearLayout>
