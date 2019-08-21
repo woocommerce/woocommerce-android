@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -26,6 +27,7 @@ class ProductListRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
+        private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
     private var continuation: Continuation<Boolean>? = null
@@ -45,7 +47,7 @@ class ProductListRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuation = it
                 isLoadingProducts = true
-                val payload = WCProductStore.FetchProductsPayload(selectedSite.get(), offset)
+                val payload = WCProductStore.FetchProductsPayload(selectedSite.get(), offset, PRODUCT_SORTING)
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
         }
@@ -54,7 +56,7 @@ class ProductListRepository @Inject constructor(
     }
 
     fun getProductList(): List<Product> {
-        val wcProducts = productStore.getProductsForSite(selectedSite.get())
+        val wcProducts = productStore.getProductsForSite(selectedSite.get(), PRODUCT_SORTING)
         val products = ArrayList<Product>()
         wcProducts.forEach {
             products.add(it.toAppModel())
