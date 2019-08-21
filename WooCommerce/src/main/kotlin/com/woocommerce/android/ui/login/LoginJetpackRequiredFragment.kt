@@ -78,11 +78,6 @@ class LoginJetpackRequiredFragment : Fragment() {
             jetpackLoginListener?.showJetpackInstructions()
         }
 
-        btn_contact_support.setOnClickListener {
-            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_CONTACT_SUPPORT_BUTTON_TAPPED)
-            loginListener?.helpSiteAddress(siteAddress)
-        }
-
         btn_what_is_jetpack.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
             jetpackLoginListener?.showWhatIsJetpackDialog()
