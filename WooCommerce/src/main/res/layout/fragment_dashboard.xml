@@ -2,7 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" xmlns:tools="http://schemas.android.com/tools">
 
     <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
         android:id="@+id/dashboard_refresh_layout"
@@ -21,6 +21,15 @@
                 android:animateLayoutChanges="true"
                 android:descendantFocusability="blocksDescendants"
                 android:orientation="vertical">
+
+                <!-- My Store stats reverted notice card -->
+                <com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard
+                    android:id="@+id/dashboard_stats_reverted_card"
+                    style="@style/Woo.Stats.Notice.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:visibility="visible"
+                    android:visibility="gone"/>
 
                 <!-- Order stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardStatsView

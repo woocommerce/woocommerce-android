@@ -160,6 +160,8 @@
     <string name="dashboard_fulfill_order_title_multiple">You have %1$d orders to fulfill</string>
     <string name="dashboard_fulfill_orders_msg">Review, prepare, and ship these pending orders</string>
 
+    <string name="my_store_stats_reverted_message">We have reverted to the old stats as we\ncouldn\'t find the WooCommerce Admin Plugin</string>
+
     <!--
         Order List View
     -->
