@@ -71,9 +71,7 @@
             android:paddingTop="@dimen/margin_small"
             android:textColor="@color/wc_grey_light"
             android:textSize="@dimen/text_medium"
-            android:visibility="gone"
-            tools:text="Private"
-            tools:visibility="visible" />
+            tools:text="Private" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

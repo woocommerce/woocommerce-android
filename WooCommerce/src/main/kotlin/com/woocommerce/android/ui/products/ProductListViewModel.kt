@@ -56,7 +56,7 @@ class ProductListViewModel @Inject constructor(
                 }
             }
 
-            _isSkeletonShown.value = true // TODO
+            _isSkeletonShown.value = true // TODO - remove this
             fetchProductList()
         }
     }
