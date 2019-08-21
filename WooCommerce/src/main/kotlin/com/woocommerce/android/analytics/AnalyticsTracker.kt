@@ -205,6 +205,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
         PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
 
+        // -- Product list
+        // TODO: add to spreadsheet
+        PRODUCT_LIST_LOADED,
+
         // -- Product detail
         PRODUCT_DETAIL_LOADED,
         PRODUCT_DETAIL_IMAGE_TAPPED,
