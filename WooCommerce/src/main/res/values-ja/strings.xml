@@ -711,7 +711,6 @@ Language: ja_JP
     <string name="taxes">税</string>
     <string name="payment">決済</string>
     <string name="shipping">配送</string>
-    <string name="order_total">合計</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">注文</string>

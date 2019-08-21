@@ -711,7 +711,6 @@ Language: sv_SE
     <string name="taxes">Momser</string>
     <string name="payment">Betalning</string>
     <string name="shipping">Frakt</string>
-    <string name="order_total">Totalt</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Ordrar</string>

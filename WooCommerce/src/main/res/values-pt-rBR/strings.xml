@@ -711,7 +711,6 @@ Language: pt_BR
     <string name="taxes">Impostos</string>
     <string name="payment">Pagamento</string>
     <string name="shipping">Envio</string>
-    <string name="order_total">Total</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Pedidos</string>

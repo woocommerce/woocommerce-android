@@ -711,7 +711,6 @@ Language: ar
     <string name="taxes">الضرائب</string>
     <string name="payment">السداد</string>
     <string name="shipping">الشحن</string>
-    <string name="order_total">الإجمالي</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">الطلبات</string>

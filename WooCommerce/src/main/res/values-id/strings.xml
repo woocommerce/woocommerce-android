@@ -711,7 +711,6 @@ Language: id
     <string name="taxes">Pajak</string>
     <string name="payment">Pembayaran</string>
     <string name="shipping">Pengiriman</string>
-    <string name="order_total">Total</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Pesanan</string>

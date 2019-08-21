@@ -711,7 +711,6 @@ Language: nl
     <string name="taxes">Belastingen</string>
     <string name="payment">Betaling</string>
     <string name="shipping">Verzending</string>
-    <string name="order_total">Totaal</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Bestellingen</string>

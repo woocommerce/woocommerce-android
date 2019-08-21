@@ -26,7 +26,6 @@
     <string name="email_address">Email address</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
-    <string name="order_total">Order total</string>
     <string name="shipping">Shipping</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
@@ -888,4 +887,5 @@
     <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
+    <string name="order_total">Order total</string>
 </resources>

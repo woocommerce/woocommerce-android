@@ -711,7 +711,6 @@ Language: zh_CN
     <string name="taxes">税费</string>
     <string name="payment">付款</string>
     <string name="shipping">配送</string>
-    <string name="order_total">合计</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">订单</string>

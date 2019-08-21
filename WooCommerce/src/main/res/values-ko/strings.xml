@@ -711,7 +711,6 @@ Language: ko_KR
     <string name="taxes">세금</string>
     <string name="payment">결제</string>
     <string name="shipping">배송</string>
-    <string name="order_total">총계</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">주문</string>

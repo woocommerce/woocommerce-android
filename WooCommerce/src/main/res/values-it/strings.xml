@@ -711,7 +711,6 @@ Language: it
     <string name="taxes">Tasse</string>
     <string name="payment">Pagamento</string>
     <string name="shipping">Spedizione</string>
-    <string name="order_total">Totale</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Ordini</string>
