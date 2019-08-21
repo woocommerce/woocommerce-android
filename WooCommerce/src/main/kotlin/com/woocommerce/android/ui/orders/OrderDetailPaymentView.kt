@@ -1,13 +1,17 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.util.DateTimeUtils
+import java.util.Date
 import kotlin.math.absoluteValue
 
 class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -18,7 +22,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
     }
 
     fun initView(order: WCOrderModel, formatCurrencyForDisplay: (String) -> String) {
-        paymentInfo_subTotal.text = formatCurrencyForDisplay(order.getOrderSubtotal().toString())
+        paymentInfo_productsTotal.text = formatCurrencyForDisplay(order.getOrderSubtotal().toString())
         paymentInfo_shippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
         paymentInfo_taxesTotal.text = formatCurrencyForDisplay(order.totalTax)
         paymentInfo_total.text = formatCurrencyForDisplay(order.total)
@@ -32,13 +36,21 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             when (order.status) {
                 CoreOrderStatus.PENDING.value,
                 CoreOrderStatus.ON_HOLD.value -> {
-                    paymentInfo_paymentMsg.text = context.getString(
-                            R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle)
+                    showPaymentWaitingMessage(order)
                 }
                 else -> {
-                    val totalPayment = formatCurrencyForDisplay(order.total)
-                    paymentInfo_paymentMsg.text = context.getString(
-                            R.string.orderdetail_payment_summary_completed, totalPayment, order.paymentMethodTitle)
+                    if (order.datePaid.isNotEmpty()) {
+                        val totalPayment = formatCurrencyForDisplay(order.total)
+                        paymentInfo_paidSection.visibility = View.VISIBLE
+                        paymentInfo_paid.text = totalPayment
+
+                        val dateStr = DateUtils.getLongDateFromString(context, order.datePaid)
+                        paymentInfo_paymentMsg.text = context.getString(
+                                R.string.orderdetail_payment_summary_completed, dateStr, order.paymentMethodTitle
+                        )
+                    } else {
+                        showPaymentWaitingMessage(order)
+                    }
                 }
             }
         }
@@ -64,5 +76,12 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_discountTotal.text = formatCurrencyForDisplay(order.discountTotal)
             paymentInfo_discountItems.text = context.getString(R.string.orderdetail_discount_items, order.discountCodes)
         }
+    }
+
+    private fun showPaymentWaitingMessage(order: WCOrderModel) {
+        paymentInfo_paidSection.visibility = View.GONE
+        paymentInfo_paymentMsg.text = context.getString(
+                R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
+        )
     }
 }
