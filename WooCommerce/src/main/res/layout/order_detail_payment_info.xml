@@ -262,5 +262,6 @@
         android:paddingTop="@dimen/card_item_padding_intra_h"
         android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+        android:textColor="@color/wc_grey_medium"
         tools:text="Payment of $49.00 received via credit card (PayPal)"/>
 </merge>
