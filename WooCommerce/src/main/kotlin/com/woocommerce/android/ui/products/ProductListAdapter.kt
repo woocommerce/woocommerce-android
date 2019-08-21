@@ -24,7 +24,7 @@ class ProductListAdapter(private val context: Context, private val listener: OnP
         RecyclerView.Adapter<ProductViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
 
-    private var productList: List<Product> = ArrayList()
+    var productList: List<Product> = ArrayList()
         set(value) {
             if (!isSameProductList(value)) {
                 field = value

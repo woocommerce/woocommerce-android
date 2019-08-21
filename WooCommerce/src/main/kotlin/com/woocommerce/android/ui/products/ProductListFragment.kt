@@ -34,13 +34,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener {
 
     private val skeletonView = SkeletonView()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        productAdapter = ProductListAdapter(activity!!, this)
-        productsRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
-        productsRecycler.adapter = productAdapter
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,9 +45,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // TODO this is temporary until we have a real product list
-        empty_view.visibility = View.VISIBLE
-        empty_view_text.text = "Some day this will be a beautiful new products list..."
+        productAdapter = ProductListAdapter(activity!!, this)
+        productsRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+        productsRecycler.adapter = productAdapter
     }
 
     override fun onAttach(context: Context?) {
@@ -126,7 +119,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener {
     }
 
     private fun showProductList(products: List<Product>) {
-        // TODO
+        productAdapter.productList = products
     }
 
     override fun onProductClick(remoteProductId: Long) {
