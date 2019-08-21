@@ -193,7 +193,7 @@
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
-    <string name="orderdetail_payment_summary_onhold">Payment waiting for %s</string>
+    <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
     <string name="orderdetail_payment_paid_by_customer">Paid by customer</string>
     <string name="orderdetail_refunded">Refunded</string>
     <string name="orderdetail_new_total">New Total</string>

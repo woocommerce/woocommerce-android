@@ -30,25 +30,23 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         } else {
             paymentInfo_paymentMsg.visibility = View.VISIBLE
             paymentInfo_divider2.visibility = View.VISIBLE
-            when (order.status) {
-                CoreOrderStatus.PENDING.value,
-                CoreOrderStatus.ON_HOLD.value -> {
-                    showPaymentWaitingMessage(order)
-                }
-                else -> {
-                    if (order.datePaid.isNotEmpty()) {
-                        val totalPayment = formatCurrencyForDisplay(order.total)
-                        paymentInfo_paidSection.visibility = View.VISIBLE
-                        paymentInfo_paid.text = totalPayment
 
-                        val dateStr = DateUtils.getMediumDateFromString(context, order.datePaid)
-                        paymentInfo_paymentMsg.text = context.getString(
-                                R.string.orderdetail_payment_summary_completed, dateStr, order.paymentMethodTitle
-                        )
-                    } else {
-                        showPaymentWaitingMessage(order)
-                    }
-                }
+            if (order.status == CoreOrderStatus.PENDING.value ||
+                    order.status == CoreOrderStatus.ON_HOLD.value ||
+                    order.datePaid.isEmpty()) {
+                paymentInfo_paid.text = formatCurrencyForDisplay("0") // Waiting for payment
+                paymentInfo_paymentMsg.text = context.getString(
+                        R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
+                )
+            } else {
+                paymentInfo_paid.text = formatCurrencyForDisplay(order.total)
+
+                val dateStr = DateUtils.getMediumDateFromString(context, order.datePaid)
+                paymentInfo_paymentMsg.text = context.getString(
+                        R.string.orderdetail_payment_summary_completed,
+                        dateStr,
+                        order.paymentMethodTitle
+                )
             }
         }
 
@@ -71,14 +69,10 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         } else {
             paymentInfo_discountSection.visibility = View.VISIBLE
             paymentInfo_discountTotal.text = formatCurrencyForDisplay(order.discountTotal)
-            paymentInfo_discountItems.text = context.getString(R.string.orderdetail_discount_items, order.discountCodes)
+            paymentInfo_discountItems.text = context.getString(
+                    R.string.orderdetail_discount_items,
+                    order.discountCodes
+            )
         }
-    }
-
-    private fun showPaymentWaitingMessage(order: WCOrderModel) {
-        paymentInfo_paidSection.visibility = View.GONE
-        paymentInfo_paymentMsg.text = context.getString(
-                R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
-        )
     }
 }
