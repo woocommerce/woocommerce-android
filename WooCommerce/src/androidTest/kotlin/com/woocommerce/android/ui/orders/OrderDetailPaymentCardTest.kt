@@ -74,7 +74,7 @@ class OrderDetailPaymentCardTest : TestBase() {
         onView(withId(R.id.paymentInfo_lblTitle)).check(matches(withText(appContext.getString(R.string.payment))))
 
         // check if order payment card sub total label matches this title: R.string.subtotal
-        onView(withId(R.id.paymentInfo_lblSubtotal)).check(matches(withText(appContext.getString(R.string.subtotal))))
+        onView(withId(R.id.paymentInfo_lblProductsTotal)).check(matches(withText(appContext.getString(R.string.subtotal))))
 
         // check if order payment card shipping label matches this title: R.string.shipping
         onView(withId(R.id.paymentInfo_lblShipping)).check(matches(withText(appContext.getString(R.string.shipping))))
@@ -83,7 +83,7 @@ class OrderDetailPaymentCardTest : TestBase() {
         onView(withId(R.id.paymentInfo_lblTaxes)).check(matches(withText(appContext.getString(R.string.taxes))))
 
         // check if order payment card total label matches this title: R.string.total
-        onView(withId(R.id.paymentInfo_lblTotal)).check(matches(withText(appContext.getString(R.string.total))))
+        onView(withId(R.id.paymentInfo_lblTotal)).check(matches(withText(appContext.getString(R.string.order_total))))
 
         // Since discount is available, check if order payment card discount label matches this title: R.string.discount
         onView(withId(R.id.paymentInfo_lblDiscount)).check(matches(withText(appContext.getString(R.string.discount))))
@@ -123,7 +123,7 @@ class OrderDetailPaymentCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // check if order payment card sub total matches this text
-        onView(withId(R.id.paymentInfo_subTotal)).check(matches(withText("€22.00")))
+        onView(withId(R.id.paymentInfo_productsTotal)).check(matches(withText("€22.00")))
 
         // check if order payment card shipping total matches this text
         onView(withId(R.id.paymentInfo_shippingTotal)).check(matches(withText("€12.00")))
@@ -154,7 +154,7 @@ class OrderDetailPaymentCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // check if order payment card sub total matches this text
-        onView(withId(R.id.paymentInfo_subTotal)).check(matches(withText("$22.00")))
+        onView(withId(R.id.paymentInfo_productsTotal)).check(matches(withText("$22.00")))
 
         // check if order payment card shipping total matches this text
         onView(withId(R.id.paymentInfo_shippingTotal)).check(matches(withText("$12.00")))
@@ -184,7 +184,7 @@ class OrderDetailPaymentCardTest : TestBase() {
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
         // check if order payment card sub total matches this text
-        onView(withId(R.id.paymentInfo_subTotal)).check(matches(withText("₹22.00")))
+        onView(withId(R.id.paymentInfo_productsTotal)).check(matches(withText("₹22.00")))
 
         // check if order payment card shipping total matches this text
         onView(withId(R.id.paymentInfo_shippingTotal)).check(matches(withText("₹12.00")))
