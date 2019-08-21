@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -123,6 +124,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener {
     }
 
     override fun onProductClick(remoteProductId: Long) {
-        // TODO
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 }

@@ -29,13 +29,6 @@ class ProductListViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
-    private val _exit = SingleLiveEvent<Unit>()
-    val exit: LiveData<Unit> = _exit
-
-    init {
-        // TODO ?
-    }
-
     fun start() {
         loadProductList()
     }
