@@ -13,13 +13,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import kotlinx.android.synthetic.main.wc_empty_view.*
 import javax.inject.Inject
 
-class ProductListFragment : TopLevelFragment() {
+class ProductListFragment : TopLevelFragment(), OnProductClickListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         fun newInstance() = ProductListFragment()
@@ -29,8 +30,16 @@ class ProductListFragment : TopLevelFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var viewModel: ProductListViewModel
+    private lateinit var productAdapter: ProductListAdapter
 
     private val skeletonView = SkeletonView()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        productAdapter = ProductListAdapter(activity!!, this)
+        productsRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+        productsRecycler.adapter = productAdapter
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -105,7 +114,7 @@ class ProductListFragment : TopLevelFragment() {
     }
 
     override fun scrollToTop() {
-        productsList.smoothScrollToPosition(0)
+        productsRecycler.smoothScrollToPosition(0)
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -117,6 +126,10 @@ class ProductListFragment : TopLevelFragment() {
     }
 
     private fun showProductList(products: List<Product>) {
+        // TODO
+    }
+
+    override fun onProductClick(remoteProductId: Long) {
         // TODO
     }
 }

@@ -4,11 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_PRODUCT_TAPPED
+import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductListAdapter.ProductViewHolder
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
@@ -16,9 +18,12 @@ import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import kotlinx.android.synthetic.main.product_list_item.view.*
+import org.wordpress.android.util.PhotonUtils
 
 class ProductListAdapter(private val context: Context, private val listener: OnProductClickListener) :
         RecyclerView.Adapter<ProductViewHolder>() {
+    private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
+
     private var productList: List<Product> = ArrayList()
         set(value) {
             if (!isSameProductList(value)) {
@@ -75,6 +80,21 @@ class ProductListAdapter(private val context: Context, private val listener: OnP
             holder.txtProductStock.visibility = View.GONE
         }
 
+        product.firstImageUrl?.let {
+            val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
+            GlideApp.with(context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(holder.imgProduct)
+        } ?: holder.imgProduct.setImageResource(R.drawable.ic_product)
+
+        if (product.status != null && product.status != ProductStatus.PUBLISH) {
+            holder.statusFrame.visibility = View.VISIBLE
+            holder.txtStatus.text = product.status.toString(context)
+        } else {
+            holder.statusFrame.visibility = View.GONE
+        }
+
         holder.itemView.setOnClickListener {
             AnalyticsTracker.track(PRODUCT_LIST_PRODUCT_TAPPED)
             listener.onProductClick(product.remoteId)
@@ -108,7 +128,10 @@ class ProductListAdapter(private val context: Context, private val listener: OnP
     }
 
     class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val imgProduct: ImageView = view.productImage
         val txtProductName: TextView = view.productName
         val txtProductStock: TextView = view.productStock
+        val txtStatus: TextView = view.statusBadge
+        val statusFrame: View = view.statusFrame
     }
 }
