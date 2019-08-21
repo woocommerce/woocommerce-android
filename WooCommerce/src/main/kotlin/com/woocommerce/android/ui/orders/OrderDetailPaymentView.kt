@@ -23,13 +23,14 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_shippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
         paymentInfo_taxesTotal.text = formatCurrencyForDisplay(order.totalTax)
         paymentInfo_total.text = formatCurrencyForDisplay(order.total)
+        paymentInfo_lblTitle.text = context.getString(R.string.payment)
 
         if (order.paymentMethodTitle.isEmpty()) {
             paymentInfo_paymentMsg.visibility = View.GONE
-            paymentInfo_divider2.visibility = View.GONE
+            paymentInfo_total_paid_divider.visibility = View.GONE
         } else {
             paymentInfo_paymentMsg.visibility = View.VISIBLE
-            paymentInfo_divider2.visibility = View.VISIBLE
+            paymentInfo_total_paid_divider.visibility = View.VISIBLE
 
             if (order.status == CoreOrderStatus.PENDING.value ||
                     order.status == CoreOrderStatus.ON_HOLD.value ||
@@ -52,13 +53,11 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
 
         // Populate or hide refund section
         if (order.refundTotal.absoluteValue > 0) {
-            paymentInfo_lblTitle.text = context.getString(R.string.orderdetail_payment_refunded)
             paymentInfo_refundSection.visibility = View.VISIBLE
             paymentInfo_refundTotal.text = formatCurrencyForDisplay(order.refundTotal.toString())
             val newTotal = order.total.toDouble() + order.refundTotal
             paymentInfo_newTotal.text = formatCurrencyForDisplay(newTotal.toString())
         } else {
-            paymentInfo_lblTitle.text = context.getString(R.string.payment)
             paymentInfo_refundSection.visibility = View.GONE
         }
 
