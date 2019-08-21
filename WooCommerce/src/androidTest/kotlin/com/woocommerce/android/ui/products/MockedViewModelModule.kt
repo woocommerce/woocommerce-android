@@ -40,7 +40,7 @@ internal abstract class MockedViewModelModule {
             site: SelectedSite
         ): ViewModelProvider.Factory {
             val mockNetworkStatus = mock<NetworkStatus>()
-            val mockProductRepository = mock<ProductRepository>()
+            val mockProductRepository = mock<ProductDetailRepository>()
 
             val mockedProductDetailViewModel = spy(
                     MockedProductDetailViewModel(
@@ -69,7 +69,7 @@ internal abstract class MockedViewModelModule {
         mainDispatcher: CoroutineDispatcher,
         wooCommerceStore: WooCommerceStore,
         selectedSite: SelectedSite,
-        productRepository: ProductRepository,
+        productRepository: ProductDetailRepository,
         networkStatus: NetworkStatus,
         private val currencyFormatter: CurrencyFormatter
     ) : ProductDetailViewModel(

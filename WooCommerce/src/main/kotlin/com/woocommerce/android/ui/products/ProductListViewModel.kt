@@ -17,7 +17,7 @@ import javax.inject.Named
 @OpenClassOnDebug
 class ProductListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    private val productRepository: ProductRepository,
+    private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
     private var lastOffset = 0
@@ -77,7 +77,7 @@ class ProductListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             val fetchedProducts = productRepository.fetchProductList(offset)
             lastOffset = offset
-            canLoadMore = productRepository.canLoadMore
+            canLoadMore = productRepository.canLoadMoreProducts
             productList.value = fetchedProducts
         } else {
             _showSnackbarMessage.value = R.string.offline_error

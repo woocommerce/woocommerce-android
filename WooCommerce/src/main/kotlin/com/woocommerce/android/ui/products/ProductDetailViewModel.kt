@@ -25,7 +25,7 @@ class ProductDetailViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
-    private val productRepository: ProductRepository,
+    private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(mainDispatcher) {
