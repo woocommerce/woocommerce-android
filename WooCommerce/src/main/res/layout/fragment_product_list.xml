@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/productsRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.woocommerce.android.ui.products.ProductListFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
