@@ -96,7 +96,9 @@ class LoginJetpackRequiredFragment : Fragment() {
             val spannable = SpannableString(jetpackInstalledText)
             spannable.setSpan(
                     WooClickableSpan {
-                        // TODO TRACKS
+                        AnalyticsTracker.track(
+                                Stat.LOGIN_JETPACK_REQUIRED_SIGN_IN_LINK_TAPPED,
+                                mapOf(AnalyticsTracker.KEY_URL to siteAddress.orEmpty()))
 
                         jetpackLoginListener?.showEmailLoginScreen(siteAddress.orEmpty())
                     },
