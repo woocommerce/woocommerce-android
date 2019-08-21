@@ -190,7 +190,7 @@ class DashboardPresenter @Inject constructor(
                     val hasNoOrders = event.rowsAffected == 0
                     dashboardView?.showEmptyView(hasNoOrders)
 
-                    // fetch visitor stats for the empty view
+                    // fetch the DAILY visitor stats for the empty view (in case a different selected granularity)
                     val visitsPayload = FetchVisitorStatsPayload(selectedSite.get(), DAYS, forced = true)
                     dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(visitsPayload))
                 }
