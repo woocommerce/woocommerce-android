@@ -45,6 +45,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
+@Suppress("SameParameterValue")
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
         HasSupportFragmentInjector, LoginJetpackRequiredListener, LoginEmailHelpDialogFragment.Listener {
     companion object {
@@ -289,7 +290,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
             // Show the 'Jetpack required' fragment
             val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
-            slideInFragment(jetpackReqFragment as Fragment, true, LoginJetpackRequiredFragment.TAG)
+            slideInFragment(
+                    fragment = jetpackReqFragment as Fragment,
+                    shouldAddToBackStack = true,
+                    tag = LoginJetpackRequiredFragment.TAG)
         }
     }
 
