@@ -74,7 +74,8 @@ class OrderDetailPaymentCardTest : TestBase() {
         onView(withId(R.id.paymentInfo_lblTitle)).check(matches(withText(appContext.getString(R.string.payment))))
 
         // check if order payment card sub total label matches this title: R.string.subtotal
-        onView(withId(R.id.paymentInfo_lblProductsTotal)).check(matches(withText(appContext.getString(R.string.subtotal))))
+        onView(withId(R.id.paymentInfo_lblProductsTotal))
+                .check(matches(withText(appContext.getString(R.string.subtotal))))
 
         // check if order payment card shipping label matches this title: R.string.shipping
         onView(withId(R.id.paymentInfo_lblShipping)).check(matches(withText(appContext.getString(R.string.shipping))))
