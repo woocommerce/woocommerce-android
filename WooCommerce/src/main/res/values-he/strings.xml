@@ -617,7 +617,7 @@ Language: he_IL
     <string name="orderdetail_customer_provided_note">הערה שסופקה על-ידי הלקוח</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">תשלום – הוחזר</string>
-    <string name="orderdetail_new_total">סך הכול חדש</string>
+    <string name="orderdetail_net">סך הכול חדש</string>
     <string name="orderdetail_refunded">הוחזר</string>
     <string name="orderdetail_payment_summary_onhold">התשלום בהמתנה עבור %s</string>
     <string name="orderdetail_payment_summary_completed">תשלום בסך %1$s התקבל באמצעות %2$s</string>

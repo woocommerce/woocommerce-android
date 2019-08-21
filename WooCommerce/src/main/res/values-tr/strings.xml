@@ -617,7 +617,7 @@ Language: tr
     <string name="orderdetail_customer_provided_note">Müşterinin Verdiği Not</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Ödeme - İade Edildi</string>
-    <string name="orderdetail_new_total">Yeni Toplam</string>
+    <string name="orderdetail_net">Yeni Toplam</string>
     <string name="orderdetail_refunded">İade Edildi</string>
     <string name="orderdetail_payment_summary_onhold">%s için ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%1$s için ödeme %2$s ile alındı</string>

@@ -617,7 +617,7 @@ Language: de
     <string name="orderdetail_customer_provided_note">Vom Kunden angegebener Hinweis</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Zahlung – rückerstattet</string>
-    <string name="orderdetail_new_total">Neue Summe</string>
+    <string name="orderdetail_net">Neue Summe</string>
     <string name="orderdetail_refunded">Rückerstattet</string>
     <string name="orderdetail_payment_summary_onhold">Zahlung wartet auf %s</string>
     <string name="orderdetail_payment_summary_completed">Zahlung von %1$s per %2$s erhalten</string>

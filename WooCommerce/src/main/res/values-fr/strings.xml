@@ -616,7 +616,7 @@ Language: fr
     <string name="orderdetail_customer_provided_note">Note fournie par le client</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Paiement - Remboursé</string>
-    <string name="orderdetail_new_total">Nouveau total</string>
+    <string name="orderdetail_net">Nouveau total</string>
     <string name="orderdetail_refunded">Remboursé</string>
     <string name="orderdetail_payment_summary_onhold">Paiement en attente pour %s</string>
     <string name="orderdetail_payment_summary_completed">Paiement de %1$s reçu via %2$s</string>

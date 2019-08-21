@@ -617,7 +617,7 @@ Language: id
     <string name="orderdetail_customer_provided_note">Catatan yang Diberikan Pelanggan</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Pembayaran - Dana Dikembalikan</string>
-    <string name="orderdetail_new_total">Total Baru</string>
+    <string name="orderdetail_net">Total Baru</string>
     <string name="orderdetail_refunded">Dana dikembalikan</string>
     <string name="orderdetail_payment_summary_onhold">Pembayaran menunggu %s</string>
     <string name="orderdetail_payment_summary_completed">Pembayaran %1$s diterima melalui %2$s</string>

@@ -617,7 +617,7 @@ Language: zh_TW
     <string name="orderdetail_customer_provided_note">顧客所提出的備註</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">付款 - 已退款</string>
-    <string name="orderdetail_new_total">新增總數</string>
+    <string name="orderdetail_net">新增總數</string>
     <string name="orderdetail_refunded">已退款</string>
     <string name="orderdetail_payment_summary_onhold">付款正在等待 %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s 的款項已透過 %2$s 收到</string>
