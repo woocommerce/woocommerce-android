@@ -56,6 +56,7 @@ class ProductListViewModel @Inject constructor(
                 }
             }
 
+            _isSkeletonShown.value = true // TODO
             fetchProductList()
         }
     }

@@ -134,7 +134,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMo
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(productsContainer, R.layout.skeleton_product_list, delayed = true)
+            skeletonView.show(productsRecycler, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
         }

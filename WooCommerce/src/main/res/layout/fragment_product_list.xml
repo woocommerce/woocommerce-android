@@ -6,24 +6,21 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/productsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
         android:focusable="true">
 
-        <!-- Product List View -->
-        <LinearLayout
-            android:id="@+id/productsView"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/productsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/productsRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+            android:visibility="gone" />
 
         <ProgressBar
             android:id="@+id/loadMoreProgress"
@@ -35,11 +32,5 @@
             android:layout_marginBottom="@dimen/margin_large"
             android:visibility="gone"
             tools:visibility="visible" />
-
-        <com.woocommerce.android.widgets.WCEmptyView
-            android:id="@+id/empty_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
     </RelativeLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

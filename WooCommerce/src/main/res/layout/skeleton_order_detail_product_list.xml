@@ -34,22 +34,6 @@
 
     <include layout="@layout/skeleton_product_list_item"/>
 
-    <include layout="@layout/skeleton_product_list_item"/>
-
-    <include layout="@layout/skeleton_product_list_item"/>
-
-    <include layout="@layout/skeleton_product_list_item"/>
-
-    <include layout="@layout/skeleton_product_list_item"/>
-
-    <include layout="@layout/skeleton_product_list_item"/>
-
-    <include layout="@layout/skeleton_product_list_item"/>
-
-    <include layout="@layout/skeleton_product_list_item"/>
-
-    <include layout="@layout/skeleton_product_list_item"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
