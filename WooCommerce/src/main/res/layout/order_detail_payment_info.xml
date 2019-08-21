@@ -21,6 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:orientation="horizontal">
 
         <TextView
@@ -28,7 +29,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingTop="@dimen/card_item_padding_intra_h"
             android:text="@string/products_total"
             android:textAlignment="viewStart"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"/>
@@ -37,7 +37,6 @@
             android:id="@+id/paymentInfo_productsTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/card_item_padding_intra_h"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
             tools:text="$45.00"/>
     </LinearLayout>
@@ -49,7 +48,7 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/card_item_padding_intra_h"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -85,7 +84,7 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/card_item_padding_intra_h">
+        android:layout_marginTop="@dimen/card_item_padding_intra_h">
 
         <TextView
             android:id="@+id/paymentInfo_lblShipping"
@@ -110,8 +109,7 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:orientation="horizontal"
-        android:paddingBottom="@dimen/card_item_padding_intra_h"
-        android:paddingTop="@dimen/card_item_padding_intra_h">
+        android:layout_marginTop="@dimen/card_item_padding_intra_h">
 
         <TextView
             android:id="@+id/paymentInfo_lblTaxes"
@@ -135,10 +133,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/card_item_padding_intra_h"
-        android:paddingTop="@dimen/card_item_padding_intra_h">
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/paymentInfo_lblTotal"
@@ -162,7 +158,7 @@
         android:id="@+id/paymentInfo_total-paid_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
         android:background="@color/list_divider"
         app:srcCompat="@drawable/list_divider"/>
 
@@ -171,6 +167,7 @@
         android:id="@+id/paymentInfo_paidSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
         android:focusable="true"
         android:orientation="horizontal">
 
@@ -179,7 +176,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingTop="@dimen/card_item_padding_intra_h"
             android:text="@string/orderdetail_payment_paid_by_customer"
             android:textAlignment="viewStart"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold" />
@@ -188,7 +184,6 @@
             android:id="@+id/paymentInfo_paid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/card_item_padding_intra_h"
             android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
             tools:text="$45.00"/>
 
@@ -198,7 +193,6 @@
         android:id="@+id/paymentInfo_paymentMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/card_item_padding_intra_h"
         android:layout_marginTop="@dimen/card_item_padding_intra_h"
         android:textAlignment="viewStart"
         android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
@@ -211,7 +205,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -226,8 +220,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h"
             android:focusable="true"
+            android:layout_marginTop="@dimen/card_item_padding_intra_double"
             android:orientation="horizontal">
 
             <TextView
@@ -252,7 +246,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h"
+            android:layout_marginTop="@dimen/card_item_padding_intra_double"
             android:background="@color/list_divider"
             app:srcCompat="@drawable/list_divider"/>
 
@@ -262,8 +256,7 @@
             android:layout_height="wrap_content"
             android:focusable="true"
             android:orientation="horizontal"
-            android:paddingBottom="@dimen/card_item_padding_intra_h"
-            android:paddingTop="@dimen/card_item_padding_intra_h">
+            android:layout_marginTop="@dimen/card_item_padding_intra_double">
 
             <TextView
                 android:id="@+id/paymentInfo_lblNet"
