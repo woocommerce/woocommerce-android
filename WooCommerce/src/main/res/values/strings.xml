@@ -140,6 +140,7 @@
     <string name="dashboard_state_no_data">No data available</string>
     <string name="dashboard_stats_error">Error fetching data</string>
     <string name="dashboard_stats_error_content_description">Error image</string>
+    <string name="dashboard_stats_todays_stats">Today\'s Stats</string>
 
     <string name="dashboard_stats_updated_now">Updated moments ago</string>
     <string name="dashboard_stats_updated_minutes">Updated %d minutes ago</string>

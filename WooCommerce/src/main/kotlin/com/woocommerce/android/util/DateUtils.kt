@@ -218,4 +218,9 @@ object DateUtils {
      * Formats a date object and returns it in the format of yyyy-MM-dd
      */
     fun getYearMonthDayStringFromDate(date: Date): String = yyyyMMddFormat.format(date)
+
+    fun getDayOfWeekWithMonthAndDayFromDate(date: Date): String {
+        val dateFormat = SimpleDateFormat("EEEE, MMM dd", Locale.US)
+        return dateFormat.format(date)
+    }
 }
