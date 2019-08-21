@@ -5,23 +5,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductListAdapter.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
-import kotlinx.android.synthetic.main.wc_empty_view.*
 import javax.inject.Inject
 
-class ProductListFragment : TopLevelFragment(), OnProductClickListener {
+class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMoreListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         fun newInstance() = ProductListFragment()
@@ -46,9 +49,22 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        productAdapter = ProductListAdapter(activity!!, this)
-        productsRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+        productAdapter = ProductListAdapter(activity!!, this, this)
+        productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
+
+        productsRefreshLayout?.apply {
+            setColorSchemeColors(
+                    ContextCompat.getColor(activity!!, R.color.colorPrimary),
+                    ContextCompat.getColor(activity!!, R.color.colorAccent),
+                    ContextCompat.getColor(activity!!, R.color.colorPrimaryDark)
+            )
+            scrollUpChild = productsRecycler
+            setOnRefreshListener {
+                AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
+                viewModel.refreshProducts()
+            }
+        }
     }
 
     override fun onAttach(context: Context?) {
@@ -73,28 +89,33 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ProductListViewModel::class.java).also {
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(ProductListViewModel::class.java).also {
             setupObservers(it)
         }
         viewModel.start()
     }
 
     private fun setupObservers(viewModel: ProductListViewModel) {
+        viewModel.productList.observe(this, Observer {
+            showProductList(it)
+        })
+
         viewModel.isSkeletonShown.observe(this, Observer {
             showSkeleton(it)
         })
 
-        viewModel.productList.observe(this, Observer {
-            showProductList(it)
+        viewModel.isLoadingMore.observe(this, Observer {
+            showLoadMoreProgress(it)
+        })
+
+        viewModel.isRefreshing.observe(this, Observer {
+            productsRefreshLayout.isRefreshing = it
         })
 
         viewModel.showSnackbarMessage.observe(this, Observer {
             uiMessageResolver.showSnack(it)
         })
-
-        /*viewModel.exit.observe(this, Observer {
-            activity?.onBackPressed()
-        })*/
     }
 
     override fun getFragmentTitle() = getString(R.string.products)
@@ -119,11 +140,19 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener {
         }
     }
 
+    private fun showLoadMoreProgress(show: Boolean) {
+        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
     private fun showProductList(products: List<Product>) {
         productAdapter.productList = products
     }
 
     override fun onProductClick(remoteProductId: Long) {
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
+    }
+
+    override fun onRequestLoadMore() {
+        viewModel.loadMoreProducts()
     }
 }

@@ -20,7 +20,11 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import kotlinx.android.synthetic.main.product_list_item.view.*
 import org.wordpress.android.util.PhotonUtils
 
-class ProductListAdapter(private val context: Context, private val listener: OnProductClickListener) :
+class ProductListAdapter(
+    private val context: Context,
+    private val clickListener: OnProductClickListener,
+    private val loadMoreListener: OnLoadMoreListener
+) :
         RecyclerView.Adapter<ProductViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
 
@@ -34,6 +38,10 @@ class ProductListAdapter(private val context: Context, private val listener: OnP
 
     interface OnProductClickListener {
         fun onProductClick(remoteProductId: Long)
+    }
+
+    interface OnLoadMoreListener {
+        fun onRequestLoadMore()
     }
 
     init {
@@ -97,7 +105,11 @@ class ProductListAdapter(private val context: Context, private val listener: OnP
 
         holder.itemView.setOnClickListener {
             AnalyticsTracker.track(PRODUCT_LIST_PRODUCT_TAPPED)
-            listener.onProductClick(product.remoteId)
+            clickListener.onProductClick(product.remoteId)
+        }
+
+        if (position == itemCount - 1) {
+            loadMoreListener?.onRequestLoadMore()
         }
     }
 

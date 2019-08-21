@@ -209,6 +209,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // TODO: add to spreadsheet
         PRODUCT_LIST_LOADED,
         PRODUCT_LIST_PRODUCT_TAPPED,
+        PRODUCT_LIST_PULLED_TO_REFRESH,
 
         // -- Product detail
         PRODUCT_DETAIL_LOADED,

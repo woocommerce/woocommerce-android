@@ -20,7 +20,8 @@ class ProductListViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
-    private val lastOffset = -1
+    private var lastOffset = 0
+    private var canLoadMore = true
     val productList = MutableLiveData<List<Product>>()
 
     private val _isSkeletonShown = MutableLiveData<Boolean>()
@@ -29,8 +30,14 @@ class ProductListViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
+    private val _isLoadingMore = MutableLiveData<Boolean>()
+    val isLoadingMore: LiveData<Boolean> = _isLoadingMore
+
+    private val _isRefreshing = MutableLiveData<Boolean>()
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+
     fun start() {
-        loadProductList()
+        loadProducts()
     }
 
     override fun onCleared() {
@@ -38,26 +45,46 @@ class ProductListViewModel @Inject constructor(
         productRepository.onCleanup()
     }
 
-    private fun loadProductList(offset: Int = 0) {
+    private fun loadProducts(offset: Int = 0) {
         launch {
-            val productsInDb = productRepository.getProductList()
-            val shouldFetch = productsInDb.isEmpty() || offset != lastOffset
-            if (shouldFetch) {
-                _isSkeletonShown.value = true
-                fetchProductList(offset)
-            } else {
-                _isSkeletonShown.value = false
+            if (offset == 0) {
+                val productsInDb = productRepository.getProductList()
+                if (productsInDb.isEmpty()) {
+                    _isSkeletonShown.value = true
+                } else {
+                    productList.value = productsInDb
+                }
             }
+
+            fetchProductList()
         }
+    }
+
+    fun loadMoreProducts() {
+        if (canLoadMore) {
+            val offset = lastOffset + 25
+            _isLoadingMore.value = true
+            loadProducts(offset)
+        }
+    }
+
+    fun refreshProducts() {
+        _isRefreshing.value = true
+        loadProducts()
     }
 
     private suspend fun fetchProductList(offset: Int = 0) {
         if (networkStatus.isConnected()) {
             val fetchedProducts = productRepository.fetchProductList(offset)
+            lastOffset = offset
+            canLoadMore = productRepository.canLoadMore
             productList.value = fetchedProducts
         } else {
             _showSnackbarMessage.value = R.string.offline_error
         }
+
         _isSkeletonShown.value = false
+        _isLoadingMore.value = false
+        _isRefreshing.value = false
     }
 }

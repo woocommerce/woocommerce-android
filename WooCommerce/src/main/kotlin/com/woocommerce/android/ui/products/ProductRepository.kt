@@ -31,6 +31,7 @@ class ProductRepository @Inject constructor(
     }
 
     private var continuation: Continuation<Boolean>? = null
+    var canLoadMore = true
 
     init {
         dispatcher.register(this)
@@ -86,6 +87,7 @@ class ProductRepository @Inject constructor(
             AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
             continuation?.resume(true)
         } else if (event.causeOfChange == FETCH_PRODUCTS) {
+            canLoadMore = event.canLoadMore
             AnalyticsTracker.track(PRODUCT_LIST_LOADED)
             continuation?.resume(true)
         }
