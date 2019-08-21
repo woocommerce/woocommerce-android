@@ -328,6 +328,7 @@
     <string name="product_stock_status_instock">In stock</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
+    <string name="product_stock_count">%d in stock</string>
     <string name="product_backorders_no">Do not allow</string>
     <string name="product_backorders_yes">Allow</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
