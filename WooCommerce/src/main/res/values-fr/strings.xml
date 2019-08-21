@@ -711,7 +711,7 @@ Language: fr
     <string name="taxes">Taxes</string>
     <string name="payment">Paiement</string>
     <string name="shipping">Expédition</string>
-    <string name="total">Total</string>
+    <string name="order_total">Total</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Commandes</string>

@@ -712,7 +712,7 @@ Language: he_IL
     <string name="taxes">מיסים</string>
     <string name="payment">תשלום</string>
     <string name="shipping">משלוח</string>
-    <string name="total">סה\"כ</string>
+    <string name="order_total">סה\"כ</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">הזמנות</string>

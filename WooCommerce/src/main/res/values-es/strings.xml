@@ -712,7 +712,7 @@ Language: es
     <string name="taxes">Impuestos</string>
     <string name="payment">Pago</string>
     <string name="shipping">Envío</string>
-    <string name="total">Total</string>
+    <string name="order_total">Total</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Pedidos</string>

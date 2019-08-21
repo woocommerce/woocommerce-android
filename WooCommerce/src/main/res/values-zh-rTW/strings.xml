@@ -712,7 +712,7 @@ Language: zh_TW
     <string name="taxes">稅金</string>
     <string name="payment">付款</string>
     <string name="shipping">運送方式</string>
-    <string name="total">總計</string>
+    <string name="order_total">總計</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">訂單</string>

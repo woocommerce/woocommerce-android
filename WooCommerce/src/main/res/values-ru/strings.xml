@@ -712,7 +712,7 @@ Language: ru
     <string name="taxes">Налоги</string>
     <string name="payment">Оплата</string>
     <string name="shipping">Доставка</string>
-    <string name="total">Итого</string>
+    <string name="order_total">Итого</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Заказы</string>
