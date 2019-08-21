@@ -21,7 +21,7 @@ class ProductListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
     private val lastOffset = -1
-    private val productList = MutableLiveData<List<Product>>()
+    val productList = MutableLiveData<List<Product>>()
 
     private val _isSkeletonShown = MutableLiveData<Boolean>()
     val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
