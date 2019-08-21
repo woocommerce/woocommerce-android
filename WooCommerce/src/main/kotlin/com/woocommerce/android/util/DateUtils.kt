@@ -32,6 +32,14 @@ object DateUtils {
     }
 
     /**
+     * Returns a date string, such as January 3, 2000
+     */
+    fun getLongDateFromString(context: Context, rawDate: String): String {
+        val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
+        return DateFormat.getLongDateFormat(context).format(date)
+    }
+
+    /**
      * Returns a string in the format of {date} at {time}.
      */
     fun getFriendlyShortDateAtTimeString(context: Context, date: Date): String {
