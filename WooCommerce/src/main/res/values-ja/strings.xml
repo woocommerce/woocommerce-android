@@ -603,7 +603,6 @@ Language: ja_JP
     <string name="order_error_fetch_notes_generic">エラー通知を取得する際にエラーが発生しました</string>
     <string name="order_fulfill_marked_complete">注文が完了としてマークされました</string>
     <string name="order_fulfill_mark_complete">注文を完了としてマーク</string>
-    <string name="order_fulfill_order">注文を履行</string>
     <string name="orderdetail_addnote_contentdesc">注文メモを追加します</string>
     <string name="orderdetail_add_note">メモを追加</string>
     <string name="orderdetail_hide_billing">課金を非表示</string>

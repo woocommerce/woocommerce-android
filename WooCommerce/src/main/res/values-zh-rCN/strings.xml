@@ -603,7 +603,6 @@ Language: zh_CN
     <string name="order_error_fetch_notes_generic">抓取错误备注时出错</string>
     <string name="order_fulfill_marked_complete">订单已标记为完成</string>
     <string name="order_fulfill_mark_complete">将订单标记为完成</string>
-    <string name="order_fulfill_order">完成订单</string>
     <string name="orderdetail_addnote_contentdesc">添加订单备注</string>
     <string name="orderdetail_add_note">添加备注</string>
     <string name="orderdetail_hide_billing">隐藏账单</string>

@@ -603,7 +603,6 @@ Language: ar
     <string name="order_error_fetch_notes_generic">حدث خطأ أثناء إحضار الملاحظات</string>
     <string name="order_fulfill_marked_complete">تم وضع علامة مكتمل على الطلب</string>
     <string name="order_fulfill_mark_complete">وضع علامة مكتمل على الطلب</string>
-    <string name="order_fulfill_order">إتمام الطلب</string>
     <string name="orderdetail_addnote_contentdesc">إضافة ملاحظة طلب</string>
     <string name="orderdetail_add_note">إضافة ملاحظة</string>
     <string name="orderdetail_hide_billing">إخفاء الفوترة</string>

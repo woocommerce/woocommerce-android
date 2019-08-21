@@ -603,7 +603,6 @@ Language: ko_KR
     <string name="order_error_fetch_notes_generic">오류 메모를 가져오는 중 오류 발생</string>
     <string name="order_fulfill_marked_complete">주문이 완료로 표시됨</string>
     <string name="order_fulfill_mark_complete">주문을 완료로 표시</string>
-    <string name="order_fulfill_order">주문 처리</string>
     <string name="orderdetail_addnote_contentdesc">주문 메모 추가</string>
     <string name="orderdetail_add_note">메모 추가</string>
     <string name="orderdetail_hide_billing">청구 숨기기</string>

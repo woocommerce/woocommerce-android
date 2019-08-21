@@ -603,7 +603,6 @@ Language: sv_SE
     <string name="order_error_fetch_notes_generic">Det gick inte att hämta ordernoteringar</string>
     <string name="order_fulfill_marked_complete">Ordern har markerats som slutförd</string>
     <string name="order_fulfill_mark_complete">Markera ordern som slutförd</string>
-    <string name="order_fulfill_order">Fullfölj order</string>
     <string name="orderdetail_addnote_contentdesc">Lägg till en ordernotering</string>
     <string name="orderdetail_add_note">Lägg till en notering</string>
     <string name="orderdetail_hide_billing">Dölj fakturering</string>
