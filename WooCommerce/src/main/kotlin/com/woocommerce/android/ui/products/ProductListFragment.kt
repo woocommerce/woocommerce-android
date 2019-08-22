@@ -130,11 +130,13 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMo
     override fun getFragmentTitle() = getString(R.string.products)
 
     override fun refreshFragmentState() {
-        // TODO
+        if (isActive) {
+            viewModel.refreshProducts()
+        }
     }
 
     override fun onReturnedFromChildFragment() {
-        // TODO
+        // once we add the ability to edit from product detail this should refresh the product list to show any changes
     }
 
     override fun scrollToTop() {
@@ -163,7 +165,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMo
     }
 
     private fun showProductList(products: List<Product>) {
-        productAdapter.productList = products
+        productAdapter.setProductList(products)
         showEmptyView(products.isEmpty())
     }
 

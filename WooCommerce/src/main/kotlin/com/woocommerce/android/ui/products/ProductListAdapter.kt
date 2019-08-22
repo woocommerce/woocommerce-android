@@ -25,17 +25,9 @@ class ProductListAdapter(
     private val context: Context,
     private val clickListener: OnProductClickListener,
     private val loadMoreListener: OnLoadMoreListener
-) :
-        RecyclerView.Adapter<ProductViewHolder>() {
+) : RecyclerView.Adapter<ProductViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
-
-    var productList: List<Product> = ArrayList()
-        set(value) {
-            if (!isSameProductList(value)) {
-                field = value
-                notifyDataSetChanged()
-            }
-        }
+    private val productList = ArrayList<Product>()
 
     interface OnProductClickListener {
         fun onProductClick(remoteProductId: Long)
@@ -49,13 +41,17 @@ class ProductListAdapter(
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int): Long {
-        return productList[position].remoteId
+    fun setProductList(products: List<Product>) {
+        if (!isSameProductList(products)) {
+            productList.clear()
+            productList.addAll(products)
+            notifyDataSetChanged()
+        }
     }
 
-    override fun getItemCount(): Int {
-        return productList.size
-    }
+    override fun getItemId(position: Int) = productList[position].remoteId
+
+    override fun getItemCount() = productList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         return ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
