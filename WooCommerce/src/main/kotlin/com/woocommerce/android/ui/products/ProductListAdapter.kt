@@ -115,7 +115,7 @@ class ProductListAdapter(
         }
 
         if (position == itemCount - 1) {
-            loadMoreListener?.onRequestLoadMore()
+            loadMoreListener.onRequestLoadMore()
         }
     }
 
@@ -136,12 +136,12 @@ class ProductListAdapter(
             return null
         }
 
-        products.forEach {
-            findProduct(it)?.let { existingProduct ->
+        products.forEach { newProduct ->
+            findProduct(newProduct)?.let { existingProduct ->
                 // note we only check the fields that are actually displayed
-                if (it.stockQuantity != existingProduct.stockQuantity ||
-                        it.stockStatus != existingProduct.stockStatus ||
-                        it.status != existingProduct.status) {
+                if (newProduct.stockQuantity != existingProduct.stockQuantity ||
+                        newProduct.stockStatus != existingProduct.stockStatus ||
+                        newProduct.status != existingProduct.status) {
                     return false
                 }
             } ?: return false

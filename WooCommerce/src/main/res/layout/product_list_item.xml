@@ -32,12 +32,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_extra_large"
+        android:layout_marginEnd="@dimen/margin_extra_large"
+        app:layout_constrainedWidth="true"
         android:maxLines="2"
         android:textAppearance="@style/Woo.TextAppearance.ListItem.Title"
-        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/productStock"
         app:layout_constraintStart_toEndOf="@+id/productImageFrame"
+        app:layout_constraintEnd_toStartOf="@id/statusFrame"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         tools:text="Awesome Sauce" />
 
     <TextView
@@ -47,7 +50,9 @@
         android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/productName"
+        app:layout_constraintEnd_toEndOf="@+id/productName"
         app:layout_constraintTop_toBottomOf="@+id/productName"
+        app:layout_constraintHorizontal_bias="0.0"
         tools:text="Out of stock" />
 
     <FrameLayout
