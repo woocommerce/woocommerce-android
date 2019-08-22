@@ -504,7 +504,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun showSiteNotConnectedJetpackView(url: String) {
-        // TODO track error view shown
+        AnalyticsTracker.track(
+                Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
+                mapOf(AnalyticsTracker.KEY_URL to url))
 
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
@@ -521,7 +523,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             val spannable = SpannableString(notConnectedText)
             spannable.setSpan(
                     WooClickableSpan {
-                        // TODO tracks refresh app jetpack not connected
+                        AnalyticsTracker.track(Stat.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
 
                         progressDialog?.takeIf { !it.isShowing }?.dismiss()
                         progressDialog = ProgressDialog.show(

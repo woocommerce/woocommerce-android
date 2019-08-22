@@ -98,10 +98,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SITE_PICKER_AUTO_LOGIN_SUBMITTED(siteless = true),
         SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER(siteless = true),
         SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE(siteless = true),
+        SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK(siteless = true),
         SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED(siteless = true),
+        SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED(siteless = true),
         SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED(siteless = true),
         SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED(siteless = true),
         SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED(siteless = true),
+        SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED(siteless = true),
 
         // -- Dashboard
         DASHBOARD_PULLED_TO_REFRESH,
