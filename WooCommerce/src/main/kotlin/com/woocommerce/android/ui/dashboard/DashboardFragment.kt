@@ -19,11 +19,14 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.hide
+import com.woocommerce.android.util.show
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
@@ -80,6 +83,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     dashboard_refresh_layout.isRefreshing = false
                     refreshDashboard(forced = true)
                 }
+                scrollUpChild = scroll_view
             }
         }
         return view
@@ -204,6 +208,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (dashboard_stats.activeGranularity == granularity) {
             dashboard_stats.showVisitorStats(visitorStats)
         }
+
+        if (granularity == DAYS) {
+            empty_view.updateVisitorCount(visitorStats.values.sum())
+        }
     }
 
     override fun showVisitorStatsError(granularity: StatsGranularity) {
@@ -281,6 +289,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun showEmptyView(show: Boolean) {
-        if (show) empty_view.show(R.string.waiting_for_customers) else empty_view.hide()
+        if (show) {
+            empty_view.show(R.string.waiting_for_customers, showStats = true)
+            dashboard_view.hide()
+        } else {
+            dashboard_view.show()
+            empty_view.hide()
+        }
     }
 }

@@ -300,4 +300,9 @@ object DateUtils {
             throw IllegalArgumentException("Date string argument is not of format yyyy-MM: $iso8601Month")
         }
     }
+
+    fun getDayOfWeekWithMonthAndDayFromDate(date: Date): String {
+        val dateFormat = SimpleDateFormat("EEEE, MMM dd", Locale.US)
+        return dateFormat.format(date)
+    }
 }
