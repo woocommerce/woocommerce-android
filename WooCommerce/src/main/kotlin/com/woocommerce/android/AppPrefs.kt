@@ -172,6 +172,10 @@ object AppPrefs {
     fun getLoginUserBypassedJetpackRequired() =
             getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
 
+    fun removeLoginUserBypassedJetpackRequired() {
+        remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
+    }
+
     /**
      * Remove all user-related preferences.
      */

@@ -423,6 +423,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private fun processLoginSite(url: String) {
         presenter.getSiteModelByUrl(url)?.let { site ->
+            // Remove app prefs no longer needed by the login process
+            AppPrefs.removeLoginUserBypassedJetpackRequired()
+
             if (!site.hasWooCommerce) {
                 // Show not woo store message view.
                 showSiteNotWooStore(site)
