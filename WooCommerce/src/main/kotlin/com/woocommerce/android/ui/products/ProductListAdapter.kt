@@ -61,12 +61,15 @@ class ProductListAdapter(
         return ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
     }
 
-    private fun getStockStatusTextForProduct(product: Product): String {
+    private fun getProductStockStatusText(product: Product): String {
         return when (product.stockStatus) {
             InStock -> {
                 if (product.type == VARIABLE) {
-                    // TODO: we want to show the number of variations here but this will require a FluxC change
-                    context.getString(R.string.product_stock_status_instock)
+                    if (product.numVariations > 0) {
+                        context.getString(R.string.product_stock_status_instock_with_variations, product.numVariations)
+                    } else {
+                        context.getString(R.string.product_stock_status_instock)
+                    }
                 } else {
                     context.getString(R.string.product_stock_count, FormatUtils.formatInt(product.stockQuantity))
                 }
@@ -95,7 +98,7 @@ class ProductListAdapter(
 
         if (product.manageStock) {
             holder.txtProductStock.visibility = View.VISIBLE
-            holder.txtProductStock.text = getStockStatusTextForProduct(product)
+            holder.txtProductStock.text = getProductStockStatusText(product)
         } else {
             holder.txtProductStock.visibility = View.GONE
         }
@@ -133,7 +136,7 @@ class ProductListAdapter(
             return false
         }
 
-        fun findProduct(product: Product): Product? {
+        fun findProductById(product: Product): Product? {
             productList.forEach {
                 if (it.remoteId == product.remoteId) {
                     return it
@@ -142,13 +145,19 @@ class ProductListAdapter(
             return null
         }
 
+        fun isSameProduct(product1: Product, product2: Product): Boolean {
+            return product1.stockQuantity == product2.stockQuantity &&
+                    product1.stockStatus == product2.stockStatus &&
+                    product1.status == product2.status &&
+                    product1.manageStock == product2.manageStock &&
+                    product1.type == product2.type &&
+                    product1.numVariations == product2.numVariations &&
+                    product1.name == product2.name
+        }
+
         products.forEach { newProduct ->
-            findProduct(newProduct)?.let { existingProduct ->
-                // note we only check the fields that are actually displayed
-                if (newProduct.stockQuantity != existingProduct.stockQuantity ||
-                        newProduct.stockStatus != existingProduct.stockStatus ||
-                        newProduct.status != existingProduct.status ||
-                        newProduct.manageStock != existingProduct.manageStock) {
+            findProductById(newProduct)?.let { existingProduct ->
+                if (!isSameProduct(newProduct, existingProduct)) {
                     return false
                 }
             } ?: return false
