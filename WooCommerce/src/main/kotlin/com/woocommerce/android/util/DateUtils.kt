@@ -32,7 +32,7 @@ object DateUtils {
     }
 
     /**
-     * Returns a date string, such as Jan 3, 2000
+     * Takes a date string in ISO8601 standard and returns a string, such as Jan 3, 2000
      */
     fun getMediumDateFromString(context: Context, rawDate: String): String {
         val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
