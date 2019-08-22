@@ -23,11 +23,11 @@
     <TextView
         android:id="@+id/dashboard_date_range_value"
         style="@style/Woo.Stats.DateBar"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:paddingEnd="0dp"
+        android:paddingStart="0dp"
         tools:text="June 30-Jul 06"/>
 
     <FrameLayout
@@ -37,96 +37,7 @@
         android:background="@color/list_divider"
         app:srcCompat="@drawable/list_divider"/>
 
-    <LinearLayout
-        android:id="@+id/label_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:baselineAligned="false"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:id="@+id/visitors_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/visitors_label"
-                style="@style/Woo.TextAppearance.Title.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/dashboard_stats_visitors"
-                tools:text="Visitors"/>
-
-            <TextView
-                android:id="@+id/visitors_value"
-                style="@style/Woo.TextAppearance.Label.XL"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                tools:text="400"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/orders_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/orders_label"
-                style="@style/Woo.TextAppearance.Title.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/dashboard_stats_orders"
-                tools:text="Orders"/>
-
-            <TextView
-                android:id="@+id/orders_value"
-                style="@style/Woo.TextAppearance.Label.XL"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                tools:text="10"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/revenue_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/revenue_label"
-                style="@style/Woo.TextAppearance.Title.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/dashboard_stats_revenue"/>
-
-            <TextView
-                android:id="@+id/revenue_value"
-                style="@style/Woo.TextAppearance.Label.XL"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                tools:text="$1.6k"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    <include android:id="@+id/stats_view_row" layout="@layout/dashboard_main_stats_row" />
 
     <FrameLayout
         android:id="@+id/chart_container"
