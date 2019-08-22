@@ -1,3 +1,7 @@
+2.6
+-----
+* Added an option to bypass the Jetpack required screen during the login process and attempt to log into the site anyway.
+
 2.5
 -----
 * Fixed rare crash after fulfilling an order and then minimizing the app.
