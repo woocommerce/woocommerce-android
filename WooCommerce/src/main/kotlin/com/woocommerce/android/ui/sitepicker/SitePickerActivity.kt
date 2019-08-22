@@ -434,8 +434,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 siteSelected(site, isAutoLogin = true)
             }
         } ?: run {
-            // The url doesn't match any sites for this account.
-            showSiteNotConnectedView(url)
+            if (AppPrefs.getLoginUserBypassedJetpackRequired()) {
+                // The user was warned that Jetpack was required during the login
+                // process and continued with login anyway. It's likely we just
+                // can't connect to jetpack so show a different message.
+                showSiteNotConnectedJetpackView(url)
+            } else {
+                // The url doesn't match any sites for this account.
+                showSiteNotConnectedAccountView(url)
+            }
         }
     }
 
@@ -453,7 +460,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * to a site that is not connected to the account the user logged
      * in with.
      */
-    override fun showSiteNotConnectedView(url: String) {
+    override fun showSiteNotConnectedAccountView(url: String) {
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
                 mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
@@ -471,8 +478,69 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         with(button_primary) {
+            text = getString(R.string.login_try_another_account)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
+
+                presenter.logout()
+            }
+        }
+
+        with(button_secondary) {
+            visibility = if (hasConnectedStores) {
+                text = getString(R.string.login_view_connected_stores)
+
+                setOnClickListener {
+                    AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    showConnectedSites()
+                }
+
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        }
+    }
+
+    override fun showSiteNotConnectedJetpackView(url: String) {
+        // TODO track error view shown
+
+        site_picker_root.visibility = View.VISIBLE
+        no_stores_view.visibility = View.VISIBLE
+        button_email_help.visibility = View.GONE
+
+        with(no_stores_view) {
+            val refreshAppText = getString(R.string.login_refresh_app)
+            val notConnectedText = getString(
+                    R.string.login_not_connected_jetpack,
+                    url,
+                    refreshAppText
+            )
+
+            val spannable = SpannableString(notConnectedText)
+            spannable.setSpan(
+                    WooClickableSpan {
+                        // TODO tracks refresh app jetpack not connected
+
+                        progressDialog?.takeIf { !it.isShowing }?.dismiss()
+                        progressDialog = ProgressDialog.show(
+                                this@SitePickerActivity,
+                                null,
+                                getString(R.string.login_refresh_app_progress_jetpack))
+                        processLoginSite(url)
+                    },
+                    (notConnectedText.length - refreshAppText.length),
+                    notConnectedText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            setText(spannable, TextView.BufferType.SPANNABLE)
+            movementMethod = LinkMovementMethod.getInstance()
+        }
+
+        with(button_primary) {
+            text = getString(R.string.login_try_another_store)
+            setOnClickListener {
+                // TODO tracks
 
                 presenter.logout()
             }
@@ -535,6 +603,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         with(button_primary) {
+            text = getString(R.string.login_try_another_account)
+
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
 
