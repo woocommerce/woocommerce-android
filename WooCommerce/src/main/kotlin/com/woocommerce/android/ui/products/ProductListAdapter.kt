@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import kotlinx.android.synthetic.main.product_list_item.view.*
+import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 
 class ProductListAdapter(
@@ -60,6 +61,28 @@ class ProductListAdapter(
         return ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
     }
 
+    private fun getStockStatusTextForProduct(product: Product): String {
+        return when (product.stockStatus) {
+            InStock -> {
+                if (product.type == VARIABLE) {
+                    // TODO: we want to show the number of variations here but this will require a FluxC change
+                    context.getString(R.string.product_stock_status_instock)
+                } else {
+                    context.getString(R.string.product_stock_count, FormatUtils.formatInt(product.stockQuantity))
+                }
+            }
+            OutOfStock -> {
+                context.getString(R.string.product_stock_status_out_of_stock)
+            }
+            OnBackorder -> {
+                context.getString(R.string.product_stock_status_on_backorder)
+            }
+            else -> {
+                product.stockStatus.value
+            }
+        }
+    }
+
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = productList[position]
 
@@ -72,24 +95,7 @@ class ProductListAdapter(
 
         if (product.manageStock) {
             holder.txtProductStock.visibility = View.VISIBLE
-            holder.txtProductStock.text = when (product.stockStatus) {
-                InStock -> {
-                    if (product.type == VARIABLE) {
-                        context.getString(R.string.product_stock_status_instock)
-                    } else {
-                        context.getString(R.string.product_stock_count, product.stockQuantity)
-                    }
-                }
-                OutOfStock -> {
-                    context.getString(R.string.product_stock_status_out_of_stock)
-                }
-                OnBackorder -> {
-                    context.getString(R.string.product_stock_status_on_backorder)
-                }
-                else -> {
-                    product.stockStatus.value
-                }
-            }
+            holder.txtProductStock.text = getStockStatusTextForProduct(product)
         } else {
             holder.txtProductStock.visibility = View.GONE
         }
