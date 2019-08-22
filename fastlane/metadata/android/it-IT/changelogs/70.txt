@@ -1,0 +1,6 @@
+2.4:
+La scheda precedentemente nota come Notifiche si chiama ora Recensioni. Poiché le notifiche vengono attualmente visualizzate sotto Ordini, la scheda Notifiche aveva bisogno di una nuova identità. Abbiamo deciso di rinominarla 'Recensioni', poiché ora contiene solo recensioni.
+
+Il numero di ordini inevasi non è più in bacheca, ma è ora visualizzato come badge nell'elenco degli ordini.
+
+Ti verrà richiesto di effettuare gli aggiornamenti direttamente nell'app, evitando la scomodità di aprire il Play Store.

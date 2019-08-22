@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import androidx.annotation.StringRes
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import com.woocommerce.android.ui.base.TopLevelFragmentRouter
@@ -14,6 +15,7 @@ interface MainContract {
         fun hasMultipleStores(): Boolean
         fun selectedSiteChanged(site: SiteModel)
         fun fetchUnfilledOrderCount()
+        fun fetchSitesAfterDowngrade()
     }
 
     interface View : BaseView<Presenter>, TopLevelFragmentRouter {
@@ -32,5 +34,7 @@ interface MainContract {
         fun hideOrderBadge()
         fun showOrderBadge(count: Int)
         fun updateOrderBadge(hideCountUntilComplete: Boolean)
+        fun hideProgressDialog()
+        fun showProgressDialog(@StringRes stringId: Int)
     }
 }

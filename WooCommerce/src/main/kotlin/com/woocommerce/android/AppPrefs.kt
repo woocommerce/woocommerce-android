@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
 
@@ -25,7 +26,8 @@ object AppPrefs {
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
-        LOGIN_USER_BYPASSED_JETPACK_REQUIRED
+        LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
+        DATABASE_DOWNGRADED
     }
 
     /**
@@ -174,6 +176,11 @@ object AppPrefs {
 
     fun removeLoginUserBypassedJetpackRequired() {
         remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
+
+    fun getDatabaseDowngraded() = getBoolean(DATABASE_DOWNGRADED, false)
+
+    fun setDatabaseDowngraded(value: Boolean) {
+        setBoolean(DATABASE_DOWNGRADED, value)
     }
 
     /**

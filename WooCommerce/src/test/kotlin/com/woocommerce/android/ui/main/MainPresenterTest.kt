@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import org.junit.Before
@@ -157,5 +158,16 @@ class MainPresenterTest {
         })
 
         verify(mainContractView).hideOrderBadge()
+    }
+
+    @Test
+    fun `Handles database downgrade correctly`() {
+        if (BuildConfig.DEBUG) {
+            mainPresenter.takeView(mainContractView)
+            mainPresenter.fetchSitesAfterDowngrade()
+            verify(mainContractView).showProgressDialog(any())
+            mainPresenter.onSiteChanged(OnSiteChanged(1))
+            verify(mainContractView).updateSelectedSite()
+        }
     }
 }
