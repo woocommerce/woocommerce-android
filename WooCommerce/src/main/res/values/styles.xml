@@ -577,6 +577,23 @@
         <item name="android:layout_marginBottom">@dimen/margin_medium</item>
     </style>
 
+    <style name="Woo.Stats.Card.Expandable" parent="Woo.Card.Expandable">
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:layout_marginBottom">@dimen/margin_medium</item>
+    </style>
+
+    <style name="Woo.Stats.Availability.CardExtenderButton" parent="Woo.CardExtenderButton">
+        <item name="android:background">@drawable/button_white_bg</item>
+        <item name="android:textColor">@color/wc_grey_darkest</item>
+        <item name="android:drawableStart">@drawable/ic_gridicons_gift</item>
+        <item name="android:drawableEnd">@drawable/stats_availability_expander_selector</item>
+        <item name="android:paddingStart">@dimen/card_padding_start</item>
+        <item name="android:paddingTop">@dimen/card_padding_top</item>
+        <item name="android:paddingBottom">@dimen/card_padding_bottom</item>
+        <item name="android:drawablePadding">@dimen/card_padding_start</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
     <style name="Woo.Stats.DateBar" parent="Woo.TextView">
         <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:textColor">@color/wc_grey_darker</item>
