@@ -1,37 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/empty_view_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_window_background"
-    android:gravity="center"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/empty_view_image"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/empty_view_stats_row"
+        style="@style/Woo.Card.List"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:contentDescription="@string/waiting_for_customers_contentdesc"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/ic_woo_waiting_customers"/>
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/empty_view_text"
-        style="@style/Woo.TextAppearance.Bold"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/margin_extra_large"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:text="@string/dashboard_stats_todays_stats"
+            android:textColor="@color/wc_grey_medium"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_medium"/>
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:background="@color/list_divider"/>
+
+        <include
+            android:id="@+id/empty_view_row"
+            layout="@layout/dashboard_main_stats_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_extra_large"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:text="@string/dashboard_stats_updated_now"
+            android:textColor="@color/wc_grey_mid"
+            android:textSize="@dimen/text_caption"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        style="@style/Woo.Card.List"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_large"
-        tools:text="@string/waiting_for_customers"/>
+        android:layout_marginTop="@dimen/default_padding"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/empty_view_stats_row">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/empty_view_share_button"
-        style="@style/Woo.Button.Purple"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_large"
-        android:text="@string/share_store_button"/>
+        <ImageView
+            android:id="@+id/empty_view_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/waiting_for_customers_contentdesc"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/ic_woo_waiting_customers"/>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/empty_view_text"
+            style="@style/Woo.TextAppearance.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            tools:text="@string/waiting_for_customers"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/empty_view_share_button"
+            style="@style/Woo.Button.Purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="@string/share_store_button"/>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
