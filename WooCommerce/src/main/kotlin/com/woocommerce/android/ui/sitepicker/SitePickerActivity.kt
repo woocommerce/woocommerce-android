@@ -274,12 +274,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         no_stores_view.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
 
-        site_list_label.text = if (wcSites.size == 1) {
-            getString(R.string.login_connected_store)
-        } else if (calledFromLogin) {
-            getString(R.string.login_pick_store)
-        } else {
-            getString(R.string.site_picker_title)
+        site_list_label.text = when {
+            wcSites.size == 1 -> getString(R.string.login_connected_store)
+            calledFromLogin -> getString(R.string.login_pick_store)
+            else -> getString(R.string.site_picker_title)
         }
 
         siteAdapter.siteList = wcSites
@@ -527,7 +525,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                                 this@SitePickerActivity,
                                 null,
                                 getString(R.string.login_refresh_app_progress_jetpack))
-                        processLoginSite(url)
+                        // Tell the presenter to fetch a fresh list of
+                        // sites from the API. When the results come back the login
+                        // process will restart again.
+                        presenter.fetchSitesFromAPI()
                     },
                     (notConnectedText.length - refreshAppText.length),
                     notConnectedText.length,

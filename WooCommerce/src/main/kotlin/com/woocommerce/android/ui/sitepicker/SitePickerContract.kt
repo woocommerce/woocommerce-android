@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 interface SitePickerContract {
     interface Presenter : BasePresenter<View> {
         fun loadAndFetchSites()
+        fun fetchSitesFromAPI()
         fun fetchUpdatedSiteFromAPI(site: SiteModel)
         fun loadSites()
         fun getWooCommerceSites(): List<SiteModel>
