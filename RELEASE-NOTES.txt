@@ -1,6 +1,7 @@
 2.6
 -----
- 
+* Fixed a bug in the Jetpack connection check during login where a small percentage of sites with Jetpack properly connected were coming back as not connected and preventing users from logging in successfully.
+
 2.5
 -----
 * Fixed rare crash after fulfilling an order and then minimizing the app.
