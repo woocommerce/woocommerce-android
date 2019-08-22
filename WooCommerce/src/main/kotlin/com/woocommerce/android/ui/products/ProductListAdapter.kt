@@ -141,7 +141,8 @@ class ProductListAdapter(
                 // note we only check the fields that are actually displayed
                 if (newProduct.stockQuantity != existingProduct.stockQuantity ||
                         newProduct.stockStatus != existingProduct.stockStatus ||
-                        newProduct.status != existingProduct.status) {
+                        newProduct.status != existingProduct.status ||
+                        newProduct.manageStock != existingProduct.manageStock) {
                     return false
                 }
             } ?: return false
