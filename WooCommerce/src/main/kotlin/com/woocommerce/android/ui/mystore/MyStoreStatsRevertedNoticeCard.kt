@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import kotlinx.android.synthetic.main.my_store_stats_reverted_notice.view.*
 
 /**
  * Dashboard card that displays a reverted notice message if the WooCommerce Admin plugin
@@ -16,7 +18,15 @@ class MyStoreStatsRevertedNoticeCard @JvmOverloads constructor(ctx: Context, att
         View.inflate(context, R.layout.my_store_stats_reverted_notice, this)
     }
 
-    fun initView() {
-        // TODO: the dashboard card will be initialised here in another commit
+    fun initView(listener: MyStoreStatsAvailabilityListener) {
+        btn_learn_more.setOnClickListener {
+            // TODO: add analytics event here to track how many people click on the learn more button
+            ChromeCustomTabUtils.launchUrl(context, context.getString(R.string.stats_woocommerce_admin_plugin_link))
+        }
+
+        btn_dismiss.setOnClickListener {
+            // TODO: add analytics event here to track how many people click on the dismiss button
+            listener.onMyStoreStatsRevertedNoticeCardDismissed()
+        }
     }
 }

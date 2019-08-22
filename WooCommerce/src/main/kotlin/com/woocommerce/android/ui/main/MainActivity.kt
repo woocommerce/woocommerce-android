@@ -536,20 +536,19 @@ class MainActivity : AppUpgradeActivity(),
      * Method to update the `My Store` TAB based on the revenue stats availability
      *
      * if revenue stats v4 support is available but we are currently displaying the v3 stats UI,
-     * display a dialog to the user with the option to unload the v3 UI and display the new stats UI
+     * display a banner to the user with the option to unload the v3 UI and display the new stats UI
      *
      * if revenue stats v4 support is NOT available but we are currently displaying the v4 stats UI,
-     * display an error snackbar to the user with the option to unload the v4 and display the old stats UI
-     *
-     * This implementation is on hold till we can finalise on the design interaction.
-     *
+     * display a banner [MyStoreStatsRevertedNoticeCard] to the user after unloading the v4 UI and
+     * displaying the old stats UI
      */
     override fun updateStatsView(isAvailable: Boolean) {
         val fragment = bottomNavView.getFragment(DASHBOARD)
         if (isAvailable && fragment.tag == DashboardFragment.TAG) {
             // TODO: display a dialog to the user with the option to unload the v3 UI and display the new stats UI
         } else if (!isAvailable && fragment.tag == MyStoreFragment.TAG) {
-            // TODO: display an error snackbar to the user with the option to unload the v4 and display the old stats UI
+            AppPrefs.setShouldDisplayV4StatsRevertedBanner(true)
+            bottomNavView.replaceStatsFragment()
         }
     }
 

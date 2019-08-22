@@ -162,11 +162,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     /**
-     * Replaces the fragment in [DASHBOARD] based on whether the revenue stats is available.
-     * This method is not used so far and is added to support future implementations when we would need to
-     * add support for switching between the two new versions of stats
+     * Replaces the fragment in [DASHBOARD] based on whether the revenue stats is available
      */
-    fun replaceMyStoreFragment() {
+    fun replaceStatsFragment() {
         val fragment = fragmentManager.findFragment(currentPosition)
         val tag = currentPosition.getTag()
 
