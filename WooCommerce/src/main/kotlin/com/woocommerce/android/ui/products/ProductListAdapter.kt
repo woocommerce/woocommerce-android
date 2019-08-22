@@ -127,19 +127,24 @@ class ProductListAdapter(
             return false
         }
 
-        fun containsProduct(product: Product): Boolean {
+        fun findProduct(product: Product): Product? {
             productList.forEach {
                 if (it.remoteId == product.remoteId) {
-                    return true
+                    return it
                 }
             }
-            return false
+            return null
         }
 
         products.forEach {
-            if (!containsProduct(it)) {
-                return false
-            }
+            findProduct(it)?.let { existingProduct ->
+                // note we only check the fields that are actually displayed
+                if (it.stockQuantity != existingProduct.stockQuantity ||
+                        it.stockStatus != existingProduct.stockStatus ||
+                        it.status != existingProduct.status) {
+                    return false
+                }
+            } ?: return false
         }
 
         return true
