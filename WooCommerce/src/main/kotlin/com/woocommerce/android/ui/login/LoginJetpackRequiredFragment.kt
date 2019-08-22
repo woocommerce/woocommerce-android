@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -100,6 +101,11 @@ class LoginJetpackRequiredFragment : Fragment() {
                                 Stat.LOGIN_JETPACK_REQUIRED_SIGN_IN_LINK_TAPPED,
                                 mapOf(AnalyticsTracker.KEY_URL to siteAddress.orEmpty()))
 
+                        // Save this decision to preferences so it may be used later
+                        // if the login is not successful.
+                        AppPrefs.setLoginUserBypassedJetpackRequired()
+
+                        // Display the login by email screen
                         jetpackLoginListener?.showEmailLoginScreen(siteAddress.orEmpty())
                     },
                     (jetpackInstalledText.length - signInText.length),

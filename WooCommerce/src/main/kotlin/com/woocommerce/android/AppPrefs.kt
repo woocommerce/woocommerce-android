@@ -24,7 +24,8 @@ object AppPrefs {
         HAS_UNSEEN_REVIEWS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
-        LOGIN_SITE_ADDRESS
+        LOGIN_SITE_ADDRESS,
+        LOGIN_USER_BYPASSED_JETPACK_REQUIRED
     }
 
     /**
@@ -163,6 +164,13 @@ object AppPrefs {
     fun removeLoginSiteAddress() {
         remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
     }
+
+    fun setLoginUserBypassedJetpackRequired() {
+        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, true)
+    }
+
+    fun getLoginUserBypassedJetpackRequired() =
+            getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
 
     /**
      * Remove all user-related preferences.
