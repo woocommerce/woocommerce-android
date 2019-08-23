@@ -230,14 +230,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
 
-            // Check for customer note, show if available
-            if (order.customerNote.isEmpty()) {
-                orderDetail_customerNote.visibility = View.GONE
-            } else {
-                orderDetail_customerNote.visibility = View.VISIBLE
-                orderDetail_customerNote.initView(order)
-            }
-
             if (isFreshData) {
                 isRefreshPending = false
             }
