@@ -105,9 +105,14 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
     fun onOrderShipmentProviderChanged(event: OnOrderShipmentProvidersChanged) {
         providerListView?.showSkeleton(false)
         if (event.isError) {
-            WooLog.e(T.ORDERS, "$TAG - Error fetching order notes : ${event.error.message}")
+            WooLog.e(T.ORDERS, "$TAG - Error fetching shipment providers : ${event.error.message}")
             providerListView?.showProviderListErrorSnack(
                     R.string.order_shipment_tracking_provider_list_error_fetch_generic
+            )
+        } else if (event.rowsAffected == 0) {
+            WooLog.e(T.ORDERS, "$TAG - Error fetching shipment providers : empty list")
+            providerListView?.showProviderListErrorSnack(
+                    R.string.order_shipment_tracking_provider_list_error_empty_list
             )
         } else {
             AnalyticsTracker.track(Stat.ORDER_TRACKING_PROVIDERS_LOADED)

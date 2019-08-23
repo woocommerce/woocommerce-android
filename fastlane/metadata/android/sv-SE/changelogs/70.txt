@@ -1,0 +1,6 @@
+2.4:
+Fliken Meddelanden har bytt namn till Omdömen. Eftersom meddelanden nu visas under Beställningar behövde Meddelanden-fliken ett nytt namn. Vi har listigt nog kallat den för Omdömen eftersom den bara visar omdömen nu.
+
+Antalet ej slutförda beställningar är borta från instrumentpanelen och visas nu som ett märke i beställningslistan.
+
+Du får meddelande om att utföra uppdateringar inom appen så du behöver inte längre krångla med att öppna Play Store för att göra det.

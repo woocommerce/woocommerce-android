@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-07-24 00:54:31+0000
+Translation-Revision-Date: 2019-08-07 00:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="error_disabled_apis">Could not fetch settings: Some APIs are unavailable for this OAuth app ID + account combination.</string>
-    <string name="settings_hiring">We\'re hiring!</string>
-    <string name="feature_requests">Feature request</string>
-    <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
-    <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
-    <string name="login_refresh_app">refresh the app</string>
-    <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. Install the WooCommerce plugin on your site and then %2$s</string>
+    <string name="login_invalid_site_url">يرجى إدخال عنوان موقع ويب كامل، مثل example.com.</string>
+    <string name="reviews_empty_message">لا توجد مراجعات بعد!</string>
+    <string name="review_notifications">مراجعات</string>
+    <string name="update_failed">فشل تحديث Woo</string>
+    <string name="update_downloaded">قام Woo بتنزيل تحديث</string>
+    <string name="install">تثبيت</string>
+    <string name="error_disabled_apis">تعذَّر الوصول إلى الإعدادات: بعض واجهات برمجة التطبيقات غير متاحة لمجموعة الحسابات عند إضافة المعرِّفات على تطبيق OAuth.</string>
+    <string name="settings_hiring">إنَّنا نوظِّف!</string>
+    <string name="feature_requests">تمييز الطلب</string>
+    <string name="orderdetail_copy_tracking_number">نسخ رقم التعقُّب</string>
+    <string name="login_refresh_app_progress">جارٍ التحقُّق من WooCommerce…</string>
+    <string name="login_refresh_app">تحديث التطبيق</string>
+    <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. ثبِّت إضافة WooCommerce على موقعك ثم %2$s</string>
     <string name="orderdetail_empty_shipping_address">لا يوجد عنوان محدَّد.</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
@@ -302,7 +308,6 @@ Language: ar
     <string name="keep_editing">متابعة التحرير</string>
     <string name="notification_wpcom_username_needed">يرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك وكلمة مرورك.</string>
     <string name="error_user_username_instead_of_email">يُرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك على وردبرس.كوم بدلاً من عنوان البريد الإلكتروني.</string>
-    <string name="login_invalid_site_url">عنوان الموقع الذي أدخلته غير صالح. يرجى إدخاله مجددًا.</string>
     <string name="no_site_error">الموقع الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب أن يستخدم وردبرس.</string>
     <string name="support_help_center">مركز المساعدة</string>
     <string name="product_name_virtual">%s ظاهري</string>
@@ -378,7 +383,6 @@ Language: ar
     <string name="app_rating_message">من الرائع رؤيتك مجددًا! إذا كنت تتعمق في التطبيق، فإننا نرغب في إعطاء تقييم على متجر Google Play.</string>
     <string name="app_rating_title">هل تستمتع بـ Woo؟</string>
     <string name="settings_selected_store">المتجر المحدّد</string>
-    <string name="notifs_empty_message">لا توجد تنبيهات حتى الآن!</string>
     <string name="orders_empty_message_with_search">لا توجد طلبات مطابقة</string>
     <string name="orders_empty_message_with_filter">لا توجد طلبات</string>
     <string name="waiting_for_customers_contentdesc">في انتظار صورة العملاء</string>
@@ -521,7 +525,6 @@ Language: ar
     <string name="login_empty_2fa">يُرجى إدخال كود التحقق</string>
     <string name="login_empty_password">يرجى إدخال كلمة المرور</string>
     <string name="login_empty_username">الرجاء إدخال اسم المستخدم</string>
-    <string name="login_empty_site_url">يُرجى إدخال عنوان موقع</string>
     <string name="login_log_in_for_share_intent">سجّل الدخول إلى وردبرس.كوم لمشاركة المحتوى.</string>
     <string name="login_log_in_for_deeplink">سجِّل الدخول إلى وردبرس.كوم للوصول إلى الرسالة.</string>
     <string name="login_error_while_adding_site">حدث خطأ أثناء إضافة الموقع. خطأ بالخصائص: %s</string>
@@ -674,7 +677,6 @@ Language: ar
     <string name="login_prologue_banner">قم بإدارة الطلبات، وتعقب المبيعات، وراقب نشاط المتجر من خلال تنبيهات في الوقت الحقيقي.</string>
     <string name="login_jetpack_required">يتطلب هذا التطبيق اتصال Jetpack بمتجرك.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">أدخل عنوان متجر WooCommerce الخاص بك الذي تود الاتصال به.</string>
     <string name="already_logged_in_wpcom">أنت قيد تسجيل الدخول بالفعل إلى حساب وردبرس.كوم، ولا يمكنك إضافة موقع وردبرس.كوم مرتبط بحساب آخر.</string>
     <string name="cant_open_url">يتعذر فتح الرابط</string>
     <string name="error_no_sms_app">لم يتم العثور على تطبيق SMS</string>
@@ -688,7 +690,6 @@ Language: ar
     <string name="date_timeframe_older_two_days">قبل يومين</string>
     <string name="date_timeframe_yesterday">أمس</string>
     <string name="date_timeframe_today">اليوم</string>
-    <string name="review_notifications">التنبيهات</string>
     <string name="products">المنتجات</string>
     <string name="discard">تجاهل</string>
     <string name="this_year">هذا العام</string>

@@ -1,5 +1,2 @@
-The tab formerly known as Notifications is now Reviews. As notifications are now shown under Orders, the Notifications tab was in need of a new identity. We have cunningly renamed it ‘Reviews,’ as it now just shows reviews.
-
-The number of unfulfilled orders is gone from the dashboard and is now shown as a badge on the order list.
-
-You will be prompted to perform updates within the app, so the hassle of having to open the Play store to do so is no more.
+* We tracked down and fixed: a rare crash that happened after fulfilling an order and minimizing the app, a bug causing the selected site in the site picker to switch back to the previous selection, and a few UI issues with the new “Reviews” tab.
+* Product names can now wrap onto two lines in the order detail screen.

@@ -11,6 +11,13 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_025"
+msgid ""
+"2.5:\n"
+"* We tracked down and fixed: a rare crash that happened after fulfilling an order and minimizing the app, a bug causing the selected site in the site picker to switch back to the previous selection, and a few UI issues with the new “Reviews” tab.\n"
+"* Product names can now wrap onto two lines in the order detail screen.\n"
+msgstr ""
+
 msgctxt "release_note_024"
 msgid ""
 "2.4:\n"
@@ -19,14 +26,6 @@ msgid ""
 "The number of unfulfilled orders is gone from the dashboard and is now shown as a badge on the order list.\n"
 "\n"
 "You will be prompted to perform updates within the app, so the hassle of having to open the Play store to do so is no more.\n"
-msgstr ""
-
-msgctxt "release_note_023"
-msgid ""
-"2.3:\n"
-"* Have an idea for a new feature? Request it right from your Settings page.\n"
-"* There’s a “Copy tracking number” link in the tracking popup menu in the order details, so sharing tracking info is easier.\n"
-"* Bug squashing: We fixed a problem that caused virtual orders to display shipping details, and sites with redirects can now log in without issue.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

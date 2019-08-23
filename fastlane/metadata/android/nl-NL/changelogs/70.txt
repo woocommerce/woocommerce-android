@@ -1,0 +1,6 @@
+2.4:
+Het tabblad 'Meldingen' is nu 'Beoordelingen' geworden. Omdat meldingen nu onder 'Bestellingen' staan, had het tabblad 'Meldingen' een nieuwe identiteit nodig. Nu hebben we het 'Beoordelingen' genoemd, omdat er nu alleen beoordelingen staan.
+
+Het aantal onvoltooide bestellingen is van het dashboard af en wordt nu weergegeven als een badge op de bestellijst.
+
+Je wordt binnen de app gevraagd updates uit te voeren, dus daarvoor hoef je niet meer naar de Play Store.

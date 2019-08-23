@@ -243,12 +243,23 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
-        outState.putString(FIELD_ORDER_TRACKING_NUMBER, addTracking_number.text.toString())
-        outState.putString(FIELD_ORDER_TRACKING_DATE_SHIPPED, addTracking_date.text.toString())
-        outState.putString(FIELD_ORDER_TRACKING_PROVIDER, addTracking_editCarrier.text.toString())
         outState.putBoolean(FIELD_IS_CUSTOM_PROVIDER, isCustomProvider())
-        outState.putString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME, addTracking_custom_provider_name.text.toString())
-        outState.putString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL, addTracking_custom_provider_url.text.toString())
+
+        addTracking_number?.let {
+            outState.putString(FIELD_ORDER_TRACKING_NUMBER, it.text.toString())
+        }
+        addTracking_date?.let {
+            outState.putString(FIELD_ORDER_TRACKING_DATE_SHIPPED, it.text.toString())
+        }
+        addTracking_editCarrier?.let {
+            outState.putString(FIELD_ORDER_TRACKING_PROVIDER, it.text.toString())
+        }
+        addTracking_custom_provider_name?.let {
+            outState.putString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME, it.text.toString())
+        }
+        addTracking_custom_provider_url?.let {
+            outState.putString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL, it.text.toString())
+        }
     }
 
     override fun confirmDiscard() {

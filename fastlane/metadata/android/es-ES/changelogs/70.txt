@@ -1,0 +1,6 @@
+2.4:
+La pestaña anteriormente conocida como Notificaciones ahora se ha cambiado a Reseñas. Como las notificaciones ahora se muestran en Pedidos, la pestaña Notificaciones necesitaba otra identidad. Le hemos cambiado el nombre a "Reseñas", ya que ahora solo muestra reseñas.
+
+El número de los pedidos sin completar se ha quitado del escritorio y ahora se muestra como una insignia en la lista de pedidos.
+
+Se te pedirá que realices actualizaciones en la aplicación, de modo que ya no tendrás que molestarte en abrir Play Store para hacerlo.

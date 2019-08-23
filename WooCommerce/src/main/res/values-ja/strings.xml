@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-07-27 00:54:04+0000
+Translation-Revision-Date: 2019-08-10 00:54:39+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="login_invalid_site_url">ウェブサイトの完全なアドレス (例 : example.com) を入力してください。</string>
+    <string name="reviews_empty_message">まだレビューがありません。</string>
+    <string name="review_notifications">レビュー</string>
+    <string name="update_failed">Woo を更新できませんでした</string>
+    <string name="update_downloaded">Woo の更新をダウンロードしました</string>
+    <string name="install">インストール</string>
     <string name="error_disabled_apis">設定を取得できませんでした。一部の API ではこの OAuth のアプリ ID とアカウントの組み合わせを使用できません。</string>
     <string name="settings_hiring">人材募集中です。</string>
     <string name="feature_requests">機能のリクエスト</string>
@@ -302,7 +308,6 @@ Language: ja_JP
     <string name="keep_editing">編集を続行</string>
     <string name="notification_wpcom_username_needed">ユーザー名とパスワードでログインしてください。</string>
     <string name="error_user_username_instead_of_email">メールアドレスではなく WordPress.com ユーザー名を使用してログインしてください。</string>
-    <string name="login_invalid_site_url">入力されたサイトアドレスが無効です。もう一度入力してください。</string>
     <string name="no_site_error">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトが WordPress を使用している必要があります。</string>
     <string name="support_help_center">ヘルプセンター</string>
     <string name="product_name_virtual">仮想 %s</string>
@@ -378,7 +383,6 @@ Language: ja_JP
     <string name="app_rating_message">ご利用ありがとうございます。アプリをご利用いただきありがとうございます。Google Play ストアでの評価をお願いいたします。</string>
     <string name="app_rating_title">Woo を楽しんでいますか？</string>
     <string name="settings_selected_store">選択したストア</string>
-    <string name="notifs_empty_message">まだ通知はありません</string>
     <string name="orders_empty_message_with_search">一致する注文はありません</string>
     <string name="orders_empty_message_with_filter">注文はありません</string>
     <string name="waiting_for_customers_contentdesc">顧客の画像を待機中です</string>
@@ -521,7 +525,6 @@ Language: ja_JP
     <string name="login_empty_2fa">認証コードを入力してください</string>
     <string name="login_empty_password">パスワードを入力してください</string>
     <string name="login_empty_username">ユーザー名を入力してください</string>
-    <string name="login_empty_site_url">サイトアドレスを入力してください</string>
     <string name="login_log_in_for_share_intent">WordPress.com にログインしてコンテンツを共有します。</string>
     <string name="login_log_in_for_deeplink">WordPress.com にログインして投稿にアクセスしてください。</string>
     <string name="login_error_while_adding_site">サイトを追加する際にエラーが発生しました。エラーコード: %s</string>
@@ -674,7 +677,6 @@ Language: ja_JP
     <string name="login_prologue_banner">注文を管理し、売り上げをトラッキングし、ストアのアクティビティをリアルタイムのアラートでモニターします。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
     <string name="already_logged_in_wpcom">すでに WordPress.com アカウントにログインしています。別のアカウントに結び付いている WordPress.com サイトを追加することはできません。</string>
     <string name="cant_open_url">リンクを開けません</string>
     <string name="error_no_sms_app">SMS アプリが見つかりませんでした</string>
@@ -688,7 +690,6 @@ Language: ja_JP
     <string name="date_timeframe_older_two_days">2日以上前</string>
     <string name="date_timeframe_yesterday">昨日</string>
     <string name="date_timeframe_today">今日</string>
-    <string name="review_notifications">通知</string>
     <string name="products">商品</string>
     <string name="discard">削除</string>
     <string name="this_year">今年</string>
