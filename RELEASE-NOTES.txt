@@ -1,6 +1,7 @@
 2.6
 -----
- 
+ * Added brand new stats page for user with the WooCommerce Admin plugin and provided an option for users to opt in or out directly from the Settings page.
+
 2.5
 -----
 * Fixed rare crash after fulfilling an order and then minimizing the app.
