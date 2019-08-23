@@ -5,7 +5,6 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
@@ -514,26 +513,33 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         button_email_help.visibility = View.GONE
 
         with(no_stores_view) {
-            val refreshAppText = getString(R.string.login_refresh_app_html, getString(R.string.login_refresh_app))
+            val refreshAppText = getString(R.string.login_refresh_app)
             val notConnectedText = getString(
                     R.string.login_not_connected_jetpack,
                     url,
                     refreshAppText
             )
-            setText(Html.fromHtml(notConnectedText), TextView.BufferType.SPANNABLE)
-            setOnClickListener {
-                AnalyticsTracker.track(Stat.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
 
-                progressDialog?.takeIf { !it.isShowing }?.dismiss()
-                progressDialog = ProgressDialog.show(
-                        this@SitePickerActivity,
-                        null,
-                        getString(R.string.login_refresh_app_progress_jetpack))
-                // Tell the presenter to fetch a fresh list of
-                // sites from the API. When the results come back the login
-                // process will restart again.
-                presenter.fetchSitesFromAPI()
-            }
+            val spannable = SpannableString(notConnectedText)
+            spannable.setSpan(
+                    WooClickableSpan {
+                        AnalyticsTracker.track(Stat.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
+
+                        progressDialog?.takeIf { !it.isShowing }?.dismiss()
+                        progressDialog = ProgressDialog.show(
+                                this@SitePickerActivity,
+                                null,
+                                getString(R.string.login_refresh_app_progress_jetpack))
+                        // Tell the presenter to fetch a fresh list of
+                        // sites from the API. When the results come back the login
+                        // process will restart again.
+                        presenter.fetchSitesFromAPI()
+                    },
+                    (notConnectedText.length - refreshAppText.length),
+                    notConnectedText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
         }
 
