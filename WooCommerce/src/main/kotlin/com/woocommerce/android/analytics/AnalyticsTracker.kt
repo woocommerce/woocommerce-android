@@ -206,7 +206,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
 
         // -- Product list
-        // TODO: add to spreadsheet
         PRODUCT_LIST_LOADED,
         PRODUCT_LIST_PRODUCT_TAPPED,
         PRODUCT_LIST_PULLED_TO_REFRESH,
