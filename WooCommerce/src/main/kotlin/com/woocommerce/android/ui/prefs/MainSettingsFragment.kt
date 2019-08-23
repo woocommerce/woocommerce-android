@@ -101,6 +101,13 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
         }
 
+        // display the Beta features section only if the wc-admin is installed/active on a site
+        if (AppPrefs.isUsingV4Api()) {
+            betaFeaturesContainer.visibility = View.VISIBLE
+        } else {
+            betaFeaturesContainer.visibility = View.GONE
+        }
+
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifsContainerOlder.visibility = View.GONE
