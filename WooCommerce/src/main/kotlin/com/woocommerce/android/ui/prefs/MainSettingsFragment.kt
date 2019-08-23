@@ -50,6 +50,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onSiteChanged()
+        fun onV4StatsOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener

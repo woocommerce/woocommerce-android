@@ -417,6 +417,11 @@ class MainActivity : AppUpgradeActivity(),
                     presenter.selectedSiteChanged(selectedSite.get())
                     restart()
                 }
+
+                // update the stats fragment based on the user's preferences
+                if (resultCode == AppSettingsActivity.RESULT_CODE_V4_STATS_OPTIONS_CHANGED) {
+                    updateStatsView(AppPrefs.isV4StatsUISupported())
+                }
                 return
             }
         }
@@ -544,17 +549,28 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun updateStatsView(isAvailable: Boolean) {
         val fragment = bottomNavView.getFragment(DASHBOARD)
-        if (isAvailable && fragment.tag == DashboardFragment.TAG) {
-            // display the new stats UI only if user has opted in
-            if (AppPrefs.isV4StatsUISupported()) {
-                replaceStatsFragment()
-            } else {
-                // display the new stats availability banner
-                (fragment as? DashboardFragment)?.showV4StatsAvailabilityBanner(true)
+        val isEnabled = isAvailable && AppPrefs.isV4StatsUISupported()
+        when (fragment.tag) {
+            DashboardFragment.TAG -> {
+                if (isEnabled) {
+                    // display the new stats UI only if user has opted in
+                    replaceStatsFragment()
+                } else if (isAvailable) {
+                    // if the new stats UI is not enabled but the user has not opted out of it,
+                    // display the new stats availability banner
+                    (fragment as? DashboardFragment)?.showV4StatsAvailabilityBanner(
+                            AppPrefs.shouldDisplayV4StatsAvailabilityBanner()
+                    )
+                }
             }
-        } else if (!isAvailable && fragment.tag == MyStoreFragment.TAG) {
-            AppPrefs.setShouldDisplayV4StatsRevertedBanner(true)
-            replaceStatsFragment()
+            MyStoreFragment.TAG -> {
+                // if new stats UI was enabled but is no longer enabled, display revert banner
+                // and replace the new stats UI with the old UI
+                if (!isEnabled) {
+                    AppPrefs.setShouldDisplayV4StatsRevertedBanner(true)
+                    replaceStatsFragment()
+                }
+            }
         }
     }
 
