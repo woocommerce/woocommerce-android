@@ -141,6 +141,11 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             }
         }
 
+        textBetaFeatures.setOnClickListener {
+            // TODO: add analytic event here
+            findNavController().navigate(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
+        }
+
         textPrivacySettings.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_privacySettingsFragment)

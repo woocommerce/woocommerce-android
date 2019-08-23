@@ -114,7 +114,7 @@ object AppPrefs {
      * Flag to check if the user chooses to continue using the old stats, even when wc-admin is available,
      * by clicking the `No thanks` button in the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
      */
-    private fun isV4StatsUIEnabled() = getBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, false)
+    fun isV4StatsUIEnabled() = getBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, false)
 
     fun setIsV4StatsUIEnabled(isV4StatsUIEnabled: Boolean) =
             setBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, isV4StatsUIEnabled)
