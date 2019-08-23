@@ -546,7 +546,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         with(button_primary) {
             text = getString(R.string.login_try_another_store)
             setOnClickListener {
-                // TODO tracks
+                AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED)
 
                 presenter.logout()
             }
