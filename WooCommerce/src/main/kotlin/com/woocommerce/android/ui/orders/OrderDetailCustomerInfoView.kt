@@ -10,6 +10,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.PhoneUtils
+import com.woocommerce.android.util.collapse
+import com.woocommerce.android.util.expand
+import com.woocommerce.android.util.hide
+import com.woocommerce.android.util.show
 import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -36,6 +40,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             formatViewAsShippingOnly()
             customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
             return
+        }
+
+        if (order.customerNote.isEmpty()) {
+            customerInfo_customerNoteSection.hide()
+        } else {
+            customerInfo_customerNoteSection.show()
+            customerInfo_customerNote.text = order.customerNote
         }
 
         // show shipping section only for non virtual products or if shipping info available
@@ -97,11 +108,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
     fun initShippingSection(order: WCOrderModel, hide: Boolean) {
         if (!isShippingAvailable(order) || hide) {
             customerInfo_divider.visibility = View.GONE
-            customerInfo_shippingAddr.visibility = View.GONE
-            customerInfo_shippingLabel.visibility = View.GONE
+            customerInfo_shippingSection.visibility = View.GONE
             customerInfo_morePanel.visibility = View.VISIBLE
             formatViewAsShippingOnly()
-            customerInfo_viewMore.setOnCheckedChangeListener(null)
+            customerInfo_viewMore.setOnClickListener(null)
         } else {
             val shippingName = context
                     .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
@@ -109,13 +119,18 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
             val shippingAddrFull = getFullAddress(shippingName, shippingAddr, shippingCountry)
             customerInfo_shippingAddr.text = shippingAddrFull
-            customerInfo_viewMore.setOnCheckedChangeListener { _, isChecked ->
+            customerInfo_viewMore.setOnClickListener {
+                val isChecked = customerInfo_viewMoreButtonImage.rotation == 0F
                 if (isChecked) {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
-                    customerInfo_morePanel.visibility = View.VISIBLE
+                    customerInfo_morePanel.expand()
+                    customerInfo_viewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
+                    customerInfo_viewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
                 } else {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
-                    customerInfo_morePanel.visibility = View.GONE
+                    customerInfo_morePanel.collapse()
+                    customerInfo_viewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+                    customerInfo_viewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
                 }
             }
         }
