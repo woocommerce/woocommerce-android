@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.android.synthetic.main.my_store_stats_reverted_notice.view.*
 
@@ -20,12 +22,12 @@ class MyStoreStatsRevertedNoticeCard @JvmOverloads constructor(ctx: Context, att
 
     fun initView(listener: MyStoreStatsAvailabilityListener) {
         btn_learn_more.setOnClickListener {
-            // TODO: add analytics event here to track how many people click on the learn more button
+            AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_REVERTED_BANNER_LEARN_MORE_TAPPED)
             ChromeCustomTabUtils.launchUrl(context, context.getString(R.string.stats_woocommerce_admin_plugin_link))
         }
 
         btn_dismiss.setOnClickListener {
-            // TODO: add analytics event here to track how many people click on the dismiss button
+            AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_REVERTED_BANNER_DISMISS_TAPPED)
             listener.onMyStoreStatsRevertedNoticeCardDismissed()
         }
     }

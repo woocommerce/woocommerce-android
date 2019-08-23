@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import kotlinx.android.synthetic.main.my_store_stats_availability_notice.view.*
 
 class MyStoreStatsAvailabilityCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -23,12 +25,12 @@ class MyStoreStatsAvailabilityCard @JvmOverloads constructor(ctx: Context, attrs
         }
 
         btn_try.setOnClickListener {
-            // TODO: add analytics event here to track how many people click on the try now button
+            AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_TRY_TAPPED)
             listener.onMyStoreStatsAvailabilityAccepted()
         }
 
         btn_no_thanks.setOnClickListener {
-            // TODO: add analytics event here to track how many people click on the try now button
+            AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_CANCEL_TAPPED)
             listener.onMyStoreStatsAvailabilityRejected()
         }
     }

@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
+import com.woocommerce.android.util.AnalyticsUtils
 import kotlinx.android.synthetic.main.fragment_settings_beta.*
 
 class BetaFeaturesFragment : Fragment() {
@@ -32,7 +34,9 @@ class BetaFeaturesFragment : Fragment() {
 
         switchStatsV4UI.isChecked = AppPrefs.isV4StatsUIEnabled()
         switchStatsV4UI.setOnCheckedChangeListener { _, isChecked ->
-            // TODO: add analytics events here
+            AnalyticsTracker.track(
+                    SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED, mapOf(
+                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchStatsV4UI.isChecked)))
             settingsListener.onV4StatsOptionChanged(isChecked)
         }
     }
