@@ -41,20 +41,6 @@
                     android:clipToPadding="false"
                     android:contentDescription="@string/products"/>
 
-                <!-- Customer Note -->
-                <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
-                    android:id="@+id/orderDetail_customerNote"
-                    style="@style/Woo.Card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <!-- Customer Info -->
-                <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
-                    android:id="@+id/orderDetail_customerInfo"
-                    style="@style/Woo.Card.Expandable"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
                 <!-- Payments -->
                 <com.woocommerce.android.ui.orders.OrderDetailPaymentView
                     android:id="@+id/orderDetail_paymentInfo"
@@ -63,6 +49,13 @@
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
                     android:focusable="true"/>
+
+                <!-- Customer Info -->
+                <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
+                    android:id="@+id/orderDetail_customerInfo"
+                    style="@style/Woo.Card.Expandable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
                 <!-- Shipment Tracking -->
                 <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
