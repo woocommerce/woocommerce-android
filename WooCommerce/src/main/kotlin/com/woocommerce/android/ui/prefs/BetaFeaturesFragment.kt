@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import kotlinx.android.synthetic.main.fragment_settings_beta.*
 
@@ -34,5 +35,12 @@ class BetaFeaturesFragment : Fragment() {
             // TODO: add analytics events here
             settingsListener.onV4StatsOptionChanged(isChecked)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+
+        activity?.setTitle(R.string.beta_features)
     }
 }
