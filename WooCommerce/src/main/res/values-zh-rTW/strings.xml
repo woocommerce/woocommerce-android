@@ -603,7 +603,6 @@ Language: zh_TW
     <string name="order_error_fetch_notes_generic">擷取錯誤備註時發生錯誤</string>
     <string name="order_fulfill_marked_complete">標示為完成的訂單</string>
     <string name="order_fulfill_mark_complete">將訂單標示為完成</string>
-    <string name="order_fulfill_order">履行訂單</string>
     <string name="orderdetail_addnote_contentdesc">新增訂單備註</string>
     <string name="orderdetail_add_note">新增備註</string>
     <string name="orderdetail_hide_billing">隱藏帳單</string>
@@ -617,7 +616,6 @@ Language: zh_TW
     <string name="orderdetail_customer_provided_note">顧客所提出的備註</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">付款 - 已退款</string>
-    <string name="orderdetail_new_total">新增總數</string>
     <string name="orderdetail_refunded">已退款</string>
     <string name="orderdetail_payment_summary_onhold">付款正在等待 %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s 的款項已透過 %2$s 收到</string>
@@ -712,7 +710,6 @@ Language: zh_TW
     <string name="taxes">稅金</string>
     <string name="payment">付款</string>
     <string name="shipping">運送方式</string>
-    <string name="total">總計</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">訂單</string>

@@ -603,7 +603,6 @@ Language: tr
     <string name="order_error_fetch_notes_generic">Hata notları alınırken hata</string>
     <string name="order_fulfill_marked_complete">Sipariş Tamamlanmış Olarak İşaretlendi</string>
     <string name="order_fulfill_mark_complete">Siparişi Tamamlanmış Olarak İşaretle</string>
-    <string name="order_fulfill_order">Siparişi Yerine Getir</string>
     <string name="orderdetail_addnote_contentdesc">Sipariş notu ekleyin</string>
     <string name="orderdetail_add_note">Not ekleyin</string>
     <string name="orderdetail_hide_billing">Faturayı Saklayın</string>
@@ -617,7 +616,6 @@ Language: tr
     <string name="orderdetail_customer_provided_note">Müşterinin Verdiği Not</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Ödeme - İade Edildi</string>
-    <string name="orderdetail_new_total">Yeni Toplam</string>
     <string name="orderdetail_refunded">İade Edildi</string>
     <string name="orderdetail_payment_summary_onhold">%s için ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%1$s için ödeme %2$s ile alındı</string>
@@ -712,7 +710,6 @@ Language: tr
     <string name="taxes">Vergiler</string>
     <string name="payment">Ödeme</string>
     <string name="shipping">Gönderim</string>
-    <string name="total">Toplam</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Siparişler</string>

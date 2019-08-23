@@ -46,6 +46,7 @@
     <dimen name="card_gutter_tablet">16dp</dimen>
 
     <dimen name="card_item_padding_intra_h">8dp</dimen>
+    <dimen name="card_item_padding_intra_double">16dp</dimen>
     <dimen name="card_item_padding_intra_v">4dp</dimen>
     <dimen name="card_section_padding_h">12dp</dimen>
     <dimen name="card_elevation">1dp</dimen>
