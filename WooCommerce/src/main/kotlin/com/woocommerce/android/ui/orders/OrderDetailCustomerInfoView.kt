@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -24,6 +25,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         View.inflate(context, R.layout.order_detail_customer_info, this)
     }
 
+    @SuppressLint("SetTextI18n")
     fun initView(
         order: WCOrderModel,
         shippingOnly: Boolean,
@@ -46,7 +48,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
             customerInfo_customerNoteSection.hide()
         } else {
             customerInfo_customerNoteSection.show()
-            customerInfo_customerNote.text = order.customerNote
+            customerInfo_customerNote.text = "\"${order.customerNote}\""
         }
 
         // show shipping section only for non virtual products or if shipping info available
