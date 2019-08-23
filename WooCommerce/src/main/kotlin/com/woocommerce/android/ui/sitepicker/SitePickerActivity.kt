@@ -513,7 +513,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         button_email_help.visibility = View.GONE
 
         with(no_stores_view) {
-            val refreshAppText = getString(R.string.login_refresh_app)
+            val refreshAppText = getString(R.string.login_refresh_app_continue)
             val notConnectedText = getString(
                     R.string.login_not_connected_jetpack,
                     url,
