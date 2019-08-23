@@ -47,7 +47,6 @@ class ProductListViewModelTest : BaseUnitTest() {
         assertThat(products).isEqualTo(productList)
     }
 
-
     @Test
     fun `Do not fetch product list from api when not connected`() = test {
         doReturn(false).whenever(networkStatus).isConnected()

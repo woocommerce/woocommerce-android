@@ -28,7 +28,7 @@ object ProductTestUtils {
     }
 
     fun generateProductList(): List<Product> {
-        with (ArrayList<Product>()) {
+        with(ArrayList<Product>()) {
             add(generateProduct(1))
             add(generateProduct(2))
             add(generateProduct(3))
