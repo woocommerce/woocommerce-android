@@ -274,12 +274,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         no_stores_view.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
 
-        site_list_label.text = if (wcSites.size == 1) {
-            getString(R.string.login_connected_store)
-        } else if (calledFromLogin) {
-            getString(R.string.login_pick_store)
-        } else {
-            getString(R.string.site_picker_title)
+        site_list_label.text = when {
+            wcSites.size == 1 -> getString(R.string.login_connected_store)
+            calledFromLogin -> getString(R.string.login_pick_store)
+            else -> getString(R.string.site_picker_title)
         }
 
         siteAdapter.siteList = wcSites
@@ -425,6 +423,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private fun processLoginSite(url: String) {
         presenter.getSiteModelByUrl(url)?.let { site ->
+            // Remove app prefs no longer needed by the login process
+            AppPrefs.removeLoginUserBypassedJetpackRequired()
+
             if (!site.hasWooCommerce) {
                 // Show not woo store message view.
                 showSiteNotWooStore(site)
@@ -434,8 +435,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 siteSelected(site, isAutoLogin = true)
             }
         } ?: run {
-            // The url doesn't match any sites for this account.
-            showSiteNotConnectedView(url)
+            if (AppPrefs.getLoginUserBypassedJetpackRequired()) {
+                // The user was warned that Jetpack was required during the login
+                // process and continued with login anyway. It's likely we just
+                // can't connect to jetpack so show a different message.
+                showSiteNotConnectedJetpackView(url)
+            } else {
+                // The url doesn't match any sites for this account.
+                showSiteNotConnectedAccountView(url)
+            }
         }
     }
 
@@ -453,7 +461,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * to a site that is not connected to the account the user logged
      * in with.
      */
-    override fun showSiteNotConnectedView(url: String) {
+    override fun showSiteNotConnectedAccountView(url: String) {
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
                 mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
@@ -471,8 +479,74 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         with(button_primary) {
+            text = getString(R.string.login_try_another_account)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
+
+                presenter.logout()
+            }
+        }
+
+        with(button_secondary) {
+            visibility = if (hasConnectedStores) {
+                text = getString(R.string.login_view_connected_stores)
+
+                setOnClickListener {
+                    AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    showConnectedSites()
+                }
+
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        }
+    }
+
+    override fun showSiteNotConnectedJetpackView(url: String) {
+        AnalyticsTracker.track(
+                Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
+                mapOf(AnalyticsTracker.KEY_URL to url))
+
+        site_picker_root.visibility = View.VISIBLE
+        no_stores_view.visibility = View.VISIBLE
+        button_email_help.visibility = View.GONE
+
+        with(no_stores_view) {
+            val refreshAppText = getString(R.string.login_refresh_app_continue)
+            val notConnectedText = getString(
+                    R.string.login_not_connected_jetpack,
+                    url,
+                    refreshAppText
+            )
+
+            val spannable = SpannableString(notConnectedText)
+            spannable.setSpan(
+                    WooClickableSpan {
+                        AnalyticsTracker.track(Stat.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
+
+                        progressDialog?.takeIf { !it.isShowing }?.dismiss()
+                        progressDialog = ProgressDialog.show(
+                                this@SitePickerActivity,
+                                null,
+                                getString(R.string.login_refresh_app_progress_jetpack))
+                        // Tell the presenter to fetch a fresh list of
+                        // sites from the API. When the results come back the login
+                        // process will restart again.
+                        presenter.fetchSitesFromAPI()
+                    },
+                    (notConnectedText.length - refreshAppText.length),
+                    notConnectedText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            setText(spannable, TextView.BufferType.SPANNABLE)
+            movementMethod = LinkMovementMethod.getInstance()
+        }
+
+        with(button_primary) {
+            text = getString(R.string.login_try_another_store)
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED)
 
                 presenter.logout()
             }
@@ -535,6 +609,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         with(button_primary) {
+            text = getString(R.string.login_try_another_account)
+
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
 
