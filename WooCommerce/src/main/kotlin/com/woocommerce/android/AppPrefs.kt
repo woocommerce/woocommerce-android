@@ -99,6 +99,13 @@ object AppPrefs {
         remove(DeletablePrefKey.SUPPORT_NAME)
     }
 
+    /**
+     * Method to check if the v4 stats UI is supported.
+     * i.e. if the Woocommerce Admin plugin is installed/active on the site AND
+     * if the user has elected to try out the new stats UI
+     */
+    fun isV4StatsUISupported() = isUsingV4Api() && isV4StatsUIEnabled()
+
     fun isUsingV4Api() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
 
     fun setIsUsingV4Api(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
@@ -107,7 +114,7 @@ object AppPrefs {
      * Flag to check if the user chooses to continue using the old stats, even when wc-admin is available,
      * by clicking the `No thanks` button in the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
      */
-    fun isV4StatsUIEnabled() = getBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, false)
+    private fun isV4StatsUIEnabled() = getBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, false)
 
     fun setIsV4StatsUIEnabled(isV4StatsUIEnabled: Boolean) =
             setBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, isV4StatsUIEnabled)
@@ -128,7 +135,7 @@ object AppPrefs {
      * [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard]
      */
     fun shouldDisplayV4StatsRevertedBanner() =
-            getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, true)
+            getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, false)
 
     fun setShouldDisplayV4StatsRevertedBanner(shouldDisplayV4StatsRevertedBanner: Boolean) =
             setBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, shouldDisplayV4StatsRevertedBanner)

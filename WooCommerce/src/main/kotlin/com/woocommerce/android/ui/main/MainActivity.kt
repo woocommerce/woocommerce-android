@@ -539,17 +539,27 @@ class MainActivity : AppUpgradeActivity(),
      * display a banner to the user with the option to unload the v3 UI and display the new stats UI
      *
      * if revenue stats v4 support is NOT available but we are currently displaying the v4 stats UI,
-     * display a banner [MyStoreStatsRevertedNoticeCard] to the user after unloading the v4 UI and
-     * displaying the old stats UI
+     * display a banner [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard]
+     * to the user after unloading the v4 UI and displaying the old stats UI
      */
     override fun updateStatsView(isAvailable: Boolean) {
         val fragment = bottomNavView.getFragment(DASHBOARD)
         if (isAvailable && fragment.tag == DashboardFragment.TAG) {
-            // TODO: display a dialog to the user with the option to unload the v3 UI and display the new stats UI
+            // display the new stats UI only if user has opted in
+            if (AppPrefs.isV4StatsUISupported()) {
+                replaceStatsFragment()
+            } else {
+                // display the new stats availability banner
+                (fragment as? DashboardFragment)?.showV4StatsAvailabilityBanner(true)
+            }
         } else if (!isAvailable && fragment.tag == MyStoreFragment.TAG) {
             AppPrefs.setShouldDisplayV4StatsRevertedBanner(true)
-            bottomNavView.replaceStatsFragment()
+            replaceStatsFragment()
         }
+    }
+
+    override fun replaceStatsFragment() {
+        bottomNavView.replaceStatsFragment()
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {

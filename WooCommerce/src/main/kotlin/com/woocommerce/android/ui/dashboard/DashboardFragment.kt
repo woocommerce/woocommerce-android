@@ -130,7 +130,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             refreshDashboard(forced = this.isRefreshPending)
         }
 
-        if (AppPrefs.shouldDisplayV4StatsRevertedBanner()) {
+        if (AppPrefs.isUsingV4Api() && AppPrefs.shouldDisplayV4StatsAvailabilityBanner()) {
+            showV4StatsAvailabilityBanner(true)
+        } else if (AppPrefs.shouldDisplayV4StatsRevertedBanner()) {
             showV4StatsRevertedBanner(true)
         }
     }
@@ -244,6 +246,15 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
+    override fun showV4StatsAvailabilityBanner(show: Boolean) {
+        if (show) {
+            dashboard_stats_availability_card.visibility = View.VISIBLE
+            dashboard_stats_availability_card.initView(this)
+        } else {
+            dashboard_stats_availability_card.visibility = View.GONE
+        }
+    }
+
     override fun getFragmentTitle(): String {
         selectedSite.getIfExists()?.let { site ->
             if (!site.displayName.isNullOrBlank()) {
@@ -321,5 +332,30 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     override fun onMyStoreStatsRevertedNoticeCardDismissed() {
         AppPrefs.setShouldDisplayV4StatsRevertedBanner(false)
         showV4StatsRevertedBanner(false)
+    }
+
+    /**
+     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
+     * TRY NOW button is clicked
+     * - The banner will no longer be displayed to the user
+     * - The old stats UI will be replaced with the new wc-admin stats
+     */
+    override fun onMyStoreStatsAvailabilityAccepted() {
+        AppPrefs.setIsV4StatsUIEnabled(true)
+        AppPrefs.setShouldDisplayV4StatsAvailabilityBanner(false)
+        showV4StatsAvailabilityBanner(false)
+        (activity as? MainActivity)?.replaceStatsFragment()
+    }
+
+    /**
+     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
+     * NO THANKS button is clicked
+     * - The banner will no longer be displayed to the user
+     * - The old stats UI will NOT be replaced with the new wc-admin stats
+     */
+    override fun onMyStoreStatsAvailabilityRejected() {
+        AppPrefs.setIsV4StatsUIEnabled(false)
+        AppPrefs.setShouldDisplayV4StatsAvailabilityBanner(false)
+        showV4StatsAvailabilityBanner(false)
     }
 }

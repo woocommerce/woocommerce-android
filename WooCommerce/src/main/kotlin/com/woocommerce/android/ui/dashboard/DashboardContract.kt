@@ -30,5 +30,6 @@ interface DashboardContract {
         fun showTopEarnersSkeleton(show: Boolean)
 
         fun showV4StatsRevertedBanner(show: Boolean)
+        fun showV4StatsAvailabilityBanner(show: Boolean)
     }
 }
