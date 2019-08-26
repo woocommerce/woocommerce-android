@@ -174,6 +174,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMo
     }
 
     override fun onRequestLoadMore() {
-        viewModel.loadMoreProducts()
+        viewModel.loadProducts(loadMore = true)
     }
 }

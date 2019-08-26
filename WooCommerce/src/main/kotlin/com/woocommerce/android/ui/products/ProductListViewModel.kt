@@ -7,6 +7,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -44,26 +45,25 @@ class ProductListViewModel @Inject constructor(
         productRepository.onCleanup()
     }
 
-    private fun loadProducts() {
+    fun loadProducts(loadMore: Boolean = false) {
+        if (loadMore && !productRepository.canLoadMoreProducts) {
+            WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
+            return
+        }
+
         launch {
+            _isLoadingMore.value = loadMore
             // since this is the initial load, first get the products from the db and if there are any show them
             // immediately, otherwise make sure the skeleton shows
-            val productsInDb = productRepository.getProductList()
-            if (productsInDb.isEmpty()) {
-                _isSkeletonShown.value = true
-            } else {
-                productList.value = productsInDb
+            if (!loadMore) {
+                val productsInDb = productRepository.getProductList()
+                if (productsInDb.isEmpty()) {
+                    _isSkeletonShown.value = true
+                } else {
+                    productList.value = productsInDb
+                }
             }
-            fetchProductList()
-        }
-    }
-
-    fun loadMoreProducts() {
-        if (canLoadMore) {
-            _isLoadingMore.value = true
-            launch {
-                fetchProductList(true)
-            }
+            fetchProductList(loadMore)
         }
     }
 
