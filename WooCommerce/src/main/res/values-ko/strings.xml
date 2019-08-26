@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-09 00:54:03+0000
+Translation-Revision-Date: 2019-08-22 00:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">공급자를 찾을 수 없음</string>
     <string name="login_invalid_site_url">example.com과 같은 완전한 웹사이트 주소를 입력하세요.</string>
     <string name="reviews_empty_message">아직 리뷰가 없습니다!</string>
     <string name="review_notifications">검토</string>
@@ -389,11 +390,9 @@ Language: ko_KR
     <string name="waiting_for_customers">고객을 기다리는 중</string>
     <string name="share_store_dialog_title">스토어 URL 공유</string>
     <string name="share_store_button">스토어 공유</string>
-    <string name="wc_mark_all_read_success">모든 알림이 읽음으로 표시됨</string>
     <string name="login_update_required_title">스토어를 WooCommerce 3.5로 업데이트</string>
     <string name="login_verifying_site_error">%s에 연결할 수 없음</string>
     <string name="dismiss">무시</string>
-    <string name="wc_mark_all_read_error">모든 알림을 읽음으로 표시하는 중에 오류가 발생했습니다.</string>
     <string name="wc_mark_all_read">모두 읽음으로 표시</string>
     <string name="orderdetail_message_customer">메시지</string>
     <string name="orderdetail_call_customer">전화</string>

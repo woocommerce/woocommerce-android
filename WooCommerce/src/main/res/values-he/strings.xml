@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-07 00:54:03+0000
+Translation-Revision-Date: 2019-08-24 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">לא נמצאו ספקים</string>
     <string name="login_invalid_site_url">יש להזין את כתובת האתר המלאה, לדוגמה example.com.</string>
     <string name="reviews_empty_message">עוד אין ביקורות!</string>
     <string name="review_notifications">ביקורות</string>
@@ -389,11 +390,9 @@ Language: he_IL
     <string name="waiting_for_customers">בהמתנה ללקוחות</string>
     <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
     <string name="share_store_button">שיתוף החנות שלך</string>
-    <string name="wc_mark_all_read_success">כל ההודעות מסומנות כ\'נקרא\'</string>
     <string name="login_update_required_title">לעדכן את החנות ל-Woocommerce 3.5</string>
     <string name="login_verifying_site_error">אין אפשרות להתחבר אל %s</string>
     <string name="dismiss">סגור</string>
-    <string name="wc_mark_all_read_error">שגיאה בעת סימון של התגובות כ\'נקרא\'</string>
     <string name="wc_mark_all_read">סימון כל הפריטים כ\'נקרא\'</string>
     <string name="orderdetail_message_customer">הודעה</string>
     <string name="orderdetail_call_customer">להתקשר</string>

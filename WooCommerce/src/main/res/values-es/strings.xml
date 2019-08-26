@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-10 00:54:39+0000
+Translation-Revision-Date: 2019-08-21 00:54:30+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">No se han encontrado proveedores</string>
     <string name="login_invalid_site_url">Introduce una dirección de sitio web completa, como ejemplo.com.</string>
     <string name="reviews_empty_message">Aún no has recibido ninguna reseña</string>
     <string name="review_notifications">Reseñas</string>
@@ -389,11 +390,9 @@ Language: es
     <string name="waiting_for_customers">Esperando clientes</string>
     <string name="share_store_dialog_title">Comparte la URL de tu tienda</string>
     <string name="share_store_button">Compartir tienda</string>
-    <string name="wc_mark_all_read_success">Se han marcado todas las notificaciones como leídas</string>
     <string name="login_update_required_title">Actualizar tienda a WooCommerce 3.5</string>
     <string name="login_verifying_site_error">No se puede conectar a %s</string>
     <string name="dismiss">Descartar </string>
-    <string name="wc_mark_all_read_error">Se ha producido un error al marcar todas las notificaciones como leídas</string>
     <string name="wc_mark_all_read">Marcar todo como leído</string>
     <string name="orderdetail_message_customer">Enviar mensaje</string>
     <string name="orderdetail_call_customer">Llamar</string>
