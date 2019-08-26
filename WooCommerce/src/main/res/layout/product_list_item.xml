@@ -36,15 +36,14 @@
         app:layout_constrainedWidth="true"
         android:maxLines="2"
         android:textAppearance="@style/Woo.TextAppearance.ListItem.Title"
-        app:layout_constraintBottom_toTopOf="@+id/productStock"
+        app:layout_constraintBottom_toTopOf="@+id/productStockAndStaus"
         app:layout_constraintStart_toEndOf="@+id/productImageFrame"
-        app:layout_constraintEnd_toStartOf="@id/statusFrame"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         tools:text="Awesome Sauce" />
 
     <TextView
-        android:id="@+id/productStock"
+        android:id="@+id/productStockAndStaus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
@@ -54,31 +53,5 @@
         app:layout_constraintTop_toBottomOf="@+id/productName"
         app:layout_constraintHorizontal_bias="0.0"
         tools:text="Out of stock" />
-
-    <FrameLayout
-        android:id="@+id/statusFrame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:visibility="visible">
-
-        <TextView
-            android:id="@+id/statusBadge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="@drawable/product_detail_status_badge"
-            android:gravity="center"
-            android:paddingBottom="@dimen/margin_small"
-            android:paddingEnd="@dimen/margin_medium"
-            android:paddingStart="@dimen/margin_medium"
-            android:paddingTop="@dimen/margin_small"
-            android:textColor="@color/wc_grey_dark"
-            android:textSize="@dimen/text_medium"
-            tools:text="Private" />
-    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
