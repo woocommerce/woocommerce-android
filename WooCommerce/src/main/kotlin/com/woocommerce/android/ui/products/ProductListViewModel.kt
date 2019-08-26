@@ -20,7 +20,6 @@ class ProductListViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
-    private var lastOffset = 0
     private var canLoadMore = true
     val productList = MutableLiveData<List<Product>>()
 
@@ -45,28 +44,26 @@ class ProductListViewModel @Inject constructor(
         productRepository.onCleanup()
     }
 
-    private fun loadProducts(offset: Int = 0) {
+    private fun loadProducts() {
         launch {
-            // if this is the initial load, first get the products from the db and if there are any show them
+            // since this is the initial load, first get the products from the db and if there are any show them
             // immediately, otherwise make sure the skeleton shows
-            if (offset == 0) {
-                val productsInDb = productRepository.getProductList()
-                if (productsInDb.isEmpty()) {
-                    _isSkeletonShown.value = true
-                } else {
-                    productList.value = productsInDb
-                }
+            val productsInDb = productRepository.getProductList()
+            if (productsInDb.isEmpty()) {
+                _isSkeletonShown.value = true
+            } else {
+                productList.value = productsInDb
             }
-
             fetchProductList()
         }
     }
 
     fun loadMoreProducts() {
         if (canLoadMore) {
-            val offset = lastOffset + 25
             _isLoadingMore.value = true
-            loadProducts(offset)
+            launch {
+                fetchProductList(true)
+            }
         }
     }
 
@@ -75,10 +72,9 @@ class ProductListViewModel @Inject constructor(
         loadProducts()
     }
 
-    private suspend fun fetchProductList(offset: Int = 0) {
+    private suspend fun fetchProductList(loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            val fetchedProducts = productRepository.fetchProductList(offset)
-            lastOffset = offset
+            val fetchedProducts = productRepository.fetchProductList(loadMore)
             canLoadMore = productRepository.canLoadMoreProducts
             productList.value = fetchedProducts
         } else {
