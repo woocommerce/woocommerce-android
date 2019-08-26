@@ -19,6 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
@@ -143,7 +144,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         }
 
         textBetaFeatures.setOnClickListener {
-            // TODO: add analytic event here
+            AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
             findNavController().navigate(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
