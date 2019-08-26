@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.hide
 import com.woocommerce.android.util.show
@@ -29,7 +31,8 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import javax.inject.Inject
 
-class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener {
+class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
+        MyStoreStatsAvailabilityListener {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         const val STATE_KEY_TAB_STATS = "tab-stats-state"
@@ -125,6 +128,12 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         if (isActive && !deferInit) {
             isStatsRefreshed = true
             refreshDashboard(forced = this.isRefreshPending)
+        }
+
+        if (AppPrefs.isUsingV4Api() && AppPrefs.shouldDisplayV4StatsAvailabilityBanner()) {
+            showV4StatsAvailabilityBanner(true)
+        } else if (AppPrefs.shouldDisplayV4StatsRevertedBanner()) {
+            showV4StatsRevertedBanner(true)
         }
     }
 
@@ -228,6 +237,24 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         errorSnackbar?.show()
     }
 
+    override fun showV4StatsRevertedBanner(show: Boolean) {
+        if (show) {
+            dashboard_stats_reverted_card.visibility = View.VISIBLE
+            dashboard_stats_reverted_card.initView(this)
+        } else {
+            dashboard_stats_reverted_card.visibility = View.GONE
+        }
+    }
+
+    override fun showV4StatsAvailabilityBanner(show: Boolean) {
+        if (show) {
+            dashboard_stats_availability_card.visibility = View.VISIBLE
+            dashboard_stats_availability_card.initView(this)
+        } else {
+            dashboard_stats_availability_card.visibility = View.GONE
+        }
+    }
+
     override fun getFragmentTitle(): String {
         selectedSite.getIfExists()?.let { site ->
             if (!site.displayName.isNullOrBlank()) {
@@ -296,5 +323,39 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             dashboard_view.show()
             empty_view.hide()
         }
+    }
+
+    /**
+     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard] banner is dismissed.
+     * The banner will no longer be displayed to the user
+     */
+    override fun onMyStoreStatsRevertedNoticeCardDismissed() {
+        AppPrefs.setShouldDisplayV4StatsRevertedBanner(false)
+        showV4StatsRevertedBanner(false)
+    }
+
+    /**
+     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
+     * TRY NOW button is clicked
+     * - The banner will no longer be displayed to the user
+     * - The old stats UI will be replaced with the new wc-admin stats
+     */
+    override fun onMyStoreStatsAvailabilityAccepted() {
+        AppPrefs.setIsV4StatsUIEnabled(true)
+        AppPrefs.setShouldDisplayV4StatsAvailabilityBanner(false)
+        showV4StatsAvailabilityBanner(false)
+        (activity as? MainActivity)?.replaceStatsFragment()
+    }
+
+    /**
+     * Method called when the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
+     * NO THANKS button is clicked
+     * - The banner will no longer be displayed to the user
+     * - The old stats UI will NOT be replaced with the new wc-admin stats
+     */
+    override fun onMyStoreStatsAvailabilityRejected() {
+        AppPrefs.setIsV4StatsUIEnabled(false)
+        AppPrefs.setShouldDisplayV4StatsAvailabilityBanner(false)
+        showV4StatsAvailabilityBanner(false)
     }
 }

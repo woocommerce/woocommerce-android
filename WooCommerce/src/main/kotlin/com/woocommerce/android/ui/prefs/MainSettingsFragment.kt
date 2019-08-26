@@ -19,6 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
@@ -50,6 +51,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onSiteChanged()
+        fun onV4StatsOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -101,6 +103,13 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             setLinkTextColor(ContextCompat.getColor(context, R.color.wc_purple))
         }
 
+        // display the Beta features section only if the wc-admin is installed/active on a site
+        if (AppPrefs.isUsingV4Api()) {
+            betaFeaturesContainer.visibility = View.VISIBLE
+        } else {
+            betaFeaturesContainer.visibility = View.GONE
+        }
+
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifsContainerOlder.visibility = View.GONE
@@ -132,6 +141,11 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
                 trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
                 AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
             }
+        }
+
+        textBetaFeatures.setOnClickListener {
+            AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
+            findNavController().navigate(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
         textPrivacySettings.setOnClickListener {

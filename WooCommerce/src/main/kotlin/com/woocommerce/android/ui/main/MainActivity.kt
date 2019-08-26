@@ -417,6 +417,11 @@ class MainActivity : AppUpgradeActivity(),
                     presenter.selectedSiteChanged(selectedSite.get())
                     restart()
                 }
+
+                // update the stats fragment based on the user's preferences
+                if (resultCode == AppSettingsActivity.RESULT_CODE_V4_STATS_OPTIONS_CHANGED) {
+                    replaceStatsFragment()
+                }
                 return
             }
         }
@@ -536,21 +541,41 @@ class MainActivity : AppUpgradeActivity(),
      * Method to update the `My Store` TAB based on the revenue stats availability
      *
      * if revenue stats v4 support is available but we are currently displaying the v3 stats UI,
-     * display a dialog to the user with the option to unload the v3 UI and display the new stats UI
+     * display a banner to the user with the option to unload the v3 UI and display the new stats UI
      *
      * if revenue stats v4 support is NOT available but we are currently displaying the v4 stats UI,
-     * display an error snackbar to the user with the option to unload the v4 and display the old stats UI
-     *
-     * This implementation is on hold till we can finalise on the design interaction.
-     *
+     * display a banner [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard]
+     * to the user after unloading the v4 UI and displaying the old stats UI
      */
     override fun updateStatsView(isAvailable: Boolean) {
         val fragment = bottomNavView.getFragment(DASHBOARD)
-        if (isAvailable && fragment.tag == DashboardFragment.TAG) {
-            // TODO: display a dialog to the user with the option to unload the v3 UI and display the new stats UI
-        } else if (!isAvailable && fragment.tag == MyStoreFragment.TAG) {
-            // TODO: display an error snackbar to the user with the option to unload the v4 and display the old stats UI
+        val isEnabled = isAvailable && AppPrefs.isV4StatsUISupported()
+        when (fragment.tag) {
+            DashboardFragment.TAG -> {
+                if (isEnabled) {
+                    // display the new stats UI only if user has opted in
+                    replaceStatsFragment()
+                } else if (isAvailable) {
+                    // if the new stats UI is not enabled but the user has not opted out of it,
+                    // display the new stats availability banner
+                    (fragment as? DashboardFragment)?.showV4StatsAvailabilityBanner(
+                            AppPrefs.shouldDisplayV4StatsAvailabilityBanner()
+                    )
+                }
+            }
+            MyStoreFragment.TAG -> {
+                // if new stats UI was enabled but is no longer enabled, display revert banner
+                // and replace the new stats UI with the old UI
+                if (!isEnabled) {
+                    AppPrefs.setShouldDisplayV4StatsRevertedBanner(true)
+                    replaceStatsFragment()
+                }
+            }
         }
+    }
+
+    override fun replaceStatsFragment() {
+        bottomNavView.replaceStatsFragment()
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
