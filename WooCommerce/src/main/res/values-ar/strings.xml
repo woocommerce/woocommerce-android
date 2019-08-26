@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-07 00:54:03+0000
+Translation-Revision-Date: 2019-08-21 00:54:31+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">لم يتم العثور على أي مزوِّدين</string>
     <string name="login_invalid_site_url">يرجى إدخال عنوان موقع ويب كامل، مثل example.com.</string>
     <string name="reviews_empty_message">لا توجد مراجعات بعد!</string>
     <string name="review_notifications">مراجعات</string>
@@ -389,11 +390,9 @@ Language: ar
     <string name="waiting_for_customers">في انتظار العملاء</string>
     <string name="share_store_dialog_title">مشاركة عنوان URL الخاص بمتجرك</string>
     <string name="share_store_button">مشاركة متجرك</string>
-    <string name="wc_mark_all_read_success">تم وسم جميع التنبيهات كمقروءة</string>
     <string name="login_update_required_title">تحديث المتجر إلى WooCommerce 3.5</string>
     <string name="login_verifying_site_error">يتعذر الاتصال بـ %s</string>
     <string name="dismiss">تجاهل</string>
-    <string name="wc_mark_all_read_error">حدث خطأ أثناء وسم جميع التنبيهات كمقروءة</string>
     <string name="wc_mark_all_read">وسم الجميع كمقروء</string>
     <string name="orderdetail_message_customer">رسالة</string>
     <string name="orderdetail_call_customer">اتصال</string>
