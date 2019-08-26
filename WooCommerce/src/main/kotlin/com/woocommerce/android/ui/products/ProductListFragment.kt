@@ -52,21 +52,23 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMo
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        productAdapter = ProductListAdapter(activity!!, this, this)
+        val activity = requireActivity()
+
+        productAdapter = ProductListAdapter(activity, this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
         productsRecycler.addItemDecoration(
                 AlignedDividerDecoration(
-                        activity!!,
+                        activity,
                         DividerItemDecoration.VERTICAL, R.id.productName, clipToMargin = false
                 )
         )
 
         productsRefreshLayout?.apply {
             setColorSchemeColors(
-                    ContextCompat.getColor(activity!!, R.color.colorPrimary),
-                    ContextCompat.getColor(activity!!, R.color.colorAccent),
-                    ContextCompat.getColor(activity!!, R.color.colorPrimaryDark)
+                    ContextCompat.getColor(activity, R.color.colorPrimary),
+                    ContextCompat.getColor(activity, R.color.colorAccent),
+                    ContextCompat.getColor(activity, R.color.colorPrimaryDark)
             )
             scrollUpChild = productsRecycler
             setOnRefreshListener {
