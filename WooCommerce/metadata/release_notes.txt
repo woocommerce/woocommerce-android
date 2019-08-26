@@ -1,2 +1,4 @@
-* Added an option to bypass the Jetpack required screen during the login process and attempt to log into the site anyway.
-* Fixed a bug in the Jetpack connection check during login where a small percentage of sites with Jetpack properly connected were coming back as not connected and preventing users from logging in successfully.
+- Added an option to bypass the Jetpack required screen during the login process and attempt to log into the site anyway.
+- Fixed a bug in the Jetpack connection check during login where a small percentage of sites with Jetpack properly connected were coming back as not connected and preventing users from logging in successfully.
+- Fixed the way 'My Store' displayed stats when no orders have yet been processed.
+- Several bugs were fixed including a few that were causing some difficult to reproduce crashes for a small subset of users. 
