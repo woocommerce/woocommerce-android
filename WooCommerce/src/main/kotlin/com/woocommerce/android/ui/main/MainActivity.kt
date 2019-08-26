@@ -420,7 +420,7 @@ class MainActivity : AppUpgradeActivity(),
 
                 // update the stats fragment based on the user's preferences
                 if (resultCode == AppSettingsActivity.RESULT_CODE_V4_STATS_OPTIONS_CHANGED) {
-                    updateStatsView(AppPrefs.isV4StatsUISupported())
+                    replaceStatsFragment()
                 }
                 return
             }
