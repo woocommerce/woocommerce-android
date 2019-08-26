@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import kotlinx.android.synthetic.main.product_list_item.view.*
 import org.wordpress.android.util.FormatUtils
+import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 
 class ProductListAdapter(
@@ -107,7 +108,7 @@ class ProductListAdapter(
         holder.txtProductName.text = if (product.name.isEmpty()) {
             context.getString(R.string.untitled)
         } else {
-            product.name
+            HtmlUtils.fastStripHtml(product.name)
         }
 
         val stockAndStatus = getProductStockStatusText(product)
