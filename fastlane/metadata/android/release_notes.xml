@@ -1,136 +1,85 @@
 <ar>
-2.4:
-علامة التبويب التي كانت تسمى في السابق تنبيهات تسمى الآن مراجعات. حيث إن التنبيهات تظهر الآن أسفل الطلبات، كان يجب أن يكون لها هوية جديدة. قمنا بإعادة تسميتها إلى "مراجعات" حيث إنها الآن تُظهر المراجعات.
-
-تم نقل عدد الطلبات غير المستوفاة من لوحة التحكم ويظهر الآن كشارة على قائمة الطلبات.
-
-سيُطلب منك إجراء تحديثات داخل التطبيق، لذا فلن تلجأ إلى فوضى فتح Play store لإجرائها.
+2.5:
+* لقد تعقبنا وأصلحنا: عطلاً نادرًا حدث بعد إنجاز أحد الطلبات وتصغير حجم التطبيق، إلى جانب خطأ تسبب في تبديل الموقع المُحدَّد في منتقي المواقع إلى التحديد السابق مرة أخرى، فضلاً عن بعض المشكلات في واجهة المستخدم التي تحتوي على علامة تبويب "المراجعات" الجديدة.
+* يمكنك الآن تضمين أسماء المنتجات في سطرين في شاشة تفاصيل الطلب.
 </ar>
 <de-DE>
-2.4:
-Der vormals „Benachrichtigungen“ genannte Tab heißt jetzt „Rezensionen“. Da Benachrichtigungen jetzt unter „Aufträge“ angezeigt werden, brauchte der Tab „Benachrichtigungen“ eine neue Bezeichnung. Wir haben ihn schlauerweise „Rezensionen“ genannt, da dort jetzt eben nur diese angezeigt werden.
-
-Die Anzahl nicht erfüllter Aufträge wird nicht mehr im Dashboard angezeigt, sondern als Badge in der Liste der Bestellungen.
-
-Du erhältst eine Aufforderung in der App, wenn es Zeit für ein Update ist. Du brauchst dazu also nicht mehr den Play Store zu öffnen.
+2.5:
+* Wir haben folgende Probleme gefunden und behoben: einen seltenen Absturz, der nach dem Erfüllen eines Auftrags und Minimieren der App auftrat, einen Fehler, bei dem die ausgewählte Website in der Websiteauswahl zur vorherigen Auswahl zurückwechselte, und einige Probleme mit der Benutzeroberfläche auf dem neuen Tab „Rezensionen“.
+* Produktnamen können jetzt auf dem Bildschirm mit den Bestelldetails in zwei Zeilen geschrieben werden.
 </de-DE>
 <es-ES>
-2.4:
-La pestaña anteriormente conocida como Notificaciones ahora se ha cambiado a Reseñas. Como las notificaciones ahora se muestran en Pedidos, la pestaña Notificaciones necesitaba otra identidad. Le hemos cambiado el nombre a "Reseñas", ya que ahora solo muestra reseñas.
-
-El número de los pedidos sin completar se ha quitado del escritorio y ahora se muestra como una insignia en la lista de pedidos.
-
-Se te pedirá que realices actualizaciones en la aplicación, de modo que ya no tendrás que molestarte en abrir Play Store para hacerlo.
+2.5:
+* Hemos supervisado y corregido lo siguiente: un error extraño que se producía después de hacer un pedido y minimizar la aplicación, un error que hacía que el sitio seleccionado en el selector de sitios volviera a la selección anterior y algunos problemas de la interfaz de usuario que ocurrían en la nueva pestaña "Revisiones".
+* Los nombres de los productos ahora pueden agruparse en dos líneas, en la pantalla Información del pedido.
 </es-ES>
 <fr-FR>
-2.4 :
-L’onglet anciennement appelé Notifications se nomme désormais Avis. Puisque les notifications sont à présent accessibles dans Commandes, l’onglet Notification avait besoin d’une nouvelle identité. Nous l’avons astucieusement rebaptisé « Avis » puisqu’il n’affiche plus que les avis.
-
-Le nombre de commandes inachevées n’apparaît plus sur le tableau de bord. C’est désormais un badge dans la liste de commandes.
-
-Vous serez invité à effectuer des mises à jour dans l’application, il n’est donc plus nécessaire d’ouvrir le Play store.
+2.5 :
+* Nous avons détecté et résolu : une défaillance rare qui survenait après l'exécution d'une commande et la réduction de l'application, un bug remplaçant le site sélectionné dans le sélecteur de site par la sélection précédente, ainsi que quelques problèmes d'interface utilisateur avec le nouvel onglet « Avis ».
+* Les noms de produit peuvent désormais occuper deux lignes dans l'écran des détails de la commande.
 </fr-FR>
 <iw-IL>
-2.4:
-הלשונית 'הודעות' נקראת כעת 'ביקורות'. מאחר שההודעות מוצגות כעת במקטע 'הזמנות', רצינו לתת שם חדש ללשונית 'הודעות'. לכן, קראנו לה פשוט 'ביקורות', כיוון שהיא מציגה כעת רק ביקורות.
-
-מספר ההזמנות שלא הושלמו לא מופיע עוד בלוח הבקרה וכעת מופיע כסמל ברשימת ההזמנות.
-
-אנחנו נודיע לך מתי יש עדכונים בתוך האפליקציה כדי שלא יהיה צורך לפתוח את Play Store במיוחד ולבדוק אם קיים עדכון.
+2.5:
+* איתרנו ותיקנו את הבעיות הבאות: קריסה נדירה שהתרחשה לאחר השלמה של הזמנה וצמצום האפליקציה,באג שגרם לאתר שנבחר בבורר האתרים להתחלף לבחירה הקודמת ועוד כמה בעיות בממשק המשתמש בלשונית 'ביקורות' החדשה.
+* כעת ניתן לפרסום את שמות המוצרים על שתי שורות במסך של פרטי ההזמנה.
 </iw-IL>
 <id>
-2.4:
-Tab yang sebelumnya bernama Pemberitahuan kini menjadi Ulasan. Karena pemberitahuan kini ditampilkan di Pesanan, tab Pemberitahuan perlu identitas baru. Kami memberikan nama cerdik ‘Ulasan’, karena sekarang hanya menampilkan ulasan.
-
-Jumlah pesanan yang belum dipenuhi kini tidak ada di dasbor dan ditampilkan sebagai lencana di daftar pesanan.
-
-Anda akan diminta melakukan pembaruan di dalam aplikasi, jadi tak perlu lagi repot membuka Play store untuk melakukannya.
+2.5:
+* Kami telah menemukan dan memperbaiki: sebuah crash langka yang terjadi setelah memenuhi pesanan dan mengecilkan aplikasi, satu bug yang menyebabkan situs terpilih di pemilih situs beralih kembali ke pilihan sebelumnya, dan beberapa masalah UI di tab “Ulasan” yang baru.
+* Nama produk kini dapat dijadikan dua baris dalam layar detail pesanan.
 </id>
 <it-IT>
-2.4:
-La scheda precedentemente nota come Notifiche si chiama ora Recensioni. Poiché le notifiche vengono attualmente visualizzate sotto Ordini, la scheda Notifiche aveva bisogno di una nuova identità. Abbiamo deciso di rinominarla 'Recensioni', poiché ora contiene solo recensioni.
-
-Il numero di ordini inevasi non è più in bacheca, ma è ora visualizzato come badge nell'elenco degli ordini.
-
-Ti verrà richiesto di effettuare gli aggiornamenti direttamente nell'app, evitando la scomodità di aprire il Play Store.
+2.5:
+* Siamo risaliti alle cause e abbiamo risolto: un raro arresto anomalo che si verificava dopo aver evaso un ordine e ridotto a icona l'app, un bug che portava il sito selezionato in Scelta siti a tornare alla selezione precedente e alcuni problemi di interfaccia utente con la nuova scheda "Recensioni".
+* I nomi dei prodotti ora possono essere inseriti in due righe nella schermata dei dettagli dell'ordine.
 </it-IT>
 <ja-JP>
-2.4:
-以前は「通知」と呼ばれていたタブの名称が「レビュー」になりました。「注文」に通知が表示されるようになったため、「通知」タブに新しい名前が必要でした。レビューのみ表示されるようになったため、このタイミングで「レビュー」という名称に変更しました。
-
-未完了の注文件数がダッシュボードに表示されなくなり、注文リストにバッジとして表示されるようになりました。
-
-アプリ内で更新の実行を促すメッセージが表示されるため、これからは Play ストアを開く手間がかかりません。
+2.5:
+* 追跡して次の修正を実行しました :注文を完了してアプリを最小化した後に発生した稀なクラッシュ、サイトピッカーで選択したサイトが以前の選択内容にスイッチバックするバグ、新しい「レビュー」タブに関する UI の問題の一部。
+* 注文詳細の画面で製品名を折り返して2行で表示できるようになりました。
 </ja-JP>
 <ko-KR>
-2.4:
-이전에 알림으로 알려진 탭이 이제 리뷰로 변경되었습니다. 이제 알림이 주문 섹션에 표시되므로 알림 탭에 새로운 ID가 필요합니다. '리뷰'로 이름을 살짝 바꾸었으며 이제 리뷰만 표시됩니다.
-
-이행되지 않은 주문 수는 대시보드에 표시되지 않으며 이제 주문 목록에 배지로 표시됩니다.
-
-앱 내에서 업데이트를 수행하라는 메시지가 표시되므로 더 이상 번거롭게 Play 스토어를 열지 않아도 됩니다.
+2.5:
+* 추적 및 수정 내용: 주문을 이행하고 앱을 최소화한 후 발생하는 드문 충돌, 사이트 선택 도구에서 선택한 사이트가 이전 선택으로 다시 전환되는 버그, 새로운 "검토"탭의 UI 문제.
+* 이제 주문 세부정보 화면에서 제품 이름을 2줄로 줄바꿈할 수 있습니다.
 </ko-KR>
 <nl-NL>
-2.4:
-Het tabblad 'Meldingen' is nu 'Beoordelingen' geworden. Omdat meldingen nu onder 'Bestellingen' staan, had het tabblad 'Meldingen' een nieuwe identiteit nodig. Nu hebben we het 'Beoordelingen' genoemd, omdat er nu alleen beoordelingen staan.
-
-Het aantal onvoltooide bestellingen is van het dashboard af en wordt nu weergegeven als een badge op de bestellijst.
-
-Je wordt binnen de app gevraagd updates uit te voeren, dus daarvoor hoef je niet meer naar de Play Store.
+2.5:
+* We hebben het volgende gevonden en gerepareerd: een zeldzame crash die plaatsvond na het voltooien van een bestelling en het minimaliseren van de app, een bug die ervoor zorgde dat de geselecteerde sitekiezer terugkeerde naar de vorige selectie en een paar UI-problemen met het nieuwe tabblad 'Beoordelingen'.
+* Productnamen kunnen nu op twee regels worden weergegeven op het scherm met bestelgegevens.
 </nl-NL>
 <pt-BR>
-2.4:
-A guia anteriormente conhecida como Notificações agora se chama Comentários. Como as notificações agora são mostradas em Pedidos, a guia Notificações precisava de uma nova identidade. Nós a renomeamos como "Comentários", já que agora ela mostra apenas comentários.
-
-O número de pedidos não realizados não aparece mais no painel e agora é exibido como um selo na lista de pedidos.
-
-Você será solicitado a realizar atualizações dentro do aplicativo, assim não haverá mais o contratempo de ter que abrir a Play Store para isso.
+2.5:
+* Rastreamos e corrigimos: um travamento raro que ocorria após a conclusão de um pedido e ao minimizar o aplicativo, um bug que fazia com que o site selecionado no seletor de sites retornasse à seleção anterior e alguns problemas de interface na nova guia "Comentários".
+* Os nomes dos produtos agora podem ser agrupados em duas linhas na tela de detalhes do pedido.
 </pt-BR>
 <ru-RU>
-2.4:
-Теперь вкладка "Уведомления" называется "Обзоры". Так как уведомления теперь отображаются на вкладке "Заказы", вкладке "Уведомления" понадобилось новое называние. Мы решили, что "Обзоры" отлично подойдет, так как отражает содержание.
-
-Мы перенесли значок количества ожидающих выполнения заказов с панели управления в список заказов.
-
-Теперь установить обновление можно прямо в приложении, когда всплывет соответствующая подсказка. Для этого больше не нужно заходить в Play Store.
+2.5:
+* Мы нашли и исправили следующее: редкую ошибку, которая возникала, если заполнить заказ и свернуть приложение; ошибку, из-за которой при выборе сайта выделение откатывалось на шаг назад; несколько проблем с интерфейсом новой вкладки "Обзоры".
+* Названия товаров в окне информации о заказе теперь помещаются в две строки.
 </ru-RU>
 <sv-SE>
-2.4:
-Fliken Meddelanden har bytt namn till Omdömen. Eftersom meddelanden nu visas under Beställningar behövde Meddelanden-fliken ett nytt namn. Vi har listigt nog kallat den för Omdömen eftersom den bara visar omdömen nu.
-
-Antalet ej slutförda beställningar är borta från instrumentpanelen och visas nu som ett märke i beställningslistan.
-
-Du får meddelande om att utföra uppdateringar inom appen så du behöver inte längre krångla med att öppna Play Store för att göra det.
+2.5:
+* Vi har hittat och åtgärdat: en sällsynt krasch som inträffade efter att en beställning hade lagts och appen minimerats, ett fel som gjorde att den valda webbplatsen i webbplatsväljaren växlade tillbaka till det föregående valet och några gränssnittsproblem med den nya fliken "Recensioner".
+* Produktnamn kan nu sträcka sig över två rader på skärmen för beställningsinformation.
 </sv-SE>
 <tr-TR>
-2.4:
-Daha önce Bildirimler olarak bilinen sekme artık İncelemeler olarak adlandırılıyor. Bildirimler artık Siparişler bölümünde gösterildiğinden Bildirimler sekmesi için yeni bir kimlik gerekiyordu. Bu sekme artık yalnızca incelemeleri gösterdiğinden biz de onu “İncelemeler” şekkinde yeniden adlandırmakta sakınca görmedik.
-
-Gönderilmemiş siparişlerin sayısı artık panoda değil, sipariş listesinde rozet olarak gösteriliyor.
-
-Uygulamanın içinden güncelleme gerçekleştirmeniz istendiğinden Google Play’ı açma zorunluluğu ortadan kalkıyor.
+2.5:
+* Takip ettik ve aşağıdakileri düzelttik: bir sipariş verilip uygulama simge durumuna küçültüldükten sonra oluşan nadir bir hata, site seçiciden site seçildikten sonra önceki seçime geri dönülmesine neden olan bir hata ve yeni “Yorumlar” sekmesiyle ilgili bir kaç kullanıcı arayüzü sorunu.
+* Ürün adları artık sipariş ayrıntıları ekranında iki satıra sarılabiliyor.
 </tr-TR>
 <zh-CN>
-2.4：
-之前的“通知”选项卡现已改为“评论”。由于通知现在显示在“订单”下，因此“通知”选项卡需要一个新的身份。我们已巧妙地将其重新命名为“评论”，因为它现在只显示评论。
-
-未完成订单的数量将从控制面板中删除，现在以徽章的形式显示在订单列表上。
-
-系统会提示您在应用程序内执行更新，因此在执行更新操作时，不必再打开 Play 商店即可轻松搞定。
+2.5：
+* 我们跟踪并修复了以下内容：完成订单并将应用程序最小化后偶尔出现的崩溃、导致站点选择器中所选站点切换回之前选择的站点的错误，以及新“评论”选项卡中存在的一些 UI 问题。
+* 产品名称现在可以在“订单详细信息”屏幕中分两行显示。
 </zh-CN>
 <zh-TW>
-2.4：
-此分頁先前名稱為「通知」，現已改為「評論」。由於現在通知會顯示在「訂單」下方，「通知」分頁需要新的身分。該分頁現在只會顯示評論，因此我們巧妙地將其重新命名為「評論」。
-
-未完成的訂單數量已從儀表板移除，現在會以徽章顯示在訂單清單中。
-
-系統會提示你在應用程式中執行更新，免除了必須開啟 Play 商店進行更新的麻煩。
+2.5：
+* 我們已追蹤及修正以下問題：履行訂單並最小化應用程式後所發生不常見的當機情形；導致所選網站在網站挑選器中切換回上一個選項的錯誤；以及「評論」分頁的一些 UI 問題。
+* 產品名稱現在可於訂單詳細資料畫面中以兩行顯示。
 </zh-TW>
 <en-US>
-2.4:
-The tab formerly known as Notifications is now Reviews. As notifications are now shown under Orders, the Notifications tab was in need of a new identity. We have cunningly renamed it ‘Reviews,’ as it now just shows reviews.
-
-The number of unfulfilled orders is gone from the dashboard and is now shown as a badge on the order list.
-
-You will be prompted to perform updates within the app, so the hassle of having to open the Play store to do so is no more.
+2.5:
+* We tracked down and fixed: a rare crash that happened after fulfilling an order and minimizing the app, a bug causing the selected site in the site picker to switch back to the previous selection, and a few UI issues with the new “Reviews” tab.
+* Product names can now wrap onto two lines in the order detail screen.
 /<en-US>

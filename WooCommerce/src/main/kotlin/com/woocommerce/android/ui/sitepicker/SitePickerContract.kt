@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 interface SitePickerContract {
     interface Presenter : BasePresenter<View> {
         fun loadAndFetchSites()
+        fun fetchSitesFromAPI()
         fun fetchUpdatedSiteFromAPI(site: SiteModel)
         fun loadSites()
         fun getWooCommerceSites(): List<SiteModel>
@@ -26,7 +27,8 @@ interface SitePickerContract {
         fun showUserInfo()
         fun showStoreList(wcSites: List<SiteModel>)
         fun showNoStoresView()
-        fun showSiteNotConnectedView(url: String)
+        fun showSiteNotConnectedAccountView(url: String)
+        fun showSiteNotConnectedJetpackView(url: String)
         fun showSiteNotWooStore(site: SiteModel)
         fun didLogout()
         fun siteSelected(site: SiteModel, isAutoLogin: Boolean = false)
