@@ -65,11 +65,7 @@ class ProductListRepository @Inject constructor(
 
     fun getProductList(): List<Product> {
         val wcProducts = productStore.getProductsForSite(selectedSite.get(), PRODUCT_SORTING)
-        val products = ArrayList<Product>()
-        wcProducts.forEach {
-            products.add(it.toAppModel())
-        }
-        return products
+        return wcProducts.map { it.toAppModel() }
     }
 
     @SuppressWarnings("unused")
