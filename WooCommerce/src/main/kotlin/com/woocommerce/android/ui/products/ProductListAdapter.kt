@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -39,14 +41,6 @@ class ProductListAdapter(
 
     init {
         setHasStableIds(true)
-    }
-
-    fun setProductList(products: List<Product>) {
-        if (!isSameProductList(products)) {
-            productList.clear()
-            productList.addAll(products)
-            notifyDataSetChanged()
-        }
     }
 
     override fun getItemId(position: Int) = productList[position].remoteId
@@ -124,42 +118,33 @@ class ProductListAdapter(
         }
     }
 
-    /**
-     * returns true if the passed list of products is the same as the current list
-     */
-    private fun isSameProductList(products: List<Product>): Boolean {
-        if (products.size != productList.size) {
-            return false
+    private class ProductItemDiffUtil(val items: List<Product>, val result: List<Product>) : Callback() {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = items[oldItemPosition]
+            val newItem = result[newItemPosition]
+            return oldItem.stockQuantity == newItem.stockQuantity &&
+                    oldItem.stockStatus == newItem.stockStatus &&
+                    oldItem.status == newItem.status &&
+                    oldItem.manageStock == newItem.manageStock &&
+                    oldItem.type == newItem.type &&
+                    oldItem.numVariations == newItem.numVariations &&
+                    oldItem.name == newItem.name
         }
 
-        fun findProductById(product: Product): Product? {
-            productList.forEach {
-                if (it.remoteId == product.remoteId) {
-                    return it
-                }
-            }
-            return null
-        }
+        override fun getOldListSize(): Int = items.size
 
-        fun isSameProduct(product1: Product, product2: Product): Boolean {
-            return product1.stockQuantity == product2.stockQuantity &&
-                    product1.stockStatus == product2.stockStatus &&
-                    product1.status == product2.status &&
-                    product1.manageStock == product2.manageStock &&
-                    product1.type == product2.type &&
-                    product1.numVariations == product2.numVariations &&
-                    product1.name == product2.name
-        }
+        override fun getNewListSize(): Int = result.size
 
-        products.forEach { newProduct ->
-            findProductById(newProduct)?.let { existingProduct ->
-                if (!isSameProduct(newProduct, existingProduct)) {
-                    return false
-                }
-            } ?: return false
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return items[oldItemPosition] == result[newItemPosition]
         }
+    }
 
-        return true
+    fun setProductList(products: List<Product>) {
+        val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
+        productList.clear()
+        productList.addAll(products)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
