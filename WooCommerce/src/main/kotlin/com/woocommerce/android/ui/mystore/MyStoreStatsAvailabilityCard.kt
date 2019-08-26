@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.my_store_stats_availability_notice.view.*
 
 class MyStoreStatsAvailabilityCard @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
@@ -18,9 +19,9 @@ class MyStoreStatsAvailabilityCard @JvmOverloads constructor(ctx: Context, attrs
     fun initView(listener: MyStoreStatsAvailabilityListener) {
         my_store_availability_viewMore.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                my_store_availability_morePanel.visibility = View.VISIBLE
+                WooAnimUtils.fadeIn(my_store_availability_morePanel)
             } else {
-                my_store_availability_morePanel.visibility = View.GONE
+                WooAnimUtils.fadeOut(my_store_availability_morePanel)
             }
         }
 
