@@ -296,11 +296,14 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
+        if (visitors_layout.visibility == View.GONE) {
+            WooAnimUtils.fadeIn(visitors_layout)
+        }
         fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
     }
 
     fun showVisitorStatsError() {
-        fadeInLabelValue(visitors_value, "?")
+        WooAnimUtils.fadeOut(visitors_layout)
     }
 
     private fun updateChartView() {
@@ -440,7 +443,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     private fun fadeInLabelValue(view: TextView, value: String) {
         // do nothing if value hasn't changed
-        if (view.text.toString().equals(value)) {
+        if (view.text.toString() == value) {
             return
         }
 

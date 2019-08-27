@@ -294,12 +294,14 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
-        visitors_layout.visibility = View.VISIBLE
+        if (visitors_layout.visibility == View.GONE) {
+            WooAnimUtils.fadeIn(visitors_layout)
+        }
         fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
     }
 
     fun showVisitorStatsError() {
-        fadeInLabelValue(visitors_value, "?")
+        WooAnimUtils.fadeOut(visitors_layout)
     }
 
     fun clearLabelValues() {
