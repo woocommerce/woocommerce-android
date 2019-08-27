@@ -561,7 +561,6 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         ))
     }
 
-
     @Test
     fun verifyOrderDetailNotesCardEmptyView() {
         // add mock data to order detail screen
