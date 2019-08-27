@@ -27,8 +27,8 @@ final class ReviewListRepository @Inject constructor(
 
     private var continuationReview: Continuation<Boolean>? = null
     private var offset = 0
-    var canLoadMoreReviews = true
-    var isLoadingMoreReviews = false
+    private var isLoadingMoreReviews = false
+    var canLoadMoreReviews = false
 
     init {
         dispatcher.register(this)

@@ -131,5 +131,5 @@ object StringUtils {
     /**
      * Strips HTML tags and newline characters from the provided text and returns the raw text
      */
-    fun getRawTextFromHtml(htmlStr: String): String = Html.fromHtml(htmlStr).toString().replace("\n","")
+    fun getRawTextFromHtml(htmlStr: String): String = Html.fromHtml(htmlStr).toString().replace("\n", "")
 }

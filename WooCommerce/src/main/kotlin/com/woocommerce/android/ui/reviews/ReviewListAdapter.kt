@@ -28,8 +28,7 @@ import kotlinx.android.synthetic.main.order_list_header.view.*
 
 class ReviewListAdapter(
     private val context: Context,
-    private val clickListener: OnReviewClickListener,
-    private val loadMoreListener: OnLoadMoreListener
+    private val clickListener: OnReviewClickListener
 ) : SectionedRecyclerViewAdapter() {
     private var starTintColor: Int = 0
     init {
@@ -47,10 +46,6 @@ class ReviewListAdapter(
 
     interface OnReviewClickListener {
         fun onReviewClick(remoteReviewId: Long)
-    }
-
-    interface OnLoadMoreListener {
-        fun onRequestLoadMore()
     }
 
     fun setReviews(reviews: List<ProductReview>) {

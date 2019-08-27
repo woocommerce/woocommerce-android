@@ -28,8 +28,7 @@ import kotlinx.android.synthetic.main.fragment_notifs_list.notifsList
 import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
 import javax.inject.Inject
 
-class ReviewListFragment : TopLevelFragment(), ItemDecorationListener,
-        ReviewListAdapter.OnLoadMoreListener, ReviewListAdapter.OnReviewClickListener {
+class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewListAdapter.OnReviewClickListener {
     companion object {
         const val TAG = "ReviewListFragment"
         const val KEY_LIST_STATE = "list-state"
@@ -72,7 +71,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener,
 
         val activity = requireActivity()
 
-        reviewsAdapter = ReviewListAdapter(activity, this, this)
+        reviewsAdapter = ReviewListAdapter(activity, this)
         val unreadDecoration = UnreadItemDecoration(activity as Context, this)
         notifsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
@@ -94,6 +93,14 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener,
                         onScrollDown()
                     } else if (dy < 0) {
                         onScrollUp()
+                    }
+                }
+
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+
+                    if (!recyclerView.canScrollVertically(1)) {
+                        viewModel.loadReviews(true)
                     }
                 }
             })
@@ -219,9 +226,5 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener,
 
     override fun onReviewClick(remoteReviewId: Long) {
         // TODO AMANDA : open review detail
-    }
-
-    override fun onRequestLoadMore() {
-        // TODO AMANDA : load more reviews
     }
 }
