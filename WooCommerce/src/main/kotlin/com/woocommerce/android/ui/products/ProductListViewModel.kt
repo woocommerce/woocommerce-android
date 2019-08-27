@@ -36,6 +36,9 @@ class ProductListViewModel @Inject constructor(
     private val _isRefreshing = MutableLiveData<Boolean>()
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
+    private val _searchQuery = MutableLiveData<String>()
+    val searchQuery: LiveData<String> = _searchQuery
+
     fun start() {
         loadProducts()
     }
@@ -46,13 +49,9 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun loadProducts(loadMore: Boolean = false) {
-        if (loadMore && !productRepository.canLoadMoreProducts) {
-            WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
-            return
-        }
-
         launch {
             _isLoadingMore.value = loadMore
+            _searchQuery.value = null
             // since this is the initial load, first get the products from the db and if there are any show them
             // immediately, otherwise make sure the skeleton shows
             if (!loadMore) {
@@ -67,9 +66,40 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun loadMoreProducts() {
+        if (!productRepository.canLoadMoreProducts) {
+            WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
+            return
+        }
+
+        val query = _searchQuery.value
+        if (query == null) {
+            loadProducts(true)
+        } else {
+            searchProducts(query, true)
+        }
+    }
+
+    fun searchProducts(query: String, loadMore: Boolean = false) {
+        launch {
+            _searchQuery.value = query
+            _isLoadingMore.value = loadMore
+            // clear the product list if this is the initial search
+            if (!loadMore) {
+                productList.value = emptyList()
+            }
+            searchProductList(query, loadMore)
+        }
+    }
+
     fun refreshProducts() {
         _isRefreshing.value = true
-        loadProducts()
+        val query = _searchQuery.value
+        if (query == null) {
+            loadProducts()
+        } else {
+            searchProducts(query)
+        }
     }
 
     private suspend fun fetchProductList(loadMore: Boolean = false) {
@@ -77,6 +107,28 @@ class ProductListViewModel @Inject constructor(
             val fetchedProducts = productRepository.fetchProductList(loadMore)
             canLoadMore = productRepository.canLoadMoreProducts
             productList.value = fetchedProducts
+        } else {
+            _showSnackbarMessage.value = R.string.offline_error
+        }
+
+        _isSkeletonShown.value = false
+        _isLoadingMore.value = false
+        _isRefreshing.value = false
+    }
+
+    private suspend fun searchProductList(query: String, loadMore: Boolean = false) {
+        if (networkStatus.isConnected()) {
+            val fetchedProducts = productRepository.searchProductList(query, loadMore)
+            canLoadMore = productRepository.canLoadMoreProducts
+            // if we loaded more, add the fetched products to the existing list
+            if (loadMore) {
+                val allProducts = ArrayList<Product>()
+                allProducts.addAll(productList.value!!)
+                allProducts.addAll(fetchedProducts)
+                productList.value = allProducts
+            } else {
+                productList.value = fetchedProducts
+            }
         } else {
             _showSnackbarMessage.value = R.string.offline_error
         }

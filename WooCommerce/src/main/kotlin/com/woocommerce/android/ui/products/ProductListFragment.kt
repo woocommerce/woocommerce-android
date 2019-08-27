@@ -40,9 +40,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-
-        private const val STATE_KEY_SEARCH_QUERY = "search-query"
-        private const val STATE_KEY_IS_SEARCHING = "is_searching"
         private const val SEARCH_TYPING_DELAY_MS = 500L
 
         fun newInstance() = ProductListFragment()
@@ -58,23 +55,15 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private var searchQuery: String = ""
     private val searchHandler = Handler()
     private var isSearching: Boolean = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        savedInstanceState?.let { bundle ->
-            isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
-            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_list, container, false)
     }
 
@@ -128,11 +117,18 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         initializeViewModel()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
-        outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
 
-        super.onSaveInstanceState(outState)
+        if (hidden) {
+            disableSearchListeners()
+        } else {
+            enableSearchListeners()
+        }
+    }
+
+    override fun onReturnedFromChildFragment() {
+        showOptionsMenu(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -149,6 +145,13 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         super.onPrepareOptionsMenu(menu)
     }
 
+    private fun showOptionsMenu(show: Boolean) {
+        setHasOptionsMenu(show)
+        if (show) {
+            refreshOptionsMenu()
+        }
+    }
+
     /**
      * Use this rather than invalidateOptionsMenu() since that collapses the search menu item
      */
@@ -161,17 +164,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     private fun shouldShowSearchMenuItem(): Boolean {
-        var isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
-        return when {
-            (isChildShowing) -> false
-            else -> true
-        }
+        val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
+        return !isChildShowing
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.menu_search -> {
-                // TODO AnalyticsTracker.track(Stat.PRODUCT_LIST_MENU_SEARCH_TAPPED)
+                AnalyticsTracker.track(Stat.PRODUCT_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
@@ -181,7 +181,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     fun clearSearchResults() {
         if (isSearching) {
-            searchQuery = ""
             isSearching = false
             disableSearchListeners()
             updateActivityTitle()
@@ -236,12 +235,10 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     fun submitSearch(query: String) {
-        // TODO
-        /*AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
                 mapOf(AnalyticsTracker.KEY_SEARCH to query)
-        )*/
-
-        searchQuery = query
+        )
+        viewModel.searchProducts(query)
     }
 
     private fun initializeViewModel() {
@@ -282,10 +279,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         }
     }
 
-    override fun onReturnedFromChildFragment() {
-        // once we add the ability to edit from product detail this should refresh the product list to show any changes
-    }
-
     override fun scrollToTop() {
         productsRecycler.smoothScrollToPosition(0)
     }
@@ -317,6 +310,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     override fun onProductClick(remoteProductId: Long) {
+        disableSearchListeners()
+        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
