@@ -12,17 +12,21 @@ data class ProductReview(
     val rating: Int,
     val reviewerName: String,
     val reviewerAvatarUrl: String?,
-    val remoteProductId: Long
+    val remoteProductId: Long,
+    var status: String, // TODO AMANDA: turn into enum or similar
+    var read: Boolean
 )
 
 fun WCProductReviewModel.toAppModel(): ProductReview {
     return ProductReview(
             this.remoteProductReviewId,
-            DateTimeUtils.dateFromIso8601(this.dateCreated),
+            DateTimeUtils.dateUTCFromIso8601(this.dateCreated),
             this.review,
             this.rating,
             this.reviewerName,
             this.reviewerAvatarUrlBySize[SMALL],
-            this.remoteProductId
+            this.remoteProductId,
+            this.status,
+            true // TODO AMANDA: figure out how to match this properly with a notification
     )
 }

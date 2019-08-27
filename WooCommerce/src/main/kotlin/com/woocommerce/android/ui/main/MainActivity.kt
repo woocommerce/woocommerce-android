@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
+import com.woocommerce.android.ui.reviews.ReviewListFragment
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -281,7 +282,7 @@ class MainActivity : AppUpgradeActivity(),
         val tag = when (bottomNavView.currentPosition) {
             DASHBOARD -> DashboardFragment.TAG
             ORDERS -> OrderListFragment.TAG
-            REVIEWS -> NotifsListFragment.TAG
+            REVIEWS -> ReviewListFragment.TAG
         }
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
