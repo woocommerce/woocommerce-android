@@ -33,8 +33,12 @@ class ProductListRepository @Inject constructor(
 
     private var continuation: Continuation<Boolean>? = null
     private var offset = 0
-    var canLoadMoreProducts = true
-    var isLoadingProducts = false
+    private var isLoadingProducts = false
+
+    final var canLoadMoreProducts = true
+        private set(value) {
+            field = value
+        }
 
     init {
         dispatcher.register(this)
