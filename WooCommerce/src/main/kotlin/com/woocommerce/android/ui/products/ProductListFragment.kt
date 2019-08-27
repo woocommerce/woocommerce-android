@@ -222,6 +222,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         clearSearchResults()
+        viewModel.loadProducts()
         return true
     }
 
@@ -297,8 +298,12 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            val showImage = !DisplayUtils.isLandscape(activity)
-            empty_view.show(R.string.product_list_empty, showImage)
+            if (isSearching) {
+                empty_view.show(R.string.product_list_empty_search, false)
+            } else {
+                val showImage = !DisplayUtils.isLandscape(activity)
+                empty_view.show(R.string.product_list_empty, showImage)
+            }
         } else {
             empty_view.hide()
         }
