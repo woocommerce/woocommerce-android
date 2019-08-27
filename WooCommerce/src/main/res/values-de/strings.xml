@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-07 00:54:03+0000
+Translation-Revision-Date: 2019-08-21 00:54:30+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Keine Anbieter gefunden</string>
     <string name="login_invalid_site_url">Bitte gib eine vollständige Website-Adresse wie „example.com“ an.</string>
     <string name="reviews_empty_message">Noch keine Rezensionen vorhanden!</string>
     <string name="review_notifications">Rezensionen</string>
@@ -389,11 +390,9 @@ Language: de
     <string name="waiting_for_customers">Warten auf Kunden</string>
     <string name="share_store_dialog_title">Teile die URL deines Shops</string>
     <string name="share_store_button">Teile deinen Shop</string>
-    <string name="wc_mark_all_read_success">Alle Benachrichtigungen als gelesen markiert</string>
     <string name="login_update_required_title">Shop auf WooCommerce 3.5 aktualisieren</string>
     <string name="login_verifying_site_error">Verbindung zu %s kann nicht hergestellt werden</string>
     <string name="dismiss">Verwerfen</string>
-    <string name="wc_mark_all_read_error">Fehler beim Markieren aller Benachrichtigungen als gelesen</string>
     <string name="wc_mark_all_read">Alle als gelesen markieren</string>
     <string name="orderdetail_message_customer">Nachricht</string>
     <string name="orderdetail_call_customer">Anrufen</string>
@@ -603,7 +602,6 @@ Language: de
     <string name="order_error_fetch_notes_generic">Fehler beim Abrufen von Fehlerhinweisen</string>
     <string name="order_fulfill_marked_complete">Bestellung als abgeschlossen markiert</string>
     <string name="order_fulfill_mark_complete">Bestellung als abgeschlossen markieren</string>
-    <string name="order_fulfill_order">Bestellung abschließen</string>
     <string name="orderdetail_addnote_contentdesc">Bestellhinweis hinzufügen</string>
     <string name="orderdetail_add_note">Hinweis hinzufügen</string>
     <string name="orderdetail_hide_billing">Abrechnung ausblenden</string>
@@ -617,7 +615,6 @@ Language: de
     <string name="orderdetail_customer_provided_note">Vom Kunden angegebener Hinweis</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Zahlung – rückerstattet</string>
-    <string name="orderdetail_new_total">Neue Summe</string>
     <string name="orderdetail_refunded">Rückerstattet</string>
     <string name="orderdetail_payment_summary_onhold">Zahlung wartet auf %s</string>
     <string name="orderdetail_payment_summary_completed">Zahlung von %1$s per %2$s erhalten</string>
@@ -712,7 +709,6 @@ Language: de
     <string name="taxes">Steuern</string>
     <string name="payment">Zahlung</string>
     <string name="shipping">Versand</string>
-    <string name="total">Insgesamt</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Bestellungen</string>

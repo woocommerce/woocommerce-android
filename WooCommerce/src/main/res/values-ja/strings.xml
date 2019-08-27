@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-10 00:54:39+0000
+Translation-Revision-Date: 2019-08-22 00:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">プロバイダーが見つかりません</string>
     <string name="login_invalid_site_url">ウェブサイトの完全なアドレス (例 : example.com) を入力してください。</string>
     <string name="reviews_empty_message">まだレビューがありません。</string>
     <string name="review_notifications">レビュー</string>
@@ -389,11 +390,9 @@ Language: ja_JP
     <string name="waiting_for_customers">顧客待ち</string>
     <string name="share_store_dialog_title">ストアの URL を共有します</string>
     <string name="share_store_button">ストアを共有</string>
-    <string name="wc_mark_all_read_success">すべての通知が既読としてマークされました</string>
     <string name="login_update_required_title">ストアを WooCommerce 3.5 に更新</string>
     <string name="login_verifying_site_error">%s に接続できません</string>
     <string name="dismiss">非表示にする</string>
-    <string name="wc_mark_all_read_error">すべてを既読にする際にエラーが発生</string>
     <string name="wc_mark_all_read">すべてを既読にする</string>
     <string name="orderdetail_message_customer">メッセージ</string>
     <string name="orderdetail_call_customer">通話</string>
@@ -603,7 +602,6 @@ Language: ja_JP
     <string name="order_error_fetch_notes_generic">エラー通知を取得する際にエラーが発生しました</string>
     <string name="order_fulfill_marked_complete">注文が完了としてマークされました</string>
     <string name="order_fulfill_mark_complete">注文を完了としてマーク</string>
-    <string name="order_fulfill_order">注文を履行</string>
     <string name="orderdetail_addnote_contentdesc">注文メモを追加します</string>
     <string name="orderdetail_add_note">メモを追加</string>
     <string name="orderdetail_hide_billing">課金を非表示</string>
@@ -617,7 +615,6 @@ Language: ja_JP
     <string name="orderdetail_customer_provided_note">顧客提供メモ</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">支払い - 返金済み</string>
-    <string name="orderdetail_new_total">新しい合計</string>
     <string name="orderdetail_refunded">返金済み</string>
     <string name="orderdetail_payment_summary_onhold">%s 待ちの支払い</string>
     <string name="orderdetail_payment_summary_completed">%1$s の支払いを %2$s から受領しました</string>
@@ -712,7 +709,6 @@ Language: ja_JP
     <string name="taxes">税</string>
     <string name="payment">決済</string>
     <string name="shipping">配送</string>
-    <string name="total">合計</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">注文</string>

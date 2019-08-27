@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-07 00:54:03+0000
+Translation-Revision-Date: 2019-08-21 00:54:31+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Sağlayıcı bulunamadı</string>
     <string name="login_invalid_site_url">Lütfen example.com gibi eksiksiz bir web sitesi adresi girin.</string>
     <string name="reviews_empty_message">Henüz inceleme yok!</string>
     <string name="review_notifications">İncelemeler</string>
@@ -389,11 +390,9 @@ Language: tr
     <string name="waiting_for_customers">Müşteriler bekleniyor</string>
     <string name="share_store_dialog_title">Mağazanızın URL\'sini paylaşın</string>
     <string name="share_store_button">Mağazanızı paylaşın</string>
-    <string name="wc_mark_all_read_success">Tüm bildirimler okundu olarak işaretlendi</string>
     <string name="login_update_required_title">Mağazayı WooCommerce 3.5’e Yükseltin</string>
     <string name="login_verifying_site_error">%s ile bağlantı kurulamıyor</string>
     <string name="dismiss">Gizle</string>
-    <string name="wc_mark_all_read_error">Tüm bildirimler okundu olarak işaretlenirken hata oluştu</string>
     <string name="wc_mark_all_read">Tümünü okundu olarak işaretle</string>
     <string name="orderdetail_message_customer">Mesaj Gönder</string>
     <string name="orderdetail_call_customer">Ara</string>
@@ -603,7 +602,6 @@ Language: tr
     <string name="order_error_fetch_notes_generic">Hata notları alınırken hata</string>
     <string name="order_fulfill_marked_complete">Sipariş Tamamlanmış Olarak İşaretlendi</string>
     <string name="order_fulfill_mark_complete">Siparişi Tamamlanmış Olarak İşaretle</string>
-    <string name="order_fulfill_order">Siparişi Yerine Getir</string>
     <string name="orderdetail_addnote_contentdesc">Sipariş notu ekleyin</string>
     <string name="orderdetail_add_note">Not ekleyin</string>
     <string name="orderdetail_hide_billing">Faturayı Saklayın</string>
@@ -617,7 +615,6 @@ Language: tr
     <string name="orderdetail_customer_provided_note">Müşterinin Verdiği Not</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Ödeme - İade Edildi</string>
-    <string name="orderdetail_new_total">Yeni Toplam</string>
     <string name="orderdetail_refunded">İade Edildi</string>
     <string name="orderdetail_payment_summary_onhold">%s için ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%1$s için ödeme %2$s ile alındı</string>
@@ -712,7 +709,6 @@ Language: tr
     <string name="taxes">Vergiler</string>
     <string name="payment">Ödeme</string>
     <string name="shipping">Gönderim</string>
-    <string name="total">Toplam</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Siparişler</string>

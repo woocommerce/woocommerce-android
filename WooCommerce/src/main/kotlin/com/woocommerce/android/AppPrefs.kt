@@ -1,3 +1,5 @@
+@file:Suppress("SameParameterValue")
+
 package com.woocommerce.android
 
 import android.annotation.SuppressLint
@@ -21,12 +23,16 @@ object AppPrefs {
     private enum class DeletablePrefKey : PrefKey {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
-        IS_USING_V3_API,
+        IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
-        DATABASE_DOWNGRADED
+        DATABASE_DOWNGRADED,
+        SHOULD_DISPLAY_V4_STATS_AVAILABILITY_BANNER,
+        SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER,
+        IS_V4_STATS_UI_ENABLED,
+        LOGIN_USER_BYPASSED_JETPACK_REQUIRED
     }
 
     /**
@@ -80,7 +86,7 @@ object AppPrefs {
 
     fun getSupportEmail() = getString(DeletablePrefKey.SUPPORT_EMAIL)
 
-    fun hasSupportEmail() = !getSupportEmail().isEmpty()
+    fun hasSupportEmail() = getSupportEmail().isNotEmpty()
 
     fun removeSupportEmail() {
         remove(DeletablePrefKey.SUPPORT_EMAIL)
@@ -96,9 +102,46 @@ object AppPrefs {
         remove(DeletablePrefKey.SUPPORT_NAME)
     }
 
-    fun isUsingV3Api() = getBoolean(DeletablePrefKey.IS_USING_V3_API, false)
+    /**
+     * Method to check if the v4 stats UI is supported.
+     * i.e. if the Woocommerce Admin plugin is installed/active on the site AND
+     * if the user has elected to try out the new stats UI
+     */
+    fun isV4StatsUISupported() = isUsingV4Api() && isV4StatsUIEnabled()
 
-    fun setIsUsingV3Api() = setBoolean(DeletablePrefKey.IS_USING_V3_API, true)
+    fun isUsingV4Api() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
+
+    fun setIsUsingV4Api(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
+
+    /**
+     * Flag to check if the user chooses to continue using the old stats, even when wc-admin is available,
+     * by clicking the `No thanks` button in the [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
+     */
+    fun isV4StatsUIEnabled() = getBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, false)
+
+    fun setIsV4StatsUIEnabled(isV4StatsUIEnabled: Boolean) =
+            setBoolean(DeletablePrefKey.IS_V4_STATS_UI_ENABLED, isV4StatsUIEnabled)
+
+    /**
+     * Flag to check if the user has already chosen to try out or dismissed the new stats.
+     * The [com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard]
+     * will no longer be displayed if this flag returns false
+     */
+    fun shouldDisplayV4StatsAvailabilityBanner() =
+            getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_AVAILABILITY_BANNER, true)
+
+    fun setShouldDisplayV4StatsAvailabilityBanner(shouldDisplayAvailabilityBanner: Boolean) =
+            setBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_AVAILABILITY_BANNER, shouldDisplayAvailabilityBanner)
+
+    /**
+     * Flag to check if the v4 stats API is no longer supported for a site AND if the user has already dismissed the
+     * [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard]
+     */
+    fun shouldDisplayV4StatsRevertedBanner() =
+            getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, false)
+
+    fun setShouldDisplayV4StatsRevertedBanner(shouldDisplayV4StatsRevertedBanner: Boolean) =
+            setBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, shouldDisplayV4StatsRevertedBanner)
 
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds
@@ -164,6 +207,17 @@ object AppPrefs {
 
     fun removeLoginSiteAddress() {
         remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+    }
+
+    fun setLoginUserBypassedJetpackRequired() {
+        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, true)
+    }
+
+    fun getLoginUserBypassedJetpackRequired() =
+            getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
+
+    fun removeLoginUserBypassedJetpackRequired() {
+        remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
     }
 
     fun getDatabaseDowngraded() = getBoolean(DATABASE_DOWNGRADED, false)

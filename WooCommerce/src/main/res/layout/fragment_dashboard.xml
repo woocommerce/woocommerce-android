@@ -22,6 +22,24 @@
                 android:descendantFocusability="blocksDescendants"
                 android:orientation="vertical">
 
+                <!-- My Store stats reverted notice card -->
+                <com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard
+                    android:id="@+id/dashboard_stats_reverted_card"
+                    style="@style/Woo.Stats.Notice.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:visibility="visible"
+                    android:visibility="gone"/>
+
+                <!-- My Store stats availability notice card -->
+                <com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard
+                    android:id="@+id/dashboard_stats_availability_card"
+                    style="@style/Woo.Stats.Card.Expandable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:visibility="visible"
+                    android:visibility="gone"/>
+
                 <!-- Order stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardStatsView
                     android:id="@+id/dashboard_stats"

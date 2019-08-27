@@ -167,6 +167,23 @@ class MainBottomNavigationView @JvmOverloads constructor(
         listener.onNavItemReselected(navPos)
     }
 
+    /**
+     * Replaces the fragment in [DASHBOARD] based on whether the revenue stats is available
+     */
+    fun replaceStatsFragment() {
+        val fragment = fragmentManager.findFragment(currentPosition)
+        val tag = currentPosition.getTag()
+
+        // replace the fragment
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment, tag)
+                .show(fragment)
+                .commitAllowingStateLoss()
+
+        // update the correct fragment in the navigation adapter
+        navAdapter.replaceFragment(currentPosition, fragment)
+    }
+
     private fun updateCurrentPosition(navPos: BottomNavigationPosition, deferInit: Boolean = false) {
         assignNavigationListeners(false)
         try {
@@ -224,6 +241,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
             fragments.put(navPos.position, fragment)
             return fragment
         }
+
+        internal fun replaceFragment(navPos: BottomNavigationPosition, fragment: TopLevelFragment) =
+                fragments.put(navPos.position, fragment)
     }
     // endregion
 }

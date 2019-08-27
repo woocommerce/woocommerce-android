@@ -62,7 +62,7 @@ fun WCProductModel.toAppModel(): Product {
         this.averageRating.toFloatOrNull() ?: 0f,
         this.permalink,
         this.externalUrl,
-        this.price.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        this.price.toBigDecimalOrNull(),
         this.salePrice.toBigDecimalOrNull(),
         this.regularPrice.toBigDecimalOrNull(),
         this.taxClass,
