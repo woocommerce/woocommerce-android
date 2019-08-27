@@ -80,7 +80,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         val isLoadingMore = ArrayList<Boolean>()
         viewModel.isLoadingMore.observeForever { isLoadingMore.add(it) }
 
-        viewModel.loadMoreProducts()
+        viewModel.loadProducts(true)
         assertThat(isLoadingMore).containsExactly(true, false)
     }
 }
