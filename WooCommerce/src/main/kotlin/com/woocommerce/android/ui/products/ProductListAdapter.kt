@@ -168,6 +168,13 @@ class ProductListAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
+    fun clearAdapterData() {
+        if (productList.isNotEmpty()) {
+            productList.clear()
+            notifyDataSetChanged()
+        }
+    }
+
     class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imgProduct: ImageView = view.productImage
         val txtProductName: TextView = view.productName

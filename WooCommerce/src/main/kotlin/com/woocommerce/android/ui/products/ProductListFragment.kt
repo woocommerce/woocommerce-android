@@ -2,9 +2,16 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -27,9 +34,17 @@ import kotlinx.android.synthetic.main.fragment_product_list.*
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
-class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMoreListener {
+class ProductListFragment : TopLevelFragment(), OnProductClickListener,
+        OnLoadMoreListener,
+        OnQueryTextListener,
+        OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
+
+        private const val STATE_KEY_SEARCH_QUERY = "search-query"
+        private const val STATE_KEY_IS_SEARCHING = "is_searching"
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+
         fun newInstance() = ProductListFragment()
     }
 
@@ -40,6 +55,20 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMo
     private lateinit var productAdapter: ProductListAdapter
 
     private val skeletonView = SkeletonView()
+
+    private var searchMenuItem: MenuItem? = null
+    private var searchView: SearchView? = null
+    private var searchQuery: String = ""
+    private val searchHandler = Handler()
+    private var isSearching: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
+            searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,6 +126,122 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, OnLoadMo
         super.onViewCreated(view, savedInstanceState)
 
         initializeViewModel()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
+        outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
+
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_product_list_fragment, menu)
+
+        searchMenuItem = menu?.findItem(R.id.menu_search)
+        searchView = searchMenuItem?.actionView as SearchView?
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        refreshOptionsMenu()
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    /**
+     * Use this rather than invalidateOptionsMenu() since that collapses the search menu item
+     */
+    private fun refreshOptionsMenu() {
+        val showSearch = shouldShowSearchMenuItem()
+        searchMenuItem?.let {
+            if (it.isActionViewExpanded) it.collapseActionView()
+            if (it.isVisible != showSearch) it.isVisible = showSearch
+        }
+    }
+
+    private fun shouldShowSearchMenuItem(): Boolean {
+        var isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
+        return when {
+            (isChildShowing) -> false
+            else -> true
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_search -> {
+                // TODO AnalyticsTracker.track(Stat.PRODUCT_LIST_MENU_SEARCH_TAPPED)
+                enableSearchListeners()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun clearSearchResults() {
+        if (isSearching) {
+            searchQuery = ""
+            isSearching = false
+            disableSearchListeners()
+            updateActivityTitle()
+            searchMenuItem?.collapseActionView()
+        }
+    }
+
+    private fun disableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(null)
+        searchView?.setOnQueryTextListener(null)
+    }
+
+    private fun enableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(this)
+        searchView?.setOnQueryTextListener(this)
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        submitSearch(query)
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        if (newText.length > 2) {
+            submitSearchDelayed(newText)
+        } else {
+            productAdapter.clearAdapterData()
+        }
+        showEmptyView(false)
+        return true
+    }
+
+    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+        productAdapter.clearAdapterData()
+        isSearching = true
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+        clearSearchResults()
+        return true
+    }
+
+    fun submitSearchDelayed(query: String) {
+        searchHandler.postDelayed({
+            searchView?.let {
+                // submit the search if the searchView's query still matches the passed query
+                if (query == it.query.toString()) submitSearch(query)
+            }
+        }, SEARCH_TYPING_DELAY_MS)
+    }
+
+    fun submitSearch(query: String) {
+        // TODO
+        /*AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
+                mapOf(AnalyticsTracker.KEY_SEARCH to query)
+        )*/
+
+        searchQuery = query
     }
 
     private fun initializeViewModel() {
