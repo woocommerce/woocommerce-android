@@ -141,7 +141,14 @@ class ProductListAdapter(
     }
 
     private class ProductItemDiffUtil(val items: List<Product>, val result: List<Product>) : Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                items[oldItemPosition].remoteId == result[newItemPosition].remoteId
+
+        override fun getOldListSize(): Int = items.size
+
+        override fun getNewListSize(): Int = result.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = items[oldItemPosition]
             val newItem = result[newItemPosition]
             return oldItem.stockQuantity == newItem.stockQuantity &&
@@ -151,14 +158,6 @@ class ProductListAdapter(
                     oldItem.type == newItem.type &&
                     oldItem.numVariations == newItem.numVariations &&
                     oldItem.name == newItem.name
-        }
-
-        override fun getOldListSize(): Int = items.size
-
-        override fun getNewListSize(): Int = result.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return items[oldItemPosition] == result[newItemPosition]
         }
     }
 
