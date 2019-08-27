@@ -54,6 +54,11 @@ class ReviewListAdapter(
     }
 
     fun setReviews(reviews: List<ProductReview>) {
+        if (isSameList(reviews)) {
+            // No changes to display, exit.
+            return
+        }
+
         // make sure to exclude any reviews that we know have been removed
         val newList = reviews.filter { !removedRemoteIds.contains(it.remoteId) }
 
@@ -106,7 +111,7 @@ class ReviewListAdapter(
         reviewList.addAll(newList)
     }
 
-    fun isSameList(reviews: List<ProductReview>): Boolean {
+    private fun isSameList(reviews: List<ProductReview>): Boolean {
         if (reviews.size != reviewList.size) {
             return false
         }

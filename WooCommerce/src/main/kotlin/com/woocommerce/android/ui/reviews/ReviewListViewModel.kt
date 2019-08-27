@@ -51,7 +51,7 @@ class ReviewListViewModel @Inject constructor(
 
     fun loadReviews(loadMore: Boolean = false) {
         if (loadMore && !reviewRepository.canLoadMoreReviews) {
-            WooLog.d(WooLog.T.REVIEWS, "Can't load more product reviewList")
+            WooLog.d(REVIEWS, "Can't load more product reviewList")
             return
         }
 
