@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-07 02:54:03+0000
+Translation-Revision-Date: 2019-08-20 02:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">未找到提供商</string>
     <string name="login_invalid_site_url">请输入完整网址（如 example.com）。</string>
     <string name="reviews_empty_message">尚无评论！</string>
     <string name="review_notifications">评论</string>
@@ -389,11 +390,9 @@ Language: zh_CN
     <string name="waiting_for_customers">等待客户</string>
     <string name="share_store_dialog_title">共享您商店的 URL</string>
     <string name="share_store_button">共享您的商店</string>
-    <string name="wc_mark_all_read_success">所有通知标为已读</string>
     <string name="login_update_required_title">将商店更新到 WooCommerce 3.5</string>
     <string name="login_verifying_site_error">无法连接 %s</string>
     <string name="dismiss">不再显示</string>
-    <string name="wc_mark_all_read_error">将所有通知标记为已读时出错</string>
     <string name="wc_mark_all_read">全部标为已读</string>
     <string name="orderdetail_message_customer">邮件</string>
     <string name="orderdetail_call_customer">致电</string>

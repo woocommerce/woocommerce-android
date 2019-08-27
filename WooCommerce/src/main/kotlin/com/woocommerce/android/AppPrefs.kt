@@ -1,3 +1,5 @@
+@file:Suppress("SameParameterValue")
+
 package com.woocommerce.android
 
 import android.annotation.SuppressLint
@@ -30,6 +32,7 @@ object AppPrefs {
         SHOULD_DISPLAY_V4_STATS_AVAILABILITY_BANNER,
         SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER,
         IS_V4_STATS_UI_ENABLED,
+        LOGIN_USER_BYPASSED_JETPACK_REQUIRED
     }
 
     /**
@@ -83,7 +86,7 @@ object AppPrefs {
 
     fun getSupportEmail() = getString(DeletablePrefKey.SUPPORT_EMAIL)
 
-    fun hasSupportEmail() = !getSupportEmail().isEmpty()
+    fun hasSupportEmail() = getSupportEmail().isNotEmpty()
 
     fun removeSupportEmail() {
         remove(DeletablePrefKey.SUPPORT_EMAIL)
@@ -204,6 +207,17 @@ object AppPrefs {
 
     fun removeLoginSiteAddress() {
         remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+    }
+
+    fun setLoginUserBypassedJetpackRequired() {
+        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, true)
+    }
+
+    fun getLoginUserBypassedJetpackRequired() =
+            getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
+
+    fun removeLoginUserBypassedJetpackRequired() {
+        remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
     }
 
     fun getDatabaseDowngraded() = getBoolean(DATABASE_DOWNGRADED, false)

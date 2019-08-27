@@ -1,0 +1,3 @@
+2.5:
+* Vi har hittat och åtgärdat: en sällsynt krasch som inträffade efter att en beställning hade lagts och appen minimerats, ett fel som gjorde att den valda webbplatsen i webbplatsväljaren växlade tillbaka till det föregående valet och några gränssnittsproblem med den nya fliken "Recensioner".
+* Produktnamn kan nu sträcka sig över två rader på skärmen för beställningsinformation.
