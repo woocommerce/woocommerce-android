@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.widgets.SkeletonView
@@ -151,12 +153,41 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener,
 
     private fun initializeViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ReviewListViewModel::class.java).also { setupObservers() }
+                .get(ReviewListViewModel::class.java)
+        setupObservers()
         viewModel.start()
     }
 
     private fun setupObservers() {
-        // TODO AMANDA - setup observers
+        viewModel.reviewList.observe(this, Observer {
+            showReviewList(it)
+        })
+
+        viewModel.isSkeletonShown.observe(this, Observer {
+            showSkeleton(it)
+        })
+
+        viewModel.isRefreshing.observe(this, Observer {
+            notifsRefreshLayout.isRefreshing = it
+        })
+
+        viewModel.isLoadingMore.observe(this, Observer {
+            showLoadMoreProgress(it)
+        })
+
+        viewModel.showSnackbarMessage.observe(this, Observer {
+            uiMessageResolver.showSnack(it)
+        })
+    }
+
+    private fun showReviewList(reviews: List<ProductReview>) {
+        reviewsAdapter.setReviews(reviews)
+
+        // TODO AMANDA: show empty view if no reviews
+    }
+
+    private fun showLoadMoreProgress(show: Boolean) {
+        notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     fun showSkeleton(show: Boolean) {
