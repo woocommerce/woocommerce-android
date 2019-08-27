@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-08 00:54:04+0000
+Translation-Revision-Date: 2019-08-21 00:54:31+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Inga leverantörer hittades</string>
     <string name="login_invalid_site_url">Ange en fullständig webbplatsadress som example.com.</string>
     <string name="reviews_empty_message">Inga omdömen än!</string>
     <string name="review_notifications">Omdömen</string>
@@ -389,11 +390,9 @@ Language: sv_SE
     <string name="waiting_for_customers">Väntar på kunder</string>
     <string name="share_store_dialog_title">Dela din butiks URL</string>
     <string name="share_store_button">Dela din butik</string>
-    <string name="wc_mark_all_read_success">Alla meddelanden markerade som lästa</string>
     <string name="login_update_required_title">Uppdatera butik till WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Kan inte ansluta till %s</string>
     <string name="dismiss">Avfärda</string>
-    <string name="wc_mark_all_read_error">Ett fel uppstod när alla notifikationer skulle markeras som lästa</string>
     <string name="wc_mark_all_read">Markera alla som lästa</string>
     <string name="orderdetail_message_customer">Meddelande</string>
     <string name="orderdetail_call_customer">Ring</string>

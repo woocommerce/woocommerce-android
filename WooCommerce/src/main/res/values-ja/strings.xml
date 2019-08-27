@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-10 00:54:39+0000
+Translation-Revision-Date: 2019-08-22 00:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">プロバイダーが見つかりません</string>
     <string name="login_invalid_site_url">ウェブサイトの完全なアドレス (例 : example.com) を入力してください。</string>
     <string name="reviews_empty_message">まだレビューがありません。</string>
     <string name="review_notifications">レビュー</string>
@@ -389,11 +390,9 @@ Language: ja_JP
     <string name="waiting_for_customers">顧客待ち</string>
     <string name="share_store_dialog_title">ストアの URL を共有します</string>
     <string name="share_store_button">ストアを共有</string>
-    <string name="wc_mark_all_read_success">すべての通知が既読としてマークされました</string>
     <string name="login_update_required_title">ストアを WooCommerce 3.5 に更新</string>
     <string name="login_verifying_site_error">%s に接続できません</string>
     <string name="dismiss">非表示にする</string>
-    <string name="wc_mark_all_read_error">すべてを既読にする際にエラーが発生</string>
     <string name="wc_mark_all_read">すべてを既読にする</string>
     <string name="orderdetail_message_customer">メッセージ</string>
     <string name="orderdetail_call_customer">通話</string>

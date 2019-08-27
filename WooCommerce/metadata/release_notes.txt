@@ -1,2 +1,4 @@
-* We tracked down and fixed: a rare crash that happened after fulfilling an order and minimizing the app, a bug causing the selected site in the site picker to switch back to the previous selection, and a few UI issues with the new “Reviews” tab.
-* Product names can now wrap onto two lines in the order detail screen.
+- Don’t have a Jetpack account? Now you can log in to your site while bypassing the Jetpack-required screen. (That said, you’re missing out on some powerful features — give Jetpack a try!)
+- Some of you who do have a Jetpack-connected site would sometimes encounter issues while logging in. That’s a bug you’ll no longer run into.
+- We fixed the way your My Store stats look before you receive your first order.
+- A small group among you would occasionally deal with unexpected crashes; if that sounds like you, good news: you’ll no longer experience them.

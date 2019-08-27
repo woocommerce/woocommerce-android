@@ -1,0 +1,3 @@
+2.5:
+* Rastreamos e corrigimos: um travamento raro que ocorria após a conclusão de um pedido e ao minimizar o aplicativo, um bug que fazia com que o site selecionado no seletor de sites retornasse à seleção anterior e alguns problemas de interface na nova guia "Comentários".
+* Os nomes dos produtos agora podem ser agrupados em duas linhas na tela de detalhes do pedido.

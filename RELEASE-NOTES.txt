@@ -1,5 +1,9 @@
+2.7
+-----
+ 
 2.6
 -----
+* Added an option to bypass the Jetpack required screen during the login process and attempt to log into the site anyway.
 * Fixed a bug in the Jetpack connection check during login where a small percentage of sites with Jetpack properly connected were coming back as not connected and preventing users from logging in successfully.
 
 2.5
