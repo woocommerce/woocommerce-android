@@ -189,7 +189,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private fun showReviewList(reviews: List<ProductReview>) {
         reviewsAdapter.setReviews(reviews)
 
-        // TODO AMANDA: show empty view if no reviews
+        showEmptyView(reviews.isEmpty())
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
@@ -201,6 +201,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
             false -> skeletonView.hide()
         }
+    }
+
+    private fun showEmptyView(show: Boolean) {
+        if (show) empty_view.show(R.string.reviews_empty_message) else empty_view.hide()
     }
 
     override fun getFragmentTitle() = getString(R.string.review_notifications)

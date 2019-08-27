@@ -80,14 +80,7 @@ class ReviewListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             val fetchedReviews = reviewRepository.fetchProductReviews(loadMore)
             canLoadMore = reviewRepository.canLoadMoreReviews
-
-            if (fetchedReviews.isNotEmpty()) {
-                reviewList.value = fetchedReviews
-            } else {
-                // No reviews to display. Show empty view.
-                WooLog.d(REVIEWS, "No reviews to display.")
-                // TODO show the empty view
-            }
+            reviewList.value = fetchedReviews
         } else {
             // Network is not connected
             _showSnackbarMessage.value = R.string.offline_error
