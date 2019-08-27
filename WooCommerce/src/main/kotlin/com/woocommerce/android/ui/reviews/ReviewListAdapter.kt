@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
 import android.os.Build
-import android.text.Html
 import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.TimeGroup
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.applyTransform
@@ -347,7 +347,7 @@ class ReviewListAdapter(
 
             // TODO AMANDA : Set proper review title
             itemHolder.title.text = review.reviewerName
-            itemHolder.desc.text = Html.fromHtml(review.review)
+            itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
 
             itemHolder.itemView.setOnClickListener {
                 clickListener.onReviewClick(review.remoteId)

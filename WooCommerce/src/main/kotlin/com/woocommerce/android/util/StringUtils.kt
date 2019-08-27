@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
+import android.text.Html
 import android.util.Patterns
 import androidx.annotation.StringRes
 import org.wordpress.android.fluxc.model.SiteModel
@@ -126,4 +127,9 @@ object StringUtils {
             ""
         }
     }
+
+    /**
+     * Strips HTML tags and newline characters from the provided text and returns the raw text
+     */
+    fun getRawTextFromHtml(htmlStr: String): String = Html.fromHtml(htmlStr).toString().replace("\n","")
 }
