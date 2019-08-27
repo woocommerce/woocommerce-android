@@ -1,9 +1,12 @@
+@file:Suppress("SameParameterValue")
+
 package com.woocommerce.android
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
 
@@ -24,7 +27,9 @@ object AppPrefs {
         HAS_UNSEEN_REVIEWS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
-        LOGIN_SITE_ADDRESS
+        LOGIN_SITE_ADDRESS,
+        LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
+        DATABASE_DOWNGRADED
     }
 
     /**
@@ -78,7 +83,7 @@ object AppPrefs {
 
     fun getSupportEmail() = getString(DeletablePrefKey.SUPPORT_EMAIL)
 
-    fun hasSupportEmail() = !getSupportEmail().isEmpty()
+    fun hasSupportEmail() = getSupportEmail().isNotEmpty()
 
     fun removeSupportEmail() {
         remove(DeletablePrefKey.SUPPORT_EMAIL)
@@ -162,6 +167,23 @@ object AppPrefs {
 
     fun removeLoginSiteAddress() {
         remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+    }
+
+    fun setLoginUserBypassedJetpackRequired() {
+        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, true)
+    }
+
+    fun getLoginUserBypassedJetpackRequired() =
+            getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
+
+    fun removeLoginUserBypassedJetpackRequired() {
+        remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
+    }
+
+    fun getDatabaseDowngraded() = getBoolean(DATABASE_DOWNGRADED, false)
+
+    fun setDatabaseDowngraded(value: Boolean) {
+        setBoolean(DATABASE_DOWNGRADED, value)
     }
 
     /**

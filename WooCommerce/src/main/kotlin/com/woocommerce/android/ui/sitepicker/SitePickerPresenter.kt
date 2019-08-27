@@ -61,6 +61,10 @@ class SitePickerPresenter @Inject constructor(
         } else {
             view?.showSkeleton(true)
         }
+        fetchSitesFromAPI()
+    }
+
+    override fun fetchSitesFromAPI() {
         dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
     }
 

@@ -45,6 +45,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
+@Suppress("SameParameterValue")
 class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
         HasSupportFragmentInjector, LoginJetpackRequiredListener, LoginEmailHelpDialogFragment.Listener {
     companion object {
@@ -281,15 +282,17 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         AppPrefs.setLoginSiteAddress((redirectUrl ?: siteAddress).replaceFirst(protocolRegex, ""))
 
         if (hasJetpack) {
-            val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
-            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+            showEmailLoginScreen(siteAddress)
         } else {
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // Show the 'Jetpack required' fragment
             val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
-            slideInFragment(jetpackReqFragment as Fragment, true, LoginJetpackRequiredFragment.TAG)
+            slideInFragment(
+                    fragment = jetpackReqFragment as Fragment,
+                    shouldAddToBackStack = true,
+                    tag = LoginJetpackRequiredFragment.TAG)
         }
     }
 
@@ -442,5 +445,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun onEmailNeedMoreHelpClicked() {
         startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
+    }
+
+    override fun showEmailLoginScreen(siteAddress: String) {
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(true, siteAddress)
+        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 }

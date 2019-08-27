@@ -319,14 +319,16 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun refreshOrderDetail(displaySkeleton: Boolean) {
-        orderRefreshLayout.isRefreshing = false
-        if (!isRefreshPending) {
-            if (!networkStatus.isConnected()) {
-                uiMessageResolver.showOfflineSnack()
-                return
+        if (isAdded) {
+            orderRefreshLayout.isRefreshing = false
+            if (!isRefreshPending) {
+                if (!networkStatus.isConnected()) {
+                    uiMessageResolver.showOfflineSnack()
+                    return
+                }
+                isRefreshPending = true
+                presenter.refreshOrderDetail(displaySkeleton)
             }
-            isRefreshPending = true
-            presenter.refreshOrderDetail(displaySkeleton)
         }
     }
 
