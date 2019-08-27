@@ -47,6 +47,7 @@ abstract class MockedDashboardModule {
                     ),
                     WCStatsStore(
                             mockDispatcher,
+                            mockContext,
                             OrderStatsRestClient(mockContext, mockDispatcher, mock(), mock(), mock())
                     ),
                     WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
