@@ -37,18 +37,18 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(ctx: Context, attrs:
         val isBillingInfoEmpty = billingAddrFull.trim().isEmpty() &&
                 order.billingEmail.isEmpty() && order.billingPhone.isEmpty()
 
-        // display empty message if no shipping and billing details are available
-        if (isShippingInfoEmpty && isBillingInfoEmpty) {
-            formatViewAsShippingOnly()
-            customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
-            return
-        }
-
         if (order.customerNote.isEmpty()) {
             customerInfo_customerNoteSection.hide()
         } else {
             customerInfo_customerNoteSection.show()
             customerInfo_customerNote.text = "\"${order.customerNote}\""
+        }
+
+        // display empty message if no shipping and billing details are available
+        if (isShippingInfoEmpty && isBillingInfoEmpty) {
+            formatViewAsShippingOnly()
+            customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
+            return
         }
 
         // show shipping section only for non virtual products or if shipping info available

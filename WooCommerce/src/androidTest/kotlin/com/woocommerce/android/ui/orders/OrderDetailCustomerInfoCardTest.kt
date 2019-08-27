@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.ListView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -21,9 +22,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
 import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isChecked
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -126,13 +125,13 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
         ))
 
         // verify that the customer shipping details is displayed and text is correct
+        onView(withId(R.id.customerInfo_shippingAddr)).perform(WCMatchers.scrollTo())
         onView(withId(R.id.customerInfo_shippingAddr)).check(matches(isDisplayed()))
         verifyShippingInfoDisplayedCorrectly()
 
         // verify that the billing view is condensed and load more button is visible
         onView(withId(R.id.customerInfo_morePanel)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(isNotChecked()))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(
+        onView(withId(R.id.customerInfo_viewMoreButtonTitle)).check(matches(
                 withText(appContext.getString(R.string.orderdetail_show_billing))
         ))
     }
@@ -163,8 +162,7 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // verify that the billing view is expanded and load more button is visible
         onView(withId(R.id.customerInfo_morePanel)).check(matches(withEffectiveVisibility(VISIBLE)))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(isChecked()))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(
+        onView(withId(R.id.customerInfo_viewMoreButtonTitle)).check(matches(
                 withText(appContext.getString(R.string.orderdetail_hide_billing))
         ))
 
@@ -173,8 +171,7 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // verify that the billing view is condensed and load more button is visible
         onView(withId(R.id.customerInfo_morePanel)).check(matches(withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(isNotChecked()))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(
+        onView(withId(R.id.customerInfo_viewMoreButtonTitle)).check(matches(
                 withText(appContext.getString(R.string.orderdetail_show_billing))
         ))
     }
@@ -553,14 +550,45 @@ class OrderDetailCustomerInfoCardTest : TestBase() {
 
         // verify that the customer info card is not hidden
         // verify that the customer shipping details is displayed and text is correct
+        onView(withId(R.id.customerInfo_shippingAddr)).perform(WCMatchers.scrollTo())
         onView(withId(R.id.customerInfo_shippingAddr)).check(matches(isDisplayed()))
         verifyShippingInfoDisplayedCorrectly()
 
         // verify that the billing view is condensed and load more button is visible
         onView(withId(R.id.customerInfo_morePanel)).check(matches(ViewMatchers.withEffectiveVisibility(GONE)))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(isNotChecked()))
-        onView(withId(R.id.customerInfo_viewMore)).check(matches(
+        onView(withId(R.id.customerInfo_viewMoreButtonTitle)).check(matches(
                 withText(appContext.getString(R.string.orderdetail_show_billing))
         ))
+    }
+
+
+    @Test
+    fun verifyOrderDetailNotesCardEmptyView() {
+        // add mock data to order detail screen
+        val wcOrderStatusModel = WcOrderTestUtils.generateOrderDetail()
+        activityTestRule.setOrderDetailWithMockData(wcOrderStatusModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // customerNote is empty so Hide Customer Note card
+        onView(withId(R.id.customerInfo_customerNoteSection)).check(
+                matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+    }
+
+    @Test
+    fun verifyOrderDetailNotesCardViewIsDisplayed() {
+        // add mock data to order detail screen
+        val wcOrderStatusModel = WcOrderTestUtils.generateOrderDetail(note = "This is a test note")
+        activityTestRule.setOrderDetailWithMockData(wcOrderStatusModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // customerNote is not empty so Show Customer Note card
+        onView(withId(R.id.customerInfo_customerNoteSection)).check(matches(
+                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 }
