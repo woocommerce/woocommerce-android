@@ -152,7 +152,6 @@
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
     <string name="dashboard_top_earners_total_spend">Total spend</string>
     <string name="dashboard_top_earners_total_orders">Total orders: %s</string>
-    <string name="dashboard_top_earners_content_description">Product image</string>
     <string name="dashboard_top_earners_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
@@ -296,8 +295,9 @@
     <string name="notifs_detail_loading_error">Error loading notification detail</string>
 
     <!--
-        Product detail
+        Products
     -->
+    <string name="product_image_content_description">Product image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>
@@ -327,8 +327,10 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
+    <string name="product_stock_count">%s in stock</string>
     <string name="product_backorders_no">Do not allow</string>
     <string name="product_backorders_yes">Allow</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
@@ -336,6 +338,7 @@
     <string name="product_name_external">Affiliate %s</string>
     <string name="product_name_grouped">Grouped %s</string>
     <string name="product_name_virtual">Virtual %s</string>
+    <string name="product_list_empty">No products yet</string>
 
     <!--
         Empty list messages

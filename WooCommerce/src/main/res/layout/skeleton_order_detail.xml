@@ -60,7 +60,7 @@
         android:background="@color/list_divider"/>
 
     <!-- group two - order product list -->
-    <include layout="@layout/skeleton_product_list"/>
+    <include layout="@layout/skeleton_order_detail_product_list"/>
 
     <View
         android:layout_width="match_parent"
