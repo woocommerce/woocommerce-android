@@ -34,8 +34,7 @@ class ProductListAdapter(
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
     private val productList = ArrayList<Product>()
     private val bullet = "\u2022"
-    // TODO: these colors will be changed once the designs are finalized
-    private val statusColor = ContextCompat.getColor(context, R.color.blue_wordpress)
+    private val statusColor = ContextCompat.getColor(context, R.color.blue_50)
     private val stockColor = ContextCompat.getColor(context, R.color.wc_grey_mid)
 
     interface OnProductClickListener {

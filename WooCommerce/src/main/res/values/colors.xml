@@ -34,6 +34,10 @@
     <!-- Primary Blues -->
     <color name="wc_blue_light">#BCDEEE</color>
     <color name="wc_blue_lightest">#e8f2f9</color>
+
+    <!-- STUDIO 2.0.0 -->
+    <color name="blue_50">#2271b1</color>
+
     <!--
         Default Global Colors
     -->
