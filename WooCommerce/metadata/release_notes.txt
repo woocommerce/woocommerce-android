@@ -1,4 +1,4 @@
-- Added an option to bypass the Jetpack required screen during the login process and attempt to log into the site anyway.
-- Fixed a bug in the Jetpack connection check during login where a small percentage of sites with Jetpack properly connected were coming back as not connected and preventing users from logging in successfully.
-- Fixed the way 'My Store' displayed stats when no orders have yet been processed.
-- Several bugs were fixed including a few that were causing some difficult to reproduce crashes for a small subset of users. 
+- Don’t have a Jetpack account? Now you can log in to your site while bypassing the Jetpack-required screen. (That said, you’re missing out on some powerful features — give Jetpack a try!)
+- Some of you who do have a Jetpack-connected site would sometimes encounter issues while logging in. That’s a bug you’ll no longer run into.
+- We fixed the way your My Store stats look before you receive your first order.
+- A small group among you would occasionally deal with unexpected crashes; if that sounds like you, good news: you’ll no longer experience them.
