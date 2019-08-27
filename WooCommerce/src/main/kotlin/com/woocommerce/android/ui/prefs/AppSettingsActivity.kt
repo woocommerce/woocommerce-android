@@ -10,6 +10,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -33,7 +34,9 @@ class AppSettingsActivity : AppCompatActivity(),
         HasSupportFragmentInjector {
     companion object {
         private const val KEY_SITE_CHANGED = "key_site_changed"
+        private const val KEY_V4_STATS_OPTION_CHANGED = "key_v4_stats_option_changed"
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
+        const val RESULT_CODE_V4_STATS_OPTIONS_CHANGED = 2
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<androidx.fragment.app.Fragment>
@@ -42,6 +45,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
+    private var v4StatsOptionChanged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -53,11 +57,16 @@ class AppSettingsActivity : AppCompatActivity(),
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (savedInstanceState != null) {
-            siteChanged = savedInstanceState.getBoolean(KEY_SITE_CHANGED)
-            if (siteChanged) {
-                setResult(RESULT_CODE_SITE_CHANGED)
-            }
+        savedInstanceState?.let {
+            siteChanged = it.getBoolean(KEY_SITE_CHANGED)
+            v4StatsOptionChanged = it.getBoolean(KEY_V4_STATS_OPTION_CHANGED)
+        } ?: AppPrefs.isV4StatsUIEnabled()
+
+        if (siteChanged) {
+            setResult(RESULT_CODE_SITE_CHANGED)
+        }
+        if (v4StatsOptionChanged) {
+            setResult(RESULT_CODE_V4_STATS_OPTIONS_CHANGED)
         }
     }
 
@@ -73,6 +82,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(KEY_SITE_CHANGED, siteChanged)
+        outState.putBoolean(KEY_V4_STATS_OPTION_CHANGED, v4StatsOptionChanged)
         super.onSaveInstanceState(outState)
     }
 
@@ -109,6 +119,15 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun onRequestLogout() {
         confirmLogout()
+    }
+
+    override fun onV4StatsOptionChanged(enabled: Boolean) {
+        val isV4StatsEnabled = AppPrefs.isV4StatsUIEnabled()
+        if (isV4StatsEnabled != enabled) {
+            v4StatsOptionChanged = enabled
+            AppPrefs.setIsV4StatsUIEnabled(enabled)
+            setResult(RESULT_CODE_V4_STATS_OPTIONS_CHANGED)
+        }
     }
 
     override fun supportFragmentInjector(): AndroidInjector<androidx.fragment.app.Fragment> = fragmentInjector

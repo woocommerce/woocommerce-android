@@ -128,6 +128,29 @@
             style="@style/Woo.Settings.Divider"/>
 
         <!--
+            Beta Features
+        -->
+        <LinearLayout
+            android:id="@+id/betaFeaturesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/textBetaFeatures"
+                style="@style/Woo.Settings.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/beta_features"/>
+
+            <View
+                style="@style/Woo.Settings.Divider"/>
+
+        </LinearLayout>
+
+        <!--
             Feature Requests
         -->
         <TextView
