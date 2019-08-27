@@ -27,12 +27,18 @@ class ProductListRepository @Inject constructor(
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
+        private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
         private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
     private var continuation: Continuation<Boolean>? = null
-    var canLoadMoreProducts = true
-    var isLoadingProducts = false
+    private var offset = 0
+    private var isLoadingProducts = false
+
+    final var canLoadMoreProducts = true
+        private set(value) {
+            field = value
+        }
 
     init {
         dispatcher.register(this)
@@ -42,12 +48,18 @@ class ProductListRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchProductList(offset: Int = 0): List<Product> {
+    suspend fun fetchProductList(loadMore: Boolean = false): List<Product> {
         if (!isLoadingProducts) {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 continuation = it
                 isLoadingProducts = true
-                val payload = WCProductStore.FetchProductsPayload(selectedSite.get(), offset, PRODUCT_SORTING)
+                val payload = WCProductStore.FetchProductsPayload(
+                        selectedSite.get(),
+                        PRODUCT_PAGE_SIZE,
+                        offset,
+                        PRODUCT_SORTING
+                )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
         }
@@ -57,11 +69,7 @@ class ProductListRepository @Inject constructor(
 
     fun getProductList(): List<Product> {
         val wcProducts = productStore.getProductsForSite(selectedSite.get(), PRODUCT_SORTING)
-        val products = ArrayList<Product>()
-        wcProducts.forEach {
-            products.add(it.toAppModel())
-        }
-        return products
+        return wcProducts.map { it.toAppModel() }
     }
 
     @SuppressWarnings("unused")
