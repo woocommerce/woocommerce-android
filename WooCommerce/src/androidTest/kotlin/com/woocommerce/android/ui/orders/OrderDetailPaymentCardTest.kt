@@ -308,4 +308,36 @@ class OrderDetailPaymentCardTest : TestBase() {
                 appContext.getString(R.string.orderdetail_discount_items, mockWCOrderModel.discountCodes)
         )))
     }
+
+    @Test
+    fun verifyPaymentCardViewWaitingForPayment() {
+        val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
+                paymentMethodTitle = "Cash on Delivery"
+        )
+        activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
+
+        // click on the first order in the list and check if redirected to order detail
+        onView(withId(R.id.ordersList))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
+
+        // check if order payment card sub total matches this text
+        onView(withId(R.id.paymentInfo_productsTotal)).check(matches(withText("$22.00")))
+
+        // check if order payment card shipping total matches this text
+        onView(withId(R.id.paymentInfo_shippingTotal)).check(matches(withText("$12.00")))
+
+        // check if order payment card tax total matches this text
+        onView(withId(R.id.paymentInfo_taxesTotal)).check(matches(withText("$2.00")))
+
+        // check if order payment card total matches this text
+        onView(withId(R.id.paymentInfo_total)).check(matches(withText("$44.00")))
+
+        // check if order paid by customer matches this text
+        onView(withId(R.id.paymentInfo_paid)).check(matches(withText("$0.00")))
+
+        onView(withId(R.id.paymentInfo_paymentMsg)).check(matches(withText(appContext.getString(
+                R.string.orderdetail_payment_summary_onhold,
+                mockWCOrderModel.paymentMethodTitle)
+        )))
+    }
 }
