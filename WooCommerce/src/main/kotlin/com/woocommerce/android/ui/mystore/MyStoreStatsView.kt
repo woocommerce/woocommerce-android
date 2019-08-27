@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.mystore
 
 import android.content.Context
 import android.os.Handler
@@ -22,16 +22,15 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.formatDateToWeeksInYear
-import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
+import com.woocommerce.android.extensions.formatToDateOnly
+import com.woocommerce.android.extensions.formatToMonthDateOnly
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardFragment.Companion.DEFAULT_STATS_GRANULARITY
-import com.woocommerce.android.ui.mystore.BarChartGestureListener
+import com.woocommerce.android.ui.dashboard.DashboardStatsListener
+import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
@@ -39,38 +38,32 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.*
 import kotlinx.android.synthetic.main.dashboard_stats.view.*
+import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
-import java.io.Serializable
 import java.util.ArrayList
 import java.util.Date
+import kotlin.math.round
 
-class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
+class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs), OnChartValueSelectedListener, BarChartGestureListener {
     init {
-        View.inflate(context, R.layout.dashboard_stats, this)
+        View.inflate(context, R.layout.my_store_stats, this)
     }
 
     companion object {
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
 
-    var tabStateStats: Serializable? = null // Save the current position of stats tab view
-
-    val activeGranularity: StatsGranularity
-        get() {
-            return tab_layout.getTabAt(tab_layout.selectedTabPosition)?.let {
-                it.tag as StatsGranularity
-            } ?: tabStateStats?.let { it as StatsGranularity } ?: DEFAULT_STATS_GRANULARITY
-        }
+    private lateinit var activeGranularity: StatsGranularity
+    private lateinit var listener: DashboardStatsListener
 
     private lateinit var selectedSite: SelectedSite
-
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
+    private var revenueStatsModel: WCRevenueStatsModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
-    private var chartOrderStats = mapOf<String, Int>()
+    private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
     private var chartCurrencyCode: String? = null
 
@@ -87,7 +80,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             // up before the chart data is added once the request completes
             if (value) {
                 clearLabelValues()
-                clearDateRangeValues()
                 chart.setNoDataText(null)
                 chart.clear()
             } else {
@@ -104,45 +96,31 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         selectedSite: SelectedSite,
         formatCurrencyForDisplay: FormatCurrencyRounded
     ) {
+        this.listener = listener
         this.selectedSite = selectedSite
+        this.activeGranularity = period
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
-
-        StatsGranularity.values().forEach { granularity ->
-            val tab = tab_layout.newTab().apply {
-                setText(getStringForGranularity(granularity))
-                tag = granularity
-            }
-            tab_layout.addTab(tab)
-
-            // Start with the given time period selected
-            if (granularity == period) {
-                tab.select()
-            }
-        }
-
-        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                // Track range change
-                AnalyticsTracker.track(
-                        Stat.DASHBOARD_MAIN_STATS_DATE,
-                        mapOf(AnalyticsTracker.KEY_RANGE to tab.tag.toString().toLowerCase()))
-
-                isRequestingStats = true
-                listener.onRequestLoadStats(tab.tag as StatsGranularity)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
 
         initChart()
 
         lastUpdatedHandler = Handler()
         lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable,
+                    UPDATE_DELAY_TIME_MS
+            )
         }
+    }
+
+    fun loadDashboardStats(granularity: StatsGranularity) {
+        this.activeGranularity = granularity
+        // Track range change
+        AnalyticsTracker.track(
+                Stat.DASHBOARD_MAIN_STATS_DATE,
+                mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase()))
+
+        isRequestingStats = true
+        listener.onRequestLoadStats(granularity)
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
@@ -181,6 +159,16 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         return context.resources.getDimensionPixelSize(resId)
     }
 
+    private fun getBarLabelCount(): Int {
+        val resId = when (activeGranularity) {
+            StatsGranularity.DAYS -> R.integer.stats_label_count_days
+            StatsGranularity.WEEKS -> R.integer.stats_label_count_weeks
+            StatsGranularity.MONTHS -> R.integer.stats_label_count_months
+            StatsGranularity.YEARS -> R.integer.stats_label_count_years
+        }
+        return context.resources.getInteger(resId)
+    }
+
     /**
      * One-time chart initialization with settings common to all granularities.
      */
@@ -191,15 +179,10 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
-
-                setLabelCount(2, true) // Only show first and last date
-
-                valueFormatter = StartEndDateAxisFormatter()
             }
 
-            axisLeft.isEnabled = false
-
-            with(axisRight) {
+            axisRight.isEnabled = false
+            with(axisLeft) {
                 setDrawZeroLine(false)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
@@ -218,7 +201,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             legend.isEnabled = false
 
             // touch has to be enabled in order to show a marker when a bar is tapped, but we don't want
-            // pinch/zoom, or scaling to be enabled
+            // pinch/zoom, drag, or scaling to be enabled
             setTouchEnabled(true)
             setPinchZoom(false)
             isScaleXEnabled = false
@@ -227,7 +210,6 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
         }
-
         chart.setOnChartValueSelectedListener(this)
         chart.onChartGestureListener = this
     }
@@ -238,29 +220,38 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     override fun onNothingSelected() {
         // update the total values of the chart here
         updateChartView()
+        if (visitors_layout.visibility == View.GONE) {
+            visitors_layout.visibility = View.VISIBLE
+        }
         fadeInLabelValue(visitors_value, chartVisitorStats.values.sum().toString())
 
         // update date bar when unselected
-        updateDateRangeView()
+        listener.onChartValueUnSelected(revenueStatsModel, activeGranularity)
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
         val barEntry = e as BarEntry
 
         // display the revenue for this entry
-        revenue_value.text = getFormattedRevenueValue(barEntry.y.toDouble())
+        val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
+        revenue_value.text = formattedRevenue
 
         // display the order count for this entry
         val date = getDateFromIndex(barEntry.x.toInt())
-        val orderValue = chartOrderStats.getValue(date)
+        val orderValue = chartOrderStats[date]?.toInt() ?: 0
         orders_value.text = orderValue.toString()
 
-        // display the visitor count for this entry
+        // display the visitor count for this entry only if the text is NOT empty
         val visitorValue = getFormattedVisitorValue(date)
-        visitors_value.text = visitorValue
+        if (visitorValue.isEmpty()) {
+            visitors_layout.visibility = View.GONE
+        } else {
+            visitors_layout.visibility = View.VISIBLE
+            visitors_value.text = visitorValue
+        }
 
-        // update date bar
-        dashboard_date_range_value.text = getFormattedDateValue(date)
+        // update the date bar
+        listener.onChartValueSelected(date, activeGranularity)
     }
 
     /**
@@ -280,10 +271,17 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         chart.highlightValue(null)
     }
 
-    fun updateView(revenueStats: Map<String, Double>, orderStats: Map<String, Int>, currencyCode: String?) {
+    fun updateView(revenueStatsModel: WCRevenueStatsModel?, currencyCode: String?) {
+        this.revenueStatsModel = revenueStatsModel
         chartCurrencyCode = currencyCode
-        chartRevenueStats = revenueStats
-        chartOrderStats = orderStats
+
+        this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
+            it.interval!! to it.subtotals?.grossRevenue!!
+        }?.toMap() ?: mapOf()
+
+        this.chartOrderStats = revenueStatsModel?.getIntervalList()?.map {
+            it.interval!! to it.subtotals?.ordersCount!!
+        }?.toMap() ?: mapOf()
 
         updateChartView()
     }
@@ -296,6 +294,7 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
+        visitors_layout.visibility = View.VISIBLE
         fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
     }
 
@@ -303,15 +302,34 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         fadeInLabelValue(visitors_value, "?")
     }
 
+    fun clearLabelValues() {
+        val color = ContextCompat.getColor(context, R.color.skeleton_color)
+        visitors_value.setTextColor(color)
+        revenue_value.setTextColor(color)
+        orders_value.setTextColor(color)
+
+        visitors_value.setText(R.string.emdash)
+        revenue_value.setText(R.string.emdash)
+        orders_value.setText(R.string.emdash)
+    }
+
+    fun clearChartData() {
+        chart.data?.clearValues()
+    }
+
     private fun updateChartView() {
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
 
-        val revenue = getFormattedRevenueValue(chartRevenueStats.values.sum())
-        val orders = chartOrderStats.values.sum().toString()
+        val grossRevenue = revenueStatsModel?.getTotal()?.grossRevenue ?: 0.0
+        val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
+
+        val orderCount = revenueStatsModel?.getTotal()?.ordersCount ?: 0
+        val orders = orderCount.toString()
+
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        if (chartRevenueStats.isEmpty()) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.grossRevenue?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return
@@ -345,102 +363,44 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             if (wasEmpty) {
                 animateY(duration)
             }
+            with(xAxis) {
+                setLabelCount(getBarLabelCount(), true)
+                valueFormatter = StartEndDateAxisFormatter()
+            }
         }
 
         hideMarker()
         resetLastUpdated()
-
-        // update the date range view only after the Bar dataset is generated
-        // since we are using the [chartRevenueStats] variable to get the
-        // start and end date values
-        updateDateRangeView()
         isRequestingStats = false
     }
 
     private fun getFormattedRevenueValue(revenue: Double) =
             formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
 
-    private fun getDateFromIndex(dateIndex: Int) =
-            if (activeGranularity == StatsGranularity.YEARS) dateIndex.toString() else
-                chartRevenueStats.keys.elementAt(dateIndex - 1)
+    private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
-    /**
-     * Method to format the date value displayed when scrubbing or tapping of the chart takes place.
-     * [date] is formatted based on the [activeGranularity]
-     * [StatsGranularity.DAYS] format would be Aug 11
-     * [StatsGranularity.WEEKS] format would be Aug 11
-     * [StatsGranularity.MONTHS] format would be Aug 2019
-     * [StatsGranularity.YEARS] format would be 2019
-     */
-    private fun getFormattedDateValue(date: String): String {
-        return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
-            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(date)
-            StatsGranularity.YEARS -> date
-        }
-    }
-
-    private fun getFormattedVisitorValue(date: String) = chartVisitorStats[date]?.toString() ?: "0"
+    private fun getFormattedVisitorValue(date: String) =
+            if (activeGranularity == StatsGranularity.DAYS) "" else
+                chartVisitorStats[date]?.toString() ?: "0"
 
     /**
      * Method to format the incoming visitor stats data
      * The [visitorStats] map keys are in a different date format compared to [chartRevenueStats] map date format.
      * To add scrubbing interaction, we are converting the [visitorStats] date format to [chartRevenueStats] date format
-     * [StatsGranularity.WEEKS] visitor stats date format (yyyy'W'MM'W'dd) to yyyy-'W'MM
-     * [StatsGranularity.MONTHS] visitor stats date format (yyyy-MM-dd) to yyyy-MM
-     * [StatsGranularity.YEARS] visitor stats date format (yyyy-MM-dd) to yyyy
+     * [StatsGranularity.WEEKS] format is the same for both
+     * [StatsGranularity.MONTHS] format is the same for both
+     * [StatsGranularity.YEARS] visitor stats date format (yyyy-MM-dd) to yyyy-MM
      * [StatsGranularity.DAYS] format is the same for both
      */
     private fun getFormattedVisitorStats(visitorStats: Map<String, Int>): Map<String, Int> {
-        return visitorStats.mapKeys {
-            when (activeGranularity) {
-                StatsGranularity.DAYS -> it.key
-                StatsGranularity.WEEKS -> it.key.formatDateToWeeksInYear()
-                StatsGranularity.MONTHS -> it.key.formatDateToYearMonth()
-                StatsGranularity.YEARS -> it.key.formatDateToYear()
-            }
-        }
-    }
-
-    /**
-     * Update the date bar range with the start and end date.
-     * If the start and end date are the same i.e. 2019 for YEARS, then only display
-     * the date and not the range
-     */
-    private fun updateDateRangeView() {
-        val startDate = getStartDateValue()
-        val endDate = getEndDateValue()
-        val dateRangeString = if (startDate == endDate) {
-            startDate
-        } else {
-            String.format("%s – %s", startDate, endDate)
-        }
-        dashboard_date_range_value.text = dateRangeString
-    }
-
-    private fun clearDateRangeValues() {
-        dashboard_date_range_value.text = ""
-    }
-
-    fun clearLabelValues() {
-        val color = ContextCompat.getColor(context, R.color.skeleton_color)
-        visitors_value.setTextColor(color)
-        revenue_value.setTextColor(color)
-        orders_value.setTextColor(color)
-
-        visitors_value.setText(R.string.emdash)
-        revenue_value.setText(R.string.emdash)
-        orders_value.setText(R.string.emdash)
-    }
-
-    fun clearChartData() {
-        chart.data?.clearValues()
+        return if (activeGranularity == StatsGranularity.YEARS) visitorStats.mapKeys {
+            it.key.formatDateToYearMonth()
+        } else visitorStats
     }
 
     private fun fadeInLabelValue(view: TextView, value: String) {
         // do nothing if value hasn't changed
-        if (view.text.toString().equals(value)) {
+        if (view.text.toString() == value) {
             return
         }
 
@@ -459,61 +419,20 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
-        val barEntries = when (activeGranularity) {
-            StatsGranularity.DAYS,
-            StatsGranularity.WEEKS,
-            StatsGranularity.MONTHS -> {
-                chartRevenueStats = revenueStats
-                chartRevenueStats.values.mapIndexed { index, value ->
-                    BarEntry((index + 1).toFloat(), value.toFloat())
-                }
-            }
-            StatsGranularity.YEARS -> {
-                // Clean up leading empty years and start from first year with non-zero sales
-                // (but always include current year)
-                val modifiedRevenueStats = revenueStats.toMutableMap()
-                for (entry in revenueStats) {
-                    if (entry.value != 0.0 || entry.key == revenueStats.keys.last()) {
-                        break
-                    }
-                    modifiedRevenueStats.remove(entry.key)
-                }
-                chartRevenueStats = modifiedRevenueStats
-                chartRevenueStats.map { BarEntry(it.key.toFloat(), it.value.toFloat()) }
-            }
+        chartRevenueStats = revenueStats
+        val barEntries = chartRevenueStats.values.mapIndexed { index, value ->
+            BarEntry((index + 1).toFloat(), value.toFloat())
         }
-
         return BarDataSet(barEntries, "")
-    }
-
-    private fun getStartDateValue(): String {
-        val dateString = chartRevenueStats.keys.first()
-        return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
-            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(dateString)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(dateString)
-            StatsGranularity.YEARS -> dateString
-        }
-    }
-
-    private fun getEndDateValue(): String {
-        val dateString = chartRevenueStats.keys.last()
-        return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
-            StatsGranularity.WEEKS ->
-                SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(dateString)
-            StatsGranularity.YEARS -> dateString
-        }
     }
 
     @StringRes
     fun getStringForGranularity(timeframe: StatsGranularity): Int {
         return when (timeframe) {
-            StatsGranularity.DAYS -> R.string.dashboard_stats_granularity_days
-            StatsGranularity.WEEKS -> R.string.dashboard_stats_granularity_weeks
-            StatsGranularity.MONTHS -> R.string.dashboard_stats_granularity_months
-            StatsGranularity.YEARS -> R.string.dashboard_stats_granularity_years
+            StatsGranularity.DAYS -> R.string.today
+            StatsGranularity.WEEKS -> R.string.this_week
+            StatsGranularity.MONTHS -> R.string.this_month
+            StatsGranularity.YEARS -> R.string.this_year
         }
     }
 
@@ -532,7 +451,18 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
         lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
 
         if (lastUpdated != null) {
-            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable, UPDATE_DELAY_TIME_MS)
+            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable,
+                    UPDATE_DELAY_TIME_MS
+            )
+        }
+    }
+
+    private fun getEntryValue(dateString: String): String {
+        return when (activeGranularity) {
+            StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
+            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayString(dateString)
+            StatsGranularity.MONTHS -> DateUtils.getShortMonthDayString(dateString)
+            StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
         }
     }
 
@@ -584,28 +514,42 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
             return when (value) {
                 axis.mEntries.first() -> getStartValue()
                 axis.mEntries.max() -> getEndValue()
-                else -> ""
+                else -> getLabelValue(chartRevenueStats.keys.elementAt(round(value).toInt() - 1))
             }
         }
 
-        fun getStartValue(): String {
-            val dateString = chartRevenueStats.keys.first()
+        fun getStartValue() = getEntryValue(chartRevenueStats.keys.first())
+
+        fun getEndValue() = getLabelValue(chartRevenueStats.keys.last())
+
+        /**
+         * Displays the x-axis labels in the following format based on [StatsGranularity]
+         * [StatsGranularity.DAYS] would be 7am, 8am, 9am
+         * [StatsGranularity.WEEKS] would be Aug 31, Sept 1, 2, 3
+         * [StatsGranularity.MONTHS] would be Aug 1, 2, 3
+         * [StatsGranularity.YEARS] would be Jan, Feb, Mar
+         */
+        private fun getLabelValue(dateString: String): String {
             return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
-                StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(dateString)
-                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
-                StatsGranularity.YEARS -> dateString
+                StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
+                StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
+                StatsGranularity.MONTHS -> dateString.formatToDateOnly()
+                StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
             }
         }
 
-        fun getEndValue(): String {
-            val dateString = chartRevenueStats.keys.last()
-            return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
-                StatsGranularity.WEEKS ->
-                    SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
-                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
-                StatsGranularity.YEARS -> dateString
+        /**
+         * Method returns the formatted date for the [StatsGranularity.WEEKS] tab,
+         * if the date string is the first day of the month. i.e. date is equal to 1,
+         * then the formatted date would be `MM-d` format.
+         * Otherwise the formatted date would be `d` format
+         */
+        private fun getWeekLabelValue(dateString: String): String {
+            val formattedDateString = dateString.formatToDateOnly()
+            return if (formattedDateString == "1") {
+                dateString.formatToMonthDateOnly()
+            } else {
+                dateString.formatToDateOnly()
             }
         }
     }
