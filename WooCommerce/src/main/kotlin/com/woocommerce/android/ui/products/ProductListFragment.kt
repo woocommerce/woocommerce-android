@@ -60,6 +60,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     private var isSearchActive: Boolean = false
     private var searchQuery: String? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        savedInstanceState?.let { bundle ->
+            isSearchActive = bundle.getBoolean(KEY_SEARCH_ACTIVE)
+            searchQuery = bundle.getString(KEY_SEARCH_QUERY)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -95,11 +103,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                 AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
                 viewModel.refreshProducts()
             }
-        }
-
-        savedInstanceState?.let { bundle ->
-            isSearchActive = bundle.getBoolean(KEY_SEARCH_ACTIVE)
-            searchQuery = bundle.getString(KEY_SEARCH_QUERY)
         }
     }
 
@@ -266,6 +269,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                 mapOf(AnalyticsTracker.KEY_SEARCH to query)
         )
         viewModel.loadProducts(searchQuery = query)
+        searchQuery = query
     }
 
     private fun initializeViewModel() {

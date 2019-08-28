@@ -64,7 +64,7 @@ class ProductListViewModel @Inject constructor(
             isLoadingProducts = true
             _isLoadingMore.value = loadMore
 
-            if (searchQuery != null) {
+            if (searchQuery != null && !loadMore) {
                 _isSkeletonShown.value = true
             } else if (!loadMore) {
                 // if this is the initial load, first get the products from the db and if there are any show
@@ -77,11 +77,7 @@ class ProductListViewModel @Inject constructor(
                 }
             }
 
-            if (searchQuery.isNullOrEmpty()) {
-                fetchProductList(loadMore)
-            } else {
-                searchProductList(searchQuery, loadMore)
-            }
+            fetchProductList(searchQuery, loadMore)
         }
     }
 
@@ -90,11 +86,19 @@ class ProductListViewModel @Inject constructor(
         loadProducts(searchQuery = searchQuery)
     }
 
-    private suspend fun fetchProductList(loadMore: Boolean = false) {
+    private suspend fun fetchProductList(searchQuery: String? = null, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            val fetchedProducts = productRepository.fetchProductList(loadMore)
+            if (searchQuery.isNullOrEmpty()) {
+                productList.value = productRepository.fetchProductList(loadMore)
+            } else {
+                val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
+                if (loadMore) {
+                    addProducts(fetchedProducts)
+                } else {
+                    productList.value = fetchedProducts
+                }
+            }
             canLoadMore = productRepository.canLoadMoreProducts
-            productList.value = fetchedProducts
         } else {
             _showSnackbarMessage.value = R.string.offline_error
         }
@@ -105,26 +109,15 @@ class ProductListViewModel @Inject constructor(
         isLoadingProducts = false
     }
 
-    private suspend fun searchProductList(query: String, loadMore: Boolean = false) {
-        if (networkStatus.isConnected()) {
-            val fetchedProducts = productRepository.searchProductList(query, loadMore)
-            canLoadMore = productRepository.canLoadMoreProducts
-            // if we loaded more, add the fetched products to the existing list
-            if (loadMore) {
-                val allProducts = ArrayList<Product>()
-                allProducts.addAll(productList.value!!)
-                allProducts.addAll(fetchedProducts)
-                productList.value = allProducts
-            } else {
-                productList.value = fetchedProducts
-            }
+    private fun addProducts(products: List<Product>) {
+        if (productList.value.isNullOrEmpty()) {
+            productList.value = products
         } else {
-            _showSnackbarMessage.value = R.string.offline_error
+            with(ArrayList<Product>()) {
+                addAll(productList.value!!)
+                addAll(products)
+                productList.value = this
+            }
         }
-
-        _isSkeletonShown.value = false
-        _isLoadingMore.value = false
-        _isRefreshing.value = false
-        isLoadingProducts = false
     }
 }

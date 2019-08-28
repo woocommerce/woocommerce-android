@@ -50,6 +50,10 @@ class ProductListRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
+    /**
+     * Submits a fetch request to get a page of products for the current site and returns the full
+     * list of products from the database
+     */
     suspend fun fetchProductList(loadMore: Boolean = false): List<Product> {
         if (!isLoadingProducts) {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -69,6 +73,10 @@ class ProductListRepository @Inject constructor(
         return getProductList()
     }
 
+    /**
+     * Submits a fetch request to get a page of products for the current site matching the passed
+     * query and returns only that page of products
+     */
     suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product> {
         if (isLoadingProducts) {
             return emptyList()
@@ -91,6 +99,9 @@ class ProductListRepository @Inject constructor(
         return products ?: emptyList()
     }
 
+    /**
+     * Returns all products for the current site that are in the database
+     */
     fun getProductList(): List<Product> {
         val wcProducts = productStore.getProductsForSite(selectedSite.get(), PRODUCT_SORTING)
         return wcProducts.map { it.toAppModel() }
@@ -119,7 +130,6 @@ class ProductListRepository @Inject constructor(
             searchContinuation?.resume(emptyList())
         } else {
             canLoadMoreProducts = event.canLoadMore
-            AnalyticsTracker.track(PRODUCT_LIST_LOADED)
             val products = event.searchResults.map { it.toAppModel() }
             searchContinuation?.resume(products)
         }
