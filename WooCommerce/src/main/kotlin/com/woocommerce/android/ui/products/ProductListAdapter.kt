@@ -53,12 +53,6 @@ class ProductListAdapter(
 
     override fun getItemCount() = productList.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val holder = ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
-        holder.imgProduct.clipToOutline = true
-        return holder
-    }
-
     private fun getProductStockStatusText(product: Product): String? {
         val statusHtml = if (product.status != null && product.status != ProductStatus.PUBLISH) {
             "<font color=$statusColor>${product.status.toString(context)}</font>"
@@ -101,6 +95,12 @@ class ProductListAdapter(
         val stockHtml = "<font color=$stockColor>$stock</font>"
 
         return if (statusHtml != null) "$statusHtml $bullet $stockHtml" else stockHtml
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+        val holder = ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
+        holder.imgProduct.clipToOutline = true
+        return holder
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {

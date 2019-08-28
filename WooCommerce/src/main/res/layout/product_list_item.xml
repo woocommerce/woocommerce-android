@@ -8,16 +8,23 @@
     android:background="@color/list_item_bg"
     android:padding="@dimen/margin_extra_large">
 
-    <ImageView
-        android:id="@+id/productImage"
-        android:layout_width="@dimen/product_icon_sz"
-        android:layout_height="@dimen/product_icon_sz"
+    <FrameLayout
+        android:id="@+id/productImageFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/picture_frame"
-        android:contentDescription="@string/product_image_content_description"
-        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_product" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/productImage"
+            android:layout_width="@dimen/product_icon_sz"
+            android:layout_height="@dimen/product_icon_sz"
+            android:background="@drawable/picture_frame"
+            android:contentDescription="@string/product_image_content_description"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_product" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/productName"
@@ -31,7 +38,7 @@
         app:layout_constraintBottom_toTopOf="@+id/productStockAndStaus"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/productImage"
+        app:layout_constraintStart_toEndOf="@+id/productImageFrame"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Awesome Sauce" />
 
