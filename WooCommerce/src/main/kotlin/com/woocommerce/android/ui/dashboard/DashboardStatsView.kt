@@ -303,7 +303,9 @@ class DashboardStatsView @JvmOverloads constructor(ctx: Context, attrs: Attribut
     }
 
     fun showVisitorStatsError() {
-        WooAnimUtils.fadeOut(visitors_layout)
+        if (visitors_layout.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(visitors_layout)
+        }
     }
 
     private fun updateChartView() {

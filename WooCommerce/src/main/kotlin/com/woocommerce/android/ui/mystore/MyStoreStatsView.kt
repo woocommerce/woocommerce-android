@@ -301,7 +301,9 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     }
 
     fun showVisitorStatsError() {
-        WooAnimUtils.fadeOut(visitors_layout)
+        if (visitors_layout.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(visitors_layout)
+        }
     }
 
     fun clearLabelValues() {
