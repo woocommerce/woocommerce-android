@@ -10,8 +10,8 @@
 
     <FrameLayout
         android:id="@+id/productImageFrame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/product_icon_sz"
+        android:layout_height="@dimen/product_icon_sz"
         android:background="@drawable/picture_frame"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -20,7 +20,8 @@
             android:id="@+id/productImage"
             android:layout_width="@dimen/product_icon_sz"
             android:layout_height="@dimen/product_icon_sz"
-            android:background="@drawable/picture_frame"
+            android:layout_gravity="center"
+            android:background="@drawable/picture_corners"
             android:contentDescription="@string/product_image_content_description"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_product" />
