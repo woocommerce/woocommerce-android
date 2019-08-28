@@ -6,6 +6,9 @@ import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.expandHitArea
+import com.woocommerce.android.util.hide
+import com.woocommerce.android.util.show
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -26,11 +29,11 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_lblTitle.text = context.getString(R.string.payment)
 
         if (order.paymentMethodTitle.isEmpty()) {
-            paymentInfo_paymentMsg.visibility = View.GONE
-            paymentInfo_total_paid_divider.visibility = View.GONE
+            paymentInfo_paymentMsg.hide()
+            paymentInfo_total_paid_divider.hide()
         } else {
-            paymentInfo_paymentMsg.visibility = View.VISIBLE
-            paymentInfo_total_paid_divider.visibility = View.VISIBLE
+            paymentInfo_paymentMsg.show()
+            paymentInfo_total_paid_divider.show()
 
             if (order.status == CoreOrderStatus.PENDING.value ||
                     order.status == CoreOrderStatus.ON_HOLD.value ||
@@ -39,6 +42,9 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                 paymentInfo_paymentMsg.text = context.getString(
                         R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
                 )
+
+                // Can't refund if we haven't received the money yet
+                paymentInfo_issueRefundButtonSection.hide()
             } else {
                 paymentInfo_paid.text = formatCurrencyForDisplay(order.total)
 
@@ -48,6 +54,8 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                         dateStr,
                         order.paymentMethodTitle
                 )
+
+                paymentInfo_issueRefundButtonSection.show()
             }
         }
 
@@ -73,5 +81,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                     order.discountCodes
             )
         }
+
+        paymentInfo_issueRefundButton.expandHitArea(100, 100)
     }
 }
