@@ -207,7 +207,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         }
     }
 
-    fun clearSearchResults() {
+    private fun clearSearchResults() {
         if (isSearchActive) {
             isSearchActive = false
             searchQuery = null
@@ -255,7 +255,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         return true
     }
 
-    fun submitSearchDelayed(query: String) {
+    private fun submitSearchDelayed(query: String) {
         searchHandler.postDelayed({
             searchView?.let {
                 // submit the search if the searchView's query still matches the passed query
@@ -264,7 +264,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         }, SEARCH_TYPING_DELAY_MS)
     }
 
-    fun submitSearch(query: String) {
+    private fun submitSearch(query: String) {
         AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
                 mapOf(AnalyticsTracker.KEY_SEARCH to query)
         )
