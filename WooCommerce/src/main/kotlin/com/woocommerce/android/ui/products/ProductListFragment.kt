@@ -101,7 +101,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
             scrollUpChild = productsRecycler
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
-                viewModel.refreshProducts()
+                viewModel.refreshProducts(searchQuery)
             }
         }
     }
@@ -306,7 +306,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun refreshFragmentState() {
         if (isActive) {
-            viewModel.refreshProducts()
+            viewModel.refreshProducts(searchQuery)
         }
     }
 
