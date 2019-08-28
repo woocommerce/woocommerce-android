@@ -54,7 +54,9 @@ class ProductListAdapter(
     override fun getItemCount() = productList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        return ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
+        val holder = ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
+        holder.imgProduct.clipToOutline = true
+        return holder
     }
 
     private fun getProductStockStatusText(product: Product): String? {
