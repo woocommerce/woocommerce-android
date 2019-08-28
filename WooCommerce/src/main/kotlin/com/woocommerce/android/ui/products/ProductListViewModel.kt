@@ -39,9 +39,7 @@ class ProductListViewModel @Inject constructor(
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
     fun start(searchQuery: String? = null) {
-        if (productList.value.isNullOrEmpty()) {
-            loadProducts(searchQuery = searchQuery)
-        }
+        loadProducts(searchQuery = searchQuery)
     }
 
     override fun onCleared() {
@@ -92,6 +90,7 @@ class ProductListViewModel @Inject constructor(
                 productList.value = productRepository.fetchProductList(loadMore)
             } else {
                 val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
+                // make sure the search query hasn't changed while the fetch was processing
                 if (searchQuery == productRepository.lastSearchQuery) {
                     if (loadMore) {
                         addProducts(fetchedProducts)
@@ -113,6 +112,9 @@ class ProductListViewModel @Inject constructor(
         isLoadingProducts = false
     }
 
+    /**
+     * Adds the passed list of products to the current list
+     */
     private fun addProducts(products: List<Product>) {
         if (productList.value.isNullOrEmpty()) {
             productList.value = products

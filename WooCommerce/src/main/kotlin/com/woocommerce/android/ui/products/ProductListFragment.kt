@@ -191,6 +191,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         }
     }
 
+    /**
+     * Prevent search from appearing when a child fragment is active
+     */
     private fun shouldShowSearchMenuItem(): Boolean {
         val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
         return !isChildShowing
@@ -255,6 +258,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         return true
     }
 
+    /**
+     * Submit the search after a brief delay - this way we don't submit while the user is typing
+     */
     private fun submitSearchDelayed(query: String) {
         searchHandler.postDelayed({
             searchView?.let {
