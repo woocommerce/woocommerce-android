@@ -278,4 +278,34 @@
 
     </LinearLayout>
 
+    <!-- Refund button section -->
+    <LinearLayout
+        android:id="@+id/paymentInfo_issueRefundButtonSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/card_item_padding_intra_double">
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/list_divider"
+            app:srcCompat="@drawable/list_divider"/>
+
+        <!-- Refund button -->
+        <TextView
+            android:id="@+id/paymentInfo_issueRefundButton"
+            style="@style/Woo.TextAppearance.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginTop="@dimen/card_item_padding_intra_double"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:text="@string/orderdetail_issue_refund_button"/>
+
+    </LinearLayout>
+
 </merge>
