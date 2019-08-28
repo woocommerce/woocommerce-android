@@ -42,6 +42,11 @@ class ProductListRepository @Inject constructor(
             field = value
         }
 
+    final var lastSearchQuery: String? = null
+        private set(value) {
+            field = value
+        }
+
     init {
         dispatcher.register(this)
     }
@@ -60,6 +65,7 @@ class ProductListRepository @Inject constructor(
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 loadContinuation = it
                 isLoadingProducts = true
+                lastSearchQuery  = null
                 val payload = WCProductStore.FetchProductsPayload(
                         selectedSite.get(),
                         PRODUCT_PAGE_SIZE,
@@ -86,6 +92,7 @@ class ProductListRepository @Inject constructor(
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             searchContinuation = it
             isLoadingProducts = true
+            lastSearchQuery  = searchQuery
             val payload = WCProductStore.SearchProductsPayload(
                     selectedSite.get(),
                     searchQuery,

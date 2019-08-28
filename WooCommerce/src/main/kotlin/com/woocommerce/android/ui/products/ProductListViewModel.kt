@@ -92,10 +92,14 @@ class ProductListViewModel @Inject constructor(
                 productList.value = productRepository.fetchProductList(loadMore)
             } else {
                 val fetchedProducts = productRepository.searchProductList(searchQuery, loadMore)
-                if (loadMore) {
-                    addProducts(fetchedProducts)
+                if (searchQuery == productRepository.lastSearchQuery) {
+                    if (loadMore) {
+                        addProducts(fetchedProducts)
+                    } else {
+                        productList.value = fetchedProducts
+                    }
                 } else {
-                    productList.value = fetchedProducts
+                    WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                 }
             }
             canLoadMore = productRepository.canLoadMoreProducts
