@@ -14,7 +14,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -41,9 +40,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         private var previousNavPos: BottomNavigationPosition? = null
         private const val ORDER_BADGE_MAX = 99
         private const val ORDER_BADGE_MAX_LABEL = "$ORDER_BADGE_MAX+"
-
-        // TODO for now the products tab is only shown in debug builds
-        private val SHOULD_ENABLE_PRODUCT_LIST = BuildConfig.DEBUG
     }
 
     interface MainNavigationListener {
@@ -58,8 +54,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
     fun init(fm: FragmentManager, listener: MainNavigationListener) {
         this.fragmentManager = fm
         this.listener = listener
-
-        menu.findItem(R.id.products).isVisible = SHOULD_ENABLE_PRODUCT_LIST
 
         navAdapter = NavAdapter()
         addTopDivider()
