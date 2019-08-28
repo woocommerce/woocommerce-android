@@ -123,13 +123,23 @@ class ProductListAdapter(
             holder.txtProductStockAndStatus.visibility = View.GONE
         }
 
-        product.firstImageUrl?.let {
-            val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
+        val firstImage = product.firstImageUrl
+        val size: Int
+        if (firstImage.isNullOrEmpty()) {
+            size = imageSize / 2
+            holder.imgProduct.setImageResource(R.drawable.ic_product)
+        } else {
+            size = imageSize
+            val imageUrl = PhotonUtils.getPhotonImageUrl(firstImage, imageSize, imageSize)
             GlideApp.with(context)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)
                     .into(holder.imgProduct)
-        } ?: holder.imgProduct.setImageResource(R.drawable.ic_product)
+        }
+        holder.imgProduct.layoutParams.apply {
+            height = size
+            width = size
+        }
 
         holder.itemView.setOnClickListener {
             AnalyticsTracker.track(PRODUCT_LIST_PRODUCT_TAPPED)

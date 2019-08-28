@@ -14,8 +14,7 @@
     <item
         android:id="@+id/products"
         android:icon="@drawable/ic_menu_products_list"
-        android:title="@string/products"
-        android:visible="false" />
+        android:title="@string/products" />
 
     <item
         android:id="@+id/reviews"
