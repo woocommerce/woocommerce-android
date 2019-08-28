@@ -22,6 +22,8 @@ class ProductListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
     private var canLoadMore = true
+    private var isLoadingProducts = false
+
     val productList = MutableLiveData<List<Product>>()
 
     private val _isSkeletonShown = MutableLiveData<Boolean>()
@@ -36,13 +38,10 @@ class ProductListViewModel @Inject constructor(
     private val _isRefreshing = MutableLiveData<Boolean>()
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
-    final var searchQuery: String? = null
-        private set(value) {
-            field = value
+    fun start(searchQuery: String? = null) {
+        if (productList.value.isNullOrEmpty()) {
+            loadProducts(searchQuery = searchQuery)
         }
-
-    fun start() {
-        loadProducts()
     }
 
     override fun onCleared() {
@@ -50,13 +49,26 @@ class ProductListViewModel @Inject constructor(
         productRepository.onCleanup()
     }
 
-    fun loadProducts(loadMore: Boolean = false) {
+    fun loadProducts(searchQuery: String? = null, loadMore: Boolean = false) {
+        if (isLoadingProducts) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading products")
+            return
+        }
+
+        if (loadMore && !productRepository.canLoadMoreProducts) {
+            WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
+            return
+        }
+
         launch {
+            isLoadingProducts = true
             _isLoadingMore.value = loadMore
-            searchQuery = null
-            // since this is the initial load, first get the products from the db and if there are any show them
-            // immediately, otherwise make sure the skeleton shows
-            if (!loadMore) {
+
+            if (searchQuery != null) {
+                _isSkeletonShown.value = true
+            } else if (!loadMore) {
+                // if this is the initial load, first get the products from the db and if there are any show
+                // them immediately, otherwise make sure the skeleton shows
                 val productsInDb = productRepository.getProductList()
                 if (productsInDb.isEmpty()) {
                     _isSkeletonShown.value = true
@@ -64,43 +76,18 @@ class ProductListViewModel @Inject constructor(
                     productList.value = productsInDb
                 }
             }
-            fetchProductList(loadMore)
-        }
-    }
 
-    fun loadMoreProducts() {
-        if (!productRepository.canLoadMoreProducts) {
-            WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
-            return
-        }
-
-        if (searchQuery == null) {
-            loadProducts(true)
-        } else {
-            searchProducts(searchQuery!!, true)
-        }
-    }
-
-    fun searchProducts(query: String, loadMore: Boolean = false) {
-        launch {
-            searchQuery = query
-            _isLoadingMore.value = loadMore
-
-            if (!loadMore) {
-                _isSkeletonShown.value = true
+            if (searchQuery.isNullOrEmpty()) {
+                fetchProductList(loadMore)
+            } else {
+                searchProductList(searchQuery, loadMore)
             }
-
-            searchProductList(query, loadMore)
         }
     }
 
-    fun refreshProducts() {
+    fun refreshProducts(searchQuery: String? = null) {
         _isRefreshing.value = true
-        if (searchQuery == null) {
-            loadProducts()
-        } else {
-            searchProducts(searchQuery!!)
-        }
+        loadProducts(searchQuery = searchQuery)
     }
 
     private suspend fun fetchProductList(loadMore: Boolean = false) {
@@ -115,6 +102,7 @@ class ProductListViewModel @Inject constructor(
         _isSkeletonShown.value = false
         _isLoadingMore.value = false
         _isRefreshing.value = false
+        isLoadingProducts = false
     }
 
     private suspend fun searchProductList(query: String, loadMore: Boolean = false) {
@@ -137,5 +125,6 @@ class ProductListViewModel @Inject constructor(
         _isSkeletonShown.value = false
         _isLoadingMore.value = false
         _isRefreshing.value = false
+        isLoadingProducts = false
     }
 }

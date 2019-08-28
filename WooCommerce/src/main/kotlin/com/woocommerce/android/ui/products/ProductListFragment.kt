@@ -42,6 +42,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         val TAG: String = ProductListFragment::class.java.simpleName
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_SEARCH_ACTIVE = "search_active"
+        private const val KEY_SEARCH_QUERY = "search_query"
         fun newInstance() = ProductListFragment()
     }
 
@@ -57,6 +58,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     private var searchView: SearchView? = null
     private val searchHandler = Handler()
     private var isSearchActive: Boolean = false
+    private var searchQuery: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,12 +99,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
         savedInstanceState?.let { bundle ->
             isSearchActive = bundle.getBoolean(KEY_SEARCH_ACTIVE)
+            searchQuery = bundle.getString(KEY_SEARCH_QUERY)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(KEY_SEARCH_ACTIVE, isSearchActive)
+        outState.putString(KEY_SEARCH_QUERY, searchQuery)
     }
 
     override fun onAttach(context: Context?) {
@@ -175,7 +179,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                 disableSearchListeners()
                 if (isSearchActive) {
                     menuItem.expandActionView()
-                    searchView?.setQuery(viewModel.searchQuery, false)
+                    searchView?.setQuery(searchQuery, false)
                 } else {
                     menuItem.collapseActionView()
                 }
@@ -203,6 +207,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     fun clearSearchResults() {
         if (isSearchActive) {
             isSearchActive = false
+            searchQuery = null
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
@@ -260,7 +265,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
                 mapOf(AnalyticsTracker.KEY_SEARCH to query)
         )
-        viewModel.searchProducts(query)
+        viewModel.loadProducts(searchQuery = query)
     }
 
     private fun initializeViewModel() {
@@ -268,7 +273,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                 .get(ProductListViewModel::class.java).also {
             setupObservers(it)
         }
-        viewModel.start()
+        viewModel.start(searchQuery)
     }
 
     private fun setupObservers(viewModel: ProductListViewModel) {
@@ -342,6 +347,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     override fun onRequestLoadMore() {
-        viewModel.loadMoreProducts()
+        viewModel.loadProducts(loadMore = true, searchQuery = searchQuery)
     }
 }
