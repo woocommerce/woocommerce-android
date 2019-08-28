@@ -518,7 +518,12 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             return when (value) {
                 axis.mEntries.first() -> getStartValue()
                 axis.mEntries.max() -> getEndValue()
-                else -> getLabelValue(chartRevenueStats.keys.elementAt(round(value).toInt() - 1))
+                else -> {
+                    val index = round(value).toInt() - 1
+                    return if (index > 0 && index < chartRevenueStats.keys.size - 1) {
+                        getLabelValue(chartRevenueStats.keys.elementAt(index))
+                    } else ""
+                }
             }
         }
 
