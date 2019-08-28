@@ -64,7 +64,15 @@ class ReviewListViewModel @Inject constructor(
                 if (reviewsInDb.isEmpty()) {
                     _isSkeletonShown.value = true
                 } else {
-                    reviewList.value = reviewsInDb
+                    // TODO AMANDA: Consolidate this into a single function
+                    // TODO AMANDA: Try to break out the fetching of products into their own small
+                    // suspend function so they can happen in parallel.
+                    val productsToFetch = reviewsInDb.map { it.remoteProductId }.distinct()
+                    val productsMap = reviewRepository.getProductsByRemoteIdMap(productsToFetch)
+                    val finalReviews = reviewsInDb.filter { productsMap.containsKey(it.remoteProductId) }.also { review ->
+                        review.forEach { it.product = productsMap[it.remoteProductId] }
+                    }
+                    reviewList.value = finalReviews
                 }
             }
             fetchReviewList(loadMore)
@@ -78,9 +86,15 @@ class ReviewListViewModel @Inject constructor(
 
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
-            val fetchedReviews = reviewRepository.fetchProductReviews(loadMore)
+            val fetchedReviews = reviewRepository.fetchAndLoadProductReviews(loadMore)
+            val productsToFetch = fetchedReviews.map { it.remoteProductId }.distinct()
+            val productsMap = reviewRepository.getProductsByRemoteIdMap(productsToFetch)
+            val finalReviews = fetchedReviews.filter { productsMap.containsKey(it.remoteProductId) }.also { review ->
+                review.forEach { it.product = productsMap[it.remoteProductId] }
+            }
+
             canLoadMore = reviewRepository.canLoadMoreReviews
-            reviewList.value = fetchedReviews
+            reviewList.value = finalReviews
         } else {
             // Network is not connected
             _showSnackbarMessage.value = R.string.offline_error

@@ -14,7 +14,8 @@ data class ProductReview(
     val reviewerAvatarUrl: String?,
     val remoteProductId: Long,
     var status: String, // TODO AMANDA: turn into enum or similar
-    var read: Boolean
+    var read: Boolean,
+    var product: ProductReviewProduct? = null
 )
 
 fun WCProductReviewModel.toAppModel(): ProductReview {

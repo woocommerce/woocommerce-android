@@ -345,8 +345,8 @@ class ReviewListAdapter(
                 }
             }
 
-            // TODO AMANDA : Set proper review title
-            itemHolder.title.text = review.reviewerName
+            itemHolder.title.text = context.getString(
+                    R.string.review_list_item_title, review.reviewerName, review.product?.name)
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
 
             itemHolder.itemView.setOnClickListener {
