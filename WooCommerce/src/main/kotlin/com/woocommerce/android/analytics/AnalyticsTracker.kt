@@ -218,7 +218,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_LIST_LOADED,
         PRODUCT_LIST_PRODUCT_TAPPED,
         PRODUCT_LIST_PULLED_TO_REFRESH,
-        // TODO: add these two events to the spreadsheet
         PRODUCT_LIST_SEARCHED,
         PRODUCT_LIST_MENU_SEARCH_TAPPED,
 
