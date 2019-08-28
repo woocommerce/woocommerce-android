@@ -36,8 +36,10 @@ class ProductListViewModel @Inject constructor(
     private val _isRefreshing = MutableLiveData<Boolean>()
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
-    private val _searchQuery = MutableLiveData<String>()
-    val searchQuery: LiveData<String> = _searchQuery
+    final var searchQuery: String? = null
+        private set(value) {
+            field = value
+        }
 
     fun start() {
         loadProducts()
@@ -51,7 +53,7 @@ class ProductListViewModel @Inject constructor(
     fun loadProducts(loadMore: Boolean = false) {
         launch {
             _isLoadingMore.value = loadMore
-            _searchQuery.value = null
+            searchQuery = null
             // since this is the initial load, first get the products from the db and if there are any show them
             // immediately, otherwise make sure the skeleton shows
             if (!loadMore) {
@@ -72,17 +74,16 @@ class ProductListViewModel @Inject constructor(
             return
         }
 
-        val query = _searchQuery.value
-        if (query == null) {
+        if (searchQuery == null) {
             loadProducts(true)
         } else {
-            searchProducts(query, true)
+            searchProducts(searchQuery!!, true)
         }
     }
 
     fun searchProducts(query: String, loadMore: Boolean = false) {
         launch {
-            _searchQuery.value = query
+            searchQuery = query
             _isLoadingMore.value = loadMore
 
             if (!loadMore) {
@@ -95,11 +96,10 @@ class ProductListViewModel @Inject constructor(
 
     fun refreshProducts() {
         _isRefreshing.value = true
-        val query = _searchQuery.value
-        if (query == null) {
+        if (searchQuery == null) {
             loadProducts()
         } else {
-            searchProducts(query)
+            searchProducts(searchQuery!!)
         }
     }
 

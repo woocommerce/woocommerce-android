@@ -112,6 +112,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onDestroyView() {
         skeletonView.hide()
+        disableSearchListeners()
+        searchView = null
         super.onDestroyView()
     }
 
@@ -166,9 +168,19 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
      */
     private fun refreshOptionsMenu() {
         val showSearch = shouldShowSearchMenuItem()
-        searchMenuItem?.let {
-            if (it.isActionViewExpanded) it.collapseActionView()
-            if (it.isVisible != showSearch) it.isVisible = showSearch
+        searchMenuItem?.let { menuItem ->
+            if (menuItem.isVisible != showSearch) menuItem.isVisible = showSearch
+
+            if (menuItem.isActionViewExpanded != isSearchActive) {
+                disableSearchListeners()
+                if (isSearchActive) {
+                    menuItem.expandActionView()
+                    searchView?.setQuery(viewModel.searchQuery, false)
+                } else {
+                    menuItem.collapseActionView()
+                }
+                enableSearchListeners()
+            }
         }
     }
 
