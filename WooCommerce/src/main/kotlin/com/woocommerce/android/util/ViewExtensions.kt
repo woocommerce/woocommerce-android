@@ -1,5 +1,7 @@
 package com.woocommerce.android.util
 
+import android.graphics.Rect
+import android.view.TouchDelegate
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
@@ -61,4 +63,19 @@ fun View.collapse() {
 
     a.duration = 300
     this.startAnimation(a)
+}
+
+fun View.expandHitArea(horizontal: Int, vertical: Int) {
+    val parent = this.parent as View
+    parent.post {
+        val rect = Rect()
+        getHitRect(rect)
+
+        rect.left -= horizontal
+        rect.top -= vertical
+        rect.right += horizontal
+        rect.bottom += vertical
+
+        parent.touchDelegate = TouchDelegate(rect, this)
+    }
 }
