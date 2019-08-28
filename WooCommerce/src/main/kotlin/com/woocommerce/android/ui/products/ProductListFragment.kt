@@ -41,7 +41,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         private const val SEARCH_TYPING_DELAY_MS = 500L
-
+        private const val KEY_SEARCH_ACTIVE = "search_active"
         fun newInstance() = ProductListFragment()
     }
 
@@ -56,7 +56,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private val searchHandler = Handler()
-    private var isSearching: Boolean = false
+    private var isSearchActive: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -94,6 +94,15 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
                 viewModel.refreshProducts()
             }
         }
+
+        savedInstanceState?.let { bundle ->
+            isSearchActive = bundle.getBoolean(KEY_SEARCH_ACTIVE)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_SEARCH_ACTIVE, isSearchActive)
     }
 
     override fun onAttach(context: Context?) {
@@ -180,8 +189,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
     }
 
     fun clearSearchResults() {
-        if (isSearching) {
-            isSearching = false
+        if (isSearchActive) {
+            isSearchActive = false
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
@@ -216,7 +225,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         productAdapter.clearAdapterData()
-        isSearching = true
+        isSearchActive = true
         return true
     }
 
@@ -298,7 +307,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            if (isSearching) {
+            if (isSearchActive) {
                 empty_view.show(R.string.product_list_empty_search, false)
             } else {
                 val showImage = !DisplayUtils.isLandscape(activity)

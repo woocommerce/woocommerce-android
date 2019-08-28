@@ -87,13 +87,8 @@ class ProductListViewModel @Inject constructor(
 
             if (!loadMore) {
                 _isSkeletonShown.value = true
-                // clear the product list if this is the initial search
-                productList.value?.let {
-                    if (it.isNotEmpty()) {
-                        productList.value = emptyList()
-                    }
-                }
             }
+
             searchProductList(query, loadMore)
         }
     }

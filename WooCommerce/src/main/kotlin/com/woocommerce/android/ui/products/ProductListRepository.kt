@@ -32,7 +32,7 @@ class ProductListRepository @Inject constructor(
         private val PRODUCT_SORTING = ProductSorting.TITLE_ASC
     }
 
-    private var continuation: Continuation<Boolean>? = null
+    private var loadContinuation: Continuation<Boolean>? = null
     private var searchContinuation: Continuation<List<Product>>? = null
     private var offset = 0
     private var isLoadingProducts = false
@@ -54,7 +54,7 @@ class ProductListRepository @Inject constructor(
         if (!isLoadingProducts) {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
-                continuation = it
+                loadContinuation = it
                 isLoadingProducts = true
                 val payload = WCProductStore.FetchProductsPayload(
                         selectedSite.get(),
@@ -102,11 +102,11 @@ class ProductListRepository @Inject constructor(
         if (event.causeOfChange == FETCH_PRODUCTS) {
             isLoadingProducts = false
             if (event.isError) {
-                continuation?.resume(false)
+                loadContinuation?.resume(false)
             } else {
                 canLoadMoreProducts = event.canLoadMore
                 AnalyticsTracker.track(PRODUCT_LIST_LOADED)
-                continuation?.resume(true)
+                loadContinuation?.resume(true)
             }
         }
     }
