@@ -34,8 +34,7 @@ class ProductListAdapter(
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.product_icon_sz)
     private val productList = ArrayList<Product>()
     private val bullet = "\u2022"
-    // TODO: these colors will be changed once the designs are finalized
-    private val statusColor = ContextCompat.getColor(context, R.color.blue_wordpress)
+    private val statusColor = ContextCompat.getColor(context, R.color.blue_50)
     private val stockColor = ContextCompat.getColor(context, R.color.wc_grey_mid)
 
     interface OnProductClickListener {
@@ -53,10 +52,6 @@ class ProductListAdapter(
     override fun getItemId(position: Int) = productList[position].remoteId
 
     override fun getItemCount() = productList.size
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        return ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
-    }
 
     private fun getProductStockStatusText(product: Product): String? {
         val statusHtml = if (product.status != null && product.status != ProductStatus.PUBLISH) {
@@ -100,6 +95,12 @@ class ProductListAdapter(
         val stockHtml = "<font color=$stockColor>$stock</font>"
 
         return if (statusHtml != null) "$statusHtml $bullet $stockHtml" else stockHtml
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+        val holder = ProductViewHolder(LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false))
+        holder.imgProduct.clipToOutline = true
+        return holder
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {

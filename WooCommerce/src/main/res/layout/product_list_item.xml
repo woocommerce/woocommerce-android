@@ -12,9 +12,7 @@
         android:id="@+id/productImageFrame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:background="@drawable/picture_frame"
-        android:padding="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -22,6 +20,7 @@
             android:id="@+id/productImage"
             android:layout_width="@dimen/product_icon_sz"
             android:layout_height="@dimen/product_icon_sz"
+            android:background="@drawable/picture_frame"
             android:contentDescription="@string/product_image_content_description"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_product" />
@@ -31,15 +30,16 @@
         android:id="@+id/productName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_extra_large"
         android:layout_marginEnd="@dimen/margin_extra_large"
-        app:layout_constrainedWidth="true"
+        android:layout_marginStart="@dimen/margin_extra_large"
         android:maxLines="2"
         android:textAppearance="@style/Woo.TextAppearance.ListItem.Title"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/productStockAndStaus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productImageFrame"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         tools:text="Awesome Sauce" />
 
     <TextView
@@ -48,10 +48,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/productName"
         app:layout_constraintEnd_toEndOf="@+id/productName"
-        app:layout_constraintTop_toBottomOf="@+id/productName"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/productName"
+        app:layout_constraintTop_toBottomOf="@+id/productName"
         tools:text="Out of stock" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

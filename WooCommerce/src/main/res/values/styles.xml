@@ -101,7 +101,7 @@
     </style>
 
     <style name="Woo.TextAppearance.Medium.Grey">
-        <item name="android:textColor">@color/wc_grey_medium</item>
+        <item name="android:textColor">@color/wc_grey_mid</item>
         <item name="android:textSize">@dimen/text_medium</item>
     </style>
 
