@@ -18,6 +18,15 @@
         android:name="com.woocommerce.android.ui.main.RootFragment"
         tools:layout="@layout/fragment_root"/>
     <fragment
+        android:id="@+id/refundsFragment"
+        android:name="com.woocommerce.android.ui.refunds.RefundsFragment"
+        tools:layout="@layout/fragment_refunds">
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+    </fragment>
+    <fragment
         android:id="@+id/orderDetailFragment"
         android:name="com.woocommerce.android.ui.orders.OrderDetailFragment"
         tools:layout="@layout/fragment_order_detail">
@@ -53,6 +62,11 @@
             app:destination="@id/addOrderShipmentTrackingFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_refundsFragment"
+            app:destination="@id/refundsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"

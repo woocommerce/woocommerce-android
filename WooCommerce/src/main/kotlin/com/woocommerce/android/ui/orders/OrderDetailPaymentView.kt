@@ -21,7 +21,11 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         orientation = LinearLayout.VERTICAL
     }
 
-    fun initView(order: WCOrderModel, formatCurrencyForDisplay: (String) -> String) {
+    fun initView(
+        order: WCOrderModel,
+        formatCurrencyForDisplay: (String) -> String,
+        actionListener: OrderRefundActionListener
+    ) {
         paymentInfo_productsTotal.text = formatCurrencyForDisplay(order.getOrderSubtotal().toString())
         paymentInfo_shippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
         paymentInfo_taxesTotal.text = formatCurrencyForDisplay(order.totalTax)
@@ -83,5 +87,8 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         }
 
         paymentInfo_issueRefundButton.expandHitArea(100, 100)
+        paymentInfo_issueRefundButton.setOnClickListener {
+            actionListener.issueOrderRefund(order)
+        }
     }
 }

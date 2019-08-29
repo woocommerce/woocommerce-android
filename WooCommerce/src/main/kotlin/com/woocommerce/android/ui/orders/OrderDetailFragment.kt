@@ -228,7 +228,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     billingOnly = presenter.isVirtualProduct(order))
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
+            orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency), this)
 
             if (isFreshData) {
                 isRefreshPending = false
@@ -283,6 +283,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         findNavController().navigate(action)
     }
 
+    override fun issueOrderRefund(order: WCOrderModel) {
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToRefundsFragment(order.number.toLong())
+        findNavController().navigate(action)
+    }
+
     override fun openOrderProductList(order: WCOrderModel) {
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderProductListFragment(
                 order.getIdentifier(),
@@ -300,7 +305,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         orderDetail_orderStatus.updateStatus(orderStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, this)
-            orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency))
+            orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency), this)
         }
     }
 
