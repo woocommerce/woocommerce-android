@@ -251,6 +251,12 @@
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
     <!--
+        Refunds
+    -->
+    <string name="order_refunds_available_for_refund">%s available for refund</string>
+    <string name="order_refunds_restocking_note">By refunding an amount, no items will be restocked</string>
+    <string name="order_refunds_next_button_title">Next</string>
+    <!--
         Add Order Note
     -->
     <string name="add_order_note_label">Email note to customer</string>
