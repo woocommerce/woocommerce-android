@@ -201,6 +201,8 @@ dependencies {
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    implementation 'me.abhinay.input:currency-edittext:1.1'
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
