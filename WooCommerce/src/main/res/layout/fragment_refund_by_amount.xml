@@ -1,0 +1,50 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/default_window_background"
+    tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
+
+    <LinearLayout
+        style="@style/Woo.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <me.abhinay.input.CurrencyEditText
+            android:id="@+id/refunds_refundAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            />
+
+        <TextView
+            android:id="@+id/refunds_txtAvailableForRefund"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="@dimen/card_item_padding_intra_h"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/order_refunds_restocking_note"
+            />
+
+    </LinearLayout>
+
+    <!-- Button: Next -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/refunds_btnNext"
+        style="@style/Woo.Button.Purple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_item_padding_intra_double"
+        android:layout_marginEnd="@dimen/card_item_padding_intra_double"
+        android:text="@string/order_refunds_next_button_title" />
+
+</LinearLayout>
