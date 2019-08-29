@@ -1,0 +1,72 @@
+package com.woocommerce.android.ui.refunds
+
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
+import androidx.navigation.fragment.navArgs
+
+class RefundsFragment : BaseFragment() {
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private lateinit var viewModel: RefundsViewModel
+
+    private val navArgs: RefundsFragmentArgs by navArgs()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_refunds, container, false)
+    }
+
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initializeViewModel()
+    }
+
+    private fun initializeViewModel() {
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(RefundsViewModel::class.java).also {
+            setupObservers(it)
+        }
+
+        viewModel.start(navArgs.orderId)
+    }
+
+    override fun getFragmentTitle() = viewModel.formattedRefundAmount.value ?: ""
+
+    private fun setupObservers(viewModel: RefundsViewModel) {
+        viewModel.showSnackbarMessage.observe(this, Observer {
+            uiMessageResolver.showSnack(it)
+        })
+
+        viewModel.exit.observe(this, Observer {
+            activity?.onBackPressed()
+        })
+
+        viewModel.formattedRefundAmount.observe(this, Observer {
+            activity?.title = it
+        })
+    }
+}
