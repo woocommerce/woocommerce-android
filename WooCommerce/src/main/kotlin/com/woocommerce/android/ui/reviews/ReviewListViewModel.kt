@@ -17,6 +17,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_REVIEW
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -25,7 +28,8 @@ class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val selectedSite: SelectedSite,
     private val reviewRepository: ReviewListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {
     private var canLoadMore = true
 
@@ -45,11 +49,13 @@ class ReviewListViewModel @Inject constructor(
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
     fun start() {
+        dispatcher.register(this)
         loadReviews()
     }
 
     override fun onCleared() {
         super.onCleared()
+        dispatcher.unregister(this)
         reviewRepository.onCleanup()
     }
 
@@ -60,11 +66,12 @@ class ReviewListViewModel @Inject constructor(
         }
 
         _isLoadingMore.value = loadMore
-        _isSkeletonShown.value = true
 
         launch {
             if (!loadMore) {
-                // Initial load. Get and show reviewList from the db if any. Otherwise show the loading skeleton.
+                _isSkeletonShown.value = true
+
+                // Initial load. Get and show reviewList from the db if any
                 val reviewsInDb = reviewRepository.getCachedProductReviews()
                 if (reviewsInDb.isNotEmpty()) {
                     _isSkeletonShown.value = false
@@ -77,23 +84,23 @@ class ReviewListViewModel @Inject constructor(
 
     fun refreshReviewList() {
         _isRefreshing.value = true
-        loadReviews()
+        fetchReviewList(loadMore = false)
     }
 
     private fun fetchReviewList(loadMore: Boolean) {
-        if (networkStatus.isConnected()) {
-            launch {
+        launch {
+            if (networkStatus.isConnected()) {
                 reviewList.value = reviewRepository.fetchAndLoadProductReviews(loadMore)
                 canLoadMore = reviewRepository.canLoadMoreReviews
+            } else {
+                // Network is not connected
+                _showSnackbarMessage.value = R.string.offline_error
             }
-        } else {
-            // Network is not connected
-            _showSnackbarMessage.value = R.string.offline_error
-        }
 
-        _isSkeletonShown.value = false
-        _isLoadingMore.value = false
-        _isRefreshing.value = false
+            _isSkeletonShown.value = false
+            _isLoadingMore.value = false
+            _isRefreshing.value = false
+        }
     }
 
     @Suppress("unused")
@@ -102,6 +109,18 @@ class ReviewListViewModel @Inject constructor(
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
             refreshReviewList()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onProductReviewChanged(event: OnProductReviewChanged) {
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT_REVIEW) {
+            if (event.isError) {
+                WooLog.e(REVIEWS, "Error fetching single product review: ${event.error.message}")
+            } else {
+                refreshReviewList()
+            }
         }
     }
 }
