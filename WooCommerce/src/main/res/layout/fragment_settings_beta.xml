@@ -11,6 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:switchSummary="@string/settings_enable_v4_stats_message"
+        app:switchSummaryTextColor="@color/wc_grey_medium"
         app:switchTitle="@string/settings_enable_v4_stats_title"
         android:background="@color/white"
         app:layout_constraintStart_toStartOf="parent"
