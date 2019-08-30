@@ -154,6 +154,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
         searchMenuItem = menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
+        searchView?.queryHint = getString(R.string.product_search_hint)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
