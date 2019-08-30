@@ -37,6 +37,9 @@ class RefundsViewModel @Inject constructor(
     private val _exit = SingleLiveEvent<Unit>()
     val exit: LiveData<Unit> = _exit
 
+    private val _showValidationError = SingleLiveEvent<String>()
+    val showValidationError: LiveData<String> = _showValidationError
+
     private val _availableForRefund = MutableLiveData<String>()
     val availableForRefund: LiveData<String> = _availableForRefund
 
@@ -52,6 +55,7 @@ class RefundsViewModel @Inject constructor(
     final var enteredAmount: BigDecimal = BigDecimal.ZERO
         private set
 
+    private lateinit var maxRefund: BigDecimal
     private lateinit var order: Order
     private lateinit var formatCurrency: (BigDecimal) -> String
 
@@ -59,11 +63,10 @@ class RefundsViewModel @Inject constructor(
         orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()?.let { order ->
             this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
 
-            val availableForRefund = formatCurrency(order.total - order.refundTotal)
-
+            maxRefund = order.total - order.refundTotal
             _availableForRefund.value = resourceProvider.getString(
                     R.string.order_refunds_available_for_refund,
-                    availableForRefund
+                    formatCurrency(maxRefund)
             )
             _isNextButtonEnabled.value = false
             _formattedRefundAmount.value = formatCurrency(enteredAmount)
@@ -76,6 +79,9 @@ class RefundsViewModel @Inject constructor(
     }
 
     fun onNextClicked() {
+        if (enteredAmount > maxRefund) {
+            _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_high_error)
+        }
     }
 
     fun onManualRefundAmountChanged(amount: BigDecimal) {

@@ -1,8 +1,8 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/default_window_background"
     tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
@@ -13,12 +13,20 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <me.abhinay.input.CurrencyEditText
-            android:id="@+id/refunds_refundAmount"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/refunds_refundAmountInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            />
+            android:importantForAccessibility="no">
+
+            <me.abhinay.input.CurrencyEditText
+                android:id="@+id/refunds_refundAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/refunds_txtAvailableForRefund"

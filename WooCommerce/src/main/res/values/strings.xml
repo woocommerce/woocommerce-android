@@ -256,6 +256,7 @@
     <string name="order_refunds_available_for_refund">%s available for refund</string>
     <string name="order_refunds_restocking_note">By refunding an amount, no items will be restocked</string>
     <string name="order_refunds_next_button_title">Next</string>
+    <string name="order_refunds_refund_high_error">The entered refund is higher than the available amount</string>
     <!--
         Add Order Note
     -->

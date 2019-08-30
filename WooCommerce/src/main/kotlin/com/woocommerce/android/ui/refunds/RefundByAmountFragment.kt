@@ -53,6 +53,10 @@ class RefundByAmountFragment : androidx.fragment.app.Fragment() {
             refunds_refundAmount.setCurrency(it)
             refunds_refundAmount.setText(viewModel.enteredAmount.toString())
         })
+
+        viewModel.showValidationError.observe(this, Observer {
+            refunds_refundAmountInputLayout.error = it
+        })
     }
 
     private fun initializeViews(viewModel: RefundsViewModel) {
@@ -69,12 +73,7 @@ class RefundByAmountFragment : androidx.fragment.app.Fragment() {
         })
 
         refunds_btnNext.setOnClickListener {
-//            val action = RefundsFragmentDirections.a(
-//                    order.getIdentifier(),
-//                    order.number,
-//                    presenter.isShipmentTrackingsFetched
-//            )
-//            findNavController().navigate(action)
+            viewModel.onNextClicked()
         }
     }
 }
