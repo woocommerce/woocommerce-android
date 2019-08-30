@@ -159,7 +159,7 @@ class ReviewListAdapter(
             if (section.list.size == 0) {
                 val sectionPos = getSectionPosition(section)
                 section.isVisible = false
-                if (sectionPos != SectionedRecyclerViewAdapter.INVALID_POSITION) {
+                if (sectionPos != INVALID_POSITION) {
                     notifySectionChangedToInvisible(section, sectionPos)
                 }
             }

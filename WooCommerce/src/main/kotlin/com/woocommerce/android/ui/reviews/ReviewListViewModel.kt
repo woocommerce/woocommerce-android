@@ -26,6 +26,7 @@ class ReviewListViewModel @Inject constructor(
 ) : ScopedViewModel(mainDispatcher) {
     private var canLoadMore = true
 
+    // TODO AMANDA: should this MutableLiveData object be exposed publicly?
     val reviewList = MutableLiveData<List<ProductReview>>()
 
     private val _isSkeletonShown = MutableLiveData<Boolean>()
@@ -55,24 +56,16 @@ class ReviewListViewModel @Inject constructor(
             return
         }
 
-        launch {
-            _isLoadingMore.value = loadMore
+        _isLoadingMore.value = loadMore
+        _isSkeletonShown.value = true
 
+        launch {
             if (!loadMore) {
                 // Initial load. Get and show reviewList from the db if any. Otherwise show the loading skeleton.
-                val reviewsInDb = reviewRepository.getProductReviews()
-                if (reviewsInDb.isEmpty()) {
-                    _isSkeletonShown.value = true
-                } else {
-                    // TODO AMANDA: Consolidate this into a single function
-                    // TODO AMANDA: Try to break out the fetching of products into their own small
-                    // suspend function so they can happen in parallel.
-                    val productsToFetch = reviewsInDb.map { it.remoteProductId }.distinct()
-                    val productsMap = reviewRepository.getProductsByRemoteIdMap(productsToFetch)
-                    val finalReviews = reviewsInDb.filter { productsMap.containsKey(it.remoteProductId) }.also { review ->
-                        review.forEach { it.product = productsMap[it.remoteProductId] }
-                    }
-                    reviewList.value = finalReviews
+                val reviewsInDb = reviewRepository.getCachedProductReviews()
+                if (reviewsInDb.isNotEmpty()) {
+                    _isSkeletonShown.value = false
+                    reviewList.value = reviewsInDb
                 }
             }
             fetchReviewList(loadMore)
@@ -84,17 +77,12 @@ class ReviewListViewModel @Inject constructor(
         loadReviews()
     }
 
-    private suspend fun fetchReviewList(loadMore: Boolean) {
+    private fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
-            val fetchedReviews = reviewRepository.fetchAndLoadProductReviews(loadMore)
-            val productsToFetch = fetchedReviews.map { it.remoteProductId }.distinct()
-            val productsMap = reviewRepository.getProductsByRemoteIdMap(productsToFetch)
-            val finalReviews = fetchedReviews.filter { productsMap.containsKey(it.remoteProductId) }.also { review ->
-                review.forEach { it.product = productsMap[it.remoteProductId] }
+            launch {
+                reviewList.value = reviewRepository.fetchAndLoadProductReviews(loadMore)
+                canLoadMore = reviewRepository.canLoadMoreReviews
             }
-
-            canLoadMore = reviewRepository.canLoadMoreReviews
-            reviewList.value = finalReviews
         } else {
             // Network is not connected
             _showSnackbarMessage.value = R.string.offline_error

@@ -7,6 +7,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -46,7 +48,7 @@ class ReviewListRepository @Inject constructor(
     }
 
     /**
-     * Fetch product reviews from the API, waits for it to complete, and then queries the db
+     * Fetch product reviews from the API, wait for it to complete, and then query the db
      * for the fetched reviews.
      *
      * @param [loadMore] if true, creates an offset to fetch the next page of [ProductReview]s
@@ -63,59 +65,78 @@ class ReviewListRepository @Inject constructor(
                 val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
             }
+
+            /*
+             * Fetch any products associated with these reviews missing from the db
+             */
+            getProductReviews().map { it.remoteProductId }.distinct().takeIf { it.isNotEmpty() }?.let {
+                fetchProductsByRemoteId(it)
+            }
         }
 
-        return getProductReviews()
+        return getCachedProductReviews()
     }
 
     /**
-     * Fetch products from the API, wait for it to complete, and then query the db
-     * for the fetched reviews.
-     *
-     * @return List of [ProductReviewProduct]
+     * Create a distinct list of products associated with the reviews already in the db, then
+     * pass that list to get a map of those products from the db. Only reviews that have an existing
+     * cached product will be returned.
      */
-    private suspend fun fetchAndLoadProductsByRemoteId(remoteProductIds: List<Long>): List<ProductReviewProduct> {
+    suspend fun getCachedProductReviews(): List<ProductReview> {
+        var cachedReviews = getProductReviews()
+        if (cachedReviews.isNotEmpty()) {
+            val relatedProducts = cachedReviews.map { it.remoteProductId }.distinct()
+            val productsMap = getProductsByRemoteIdMap(relatedProducts)
+            cachedReviews = cachedReviews.filter {
+                // Only returns reviews that have a matching product in the db.
+                productsMap.containsKey(it.remoteProductId) && productsMap[it.remoteProductId] != null
+            }.also { review ->
+                review.forEach { it.product = productsMap[it.remoteProductId] }
+            }
+        }
+        return cachedReviews
+    }
+
+    /**
+     * Fetch products from the API and suspends until finished.
+     */
+    private suspend fun fetchProductsByRemoteId(remoteProductIds: List<Long>) {
         suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
             continuationProduct = it
 
             val payload = FetchProductsPayload(selectedSite.get(), remoteProductIds = remoteProductIds)
             dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
         }
-
-        return productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-                .map { ProductReviewProduct(it.remoteProductId, it.name, it.externalUrl) }
     }
 
     /**
      * Returns a list of all [ProductReview]s for the active site.
      */
-    fun getProductReviews(): List<ProductReview> =
+    private suspend fun getProductReviews(): List<ProductReview> {
+        return withContext(Dispatchers.IO) {
             productStore.getProductReviewsForSite(selectedSite.get()).map { it.toAppModel() }
+        }
+    }
 
     /**
      * Queries the db for a [org.wordpress.android.fluxc.model.WCProductModel] matching the
      * provided [remoteProductId] and returns it as a [ProductReviewProduct] or null if not found.
      */
-    private fun getProductByRemoteId(remoteProductId: Long): ProductReviewProduct? {
-        return productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.let {
-             ProductReviewProduct(it.remoteProductId, it.name, it.externalUrl)
+    private suspend fun getProductByRemoteId(remoteProductId: Long): ProductReviewProduct? {
+        return withContext(Dispatchers.IO) {
+            productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.let {
+                ProductReviewProduct(it.remoteProductId, it.name, it.externalUrl)
+            }
         }
     }
 
     /**
-     * Takes a list of remote product_id's and returns a map of [ProductReviewProduct] by
-     * the remote_product_id.
+     * Returns a map of [ProductReviewProduct] by the remote_product_id pulled from the db.
      */
-    suspend fun getProductsByRemoteIdMap(remoteProductIds: List<Long>): Map<Long, ProductReviewProduct?> {
-        /*
-         * Create a list of remote product IDs not existing in the database and perform
-         * a batch fetch from the API. Code will stop here until the fetch is complete.
-         */
-        remoteProductIds.filter { getProductByRemoteId(it) == null }.takeIf { it.isNotEmpty() }?.let {
-            fetchAndLoadProductsByRemoteId(it)
+    private suspend fun getProductsByRemoteIdMap(remoteProductIds: List<Long>): Map<Long, ProductReviewProduct?> {
+        return withContext(Dispatchers.IO) {
+            remoteProductIds.associateWith { getProductByRemoteId(it) }
         }
-
-        return remoteProductIds.associateWith { getProductByRemoteId(it) }
     }
 
     @SuppressWarnings("unused")
