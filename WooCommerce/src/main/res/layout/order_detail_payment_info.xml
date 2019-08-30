@@ -294,16 +294,14 @@
             app:srcCompat="@drawable/list_divider"/>
 
         <!-- Refund button -->
-        <TextView
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/paymentInfo_issueRefundButton"
-            style="@style/Woo.TextAppearance.Button"
+            style="@style/Woo.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginTop="@dimen/card_item_padding_intra_double"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
             android:text="@string/orderdetail_issue_refund_button"/>
 
     </LinearLayout>
