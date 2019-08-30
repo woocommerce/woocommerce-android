@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -14,6 +15,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -91,5 +94,14 @@ class ReviewListViewModel @Inject constructor(
         _isSkeletonShown.value = false
         _isLoadingMore.value = false
         _isRefreshing.value = false
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: ConnectionChangeEvent) {
+        if (event.isConnected) {
+            // Refresh data now that a connection is active if needed
+            refreshReviewList()
+        }
     }
 }
