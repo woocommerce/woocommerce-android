@@ -62,7 +62,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // TODO AMANDA - rename this layout
         return inflater.inflate(R.layout.fragment_reviews_list, container, false)
     }
 

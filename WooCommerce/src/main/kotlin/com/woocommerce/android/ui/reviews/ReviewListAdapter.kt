@@ -69,8 +69,7 @@ class ReviewListAdapter(
 
         newList.forEach {
             // Default to today if the date cannot be parsed
-            val timeGroup = TimeGroup.getTimeGroupForDate(it.dateCreated)
-            when (timeGroup) {
+            when (TimeGroup.getTimeGroupForDate(it.dateCreated)) {
                 TimeGroup.GROUP_TODAY -> listToday.add(it)
                 TimeGroup.GROUP_YESTERDAY -> listYesterday.add(it)
                 TimeGroup.GROUP_OLDER_TWO_DAYS -> listTwoDays.add(it)
