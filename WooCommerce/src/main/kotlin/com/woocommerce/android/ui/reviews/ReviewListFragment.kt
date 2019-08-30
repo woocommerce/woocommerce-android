@@ -23,9 +23,9 @@ import com.woocommerce.android.widgets.UnreadItemDecoration
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_notifs_list.*
-import kotlinx.android.synthetic.main.fragment_notifs_list.notifsList
-import kotlinx.android.synthetic.main.fragment_notifs_list.view.*
+import kotlinx.android.synthetic.main.fragment_reviews_list.*
+import kotlinx.android.synthetic.main.fragment_reviews_list.notifsList
+import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
 import javax.inject.Inject
 
 class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewListAdapter.OnReviewClickListener {
@@ -63,7 +63,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         savedInstanceState: Bundle?
     ): View? {
         // TODO AMANDA - rename this layout
-        return inflater.inflate(R.layout.fragment_notifs_list, container, false)
+        return inflater.inflate(R.layout.fragment_reviews_list, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

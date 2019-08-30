@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
-import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
@@ -39,7 +38,6 @@ abstract class ActivityBindingModule {
             OrderProductListModule::class,
             OrderFulfillmentModule::class,
             AddOrderNoteModule::class,
-            NotifsListModule::class,
             ProductDetailModule::class,
             ReviewListModule::class,
             ReviewDetailModule::class,
