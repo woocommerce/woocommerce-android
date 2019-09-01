@@ -65,7 +65,7 @@ class ProductListRepository @Inject constructor(
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 loadContinuation = it
                 isLoadingProducts = true
-                lastSearchQuery  = null
+                lastSearchQuery = null
                 val payload = WCProductStore.FetchProductsPayload(
                         selectedSite.get(),
                         PRODUCT_PAGE_SIZE,
@@ -92,7 +92,7 @@ class ProductListRepository @Inject constructor(
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             searchContinuation = it
             isLoadingProducts = true
-            lastSearchQuery  = searchQuery
+            lastSearchQuery = searchQuery
             val payload = WCProductStore.SearchProductsPayload(
                     selectedSite.get(),
                     searchQuery,
