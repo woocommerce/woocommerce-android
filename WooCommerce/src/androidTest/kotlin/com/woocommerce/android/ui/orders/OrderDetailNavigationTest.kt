@@ -9,7 +9,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -436,35 +435,5 @@ class OrderDetailNavigationTest : TestBase() {
         onView(withId(R.id.orderStatus_orderTags)).check(
                 matches(WCMatchers.withTagBackgroundColor(appContext, R.color.orderStatus_failed_bg))
         )
-    }
-
-    @Test
-    fun verifyOrderDetailNotesCardEmptyView() {
-        // add mock data to order detail screen
-        val wcOrderStatusModel = WcOrderTestUtils.generateOrderDetail()
-        activityTestRule.setOrderDetailWithMockData(wcOrderStatusModel)
-
-        // click on the first order in the list and check if redirected to order detail
-        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
-
-        // customerNote is empty so Hide Customer Note card
-        onView(withId(R.id.orderDetail_customerNote)).check(
-                matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
-    }
-
-    @Test
-    fun verifyOrderDetailNotesCardViewIsDisplayed() {
-        // add mock data to order detail screen
-        val wcOrderStatusModel = WcOrderTestUtils.generateOrderDetail(note = "This is a test note")
-        activityTestRule.setOrderDetailWithMockData(wcOrderStatusModel)
-
-        // click on the first order in the list and check if redirected to order detail
-        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
-
-        // customerNote is empty so Hide Customer Note card
-        onView(withId(R.id.orderDetail_customerNote)).check(matches(
-                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 }
