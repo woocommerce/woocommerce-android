@@ -9,7 +9,17 @@
     <fragment
         android:id="@+id/refundByAmount"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:name="com.woocommerce.android.ui.refunds.RefundByAmountFragment" />
+
+    <!-- Button: Next -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/refunds_btnNext"
+        style="@style/Woo.Button.Purple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_item_padding_intra_double"
+        android:layout_marginEnd="@dimen/card_item_padding_intra_double"
+        android:text="@string/order_refunds_next_button_title" />
 
 </FrameLayout>
