@@ -14,7 +14,11 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
+import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
@@ -26,6 +30,7 @@ import kotlin.coroutines.resume
 class ReviewListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
+    private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
@@ -97,6 +102,14 @@ class ReviewListRepository @Inject constructor(
         return cachedReviews
     }
 
+    suspend fun getHasUnreadReviews(): Boolean {
+        return withContext(Dispatchers.IO) {
+            notificationStore.hasUnreadNotificationsForSite(
+                    site = selectedSite.get(),
+                    filterBySubtype = listOf(STORE_REVIEW.toString()))
+        }
+    }
+
     /**
      * Fetch products from the API and suspends until finished.
      */
@@ -106,6 +119,13 @@ class ReviewListRepository @Inject constructor(
 
             val payload = FetchProductsPayload(selectedSite.get(), remoteProductIds = remoteProductIds)
             dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
+        }
+    }
+
+    private suspend fun fetchNotifications() {
+        suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            val payload = FetchNotificationsPayload()
+            dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
         }
     }
 

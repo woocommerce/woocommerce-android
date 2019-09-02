@@ -47,6 +47,9 @@ class ReviewListViewModel @Inject constructor(
     private val _isRefreshing = MutableLiveData<Boolean>()
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
+    private val _hasUnreadReviews = MutableLiveData<Boolean>()
+    val hasUnreadReviews: LiveData<Boolean> = _hasUnreadReviews
+
     fun start() {
         dispatcher.register(this)
         loadReviews()
@@ -85,6 +88,12 @@ class ReviewListViewModel @Inject constructor(
         _isRefreshing.value = true
         launch {
             fetchReviewList(loadMore = false)
+        }
+    }
+    
+    fun checkForUnreadReviews() {
+        launch {
+            _hasUnreadReviews.value = reviewRepository.getHasUnreadReviews()
         }
     }
 
