@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
+import com.woocommerce.android.ui.mystore.MyStoreModule
 import com.woocommerce.android.ui.notifications.NotifsListModule
 import com.woocommerce.android.ui.notifications.ReviewDetailModule
 import com.woocommerce.android.ui.orders.MockedAddOrderShipmentTrackingModule
@@ -33,6 +34,7 @@ abstract class MockedActivityBindingModule {
     @ContributesAndroidInjector(modules = arrayOf(
             MockedMainModule::class,
             MockedDashboardModule::class,
+            MyStoreModule::class,
             MockedOrderListModule::class,
             MockedOrderDetailModule::class,
             MockedOrderProductListModule::class,
