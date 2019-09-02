@@ -37,14 +37,14 @@ class RefundByAmountFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun initializeViewModel() {
-        ViewModelProviders.of(requireActivity(), viewModelFactory).get(RefundsViewModel::class.java).also {
+        ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java).also {
             initializeViews(it)
             setupObservers(it)
         }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setupObservers(viewModel: RefundsViewModel) {
+    private fun setupObservers(viewModel: IssueRefundViewModel) {
         viewModel.availableForRefund.observe(this, Observer {
             refunds_txtAvailableForRefund.text = it
         })
@@ -59,7 +59,7 @@ class RefundByAmountFragment : androidx.fragment.app.Fragment() {
         })
     }
 
-    private fun initializeViews(viewModel: RefundsViewModel) {
+    private fun initializeViews(viewModel: IssueRefundViewModel) {
         refunds_refundAmount.setDelimiter(false)
         refunds_refundAmount.setDecimals(true)
         refunds_refundAmount.addTextChangedListener(object : TextWatcher {

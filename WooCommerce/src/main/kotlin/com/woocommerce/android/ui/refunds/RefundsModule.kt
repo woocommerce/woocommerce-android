@@ -6,7 +6,7 @@ import dagger.android.ContributesAndroidInjector
 @Module
 internal abstract class RefundsModule {
     @ContributesAndroidInjector
-    abstract fun refundfragment(): RefundsFragment
+    abstract fun refundfragment(): IssueRefundFragment
 
     @ContributesAndroidInjector
     abstract fun refundByAmountfragment(): RefundByAmountFragment

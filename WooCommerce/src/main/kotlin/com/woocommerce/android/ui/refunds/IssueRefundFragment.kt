@@ -10,20 +10,19 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 import androidx.navigation.fragment.navArgs
 
-class RefundsFragment : BaseFragment() {
+class IssueRefundFragment : BaseFragment() {
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var viewModel: RefundsViewModel
+    private lateinit var viewModel: IssueRefundViewModel
 
-    private val navArgs: RefundsFragmentArgs by navArgs()
+    private val navArgs: IssueRefundFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -36,11 +35,6 @@ class RefundsFragment : BaseFragment() {
         super.onAttach(context)
     }
 
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -50,7 +44,7 @@ class RefundsFragment : BaseFragment() {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(RefundsViewModel::class.java).also {
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java).also {
             setupObservers(it)
         }
 
@@ -59,7 +53,7 @@ class RefundsFragment : BaseFragment() {
 
     override fun getFragmentTitle() = viewModel.formattedRefundAmount.value ?: ""
 
-    private fun setupObservers(viewModel: RefundsViewModel) {
+    private fun setupObservers(viewModel: IssueRefundViewModel) {
         viewModel.showSnackbarMessage.observe(this, Observer {
             uiMessageResolver.showSnack(it)
         })

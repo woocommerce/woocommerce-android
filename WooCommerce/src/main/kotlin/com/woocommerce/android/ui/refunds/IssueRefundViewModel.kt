@@ -22,7 +22,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @OpenClassOnDebug
-class RefundsViewModel @Inject constructor(
+class IssueRefundViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val refundStore: RefundsStore,
     private val orderStore: WCOrderStore,
