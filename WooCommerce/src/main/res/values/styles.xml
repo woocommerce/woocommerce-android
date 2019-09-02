@@ -342,6 +342,19 @@
     <style name="Woo.OrderList.TextAppearance.ListItem.Title.Bold">
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="Woo.OrderList.TabLayout" parent="Woo.TabLayout">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:elevation">@dimen/tablayout_elevation</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">0dp</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabPaddingStart">25dp</item>
+        <item name="tabPaddingEnd">25dp</item>
+        <item name="tabIndicatorHeight">2.5dp</item>
+        <item name="tabTextColor">@color/white_translucent_65</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="tabIndicatorColor">@color/white</item>
+    </style>
     <!--
         OrderDetail Styles
     -->

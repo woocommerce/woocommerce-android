@@ -259,6 +259,15 @@
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_confirm_discard">Discard this note?</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
+
+    <!--
+    Order List Tab Labels
+    -->
+    <string-array name="order_list_tabs">
+        <item>Processing</item>
+        <item>All Orders</item>
+    </string-array>
+
     <!--
         Order Status Labels
     -->
