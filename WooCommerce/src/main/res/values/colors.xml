@@ -7,7 +7,7 @@
         Default Colors
     -->
     <color name="default_window_background">#f7f7f7</color>
-    <color name="default_text_color">@color/grey_dark</color>
+    <color name="default_text_color">@color/wc_grey_dark</color>
     <color name="default_button_fg_color">@color/colorPrimary</color>
     <color name="default_text_label_color">@color/colorPrimary</color>
     <color name="default_card_heading_color">@color/colorPrimary</color>

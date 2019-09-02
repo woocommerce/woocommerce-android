@@ -24,6 +24,11 @@
             app:destination="@id/aboutFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:popExitAnim="@anim/activity_slide_out_to_right"/>
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_betaFeaturesFragment"
+            app:destination="@id/betaFeaturesFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -37,4 +42,8 @@
         android:id="@+id/licensesFragment2"
         android:name="com.woocommerce.android.ui.prefs.LicensesFragment"
         android:label="LicensesFragment"/>
+    <fragment
+        android:id="@+id/betaFeaturesFragment"
+        android:name="com.woocommerce.android.ui.prefs.BetaFeaturesFragment"
+        android:label="BetaFeaturesFragment"/>
 </navigation>

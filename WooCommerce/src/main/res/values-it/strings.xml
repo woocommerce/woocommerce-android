@@ -602,7 +602,6 @@ Language: it
     <string name="order_error_fetch_notes_generic">Errore durante il recupero delle note di errore</string>
     <string name="order_fulfill_marked_complete">Ordine contrassegnato come completo</string>
     <string name="order_fulfill_mark_complete">Contrassegna ordine come completo</string>
-    <string name="order_fulfill_order">Evadi ordine</string>
     <string name="orderdetail_addnote_contentdesc">Aggiungi una nota dell\'ordine</string>
     <string name="orderdetail_add_note">Aggiungi una nota</string>
     <string name="orderdetail_hide_billing">Nascondi fatturazione</string>
@@ -616,7 +615,6 @@ Language: it
     <string name="orderdetail_customer_provided_note">Nota fornita dai clienti</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Pagamento - Rimborso</string>
-    <string name="orderdetail_new_total">Nuovo totale</string>
     <string name="orderdetail_refunded">Rimborsato</string>
     <string name="orderdetail_payment_summary_onhold">Pagamento in attesa per %s</string>
     <string name="orderdetail_payment_summary_completed">Pagamento di %1$s ricevuto tramite %2$s</string>
@@ -711,7 +709,6 @@ Language: it
     <string name="taxes">Tasse</string>
     <string name="payment">Pagamento</string>
     <string name="shipping">Spedizione</string>
-    <string name="total">Totale</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Ordini</string>

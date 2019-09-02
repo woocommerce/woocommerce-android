@@ -43,8 +43,13 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        versionName "2.5"
-        versionCode 73
+        // Allow versionName to be overridden with property. e.g. -PversionName=1234
+        if (project.hasProperty("versionName")) {
+            versionName project.property("versionName")
+        } else {
+            versionName "2.6-rc-1"
+        }
+        versionCode 74
 
         minSdkVersion 21
         targetSdkVersion 28
@@ -191,7 +196,7 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:1.0.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
-    implementation(group: 'com.zendesk', name: 'support', version: '2.3.1') {
+    implementation(group: 'com.zendesk', name: 'support', version: '3.0.1') {
         exclude group: 'com.google.dagger'
     }
 
@@ -282,7 +287,7 @@ if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.h
     android {
         signingConfigs {
             release {
-                storeFile = file(project.storeFile.replaceFirst("^~", System.getProperty("user.home")))
+                storeFile = rootProject.file(project.storeFile)
                 storePassword = project.storePassword
                 keyAlias = project.keyAlias
                 keyPassword = project.keyPassword

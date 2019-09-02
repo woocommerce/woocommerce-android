@@ -19,7 +19,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
-class ProductRepository @Inject constructor(
+final class ProductRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite

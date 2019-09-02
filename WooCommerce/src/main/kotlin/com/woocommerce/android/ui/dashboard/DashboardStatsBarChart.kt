@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarEntry
+import android.view.MotionEvent
 
 /**
  * Creating a custom BarChart to fix this issue:
@@ -45,5 +46,16 @@ class DashboardStatsBarChart(context: Context?, attrs: AttributeSet?) : BarChart
             // draw the marker
             mMarker.draw(canvas, pos[0], pos[1])
         }
+    }
+
+    /**
+     * Method added to prevent the chart's parent view i.e ScrollView
+     * from intercepting the touch events during the scrubbing interaction.
+     * Solution implemented from here: https://github.com/PhilJay/MPAndroidChart/issues/925
+     */
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        parent.requestDisallowInterceptTouchEvent(data != null)
+        super.onTouchEvent(event)
+        return data != null
     }
 }
