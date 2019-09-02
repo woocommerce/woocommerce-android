@@ -24,7 +24,7 @@ import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListen
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_reviews_list.*
-import kotlinx.android.synthetic.main.fragment_reviews_list.notifsList
+import kotlinx.android.synthetic.main.fragment_reviews_list.reviewsList
 import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
 import javax.inject.Inject
 
@@ -72,7 +72,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
         reviewsAdapter = ReviewListAdapter(activity, this)
         val unreadDecoration = UnreadItemDecoration(activity as Context, this)
-        notifsList.apply {
+        reviewsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(false)
@@ -114,16 +114,15 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 )
             }
             // Set the scrolling view in the custom SwipeRefreshLayout
-            scrollUpChild = notifsList
+            scrollUpChild = reviewsList
             setOnRefreshListener {
                 // TODO AMANDA : new track notification for refreshing all product reviews
                 viewModel.refreshReviewList()
             }
         }
 
-        // TODO AMANDA setup refresh layout
         listState?.let {
-            notifsList.layoutManager?.onRestoreInstanceState(listState)
+            reviewsList.layoutManager?.onRestoreInstanceState(listState)
             listState = null
         }
     }
@@ -145,7 +144,8 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        // TODO AMANDA : save list state
+        val listState = reviewsList.layoutManager?.onSaveInstanceState()
+        outState.putParcelable(KEY_LIST_STATE, listState)
 
         outState.putBoolean(KEY_IS_REFRESH_PENDING, isRefreshPending)
         super.onSaveInstanceState(outState)
@@ -215,7 +215,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     override fun scrollToTop() {
-        notifsList?.smoothScrollToPosition(0)
+        reviewsList?.smoothScrollToPosition(0)
     }
 
     override fun onReturnedFromChildFragment() {
