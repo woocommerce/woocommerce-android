@@ -16,6 +16,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
 import com.google.android.material.tabs.TabLayout
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -228,13 +229,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         presenter.takeView(this)
 
-        // TODO: get order status filter from the SharedPreferences here!!
-        orderStatusFilter = "processing"
-        order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
-        order_list_view.initEmptyView(selectedSite.get())
-
+        val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
         resources.getStringArray(R.array.order_list_tabs).toList()
-                .forEach { title ->
+                .forEachIndexed { index, title ->
                     val tab = tab_layout.newTab().apply {
                         text = title
                         tag = title
@@ -242,10 +239,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                     tab_layout.addTab(tab)
 
                     // Start with the given time period selected
-                    if (title == orderStatusFilter) {
+                    if (index == tabPosition) {
+                        orderStatusFilter = getOrderStatusByTab(tab)
                         tab.select()
                     }
                 }
+
+        order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
+        order_list_view.initEmptyView(selectedSite.get())
 
         if (isActive && !deferInit) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending, isFirstRun = true)
@@ -259,11 +260,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                orderStatusFilter = if (tab.position == 0) {
-                    (tab.tag as? String)?.toLowerCase()
-                } else null
+                orderStatusFilter = getOrderStatusByTab(tab)
 
                 if (orderStatusFilter != order_list_view.getOrderListStatusFilter()) {
+                    // store the selected tab in SharedPrefs
+                    // clear the adapter data
+                    // load orders based on the order status
+                    AppPrefs.setSelectedOrderListTab(tab.position)
                     order_list_view.clearAdapterData()
                     presenter.loadOrders(orderStatusFilter, true)
                 }
@@ -501,6 +504,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun refreshOrderStatusOptions() {
         presenter.refreshOrderStatusOptions()
     }
+
+    private fun getOrderStatusByTab(tab: TabLayout.Tab) = if (tab.position == 0) {
+        (tab.tag as? String)?.toLowerCase()
+    } else null
 
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
