@@ -36,6 +36,7 @@
         android:layout_marginStart="@dimen/margin_extra_large"
         android:maxLines="2"
         android:textAppearance="@style/Woo.TextAppearance.ListItem.Title"
+        android:includeFontPadding="false"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/productStockAndStaus"
         app:layout_constraintEnd_toEndOf="parent"
