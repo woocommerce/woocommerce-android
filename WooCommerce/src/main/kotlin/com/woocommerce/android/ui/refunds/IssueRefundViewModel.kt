@@ -40,6 +40,9 @@ class IssueRefundViewModel @Inject constructor(
     private val _showValidationError = SingleLiveEvent<String>()
     val showValidationError: LiveData<String> = _showValidationError
 
+    private val _showConfirmation = SingleLiveEvent<Unit>()
+    val showConfirmation: LiveData<Unit> = _showConfirmation
+
     private val _availableForRefund = MutableLiveData<String>()
     val availableForRefund: LiveData<String> = _availableForRefund
 
@@ -79,17 +82,17 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onNextClicked() {
-        if (enteredAmount > maxRefund) {
-            _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_high_error)
+        when {
+            enteredAmount > maxRefund ->
+                _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_high_error)
+            enteredAmount == BigDecimal.ZERO ->
+                _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_zero_error)
+            else -> _showConfirmation.call()
         }
     }
 
     fun onManualRefundAmountChanged(amount: BigDecimal) {
         enteredAmount = amount
         _formattedRefundAmount.value = formatCurrency(amount)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 }
