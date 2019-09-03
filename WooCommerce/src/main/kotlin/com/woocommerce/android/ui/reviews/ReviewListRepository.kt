@@ -38,6 +38,7 @@ class ReviewListRepository @Inject constructor(
     private var offset = 0
     private var isFetchingProductReviews = false
     var canLoadMoreReviews = false
+        private set
 
     init {
         dispatcher.register(this)
