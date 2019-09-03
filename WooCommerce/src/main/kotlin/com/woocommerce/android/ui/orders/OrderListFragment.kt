@@ -260,9 +260,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
+                val previousOrderStatus = orderStatusFilter
                 orderStatusFilter = getOrderStatusByTab(tab)
 
-                if (orderStatusFilter != order_list_view.getOrderListStatusFilter()) {
+                if (orderStatusFilter != previousOrderStatus) {
                     // store the selected tab in SharedPrefs
                     // clear the adapter data
                     // load orders based on the order status
@@ -276,6 +277,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
+
+        // set activity toolbar elevation to 0
+        activity?.toolbar?.elevation = 0f
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -355,7 +359,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         if (isActive) {
             updateActivityTitle()
-            activity?.toolbar?.elevation = 0f
         }
     }
 
