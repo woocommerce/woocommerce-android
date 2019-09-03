@@ -334,6 +334,8 @@ class MainActivity : AppUpgradeActivity(),
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productDetailFragment,
+                R.id.refundConfirmationFragment,
+                R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment -> {
                     true
