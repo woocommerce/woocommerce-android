@@ -1,58 +1,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/default_window_background"
+    style="@style/Woo.Card"
     tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
 
-    <LinearLayout
-        style="@style/Woo.Card"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/refunds_refundAmountInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:importantForAccessibility="no">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/refunds_refundAmountInputLayout"
+        <me.abhinay.input.CurrencyEditText
+            android:id="@+id/refunds_refundAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:importantForAccessibility="no">
-
-            <me.abhinay.input.CurrencyEditText
-                android:id="@+id/refunds_refundAmount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/refunds_txtAvailableForRefund"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:layout_marginTop="@dimen/card_item_padding_intra_h"
+            android:inputType="numberDecimal"
             />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/order_refunds_restocking_note"
-            />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    </LinearLayout>
-
-    <!-- Button: Next -->
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/refunds_btnNext"
-        style="@style/Woo.Button.Purple"
+    <TextView
+        android:id="@+id/refunds_txtAvailableForRefund"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_item_padding_intra_double"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_double"
-        android:text="@string/order_refunds_next_button_title" />
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/order_refunds_restocking_note"
+        />
 
 </LinearLayout>

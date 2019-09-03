@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.refunds
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,14 +8,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.analytics.AnalyticsTracker
+import dagger.android.support.DaggerFragment
+import kotlinx.android.synthetic.main.fragment_issue_refund.*
 
-class IssueRefundFragment : BaseFragment() {
+class IssueRefundFragment : DaggerFragment() {
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -26,13 +28,12 @@ class IssueRefundFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_refunds, container, false)
+        return inflater.inflate(R.layout.fragment_issue_refund, container, false)
     }
 
-    override fun onAttach(context: Context?) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,13 +44,18 @@ class IssueRefundFragment : BaseFragment() {
 
     private fun initializeViewModel() {
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java).also {
+            initializeViews(it)
             setupObservers(it)
         }
 
         viewModel.start(navArgs.orderId)
     }
 
-    override fun getFragmentTitle() = viewModel.formattedRefundAmount.value ?: ""
+    private fun initializeViews(viewModel: IssueRefundViewModel) {
+        refunds_btnNext.setOnClickListener {
+            viewModel.onNextClicked()
+        }
+    }
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
         viewModel.showSnackbarMessage.observe(this, Observer {
@@ -57,11 +63,16 @@ class IssueRefundFragment : BaseFragment() {
         })
 
         viewModel.exit.observe(this, Observer {
-            activity?.onBackPressed()
+            findNavController().navigateUp()
         })
 
         viewModel.formattedRefundAmount.observe(this, Observer {
             activity?.title = it
+        })
+
+        viewModel.showConfirmation.observe(this, Observer {
+            val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundConfirmationFragment()
+            findNavController().navigate(action)
         })
     }
 }
