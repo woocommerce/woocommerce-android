@@ -30,8 +30,6 @@ final class ReviewListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {
-    private var canLoadMore = true
-
     // TODO AMANDA: should this MutableLiveData object be exposed publicly?
     val reviewList = MutableLiveData<List<ProductReview>>()
 
@@ -90,7 +88,6 @@ final class ReviewListViewModel @Inject constructor(
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
             reviewList.value = reviewRepository.fetchAndLoadProductReviews(loadMore)
-            canLoadMore = reviewRepository.canLoadMoreReviews
         } else {
             // Network is not connected
             _showSnackbarMessage.value = R.string.offline_error
