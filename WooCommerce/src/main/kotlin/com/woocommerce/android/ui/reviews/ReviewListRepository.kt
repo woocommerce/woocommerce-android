@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.toAppModel
@@ -12,13 +13,15 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATIONS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
+import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
@@ -40,6 +43,7 @@ class ReviewListRepository @Inject constructor(
 
     private var continuationReview: Continuation<Boolean>? = null
     private var continuationProduct: Continuation<Boolean>? = null
+    private var continuationNotification: Continuation<Boolean>? = null
     private var offset = 0
     private var isFetchingProductReviews = false
     var canLoadMoreReviews = false
@@ -62,6 +66,13 @@ class ReviewListRepository @Inject constructor(
      */
     suspend fun fetchAndLoadProductReviews(loadMore: Boolean = false): List<ProductReview> {
         if (!isFetchingProductReviews) {
+            /*
+             * Fetch notifications so we can match them to reviews to get the read state. This
+             * will wait for completion.
+             */
+            // TODO AMANDA : figure out how to fetch notifications and reviews at the same time
+            fetchNotifications()
+
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PAGE_SIZE else 0
                 isFetchingProductReviews = true
@@ -86,9 +97,14 @@ class ReviewListRepository @Inject constructor(
      * Create a distinct list of products associated with the reviews already in the db, then
      * pass that list to get a map of those products from the db. Only reviews that have an existing
      * cached product will be returned.
+     *
+     * Also populates the [ProductReview.read] field with the value of a matching Notification, or if
+     * one doesn't exist, it is set to true.
      */
     suspend fun getCachedProductReviews(): List<ProductReview> {
         var cachedReviews = getProductReviews()
+        val readValueByRemoteIdMap = getReviewNotifReadValueByRemoteIdMap()
+
         if (cachedReviews.isNotEmpty()) {
             val relatedProducts = cachedReviews.map { it.remoteProductId }.distinct()
             val productsMap = getProductsByRemoteIdMap(relatedProducts)
@@ -96,7 +112,10 @@ class ReviewListRepository @Inject constructor(
                 // Only returns reviews that have a matching product in the db.
                 productsMap.containsKey(it.remoteProductId) && productsMap[it.remoteProductId] != null
             }.also { review ->
-                review.forEach { it.product = productsMap[it.remoteProductId] }
+                review.forEach {
+                    it.product = productsMap[it.remoteProductId]
+                    it.read = readValueByRemoteIdMap[it.remoteId] ?: true
+                }
             }
         }
         return cachedReviews
@@ -106,7 +125,7 @@ class ReviewListRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             notificationStore.hasUnreadNotificationsForSite(
                     site = selectedSite.get(),
-                    filterBySubtype = listOf(STORE_REVIEW.toString()))
+                    filterBySubtype = listOf(Subkind.STORE_REVIEW.toString()))
         }
     }
 
@@ -122,8 +141,13 @@ class ReviewListRepository @Inject constructor(
         }
     }
 
+    /**
+     * Fetches notifications from the API. We use these results to populate [ProductReview.read].
+     */
     private suspend fun fetchNotifications() {
         suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            continuationNotification = it
+
             val payload = FetchNotificationsPayload()
             dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
         }
@@ -159,6 +183,19 @@ class ReviewListRepository @Inject constructor(
         }
     }
 
+    /**
+     * Uses the product review notifications to create a map of
+     * [org.wordpress.android.fluxc.model.notification.NotificationModel.read] by [ProductReview.remoteId].
+     */
+    private suspend fun getReviewNotifReadValueByRemoteIdMap(): Map<Long, Boolean> {
+        return withContext(Dispatchers.IO) {
+            notificationStore.getNotificationsForSite(
+                    site = selectedSite.get(),
+                    filterBySubtype = listOf(Subkind.STORE_REVIEW.toString())
+            ).associate { it.getCommentId() to it.read }
+        }
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
@@ -187,6 +224,21 @@ class ReviewListRepository @Inject constructor(
                 // TODO AMANDA : track fetch product reviews success
                 canLoadMoreReviews = event.canLoadMore
                 continuationReview?.resume(true)
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onNotificationChanged(event: OnNotificationChanged) {
+        if (event.causeOfChange == FETCH_NOTIFICATIONS) {
+            if (event.isError) {
+                // TODO AMANDA : track fetch notifications failed
+                WooLog.e(REVIEWS, "Error fetching product review notifications: ${event.error.message}")
+                continuationNotification?.resume(false)
+            } else {
+                // TODO AMANDA : track fetch notifications success
+                continuationNotification?.resume(true)
             }
         }
     }
