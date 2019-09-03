@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.COMPLETE
@@ -223,11 +224,18 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 PROCESSING -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
                 COMPLETE -> {
                     menuMarkAllRead?.actionView = null
-                    reviewsAdapter.markAllReviewsAsRead()
+                    markAllReviewsAsReadSuccess()
                 }
                 ERROR -> menuMarkAllRead?.actionView = null
             }
         })
+    }
+
+    private fun markAllReviewsAsReadSuccess() {
+        reviewsAdapter.markAllReviewsAsRead()
+
+        // Remove all active notifications from the system bar
+        context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {
