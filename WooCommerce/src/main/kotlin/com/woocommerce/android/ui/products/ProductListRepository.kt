@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOADED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
@@ -79,6 +80,12 @@ class ProductListRepository @Inject constructor(
             isLoadingProducts = false
             if (event.isError) {
                 continuation?.resume(false)
+                AnalyticsTracker.track(
+                        PRODUCT_LIST_LOAD_ERROR,
+                        this.javaClass.simpleName,
+                        event.error.type.toString(),
+                        event.error.message
+                )
             } else {
                 canLoadMoreProducts = event.canLoadMore
                 AnalyticsTracker.track(PRODUCT_LIST_LOADED)
