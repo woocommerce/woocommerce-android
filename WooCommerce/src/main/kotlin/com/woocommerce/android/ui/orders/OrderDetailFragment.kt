@@ -284,7 +284,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun issueOrderRefund(order: WCOrderModel) {
-        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToRefundsFragment(order.number.toLong())
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToIssueRefund(order.number.toLong())
         findNavController().navigate(action)
     }
 
