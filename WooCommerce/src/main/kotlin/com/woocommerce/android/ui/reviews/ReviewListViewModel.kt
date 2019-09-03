@@ -8,6 +8,9 @@ import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.ERROR
+import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -50,6 +53,9 @@ class ReviewListViewModel @Inject constructor(
     private val _hasUnreadReviews = MutableLiveData<Boolean>()
     val hasUnreadReviews: LiveData<Boolean> = _hasUnreadReviews
 
+    private val _isMarkingAllAsRead = MutableLiveData<Boolean>()
+    val isMarkingAllAsRead: LiveData<Boolean> = _isMarkingAllAsRead
+
     fun start() {
         dispatcher.register(this)
         loadReviews()
@@ -90,10 +96,31 @@ class ReviewListViewModel @Inject constructor(
             fetchReviewList(loadMore = false)
         }
     }
-    
+
     fun checkForUnreadReviews() {
         launch {
             _hasUnreadReviews.value = reviewRepository.getHasUnreadReviews()
+        }
+    }
+
+    fun markAllReviewsAsRead() {
+        if (networkStatus.isConnected()) {
+            _isMarkingAllAsRead.value = true
+
+            launch {
+                when (reviewRepository.markAllReviewsAsRead()) {
+                    ERROR -> _showSnackbarMessage.value = R.string.wc_mark_all_read_error
+                    NO_ACTION_NEEDED, SUCCESS -> _showSnackbarMessage.value = R.string.wc_mark_all_read_success
+                }
+
+                // Update the menu option visibility
+                checkForUnreadReviews()
+
+                _isMarkingAllAsRead.value = false
+            }
+        } else {
+            // Network is not connected
+            _showSnackbarMessage.value = R.string.offline_error
         }
     }
 

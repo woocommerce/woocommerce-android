@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.model.ProductReview
@@ -147,6 +148,17 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_mark_all_read -> {
+                AnalyticsTracker.track(Stat.NOTIFICATIONS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
+                viewModel.markAllReviewsAsRead()
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -201,6 +213,13 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
         viewModel.showSnackbarMessage.observe(this, Observer {
             uiMessageResolver.showSnack(it)
+        })
+
+        viewModel.isMarkingAllAsRead.observe(this, Observer {
+            when (it) {
+                true -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
+                false -> menuMarkAllRead?.actionView = null
+            }
         })
     }
 

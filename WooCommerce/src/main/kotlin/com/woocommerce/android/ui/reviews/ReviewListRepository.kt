@@ -5,6 +5,8 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.ERROR
+import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -14,6 +16,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATIONS
+import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
@@ -21,6 +24,7 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
+import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
@@ -44,6 +48,8 @@ class ReviewListRepository @Inject constructor(
     private var continuationReview: Continuation<Boolean>? = null
     private var continuationProduct: Continuation<Boolean>? = null
     private var continuationNotification: Continuation<Boolean>? = null
+    private var continuationMarkAllRead: Continuation<RequestResult>? = null
+
     private var offset = 0
     private var isFetchingProductReviews = false
     var canLoadMoreReviews = false
@@ -126,6 +132,27 @@ class ReviewListRepository @Inject constructor(
             notificationStore.hasUnreadNotificationsForSite(
                     site = selectedSite.get(),
                     filterBySubtype = listOf(Subkind.STORE_REVIEW.toString()))
+        }
+    }
+
+    /**
+     * Mark all product review notifications as read.
+     */
+    suspend fun markAllReviewsAsRead(): RequestResult {
+        return if (getHasUnreadReviews()) {
+            val unreadProductReviews = notificationStore.getNotificationsForSite(
+                    site = selectedSite.get(),
+                    filterBySubtype = listOf(Subkind.STORE_REVIEW.toString()))
+
+            suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+                continuationMarkAllRead = it
+
+                val payload = MarkNotificationsReadPayload(unreadProductReviews)
+                dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+            }!!
+        } else {
+            WooLog.d(REVIEWS, "Mark all as read: No unread product reviews found. Exiting...")
+            RequestResult.NO_ACTION_NEEDED
         }
     }
 
@@ -240,6 +267,21 @@ class ReviewListRepository @Inject constructor(
                 // TODO AMANDA : track fetch notifications success
                 continuationNotification?.resume(true)
             }
+        } else if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
+            if (event.isError) {
+                // TODO AMANDA : track mark notifications read error
+                WooLog.e(REVIEWS, "Error marking all reviews as read: ${event.error.message}")
+                continuationMarkAllRead?.resume(ERROR)
+            } else {
+                // TODO AMANDA : track mark notifications read success
+                continuationMarkAllRead?.resume(SUCCESS)
+            }
         }
+    }
+
+    enum class RequestResult {
+        SUCCESS,
+        ERROR,
+        NO_ACTION_NEEDED
     }
 }
