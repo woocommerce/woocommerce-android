@@ -22,6 +22,9 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.COMPLETE
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.ERROR
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.PROCESSING
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.UnreadItemDecoration
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
@@ -217,8 +220,12 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
         viewModel.isMarkingAllAsRead.observe(this, Observer {
             when (it) {
-                true -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
-                false -> menuMarkAllRead?.actionView = null
+                PROCESSING -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
+                COMPLETE -> {
+                    menuMarkAllRead?.actionView = null
+                    reviewsAdapter.markAllReviewsAsRead()
+                }
+                ERROR -> menuMarkAllRead?.actionView = null
             }
         })
     }

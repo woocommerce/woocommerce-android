@@ -11,6 +11,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.ERROR
 import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.SUCCESS
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.COMPLETE
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.PROCESSING
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -53,8 +55,8 @@ class ReviewListViewModel @Inject constructor(
     private val _hasUnreadReviews = MutableLiveData<Boolean>()
     val hasUnreadReviews: LiveData<Boolean> = _hasUnreadReviews
 
-    private val _isMarkingAllAsRead = MutableLiveData<Boolean>()
-    val isMarkingAllAsRead: LiveData<Boolean> = _isMarkingAllAsRead
+    private val _isMarkingAllAsRead = MutableLiveData<ActionStatus>()
+    val isMarkingAllAsRead: LiveData<ActionStatus> = _isMarkingAllAsRead
 
     fun start() {
         dispatcher.register(this)
@@ -105,18 +107,22 @@ class ReviewListViewModel @Inject constructor(
 
     fun markAllReviewsAsRead() {
         if (networkStatus.isConnected()) {
-            _isMarkingAllAsRead.value = true
+            _isMarkingAllAsRead.value = PROCESSING
 
             launch {
                 when (reviewRepository.markAllReviewsAsRead()) {
-                    ERROR -> _showSnackbarMessage.value = R.string.wc_mark_all_read_error
-                    NO_ACTION_NEEDED, SUCCESS -> _showSnackbarMessage.value = R.string.wc_mark_all_read_success
+                    ERROR -> {
+                        _isMarkingAllAsRead.value = ActionStatus.ERROR
+                        _showSnackbarMessage.value = R.string.wc_mark_all_read_error
+                    }
+                    NO_ACTION_NEEDED, SUCCESS -> {
+                        _isMarkingAllAsRead.value = COMPLETE
+                        _showSnackbarMessage.value = R.string.wc_mark_all_read_success
+                    }
                 }
 
                 // Update the menu option visibility
                 checkForUnreadReviews()
-
-                _isMarkingAllAsRead.value = false
             }
         } else {
             // Network is not connected
@@ -128,6 +134,7 @@ class ReviewListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             reviewList.value = reviewRepository.fetchAndLoadProductReviews(loadMore)
             canLoadMore = reviewRepository.canLoadMoreReviews
+            checkForUnreadReviews()
         } else {
             // Network is not connected
             _showSnackbarMessage.value = R.string.offline_error
@@ -162,5 +169,11 @@ class ReviewListViewModel @Inject constructor(
                 _showSnackbarMessage.value = R.string.review_fetch_error
             }
         }
+    }
+
+    enum class ActionStatus {
+        PROCESSING,
+        COMPLETE,
+        ERROR
     }
 }

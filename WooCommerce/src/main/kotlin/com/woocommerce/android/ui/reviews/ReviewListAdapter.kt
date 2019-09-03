@@ -256,8 +256,7 @@ class ReviewListAdapter(
      * property to true and feeding the updated list back into the adapter.
      */
     fun markAllReviewsAsRead() {
-        val newList = mutableListOf<ProductReview>()
-                .apply { addAll(reviewList) }.applyTransform { it.apply { read = true } }
+        val newList = reviewList.map { it.copy() }.applyTransform { it.apply { read = true } }
 
         setReviews(newList)
     }
