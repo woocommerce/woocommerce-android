@@ -171,6 +171,6 @@ class ProductListAdapter(
     class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imgProduct: ImageView = view.productImage
         val txtProductName: TextView = view.productName
-        val txtProductStockAndStatus: TextView = view.productStockAndStaus
+        val txtProductStockAndStatus: TextView = view.productStockAndStatus
     }
 }
