@@ -11,6 +11,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -72,27 +74,41 @@ class ReviewListRepository @Inject constructor(
      */
     suspend fun fetchAndLoadProductReviews(loadMore: Boolean = false): List<ProductReview> {
         if (!isFetchingProductReviews) {
-            /*
-             * Fetch notifications so we can match them to reviews to get the read state. This
-             * will wait for completion.
-             */
-            // TODO AMANDA : figure out how to fetch notifications and reviews at the same time
-            fetchNotifications()
+            coroutineScope {
+                /*
+                 * Fetch notifications so we can match them to reviews to get the read state. This
+                 * will wait for completion.
+                 */
+                val fetchNotifs = async { fetchNotifications() }
 
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                offset = if (loadMore) offset + PAGE_SIZE else 0
-                isFetchingProductReviews = true
-                continuationReview = it
+                val fetchReviews = async {
+                    suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                        offset = if (loadMore) offset + PAGE_SIZE else 0
+                        isFetchingProductReviews = true
+                        continuationReview = it
 
-                val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
-            }
+                        val payload = WCProductStore.FetchProductReviewsPayload(
+                                selectedSite.get(),
+                                offset
+                        )
+                        dispatcher.dispatch(
+                                WCProductActionBuilder.newFetchProductReviewsAction(
+                                        payload
+                                )
+                        )
+                    }
 
-            /*
-             * Fetch any products associated with these reviews missing from the db
-             */
-            getProductReviews().map { it.remoteProductId }.distinct().takeIf { it.isNotEmpty() }?.let {
-                fetchProductsByRemoteId(it)
+                    /*
+                     * Fetch any products associated with these reviews missing from the db
+                     */
+                    getProductReviews().map { it.remoteProductId }.distinct().takeIf { it.isNotEmpty() }?.let {
+                        fetchProductsByRemoteId(it)
+                    }
+                }
+
+                // Wait for both to complete before continuing
+                fetchNotifs.await()
+                fetchReviews.await()
             }
         }
 
