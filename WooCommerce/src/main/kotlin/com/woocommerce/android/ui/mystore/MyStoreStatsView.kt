@@ -166,7 +166,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             StatsGranularity.MONTHS -> R.integer.stats_label_count_months
             StatsGranularity.YEARS -> R.integer.stats_label_count_years
         }
-        return context.resources.getInteger(resId)
+        val chartRevenueStatsSize = chartRevenueStats.keys.size
+        val barLabelCount = context.resources.getInteger(resId)
+        return if (chartRevenueStatsSize < barLabelCount) {
+            chartRevenueStatsSize
+        } else barLabelCount
     }
 
     /**
