@@ -24,7 +24,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @OpenClassOnDebug
-class ReviewListViewModel @Inject constructor(
+final class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val reviewRepository: ReviewListRepository,
     private val networkStatus: NetworkStatus,
@@ -47,7 +47,7 @@ class ReviewListViewModel @Inject constructor(
     private val _isRefreshing = MutableLiveData<Boolean>()
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
-    fun start() {
+    init {
         dispatcher.register(this)
         loadReviews()
     }
@@ -58,7 +58,7 @@ class ReviewListViewModel @Inject constructor(
         reviewRepository.onCleanup()
     }
 
-    fun loadReviews(loadMore: Boolean = false) {
+    final fun loadReviews(loadMore: Boolean = false) {
         if (loadMore && !reviewRepository.canLoadMoreReviews) {
             WooLog.d(REVIEWS, "No more product reviews to load")
             return
