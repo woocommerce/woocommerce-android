@@ -49,7 +49,6 @@ final class ReviewListViewModel @Inject constructor(
 
     init {
         dispatcher.register(this)
-        loadReviews()
     }
 
     override fun onCleared() {

@@ -160,7 +160,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ReviewListViewModel::class.java)
         setupObservers()
-        viewModel.start()
+        viewModel.loadReviews()
     }
 
     private fun setupObservers() {
