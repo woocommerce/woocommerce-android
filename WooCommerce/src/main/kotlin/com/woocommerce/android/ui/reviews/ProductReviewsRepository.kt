@@ -47,7 +47,7 @@ class ProductReviewsRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite
-) : ProductReviewsRepositoryContract {
+) : ProductReviewsRepositoryContract() {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
@@ -60,13 +60,12 @@ class ProductReviewsRepository @Inject constructor(
 
     private var offset = 0
     private var isFetchingProductReviews = false
-    var canLoadMoreReviews = false
 
     init {
         dispatcher.register(this)
     }
 
-    fun onCleanup() {
+    override fun onCleanup() {
         dispatcher.unregister(this)
     }
 
@@ -313,7 +312,7 @@ class ProductReviewsRepository @Inject constructor(
                 continuationReview?.resume(false)
             } else {
                 // TODO AMANDA : track fetch product reviews success
-                canLoadMoreReviews = event.canLoadMore
+                canLoadMore = event.canLoadMore
                 continuationReview?.resume(true)
             }
         }

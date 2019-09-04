@@ -29,7 +29,7 @@ import javax.inject.Named
 @OpenClassOnDebug
 class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    private val reviewRepository: ProductReviewsRepository,
+    private val reviewRepository: ProductReviewsRepositoryContract,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {
@@ -66,7 +66,7 @@ class ReviewListViewModel @Inject constructor(
     }
 
     fun loadReviews(loadMore: Boolean = false) {
-        if (loadMore && !reviewRepository.canLoadMoreReviews) {
+        if (loadMore && !reviewRepository.canLoadMore) {
             WooLog.d(REVIEWS, "No more product reviews to load")
             return
         }
