@@ -21,11 +21,11 @@
 
         <!-- Button: Next -->
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/refunds_btnNext"
+            android:id="@+id/issueRefund_btnNext"
             style="@style/Woo.Button.Purple"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_item_padding_intra_double"
+            android:layout_marginTop="@dimen/card_padding_bottom"
             android:layout_marginStart="@dimen/card_item_padding_intra_double"
             android:layout_marginEnd="@dimen/card_item_padding_intra_double"
             android:text="@string/order_refunds_next_button_title" />

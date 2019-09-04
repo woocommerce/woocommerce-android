@@ -146,6 +146,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/card_item_padding_intra_double"
             android:layout_marginEnd="@dimen/card_item_padding_intra_double"
+            android:layout_marginBottom="@dimen/card_item_padding_intra_double"
             android:text="@string/order_refunds_refund_button_title" />
 
     </LinearLayout>
