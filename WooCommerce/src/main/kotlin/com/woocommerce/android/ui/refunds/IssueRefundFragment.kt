@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -52,7 +50,7 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
-        refunds_btnNext.setOnClickListener {
+        issueRefund_btnNext.setOnClickListener {
             viewModel.onNextClicked()
         }
     }
@@ -62,11 +60,7 @@ class IssueRefundFragment : DaggerFragment() {
             uiMessageResolver.showSnack(it)
         })
 
-        viewModel.exit.observe(this, Observer {
-            findNavController().navigateUp()
-        })
-
-        viewModel.formattedRefundAmount.observe(this, Observer {
+        viewModel.screenTitle.observe(this, Observer {
             activity?.title = it
         })
 
