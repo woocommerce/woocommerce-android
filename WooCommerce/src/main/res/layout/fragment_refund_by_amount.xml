@@ -12,11 +12,10 @@
         android:layout_height="wrap_content"
         android:importantForAccessibility="no">
 
-        <me.abhinay.input.CurrencyEditText
+        <com.woocommerce.android.widgets.CurrencyEditText
             android:id="@+id/issueRefund_refundAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
             />
 
     </com.google.android.material.textfield.TextInputLayout>

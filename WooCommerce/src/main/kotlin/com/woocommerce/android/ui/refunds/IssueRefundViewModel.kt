@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.RefundsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Named
@@ -27,11 +28,16 @@ class IssueRefundViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val refundStore: RefundsStore,
     private val orderStore: WCOrderStore,
+    private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(mainDispatcher) {
+    companion object {
+        private const val DEFAULT_DECIMAL_PRECISION = 2
+    }
+    
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
@@ -53,8 +59,8 @@ class IssueRefundViewModel @Inject constructor(
     private val _previousRefunds = MutableLiveData<String>()
     val previousRefunds: LiveData<String> = _previousRefunds
 
-    private val _currencySymbol = MutableLiveData<String>()
-    val currencySymbol: LiveData<String> = _currencySymbol
+    private val _currencySettings = MutableLiveData<CurrencySettings>()
+    val currencySettings: LiveData<CurrencySettings> = _currencySettings
 
     final var enteredAmount: BigDecimal = BigDecimal.ZERO
         private set(value) {
@@ -82,8 +88,10 @@ class IssueRefundViewModel @Inject constructor(
                     R.string.order_refunds_available_for_refund,
                     formatCurrency(maxRefund)
             )
-            _currencySymbol.value = order.currency
             _previousRefunds.value = formatCurrency(order.refundTotal)
+
+            val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
+            _currencySettings.value = CurrencySettings(order.currency, decimals ?: DEFAULT_DECIMAL_PRECISION)
         }
 
         enteredAmount = BigDecimal.ZERO
@@ -102,4 +110,6 @@ class IssueRefundViewModel @Inject constructor(
     fun onManualRefundAmountChanged(amount: BigDecimal) {
         enteredAmount = amount
     }
+
+    data class CurrencySettings(val currency: String, val decimals: Int)
 }
