@@ -127,8 +127,8 @@ final class ReviewListViewModel @Inject constructor(
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
             when (reviewRepository.fetchProductReviews(loadMore)) {
-                SUCCESS, NO_ACTION_NEEDED -> { _reviewList.value = reviewRepository.getCachedProductReviews()}
-                ERROR -> { _showSnackbarMessage.value = R.string.review_fetch_error }
+                SUCCESS, NO_ACTION_NEEDED -> _reviewList.value = reviewRepository.getCachedProductReviews()
+                ERROR -> _showSnackbarMessage.value = R.string.review_fetch_error
             }
 
             checkForUnreadReviews()
