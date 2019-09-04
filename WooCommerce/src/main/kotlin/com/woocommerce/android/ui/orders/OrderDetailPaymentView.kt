@@ -67,7 +67,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         if (order.refundTotal.absoluteValue > 0) {
             paymentInfo_refundSection.visibility = View.VISIBLE
             paymentInfo_refundTotal.text = formatCurrencyForDisplay(order.refundTotal.toString())
-            val newTotal = order.total.toDouble() + order.refundTotal
+            val newTotal = order.total.toDouble() + order.refundTotal // WCOrderModel.refundTotal is NEGATIVE
             paymentInfo_newTotal.text = formatCurrencyForDisplay(newTotal.toString())
         } else {
             paymentInfo_refundSection.visibility = View.GONE

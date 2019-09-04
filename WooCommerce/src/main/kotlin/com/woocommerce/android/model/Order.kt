@@ -59,7 +59,7 @@ fun WCOrderModel.toAppModel(): Order {
             this.totalTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             this.shippingTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             this.discountTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            this.refundTotal.toBigDecimal(),
+            -this.refundTotal.toBigDecimal(), // WCOrderModel.refundTotal is NEGATIVE
             this.currency,
             this.customerNote,
             this.discountCodes,
