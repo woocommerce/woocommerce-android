@@ -35,9 +35,6 @@ class IssueRefundViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<Int>()
     val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
 
-    private val _exit = SingleLiveEvent<Unit>()
-    val exit: LiveData<Unit> = _exit
-
     private val _showValidationError = SingleLiveEvent<String>()
     val showValidationError: LiveData<String> = _showValidationError
 
@@ -47,24 +44,37 @@ class IssueRefundViewModel @Inject constructor(
     private val _availableForRefund = MutableLiveData<String>()
     val availableForRefund: LiveData<String> = _availableForRefund
 
+    private val _screenTitle = MutableLiveData<String>()
+    val screenTitle: LiveData<String> = _screenTitle
+
     private val _formattedRefundAmount = MutableLiveData<String>()
     val formattedRefundAmount: LiveData<String> = _formattedRefundAmount
 
-    private val _isNextButtonEnabled = MutableLiveData<Boolean>()
-    val isNextButtonEnabled: LiveData<Boolean> = _isNextButtonEnabled
+    private val _previousRefunds = MutableLiveData<String>()
+    val previousRefunds: LiveData<String> = _previousRefunds
 
     private val _currencySymbol = MutableLiveData<String>()
     val currencySymbol: LiveData<String> = _currencySymbol
 
     final var enteredAmount: BigDecimal = BigDecimal.ZERO
-        private set
+        private set(value) {
+            field = value
+            val formattedAmount = formatCurrency(enteredAmount)
 
+            _screenTitle.value = resourceProvider.getString(
+                    R.string.order_refunds_title_with_amount,
+                    formattedAmount
+            )
+            _formattedRefundAmount.value = formattedAmount
+        }
+
+    private var order: Order? = null
     private lateinit var maxRefund: BigDecimal
-    private lateinit var order: Order
     private lateinit var formatCurrency: (BigDecimal) -> String
 
     fun start(orderId: Long) {
-        orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()?.let { order ->
+        order = orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()
+        order?.let { order ->
             this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
 
             maxRefund = order.total - order.refundTotal
@@ -72,14 +82,11 @@ class IssueRefundViewModel @Inject constructor(
                     R.string.order_refunds_available_for_refund,
                     formatCurrency(maxRefund)
             )
-            _isNextButtonEnabled.value = false
-            _formattedRefundAmount.value = formatCurrency(enteredAmount)
             _currencySymbol.value = order.currency
+            _previousRefunds.value = formatCurrency(order.refundTotal)
         }
-    }
 
-    fun onCloseClicked() {
-        _exit.call()
+        enteredAmount = BigDecimal.ZERO
     }
 
     fun onNextClicked() {
@@ -94,6 +101,5 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onManualRefundAmountChanged(amount: BigDecimal) {
         enteredAmount = amount
-        _formattedRefundAmount.value = formatCurrency(amount)
     }
 }
