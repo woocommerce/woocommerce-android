@@ -23,6 +23,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.getCommentId
+import com.woocommerce.android.extensions.getProductInfo
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
@@ -34,9 +36,13 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
+import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductReviewPayload
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
@@ -49,6 +55,7 @@ import javax.inject.Singleton
 @Singleton
 class NotificationHandler @Inject constructor(
     private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
+    private val siteStore: SiteStore,
     private val dispatcher: Dispatcher
 ) {
     companion object {
@@ -270,6 +277,20 @@ class NotificationHandler @Inject constructor(
             // Fire off the event to fetch the actual notification from the api
             dispatcher.dispatch(NotificationActionBuilder
                     .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
+
+            /*
+             * If this is a product review notification: fetch the ProductReview and associated
+             * Product
+             */
+            if (noteType == REVIEW) {
+                val site = siteStore.getSiteBySiteId(it.remoteSiteId)
+                it.getProductInfo()?.let { prodInfo ->
+                    val payload = FetchSingleProductPayload(site, prodInfo.remoteProductId)
+                    dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+                }
+                val reviewPayload = FetchSingleProductReviewPayload(site, it.getCommentId())
+                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductReviewAction(reviewPayload))
+            }
         }
 
         // don't display the notification if user chose to disable this type of notification - note

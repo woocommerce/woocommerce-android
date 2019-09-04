@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.notifications
+package com.woocommerce.android.ui.reviews
 
 import android.content.Context
 import android.graphics.PorterDuff
@@ -12,12 +12,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.extensions.getMessageSnippet
-import com.woocommerce.android.extensions.getRating
-import com.woocommerce.android.extensions.getTitleSnippet
-import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.TimeGroup
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.applyTransform
@@ -28,55 +25,51 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerVi
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
-import org.wordpress.android.fluxc.model.notification.NotificationModel
-import org.wordpress.android.util.DateTimeUtils
-import java.util.Date
-import java.util.HashSet
-import javax.inject.Inject
 
-class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecyclerViewAdapter() {
+class ReviewListAdapter(
+    private val context: Context,
+    private val clickListener: OnReviewClickListener
+) : SectionedRecyclerViewAdapter() {
     private var starTintColor: Int = 0
     init {
         starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
+        setHasStableIds(true)
     }
 
-    interface ReviewListListener {
-        fun onNotificationClicked(notification: NotificationModel)
-    }
+    private val reviewList = mutableListOf<ProductReview>()
 
-    private val notifsList = mutableListOf<NotificationModel>()
-    private var listListener: ReviewListListener? = null
-
-    // Copy of current notification manually removed from the list so the action may be undone.
-    private var pendingRemovalNotification: Triple<NotificationModel, NotifsListSection, Int>? = null
+    // Copy of current review manually removed from the list so the action may be undone.
+    private var pendingRemovalReview: Triple<ProductReview, ReviewListSection, Int>? = null
 
     // List of all remote note IDs the user has removed this session
     private val removedRemoteIds = HashSet<Long>()
 
-    // region Public methods
-    fun setListListener(listener: ReviewListListener) {
-        listListener = listener
+    interface OnReviewClickListener {
+        fun onReviewClick(remoteReviewId: Long)
     }
 
-    fun setNotifications(notifs: List<NotificationModel>) {
-        // make sure to exclude any notifs that we know have been removed
-        val newList = notifs.filter { !removedRemoteIds.contains(it.remoteNoteId) }
+    fun setReviews(reviews: List<ProductReview>) {
+        if (isSameList(reviews)) {
+            // No changes to display, exit.
+            return
+        }
+
+        // make sure to exclude any reviews that we know have been removed
+        val newList = reviews.filter { !removedRemoteIds.contains(it.remoteId) }
 
         // clear all the current data from the adapter
         removeAllSections()
 
-        // Build a notifs for each [TimeGroup] section
-        val listToday = ArrayList<NotificationModel>()
-        val listYesterday = ArrayList<NotificationModel>()
-        val listTwoDays = ArrayList<NotificationModel>()
-        val listWeek = ArrayList<NotificationModel>()
-        val listMonth = ArrayList<NotificationModel>()
+        // Build a reviews for each [TimeGroup] section
+        val listToday = ArrayList<ProductReview>()
+        val listYesterday = ArrayList<ProductReview>()
+        val listTwoDays = ArrayList<ProductReview>()
+        val listWeek = ArrayList<ProductReview>()
+        val listMonth = ArrayList<ProductReview>()
 
         newList.forEach {
             // Default to today if the date cannot be parsed
-            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.timestamp) ?: Date()
-            val timeGroup = TimeGroup.getTimeGroupForDate(date)
-            when (timeGroup) {
+            when (TimeGroup.getTimeGroupForDate(it.dateCreated)) {
                 TimeGroup.GROUP_TODAY -> listToday.add(it)
                 TimeGroup.GROUP_YESTERDAY -> listYesterday.add(it)
                 TimeGroup.GROUP_OLDER_TWO_DAYS -> listTwoDays.add(it)
@@ -86,50 +79,50 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
         }
 
         if (listToday.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_TODAY.name, listToday))
+            addSection(ReviewListSection(TimeGroup.GROUP_TODAY.name, listToday))
         }
 
         if (listYesterday.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_YESTERDAY.name, listYesterday))
+            addSection(ReviewListSection(TimeGroup.GROUP_YESTERDAY.name, listYesterday))
         }
 
         if (listTwoDays.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays))
+            addSection(ReviewListSection(TimeGroup.GROUP_OLDER_TWO_DAYS.name, listTwoDays))
         }
 
         if (listWeek.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_WEEK.name, listWeek))
+            addSection(ReviewListSection(TimeGroup.GROUP_OLDER_WEEK.name, listWeek))
         }
 
         if (listMonth.size > 0) {
-            addSection(NotifsListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
+            addSection(ReviewListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
 
         notifyDataSetChanged()
 
-        // remember these notifications for comparison in isSameList() below
-        notifsList.clear()
-        notifsList.addAll(newList)
+        // remember these reviews for comparison in isSameList() below
+        reviewList.clear()
+        reviewList.addAll(newList)
     }
 
-    fun isSameList(notifs: List<NotificationModel>): Boolean {
-        if (notifs.size != notifsList.size) {
+    private fun isSameList(reviews: List<ProductReview>): Boolean {
+        if (reviews.size != reviewList.size) {
             return false
         }
 
-        val didMatch = fun(notification: NotificationModel): Boolean {
-            notifsList.forEach {
-                if (it.noteId == notification.noteId &&
-                        it.title == notification.title &&
-                        it.read == notification.read &&
-                        it.noteHash == notification.noteHash) {
+        val didMatch = fun(review: ProductReview): Boolean {
+            reviewList.forEach {
+                if (it.remoteId == review.remoteId &&
+                        it.review == review.review &&
+                        it.read == review.read &&
+                        it.status == review.status) {
                     return true
                 }
             }
             return false
         }
 
-        notifs.forEach {
+        reviews.forEach {
             if (!didMatch(it)) {
                 return false
             }
@@ -139,24 +132,24 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
     }
 
     /**
-     * Locates and removes the notification from the appropriate section, but keeps a reference to
+     * Locates and removes the review from the appropriate section, but keeps a reference to
      * it so it may be be restored if needed. This temporary object will get cleared either manually
-     * by reverting the action, or by loading a fresh list of notifications.
+     * by reverting the action, or by loading a fresh list of product reviews.
      */
-    fun hideNotificationWithId(remoteNoteId: Long) {
-        val posInList = notifsList.indexOfFirst { it.remoteNoteId == remoteNoteId }
+    fun hideReviewWithId(remoteId: Long) {
+        val posInList = reviewList.indexOfFirst { it.remoteId == remoteId }
         if (posInList == -1) {
-            WooLog.w(T.NOTIFICATIONS, "Unable to hide notification, position is -1")
-            pendingRemovalNotification = null
-            removedRemoteIds.remove(remoteNoteId)
+            WooLog.w(T.REVIEWS, "Unable to hide product review, position is -1")
+            pendingRemovalReview = null
+            removedRemoteIds.remove(remoteId)
             return
         }
 
         getSectionForListItemPosition(posInList)?.let {
-            val section = it as NotifsListSection
+            val section = it as ReviewListSection
             val posInSection = getPositionInSectionByListPos(posInList)
-            pendingRemovalNotification = Triple(notifsList[posInList], section, posInSection)
-            removedRemoteIds.add(remoteNoteId)
+            pendingRemovalReview = Triple(reviewList[posInList], section, posInSection)
+            removedRemoteIds.add(remoteId)
 
             // remove from the section list
             section.list.removeAt(posInSection)
@@ -165,7 +158,7 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
             if (section.list.size == 0) {
                 val sectionPos = getSectionPosition(section)
                 section.isVisible = false
-                if (sectionPos != SectionedRecyclerViewAdapter.INVALID_POSITION) {
+                if (sectionPos != INVALID_POSITION) {
                     notifySectionChangedToInvisible(section, sectionPos)
                 }
             }
@@ -209,26 +202,26 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
         }
 
         var currentPos = 0
-        for (notif in notifsList) {
+        for (review in reviewList) {
             if (isHeaderAtRecyclerPosition(currentPos)) {
                 currentPos++
             }
             if (currentPos == position) {
-                return if (notif.read) ItemType.READ else ItemType.UNREAD
+                return if (review.read) ItemType.READ else ItemType.UNREAD
             }
             currentPos++
         }
 
-        WooLog.w(T.NOTIFICATIONS, "Failed to get item type at notifs recycler position $position")
+        WooLog.w(T.REVIEWS, "Failed to get item type at review recycler position $position")
         return ItemType.READ
     }
 
     /**
-     * Inserts the previously removed notification and notifies the recycler view.
+     * Inserts the previously removed review and notifies the recycler view.
      * @return The position in the adapter the item was added to
      */
-    fun revertHiddenNotificationAndReturnPos(): Int {
-        return pendingRemovalNotification?.let { (notif, section, pos) ->
+    fun revertHiddenReviewAndReturnPos(): Int {
+        return pendingRemovalReview?.let { (review, section, pos) ->
             if (!section.isVisible) {
                 section.isVisible = true
                 notifySectionChangedToVisible(section)
@@ -236,14 +229,14 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
 
             with(section.list) {
                 if (pos < size) {
-                    add(pos, notif)
+                    add(pos, review)
                 } else {
-                    add(notif)
+                    add(review)
                 }
             }
 
-            removedRemoteIds.remove(notif.remoteNoteId)
-            pendingRemovalNotification = null
+            removedRemoteIds.remove(review.remoteId)
+            pendingRemovalReview = null
 
             notifyItemInsertedInSection(section, pos)
             getPositionInAdapter(section, pos)
@@ -254,22 +247,22 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
      * Resets any pending review moderation state
      */
     fun resetPendingModerationState() {
-        pendingRemovalNotification = null
+        pendingRemovalReview = null
     }
 
     /**
-     * Superficially marks all notifications in the current list as read by creating a
-     * copy of the existing list, then setting the [NotificationModel#read] property to true and
-     * feeding the updated list back into the adapter.
+     * Superficially marks all reviews (that have matching notifications) in the current list
+     * as read by creating a copy of the existing list, then setting the [ProductReview#read]
+     * property to true and feeding the updated list back into the adapter.
      */
-    fun markAllNotifsAsRead() {
-        val newList = mutableListOf<NotificationModel>()
-                .apply { addAll(notifsList) }.applyTransform { it.apply { read = true } }
+    fun markAllReviewsAsRead() {
+        val newList = mutableListOf<ProductReview>()
+                .apply { addAll(reviewList) }.applyTransform { it.apply { read = true } }
 
-        setNotifications(newList)
+        setReviews(newList)
     }
 
-    fun isEmpty() = notifsList.isEmpty()
+    fun isEmpty() = reviewList.isEmpty()
     // endregion
 
     // region Private methods
@@ -320,14 +313,14 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
         }
 
         // position not found, fail fast
-        WooLog.w(T.NOTIFS, "Unable to find matching section for position $position")
+        WooLog.w(T.REVIEWS, "Unable to find matching section for position $position")
         return null
     }
     // endregion
 
-    private inner class NotifsListSection(
+    private inner class ReviewListSection(
         val title: String,
-        val list: MutableList<NotificationModel>
+        val list: MutableList<ProductReview>
     ) : StatelessSection(
             SectionParameters.Builder(R.layout.notifs_list_item).headerResourceId(R.layout.order_list_header).build()
     ) {
@@ -335,35 +328,28 @@ class NotifsListAdapter @Inject constructor(context: Context) : SectionedRecycle
 
         override fun getItemViewHolder(view: View) = ItemViewHolder(view)
 
-        override fun onBindItemViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
-            val notif = list[position]
+        override fun onBindItemViewHolder(holder: ViewHolder, position: Int) {
+            val review = list[position]
             val itemHolder = holder as ItemViewHolder
             itemHolder.rating.visibility = View.GONE
+            itemHolder.icon.setImageResource(R.drawable.ic_comment)
+            itemHolder.desc.maxLines = 2
 
-            when (notif.getWooType()) {
-                PRODUCT_REVIEW -> {
-                    itemHolder.icon.setImageResource(R.drawable.ic_comment)
-                    itemHolder.desc.maxLines = 2
-
-                    notif.getRating()?.let {
-                        itemHolder.rating.rating = it
-                        itemHolder.rating.visibility = View.VISIBLE
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                            val stars = itemHolder.rating.progressDrawable as? LayerDrawable
-                            stars?.getDrawable(2)?.setColorFilter(starTintColor, PorterDuff.Mode.SRC_ATOP)
-                        }
-                    }
+            review.rating.let {
+                itemHolder.rating.rating = it.toFloat()
+                itemHolder.rating.visibility = View.VISIBLE
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    val stars = itemHolder.rating.progressDrawable as? LayerDrawable
+                    stars?.getDrawable(2)?.setColorFilter(starTintColor, PorterDuff.Mode.SRC_ATOP)
                 }
-                else -> WooLog.e(
-                        T.NOTIFICATIONS,
-                        "Unsupported woo notification type: ${notif.type} | ${notif.subtype}")
             }
 
-            itemHolder.title.text = notif.getTitleSnippet()
-            itemHolder.desc.text = notif.getMessageSnippet()
+            itemHolder.title.text = context.getString(
+                    R.string.review_list_item_title, review.reviewerName, review.product?.name)
+            itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
 
             itemHolder.itemView.setOnClickListener {
-                listListener?.onNotificationClicked(notif)
+                clickListener.onReviewClick(review.remoteId)
             }
         }
 

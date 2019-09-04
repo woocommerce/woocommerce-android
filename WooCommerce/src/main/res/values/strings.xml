@@ -304,10 +304,14 @@
     <!--
         Notifications View
     -->
-    <string name="notifs_fetch_error">Error fetching notifications</string>
+    <string name="review_fetch_error">Error fetching product reviews</string>
+    <string name="review_single_fetch_error">Error fetching new product review</string>
     <string name="notifs_review_moderation_undo">Review marked as %1$s</string>
     <string name="notifs_detail_loading_error">Error loading notification detail</string>
-
+    <!--
+        Reviews List
+    -->
+    <string name="review_list_item_title">%1$s left a review on %2$s</string>
     <!--
         Product detail
     -->
