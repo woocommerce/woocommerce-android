@@ -8,9 +8,9 @@ import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.ERROR
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.SUCCESS
+import com.woocommerce.android.ui.reviews.ProductReviewsRepository.RequestResult.ERROR
+import com.woocommerce.android.ui.reviews.ProductReviewsRepository.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.ui.reviews.ProductReviewsRepository.RequestResult.SUCCESS
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.COMPLETE
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.PROCESSING
 import com.woocommerce.android.util.WooLog
@@ -31,7 +31,7 @@ import javax.inject.Named
 @OpenClassOnDebug
 class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    private val reviewRepository: ReviewListRepository,
+    private val reviewRepository: ProductReviewsRepository,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {

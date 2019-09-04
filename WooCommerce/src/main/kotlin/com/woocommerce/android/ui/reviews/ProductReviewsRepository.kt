@@ -5,8 +5,8 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.ERROR
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.SUCCESS
+import com.woocommerce.android.ui.reviews.ProductReviewsRepository.RequestResult.ERROR
+import com.woocommerce.android.ui.reviews.ProductReviewsRepository.RequestResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -36,7 +36,7 @@ import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
-class ReviewListRepository @Inject constructor(
+class ProductReviewsRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val notificationStore: NotificationStore,
