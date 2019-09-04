@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_REVIEW
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
@@ -33,8 +32,8 @@ class ReviewListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {
-    // TODO AMANDA: should this MutableLiveData object be exposed publicly?
-    val reviewList = MutableLiveData<List<ProductReview>>()
+    private val _reviewList = MutableLiveData<List<ProductReview>>()
+    val reviewList: LiveData<List<ProductReview>> = _reviewList
 
     private val _isSkeletonShown = MutableLiveData<Boolean>()
     val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
@@ -81,7 +80,7 @@ class ReviewListViewModel @Inject constructor(
                 val reviewsInDb = reviewRepository.getCachedProductReviews()
                 if (reviewsInDb.isNotEmpty()) {
                     _isSkeletonShown.value = false
-                    reviewList.value = reviewsInDb
+                    _reviewList.value = reviewsInDb
                 }
             }
             fetchReviewList(loadMore)
@@ -129,8 +128,8 @@ class ReviewListViewModel @Inject constructor(
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
             when (reviewRepository.fetchProductReviews(loadMore)) {
-                SUCCESS, NO_ACTION_NEEDED -> { reviewList.value = reviewRepository.getCachedProductReviews()}
-                ERROR -> { /* todo amanda : show error */ }
+                SUCCESS, NO_ACTION_NEEDED -> { _reviewList.value = reviewRepository.getCachedProductReviews()}
+                ERROR -> { _showSnackbarMessage.value = R.string.review_fetch_error }
             }
 
             checkForUnreadReviews()
@@ -162,10 +161,6 @@ class ReviewListViewModel @Inject constructor(
                 _showSnackbarMessage.value = R.string.review_single_fetch_error
             } else {
                 refreshReviewList()
-            }
-        } else if (event.causeOfChange == FETCH_PRODUCT_REVIEWS) {
-            if (event.isError) {
-                _showSnackbarMessage.value = R.string.review_fetch_error
             }
         }
     }
