@@ -257,8 +257,8 @@
     <string name="order_refunds_restocking_note">By refunding an amount, no items will be restocked</string>
     <string name="order_refunds_next_button_title">Next</string>
     <string name="order_refunds_refund_button_title">Refund</string>
-    <string name="order_refunds_refund_high_error">The entered refund is higher than the available amount</string>
-    <string name="order_refunds_refund_zero_error">The entered refund must be greater that 0</string>
+    <string name="order_refunds_refund_high_error">The refund is higher than the available amount</string>
+    <string name="order_refunds_refund_zero_error">The refund must be greater that 0</string>
     <string name="order_refunds_previously_refunded">Previously refunded</string>
     <string name="order_refunds_refund_amount">Refund amount</string>
     <string name="order_refunds_reason">Reason for refund (optional)</string>
