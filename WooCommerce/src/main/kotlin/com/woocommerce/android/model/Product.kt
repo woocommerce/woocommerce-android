@@ -80,3 +80,9 @@ fun WCProductModel.toAppModel(): Product {
         this.purchaseNote
     )
 }
+
+/**
+ * Returns the product as a [ProductReviewProduct] for use with the product reviews feature.
+ */
+fun WCProductModel.toProductReviewProductModel() =
+        ProductReviewProduct(this.remoteProductId, this.name, this.externalUrl)
