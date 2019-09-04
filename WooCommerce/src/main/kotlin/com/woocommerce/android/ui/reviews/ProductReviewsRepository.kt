@@ -124,13 +124,21 @@ class ProductReviewsRepository @Inject constructor(
             val unreadProductReviews = notificationStore.getNotificationsForSite(
                     site = selectedSite.get(),
                     filterBySubtype = listOf(STORE_REVIEW.toString()))
+            try {
+                suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+                    continuationMarkAllRead = it
 
-            suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
-                continuationMarkAllRead = it
-
-                val payload = MarkNotificationsReadPayload(unreadProductReviews)
-                dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
-            }!!
+                    val payload = MarkNotificationsReadPayload(unreadProductReviews)
+                    dispatcher.dispatch(
+                            NotificationActionBuilder.newMarkNotificationsReadAction(
+                                    payload
+                            )
+                    )
+                } ?: ERROR // block timed out. Return error.
+            } catch (e: CancellationException) {
+                WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
+                ERROR
+            }
         } else {
             WooLog.d(REVIEWS, "Mark all as read: No unread product reviews found. Exiting...")
             NO_ACTION_NEEDED
@@ -204,43 +212,51 @@ class ProductReviewsRepository @Inject constructor(
      * Fetch products from the API and suspends until finished.
      */
     private suspend fun fetchProductsByRemoteId(remoteProductIds: List<Long>) {
-        suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-            continuationProduct = it
+        try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationProduct = it
 
-            val payload = FetchProductsPayload(selectedSite.get(), remoteProductIds = remoteProductIds)
-            dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
+                val payload = FetchProductsPayload(
+                        selectedSite.get(),
+                        remoteProductIds = remoteProductIds)
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.e(REVIEWS, "Exception encountered while attempting to fetch products by remote ID", e)
         }
     }
 
     /**
      * Fetches notifications from the API. We use these results to populate [ProductReview.read].
      */
-    private suspend fun fetchNotifications() : Boolean {
-        return suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-            try {
+    private suspend fun fetchNotifications(): Boolean {
+        return try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationNotification = it
 
                 val payload = FetchNotificationsPayload()
                 dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
-            } catch (e: CancellationException) {
-                WooLog.e(REVIEWS, "Exception encountered while fetching product review notifications", e)
-            }
-        } ?: false
+            } ?: false // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(REVIEWS, "Exception encountered while fetching product review notifications", e)
+            false
+        }
     }
 
-    private suspend fun fetchProductReviewsFromApi(loadMore: Boolean) : Boolean {
-        return suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-            try {
+    private suspend fun fetchProductReviewsFromApi(loadMore: Boolean): Boolean {
+        return try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PAGE_SIZE else 0
                 isFetchingProductReviews = true
                 continuationReview = it
 
                 val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
-            } catch (e: CancellationException) {
-                WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
-            }
-        } ?: false
+            } ?: false // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
+            false
+        }
     }
 
     /**
