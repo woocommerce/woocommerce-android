@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.RefundsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -38,14 +39,20 @@ class IssueRefundViewModel @Inject constructor(
         private const val DEFAULT_DECIMAL_PRECISION = 2
     }
     
-    private val _showSnackbarMessage = SingleLiveEvent<Int>()
-    val showSnackbarMessage: LiveData<Int> = _showSnackbarMessage
+    private val _showSnackbarMessage = SingleLiveEvent<String>()
+    val showSnackbarMessage: LiveData<String> = _showSnackbarMessage
 
     private val _showValidationError = SingleLiveEvent<String>()
     val showValidationError: LiveData<String> = _showValidationError
 
     private val _showConfirmation = SingleLiveEvent<Unit>()
     val showConfirmation: LiveData<Unit> = _showConfirmation
+
+    private val _exitAfterRefund = SingleLiveEvent<Boolean>()
+    val exitAfterRefund: LiveData<Boolean> = _exitAfterRefund
+
+    private val _isRefundButtonEnabled = MutableLiveData<Boolean>()
+    val isRefundButtonEnabled: LiveData<Boolean> = _isRefundButtonEnabled
 
     private val _availableForRefund = MutableLiveData<String>()
     val availableForRefund: LiveData<String> = _availableForRefund
@@ -74,13 +81,13 @@ class IssueRefundViewModel @Inject constructor(
             _formattedRefundAmount.value = formattedAmount
         }
 
-    private var order: Order? = null
+    private lateinit var order: Order
     private lateinit var maxRefund: BigDecimal
     private lateinit var formatCurrency: (BigDecimal) -> String
 
     fun start(orderId: Long) {
-        order = orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()
-        order?.let { order ->
+        orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()?.let { order ->
+            this.order = order
             this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
 
             maxRefund = order.total - order.refundTotal
@@ -97,7 +104,7 @@ class IssueRefundViewModel @Inject constructor(
         enteredAmount = BigDecimal.ZERO
     }
 
-    fun onNextClicked() {
+    fun onRefundEntered() {
         when {
             enteredAmount > maxRefund ->
                 _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_high_error)
@@ -109,6 +116,32 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onManualRefundAmountChanged(amount: BigDecimal) {
         enteredAmount = amount
+    }
+
+    fun onRefundConfirmed(reason: String) {
+        if (networkStatus.isConnected()) {
+            _showSnackbarMessage.value = resourceProvider.getString(
+                    R.string.order_refunds_manual_refund_progress_message,
+                    formatCurrency(enteredAmount)
+            )
+
+            launch {
+                _isRefundButtonEnabled.value = false
+                val result = refundStore.createRefund(selectedSite.get(), order.remoteOrderId, enteredAmount, reason)
+                _isRefundButtonEnabled.value = true
+
+                if (result.isError) {
+                    _showSnackbarMessage.value = resourceProvider.getString(R.string.order_refunds_manual_refund_error)
+                } else {
+                    _showSnackbarMessage.value = resourceProvider.getString(
+                            R.string.order_refunds_manual_refund_successful
+                    )
+                    _exitAfterRefund.value = !result.isError
+                }
+            }
+        } else {
+            _showSnackbarMessage.value = resourceProvider.getString(R.string.offline_error)
+        }
     }
 
     data class CurrencySettings(val currency: String, val decimals: Int)

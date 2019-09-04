@@ -51,7 +51,7 @@ class IssueRefundFragment : DaggerFragment() {
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
         issueRefund_btnNext.setOnClickListener {
-            viewModel.onNextClicked()
+            viewModel.onRefundEntered()
         }
     }
 
