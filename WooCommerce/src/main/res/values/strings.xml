@@ -265,6 +265,9 @@
     <string name="order_refunds_reason">Reason for refund (optional)</string>
     <string name="order_refunds_refund_via">Refund via</string>
     <string name="order_refunds_manual_refund">Manual refund</string>
+    <string name="order_refunds_manual_refund_progress_message">Your refund for %s is being processed. Please wait…</string>
+    <string name="order_refunds_manual_refund_successful">The refund was successfully submitted.</string>
+    <string name="order_refunds_manual_refund_error">Something went wrong with the refund. Please try again.</string>
     <string name="order_refunds_refund_manual_refund_note">A refund will not be issued to the customer. You will need to refund manually.</string>
     <!--
         Add Order Note
