@@ -1,25 +1,35 @@
-<FrameLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
+    android:fillViewport="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.refunds.IssueRefundFragment">
+    android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/refundByAmount"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:name="com.woocommerce.android.ui.refunds.RefundByAmountFragment" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/default_window_background"
+        tools:context="com.woocommerce.android.ui.refunds.IssueRefundFragment">
 
-    <!-- Button: Next -->
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/refunds_btnNext"
-        style="@style/Woo.Button.Purple"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_item_padding_intra_double"
-        android:layout_marginEnd="@dimen/card_item_padding_intra_double"
-        android:text="@string/order_refunds_next_button_title" />
+        <fragment
+            android:id="@+id/refundByAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.woocommerce.android.ui.refunds.RefundByAmountFragment" />
 
-</FrameLayout>
+        <!-- Button: Next -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/refunds_btnNext"
+            style="@style/Woo.Button.Purple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/card_item_padding_intra_double"
+            android:layout_marginStart="@dimen/card_item_padding_intra_double"
+            android:layout_marginEnd="@dimen/card_item_padding_intra_double"
+            android:text="@string/order_refunds_next_button_title" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
