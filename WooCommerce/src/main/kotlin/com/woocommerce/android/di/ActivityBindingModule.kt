@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
-import com.woocommerce.android.ui.notifications.ReviewDetailModule
 import com.woocommerce.android.ui.orders.AddOrderNoteModule
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingModule
 import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListModule
@@ -21,6 +20,7 @@ import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.ProductDetailModule
+import com.woocommerce.android.ui.reviews.ReviewDetailModule
 import com.woocommerce.android.ui.reviews.ReviewListModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule

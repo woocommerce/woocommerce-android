@@ -23,6 +23,7 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ActionStatus.COMPLETE
 import com.woocommerce.android.ui.reviews.ActionStatus.ERROR
 import com.woocommerce.android.ui.reviews.ActionStatus.PROCESSING
@@ -264,6 +265,15 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
     }
 
+    private fun openOrderDetail(review: ProductReview) {
+        AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                AnalyticsTracker.KEY_ALREADY_READ to review.read))
+
+        showOptionsMenu(false)
+        (activity as? MainNavigationRouter)?.showReviewDetail(review)
+    }
+
     /**
      * We use this to clear the options menu when navigating to a child destination - otherwise this
      * fragment's menu will continue to appear when the child is shown
@@ -294,6 +304,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
     override fun onReviewClick(review: ProductReview) {
-        // TODO AMANDA : open product detail
+        openOrderDetail(review)
     }
 }

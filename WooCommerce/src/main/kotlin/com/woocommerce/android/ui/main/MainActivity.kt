@@ -28,6 +28,7 @@ import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -41,7 +42,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
-import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -704,7 +704,7 @@ class MainActivity : AppUpgradeActivity(),
                         }
                     }
                 }
-                PRODUCT_REVIEW -> showReviewDetail(note)
+//                PRODUCT_REVIEW -> showReviewDetail(note)
                 else -> { /* do nothing */ }
             }
         }
@@ -716,19 +716,19 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigate(action)
     }
 
-    override fun showReviewDetail(notification: NotificationModel, tempStatus: String?) {
+    override fun showReviewDetail(review: ProductReview, tempStatus: String?) {
         showBottomNav()
-        bottomNavView.currentPosition = REVIEWS
-
-        val navPos = BottomNavigationPosition.REVIEWS.position
-        bottom_nav.active(navPos)
-
-        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-                notification.remoteNoteId,
-                notification.getCommentId(),
-                tempStatus
-        )
-        navController.navigate(action)
+//        bottomNavView.currentPosition = REVIEWS
+//
+//        val navPos = BottomNavigationPosition.REVIEWS.position
+//        bottom_nav.active(navPos)
+//
+//        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
+//                notification.remoteNoteId,
+//                notification.getCommentId(),
+//                tempStatus
+//        )
+//        navController.navigate(action)
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
