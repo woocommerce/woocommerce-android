@@ -29,14 +29,12 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @OpenClassOnDebug
-class ReviewListViewModel @Inject constructor(
+final class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val reviewRepository: ReviewListRepository,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {
-    private var canLoadMore = true
-
     // TODO AMANDA: should this MutableLiveData object be exposed publicly?
     val reviewList = MutableLiveData<List<ProductReview>>()
 
@@ -58,9 +56,8 @@ class ReviewListViewModel @Inject constructor(
     private val _isMarkingAllAsRead = MutableLiveData<ActionStatus>()
     val isMarkingAllAsRead: LiveData<ActionStatus> = _isMarkingAllAsRead
 
-    fun start() {
+    init {
         dispatcher.register(this)
-        loadReviews()
     }
 
     override fun onCleared() {
@@ -69,7 +66,7 @@ class ReviewListViewModel @Inject constructor(
         reviewRepository.onCleanup()
     }
 
-    fun loadReviews(loadMore: Boolean = false) {
+    final fun loadReviews(loadMore: Boolean = false) {
         if (loadMore && !reviewRepository.canLoadMoreReviews) {
             WooLog.d(REVIEWS, "No more product reviews to load")
             return
@@ -133,7 +130,6 @@ class ReviewListViewModel @Inject constructor(
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
             reviewList.value = reviewRepository.fetchAndLoadProductReviews(loadMore)
-            canLoadMore = reviewRepository.canLoadMoreReviews
             checkForUnreadReviews()
         } else {
             // Network is not connected
