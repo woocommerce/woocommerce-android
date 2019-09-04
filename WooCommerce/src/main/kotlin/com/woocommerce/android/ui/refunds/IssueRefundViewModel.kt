@@ -10,6 +10,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.isEqualTo
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -85,7 +86,7 @@ class IssueRefundViewModel @Inject constructor(
         when {
             enteredAmount > maxRefund ->
                 _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_high_error)
-            enteredAmount == BigDecimal.ZERO ->
+            enteredAmount isEqualTo BigDecimal.ZERO ->
                 _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_zero_error)
             else -> _showConfirmation.call()
         }
