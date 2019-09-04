@@ -129,7 +129,10 @@ object StringUtils {
     }
 
     /**
-     * Strips HTML tags and newline characters from the provided text and returns the raw text
+     * Strips HTML tags and newline characters from the provided text and returns the raw text.
+     * Newline characters are replaced with a space, and then we replace any instances of
+     * double spaces with a single space (just in case)
      */
-    fun getRawTextFromHtml(htmlStr: String): String = Html.fromHtml(htmlStr).toString().replace("\n", "")
+    fun getRawTextFromHtml(htmlStr: String) =
+            Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
 }
