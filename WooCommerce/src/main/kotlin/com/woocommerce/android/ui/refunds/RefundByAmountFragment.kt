@@ -50,7 +50,7 @@ class RefundByAmountFragment : DaggerFragment() {
 
         viewModel.currencySettings.observe(this, Observer {
             issueRefund_refundAmount.initView(it.currency, it.decimals, currencyFormatter)
-            issueRefund_refundAmount.setText(viewModel.enteredAmount.toString())
+            issueRefund_refundAmount.setValue(viewModel.enteredAmount)
         })
 
         viewModel.showValidationError.observe(this, Observer {
