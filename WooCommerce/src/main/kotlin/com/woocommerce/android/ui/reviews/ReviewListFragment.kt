@@ -4,6 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -13,15 +16,19 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.COMPLETE
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.ERROR
+import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.PROCESSING
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.UnreadItemDecoration
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
-import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_reviews_list.*
 import kotlinx.android.synthetic.main.fragment_reviews_list.reviewsList
@@ -44,6 +51,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private lateinit var reviewsAdapter: ReviewListAdapter
 
     private val skeletonView = SkeletonView()
+    private var menuMarkAllRead: MenuItem? = null
 
     var isRefreshPending = true
     private var listState: Parcelable? = null // Save the state of the recycler view
@@ -133,6 +141,28 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         initializeViewModel()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_reviews_list_fragment, menu)
+        menuMarkAllRead = menu?.findItem(R.id.menu_mark_all_read)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        viewModel.checkForUnreadReviews()
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_mark_all_read -> {
+                AnalyticsTracker.track(Stat.NOTIFICATIONS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
+                viewModel.markAllReviewsAsRead()
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -141,6 +171,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        viewModel.checkForUnreadReviews()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -172,6 +203,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             showSkeleton(it)
         })
 
+        viewModel.hasUnreadReviews.observe(this, Observer {
+            showMarkAllReadMenuItem(it)
+        })
+
         viewModel.isRefreshing.observe(this, Observer {
             notifsRefreshLayout.isRefreshing = it
         })
@@ -183,6 +218,24 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         viewModel.showSnackbarMessage.observe(this, Observer {
             uiMessageResolver.showSnack(it)
         })
+
+        viewModel.isMarkingAllAsRead.observe(this, Observer {
+            when (it) {
+                PROCESSING -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
+                COMPLETE -> {
+                    menuMarkAllRead?.actionView = null
+                    markAllReviewsAsReadSuccess()
+                }
+                ERROR -> menuMarkAllRead?.actionView = null
+            }
+        })
+    }
+
+    private fun markAllReviewsAsReadSuccess() {
+        reviewsAdapter.markAllReviewsAsRead()
+
+        // Remove all active notifications from the system bar
+        context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {
@@ -195,7 +248,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    fun showSkeleton(show: Boolean) {
+    private fun showSkeleton(show: Boolean) {
         when (show) {
             true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
             false -> skeletonView.hide()
@@ -204,6 +257,19 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     private fun showEmptyView(show: Boolean) {
         if (show) empty_view.show(R.string.reviews_empty_message) else empty_view.hide()
+    }
+
+    private fun showMarkAllReadMenuItem(show: Boolean) {
+        val showMarkAllRead = isActive && show
+        menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
+    }
+
+    /**
+     * We use this to clear the options menu when navigating to a child destination - otherwise this
+     * fragment's menu will continue to appear when the child is shown
+     */
+    private fun showOptionsMenu(show: Boolean) {
+        setHasOptionsMenu(show)
     }
 
     override fun getFragmentTitle() = getString(R.string.review_notifications)
@@ -219,13 +285,13 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     override fun onReturnedFromChildFragment() {
-        // TODO AMANDA - Refresh list of reviews if needed
+        // TODO AMANDA : refresh list - verify need to force refresh
+
+        showOptionsMenu(true)
+        viewModel.checkForUnreadReviews()
     }
 
-    override fun getItemTypeAtPosition(position: Int): ItemType {
-        // TODO AMANDA : implement actual
-        return ItemType.UNREAD
-    }
+    override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
     override fun onReviewClick(remoteReviewId: Long) {
         // TODO AMANDA : open review detail
