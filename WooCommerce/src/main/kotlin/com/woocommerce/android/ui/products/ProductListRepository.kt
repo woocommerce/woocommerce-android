@@ -133,6 +133,7 @@ class ProductListRepository @Inject constructor(
                 AnalyticsTracker.track(PRODUCT_LIST_LOADED)
                 loadContinuation?.resume(true)
             }
+            loadContinuation = null
         }
     }
 
@@ -147,5 +148,6 @@ class ProductListRepository @Inject constructor(
             val products = event.searchResults.map { it.toAppModel() }
             searchContinuation?.resume(products)
         }
+        searchContinuation = null
     }
 }
