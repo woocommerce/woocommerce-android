@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
+import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
@@ -58,6 +59,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.fragmentManager = fm
         this.listener = listener
 
+        if (SHOW_PRODUCT_LIST) {
+            detectLabelVisibilityMode()
+        }
+
         menu.findItem(R.id.products)?.isVisible = SHOW_PRODUCT_LIST
 
         navAdapter = NavAdapter()
@@ -97,6 +102,45 @@ class MainBottomNavigationView @JvmOverloads constructor(
         divider.layoutParams = dividerParams
 
         addView(divider)
+    }
+
+    /**
+     * We want to override the bottom nav's default behavior of only showing labels for the active tab when
+     * more than three tabs are showing, but we only want to do this if we know it won't cause any of the
+     * tabs to wrap to more than one line.
+     */
+    private fun detectLabelVisibilityMode() {
+        // default to showing labels for all tabs
+        labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
+
+        // get the menu view
+        val menuView = getChildAt(0) as BottomNavigationMenuView
+
+        // iterate through the menu items
+        for (index in 0 until menuView.childCount) {
+            val child = menuView.getChildAt(index)
+            // find the textView showing the caption and add a layout listener to it so we can detect how many
+            // lines of text there are after layout
+            child.findViewById<TextView>(R.id.smallLabel)?.addOnLayoutChangeListener(object : OnLayoutChangeListener {
+                override fun onLayoutChange(
+                    view: View,
+                    left: Int,
+                    top: Int,
+                    right: Int,
+                    bottom: Int,
+                    oldLeft: Int,
+                    oldTop: Int,
+                    oldRight: Int,
+                    oldBottom: Int
+                ) {
+                    view.removeOnLayoutChangeListener(this)
+                    // if there are multiple lines, revert to showing labels for just the active tab
+                    if ((view as TextView).lineCount > 1) {
+                        labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
+                    }
+                }
+            })
+        }
     }
 
     fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
