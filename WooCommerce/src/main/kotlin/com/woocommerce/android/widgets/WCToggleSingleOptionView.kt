@@ -53,6 +53,10 @@ class WCToggleSingleOptionView @JvmOverloads constructor(ctx: Context, attrs: At
                 switchSetting_switch.textOn = resources.getString(R.string.toggle_option_checked)
                 switchSetting_switch.textOff = resources.getString(R.string.toggle_option_not_checked)
 
+                // add top padding between the switch title and subtitle
+                val topPadding = a.getDimensionPixelSize(R.styleable.WCToggleSingleOptionView_switchTopPadding, 0)
+                switchSetting_switch.setPadding(0, topPadding, 0, 0)
+
                 setOnClickListener { toggle() }
             } finally {
                 a.recycle()
