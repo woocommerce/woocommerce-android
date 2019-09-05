@@ -349,16 +349,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
-        orderStatusFilter = filterByStatus
+        // Only update the order list view if the new filter match the currently selected order status
+        if (orderStatusFilter == filterByStatus) {
+            order_list_view.showOrders(orders, filterByStatus, isFreshData)
 
-        order_list_view.showOrders(orders, filterByStatus, isFreshData)
+            if (isFreshData) {
+                isRefreshPending = false
+            }
 
-        if (isFreshData) {
-            isRefreshPending = false
-        }
-
-        if (isActive) {
-            updateActivityTitle()
+            if (isActive) {
+                updateActivityTitle()
+            }
         }
     }
 
