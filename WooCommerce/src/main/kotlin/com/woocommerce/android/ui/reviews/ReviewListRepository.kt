@@ -37,17 +37,15 @@ import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
-@Singleton
-class ProductReviewsRepository @Inject constructor(
+class ReviewListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite
-) : ProductReviewsRepositoryContract() {
+) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
@@ -61,11 +59,14 @@ class ProductReviewsRepository @Inject constructor(
     private var offset = 0
     private var isFetchingProductReviews = false
 
+    var canLoadMore: Boolean = false
+        private set
+
     init {
         dispatcher.register(this)
     }
 
-    override fun onCleanup() {
+    fun onCleanup() {
         dispatcher.unregister(this)
     }
 
@@ -77,7 +78,7 @@ class ProductReviewsRepository @Inject constructor(
      * from the API.
      * @return the result of the fetch as a [RequestResult]
      */
-    override suspend fun fetchProductReviews(loadMore: Boolean): RequestResult {
+    suspend fun fetchProductReviews(loadMore: Boolean): RequestResult {
         return if (!isFetchingProductReviews) {
             coroutineScope {
                 val fetchNotifs = async {
@@ -119,7 +120,7 @@ class ProductReviewsRepository @Inject constructor(
      *
      * @return the result of the action as a [RequestResult]
      */
-    override suspend fun markAllProductReviewsAsRead(): RequestResult {
+    suspend fun markAllProductReviewsAsRead(): RequestResult {
         return if (getHasUnreadCachedProductReviews()) {
             val unreadProductReviews = notificationStore.getNotificationsForSite(
                     site = selectedSite.get(),
@@ -153,7 +154,7 @@ class ProductReviewsRepository @Inject constructor(
      * Also populates the [ProductReview.read] field with the value of a matching Notification, or if
      * one doesn't exist, it is set to true.
      */
-    override suspend fun getCachedProductReviews(): List<ProductReview> {
+    suspend fun getCachedProductReviews(): List<ProductReview> {
         var cachedReviews = getProductReviewsFromDB().map { it.toAppModel() }
         val readValueByRemoteIdMap = getReviewNotifReadValueByRemoteIdMap()
 
@@ -181,7 +182,7 @@ class ProductReviewsRepository @Inject constructor(
      * @return The matching [ProductReview] or null if either the review or associated product do not exist
      * in the database.
      */
-    override suspend fun getCachedProductReviewById(remoteId: Long): ProductReview? {
+    suspend fun getCachedProductReviewById(remoteId: Long): ProductReview? {
         return withContext(Dispatchers.IO) {
             productStore.getProductReviewByRemoteId(selectedSite.get().id, remoteId)?.let { review ->
                 val readValue = getReviewNotifReadValueByRemoteIdMap()[remoteId] ?: true
@@ -200,7 +201,7 @@ class ProductReviewsRepository @Inject constructor(
      *
      * @return true if unread product reviews exist in db, else false
      */
-    override suspend fun getHasUnreadCachedProductReviews(): Boolean {
+    suspend fun getHasUnreadCachedProductReviews(): Boolean {
         return coroutineScope {
             notificationStore.hasUnreadNotificationsForSite(
                     site = selectedSite.get(),

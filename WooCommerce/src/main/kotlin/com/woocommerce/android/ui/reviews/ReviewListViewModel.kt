@@ -28,7 +28,7 @@ import javax.inject.Named
 @OpenClassOnDebug
 final class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    private val reviewRepository: ProductReviewsRepositoryContract,
+    private val reviewRepository: ReviewListRepository,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {
