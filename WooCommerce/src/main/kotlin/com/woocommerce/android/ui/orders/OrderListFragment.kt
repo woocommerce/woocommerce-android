@@ -380,6 +380,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         return !isSearching && orderStatusFilter.isNullOrEmpty()
     }
 
+    private fun isShowingProcessingOrders() = tab_layout.selectedTabPosition == 0
+
     /**
      * shows the view that appears for stores that have have no orders matching the current filter
      */
@@ -403,14 +405,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                     showShareButton = true
                     messageId = R.string.waiting_for_customers
                 }
+                isShowingProcessingOrders() -> {
+                    showImage = false
+                    showShareButton = false
+                    messageId = R.string.orders_empty_message_with_processing
+                }
                 else -> {
                     showImage = true
                     showShareButton = true
-                    // display "No orders to process" only if the current tab is `Processing`
-                    // otherwise display the default "No orders" message
-                    messageId = if (tab_layout.selectedTabPosition == 0) {
-                        R.string.orders_empty_message_with_processing
-                    } else R.string.orders_empty_message_with_filter
+                    messageId = R.string.orders_empty_message_with_filter
                 }
             }
             order_list_view.showEmptyView(messageId, showImage, showShareButton)
