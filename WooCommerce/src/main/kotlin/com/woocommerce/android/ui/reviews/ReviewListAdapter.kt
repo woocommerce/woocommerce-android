@@ -45,7 +45,7 @@ class ReviewListAdapter(
     private val removedRemoteIds = HashSet<Long>()
 
     interface OnReviewClickListener {
-        fun onReviewClick(remoteReviewId: Long)
+        fun onReviewClick(review: ProductReview)
     }
 
     fun setReviews(reviews: List<ProductReview>) {
@@ -348,7 +348,7 @@ class ReviewListAdapter(
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
 
             itemHolder.itemView.setOnClickListener {
-                clickListener.onReviewClick(review.remoteId)
+                clickListener.onReviewClick(review)
             }
         }
 

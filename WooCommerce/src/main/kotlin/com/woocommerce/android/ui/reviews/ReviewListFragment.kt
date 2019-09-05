@@ -23,9 +23,9 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.COMPLETE
-import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.ERROR
-import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.PROCESSING
+import com.woocommerce.android.ui.reviews.ActionStatus.COMPLETE
+import com.woocommerce.android.ui.reviews.ActionStatus.ERROR
+import com.woocommerce.android.ui.reviews.ActionStatus.PROCESSING
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.UnreadItemDecoration
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
@@ -293,7 +293,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
-    override fun onReviewClick(remoteReviewId: Long) {
-        // TODO AMANDA : open review detail
+    override fun onReviewClick(review: ProductReview) {
+        // TODO AMANDA : open product detail
     }
 }

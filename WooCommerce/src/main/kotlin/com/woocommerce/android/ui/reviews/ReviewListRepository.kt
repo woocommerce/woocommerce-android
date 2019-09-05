@@ -4,12 +4,15 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toProductReviewProductModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.ERROR
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.SUCCESS
+import com.woocommerce.android.ui.reviews.RequestResult.ERROR
+import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -23,7 +26,8 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind
+import org.wordpress.android.fluxc.model.WCProductReviewModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
@@ -54,7 +58,8 @@ class ReviewListRepository @Inject constructor(
 
     private var offset = 0
     private var isFetchingProductReviews = false
-    var canLoadMoreReviews = false
+
+    var canLoadMore: Boolean = false
         private set
 
     init {
@@ -66,54 +71,79 @@ class ReviewListRepository @Inject constructor(
     }
 
     /**
-     * Fetch product reviews from the API, wait for it to complete, and then query the db
-     * for the fetched reviews.
+     * Fetch product reviews and notifications from the API. Wait for both requests to complete. If the
+     * fetch is already in progress return [RequestResult.NO_ACTION_NEEDED].
      *
      * @param [loadMore] if true, creates an offset to fetch the next page of [ProductReview]s
      * from the API.
-     * @return List of [ProductReview]
+     * @return the result of the fetch as a [RequestResult]
      */
-    suspend fun fetchAndLoadProductReviews(loadMore: Boolean = false): List<ProductReview> {
-        if (!isFetchingProductReviews) {
+    suspend fun fetchProductReviews(loadMore: Boolean): RequestResult {
+        return if (!isFetchingProductReviews) {
             coroutineScope {
-                /*
-                 * Fetch notifications so we can match them to reviews to get the read state. This
-                 * will wait for completion.
-                 */
-                val fetchNotifs = async { fetchNotifications() }
+                val fetchNotifs = async {
+                    /*
+                     * Fetch notifications so we can match them to reviews to get the read state. This
+                     * will wait for completion. If this fails we still consider fetching reviews to be successful since it
+                     * failing won't block the user. Just log the exception.
+                     */
+                    fetchNotifications()
+                }
 
+                var wasFetchReviewsSuccess = false
                 val fetchReviews = async {
-                    suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                        offset = if (loadMore) offset + PAGE_SIZE else 0
-                        isFetchingProductReviews = true
-                        continuationReview = it
-
-                        val payload = WCProductStore.FetchProductReviewsPayload(
-                                selectedSite.get(),
-                                offset
-                        )
-                        dispatcher.dispatch(
-                                WCProductActionBuilder.newFetchProductReviewsAction(
-                                        payload
-                                )
-                        )
-                    }
+                    wasFetchReviewsSuccess = fetchProductReviewsFromApi(loadMore)
 
                     /*
-                     * Fetch any products associated with these reviews missing from the db
+                     * Fetch any products associated with these reviews missing from the db.
                      */
-                    getProductReviews().map { it.remoteProductId }.distinct().takeIf { it.isNotEmpty() }?.let {
-                        fetchProductsByRemoteId(it)
+                    if (wasFetchReviewsSuccess) {
+                        getProductReviewsFromDB().map { it.remoteProductId }
+                                .distinct()
+                                .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
                     }
                 }
 
                 // Wait for both to complete before continuing
                 fetchNotifs.await()
                 fetchReviews.await()
-            }
-        }
 
-        return getCachedProductReviews()
+                if (wasFetchReviewsSuccess) SUCCESS else ERROR
+            }
+        } else NO_ACTION_NEEDED
+    }
+
+    /**
+     * Fires the request to mark all product review notifications as read to the API. If there are
+     * no unread product review notifications in the database, then the result will be
+     * [RequestResult.NO_ACTION_NEEDED].
+     *
+     * @return the result of the action as a [RequestResult]
+     */
+    suspend fun markAllProductReviewsAsRead(): RequestResult {
+        return if (getHasUnreadCachedProductReviews()) {
+            val unreadProductReviews = notificationStore.getNotificationsForSite(
+                    site = selectedSite.get(),
+                    filterBySubtype = listOf(STORE_REVIEW.toString()))
+            try {
+                suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+                    continuationMarkAllRead = it
+
+                    val payload = MarkNotificationsReadPayload(unreadProductReviews)
+                    dispatcher.dispatch(
+                            NotificationActionBuilder.newMarkNotificationsReadAction(
+                                    payload
+                            )
+                    )
+                } ?: ERROR // block timed out. Return error.
+            } catch (e: CancellationException) {
+                WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
+                ERROR
+            }
+        } else {
+            WooLog.d(REVIEWS, "Mark all as read: No unread product reviews found. Exiting...")
+            NO_ACTION_NEEDED
+        }
     }
 
     /**
@@ -125,7 +155,7 @@ class ReviewListRepository @Inject constructor(
      * one doesn't exist, it is set to true.
      */
     suspend fun getCachedProductReviews(): List<ProductReview> {
-        var cachedReviews = getProductReviews()
+        var cachedReviews = getProductReviewsFromDB().map { it.toAppModel() }
         val readValueByRemoteIdMap = getReviewNotifReadValueByRemoteIdMap()
 
         if (cachedReviews.isNotEmpty()) {
@@ -144,32 +174,38 @@ class ReviewListRepository @Inject constructor(
         return cachedReviews
     }
 
-    suspend fun getHasUnreadReviews(): Boolean {
+    /**
+     * Creates a [ProductReview] from database data. This class is created by using values from
+     * multiple tables.
+     *
+     * @param [remoteId] the remote id of the product review
+     * @return The matching [ProductReview] or null if either the review or associated product do not exist
+     * in the database.
+     */
+    suspend fun getCachedProductReviewById(remoteId: Long): ProductReview? {
         return withContext(Dispatchers.IO) {
-            notificationStore.hasUnreadNotificationsForSite(
-                    site = selectedSite.get(),
-                    filterBySubtype = listOf(Subkind.STORE_REVIEW.toString()))
+            productStore.getProductReviewByRemoteId(selectedSite.get().id, remoteId)?.let { review ->
+                val readValue = getReviewNotifReadValueByRemoteIdMap()[remoteId] ?: true
+                productStore.getProductByRemoteId(selectedSite.get(), review.remoteProductId)?.let { product ->
+                    review.toAppModel().also {
+                        it.product = product.toProductReviewProductModel()
+                        it.read = readValue
+                    }
+                }
+            }
         }
     }
 
     /**
-     * Mark all product review notifications as read.
+     * Checks the database for any product review notifications where [NotificationModel.#read] = false
+     *
+     * @return true if unread product reviews exist in db, else false
      */
-    suspend fun markAllReviewsAsRead(): RequestResult {
-        return if (getHasUnreadReviews()) {
-            val unreadProductReviews = notificationStore.getNotificationsForSite(
+    suspend fun getHasUnreadCachedProductReviews(): Boolean {
+        return coroutineScope {
+            notificationStore.hasUnreadNotificationsForSite(
                     site = selectedSite.get(),
-                    filterBySubtype = listOf(Subkind.STORE_REVIEW.toString()))
-
-            suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
-                continuationMarkAllRead = it
-
-                val payload = MarkNotificationsReadPayload(unreadProductReviews)
-                dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
-            }!!
-        } else {
-            WooLog.d(REVIEWS, "Mark all as read: No unread product reviews found. Exiting...")
-            RequestResult.NO_ACTION_NEEDED
+                    filterBySubtype = listOf(STORE_REVIEW.toString()))
         }
     }
 
@@ -177,32 +213,59 @@ class ReviewListRepository @Inject constructor(
      * Fetch products from the API and suspends until finished.
      */
     private suspend fun fetchProductsByRemoteId(remoteProductIds: List<Long>) {
-        suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-            continuationProduct = it
+        try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationProduct = it
 
-            val payload = FetchProductsPayload(selectedSite.get(), remoteProductIds = remoteProductIds)
-            dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
+                val payload = FetchProductsPayload(
+                        selectedSite.get(),
+                        remoteProductIds = remoteProductIds)
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
+            }
+        } catch (e: CancellationException) {
+            WooLog.e(REVIEWS, "Exception encountered while attempting to fetch products by remote ID", e)
         }
     }
 
     /**
      * Fetches notifications from the API. We use these results to populate [ProductReview.read].
      */
-    private suspend fun fetchNotifications() {
-        suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-            continuationNotification = it
+    private suspend fun fetchNotifications(): Boolean {
+        return try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationNotification = it
 
-            val payload = FetchNotificationsPayload()
-            dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
+                val payload = FetchNotificationsPayload()
+                dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
+            } ?: false // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(REVIEWS, "Exception encountered while fetching product review notifications", e)
+            false
+        }
+    }
+
+    private suspend fun fetchProductReviewsFromApi(loadMore: Boolean): Boolean {
+        return try {
+            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                offset = if (loadMore) offset + PAGE_SIZE else 0
+                isFetchingProductReviews = true
+                continuationReview = it
+
+                val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
+                dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
+            } ?: false // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
+            false
         }
     }
 
     /**
-     * Returns a list of all [ProductReview]s for the active site.
+     * Returns a list of all [WCProductReviewModel]s for the active site.
      */
-    private suspend fun getProductReviews(): List<ProductReview> {
+    private suspend fun getProductReviewsFromDB(): List<WCProductReviewModel> {
         return withContext(Dispatchers.IO) {
-            productStore.getProductReviewsForSite(selectedSite.get()).map { it.toAppModel() }
+            productStore.getProductReviewsForSite(selectedSite.get())
         }
     }
 
@@ -235,7 +298,7 @@ class ReviewListRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             notificationStore.getNotificationsForSite(
                     site = selectedSite.get(),
-                    filterBySubtype = listOf(Subkind.STORE_REVIEW.toString())
+                    filterBySubtype = listOf(STORE_REVIEW.toString())
             ).associate { it.getCommentId() to it.read }
         }
     }
@@ -252,6 +315,7 @@ class ReviewListRepository @Inject constructor(
                 // TODO AMANDA : track fetch products success
                 continuationProduct?.resume(true)
             }
+            continuationProduct = null
         }
     }
 
@@ -266,9 +330,10 @@ class ReviewListRepository @Inject constructor(
                 continuationReview?.resume(false)
             } else {
                 // TODO AMANDA : track fetch product reviews success
-                canLoadMoreReviews = event.canLoadMore
+                canLoadMore = event.canLoadMore
                 continuationReview?.resume(true)
             }
+            continuationReview = null
         }
     }
 
@@ -284,6 +349,7 @@ class ReviewListRepository @Inject constructor(
                 // TODO AMANDA : track fetch notifications success
                 continuationNotification?.resume(true)
             }
+            continuationNotification = null
         } else if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
             if (event.isError) {
                 // TODO AMANDA : track mark notifications read error
@@ -293,12 +359,7 @@ class ReviewListRepository @Inject constructor(
                 // TODO AMANDA : track mark notifications read success
                 continuationMarkAllRead?.resume(SUCCESS)
             }
+            continuationMarkAllRead = null
         }
-    }
-
-    enum class RequestResult {
-        SUCCESS,
-        ERROR,
-        NO_ACTION_NEEDED
     }
 }

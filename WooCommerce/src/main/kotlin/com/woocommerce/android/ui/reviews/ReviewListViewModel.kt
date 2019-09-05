@@ -8,11 +8,9 @@ import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.ERROR
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.ui.reviews.ReviewListRepository.RequestResult.SUCCESS
-import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.COMPLETE
-import com.woocommerce.android.ui.reviews.ReviewListViewModel.ActionStatus.PROCESSING
+import com.woocommerce.android.ui.reviews.RequestResult.ERROR
+import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -22,7 +20,6 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_REVIEW
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
@@ -35,8 +32,8 @@ final class ReviewListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {
-    // TODO AMANDA: should this MutableLiveData object be exposed publicly?
-    val reviewList = MutableLiveData<List<ProductReview>>()
+    private val _reviewList = MutableLiveData<List<ProductReview>>()
+    val reviewList: LiveData<List<ProductReview>> = _reviewList
 
     private val _isSkeletonShown = MutableLiveData<Boolean>()
     val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
@@ -66,8 +63,8 @@ final class ReviewListViewModel @Inject constructor(
         reviewRepository.onCleanup()
     }
 
-    final fun loadReviews(loadMore: Boolean = false) {
-        if (loadMore && !reviewRepository.canLoadMoreReviews) {
+    fun loadReviews(loadMore: Boolean = false) {
+        if (loadMore && !reviewRepository.canLoadMore) {
             WooLog.d(REVIEWS, "No more product reviews to load")
             return
         }
@@ -82,7 +79,7 @@ final class ReviewListViewModel @Inject constructor(
                 val reviewsInDb = reviewRepository.getCachedProductReviews()
                 if (reviewsInDb.isNotEmpty()) {
                     _isSkeletonShown.value = false
-                    reviewList.value = reviewsInDb
+                    _reviewList.value = reviewsInDb
                 }
             }
             fetchReviewList(loadMore)
@@ -98,22 +95,22 @@ final class ReviewListViewModel @Inject constructor(
 
     fun checkForUnreadReviews() {
         launch {
-            _hasUnreadReviews.value = reviewRepository.getHasUnreadReviews()
+            _hasUnreadReviews.value = reviewRepository.getHasUnreadCachedProductReviews()
         }
     }
 
     fun markAllReviewsAsRead() {
         if (networkStatus.isConnected()) {
-            _isMarkingAllAsRead.value = PROCESSING
+            _isMarkingAllAsRead.value = ActionStatus.PROCESSING
 
             launch {
-                when (reviewRepository.markAllReviewsAsRead()) {
+                when (reviewRepository.markAllProductReviewsAsRead()) {
                     ERROR -> {
                         _isMarkingAllAsRead.value = ActionStatus.ERROR
                         _showSnackbarMessage.value = R.string.wc_mark_all_read_error
                     }
                     NO_ACTION_NEEDED, SUCCESS -> {
-                        _isMarkingAllAsRead.value = COMPLETE
+                        _isMarkingAllAsRead.value = ActionStatus.COMPLETE
                         _showSnackbarMessage.value = R.string.wc_mark_all_read_success
                     }
                 }
@@ -129,7 +126,11 @@ final class ReviewListViewModel @Inject constructor(
 
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
-            reviewList.value = reviewRepository.fetchAndLoadProductReviews(loadMore)
+            when (reviewRepository.fetchProductReviews(loadMore)) {
+                SUCCESS, NO_ACTION_NEEDED -> _reviewList.value = reviewRepository.getCachedProductReviews()
+                ERROR -> _showSnackbarMessage.value = R.string.review_fetch_error
+            }
+
             checkForUnreadReviews()
         } else {
             // Network is not connected
@@ -160,16 +161,6 @@ final class ReviewListViewModel @Inject constructor(
             } else {
                 refreshReviewList()
             }
-        } else if (event.causeOfChange == FETCH_PRODUCT_REVIEWS) {
-            if (event.isError) {
-                _showSnackbarMessage.value = R.string.review_fetch_error
-            }
         }
-    }
-
-    enum class ActionStatus {
-        PROCESSING,
-        COMPLETE,
-        ERROR
     }
 }
