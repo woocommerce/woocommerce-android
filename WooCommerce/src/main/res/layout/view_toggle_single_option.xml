@@ -22,5 +22,6 @@
         android:textAlignment="viewStart"
         android:importantForAccessibility="no"
         android:clickable="false"
+        android:lineSpacingExtra="4sp"
         tools:text="If disabled will add the note as private"/>
 </merge>
