@@ -405,7 +405,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                 else -> {
                     showImage = true
                     showShareButton = true
-                    messageId = R.string.orders_empty_message_with_filter
+                    // display "No orders to process" only if the current tab is `Processing`
+                    // otherwise display the default "No orders" message
+                    messageId = if (tab_layout.selectedTabPosition == 0) {
+                        R.string.orders_empty_message_with_processing
+                    } else R.string.orders_empty_message_with_filter
                 }
             }
             order_list_view.showEmptyView(messageId, showImage, showShareButton)
