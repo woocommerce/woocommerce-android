@@ -7,6 +7,8 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
+import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.RequestResult.ERROR
 import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
@@ -17,11 +19,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_REVIEW
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -29,8 +29,7 @@ import javax.inject.Named
 final class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val reviewRepository: ReviewListRepository,
-    private val networkStatus: NetworkStatus,
-    private val dispatcher: Dispatcher
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
@@ -54,12 +53,12 @@ final class ReviewListViewModel @Inject constructor(
     val isMarkingAllAsRead: LiveData<ActionStatus> = _isMarkingAllAsRead
 
     init {
-        dispatcher.register(this)
+        EventBus.getDefault().register(this)
     }
 
     override fun onCleared() {
         super.onCleared()
-        dispatcher.unregister(this)
+        EventBus.getDefault().unregister(this)
         reviewRepository.onCleanup()
     }
 
@@ -72,12 +71,22 @@ final class ReviewListViewModel @Inject constructor(
             _isSkeletonShown.value = true
 
             // Initial load. Get and show reviewList from the db if any
-                val reviewsInDb = reviewRepository.getCachedProductReviews()
-                if (reviewsInDb.isNotEmpty()) {
+            val reviewsInDb = reviewRepository.getCachedProductReviews()
+            if (reviewsInDb.isNotEmpty()) {
                 _isSkeletonShown.value = false
                 _reviewList.value = reviewsInDb
             }
             fetchReviewList(loadMore = false)
+        }
+    }
+
+    /**
+     * Reload reviews from the database. Useful when a change happens on the backend
+     * when the list view was not visible.
+     */
+    fun reloadReviewsFromCache() {
+        launch {
+            _reviewList.value = reviewRepository.getCachedProductReviews()
         }
     }
 
@@ -161,14 +170,10 @@ final class ReviewListViewModel @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductReviewChanged(event: OnProductReviewChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT_REVIEW) {
-            if (event.isError) {
-                WooLog.e(REVIEWS, "Error fetching single product review: ${event.error.message}")
-                _showSnackbarMessage.value = R.string.review_single_fetch_error
-            } else {
-                forceRefreshReviews()
-            }
+    fun onEventMainThread(event: NotificationReceivedEvent) {
+        if (event.channel == REVIEW) {
+            // New review notification received. Request the list of reviews be refreshed.
+            forceRefreshReviews()
         }
     }
 }

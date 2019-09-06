@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
@@ -40,7 +41,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     companion object {
         const val TAG = "ReviewListFragment"
         const val KEY_LIST_STATE = "list-state"
-        const val KEY_IS_REFRESH_PENDING = "is-refresh-pending"
+        const val KEY_NEW_DATA_AVAILABLE = "new-data-available"
 
         fun newInstance() = ReviewListFragment()
     }
@@ -54,7 +55,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
 
-    var isRefreshPending = true
+    private var newDataAvailable = false // New reviews are available in cache
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +63,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(KEY_LIST_STATE)
-            isRefreshPending = bundle.getBoolean(KEY_IS_REFRESH_PENDING, false)
+            newDataAvailable = bundle.getBoolean(KEY_NEW_DATA_AVAILABLE, false)
         }
     }
 
@@ -179,7 +180,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         val listState = reviewsList.layoutManager?.onSaveInstanceState()
         outState.putParcelable(KEY_LIST_STATE, listState)
 
-        outState.putBoolean(KEY_IS_REFRESH_PENDING, isRefreshPending)
+        outState.putBoolean(KEY_NEW_DATA_AVAILABLE, newDataAvailable)
         super.onSaveInstanceState(outState)
     }
 
@@ -195,6 +196,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         viewModel.start()
     }
 
+    @SuppressLint("InflateParams")
     private fun setupObservers() {
         viewModel.reviewList.observe(this, Observer {
             showReviewList(it)
@@ -244,7 +246,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             reviewsAdapter.setReviews(reviews)
             showEmptyView(reviews.isEmpty())
         } else {
-            isRefreshPending = true
+            newDataAvailable = true
         }
     }
 
@@ -302,7 +304,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     override fun onReturnedFromChildFragment() {
-        // TODO AMANDA : refresh list - verify need to force refresh
+        if (newDataAvailable) {
+            viewModel.reloadReviewsFromCache()
+            newDataAvailable = false
+        }
 
         showOptionsMenu(true)
         viewModel.checkForUnreadReviews()
