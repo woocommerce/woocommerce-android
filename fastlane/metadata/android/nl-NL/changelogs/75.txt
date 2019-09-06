@@ -1,0 +1,5 @@
+2.6:
+- Heb je geen Jetpack-account? Je kunt nu inloggen op je site en het Jetpack-scherm vermijden. (Je mist dan wel een aantal krachtige functies: probeer Jetpack eens!)
+- Sommige gebruikers met een Jetpack-site ondervinden soms inlogproblemen. Dat probleem is nu opgelost.
+- We hebben de weergave van statistieken voor Mijn winkel nu aangepast wanneer je nog geen bestelling hebt ontvangen.
+- Sommigen van jullie ervaarden soms onverwachte crashes. Als jij een van die personen bent, hebben we goed nieuws: je zult ze vanaf nu niet meer ervaren.
