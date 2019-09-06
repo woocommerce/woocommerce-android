@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-22 00:54:03+0000
+Translation-Revision-Date: 2019-09-05 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">Statistiche odierne</string>
+    <string name="login_sign_in">Registrati</string>
+    <string name="login_jetpack_installed_sign_in">Hai già Jetpack? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Tentativo di accesso con Jetpack in corso…</string>
+    <string name="login_refresh_app_continue">aggiorna l\'app per continuare</string>
+    <string name="login_not_connected_jetpack">Per usare quest\'app per %1$s dovrai avere il plugin Jetpack impostato e connesso a questo account. \n\nUna volta impostato, %2$s</string>
+    <string name="login_try_another_store">Prova un altro negozio</string>
+    <string name="database_downgraded">Database declassato, ricreazione delle tabelle e caricamento dei negozi in corso</string>
+    <string name="loading_stores">Caricamento dei negozi in corso</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">Nessun provider trovato</string>
     <string name="login_invalid_site_url">Inserisci un indirizzo di sito Web completo, come esempio.com.</string>
     <string name="reviews_empty_message">Ancora nessuna recensione!</string>

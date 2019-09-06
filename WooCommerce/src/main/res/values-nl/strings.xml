@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-20 00:54:03+0000
+Translation-Revision-Date: 2019-09-04 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">Statistieken van vandaag</string>
+    <string name="login_sign_in">Aanmelden</string>
+    <string name="login_jetpack_installed_sign_in">Heb je Jetpack al? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Proberen in te loggen met Jetpack …</string>
+    <string name="login_refresh_app_continue">vernieuw de app om door te gaan</string>
+    <string name="login_not_connected_jetpack">Om deze app te gebruiken voor %1$s, moet de Jetpack-plugin ingesteld zijn en gekoppeld zijn aan dit account. \n\nZodra dit is ingesteld, %2$s</string>
+    <string name="login_try_another_store">Probeer een andere winkel</string>
+    <string name="database_downgraded">Database gedowngraded; tabellen worden opnieuw gemaakt en winkels worden geladen</string>
+    <string name="loading_stores">Winkels worden geladen</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">Geen providers gevonden</string>
     <string name="login_invalid_site_url">Voer een compleet websiteadres in, zoals example.com.</string>
     <string name="reviews_empty_message">Nog geen beoordelingen!</string>

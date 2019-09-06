@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-21 00:54:31+0000
+Translation-Revision-Date: 2019-09-05 00:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">Bugünün İstatistikleri</string>
+    <string name="login_sign_in">Giriş yap</string>
+    <string name="login_jetpack_installed_sign_in">Zaten Jetpack’iniz var mı? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Jetpack ile oturum açılmaya çalışılıyor…</string>
+    <string name="login_refresh_app_continue">devam etmek için uygulamayı yenileyin</string>
+    <string name="login_not_connected_jetpack">Bu uygulamayı %1$s için kullanmak istiyorsanız kurulu ve bu hesaba bağlı Jetpack eklentiniz olmalıdır. \n\nKurulumdan sonra, %2$s</string>
+    <string name="login_try_another_store">Başka bir mağaza deneyin</string>
+    <string name="database_downgraded">Veri tabanının sürümü düşürüldü, tablolar yeniden oluşturuluyor ve mağazalar yükleniyor</string>
+    <string name="loading_stores">Mağazalar yükleniyor</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">Sağlayıcı bulunamadı</string>
     <string name="login_invalid_site_url">Lütfen example.com gibi eksiksiz bir web sitesi adresi girin.</string>
     <string name="reviews_empty_message">Henüz inceleme yok!</string>
