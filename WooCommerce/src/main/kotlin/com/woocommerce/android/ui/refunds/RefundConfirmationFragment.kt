@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.main.navigateBackWithResult
+import com.woocommerce.android.util.navigateBackWithResult
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_confirmation.*
 import javax.inject.Inject
@@ -68,7 +68,7 @@ class RefundConfirmationFragment : DaggerFragment() {
             val bundle = Bundle()
             bundle.putBoolean(REFUND_SUCCESS_KEY, it)
 
-            requireActivity().navigateBackWithResult(bundle)
+            requireActivity().navigateBackWithResult(bundle, R.id.nav_host_fragment_main)
         })
     }
 

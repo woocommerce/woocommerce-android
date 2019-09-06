@@ -8,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
+import androidx.annotation.NavigationRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -825,15 +827,4 @@ class MainActivity : AppUpgradeActivity(),
                 actionListener = actionListener)
                 .show()
     }
-}
-
-fun FragmentActivity.navigateBackWithResult(result: Bundle) {
-    val childFragmentManager = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main)?.childFragmentManager
-    var backStackListener: FragmentManager.OnBackStackChangedListener by Delegates.notNull()
-    backStackListener = FragmentManager.OnBackStackChangedListener {
-        (childFragmentManager?.fragments?.get(0) as NavigationResult).onNavigationResult(result)
-        childFragmentManager.removeOnBackStackChangedListener(backStackListener)
-    }
-    childFragmentManager?.addOnBackStackChangedListener(backStackListener)
-    findNavController(R.id.nav_host_fragment_main).popBackStack()
 }
