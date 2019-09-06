@@ -605,7 +605,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     override fun onNavigationResult(result: Bundle) {
         val refundWasSuccessful = result.getBoolean(RefundConfirmationFragment.REFUND_SUCCESS_KEY, false)
         if (refundWasSuccessful) {
-            presenter.refreshOrderDetail(true)
+            presenter.refreshOrderDetail(false)
         }
     }
 
