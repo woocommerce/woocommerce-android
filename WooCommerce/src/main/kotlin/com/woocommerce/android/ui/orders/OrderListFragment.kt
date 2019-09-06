@@ -281,7 +281,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             }
         })
 
-        // set activity toolbar elevation to 0
+        // As part of the new order list design changes, there is no elevation of the toolbar
         activity?.toolbar?.elevation = 0f
     }
 
@@ -307,8 +307,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         super.onHiddenChanged(hidden)
 
         if (hidden) {
+            // restore the toolbar elevation when the order list screen is hidden
+            activity?.toolbar?.elevation = resources.getDimension(R.dimen.appbar_elevation)
             disableSearchListeners()
         } else {
+            activity?.toolbar?.elevation = 0f
             enableSearchListeners()
 
             // silently refresh if this fragment is no longer hidden
