@@ -173,7 +173,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        viewModel.checkForUnreadReviews()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -227,18 +226,14 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 PROCESSING -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
                 COMPLETE -> {
                     menuMarkAllRead?.actionView = null
-                    markAllReviewsAsReadSuccess()
+                    showMarkAllReadMenuItem(show = false)
+
+                    // Remove all active notifications from the system bar
+                    context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
                 }
                 ERROR -> menuMarkAllRead?.actionView = null
             }
         })
-    }
-
-    private fun markAllReviewsAsReadSuccess() {
-        reviewsAdapter.markAllReviewsAsRead()
-
-        // Remove all active notifications from the system bar
-        context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {
@@ -306,11 +301,11 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onReturnedFromChildFragment() {
         if (newDataAvailable) {
             viewModel.reloadReviewsFromCache()
+            viewModel.checkForUnreadReviews()
             newDataAvailable = false
         }
 
         showOptionsMenu(true)
-        viewModel.checkForUnreadReviews()
     }
 
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)

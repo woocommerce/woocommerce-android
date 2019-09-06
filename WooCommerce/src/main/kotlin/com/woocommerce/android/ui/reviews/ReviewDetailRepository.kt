@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toProductReviewProductModel
@@ -15,11 +16,18 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_REVIEW
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
+import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
+import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
@@ -30,11 +38,15 @@ import kotlin.coroutines.resume
 class ReviewDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
+    private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
+        private const val TAG = "ReviewDetailRepository"
     }
+
+    private var localNoteId: Int = 0
 
     private var continuationReview: Continuation<Boolean>? = null
     private var continuationProduct: Continuation<Boolean>? = null
@@ -62,6 +74,31 @@ class ReviewDetailRepository @Inject constructor(
         return getProductReviewFromDb(remoteId)?.toAppModel()?.let { review ->
             getProductFromDb(review.remoteProductId)?.toProductReviewProductModel()?.let { product ->
                 review.also { it.product = product }
+            }
+        }
+    }
+
+    suspend fun getCachedNotificationForReview(remoteReviewId: Long): NotificationModel? {
+        return withContext(Dispatchers.IO) {
+            notificationStore.getNotificationsForSite(
+                    site = selectedSite.get(),
+                    filterBySubtype = listOf(STORE_REVIEW.toString())
+            ).firstOrNull { it.getCommentId() == remoteReviewId }
+        }
+    }
+
+    suspend fun markNotificationAsRead(notification: NotificationModel) {
+        if (!notification.read) {
+            try {
+                localNoteId = notification.noteId
+
+                suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                    notification.read = true
+                    val payload = MarkNotificationsReadPayload(listOf(notification))
+                    dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+                }
+            } catch (e: CancellationException) {
+                WooLog.e(REVIEWS, "Exception encountered while marking notification as read", e)
             }
         }
     }
@@ -135,6 +172,17 @@ class ReviewDetailRepository @Inject constructor(
                 continuationProduct?.resume(true)
             }
             continuationProduct = null
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onNotificationChanged(event: OnNotificationChanged) {
+        if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
+            if (event.changedNotificationLocalIds.contains(localNoteId)) {
+                WooLog.e(REVIEWS, "$TAG - Error marking review notification as read!")
+                localNoteId = 0
+            }
         }
     }
 }

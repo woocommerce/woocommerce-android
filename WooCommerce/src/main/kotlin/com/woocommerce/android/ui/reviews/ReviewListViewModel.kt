@@ -22,6 +22,10 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.greenrobot.eventbus.ThreadMode.MAIN
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
+import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -29,8 +33,12 @@ import javax.inject.Named
 final class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val reviewRepository: ReviewListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val dispatcher: Dispatcher
 ) : ScopedViewModel(mainDispatcher) {
+    companion object {
+        private const val TAG = "ReviewListViewModel"
+    }
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
 
@@ -54,11 +62,13 @@ final class ReviewListViewModel @Inject constructor(
 
     init {
         EventBus.getDefault().register(this)
+        dispatcher.register(this)
     }
 
     override fun onCleared() {
         super.onCleared()
         EventBus.getDefault().unregister(this)
+        dispatcher.unregister(this)
         reviewRepository.onCleanup()
     }
 
@@ -92,7 +102,7 @@ final class ReviewListViewModel @Inject constructor(
 
     fun loadMoreReviews() {
         if (!reviewRepository.canLoadMore) {
-            WooLog.d(REVIEWS, "No more product reviews to load")
+            WooLog.d(REVIEWS, "$TAG : No more product reviews to load")
             return
         }
 
@@ -131,9 +141,6 @@ final class ReviewListViewModel @Inject constructor(
                         _showSnackbarMessage.value = R.string.wc_mark_all_read_success
                     }
                 }
-
-                // Update the menu option visibility
-                checkForUnreadReviews()
             }
         } else {
             // Network is not connected
@@ -174,6 +181,17 @@ final class ReviewListViewModel @Inject constructor(
         if (event.channel == REVIEW) {
             // New review notification received. Request the list of reviews be refreshed.
             forceRefreshReviews()
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onNotificationChanged(event: OnNotificationChanged) {
+        if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
+            if (!event.isError) {
+                reloadReviewsFromCache()
+                checkForUnreadReviews()
+            }
         }
     }
 }

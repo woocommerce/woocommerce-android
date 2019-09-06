@@ -24,7 +24,6 @@ final class ReviewDetailViewModel @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
     private var remoteReviewId = 0L
-    private var remoteProductId = 0L
 
     private val _productReview = MutableLiveData<ProductReview>()
     val productReview: LiveData<ProductReview> = _productReview
@@ -73,15 +72,27 @@ final class ReviewDetailViewModel @Inject constructor(
     }
 
     private fun fetchProductReview(remoteReviewId: Long) {
-        launch {
-            when (repository.fetchProductReview(remoteReviewId)) {
-                SUCCESS, NO_ACTION_NEEDED -> {
-                    repository.getCachedProductReview(remoteReviewId)?.let { review ->
-                        _productReview.value = review
+        if (networkStatus.isConnected()) {
+            launch {
+                when (repository.fetchProductReview(remoteReviewId)) {
+                    SUCCESS, NO_ACTION_NEEDED -> {
+                        repository.getCachedProductReview(remoteReviewId)?.let { review ->
+                            _productReview.value = review
+                            markAsRead(review.remoteId)
+                        }
                     }
+                    ERROR -> _showSnackbarMessage.value = R.string.wc_load_review_error
                 }
-                ERROR -> _showSnackbarMessage.value = R.string.wc_load_review_error
             }
+        } else {
+            // Network is not connected
+            _showSnackbarMessage.value = R.string.offline_error
+        }
+    }
+
+    private suspend fun markAsRead(remoteReviewId: Long) {
+        repository.getCachedNotificationForReview(remoteReviewId)?.let {
+            repository.markNotificationAsRead(it)
         }
     }
 }
