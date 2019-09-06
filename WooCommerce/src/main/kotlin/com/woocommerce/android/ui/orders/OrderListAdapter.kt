@@ -25,7 +25,7 @@ import javax.inject.Inject
  * Adapter serves up list of [WCOrderModel] items grouped by the appropriate [TimeGroup].
  */
 class OrderListAdapter @Inject constructor(
-    val presenter: OrderListContract.Presenter,
+    val listener: OrderListListener,
     val currencyFormatter: CurrencyFormatter
 )
     : SectionedRecyclerViewAdapter() {
@@ -44,7 +44,7 @@ class OrderListAdapter @Inject constructor(
 
     fun setOrders(orders: List<WCOrderModel>, filterByStatus: String? = null) {
         orderStatusFilter = filterByStatus
-        orderStatusOptionsMap = presenter.getOrderStatusOptions()
+        orderStatusOptionsMap = listener.getOrderStatusOptions()
 
         // clear all the current data from the adapter
         removeAllSections()
@@ -249,7 +249,7 @@ class OrderListAdapter @Inject constructor(
             itemHolder.rootView.tag = order
             itemHolder.rootView.setOnClickListener {
                 val orderItem = it.tag as WCOrderModel
-                presenter.openOrderDetail(orderItem)
+                listener.openOrderDetail(orderItem)
             }
             // clear existing tags and add new ones
             itemHolder.orderTagList.removeAllViews()
@@ -259,7 +259,7 @@ class OrderListAdapter @Inject constructor(
         }
 
         private fun refreshOrderStatusOptionsAndCreateTemp(status: String): WCOrderStatusModel {
-            presenter.refreshOrderStatusOptions()
+            listener.refreshOrderStatusOptions()
             return WCOrderStatusModel().apply {
                 statusKey = status
                 label = status

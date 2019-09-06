@@ -1,5 +1,6 @@
 2.7
 -----
+* Revamped the order list page by providing a new tab for unfulfilled orders
  
 2.6
 -----
