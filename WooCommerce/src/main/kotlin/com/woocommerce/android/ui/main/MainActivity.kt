@@ -23,9 +23,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.FragmentScrollListener
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
-import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.ProductReview
@@ -46,6 +44,7 @@ import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
+import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -60,7 +59,6 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -704,6 +702,8 @@ class MainActivity : AppUpgradeActivity(),
                         }
                     }
                 }
+
+                // FIXME : implement notification
 //                PRODUCT_REVIEW -> showReviewDetail(note)
                 else -> { /* do nothing */ }
             }
@@ -718,17 +718,16 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun showReviewDetail(review: ProductReview, tempStatus: String?) {
         showBottomNav()
-//        bottomNavView.currentPosition = REVIEWS
-//
-//        val navPos = BottomNavigationPosition.REVIEWS.position
-//        bottom_nav.active(navPos)
-//
-//        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-//                notification.remoteNoteId,
-//                notification.getCommentId(),
-//                tempStatus
-//        )
-//        navController.navigate(action)
+        bottomNavView.currentPosition = REVIEWS
+
+        val navPos = BottomNavigationPosition.REVIEWS.position
+        bottom_nav.active(navPos)
+
+        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
+                review.remoteId,
+                tempStatus
+        )
+        navController.navigate(action)
     }
 
     override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {

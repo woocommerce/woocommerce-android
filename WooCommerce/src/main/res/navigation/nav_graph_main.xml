@@ -134,7 +134,7 @@
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
         tools:layout="@layout/fragment_review_detail">
         <argument
-            android:name="remoteId"
+            android:name="remoteReviewId"
             app:argType="long"
             android:defaultValue="0L"/>
         <argument
