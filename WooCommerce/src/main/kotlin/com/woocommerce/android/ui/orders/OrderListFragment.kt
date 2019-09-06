@@ -238,7 +238,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                     }
                     tab_layout.addTab(tab)
 
-                    // Start with the given time period selected
+                    // Start with the tab user had previously selected
+                    // if no tab is selected, default to the `Processing` Tab
                     if (index == tabPosition) {
                         orderStatusFilter = getOrderStatusByTab(tab)
                         tab.select()
@@ -275,7 +276,9 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
 
-            override fun onTabReselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                order_list_view.scrollToTop()
+            }
         })
 
         // set activity toolbar elevation to 0
