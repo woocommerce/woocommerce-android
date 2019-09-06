@@ -271,7 +271,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 AnalyticsTracker.KEY_ALREADY_READ to review.read))
 
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showReviewDetail(review)
+        (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId)
     }
 
     /**

@@ -23,10 +23,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.FragmentScrollListener
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
-import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -702,9 +703,7 @@ class MainActivity : AppUpgradeActivity(),
                         }
                     }
                 }
-
-                // FIXME : implement notification
-//                PRODUCT_REVIEW -> showReviewDetail(note)
+                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId())
                 else -> { /* do nothing */ }
             }
         }
@@ -716,7 +715,7 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigate(action)
     }
 
-    override fun showReviewDetail(review: ProductReview, tempStatus: String?) {
+    override fun showReviewDetail(remoteReviewId: Long, tempStatus: String?) {
         showBottomNav()
         bottomNavView.currentPosition = REVIEWS
 
@@ -724,9 +723,8 @@ class MainActivity : AppUpgradeActivity(),
         bottom_nav.active(navPos)
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-                review.remoteId,
-                tempStatus
-        )
+                remoteReviewId,
+                tempStatus)
         navController.navigate(action)
     }
 
