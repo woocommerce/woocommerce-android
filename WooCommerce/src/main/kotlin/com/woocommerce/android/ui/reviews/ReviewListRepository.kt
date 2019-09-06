@@ -4,7 +4,6 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toProductReviewProductModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.RequestResult.ERROR
 import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
@@ -169,28 +168,6 @@ class ReviewListRepository @Inject constructor(
             }
         }
         return cachedReviews
-    }
-
-    /**
-     * Creates a [ProductReview] from database data. This class is created by using values from
-     * multiple tables.
-     *
-     * @param [remoteId] the remote id of the product review
-     * @return The matching [ProductReview] or null if either the review or associated product do not exist
-     * in the database.
-     */
-    suspend fun getCachedProductReviewById(remoteId: Long): ProductReview? {
-        return withContext(Dispatchers.IO) {
-            productStore.getProductReviewByRemoteId(selectedSite.get().id, remoteId)?.let { review ->
-                val readValue = getReviewNotifReadValueByRemoteIdMap()[remoteId] ?: true
-                productStore.getProductByRemoteId(selectedSite.get(), review.remoteProductId)?.let { product ->
-                    review.toAppModel().also {
-                        it.product = product.toProductReviewProductModel()
-                        it.read = readValue
-                    }
-                }
-            }
-        }
     }
 
     /**
