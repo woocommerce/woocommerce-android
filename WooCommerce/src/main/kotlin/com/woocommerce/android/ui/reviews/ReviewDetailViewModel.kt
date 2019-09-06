@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.Dispatcher
 import javax.inject.Inject
 import javax.inject.Named
 
