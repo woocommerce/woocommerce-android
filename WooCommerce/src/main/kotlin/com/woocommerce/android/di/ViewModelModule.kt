@@ -6,6 +6,7 @@ import com.woocommerce.android.viewmodel.ViewModelKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.woocommerce.android.ui.products.ProductDetailViewModel
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel
 import com.woocommerce.android.ui.reviews.ReviewListViewModel
 import dagger.Binds
 import dagger.Module
@@ -22,6 +23,11 @@ internal abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ReviewListViewModel::class)
     internal abstract fun pluginReviewListViewModel(viewModel: ReviewListViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ReviewDetailViewModel::class)
+    internal abstract fun pluginReviewDetailViewModel(viewModel: ReviewDetailViewModel): ViewModel
 
     @Binds
     internal abstract fun provideViewModelFactory(viewModelFactory: ViewModelFactory): ViewModelProvider.Factory
