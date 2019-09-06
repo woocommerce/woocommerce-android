@@ -108,7 +108,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                     super.onScrollStateChanged(recyclerView, newState)
 
                     if (!recyclerView.canScrollVertically(1)) {
-                        viewModel.loadReviews(true)
+                        viewModel.loadMoreReviews()
                     }
                 }
             })
@@ -126,7 +126,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             scrollUpChild = reviewsList
             setOnRefreshListener {
                 // TODO AMANDA : new track notification for refreshing all product reviews
-                viewModel.refreshReviewList()
+                viewModel.forceRefreshReviews()
             }
         }
 
@@ -192,7 +192,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ReviewListViewModel::class.java)
         setupObservers()
-        viewModel.loadReviews()
+        viewModel.start()
     }
 
     private fun setupObservers() {
@@ -293,7 +293,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     override fun refreshFragmentState() {
         if (isActive) {
-            viewModel.refreshReviewList()
+            viewModel.forceRefreshReviews()
         }
     }
 

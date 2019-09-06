@@ -63,30 +63,38 @@ final class ReviewListViewModel @Inject constructor(
         reviewRepository.onCleanup()
     }
 
-    fun loadReviews(loadMore: Boolean = false) {
-        if (loadMore && !reviewRepository.canLoadMore) {
+    /**
+     * Fetch and load cached reviews from the database, then fetch fresh reviews
+     * from the API.
+     */
+    fun start() {
+        launch {
+            _isSkeletonShown.value = true
+
+            // Initial load. Get and show reviewList from the db if any
+                val reviewsInDb = reviewRepository.getCachedProductReviews()
+                if (reviewsInDb.isNotEmpty()) {
+                _isSkeletonShown.value = false
+                _reviewList.value = reviewsInDb
+            }
+            fetchReviewList(loadMore = false)
+        }
+    }
+
+    fun loadMoreReviews() {
+        if (!reviewRepository.canLoadMore) {
             WooLog.d(REVIEWS, "No more product reviews to load")
             return
         }
 
-        _isLoadingMore.value = loadMore
+        _isLoadingMore.value = true
 
         launch {
-            if (!loadMore) {
-                _isSkeletonShown.value = true
-
-                // Initial load. Get and show reviewList from the db if any
-                val reviewsInDb = reviewRepository.getCachedProductReviews()
-                if (reviewsInDb.isNotEmpty()) {
-                    _isSkeletonShown.value = false
-                    _reviewList.value = reviewsInDb
-                }
-            }
-            fetchReviewList(loadMore)
+            fetchReviewList(loadMore = true)
         }
     }
 
-    fun refreshReviewList() {
+    fun forceRefreshReviews() {
         _isRefreshing.value = true
         launch {
             fetchReviewList(loadMore = false)
@@ -147,7 +155,7 @@ final class ReviewListViewModel @Inject constructor(
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
-            refreshReviewList()
+            forceRefreshReviews()
         }
     }
 
@@ -159,7 +167,7 @@ final class ReviewListViewModel @Inject constructor(
                 WooLog.e(REVIEWS, "Error fetching single product review: ${event.error.message}")
                 _showSnackbarMessage.value = R.string.review_single_fetch_error
             } else {
-                refreshReviewList()
+                forceRefreshReviews()
             }
         }
     }
