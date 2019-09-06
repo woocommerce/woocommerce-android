@@ -40,6 +40,9 @@ final class ReviewDetailViewModel @Inject constructor(
     private val _isSkeletonShown = MutableLiveData<Boolean>()
     val isSkeletonShown: LiveData<Boolean> = _isSkeletonShown
 
+    private val _markAsRead = MutableLiveData<Long>()
+    val markAsRead: LiveData<Long> = _markAsRead
+
     fun start(remoteReviewId: Long) {
         loadProductReview(remoteReviewId)
     }
@@ -93,6 +96,9 @@ final class ReviewDetailViewModel @Inject constructor(
     private suspend fun markAsRead(remoteReviewId: Long) {
         repository.getCachedNotificationForReview(remoteReviewId)?.let {
             repository.markNotificationAsRead(it)
+
+            // Also remove it from the notification panel if it exists
+            _markAsRead.value = it.remoteNoteId
         }
     }
 }

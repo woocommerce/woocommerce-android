@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -114,6 +115,13 @@ class ReviewDetailFragment : BaseFragment() {
 
         viewModel.exit.observe(this, Observer {
             exitDetailView()
+        })
+
+        viewModel.markAsRead.observe(this, Observer { remoteNoteId ->
+            // Remove all active notifications from the system bar
+            context?.let {
+                NotificationHandler.removeNotificationWithNoteIdFromSystemBar(it, remoteNoteId.toString())
+            }
         })
     }
 
