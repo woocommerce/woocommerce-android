@@ -13,17 +13,10 @@
         android:focusable="true">
 
         <!-- Orders List View -->
-        <LinearLayout
-            android:id="@+id/ordersView"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ordersList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/ordersList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+            android:layout_height="match_parent"/>
 
         <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/empty_view"

@@ -126,7 +126,7 @@ class OrderListView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet?
 
     fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(ordersView, R.layout.skeleton_order_list, delayed = true)
+            skeletonView.show(ordersList, R.layout.skeleton_order_list, delayed = true)
         } else {
             skeletonView.hide()
         }
