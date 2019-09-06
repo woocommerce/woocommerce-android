@@ -294,12 +294,16 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
-        visitors_layout.visibility = View.VISIBLE
+        if (visitors_layout.visibility == View.GONE) {
+            WooAnimUtils.fadeIn(visitors_layout)
+        }
         fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
     }
 
     fun showVisitorStatsError() {
-        fadeInLabelValue(visitors_value, "?")
+        if (visitors_layout.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(visitors_layout)
+        }
     }
 
     fun clearLabelValues() {
@@ -514,7 +518,12 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             return when (value) {
                 axis.mEntries.first() -> getStartValue()
                 axis.mEntries.max() -> getEndValue()
-                else -> getLabelValue(chartRevenueStats.keys.elementAt(round(value).toInt() - 1))
+                else -> {
+                    val index = round(value).toInt() - 1
+                    return if (index > 0 && index < chartRevenueStats.keys.size - 1) {
+                        getLabelValue(chartRevenueStats.keys.elementAt(index))
+                    } else ""
+                }
             }
         }
 
