@@ -312,6 +312,7 @@ class ReviewListRepository @Inject constructor(
                 // TODO AMANDA : track fetch products success
                 continuationProduct?.resume(true)
             }
+            continuationProduct = null
         }
     }
 
@@ -329,6 +330,7 @@ class ReviewListRepository @Inject constructor(
                 canLoadMore = event.canLoadMore
                 continuationReview?.resume(true)
             }
+            continuationReview = null
         }
     }
 
@@ -344,6 +346,7 @@ class ReviewListRepository @Inject constructor(
                 // TODO AMANDA : track fetch notifications success
                 continuationNotification?.resume(true)
             }
+            continuationNotification = null
         } else if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
             if (event.isError) {
                 // TODO AMANDA : track mark notifications read error
@@ -353,6 +356,7 @@ class ReviewListRepository @Inject constructor(
                 // TODO AMANDA : track mark notifications read success
                 continuationMarkAllRead?.resume(SUCCESS)
             }
+            continuationMarkAllRead = null
         }
     }
 }
