@@ -1,3 +1,0 @@
-2.5 :
-* Nous avons détecté et résolu : une défaillance rare qui survenait après l'exécution d'une commande et la réduction de l'application, un bug remplaçant le site sélectionné dans le sélecteur de site par la sélection précédente, ainsi que quelques problèmes d'interface utilisateur avec le nouvel onglet « Avis ».
-* Les noms de produit peuvent désormais occuper deux lignes dans l'écran des détails de la commande.

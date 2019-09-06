@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-21 00:54:31+0000
+Translation-Revision-Date: 2019-09-04 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">Statistik Hari Ini</string>
+    <string name="login_sign_in">Masuk</string>
+    <string name="login_jetpack_installed_sign_in">Sudah punya Jetpack? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Mencoba login dengan Jetpack…</string>
+    <string name="login_refresh_app_continue">segarkan aplikasi untuk melanjutkan</string>
+    <string name="login_not_connected_jetpack">Untuk menggunakan aplikasi ini untuk %1$s Anda perlu melakukan penyiapan plugin Jetpack dan terhubung ke akun ini. \n\nSekali penyiapan, %2$s</string>
+    <string name="login_try_another_store">Coba toko lain</string>
+    <string name="database_downgraded">Database di-downgrade, membuat ulang tabel dan memuat toko</string>
+    <string name="loading_stores">Memuat toko</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">Tidak ditemukan penyedia</string>
     <string name="login_invalid_site_url">Masukkan alamat situs web lengkap, seperti contoh.com.</string>
     <string name="reviews_empty_message">Belum ada ulasan!</string>
