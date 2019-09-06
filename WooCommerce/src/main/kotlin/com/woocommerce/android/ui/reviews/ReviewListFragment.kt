@@ -209,7 +209,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         })
 
         viewModel.isRefreshing.observe(this, Observer {
-            notifsRefreshLayout.isRefreshing = it
+            if (isActive) notifsRefreshLayout.isRefreshing = it
         })
 
         viewModel.isLoadingMore.observe(this, Observer {
@@ -240,19 +240,26 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {
-        reviewsAdapter.setReviews(reviews)
-
-        showEmptyView(reviews.isEmpty())
+        if (isActive) {
+            reviewsAdapter.setReviews(reviews)
+            showEmptyView(reviews.isEmpty())
+        } else {
+            isRefreshPending = true
+        }
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        if (isActive) {
+            notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        }
     }
 
     private fun showSkeleton(show: Boolean) {
-        when (show) {
-            true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
-            false -> skeletonView.hide()
+        if (isActive) {
+            when (show) {
+                true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
+                false -> skeletonView.hide()
+            }
         }
     }
 
