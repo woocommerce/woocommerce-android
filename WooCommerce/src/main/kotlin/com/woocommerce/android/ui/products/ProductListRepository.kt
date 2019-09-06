@@ -24,7 +24,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
-class ProductListRepository @Inject constructor(
+final class ProductListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
@@ -41,14 +41,10 @@ class ProductListRepository @Inject constructor(
     private var isLoadingProducts = false
 
     final var canLoadMoreProducts = true
-        private set(value) {
-            field = value
-        }
+        private set
 
     final var lastSearchQuery: String? = null
-        private set(value) {
-            field = value
-        }
+        private set
 
     init {
         dispatcher.register(this)
