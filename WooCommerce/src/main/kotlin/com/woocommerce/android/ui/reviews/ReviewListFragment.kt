@@ -269,7 +269,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
     }
 
-    private fun openOrderDetail(review: ProductReview) {
+    private fun openReviewDetail(review: ProductReview) {
         AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                 AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
                 AnalyticsTracker.KEY_ALREADY_READ to review.read))
@@ -311,6 +311,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
     override fun onReviewClick(review: ProductReview) {
-        openOrderDetail(review)
+        openReviewDetail(review)
     }
 }
