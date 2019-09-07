@@ -8,14 +8,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
-import androidx.annotation.IdRes
-import androidx.annotation.NavigationRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -43,7 +39,6 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
@@ -71,7 +66,6 @@ import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 class MainActivity : AppUpgradeActivity(),
         MainContract.View,

@@ -41,10 +41,11 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java).also {
-            initializeViews(it)
-            setupObservers(it)
-        }
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(IssueRefundViewModel::class.java)
+                .also {
+                    initializeViews(it)
+                    setupObservers(it)
+                }
 
         viewModel.start(navArgs.orderId)
     }

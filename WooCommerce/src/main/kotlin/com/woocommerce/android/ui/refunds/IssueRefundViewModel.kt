@@ -38,7 +38,6 @@ class IssueRefundViewModel @Inject constructor(
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
     }
-    
     private val _showSnackbarMessage = SingleLiveEvent<String>()
     val showSnackbarMessage: LiveData<String> = _showSnackbarMessage
 
