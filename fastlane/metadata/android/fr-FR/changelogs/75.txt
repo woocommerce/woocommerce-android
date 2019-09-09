@@ -1,0 +1,5 @@
+2.6 :
+- Vous n'avez pas de compte Jetpack ? Vous pouvez désormais vous connecter à votre site en contournant l'écran nécessitant Jetpack. (Cela signifie que vous passez à côté de puissantes fonctionnalités. Donnez une chance à Jetpack !)
+- Les utilisateurs possédant un site connecté à Jetpack rencontraient parfois des problèmes de connexion. Ce bug a été corrigé.
+- Nous avons résolu les problèmes d'affichage des statistiques Ma boutique avant la réception de votre première commande.
+- Quelques utilisateurs étaient parfois confrontés à des défaillances inattendues. Ce problème a été résolu. Si vous étiez concerné, vous ne rencontrerez plus ce problème.

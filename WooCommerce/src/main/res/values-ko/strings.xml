@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-22 00:54:03+0000
+Translation-Revision-Date: 2019-09-05 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">오늘의 통계</string>
+    <string name="login_sign_in">로그인</string>
+    <string name="login_jetpack_installed_sign_in">이미 젯팩이 있나요? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">젯팩으로 로그인 시도 중…</string>
+    <string name="login_refresh_app_continue">앱을 새로 고친 후 계속</string>
+    <string name="login_not_connected_jetpack">%1$s에 대해 이 앱을 사용하려면 이 계정에 설정되고 연결된 젯팩 플러그인이 있어야 합니다. \n\n설정이 완료되면 %2$s</string>
+    <string name="login_try_another_store">다른 스토어 시도</string>
+    <string name="database_downgraded">데이터베이스 다운그레이드됨, 테이블 다시 생성 및 스토어 로드 중</string>
+    <string name="loading_stores">스토어 로드 중</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">공급자를 찾을 수 없음</string>
     <string name="login_invalid_site_url">example.com과 같은 완전한 웹사이트 주소를 입력하세요.</string>
     <string name="reviews_empty_message">아직 리뷰가 없습니다!</string>

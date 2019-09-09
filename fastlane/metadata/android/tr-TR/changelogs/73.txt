@@ -1,3 +1,0 @@
-2.5:
-* Takip ettik ve aşağıdakileri düzelttik: bir sipariş verilip uygulama simge durumuna küçültüldükten sonra oluşan nadir bir hata, site seçiciden site seçildikten sonra önceki seçime geri dönülmesine neden olan bir hata ve yeni “Yorumlar” sekmesiyle ilgili bir kaç kullanıcı arayüzü sorunu.
-* Ürün adları artık sipariş ayrıntıları ekranında iki satıra sarılabiliyor.

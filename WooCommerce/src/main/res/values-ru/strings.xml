@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-21 00:54:30+0000
+Translation-Revision-Date: 2019-09-06 13:24:59+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">Статистика за сегодня</string>
+    <string name="login_sign_in">Войти</string>
+    <string name="login_jetpack_installed_sign_in">Уже есть Jetpack? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Попытка входа через Jetpack…</string>
+    <string name="login_refresh_app_continue">обновите приложение, чтобы продолжить</string>
+    <string name="login_not_connected_jetpack">Чтобы использовать это приложение для %1$s, нужно настроить плагин Jetpack и подключить его к этой учетной записи. \n\nПосле настройки %2$s</string>
+    <string name="login_try_another_store">Попробуйте другой магазин</string>
+    <string name="database_downgraded">База данных переведена на более раннюю версию, идет повторное создание таблиц и загрузка магазинов</string>
+    <string name="loading_stores">Загрузка магазинов</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">Поставщики услуг не найдены</string>
     <string name="login_invalid_site_url">Введите адрес сайта полностью, например example.com.</string>
     <string name="reviews_empty_message">Нет обзоров!</string>
@@ -390,9 +399,11 @@ Language: ru
     <string name="waiting_for_customers">Ожидание клиентов</string>
     <string name="share_store_dialog_title">Поделитесь URL-адресом своего магазина</string>
     <string name="share_store_button">Поделиться адресом магазина</string>
+    <string name="wc_mark_all_read_success">Все уведомления помечены как прочитанные.</string>
     <string name="login_update_required_title">Обновите свой магазин WooCommerce до версии 3.5</string>
     <string name="login_verifying_site_error">Не удалось подключиться к %s</string>
     <string name="dismiss">Закрыть</string>
+    <string name="wc_mark_all_read_error">Ошибка отметки всех уведомлений как прочитанных</string>
     <string name="wc_mark_all_read">Отметить все как прочитанные</string>
     <string name="orderdetail_message_customer">Сообщение</string>
     <string name="orderdetail_call_customer">Звонок</string>
@@ -674,6 +685,7 @@ Language: ru
     <string name="login_prologue_banner">Управляйте заказами, следите за продажами и контролируйте работу магазина с помощью уведомлений в реальном времени.</string>
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>
     <string name="already_logged_in_wpcom">Вы уже вошли в учетную запись WordPress.com. Вы не можете добавить сайт WordPress.com, привязанный к другой учетной записи.</string>
     <string name="cant_open_url">Не удаётся открыть ссылку</string>
     <string name="error_no_sms_app">Не найдено приложение для отправки SMS</string>
