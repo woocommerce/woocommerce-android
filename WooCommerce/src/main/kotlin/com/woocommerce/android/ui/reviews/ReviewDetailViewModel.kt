@@ -53,6 +53,11 @@ final class ReviewDetailViewModel @Inject constructor(
     }
 
     private fun loadProductReview(remoteReviewId: Long) {
+        // Mark the notification as read
+        launch {
+            markAsRead(remoteReviewId)
+        }
+
         val shouldFetch = remoteReviewId != this.remoteReviewId
         this.remoteReviewId = remoteReviewId
 
@@ -81,7 +86,6 @@ final class ReviewDetailViewModel @Inject constructor(
                     SUCCESS, NO_ACTION_NEEDED -> {
                         repository.getCachedProductReview(remoteReviewId)?.let { review ->
                             _productReview.value = review
-                            markAsRead(review.remoteId)
                         }
                     }
                     ERROR -> _showSnackbarMessage.value = R.string.wc_load_review_error
