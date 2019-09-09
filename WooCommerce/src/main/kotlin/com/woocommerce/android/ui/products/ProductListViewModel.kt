@@ -116,14 +116,6 @@ class ProductListViewModel @Inject constructor(
      * Adds the passed list of products to the current list
      */
     private fun addProducts(products: List<Product>) {
-        if (productList.value.isNullOrEmpty()) {
-            productList.value = products
-        } else {
-            with(ArrayList<Product>()) {
-                addAll(productList.value!!)
-                addAll(products)
-                productList.value = this
-            }
-        }
+        productList.value = productList.value.orEmpty() + products
     }
 }
