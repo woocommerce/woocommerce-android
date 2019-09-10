@@ -85,4 +85,4 @@ fun WCProductModel.toAppModel(): Product {
  * Returns the product as a [ProductReviewProduct] for use with the product reviews feature.
  */
 fun WCProductModel.toProductReviewProductModel() =
-        ProductReviewProduct(this.remoteProductId, this.name, this.externalUrl)
+        ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
