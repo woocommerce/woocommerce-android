@@ -99,10 +99,11 @@ final class ReviewDetailViewModel @Inject constructor(
 
     private suspend fun markAsRead(remoteReviewId: Long) {
         repository.getCachedNotificationForReview(remoteReviewId)?.let {
-            repository.markNotificationAsRead(it)
-
-            // Also remove it from the notification panel if it exists
+            // remove notification from the notification panel if it exists
             _markAsRead.value = it.remoteNoteId
+
+            // send request to mark notification as read to the server
+            repository.markNotificationAsRead(it)
         }
     }
 }
