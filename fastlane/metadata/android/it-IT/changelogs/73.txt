@@ -1,3 +1,0 @@
-2.5:
-* Siamo risaliti alle cause e abbiamo risolto: un raro arresto anomalo che si verificava dopo aver evaso un ordine e ridotto a icona l'app, un bug che portava il sito selezionato in Scelta siti a tornare alla selezione precedente e alcuni problemi di interfaccia utente con la nuova scheda "Recensioni".
-* I nomi dei prodotti ora possono essere inseriti in due righe nella schermata dei dettagli dell'ordine.
