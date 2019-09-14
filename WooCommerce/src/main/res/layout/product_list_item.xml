@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
-        android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
+        android:textAppearance="@style/Woo.TextAppearance.Medium.Gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/productName"
         app:layout_constraintHorizontal_bias="0.0"
