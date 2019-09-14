@@ -100,10 +100,9 @@
         <item name="android:textSize">@dimen/text_medium</item>
     </style>
 
-    <style name="Woo.TextAppearance.Medium.Gray">
+    <stylxe name="Woo.TextAppearance.Medium.Gray">
         <item name="android:textColor">@color/wc_grey_medium</item>
-        <item name="android:textSize">@dimen/text_medium</item>
-    </style>
+    </stylxe>
 
     <style name="Woo.TextAppearance.Medium.Purple">
         <item name="android:textColor">@color/colorPrimary</item>
