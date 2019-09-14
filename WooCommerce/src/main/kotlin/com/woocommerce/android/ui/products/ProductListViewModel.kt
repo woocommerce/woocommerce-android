@@ -11,6 +11,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
@@ -21,6 +23,10 @@ class ProductListViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(mainDispatcher) {
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+    }
+
     private var canLoadMore = true
     private var isLoadingProducts = false
 
@@ -38,6 +44,8 @@ class ProductListViewModel @Inject constructor(
     private val _isRefreshing = MutableLiveData<Boolean>()
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
+    private var searchJob: Job? = null
+
     fun start(searchQuery: String? = null) {
         loadProducts(searchQuery = searchQuery)
     }
@@ -48,34 +56,45 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun loadProducts(searchQuery: String? = null, loadMore: Boolean = false) {
-        if (isLoadingProducts) {
-            WooLog.d(WooLog.T.PRODUCTS, "already loading products")
-            return
-        }
-
         if (loadMore && !productRepository.canLoadMoreProducts) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
             return
         }
 
-        launch {
-            isLoadingProducts = true
-            _isLoadingMore.value = loadMore
-
-            if (searchQuery != null && !loadMore) {
-                _isSkeletonShown.value = true
-            } else if (!loadMore) {
-                // if this is the initial load, first get the products from the db and if there are any show
-                // them immediately, otherwise make sure the skeleton shows
-                val productsInDb = productRepository.getProductList()
-                if (productsInDb.isEmpty()) {
-                    _isSkeletonShown.value = true
-                } else {
-                    productList.value = productsInDb
-                }
+        if (searchQuery.isNullOrBlank()) {
+            if (isLoadingProducts) {
+                WooLog.d(WooLog.T.PRODUCTS, "already loading products")
+                return
             }
 
-            fetchProductList(searchQuery, loadMore)
+            launch {
+                isLoadingProducts = true
+                _isLoadingMore.value = loadMore
+
+                if (!loadMore) {
+                    // if this is the initial load, first get the products from the db and if there are any show
+                    // them immediately, otherwise make sure the skeleton shows
+                    val productsInDb = productRepository.getProductList()
+                    if (productsInDb.isEmpty()) {
+                        _isSkeletonShown.value = true
+                    } else {
+                        productList.value = productsInDb
+                    }
+                }
+
+                fetchProductList(loadMore = loadMore)
+            }
+        } else {
+            // cancel any existing search, then start a new one after a brief delay so we don't actually perform
+            // the fetch until the user stops typing
+            searchJob?.cancel()
+            searchJob = launch {
+                delay(SEARCH_TYPING_DELAY_MS)
+                isLoadingProducts = true
+                _isLoadingMore.value = loadMore
+                _isSkeletonShown.value = !loadMore
+                fetchProductList(searchQuery, loadMore)
+            }
         }
     }
 

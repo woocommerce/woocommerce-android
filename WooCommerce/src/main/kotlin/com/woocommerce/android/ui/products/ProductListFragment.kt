@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -40,7 +39,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_SEARCH_ACTIVE = "search_active"
         private const val KEY_SEARCH_QUERY = "search_query"
         fun newInstance() = ProductListFragment()
@@ -56,7 +54,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private val searchHandler = Handler()
     private var isSearchActive: Boolean = false
     private var searchQuery: String? = null
 
@@ -239,7 +236,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
 
     override fun onQueryTextChange(newText: String): Boolean {
         if (newText.length > 2) {
-            submitSearchDelayed(newText)
+            submitSearch(newText)
         } else {
             productAdapter.clearAdapterData()
         }
@@ -257,18 +254,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener,
         clearSearchResults()
         viewModel.loadProducts()
         return true
-    }
-
-    /**
-     * Submit the search after a brief delay - this way we don't submit while the user is typing
-     */
-    private fun submitSearchDelayed(query: String) {
-        searchHandler.postDelayed({
-            searchView?.let {
-                // submit the search if the searchView's query still matches the passed query
-                if (query == it.query.toString()) submitSearch(query)
-            }
-        }, SEARCH_TYPING_DELAY_MS)
     }
 
     private fun submitSearch(query: String) {
