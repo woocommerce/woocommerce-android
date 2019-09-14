@@ -101,8 +101,7 @@
     </style>
 
     <style name="Woo.TextAppearance.Medium.Grey">
-        <item name="android:textColor">@color/wc_grey_mid</item>
-        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/wc_grey_medium</item>
     </style>
 
     <style name="Woo.TextAppearance.Medium.Purple">
@@ -592,7 +591,7 @@
 
     <style name="Woo.Stats.Availability.CardExtenderButton" parent="Woo.CardExtenderButton">
         <item name="android:background">@drawable/button_white_bg</item>
-        <item name="android:textColor">@color/wc_grey_darkest</item>
+        <item name="android:textColor">@color/wc_grey_dark</item>
         <item name="android:drawableStart">@drawable/ic_gridicons_gift</item>
         <item name="android:drawableEnd">@drawable/stats_availability_expander_selector</item>
         <item name="android:paddingStart">@dimen/card_padding_start</item>

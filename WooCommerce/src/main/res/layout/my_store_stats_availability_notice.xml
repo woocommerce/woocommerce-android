@@ -19,10 +19,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:textOff="@string/my_store_stats_availability_title"
-            android:textOn="@string/my_store_stats_availability_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:textOn="@string/my_store_stats_availability_title"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/my_store_availability_morePanel"
@@ -30,22 +27,25 @@
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/default_padding"
             android:paddingTop="@dimen/default_padding"
+            android:paddingStart="@dimen/card_padding_start"
+            android:layout_marginStart="9dp"
+            android:paddingEnd="0dp"
             android:visibility="gone"
             tools:visibility="visible">
 
             <!-- Message -->
             <TextView
                 android:id="@+id/my_store_availability_message"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_large"
+                android:layout_marginStart="@dimen/margin_extra_large"
                 android:gravity="start"
                 android:lineSpacingExtra="4sp"
                 android:paddingBottom="@dimen/default_padding"
                 android:paddingEnd="@dimen/card_padding_end"
                 android:paddingStart="@dimen/card_padding_start"
                 android:text="@string/my_store_stats_availability_message"
-                android:textAppearance="@style/Woo.TextAppearance.Medium"
+                android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>

@@ -1,0 +1,5 @@
+2.6:
+- ¿No tienes una cuenta de Jetpack? Ahora puedes iniciar sesión en tu sitio sin pasar por la pantalla obligatoria de Jetpack. Dicho esto, te estás perdiendo algunas funciones interesantes: ¡prueba Jetpack!
+- A veces, algunos de los que tenéis un sitio conectado a Jetpack teníais problemas al acceder. Ya no os encontraréis con este error.
+- Solucionamos el aspecto que tienen las estadísticas de Mi tienda antes de que recibas el primer pedido.
+- En ocasiones, un reducido grupo teníais fallos inesperados; si es tu caso, buenas noticias: ya no los tendrás.
