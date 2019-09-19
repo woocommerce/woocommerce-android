@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-07 00:54:03+0000
+Translation-Revision-Date: 2019-09-05 00:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">إحصاءات اليوم</string>
+    <string name="login_sign_in">تسجيل الدخول</string>
+    <string name="login_jetpack_installed_sign_in">هل لديك Jetpack بالفعل؟ %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">جارٍ محاولة تسجيل الدخول باستخدام Jetpack…</string>
+    <string name="login_refresh_app_continue">تحديث التطبيق للاستمرار</string>
+    <string name="login_not_connected_jetpack">لاستخدام هذا التطبيق مقابل %1$s، سيتعين عليك إعداد إضافة Jetpack وربطها بهذا الحساب. \n\nبعد الإعداد، %2$s</string>
+    <string name="login_try_another_store">تجربة متجر آخر</string>
+    <string name="database_downgraded">تم تخفيض قاعدة البيانات إلى المستوى الأدنى وإنشاء الجداول مجددًا وتحميل المتاجر</string>
+    <string name="loading_stores">تحميل المتاجر</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">لم يتم العثور على أي مزوِّدين</string>
     <string name="login_invalid_site_url">يرجى إدخال عنوان موقع ويب كامل، مثل example.com.</string>
     <string name="reviews_empty_message">لا توجد مراجعات بعد!</string>
     <string name="review_notifications">مراجعات</string>
@@ -389,11 +399,9 @@ Language: ar
     <string name="waiting_for_customers">في انتظار العملاء</string>
     <string name="share_store_dialog_title">مشاركة عنوان URL الخاص بمتجرك</string>
     <string name="share_store_button">مشاركة متجرك</string>
-    <string name="wc_mark_all_read_success">تم وسم جميع التنبيهات كمقروءة</string>
     <string name="login_update_required_title">تحديث المتجر إلى WooCommerce 3.5</string>
     <string name="login_verifying_site_error">يتعذر الاتصال بـ %s</string>
     <string name="dismiss">تجاهل</string>
-    <string name="wc_mark_all_read_error">حدث خطأ أثناء وسم جميع التنبيهات كمقروءة</string>
     <string name="wc_mark_all_read">وسم الجميع كمقروء</string>
     <string name="orderdetail_message_customer">رسالة</string>
     <string name="orderdetail_call_customer">اتصال</string>
@@ -603,7 +611,6 @@ Language: ar
     <string name="order_error_fetch_notes_generic">حدث خطأ أثناء إحضار الملاحظات</string>
     <string name="order_fulfill_marked_complete">تم وضع علامة مكتمل على الطلب</string>
     <string name="order_fulfill_mark_complete">وضع علامة مكتمل على الطلب</string>
-    <string name="order_fulfill_order">إتمام الطلب</string>
     <string name="orderdetail_addnote_contentdesc">إضافة ملاحظة طلب</string>
     <string name="orderdetail_add_note">إضافة ملاحظة</string>
     <string name="orderdetail_hide_billing">إخفاء الفوترة</string>
@@ -617,7 +624,6 @@ Language: ar
     <string name="orderdetail_customer_provided_note">الملاحظة المقدمة إلى العميل</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">الدفع - تم استرداد المبلغ</string>
-    <string name="orderdetail_new_total">الإجمالي الجديد</string>
     <string name="orderdetail_refunded">تم رد المبلغ</string>
     <string name="orderdetail_payment_summary_onhold">المبلغ بانتظار %s</string>
     <string name="orderdetail_payment_summary_completed">تم استلام المبلغ %1$s عبر %2$s</string>
@@ -712,7 +718,6 @@ Language: ar
     <string name="taxes">الضرائب</string>
     <string name="payment">السداد</string>
     <string name="shipping">الشحن</string>
-    <string name="total">الإجمالي</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">الطلبات</string>

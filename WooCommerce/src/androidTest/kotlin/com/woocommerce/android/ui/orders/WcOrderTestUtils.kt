@@ -175,7 +175,8 @@ object WcOrderTestUtils {
         discountCodes: String = "",
         paymentMethodTitle: String = "",
         currency: String = "USD",
-        refundTotal: Double = 0.00
+        refundTotal: Double = 0.00,
+        datePaidString: String = ""
     ): WCOrderModel {
         return WCOrderModel(2).apply {
             this.billingFirstName = billingFirstName
@@ -204,6 +205,7 @@ object WcOrderTestUtils {
             this.discountTotal = discountTotal
             this.paymentMethodTitle = paymentMethodTitle
             this.refundTotal = refundTotal
+            this.datePaid = datePaidString
         }
     }
 

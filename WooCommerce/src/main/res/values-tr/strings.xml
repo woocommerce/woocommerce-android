@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-07 00:54:03+0000
+Translation-Revision-Date: 2019-09-05 00:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">Bugünün İstatistikleri</string>
+    <string name="login_sign_in">Giriş yap</string>
+    <string name="login_jetpack_installed_sign_in">Zaten Jetpack’iniz var mı? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Jetpack ile oturum açılmaya çalışılıyor…</string>
+    <string name="login_refresh_app_continue">devam etmek için uygulamayı yenileyin</string>
+    <string name="login_not_connected_jetpack">Bu uygulamayı %1$s için kullanmak istiyorsanız kurulu ve bu hesaba bağlı Jetpack eklentiniz olmalıdır. \n\nKurulumdan sonra, %2$s</string>
+    <string name="login_try_another_store">Başka bir mağaza deneyin</string>
+    <string name="database_downgraded">Veri tabanının sürümü düşürüldü, tablolar yeniden oluşturuluyor ve mağazalar yükleniyor</string>
+    <string name="loading_stores">Mağazalar yükleniyor</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Sağlayıcı bulunamadı</string>
     <string name="login_invalid_site_url">Lütfen example.com gibi eksiksiz bir web sitesi adresi girin.</string>
     <string name="reviews_empty_message">Henüz inceleme yok!</string>
     <string name="review_notifications">İncelemeler</string>
@@ -389,11 +399,9 @@ Language: tr
     <string name="waiting_for_customers">Müşteriler bekleniyor</string>
     <string name="share_store_dialog_title">Mağazanızın URL\'sini paylaşın</string>
     <string name="share_store_button">Mağazanızı paylaşın</string>
-    <string name="wc_mark_all_read_success">Tüm bildirimler okundu olarak işaretlendi</string>
     <string name="login_update_required_title">Mağazayı WooCommerce 3.5’e Yükseltin</string>
     <string name="login_verifying_site_error">%s ile bağlantı kurulamıyor</string>
     <string name="dismiss">Gizle</string>
-    <string name="wc_mark_all_read_error">Tüm bildirimler okundu olarak işaretlenirken hata oluştu</string>
     <string name="wc_mark_all_read">Tümünü okundu olarak işaretle</string>
     <string name="orderdetail_message_customer">Mesaj Gönder</string>
     <string name="orderdetail_call_customer">Ara</string>
@@ -603,7 +611,6 @@ Language: tr
     <string name="order_error_fetch_notes_generic">Hata notları alınırken hata</string>
     <string name="order_fulfill_marked_complete">Sipariş Tamamlanmış Olarak İşaretlendi</string>
     <string name="order_fulfill_mark_complete">Siparişi Tamamlanmış Olarak İşaretle</string>
-    <string name="order_fulfill_order">Siparişi Yerine Getir</string>
     <string name="orderdetail_addnote_contentdesc">Sipariş notu ekleyin</string>
     <string name="orderdetail_add_note">Not ekleyin</string>
     <string name="orderdetail_hide_billing">Faturayı Saklayın</string>
@@ -617,7 +624,6 @@ Language: tr
     <string name="orderdetail_customer_provided_note">Müşterinin Verdiği Not</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Ödeme - İade Edildi</string>
-    <string name="orderdetail_new_total">Yeni Toplam</string>
     <string name="orderdetail_refunded">İade Edildi</string>
     <string name="orderdetail_payment_summary_onhold">%s için ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%1$s için ödeme %2$s ile alındı</string>
@@ -712,7 +718,6 @@ Language: tr
     <string name="taxes">Vergiler</string>
     <string name="payment">Ödeme</string>
     <string name="shipping">Gönderim</string>
-    <string name="total">Toplam</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Siparişler</string>

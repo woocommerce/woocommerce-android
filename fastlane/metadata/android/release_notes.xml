@@ -1,136 +1,112 @@
 <ar>
-2.4:
-علامة التبويب التي كانت تسمى في السابق تنبيهات تسمى الآن مراجعات. حيث إن التنبيهات تظهر الآن أسفل الطلبات، كان يجب أن يكون لها هوية جديدة. قمنا بإعادة تسميتها إلى "مراجعات" حيث إنها الآن تُظهر المراجعات.
-
-تم نقل عدد الطلبات غير المستوفاة من لوحة التحكم ويظهر الآن كشارة على قائمة الطلبات.
-
-سيُطلب منك إجراء تحديثات داخل التطبيق، لذا فلن تلجأ إلى فوضى فتح Play store لإجرائها.
+2.6:
+- أليس لديك حساب Jetpack؟ يمكنك الآن تسجيل الدخول إلى موقعك أثناء تجاوز شاشة Jetpack الضرورية. (ومع ذلك، فأنتَ تفقد بعض الميزات الفعَّالة — جرِّب Jetpack!)
+- في بعض الأحيان، سيواجه بعضكم الذين لديهم موقع متصل بـ Jetpack مشكلات أثناء تسجيل الدخول. هذا خطأ لن تواجهه بعد الآن.
+- أصلحنا الكيفية التي تظهر بها إحصاءاتك في "متجري" قبل تلقي طلبك الأول.
+- ستواجه مجموعة صغيرة من بينكم من حين إلى آخر أخطاء غير متوقعة؛ إذا حدث ذلك معك، فلدينا أخبار سارة: لن تواجه هذه الأخطاء بعد الآن.
 </ar>
 <de-DE>
-2.4:
-Der vormals „Benachrichtigungen“ genannte Tab heißt jetzt „Rezensionen“. Da Benachrichtigungen jetzt unter „Aufträge“ angezeigt werden, brauchte der Tab „Benachrichtigungen“ eine neue Bezeichnung. Wir haben ihn schlauerweise „Rezensionen“ genannt, da dort jetzt eben nur diese angezeigt werden.
-
-Die Anzahl nicht erfüllter Aufträge wird nicht mehr im Dashboard angezeigt, sondern als Badge in der Liste der Bestellungen.
-
-Du erhältst eine Aufforderung in der App, wenn es Zeit für ein Update ist. Du brauchst dazu also nicht mehr den Play Store zu öffnen.
+2.6:
+- Du hast kein Jetpack-Konto? Du kannst dich jetzt bei deiner Website anmelden und dabei den Bildschirm umgehen, dass Jetpack erforderlich ist. (Allerdings verpasst du dann einige leistungsstarke Features – probiere Jetpack einfach einmal aus!)
+- Bei einigen von euch, die über eine mit Jetpack verbundene Website verfügen, traten manchmal Probleme beim Anmelden auf. Dieser Fehler wurde behoben.
+- Wir haben die Darstellung der Mein Shop-Statistiken korrigiert, bevor du deine erste Bestellung erhältst.
+- Bei einigen wenigen von euch ist die Website gelegentlich abgestürzt. Wenn du dazu zählst, haben wir gute Nachrichten: Das wird nicht mehr vorkommen.
 </de-DE>
 <es-ES>
-2.4:
-La pestaña anteriormente conocida como Notificaciones ahora se ha cambiado a Reseñas. Como las notificaciones ahora se muestran en Pedidos, la pestaña Notificaciones necesitaba otra identidad. Le hemos cambiado el nombre a "Reseñas", ya que ahora solo muestra reseñas.
-
-El número de los pedidos sin completar se ha quitado del escritorio y ahora se muestra como una insignia en la lista de pedidos.
-
-Se te pedirá que realices actualizaciones en la aplicación, de modo que ya no tendrás que molestarte en abrir Play Store para hacerlo.
+2.6:
+- ¿No tienes una cuenta de Jetpack? Ahora puedes iniciar sesión en tu sitio sin pasar por la pantalla obligatoria de Jetpack. Dicho esto, te estás perdiendo algunas funciones interesantes: ¡prueba Jetpack!
+- A veces, algunos de los que tenéis un sitio conectado a Jetpack teníais problemas al acceder. Ya no os encontraréis con este error.
+- Solucionamos el aspecto que tienen las estadísticas de Mi tienda antes de que recibas el primer pedido.
+- En ocasiones, un reducido grupo teníais fallos inesperados; si es tu caso, buenas noticias: ya no los tendrás.
 </es-ES>
 <fr-FR>
-2.4 :
-L’onglet anciennement appelé Notifications se nomme désormais Avis. Puisque les notifications sont à présent accessibles dans Commandes, l’onglet Notification avait besoin d’une nouvelle identité. Nous l’avons astucieusement rebaptisé « Avis » puisqu’il n’affiche plus que les avis.
-
-Le nombre de commandes inachevées n’apparaît plus sur le tableau de bord. C’est désormais un badge dans la liste de commandes.
-
-Vous serez invité à effectuer des mises à jour dans l’application, il n’est donc plus nécessaire d’ouvrir le Play store.
+2.6 :
+- Vous n'avez pas de compte Jetpack ? Vous pouvez désormais vous connecter à votre site en contournant l'écran nécessitant Jetpack. (Cela signifie que vous passez à côté de puissantes fonctionnalités. Donnez une chance à Jetpack !)
+- Les utilisateurs possédant un site connecté à Jetpack rencontraient parfois des problèmes de connexion. Ce bug a été corrigé.
+- Nous avons résolu les problèmes d'affichage des statistiques Ma boutique avant la réception de votre première commande.
+- Quelques utilisateurs étaient parfois confrontés à des défaillances inattendues. Ce problème a été résolu. Si vous étiez concerné, vous ne rencontrerez plus ce problème.
 </fr-FR>
 <iw-IL>
-2.4:
-הלשונית 'הודעות' נקראת כעת 'ביקורות'. מאחר שההודעות מוצגות כעת במקטע 'הזמנות', רצינו לתת שם חדש ללשונית 'הודעות'. לכן, קראנו לה פשוט 'ביקורות', כיוון שהיא מציגה כעת רק ביקורות.
-
-מספר ההזמנות שלא הושלמו לא מופיע עוד בלוח הבקרה וכעת מופיע כסמל ברשימת ההזמנות.
-
-אנחנו נודיע לך מתי יש עדכונים בתוך האפליקציה כדי שלא יהיה צורך לפתוח את Play Store במיוחד ולבדוק אם קיים עדכון.
+2.6:
+אין לך חשבון ב-Jetpack? כעת אפשר להתחבר לאתר שלך ולדלג על המסך שמחייב חשבון ב-Jetpack. (אבל חבל לפספס את התכונות העוצמתיות של השירות – אנחנו ממליצים לנסות את Jetpack!)
+- חלק מהמשתמשים שברשותם אתר עם חיבור ל-Jetpack נתקלו בבעיות בעת הכניסה. טיפלנו בבאג הזה והוא לא יופיע יותר.
+- תיקנו את התצוגה של הנתונים הסטטיסטיים באזור 'החנות שלי' לפני קבלת ההזמנה הראשונה.
+- קבוצה קטנה של משתמשים נתקלה לפעמים בקריסות לא צפויות. אם התופעה הזאת התרחשה אצלך, יש לנו חדשות טובות: הבעיות האלו לא יקרו עוד.
 </iw-IL>
 <id>
-2.4:
-Tab yang sebelumnya bernama Pemberitahuan kini menjadi Ulasan. Karena pemberitahuan kini ditampilkan di Pesanan, tab Pemberitahuan perlu identitas baru. Kami memberikan nama cerdik ‘Ulasan’, karena sekarang hanya menampilkan ulasan.
-
-Jumlah pesanan yang belum dipenuhi kini tidak ada di dasbor dan ditampilkan sebagai lencana di daftar pesanan.
-
-Anda akan diminta melakukan pembaruan di dalam aplikasi, jadi tak perlu lagi repot membuka Play store untuk melakukannya.
+2.6:
+- Belum punya akun Jetpack? Sekarang Anda bisa login ke situs dengan melewati layar wajib Jetpack. (Itu berarti, Anda melewatkan beberapa fitur hebat — coba Jetpack!)
+- Beberapa dari Anda yang mempunyai situs terkoneksi Jetpack terkadang mengalami masalah saat login. Itu adalah bug yang tidak akan Anda temui lagi.
+- Kami telah memperbaiki tampilan statistik Toko Saya sebelum Anda menerima pesanan pertama.
+- Beberapa orang terkadang harus berurusan dengan masalah crash, jika Anda termasuk salah satu yang pernah mengalaminya, ada kabar baik: Anda tidak akan mengalaminya lagi.
 </id>
 <it-IT>
-2.4:
-La scheda precedentemente nota come Notifiche si chiama ora Recensioni. Poiché le notifiche vengono attualmente visualizzate sotto Ordini, la scheda Notifiche aveva bisogno di una nuova identità. Abbiamo deciso di rinominarla 'Recensioni', poiché ora contiene solo recensioni.
-
-Il numero di ordini inevasi non è più in bacheca, ma è ora visualizzato come badge nell'elenco degli ordini.
-
-Ti verrà richiesto di effettuare gli aggiornamenti direttamente nell'app, evitando la scomodità di aprire il Play Store.
+2.6:
+- Non hai un account Jetpack? Ora puoi accedere al sito pur aggirando la schermata richiesta da Jetpack. (Però ti stai perdendo alcune potenti funzionalità: dai una chance a Jetpack!)
+- Alcuni utenti con un sito connesso a Jetpack a volte riscontravano problemi durante l'accesso: bug risolto.
+- Abbiamo corretto la modalità di visualizzazione delle statistiche del negozio prima della ricezione del primo ordine.
+- Occasionalmente si verificavano arresti imprevisti per alcuni utenti: problema risolto.
 </it-IT>
-<ja-JP>
-2.4:
-以前は「通知」と呼ばれていたタブの名称が「レビュー」になりました。「注文」に通知が表示されるようになったため、「通知」タブに新しい名前が必要でした。レビューのみ表示されるようになったため、このタイミングで「レビュー」という名称に変更しました。
-
-未完了の注文件数がダッシュボードに表示されなくなり、注文リストにバッジとして表示されるようになりました。
-
-アプリ内で更新の実行を促すメッセージが表示されるため、これからは Play ストアを開く手間がかかりません。
-</ja-JP>
 <ko-KR>
-2.4:
-이전에 알림으로 알려진 탭이 이제 리뷰로 변경되었습니다. 이제 알림이 주문 섹션에 표시되므로 알림 탭에 새로운 ID가 필요합니다. '리뷰'로 이름을 살짝 바꾸었으며 이제 리뷰만 표시됩니다.
-
-이행되지 않은 주문 수는 대시보드에 표시되지 않으며 이제 주문 목록에 배지로 표시됩니다.
-
-앱 내에서 업데이트를 수행하라는 메시지가 표시되므로 더 이상 번거롭게 Play 스토어를 열지 않아도 됩니다.
+2.6:
+- 아직 젯팩 계정이 없나요? 이제 젯팩 필수 화면을 무시하고 사이트에 로그인할 수 있습니다. (그래도 몇 가지 강력한 기능이 빠져있으니 젯팩을 사용해 보세요!)
+- 젯팩 연결 사이트를 보유한 일부 사용자는 경우에 따라 로그인할 때 문제가 발생할 수 있습니다. 이제 더 이상 이 버그가 발생하지 않습니다.
+- 첫 주문을 받기 전에 내 스토어 통계가 표시되는 방식을 수정했습니다.
+- 가끔 소규모 그룹에서 예기치 않는 충돌이 발생합니다. 이 경우에 해당한다면 좋은 소식을 전해드립니다. 더 이상 이 문제가 발생하지 않습니다.
 </ko-KR>
 <nl-NL>
-2.4:
-Het tabblad 'Meldingen' is nu 'Beoordelingen' geworden. Omdat meldingen nu onder 'Bestellingen' staan, had het tabblad 'Meldingen' een nieuwe identiteit nodig. Nu hebben we het 'Beoordelingen' genoemd, omdat er nu alleen beoordelingen staan.
-
-Het aantal onvoltooide bestellingen is van het dashboard af en wordt nu weergegeven als een badge op de bestellijst.
-
-Je wordt binnen de app gevraagd updates uit te voeren, dus daarvoor hoef je niet meer naar de Play Store.
+2.6:
+- Heb je geen Jetpack-account? Je kunt nu inloggen op je site en het Jetpack-scherm vermijden. (Je mist dan wel een aantal krachtige functies: probeer Jetpack eens!)
+- Sommige gebruikers met een Jetpack-site ondervinden soms inlogproblemen. Dat probleem is nu opgelost.
+- We hebben de weergave van statistieken voor Mijn winkel nu aangepast wanneer je nog geen bestelling hebt ontvangen.
+- Sommigen van jullie ervaarden soms onverwachte crashes. Als jij een van die personen bent, hebben we goed nieuws: je zult ze vanaf nu niet meer ervaren.
 </nl-NL>
 <pt-BR>
-2.4:
-A guia anteriormente conhecida como Notificações agora se chama Comentários. Como as notificações agora são mostradas em Pedidos, a guia Notificações precisava de uma nova identidade. Nós a renomeamos como "Comentários", já que agora ela mostra apenas comentários.
-
-O número de pedidos não realizados não aparece mais no painel e agora é exibido como um selo na lista de pedidos.
-
-Você será solicitado a realizar atualizações dentro do aplicativo, assim não haverá mais o contratempo de ter que abrir a Play Store para isso.
+2.6:
+- Não tem uma conta no Jetpack? Agora é possível fazer login no seu site ao ignorar a tela que solicita o Jetpack. (Porém, você está perdendo funcionalidades incríveis sem o Jetpack. Experimente usá-lo!)
+- Algumas vezes, aqueles que têm um site conectado ao Jetpack encontravam problemas ao fazer o login. Isso era causado por um bug e já foi consertado.
+- Corrigimos a aparência das estatísticas da Minha loja antes de você receber seu primeiro pedido.
+- Um pequeno grupo de usuários tinha que lidar com travamentos inesperados de vez em quando. Se isso acontecia com você, temos boas notícias: não voltará a se repetir.
 </pt-BR>
 <ru-RU>
-2.4:
-Теперь вкладка "Уведомления" называется "Обзоры". Так как уведомления теперь отображаются на вкладке "Заказы", вкладке "Уведомления" понадобилось новое называние. Мы решили, что "Обзоры" отлично подойдет, так как отражает содержание.
-
-Мы перенесли значок количества ожидающих выполнения заказов с панели управления в список заказов.
-
-Теперь установить обновление можно прямо в приложении, когда всплывет соответствующая подсказка. Для этого больше не нужно заходить в Play Store.
+2.6:
+- Нет учетной записи Jetpack? Теперь вы можете войти на свой сайт в обход экрана с требованием установить Jetpack. (Однако вы упускаете возможность использовать некоторые мощные функции — попробуйте Jetpack!)
+- Некоторые пользователи, у которых есть сайт с подключенным Jetpack, иногда не могли войти на сайт. С этой ошибкой вы больше не столкнетесь.
+- Мы исправили отображение статистики магазина до получения первого заказа.
+- Отдельные пользователи могли сталкиваться с неожиданным обрушением сайта. Если вы из их числа, то у нас хорошие новости: такого больше не случится.
 </ru-RU>
 <sv-SE>
-2.4:
-Fliken Meddelanden har bytt namn till Omdömen. Eftersom meddelanden nu visas under Beställningar behövde Meddelanden-fliken ett nytt namn. Vi har listigt nog kallat den för Omdömen eftersom den bara visar omdömen nu.
-
-Antalet ej slutförda beställningar är borta från instrumentpanelen och visas nu som ett märke i beställningslistan.
-
-Du får meddelande om att utföra uppdateringar inom appen så du behöver inte längre krångla med att öppna Play Store för att göra det.
+2.6:
+- Har du inget Jetpack-konto? Nu kan du logga in på din webbplats och hoppa över skärmen som anger att Jetpack krävs. (Med detta sagt, du kommer att gå miste om kraftfulla funktioner – varför inte testa Jetpack!)
+- Det är möjligt att vissa användare som har en webbplats som är ansluten till Jetpack har stött på problem i samband med inloggningen. Detta är en bugg som inte längre kommer att förekomma.
+- Vi har åtgärdat hur statistiken för Min butik ser ut innan du tar emot din första beställning.
+- Ett fåtal av er upplevde ibland oväntade kraschar. Om du var en av dessa har vi goda nyheter: de kommer inte längre att hända.
 </sv-SE>
 <tr-TR>
-2.4:
-Daha önce Bildirimler olarak bilinen sekme artık İncelemeler olarak adlandırılıyor. Bildirimler artık Siparişler bölümünde gösterildiğinden Bildirimler sekmesi için yeni bir kimlik gerekiyordu. Bu sekme artık yalnızca incelemeleri gösterdiğinden biz de onu “İncelemeler” şekkinde yeniden adlandırmakta sakınca görmedik.
-
-Gönderilmemiş siparişlerin sayısı artık panoda değil, sipariş listesinde rozet olarak gösteriliyor.
-
-Uygulamanın içinden güncelleme gerçekleştirmeniz istendiğinden Google Play’ı açma zorunluluğu ortadan kalkıyor.
+2.6:
+- Jetpack hesabınız mı yok? Artık Jetpack zorunlu ekranını atlayarak sitenizde oturum açabilirsiniz. (Bununla birlikte, bazı önemli özellikleri kaçırıyorsunuz; Jetpack'i deneyin!)
+- Jetpack’e bağlı bir sitesi bulunmayan bazı müşterilerimiz oturum açarken sorun yaşayabilir. Bu, artık karşılaşmayacağınız bir hata.
+- Mağazam istatistiklerinizin ilk siparişinizi almadan önceki görünümünü düzelttik.
+- Küçük bir grup müşterimiz zaman zaman beklenmedik çökmelerle karşılaşıyor. Bu durum sizi tarif ediyorsa iyi haberlerimiz var: bunları artık yaşamayacaksınız.
 </tr-TR>
 <zh-CN>
-2.4：
-之前的“通知”选项卡现已改为“评论”。由于通知现在显示在“订单”下，因此“通知”选项卡需要一个新的身份。我们已巧妙地将其重新命名为“评论”，因为它现在只显示评论。
-
-未完成订单的数量将从控制面板中删除，现在以徽章的形式显示在订单列表上。
-
-系统会提示您在应用程序内执行更新，因此在执行更新操作时，不必再打开 Play 商店即可轻松搞定。
+2.6：
+- 还没有 Jetpack 帐户？现在，您可以绕过需要使用 Jetpack 的屏幕登录到您的站点。（也就是说，您会错过很多强大的功能 - 试试 Jetpack 吧！）
+- 有些将其站点连接至 Jetpack 的用户可能会在登录时遇到问题。此问题现已得到解决。
+- 我们修正了您收到第一个订单之前，“我的商店”统计信息的显示方式。
+- 一小部分用户偶尔会遇到意外崩溃的问题；如果您也遇到过，那么好消息来了：您再也不会遇到这些问题了。
 </zh-CN>
 <zh-TW>
-2.4：
-此分頁先前名稱為「通知」，現已改為「評論」。由於現在通知會顯示在「訂單」下方，「通知」分頁需要新的身分。該分頁現在只會顯示評論，因此我們巧妙地將其重新命名為「評論」。
-
-未完成的訂單數量已從儀表板移除，現在會以徽章顯示在訂單清單中。
-
-系統會提示你在應用程式中執行更新，免除了必須開啟 Play 商店進行更新的麻煩。
+2.6：
+- 還沒有 Jetpack 帳號？現在你可以繞過需要 Jetpack 帳號的畫面登入網站。(話雖然這麼說，但有些強大的功能卻用不到；給 Jetpack 一個機會吧！)
+- 有些使用者的網站已連結 Jetpack，登入時偶爾會遇到問題。這個問題你永遠不會再遇到了。
+- 在你收到第一筆訂單之前，「我的商店」統計資料的顯示問題就已獲得修復。
+- 你們之中有一小群人偶爾會遇到意外的當機事件；如果你就是這一小群人之一，告訴你一個好消息：你永遠不會再遇到這個問題了。
 </zh-TW>
 <en-US>
-2.4:
-The tab formerly known as Notifications is now Reviews. As notifications are now shown under Orders, the Notifications tab was in need of a new identity. We have cunningly renamed it ‘Reviews,’ as it now just shows reviews.
-
-The number of unfulfilled orders is gone from the dashboard and is now shown as a badge on the order list.
-
-You will be prompted to perform updates within the app, so the hassle of having to open the Play store to do so is no more.
+2.6:
+- Don’t have a Jetpack account? Now you can log in to your site while bypassing the Jetpack-required screen. (That said, you’re missing out on some powerful features — give Jetpack a try!)
+- Some of you who do have a Jetpack-connected site would sometimes encounter issues while logging in. That’s a bug you’ll no longer run into.
+- We fixed the way your My Store stats look before you receive your first order.
+- A small group among you would occasionally deal with unexpected crashes; if that sounds like you, good news: you’ll no longer experience them.
 /<en-US>

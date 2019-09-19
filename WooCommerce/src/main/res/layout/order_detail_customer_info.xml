@@ -25,27 +25,69 @@
             android:text="@string/customer_information"
             android:textAppearance="@style/Woo.TextAppearance.Medium.Purple"/>
 
+        <!-- Label: Customer note -->
+        <LinearLayout
+            android:id="@+id/customerInfo_customerNoteSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:layout_marginTop="@dimen/card_item_padding_intra_double"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/customerInfo_customerNoteTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/orderdetail_customer_provided_note"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"/>
+
+            <TextView
+                android:id="@+id/customerInfo_customerNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_item_padding_intra_h"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                android:textAlignment="viewStart"
+                android:textIsSelectable="true"
+                tools:text="This is a nice note from the customer"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/card_item_padding_intra_double"
+                android:background="@color/list_divider"
+                app:srcCompat="@drawable/list_divider"/>
+
+        </LinearLayout>
+
         <!-- Label: Shipping -->
-        <TextView
-            android:id="@+id/customerInfo_shippingLabel"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/customerInfo_shippingSection"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/card_section_padding_h"
-            android:paddingTop="@dimen/card_section_padding_h"
-            android:text="@string/orderdetail_shipping_details"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"/>
+            android:focusable="true"
+            android:layout_marginTop="@dimen/card_item_padding_intra_double"
+            android:layout_marginBottom="@dimen/card_item_padding_intra_double"
+            android:orientation="vertical">
 
-        <!-- Shipping Address -->
-        <TextView
-            android:id="@+id/customerInfo_shippingAddr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
-            android:textAlignment="viewStart"
-            android:textIsSelectable="true"
-            android:layout_marginBottom="@dimen/card_padding_bottom"
-            tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
+            <TextView
+                android:id="@+id/customerInfo_shippingLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/orderdetail_shipping_details"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance.SectionTitle"/>
 
+            <TextView
+                android:id="@+id/customerInfo_shippingAddr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_item_padding_intra_h"
+                android:textAppearance="@style/Woo.OrderDetail.TextAppearance"
+                android:textAlignment="viewStart"
+                android:textIsSelectable="true"
+                tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
+
+        </LinearLayout>
 
         <!-- Billing Section -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -182,14 +224,41 @@
     </LinearLayout>
 
     <!-- VIEW MORE Button -->
-    <ToggleButton
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/customerInfo_viewMore"
-        style="@style/Woo.CardExtenderButton"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textOff="@string/orderdetail_show_billing"
-        android:textOn="@string/orderdetail_hide_billing"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        style="@style/Woo.CardExtenderButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/customerInfo_card"/>
+        app:layout_constraintTop_toBottomOf="@+id/customerInfo_card">
+
+        <TextView
+            android:id="@+id/customerInfo_viewMoreButtonTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/orderdetail_show_billing"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/text_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/customerInfo_viewMoreButtonImage"
+            style="@android:style/Widget.ActionButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:contentDescription="@string/orderdetail_show_billing"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_arrow_down" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

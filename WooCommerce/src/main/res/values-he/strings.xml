@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-07 00:54:03+0000
+Translation-Revision-Date: 2019-09-04 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">הנתונים הסטטיסטיים של היום</string>
+    <string name="login_sign_in">התחברות</string>
+    <string name="login_jetpack_installed_sign_in">כבר יש לך חשבון ב-Jetpack? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">מנסה להתחבר עם Jetpack…</string>
+    <string name="login_refresh_app_continue">יש לרענן את האפליקציה כדי להמשיך</string>
+    <string name="login_not_connected_jetpack">כדי להשתמש באפליקציה להפעלה של %1$s עליך להגדיר את התוסף של Jetpack ולהתחבר לחשבון. \n\nלאחר שההגדרה בוצעה, %2$s</string>
+    <string name="login_try_another_store">יש לנסות חנות אחרת</string>
+    <string name="database_downgraded">בסיס הנתונים עודכן לגרסה פחות מתקדמת, אנחנו יוצרים את הטבלאות מחדש וטוענים את החנויות</string>
+    <string name="loading_stores">מעדכן את החנויות</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">לא נמצאו ספקים</string>
     <string name="login_invalid_site_url">יש להזין את כתובת האתר המלאה, לדוגמה example.com.</string>
     <string name="reviews_empty_message">עוד אין ביקורות!</string>
     <string name="review_notifications">ביקורות</string>
@@ -389,11 +399,9 @@ Language: he_IL
     <string name="waiting_for_customers">בהמתנה ללקוחות</string>
     <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
     <string name="share_store_button">שיתוף החנות שלך</string>
-    <string name="wc_mark_all_read_success">כל ההודעות מסומנות כ\'נקרא\'</string>
     <string name="login_update_required_title">לעדכן את החנות ל-Woocommerce 3.5</string>
     <string name="login_verifying_site_error">אין אפשרות להתחבר אל %s</string>
     <string name="dismiss">סגור</string>
-    <string name="wc_mark_all_read_error">שגיאה בעת סימון של התגובות כ\'נקרא\'</string>
     <string name="wc_mark_all_read">סימון כל הפריטים כ\'נקרא\'</string>
     <string name="orderdetail_message_customer">הודעה</string>
     <string name="orderdetail_call_customer">להתקשר</string>
@@ -603,7 +611,6 @@ Language: he_IL
     <string name="order_error_fetch_notes_generic">שגיאה בעת אחזור הערות שגיאה</string>
     <string name="order_fulfill_marked_complete">ההזמנה סומנה כ\'הושלמה\'</string>
     <string name="order_fulfill_mark_complete">סימון הזמנה כ\'הושלמה\'</string>
-    <string name="order_fulfill_order">השלמת הזמנה</string>
     <string name="orderdetail_addnote_contentdesc">הוספת הערה להזמנה</string>
     <string name="orderdetail_add_note">הוספת הערה</string>
     <string name="orderdetail_hide_billing">הסתרת חיוב</string>
@@ -617,7 +624,6 @@ Language: he_IL
     <string name="orderdetail_customer_provided_note">הערה שסופקה על-ידי הלקוח</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">תשלום – הוחזר</string>
-    <string name="orderdetail_new_total">סך הכול חדש</string>
     <string name="orderdetail_refunded">הוחזר</string>
     <string name="orderdetail_payment_summary_onhold">התשלום בהמתנה עבור %s</string>
     <string name="orderdetail_payment_summary_completed">תשלום בסך %1$s התקבל באמצעות %2$s</string>
@@ -712,7 +718,6 @@ Language: he_IL
     <string name="taxes">מיסים</string>
     <string name="payment">תשלום</string>
     <string name="shipping">משלוח</string>
-    <string name="total">סה\"כ</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">הזמנות</string>

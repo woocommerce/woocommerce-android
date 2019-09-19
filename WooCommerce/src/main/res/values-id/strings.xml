@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-08 00:54:04+0000
+Translation-Revision-Date: 2019-09-04 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">Statistik Hari Ini</string>
+    <string name="login_sign_in">Masuk</string>
+    <string name="login_jetpack_installed_sign_in">Sudah punya Jetpack? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Mencoba login dengan Jetpack…</string>
+    <string name="login_refresh_app_continue">segarkan aplikasi untuk melanjutkan</string>
+    <string name="login_not_connected_jetpack">Untuk menggunakan aplikasi ini untuk %1$s Anda perlu melakukan penyiapan plugin Jetpack dan terhubung ke akun ini. \n\nSekali penyiapan, %2$s</string>
+    <string name="login_try_another_store">Coba toko lain</string>
+    <string name="database_downgraded">Database di-downgrade, membuat ulang tabel dan memuat toko</string>
+    <string name="loading_stores">Memuat toko</string>
+    <string name="order_shipment_tracking_provider_list_error_empty_list">Tidak ditemukan penyedia</string>
     <string name="login_invalid_site_url">Masukkan alamat situs web lengkap, seperti contoh.com.</string>
     <string name="reviews_empty_message">Belum ada ulasan!</string>
     <string name="review_notifications">Ulasan</string>
@@ -389,11 +399,9 @@ Language: id
     <string name="waiting_for_customers">Menunggu pelanggan</string>
     <string name="share_store_dialog_title">Bagikan URL toko Anda</string>
     <string name="share_store_button">Bagikan toko Anda</string>
-    <string name="wc_mark_all_read_success">Semua pemberitahuan ditandai sudah dibaca</string>
     <string name="login_update_required_title">Perbarui Toko ke WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Tidak dapat terhubung ke %s</string>
     <string name="dismiss">Selesai</string>
-    <string name="wc_mark_all_read_error">Terjadi error saat menandai semua pemberitahuan sudah dibaca</string>
     <string name="wc_mark_all_read">Tandai semua sudah dibaca</string>
     <string name="orderdetail_message_customer">Pesan</string>
     <string name="orderdetail_call_customer">Telepon</string>
@@ -603,7 +611,6 @@ Language: id
     <string name="order_error_fetch_notes_generic">Error saat mengambil catatan error</string>
     <string name="order_fulfill_marked_complete">Pesanan Ditandai Selesai</string>
     <string name="order_fulfill_mark_complete">Tandai Pesanan Selesai</string>
-    <string name="order_fulfill_order">Penuhi Pesanan</string>
     <string name="orderdetail_addnote_contentdesc">Tambahkan catatan pesanan</string>
     <string name="orderdetail_add_note">Tambahkan catatan</string>
     <string name="orderdetail_hide_billing">Sembunyikan Tagihan</string>
@@ -617,7 +624,6 @@ Language: id
     <string name="orderdetail_customer_provided_note">Catatan yang Diberikan Pelanggan</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">Pembayaran - Dana Dikembalikan</string>
-    <string name="orderdetail_new_total">Total Baru</string>
     <string name="orderdetail_refunded">Dana dikembalikan</string>
     <string name="orderdetail_payment_summary_onhold">Pembayaran menunggu %s</string>
     <string name="orderdetail_payment_summary_completed">Pembayaran %1$s diterima melalui %2$s</string>
@@ -712,7 +718,6 @@ Language: id
     <string name="taxes">Pajak</string>
     <string name="payment">Pembayaran</string>
     <string name="shipping">Pengiriman</string>
-    <string name="total">Total</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">Pesanan</string>
