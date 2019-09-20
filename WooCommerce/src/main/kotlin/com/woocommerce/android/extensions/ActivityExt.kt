@@ -8,6 +8,10 @@ import androidx.navigation.findNavController
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import kotlin.properties.Delegates
 
+/**
+ * Used for passing back some result from a fragment when using the Navigation component
+ * It replaces the startActivityForResult() & setResult() call, since the Navigation component uses a single activity.
+ */
 fun FragmentActivity.navigateBackWithResult(result: Bundle, @IdRes navHostId: Int) {
     val childFragmentManager = supportFragmentManager.findFragmentById(navHostId)?.childFragmentManager
     var backStackListener: FragmentManager.OnBackStackChangedListener by Delegates.notNull()
