@@ -25,9 +25,9 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.UNAPPROVED
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -58,8 +58,8 @@ class ReviewDetailFragment : BaseFragment() {
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
         AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
         when (isChecked) {
-            true -> processReviewModeration(ProductReviewStatus.APPROVED)
-            false -> processReviewModeration(ProductReviewStatus.UNAPPROVED)
+            true -> processReviewModeration(APPROVED)
+            false -> processReviewModeration(HOLD)
         }
     }
 
@@ -181,8 +181,7 @@ class ReviewDetailFragment : BaseFragment() {
         review_description.text = HtmlUtils.fromHtml(review.review)
 
         // Initialize the moderation buttons and set review status
-        configureModerationButtons(review)
-        updateStatus(ProductReviewStatus.fromString(review.status))
+        configureModerationButtons(ProductReviewStatus.fromString(review.status))
     }
 
     private fun refreshProductImage(remoteProductId: Long) {
@@ -214,7 +213,16 @@ class ReviewDetailFragment : BaseFragment() {
         }
     }
 
-    private fun configureModerationButtons(review: ProductReview) {
+    private fun configureModerationButtons(status: ProductReviewStatus) {
+        review_approve.setOnCheckedChangeListener(null)
+
+        // Use the status override if present,else new status
+        when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
+            APPROVED -> review_approve.isChecked = true
+            HOLD -> review_approve.isChecked = false
+            else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
+        }
+
         // Configure the moderate button
         with(review_approve) {
             setOnCheckedChangeListener(moderateListener)
@@ -237,20 +245,6 @@ class ReviewDetailFragment : BaseFragment() {
                 processReviewModeration(TRASH)
             }
         }
-    }
-
-    private fun updateStatus(status: ProductReviewStatus) {
-        review_approve.setOnCheckedChangeListener(null)
-
-        // Use the status override if present,else new status
-        val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status
-        when (newStatus) {
-            APPROVED -> review_approve.isChecked = true
-            UNAPPROVED -> review_approve.isChecked = false
-            else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
-        }
-
-        review_approve.setOnCheckedChangeListener(moderateListener)
     }
 
     private fun processReviewModeration(newStatus: ProductReviewStatus) {
