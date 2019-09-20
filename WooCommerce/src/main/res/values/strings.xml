@@ -304,6 +304,7 @@
     <string name="wc_view_the_product_external">View the product</string>
     <string name="wc_approve">Approve</string>
     <string name="wc_approved">Approved</string>
+    <string name="wc_unapproved">Unapproved</string>
     <string name="wc_spam">Spam</string>
     <string name="wc_trash">Trash</string>
     <string name="wc_load_review_error">Error loading product review detail</string>

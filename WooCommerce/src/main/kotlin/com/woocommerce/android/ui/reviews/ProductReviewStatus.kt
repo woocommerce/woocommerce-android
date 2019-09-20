@@ -1,21 +1,19 @@
 package com.woocommerce.android.ui.reviews
 
+import android.content.Context
+import com.woocommerce.android.R
+import org.apache.commons.lang3.StringUtils
 import java.util.Locale
 
 enum class ProductReviewStatus {
     // Real status
     APPROVED,
-    UNAPPROVED,
+    HOLD,
     SPAM,
     TRASH,
-    DELETED,
 
-    // Used for filtering
-    ALL,
-
-    // Used for editing
-    UNSPAM, // Unmark the comment as spam. Will attempt to set it to the previous status.
-    UNTRASH; // Untrash a comment. Only works when the comment is in the trash.
+    // Used for filtering only
+    ALL;
 
     override fun toString(): String {
         return this.name.toLowerCase(Locale.US)
@@ -31,6 +29,18 @@ enum class ProductReviewStatus {
                 }
             }
             return ALL
+        }
+
+        fun getLocalizedLabel(context: Context?, reviewStatus: ProductReviewStatus): String {
+            return context?.let { ctx ->
+                when (reviewStatus) {
+                    APPROVED -> ctx.getString(R.string.wc_approved)
+                    HOLD -> ctx.getString(R.string.wc_unapproved)
+                    SPAM -> ctx.getString(R.string.wc_spam)
+                    TRASH -> ctx.getString(R.string.wc_trash)
+                    ALL -> ctx.getString(R.string.all)
+                }
+            } ?: StringUtils.EMPTY
         }
     }
 }

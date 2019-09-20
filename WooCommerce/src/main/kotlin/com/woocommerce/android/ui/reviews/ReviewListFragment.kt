@@ -40,6 +40,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_reviews_list.*
 import kotlinx.android.synthetic.main.fragment_reviews_list.reviewsList
 import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
+import java.util.Locale
 import javax.inject.Inject
 
 class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewListAdapter.OnReviewClickListener {
@@ -348,13 +349,14 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 }
             }
 
-            changeReviewStatusSnackbar = uiMessageResolver
-                    .getUndoSnack(
-                            R.string.review_moderation_undo,
-                            newStatus.toString(),
-                            actionListener = actionListener
-                    ).also {
-                        it.addCallback(callback)
+                    changeReviewStatusSnackbar = uiMessageResolver
+                            .getUndoSnack(
+                                    R.string.review_moderation_undo,
+                                    ProductReviewStatus.getLocalizedLabel(context, newStatus)
+                                            .toLowerCase(Locale.getDefault()),
+                                    actionListener = actionListener
+                            ).also {
+                                it.addCallback(callback)
                         it.show()
                     }
 
