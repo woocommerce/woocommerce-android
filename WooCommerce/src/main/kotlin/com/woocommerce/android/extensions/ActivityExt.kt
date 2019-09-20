@@ -12,11 +12,11 @@ import kotlin.properties.Delegates
  * Used for passing back some result from a fragment when using the Navigation component
  * It replaces the startActivityForResult() & setResult() call, since the Navigation component uses a single activity.
  */
-fun FragmentActivity.navigateBackWithResult(result: Bundle, @IdRes navHostId: Int) {
+fun FragmentActivity.navigateBackWithResult(requestCode: Int, result: Bundle, @IdRes navHostId: Int) {
     val childFragmentManager = supportFragmentManager.findFragmentById(navHostId)?.childFragmentManager
     var backStackListener: FragmentManager.OnBackStackChangedListener by Delegates.notNull()
     backStackListener = FragmentManager.OnBackStackChangedListener {
-        (childFragmentManager?.fragments?.get(0) as NavigationResult).onNavigationResult(result)
+        (childFragmentManager?.fragments?.get(0) as NavigationResult).onNavigationResult(requestCode, result)
         childFragmentManager.removeOnBackStackChangedListener(backStackListener)
     }
     childFragmentManager?.addOnBackStackChangedListener(backStackListener)

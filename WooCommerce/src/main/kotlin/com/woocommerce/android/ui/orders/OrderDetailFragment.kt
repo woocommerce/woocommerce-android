@@ -46,6 +46,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
+        const val REFUND_REQUEST_CODE = 1001
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
@@ -612,10 +613,14 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 }
     }
 
-    override fun onNavigationResult(result: Bundle) {
-        val refundWasSuccessful = result.getBoolean(RefundConfirmationFragment.REFUND_SUCCESS_KEY, false)
-        if (refundWasSuccessful) {
-            presenter.refreshOrderDetail(false)
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            REFUND_REQUEST_CODE -> {
+                val refundWasSuccessful = result.getBoolean(RefundConfirmationFragment.REFUND_SUCCESS_KEY, false)
+                if (refundWasSuccessful) {
+                    presenter.refreshOrderDetail(false)
+                }
+            }
         }
     }
 

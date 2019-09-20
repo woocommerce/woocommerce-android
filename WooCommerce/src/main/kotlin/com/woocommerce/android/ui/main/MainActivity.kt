@@ -101,7 +101,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     interface NavigationResult {
-        fun onNavigationResult(result: Bundle)
+        fun onNavigationResult(requestCode: Int, result: Bundle)
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
