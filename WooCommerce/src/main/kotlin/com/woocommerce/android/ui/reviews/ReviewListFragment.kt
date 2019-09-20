@@ -21,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.model.DelayedUndoRequest.RequestStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -265,7 +266,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         })
 
         viewModel.moderateProductReview.observe(this, Observer {
-            handleReviewModerationRequest(it)
+            it?.let { request -> handleReviewModerationRequest(request) }
         })
     }
 
@@ -308,7 +309,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 AnalyticsTracker.KEY_ALREADY_READ to review.read))
 
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId)
+        (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId, tempStatus = pendingModerationNewStatus)
     }
 
     /**
@@ -320,34 +321,37 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun handleReviewModerationRequest(request: ProductReviewModerationRequest) {
-        with(request) {
-            pendingModerationRemoteReviewId = productReview.remoteId
-            pendingModerationNewStatus = newStatus.toString()
+        when (request.requestStatus) {
+            RequestStatus.PENDING -> {
+                with(request) {
+                    pendingModerationRemoteReviewId = productReview.remoteId
+                    pendingModerationNewStatus = newStatus.toString()
 
-            var changeReviewStatusCanceled = false
+                    var changeReviewStatusCanceled = false
 
-            AnalyticsTracker.track(Stat.REVIEW_ACTION, mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
+                    AnalyticsTracker.track(
+                            Stat.REVIEW_ACTION,
+                            mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
 
-            // Listener for the UNDO button in the snackbar
-            val actionListener = View.OnClickListener {
-                AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
+                    // Listener for the UNDO button in the snackbar
+                    val actionListener = View.OnClickListener {
+                        AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
 
-                // User canceled the action to change the status
-                changeReviewStatusCanceled = true
+                        // User canceled the action to change the status
+                        changeReviewStatusCanceled = true
 
-                // Add the notification back to the list
-                revertPendingModerationState()
-            }
-
-            val callback = object : Snackbar.Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (!changeReviewStatusCanceled) {
-                        resetPendingModerationVariables()
-                        viewModel.submitReviewStatusChange(productReview, newStatus)
+                        // Add the notification back to the list
+                        revertPendingModerationState()
                     }
-                }
-            }
+
+                    val callback = object : Snackbar.Callback() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            if (!changeReviewStatusCanceled) {
+                                viewModel.submitReviewStatusChange(productReview, newStatus)
+                            }
+                        }
+                    }
 
                     changeReviewStatusSnackbar = uiMessageResolver
                             .getUndoSnack(
@@ -357,16 +361,24 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                                     actionListener = actionListener
                             ).also {
                                 it.addCallback(callback)
-                        it.show()
+                                it.show()
+                            }
+
+                    // Manually remove the product review from the list if it's new
+                    // status will be spam or trash
+                    if (newStatus == SPAM || newStatus == TRASH) {
+                        removeProductReviewFromList(productReview.remoteId)
                     }
 
-            // Manually remove the product review from the list if it's new
-            // status will be spam or trash
-            if (newStatus == SPAM || newStatus == TRASH) {
-                removeProductReviewFromList(productReview.remoteId)
+                    AppRatingDialog.incrementInteractions()
+                }
             }
-
-            AppRatingDialog.incrementInteractions()
+            RequestStatus.SUCCESS -> {
+                reviewsAdapter.removeHiddenReviewFromList()
+                resetPendingModerationVariables()
+            }
+            RequestStatus.ERROR -> revertPendingModerationState()
+            else -> { /* do nothing */ }
         }
     }
 
