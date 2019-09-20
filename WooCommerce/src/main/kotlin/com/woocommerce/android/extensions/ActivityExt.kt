@@ -1,4 +1,4 @@
-package com.woocommerce.android.util
+package com.woocommerce.android.extensions
 
 import android.os.Bundle
 import androidx.annotation.IdRes

@@ -6,9 +6,9 @@ import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.expandHitArea
-import com.woocommerce.android.util.hide
-import com.woocommerce.android.util.show
+import com.woocommerce.android.extensions.expandHitArea
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus

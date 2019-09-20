@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.applyTransform
+import com.woocommerce.android.extensions.applyTransform
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
