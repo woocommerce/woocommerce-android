@@ -19,6 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -230,7 +232,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     billingOnly = presenter.isVirtualProduct(order))
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency), this)
+            orderDetail_paymentInfo.initView(
+                    order.toAppModel(),
+                    currencyFormatter.buildBigDecimalFormatter(order.currency),
+                    this
+            )
 
             if (isFreshData) {
                 isRefreshPending = false
@@ -285,7 +291,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         findNavController().navigate(action)
     }
 
-    override fun issueOrderRefund(order: WCOrderModel) {
+    override fun issueOrderRefund(order: Order) {
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToIssueRefund(order.number.toLong())
         findNavController().navigate(action)
     }
@@ -307,7 +313,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         orderDetail_orderStatus.updateStatus(orderStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, this)
-            orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency), this)
+            orderDetail_paymentInfo.initView(
+                    it.toAppModel(),
+                    currencyFormatter.buildBigDecimalFormatter(it.currency),
+                    this
+            )
         }
     }
 

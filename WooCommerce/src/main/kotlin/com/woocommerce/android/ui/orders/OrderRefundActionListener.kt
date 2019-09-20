@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders
 
-import org.wordpress.android.fluxc.model.WCOrderModel
+import com.woocommerce.android.model.Order
 
 /**
  * Interface for handling order refund actions from a child fragment.
  */
 interface OrderRefundActionListener {
-    fun issueOrderRefund(order: WCOrderModel)
+    fun issueOrderRefund(order: Order)
 }
