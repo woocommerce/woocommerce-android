@@ -33,7 +33,6 @@ class ReviewListAdapter(
     private var starTintColor: Int = 0
     init {
         starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
-        setHasStableIds(true)
     }
 
     private val reviewList = mutableListOf<ProductReview>()

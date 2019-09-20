@@ -10,6 +10,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
 import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.RequestResult.ERROR
 import com.woocommerce.android.ui.reviews.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.ui.reviews.RequestResult.SUCCESS
@@ -25,7 +26,11 @@ import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
+import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
+import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
+import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -34,7 +39,8 @@ final class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val reviewRepository: ReviewListRepository,
     private val networkStatus: NetworkStatus,
-    private val dispatcher: Dispatcher
+    private val dispatcher: Dispatcher,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(mainDispatcher) {
     companion object {
         private const val TAG = "ReviewListViewModel"
@@ -59,6 +65,11 @@ final class ReviewListViewModel @Inject constructor(
 
     private val _isMarkingAllAsRead = MutableLiveData<ActionStatus>()
     val isMarkingAllAsRead: LiveData<ActionStatus> = _isMarkingAllAsRead
+
+    private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest>()
+    val moderateProductReview: LiveData<ProductReviewModerationRequest> = _moderateProductReview
+
+    private var pendingReviewModeration: ProductReview? = null
 
     init {
         EventBus.getDefault().register(this)
@@ -144,9 +155,16 @@ final class ReviewListViewModel @Inject constructor(
             }
         } else {
             // Network is not connected
-            _showSnackbarMessage.value = R.string.offline_error
+            showOfflineSnack()
         }
     }
+
+    // region Review Moderation
+    fun submitReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
+        val payload = UpdateProductReviewStatusPayload(selectedSite.get(), review.remoteId, newStatus.toString())
+        dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
+    }
+    // endregion
 
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
@@ -158,12 +176,17 @@ final class ReviewListViewModel @Inject constructor(
             checkForUnreadReviews()
         } else {
             // Network is not connected
-            _showSnackbarMessage.value = R.string.offline_error
+            showOfflineSnack()
         }
 
         _isSkeletonShown.value = false
         _isLoadingMore.value = false
         _isRefreshing.value = false
+    }
+
+    private fun showOfflineSnack() {
+        // Network is not connected
+        _showSnackbarMessage.value = R.string.offline_error
     }
 
     @Suppress("unused")
@@ -184,13 +207,37 @@ final class ReviewListViewModel @Inject constructor(
         }
     }
 
-    @SuppressWarnings("unused")
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnRequestModerateReviewEvent) {
+        if (networkStatus.isConnected()) {
+            // Send the request to the UI to show the UNDO snackbar
+            _moderateProductReview.postValue(event.request)
+        } else {
+            // Network not connected
+            showOfflineSnack()
+        }
+    }
+
+    @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
         if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
             if (!event.isError) {
                 reloadReviewsFromCache()
                 checkForUnreadReviews()
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductReviewChanged(event: OnProductReviewChanged) {
+        if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
+            if (event.isError) {
+                // Show an error in the UI and reload the view
+                _showSnackbarMessage.value = R.string.wc_moderate_review_error
+                reloadReviewsFromCache()
             }
         }
     }
