@@ -323,9 +323,6 @@ class ReviewListRepository @Inject constructor(
                         "changes to server! ${event.error.message}")
             } else {
                 AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
-
-                // Request fresh review data from the api to reflect deleted reviews
-                // FIXME AMANDA - Do I need to fetch fresh product reviews?
             }
         }
     }

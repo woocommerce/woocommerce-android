@@ -199,8 +199,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         // s it can be processed immediately, otherwise silently refresh
         if (hidden) {
             changeReviewStatusSnackbar?.dismiss()
-        } else {
-            // FIXME AMANDA - Do I need to reload from DB?
         }
     }
 
@@ -322,63 +320,65 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     private fun handleReviewModerationRequest(request: ProductReviewModerationRequest) {
         when (request.requestStatus) {
-            RequestStatus.PENDING -> {
-                with(request) {
-                    pendingModerationRemoteReviewId = productReview.remoteId
-                    pendingModerationNewStatus = newStatus.toString()
-
-                    var changeReviewStatusCanceled = false
-
-                    AnalyticsTracker.track(
-                            Stat.REVIEW_ACTION,
-                            mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
-
-                    // Listener for the UNDO button in the snackbar
-                    val actionListener = View.OnClickListener {
-                        AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
-
-                        // User canceled the action to change the status
-                        changeReviewStatusCanceled = true
-
-                        // Add the notification back to the list
-                        revertPendingModerationState()
-                    }
-
-                    val callback = object : Snackbar.Callback() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-                            if (!changeReviewStatusCanceled) {
-                                viewModel.submitReviewStatusChange(productReview, newStatus)
-                            }
-                        }
-                    }
-
-                    changeReviewStatusSnackbar = uiMessageResolver
-                            .getUndoSnack(
-                                    R.string.review_moderation_undo,
-                                    ProductReviewStatus.getLocalizedLabel(context, newStatus)
-                                            .toLowerCase(Locale.getDefault()),
-                                    actionListener = actionListener
-                            ).also {
-                                it.addCallback(callback)
-                                it.show()
-                            }
-
-                    // Manually remove the product review from the list if it's new
-                    // status will be spam or trash
-                    if (newStatus == SPAM || newStatus == TRASH) {
-                        removeProductReviewFromList(productReview.remoteId)
-                    }
-
-                    AppRatingDialog.incrementInteractions()
-                }
-            }
+            RequestStatus.PENDING -> processNewModerationRequest(request)
             RequestStatus.SUCCESS -> {
                 reviewsAdapter.removeHiddenReviewFromList()
                 resetPendingModerationVariables()
             }
             RequestStatus.ERROR -> revertPendingModerationState()
             else -> { /* do nothing */ }
+        }
+    }
+
+    private fun processNewModerationRequest(request: ProductReviewModerationRequest) {
+        with(request) {
+            pendingModerationRemoteReviewId = productReview.remoteId
+            pendingModerationNewStatus = newStatus.toString()
+
+            var changeReviewStatusCanceled = false
+
+            AnalyticsTracker.track(
+                    Stat.REVIEW_ACTION,
+                    mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
+
+            // Listener for the UNDO button in the snackbar
+            val actionListener = View.OnClickListener {
+                AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
+
+                // User canceled the action to change the status
+                changeReviewStatusCanceled = true
+
+                // Add the notification back to the list
+                revertPendingModerationState()
+            }
+
+            val callback = object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (!changeReviewStatusCanceled) {
+                        viewModel.submitReviewStatusChange(productReview, newStatus)
+                    }
+                }
+            }
+
+            changeReviewStatusSnackbar = uiMessageResolver
+                    .getUndoSnack(
+                            R.string.review_moderation_undo,
+                            ProductReviewStatus.getLocalizedLabel(context, newStatus)
+                                    .toLowerCase(Locale.getDefault()),
+                            actionListener = actionListener
+                    ).also {
+                        it.addCallback(callback)
+                        it.show()
+                    }
+
+            // Manually remove the product review from the list if it's new
+            // status will be spam or trash
+            if (newStatus == SPAM || newStatus == TRASH) {
+                removeProductReviewFromList(productReview.remoteId)
+            }
+
+            AppRatingDialog.incrementInteractions()
         }
     }
 
