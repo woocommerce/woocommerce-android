@@ -92,7 +92,6 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             )
         }
 
-        paymentInfo_issueRefundButton.expandHitArea(100, 100)
         paymentInfo_issueRefundButton.setOnClickListener {
             actionListener.issueOrderRefund(order)
         }

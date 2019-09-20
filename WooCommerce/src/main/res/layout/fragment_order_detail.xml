@@ -44,7 +44,7 @@
                 <!-- Payments -->
                 <com.woocommerce.android.ui.orders.OrderDetailPaymentView
                     android:id="@+id/orderDetail_paymentInfo"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
