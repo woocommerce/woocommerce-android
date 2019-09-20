@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
+import com.woocommerce.android.model.DelayedUndoRequest.RequestStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
@@ -68,8 +69,6 @@ final class ReviewListViewModel @Inject constructor(
 
     private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest>()
     val moderateProductReview: LiveData<ProductReviewModerationRequest> = _moderateProductReview
-
-    private var pendingReviewModeration: ProductReview? = null
 
     init {
         EventBus.getDefault().register(this)
@@ -168,9 +167,20 @@ final class ReviewListViewModel @Inject constructor(
                     newStatus.toString()
             )
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
+            sendReviewModerationUpdate(RequestStatus.SUBMITTED)
         } else {
             // Network is not connected
             showOfflineSnack()
+            sendReviewModerationUpdate(RequestStatus.ERROR)
+        }
+    }
+
+    private fun sendReviewModerationUpdate(newRequestStatus: RequestStatus) {
+        _moderateProductReview.value = _moderateProductReview.value?.apply { requestStatus = newRequestStatus }
+
+        // If the request has been completed, set the event to null to prevent issues later.
+        if (newRequestStatus.isComplete()) {
+            _moderateProductReview.value = null
         }
     }
     // endregion
@@ -221,7 +231,7 @@ final class ReviewListViewModel @Inject constructor(
     fun onEventMainThread(event: OnRequestModerateReviewEvent) {
         if (networkStatus.isConnected()) {
             // Send the request to the UI to show the UNDO snackbar
-            _moderateProductReview.postValue(event.request)
+            _moderateProductReview.value = event.request
         } else {
             // Network not connected
             showOfflineSnack()
@@ -246,7 +256,9 @@ final class ReviewListViewModel @Inject constructor(
             if (event.isError) {
                 // Show an error in the UI and reload the view
                 _showSnackbarMessage.value = R.string.wc_moderate_review_error
-                reloadReviewsFromCache()
+                sendReviewModerationUpdate(RequestStatus.ERROR)
+            } else {
+                sendReviewModerationUpdate(RequestStatus.SUCCESS)
             }
         }
     }

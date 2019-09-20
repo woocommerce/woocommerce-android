@@ -243,6 +243,19 @@ class ReviewListAdapter(
     }
 
     /**
+     * Removes the previously hidden review from the main list so changes from the
+     * database will be properly applied.
+     */
+    fun removeHiddenReviewFromList() {
+        pendingRemovalReview?.let { (review, _, _) ->
+            reviewList.remove(review)
+
+            removedRemoteIds.remove(review.remoteId)
+            pendingRemovalReview = null
+        }
+    }
+
+    /**
      * Resets any pending review moderation state
      */
     fun resetPendingModerationState() {
