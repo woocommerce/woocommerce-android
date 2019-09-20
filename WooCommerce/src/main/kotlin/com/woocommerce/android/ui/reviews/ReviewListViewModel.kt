@@ -161,8 +161,17 @@ final class ReviewListViewModel @Inject constructor(
 
     // region Review Moderation
     fun submitReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
-        val payload = UpdateProductReviewStatusPayload(selectedSite.get(), review.remoteId, newStatus.toString())
-        dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
+        if (networkStatus.isConnected()) {
+            val payload = UpdateProductReviewStatusPayload(
+                    selectedSite.get(),
+                    review.remoteId,
+                    newStatus.toString()
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
+        } else {
+            // Network is not connected
+            showOfflineSnack()
+        }
     }
     // endregion
 
