@@ -18,7 +18,7 @@
             android:id="@+id/orderFulfill_products"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.Card.List"/>
+            style="@style/Woo.Card.WithoutPadding"/>
 
         <!-- Customer Provided Note -->
         <com.woocommerce.android.ui.orders.OrderDetailCustomerNoteView
@@ -39,7 +39,7 @@
             android:id="@+id/orderFulfill_addShipmentTracking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Woo.Card.List"
+            style="@style/Woo.Card.WithoutPadding"
             android:clipToPadding="false"
             android:paddingBottom="0dp"
             android:contentDescription="@string/order_shipment_tracking_add_label"

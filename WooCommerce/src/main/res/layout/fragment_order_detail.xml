@@ -35,7 +35,7 @@
                 <!-- Product List -->
                 <com.woocommerce.android.ui.orders.OrderDetailProductListView
                     android:id="@+id/orderDetail_productList"
-                    style="@style/Woo.Card.List"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
@@ -60,19 +60,18 @@
                 <!-- Shipment Tracking -->
                 <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
                     android:id="@+id/orderDetail_shipmentList"
-                    style="@style/Woo.Card.List"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:contentDescription="@string/order_shipment_tracking_section_cd"
-                    android:paddingBottom="0dp"
                     android:visibility="gone"
                     tools:visibility="visible"/>
 
                 <!-- Order Notes -->
                 <com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView
                     android:id="@+id/orderDetail_noteList"
-                    style="@style/Woo.Card.List"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
