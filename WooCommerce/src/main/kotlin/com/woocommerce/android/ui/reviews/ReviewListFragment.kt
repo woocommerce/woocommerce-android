@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
@@ -23,6 +24,7 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ActionStatus.COMPLETE
 import com.woocommerce.android.ui.reviews.ActionStatus.ERROR
 import com.woocommerce.android.ui.reviews.ActionStatus.PROCESSING
@@ -39,7 +41,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     companion object {
         const val TAG = "ReviewListFragment"
         const val KEY_LIST_STATE = "list-state"
-        const val KEY_IS_REFRESH_PENDING = "is-refresh-pending"
+        const val KEY_NEW_DATA_AVAILABLE = "new-data-available"
 
         fun newInstance() = ReviewListFragment()
     }
@@ -53,7 +55,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
 
-    var isRefreshPending = true
+    private var newDataAvailable = false // New reviews are available in cache
     private var listState: Parcelable? = null // Save the state of the recycler view
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +63,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
             listState = bundle.getParcelable(KEY_LIST_STATE)
-            isRefreshPending = bundle.getBoolean(KEY_IS_REFRESH_PENDING, false)
+            newDataAvailable = bundle.getBoolean(KEY_NEW_DATA_AVAILABLE, false)
         }
     }
 
@@ -107,7 +109,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                     super.onScrollStateChanged(recyclerView, newState)
 
                     if (!recyclerView.canScrollVertically(1)) {
-                        viewModel.loadReviews(true)
+                        viewModel.loadMoreReviews()
                     }
                 }
             })
@@ -125,7 +127,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             scrollUpChild = reviewsList
             setOnRefreshListener {
                 // TODO AMANDA : new track notification for refreshing all product reviews
-                viewModel.refreshReviewList()
+                viewModel.forceRefreshReviews()
             }
         }
 
@@ -171,14 +173,13 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        viewModel.checkForUnreadReviews()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = reviewsList.layoutManager?.onSaveInstanceState()
         outState.putParcelable(KEY_LIST_STATE, listState)
 
-        outState.putBoolean(KEY_IS_REFRESH_PENDING, isRefreshPending)
+        outState.putBoolean(KEY_NEW_DATA_AVAILABLE, newDataAvailable)
         super.onSaveInstanceState(outState)
     }
 
@@ -191,9 +192,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ReviewListViewModel::class.java)
         setupObservers()
-        viewModel.loadReviews()
+        viewModel.start()
     }
 
+    @SuppressLint("InflateParams")
     private fun setupObservers() {
         viewModel.reviewList.observe(this, Observer {
             showReviewList(it)
@@ -208,7 +210,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         })
 
         viewModel.isRefreshing.observe(this, Observer {
-            notifsRefreshLayout.isRefreshing = it
+            if (isActive) notifsRefreshLayout.isRefreshing = it
         })
 
         viewModel.isLoadingMore.observe(this, Observer {
@@ -224,34 +226,37 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 PROCESSING -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
                 COMPLETE -> {
                     menuMarkAllRead?.actionView = null
-                    markAllReviewsAsReadSuccess()
+                    showMarkAllReadMenuItem(show = false)
+
+                    // Remove all active notifications from the system bar
+                    context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
                 }
                 ERROR -> menuMarkAllRead?.actionView = null
             }
         })
     }
 
-    private fun markAllReviewsAsReadSuccess() {
-        reviewsAdapter.markAllReviewsAsRead()
-
-        // Remove all active notifications from the system bar
-        context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
-    }
-
     private fun showReviewList(reviews: List<ProductReview>) {
-        reviewsAdapter.setReviews(reviews)
-
-        showEmptyView(reviews.isEmpty())
+        if (isActive) {
+            reviewsAdapter.setReviews(reviews)
+            showEmptyView(reviews.isEmpty())
+        } else {
+            newDataAvailable = true
+        }
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        if (isActive) {
+            notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        }
     }
 
     private fun showSkeleton(show: Boolean) {
-        when (show) {
-            true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
-            false -> skeletonView.hide()
+        if (isActive) {
+            when (show) {
+                true -> skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
+                false -> skeletonView.hide()
+            }
         }
     }
 
@@ -262,6 +267,15 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private fun showMarkAllReadMenuItem(show: Boolean) {
         val showMarkAllRead = isActive && show
         menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
+    }
+
+    private fun openReviewDetail(review: ProductReview) {
+        AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                AnalyticsTracker.KEY_ALREADY_READ to review.read))
+
+        showOptionsMenu(false)
+        (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId)
     }
 
     /**
@@ -276,7 +290,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     override fun refreshFragmentState() {
         if (isActive) {
-            viewModel.refreshReviewList()
+            viewModel.forceRefreshReviews()
         }
     }
 
@@ -285,15 +299,18 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     override fun onReturnedFromChildFragment() {
-        // TODO AMANDA : refresh list - verify need to force refresh
+        if (newDataAvailable) {
+            viewModel.reloadReviewsFromCache()
+            viewModel.checkForUnreadReviews()
+            newDataAvailable = false
+        }
 
         showOptionsMenu(true)
-        viewModel.checkForUnreadReviews()
     }
 
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
     override fun onReviewClick(review: ProductReview) {
-        // TODO AMANDA : open product detail
+        openReviewDetail(review)
     }
 }
