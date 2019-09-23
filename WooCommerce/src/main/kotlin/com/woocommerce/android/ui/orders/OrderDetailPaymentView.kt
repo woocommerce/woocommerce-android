@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.expandHitArea
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
@@ -81,7 +80,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         }
 
         // Populate or hide discounts section
-        if (order.discountTotal.isEqualTo(BigDecimal.ZERO)) {
+        if (order.discountTotal isEqualTo BigDecimal.ZERO) {
             paymentInfo_discountSection.hide()
         } else {
             paymentInfo_discountSection.show()
