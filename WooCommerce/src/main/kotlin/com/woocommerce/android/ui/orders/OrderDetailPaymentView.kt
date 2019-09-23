@@ -41,7 +41,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_paymentMsg.show()
             paymentInfo_total_paid_divider.show()
 
-            if (order.status == CoreOrderStatus.PENDING||
+            if (order.status == CoreOrderStatus.PENDING ||
                     order.status == CoreOrderStatus.ON_HOLD ||
                     order.datePaid == null) {
                 paymentInfo_paid.text = formatCurrencyForDisplay(BigDecimal.ZERO) // Waiting for payment
