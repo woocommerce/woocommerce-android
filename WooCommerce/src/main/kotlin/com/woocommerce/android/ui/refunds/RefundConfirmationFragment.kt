@@ -8,16 +8,18 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_confirmation.*
 import javax.inject.Inject
 
-class RefundConfirmationFragment : DaggerFragment() {
+class RefundConfirmationFragment : DaggerFragment(), BackPressListener {
     companion object {
         const val REFUND_SUCCESS_KEY = "refund-success-key"
     }
@@ -73,5 +75,10 @@ class RefundConfirmationFragment : DaggerFragment() {
         refundConfirmation_btnRefund.setOnClickListener {
             viewModel.onRefundConfirmed(refundConfirmation_reason.text.toString())
         }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        findNavController().popBackStack(R.id.orderDetailFragment, false)
+        return false
     }
 }

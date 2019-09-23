@@ -16,8 +16,7 @@
             android:id="@+id/action_issueRefundFragment_to_refundConfirmationFragment"
             app:destination="@id/refundConfirmationFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"
-            app:popUpTo="@id/orderDetailFragment" />
+            app:popExitAnim="@anim/activity_fade_out" />
         <argument
             android:name="orderId"
             android:defaultValue="0L"
