@@ -57,10 +57,6 @@ class RefundConfirmationFragment : DaggerFragment() {
             refundConfirmation_refundAmount.text = it
         })
 
-        viewModel.isRefundButtonEnabled.observe(this, Observer {
-            refundConfirmation_refundAmount.isEnabled = it
-        })
-
         viewModel.previousRefunds.observe(this, Observer {
             refundConfirmation_previouslyRefunded.text = it
         })

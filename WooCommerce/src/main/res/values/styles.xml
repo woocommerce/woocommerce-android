@@ -166,7 +166,8 @@
 
     <style name="Woo.Button.Purple" parent="Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/white</item>
-        <item name="android:colorButtonNormal">@color/button_purple_bg_color</item>
+        <item name="android:colorAccent">@color/button_purple_bg_color</item>
+        <item name="android:colorButtonNormal">@color/black</item>
     </style>
 
     <style name="Woo.Button.White" parent="Widget.AppCompat.Button.Colored">

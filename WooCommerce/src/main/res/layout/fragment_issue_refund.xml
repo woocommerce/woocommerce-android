@@ -22,7 +22,8 @@
         <!-- Button: Next -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/issueRefund_btnNext"
-            style="@style/Woo.Button.Purple"
+            android:theme="@style/Woo.Button.Purple"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/card_padding_bottom"
