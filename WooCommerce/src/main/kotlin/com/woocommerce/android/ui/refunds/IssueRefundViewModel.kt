@@ -106,6 +106,7 @@ class IssueRefundViewModel @Inject constructor(
             val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
             _currencySettings.value = CurrencySettings(order.currency, decimals ?: DEFAULT_DECIMAL_PRECISION)
         }
+        enteredAmount = BigDecimal.ZERO
     }
 
     fun onRefundEntered() {
