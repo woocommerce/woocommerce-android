@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
@@ -11,6 +12,7 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -49,6 +51,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
+        const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
 
@@ -79,6 +82,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private var searchQuery: String = ""
     private val searchHandler = Handler()
 
+    /**
+     * flag to check if the user selected any order status from the order status list
+     * If true, the data in the order list tab currently visible, will be refreshed
+     */
+    private var isFilterEnabled: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -87,6 +96,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, null)
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
+            isFilterEnabled = bundle.getBoolean(STATE_KEY_IS_FILTER_ENABLED)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
     }
@@ -104,13 +114,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onPrepareOptionsMenu(menu: Menu?) {
         refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        if (orderStatusFilter != null && orderStatusFilter != order_list_view.getOrderListStatusFilter()) {
-            onOrderStatusSelected(orderStatusFilter)
-        }
     }
 
     /**
@@ -268,6 +271,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
+        outState.putBoolean(STATE_KEY_IS_FILTER_ENABLED, isFilterEnabled)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
 
         super.onSaveInstanceState(outState)
@@ -286,15 +290,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         if (hidden) {
             // restore the toolbar elevation when the order list screen is hidden
             activity?.toolbar?.elevation = resources.getDimension(R.dimen.appbar_elevation)
-            disableSearchListeners()
+            clearSearchResults()
         } else {
-            activity?.toolbar?.elevation = 0f
-            enableSearchListeners()
-
             // silently refresh if this fragment is no longer hidden
             if (isSearching) {
+                enableSearchListeners()
                 presenter.searchOrders(searchQuery)
             } else {
+                activity?.toolbar?.elevation = 0f
+                disableSearchListeners()
                 presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
             }
         }
@@ -463,7 +467,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                     mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
             )
 
-            clearSearchResults()
+            enableFilterListeners()
             order_list_view.clearAdapterData()
             presenter.loadOrders(orderStatusFilter, true)
 
@@ -527,7 +531,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         clearSearchResults()
-        tab_layout.visibility = View.VISIBLE
+        disableFilterListeners()
         return true
     }
 
@@ -593,6 +597,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         order_status_list_view.visibility = View.GONE
+        tab_layout.visibility = View.VISIBLE
     }
 
     private fun enableSearchListeners() {
@@ -603,6 +608,51 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         // TODO: add design changes when search is enabled
         // 1. display toolbar elevation
         // 2. hide the search keyboard
+    }
+
+    /**
+     * Method called when user clicks on an order status from [OrderStatusListView]
+     * 1. The order status view is hidden
+     * 2. The search is no longer enabled
+     * 3. The search query text is updated to display the order status selected.
+     * 4. The [isFilterEnabled] flag is set to true.
+     *    This is because once an order status is selected and the order list for that status is displayed,
+     *    when back is clicked, the order list needs to be refreshed again from the api,
+     *    since we only store the orders for a particular status in local cache.
+     */
+    private fun enableFilterListeners() {
+        isFilterEnabled = true
+        order_status_list_view.visibility = View.GONE
+        searchView?.queryHint = getString(R.string.orders)
+                .plus(orderStatusFilter?.let { filter ->
+                    val orderStatusLabel = presenter.getOrderStatusOptions()[filter]?.label
+                    getString(R.string.orderlist_filtered, orderStatusLabel)
+                } ?: "")
+
+        searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
+            it.setHintTextColor(Color.WHITE)
+            it.isEnabled = false
+        }
+    }
+
+    /**
+     * Method called when user clicks on the back button after selecting an order status
+     * 1. The order status view is hidden
+     * 2. The search is enabled again and the hint query is updated
+     * 3. The order list for the currently displayed tab needs to be refreshed from the api only
+     *    if isFilterEnabled is true
+     */
+    private fun disableFilterListeners() {
+        if (isFilterEnabled) {
+            searchView?.findViewById<EditText>(R.id.search_src_text)?.also { it.isEnabled = true }
+            searchView?.queryHint = getString(R.string.search)
+
+            val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
+            orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
+
+            presenter.loadOrders(orderStatusFilter, forceRefresh = isFilterEnabled)
+            isFilterEnabled = false
+        }
     }
     // endregion
 }
