@@ -23,6 +23,7 @@ interface OrderListContract {
         fun searchOrders(searchQuery: String)
         fun searchMoreOrders(searchQuery: String)
         fun getOrderStatusOptions(): Map<String, WCOrderStatusModel>
+        fun getOrderStatusList(): List<WCOrderStatusModel>
         fun refreshOrderStatusOptions()
         fun loadShipmentTrackingProviders(order: WCOrderModel)
     }

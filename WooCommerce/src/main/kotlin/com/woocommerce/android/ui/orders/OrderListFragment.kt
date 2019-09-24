@@ -248,6 +248,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
         order_list_view.initEmptyView(selectedSite.get())
+        order_status_list_view.init()
 
         if (isActive && !deferInit) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending, isFirstRun = true)
@@ -617,11 +618,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private fun disableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
+        order_status_list_view.visibility = View.GONE
     }
 
     private fun enableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
+        order_status_list_view.visibility = View.VISIBLE
+        order_status_list_view.updateOrderStatusListView(presenter.getOrderStatusList())
+        // TODO: add design changes when search is enabled
+        // 1. display toolbar elevation
+        // 2. hide the search keyboard
     }
     // endregion
 }

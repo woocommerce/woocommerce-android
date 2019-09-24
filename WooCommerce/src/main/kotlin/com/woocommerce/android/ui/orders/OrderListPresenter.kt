@@ -135,6 +135,7 @@ class OrderListPresenter @Inject constructor(
         return canLoadMore
     }
 
+    // TODO: clean up unnecessary code in another commit
     override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
         val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
         return if (options.isEmpty()) {
@@ -144,6 +145,12 @@ class OrderListPresenter @Inject constructor(
             options.map { it.statusKey to it }.toMap()
         }
     }
+
+    /**
+     * Method to fetch order status list for a given site
+     */
+    override fun getOrderStatusList(): List<WCOrderStatusModel> =
+            orderStore.getOrderStatusOptionsForSite(selectedSite.get())
 
     override fun refreshOrderStatusOptions() {
         // Refresh the order status options from the API

@@ -360,6 +360,23 @@
         <item name="tabSelectedTextColor">@color/white</item>
         <item name="tabIndicatorColor">@color/white</item>
     </style>
+
+    <!--
+        Order Status List Style
+    -->
+    <style name="Woo.OrderStatusListHeader" parent="Woo.ListHeader">
+        <item name="android:paddingTop">@dimen/margin_large</item>
+        <item name="android:paddingBottom">@dimen/margin_large</item>
+        <item name="android:background">@null</item>
+    </style>
+    <style name="Woo.OrderStatusList.Item" parent="Woo.OrderList.Item">
+        <item name="android:paddingTop">@dimen/margin_extra_large</item>
+        <item name="android:paddingBottom">@dimen/margin_extra_large</item>
+    </style>
+    <style name="Woo.OrderStatusList.TextAppearance.ListItem.Count" parent="Woo.TextAppearance.ListItem">
+        <item name="tabTextColor">@color/wc_grey_mid</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
     <!--
         OrderDetail Styles
     -->
