@@ -12,5 +12,5 @@ internal abstract class RefundsModule {
     abstract fun refundByAmountFragment(): RefundByAmountFragment
 
     @ContributesAndroidInjector
-    abstract fun refundConfirmationFragment(): RefundConfirmationFragment
+    abstract fun refundConfirmationFragment(): RefundSummaryFragment
 }

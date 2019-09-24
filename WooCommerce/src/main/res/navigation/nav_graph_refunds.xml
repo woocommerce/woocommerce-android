@@ -6,8 +6,8 @@
     app:startDestination="@id/issueRefundFragment" >
     <fragment
         android:id="@+id/refundConfirmationFragment"
-        android:name="com.woocommerce.android.ui.refunds.RefundConfirmationFragment"
-        tools:layout="@layout/fragment_refund_confirmation"/>
+        android:name="com.woocommerce.android.ui.refunds.RefundSummaryFragment"
+        tools:layout="@layout/fragment_refund_summary"/>
     <fragment
         android:id="@+id/issueRefundFragment"
         android:name="com.woocommerce.android.ui.refunds.IssueRefundFragment"

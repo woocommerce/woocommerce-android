@@ -17,10 +17,10 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_refund_confirmation.*
+import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
 
-class RefundConfirmationFragment : DaggerFragment(), BackPressListener {
+class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     companion object {
         const val REFUND_SUCCESS_KEY = "refund-success-key"
     }
@@ -29,7 +29,7 @@ class RefundConfirmationFragment : DaggerFragment(), BackPressListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        return inflater.inflate(R.layout.fragment_refund_confirmation, container, false)
+        return inflater.inflate(R.layout.fragment_refund_summary, container, false)
     }
 
     override fun onResume() {

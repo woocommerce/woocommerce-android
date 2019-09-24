@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
-import com.woocommerce.android.ui.refunds.RefundConfirmationFragment
+import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -616,7 +616,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
             REFUND_REQUEST_CODE -> {
-                val refundWasSuccessful = result.getBoolean(RefundConfirmationFragment.REFUND_SUCCESS_KEY, false)
+                val refundWasSuccessful = result.getBoolean(RefundSummaryFragment.REFUND_SUCCESS_KEY, false)
                 if (refundWasSuccessful) {
                     presenter.refreshOrderDetail(false)
                 }
