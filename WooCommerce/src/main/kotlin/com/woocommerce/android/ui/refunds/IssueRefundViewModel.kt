@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
@@ -157,6 +158,15 @@ class IssueRefundViewModel @Inject constructor(
                 // pause here until the snackbar is dismissed to allow for undo action
                 val wasRefundCanceled = waitForCancellation()
                 if (!wasRefundCanceled) {
+                    // TODO: Update this once the item & automatic refunds are supported
+                    AnalyticsTracker.track(Stat.REFUND_CREATE, mapOf(
+                            AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                            AnalyticsTracker.KEY_REFUND_IS_FULL to (enteredAmount isEqualTo maxRefund).toString(),
+                            AnalyticsTracker.KEY_REFUND_TYPE to "amount",
+                            AnalyticsTracker.KEY_REFUND_METHOD to "manual",
+                            AnalyticsTracker.KEY_REFUND_AMOUNT to enteredAmount.toString()
+                    ))
+
                     val resultCall = async(backgroundDispatcher) {
                         return@async refundStore.createRefund(
                                 selectedSite.get(),
@@ -168,8 +178,18 @@ class IssueRefundViewModel @Inject constructor(
                     val result = resultCall.await()
 
                     if (result.isError) {
+                        AnalyticsTracker.track(Stat.REFUND_CREATE_FAILED, mapOf(
+                                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                                AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
+                                AnalyticsTracker.KEY_ERROR_DESC to result.error.message)
+                        )
+
                         _showSnackbarMessage.value = resourceProvider.getString(R.string.order_refunds_manual_refund_error)
                     } else {
+                        AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
+                                AnalyticsTracker.KEY_ID to result.model?.id
+                        ))
+
                         _showSnackbarMessage.value = resourceProvider.getString(
                                 R.string.order_refunds_manual_refund_successful
                         )
