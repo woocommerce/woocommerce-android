@@ -135,9 +135,8 @@ class OrderListPresenter @Inject constructor(
         return canLoadMore
     }
 
-    // TODO: clean up unnecessary code in another commit
     override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
-        val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+        val options = getOrderStatusList()
         return if (options.isEmpty()) {
             refreshOrderStatusOptions()
             emptyMap()
