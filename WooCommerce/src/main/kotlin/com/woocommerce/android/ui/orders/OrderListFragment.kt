@@ -503,6 +503,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
+        // only display the order status list if the search query is empty
+        when {
+            newText.isEmpty() -> order_status_list_view.visibility = View.VISIBLE
+            else -> order_status_list_view.visibility = View.GONE
+        }
+
         if (newText.length > 2) {
             submitSearchDelayed(newText)
         } else {
