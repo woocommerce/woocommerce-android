@@ -27,11 +27,20 @@
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
         <item name="android:listViewStyle">@style/Woo.List</item>
         <item name="android:alertDialogTheme">@style/Woo.Dialog</item>
+        <item name="autoCompleteTextViewStyle">@style/SearchViewCursor</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">
         <!-- Overrides for various api levels -->
     </style>
+
+    <!--
+        Set a custom cursor for search views so they don't inherit colorAccent
+    -->
+    <style name="SearchViewCursor" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:textCursorDrawable">@drawable/searchview_cursor</item>
+    </style>
+
     <!--
         Toolbar Theme
     -->
