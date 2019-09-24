@@ -69,7 +69,7 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
             uiMessageResolver.showSnack(message)
         })
 
-        viewModel.isConfirmationFormEnabled.observe(this, Observer {
+        viewModel.isSummaryFormEnabled.observe(this, Observer {
             refundConfirmation_btnRefund.isEnabled = it
             refundConfirmation_reason.isEnabled = it
         })

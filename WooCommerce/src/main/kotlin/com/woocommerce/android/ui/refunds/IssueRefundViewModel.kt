@@ -64,8 +64,8 @@ class IssueRefundViewModel @Inject constructor(
     private val _showValidationError = SingleLiveEvent<String>()
     val showValidationError: LiveData<String> = _showValidationError
 
-    private val _showConfirmation = SingleLiveEvent<Unit>()
-    val showConfirmation: LiveData<Unit> = _showConfirmation
+    private val _showRefundSummary = SingleLiveEvent<Unit>()
+    val showRefundSummary: LiveData<Unit> = _showRefundSummary
 
     private val _exitAfterRefund = SingleLiveEvent<Boolean>()
     val exitAfterRefund: LiveData<Boolean> = _exitAfterRefund
@@ -73,8 +73,8 @@ class IssueRefundViewModel @Inject constructor(
     private val _isNextButtonEnabled = MutableLiveData<Boolean>()
     val isNextButtonEnabled: LiveData<Boolean> = _isNextButtonEnabled
 
-    private val _isConfirmationFormEnabled = MutableLiveData<Boolean>()
-    val isConfirmationFormEnabled: LiveData<Boolean> = _isConfirmationFormEnabled
+    private val _isSummaryFormEnabled = MutableLiveData<Boolean>()
+    val isSummaryFormEnabled: LiveData<Boolean> = _isSummaryFormEnabled
 
     private val _availableForRefund = MutableLiveData<String>()
     val availableForRefund: LiveData<String> = _availableForRefund
@@ -130,7 +130,7 @@ class IssueRefundViewModel @Inject constructor(
     fun onRefundEntered() {
         if (isInputValid()) {
             AnalyticsTracker.track(ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED)
-            _showConfirmation.call()
+            _showRefundSummary.call()
         } else {
             showValidationState()
         }
@@ -153,7 +153,7 @@ class IssueRefundViewModel @Inject constructor(
             )
 
             launch {
-                _isConfirmationFormEnabled.value = false
+                _isSummaryFormEnabled.value = false
 
                 // pause here until the snackbar is dismissed to allow for undo action
                 val wasRefundCanceled = waitForCancellation()
@@ -198,7 +198,7 @@ class IssueRefundViewModel @Inject constructor(
                         _exitAfterRefund.value = !result.isError
                     }
                 }
-                _isConfirmationFormEnabled.value = true
+                _isSummaryFormEnabled.value = true
             }
         } else {
             _showSnackbarMessage.value = resourceProvider.getString(R.string.offline_error)

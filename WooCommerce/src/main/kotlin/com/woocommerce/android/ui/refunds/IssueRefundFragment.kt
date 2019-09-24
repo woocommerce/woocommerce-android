@@ -65,7 +65,7 @@ class IssueRefundFragment : DaggerFragment() {
             issueRefund_btnNext.isEnabled = it
         })
 
-        viewModel.showConfirmation.observe(this, Observer {
+        viewModel.showRefundSummary.observe(this, Observer {
             val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundConfirmationFragment()
             findNavController().navigate(action)
         })
