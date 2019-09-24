@@ -184,7 +184,9 @@ class IssueRefundViewModel @Inject constructor(
                                 AnalyticsTracker.KEY_ERROR_DESC to result.error.message)
                         )
 
-                        _showSnackbarMessage.value = resourceProvider.getString(R.string.order_refunds_manual_refund_error)
+                        _showSnackbarMessage.value = resourceProvider.getString(
+                                R.string.order_refunds_manual_refund_error
+                        )
                     } else {
                         AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
                                 AnalyticsTracker.KEY_ID to result.model?.id
