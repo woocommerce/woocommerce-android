@@ -4,6 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.di.UI_THREAD
@@ -48,6 +52,8 @@ class IssueRefundViewModel @Inject constructor(
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
     }
+
+    // region LiveData
     private val _showSnackbarMessage = SingleLiveEvent<String>()
     val showSnackbarMessage: LiveData<String> = _showSnackbarMessage
 
@@ -83,6 +89,7 @@ class IssueRefundViewModel @Inject constructor(
 
     private val _currencySettings = MutableLiveData<CurrencySettings>()
     val currencySettings: LiveData<CurrencySettings> = _currencySettings
+    // endregion
 
     final var enteredAmount: BigDecimal = BigDecimal.ZERO
         private set(value) {
@@ -121,6 +128,7 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onRefundEntered() {
         if (isInputValid()) {
+            AnalyticsTracker.track(ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED)
             _showConfirmation.call()
         } else {
             showValidationState()
@@ -135,6 +143,8 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onRefundConfirmed(reason: String) {
+        AnalyticsTracker.track(ADD_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED)
+
         if (networkStatus.isConnected()) {
             _showSnackbarMessageWithUndo.value = resourceProvider.getString(
                     R.string.order_refunds_manual_refund_progress_message,
@@ -144,7 +154,7 @@ class IssueRefundViewModel @Inject constructor(
             launch {
                 _isConfirmationFormEnabled.value = false
 
-                // pause here until the snackbar is dismissed
+                // pause here until the snackbar is dismissed to allow for undo action
                 val wasRefundCanceled = waitForCancellation()
                 if (!wasRefundCanceled) {
                     val resultCall = async(backgroundDispatcher) {
@@ -182,6 +192,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onUndoTapped() {
+        AnalyticsTracker.track(ADD_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED)
         refundContinuation?.resume(true)
     }
 
