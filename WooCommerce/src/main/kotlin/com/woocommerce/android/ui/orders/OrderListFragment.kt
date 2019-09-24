@@ -509,8 +509,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onQueryTextChange(newText: String): Boolean {
         // only display the order status list if the search query is empty
         when {
-            newText.isEmpty() -> order_status_list_view.visibility = View.VISIBLE
-            else -> order_status_list_view.visibility = View.GONE
+            newText.isEmpty() -> displayOrderStatusListView()
+            else -> hideOrderStatusListView()
         }
 
         if (newText.length > 2) {
@@ -596,14 +596,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private fun disableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
-        order_status_list_view.visibility = View.GONE
+        hideOrderStatusListView()
         tab_layout.visibility = View.VISIBLE
     }
 
     private fun enableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
-        order_status_list_view.visibility = View.VISIBLE
+        displayOrderStatusListView()
         order_status_list_view.updateOrderStatusListView(presenter.getOrderStatusList())
         // TODO: add design changes when search is enabled
         // 1. display toolbar elevation
@@ -622,7 +622,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      */
     private fun enableFilterListeners() {
         isFilterEnabled = true
-        order_status_list_view.visibility = View.GONE
+        hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
                 .plus(orderStatusFilter?.let { filter ->
                     val orderStatusLabel = presenter.getOrderStatusOptions()[filter]?.label
@@ -653,6 +653,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             presenter.loadOrders(orderStatusFilter, forceRefresh = isFilterEnabled)
             isFilterEnabled = false
         }
+    }
+
+    private fun displayOrderStatusListView() {
+        order_status_list_view.visibility = View.VISIBLE
+        orderRefreshLayout.isEnabled = false
+    }
+
+    private fun hideOrderStatusListView() {
+        order_status_list_view.visibility = View.GONE
+        orderRefreshLayout.isEnabled = true
     }
     // endregion
 }
