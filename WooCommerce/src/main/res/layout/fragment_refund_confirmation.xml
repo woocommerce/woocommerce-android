@@ -141,7 +141,8 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/refundConfirmation_btnRefund"
-            style="@style/Woo.Button.Purple"
+            android:theme="@style/Woo.Button.Purple"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/card_item_padding_intra_double"

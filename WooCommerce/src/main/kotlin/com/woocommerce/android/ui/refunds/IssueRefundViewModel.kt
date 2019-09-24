@@ -29,6 +29,9 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @OpenClassOnDebug
 class IssueRefundViewModel @Inject constructor(
@@ -48,6 +51,9 @@ class IssueRefundViewModel @Inject constructor(
     private val _showSnackbarMessage = SingleLiveEvent<String>()
     val showSnackbarMessage: LiveData<String> = _showSnackbarMessage
 
+    private val _showSnackbarMessageWithUndo = SingleLiveEvent<String>()
+    val showSnackbarMessageWithUndo: LiveData<String> = _showSnackbarMessageWithUndo
+
     private val _showValidationError = SingleLiveEvent<String>()
     val showValidationError: LiveData<String> = _showValidationError
 
@@ -57,8 +63,11 @@ class IssueRefundViewModel @Inject constructor(
     private val _exitAfterRefund = SingleLiveEvent<Boolean>()
     val exitAfterRefund: LiveData<Boolean> = _exitAfterRefund
 
-    private val _isRefundButtonEnabled = MutableLiveData<Boolean>()
-    val isRefundButtonEnabled: LiveData<Boolean> = _isRefundButtonEnabled
+    private val _isNextButtonEnabled = MutableLiveData<Boolean>()
+    val isNextButtonEnabled: LiveData<Boolean> = _isNextButtonEnabled
+
+    private val _isConfirmationFormEnabled = MutableLiveData<Boolean>()
+    val isConfirmationFormEnabled: LiveData<Boolean> = _isConfirmationFormEnabled
 
     private val _availableForRefund = MutableLiveData<String>()
     val availableForRefund: LiveData<String> = _availableForRefund
@@ -90,6 +99,7 @@ class IssueRefundViewModel @Inject constructor(
     private lateinit var order: Order
     private lateinit var maxRefund: BigDecimal
     private lateinit var formatCurrency: (BigDecimal) -> String
+    private var refundContinuation: Continuation<Boolean>? = null
 
     fun start(orderId: Long) {
         orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel()?.let { order ->
@@ -126,36 +136,57 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onRefundConfirmed(reason: String) {
         if (networkStatus.isConnected()) {
-            _showSnackbarMessage.value = resourceProvider.getString(
+            _showSnackbarMessageWithUndo.value = resourceProvider.getString(
                     R.string.order_refunds_manual_refund_progress_message,
                     formatCurrency(enteredAmount)
             )
 
             launch {
-                _isRefundButtonEnabled.value = false
-                val resultCall = async(backgroundDispatcher) {
-                    return@async refundStore.createRefund(
-                            selectedSite.get(),
-                            order.remoteOrderId,
-                            enteredAmount,
-                            reason
-                    )
-                }
-                val result = resultCall.await()
-                _isRefundButtonEnabled.value = true
+                _isConfirmationFormEnabled.value = false
 
-                if (result.isError) {
-                    _showSnackbarMessage.value = resourceProvider.getString(R.string.order_refunds_manual_refund_error)
-                } else {
-                    _showSnackbarMessage.value = resourceProvider.getString(
-                            R.string.order_refunds_manual_refund_successful
-                    )
-                    _exitAfterRefund.value = !result.isError
+                // pause here until the snackbar is dismissed
+                val wasRefundCanceled = waitForCancellation()
+                if (!wasRefundCanceled) {
+                    val resultCall = async(backgroundDispatcher) {
+                        return@async refundStore.createRefund(
+                                selectedSite.get(),
+                                order.remoteOrderId,
+                                enteredAmount,
+                                reason
+                        )
+                    }
+                    val result = resultCall.await()
+
+                    if (result.isError) {
+                        _showSnackbarMessage.value = resourceProvider.getString(R.string.order_refunds_manual_refund_error)
+                    } else {
+                        _showSnackbarMessage.value = resourceProvider.getString(
+                                R.string.order_refunds_manual_refund_successful
+                        )
+                        _exitAfterRefund.value = !result.isError
+                    }
                 }
+                _isConfirmationFormEnabled.value = true
             }
         } else {
             _showSnackbarMessage.value = resourceProvider.getString(R.string.offline_error)
         }
+    }
+
+    private suspend fun waitForCancellation(): Boolean {
+        val wasRefundCanceled = suspendCoroutine<Boolean> {
+            refundContinuation = it
+        }
+        refundContinuation = null
+        return wasRefundCanceled
+    }
+
+    fun onUndoTapped() {
+        refundContinuation?.resume(true)
+    }
+
+    fun onProceedWithRefund() {
+        refundContinuation?.resume(false)
     }
 
     private fun validateInput(): InputValidationState {
@@ -170,15 +201,15 @@ class IssueRefundViewModel @Inject constructor(
         when (validateInput()) {
             TOO_HIGH -> {
                 _showValidationError.value = resourceProvider.getString(string.order_refunds_refund_high_error)
-                _isRefundButtonEnabled.value = false
+                _isNextButtonEnabled.value = false
             }
             TOO_LOW -> {
                 _showValidationError.value = resourceProvider.getString(string.order_refunds_refund_zero_error)
-                _isRefundButtonEnabled.value = false
+                _isNextButtonEnabled.value = false
             }
             VALID -> {
                 _showValidationError.value = null
-                _isRefundButtonEnabled.value = true
+                _isNextButtonEnabled.value = true
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -51,8 +52,26 @@ class RefundConfirmationFragment : DaggerFragment(), BackPressListener {
 
     @SuppressLint("SetTextI18n")
     private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
+        viewModel.showSnackbarMessageWithUndo.observe(this, Observer { message ->
+            uiMessageResolver.getUndoSnack(message, "", actionListener = View.OnClickListener {
+                viewModel.onUndoTapped()
+            }).also {
+                it.addCallback(object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        viewModel.onProceedWithRefund()
+                    }
+                })
+                it.show()
+            }
+        })
+
+        viewModel.showSnackbarMessage.observe(this, Observer { message ->
+            uiMessageResolver.showSnack(message)
+        })
+
+        viewModel.isConfirmationFormEnabled.observe(this, Observer {
+            refundConfirmation_btnRefund.isEnabled = it
+            refundConfirmation_reason.isEnabled = it
         })
 
         viewModel.formattedRefundAmount.observe(this, Observer {
@@ -67,7 +86,12 @@ class RefundConfirmationFragment : DaggerFragment(), BackPressListener {
             val bundle = Bundle()
             bundle.putBoolean(REFUND_SUCCESS_KEY, it)
 
-            requireActivity().navigateBackWithResult(REFUND_REQUEST_CODE, bundle, R.id.nav_host_fragment_main)
+            requireActivity().navigateBackWithResult(
+                    REFUND_REQUEST_CODE,
+                    bundle,
+                    R.id.nav_host_fragment_main,
+                    R.id.orderDetailFragment
+            )
         })
     }
 

@@ -57,15 +57,11 @@ class IssueRefundFragment : DaggerFragment() {
     }
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
-        viewModel.showSnackbarMessage.observe(this, Observer {
-            uiMessageResolver.showSnack(it)
-        })
-
         viewModel.screenTitle.observe(this, Observer {
             activity?.title = it
         })
 
-        viewModel.isRefundButtonEnabled.observe(this, Observer {
+        viewModel.isNextButtonEnabled.observe(this, Observer {
             issueRefund_btnNext.isEnabled = it
         })
 
