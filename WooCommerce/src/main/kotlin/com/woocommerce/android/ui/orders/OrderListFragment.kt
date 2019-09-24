@@ -605,9 +605,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         searchView?.setOnQueryTextListener(this)
         displayOrderStatusListView()
         order_status_list_view.updateOrderStatusListView(presenter.getOrderStatusList())
-        // TODO: add design changes when search is enabled
-        // 1. display toolbar elevation
-        // 2. hide the search keyboard
     }
 
     /**
@@ -658,11 +655,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private fun displayOrderStatusListView() {
         order_status_list_view.visibility = View.VISIBLE
         orderRefreshLayout.isEnabled = false
+        activity?.toolbar?.elevation = resources.getDimension(R.dimen.appbar_elevation)
     }
 
     private fun hideOrderStatusListView() {
         order_status_list_view.visibility = View.GONE
         orderRefreshLayout.isEnabled = true
+        activity?.toolbar?.elevation = 0f
     }
     // endregion
 }
