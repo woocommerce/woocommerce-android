@@ -65,8 +65,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    private var orderFilterDialog: OrderStatusSelectorDialog? = null
-
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
     override var isRefreshing: Boolean
         get() = orderRefreshLayout.isRefreshing
@@ -75,7 +73,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
-    private var filterMenuItem: MenuItem? = null
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
@@ -97,8 +94,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     // region options menu
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
-
-        filterMenuItem = menu?.findItem(R.id.menu_filter)
 
         searchMenuItem = menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
@@ -123,25 +118,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      * search menu item to collapse
      */
     private fun refreshOptionsMenu() {
-        val showFilter = shouldShowFilterMenuItem()
-        filterMenuItem?.let {
-            if (it.isVisible != showFilter) it.isVisible = showFilter
-        }
-
         val showSearch = shouldShowFilterMenuItem()
         searchMenuItem?.let {
-            if (it.isActionViewExpanded && !showFilter) it.collapseActionView()
+            if (it.isActionViewExpanded) it.collapseActionView()
             if (it.isVisible != showSearch) it.isVisible = showSearch
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.menu_filter -> {
-                AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_FILTER_TAPPED)
-                showFilterDialog()
-                true
-            }
             R.id.menu_search -> {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
@@ -209,14 +194,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             }
         }
         return view
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        // If the order filter dialog is visible, close it
-        orderFilterDialog?.dismiss()
-        orderFilterDialog = null
     }
 
     override fun onResume() {
@@ -299,7 +276,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onDestroyView() {
         disableSearchListeners()
         presenter.dropView()
-        filterMenuItem = null
         searchView = null
         super.onDestroyView()
     }
@@ -476,14 +452,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(order.localSiteId, order.remoteOrderId)
-    }
-
-    // region Filtering
-    private fun showFilterDialog() {
-        val orderStatusOptions = presenter.getOrderStatusOptions()
-        orderFilterDialog = OrderStatusSelectorDialog
-                .newInstance(orderStatusOptions, orderStatusFilter, true, listener = this)
-                .also { it.show(fragmentManager, OrderStatusSelectorDialog.TAG) }
     }
 
     override fun onOrderStatusSelected(orderStatus: String?) {
