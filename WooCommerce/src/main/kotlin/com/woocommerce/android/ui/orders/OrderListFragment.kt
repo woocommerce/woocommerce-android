@@ -38,7 +38,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
-        OrderStatusSelectorDialog.OrderStatusDialogListener,
+        OrderStatusListView.OrderStatusListListener,
         OnQueryTextListener,
         OnActionExpandListener,
         OnLoadMoreListener, OrderListListener {
@@ -225,7 +225,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         order_list_view.init(currencyFormatter = currencyFormatter, orderListListener = this)
         order_list_view.initEmptyView(selectedSite.get())
-        order_status_list_view.init()
+        order_status_list_view.init(listener = this)
 
         if (isActive && !deferInit) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending, isFirstRun = true)

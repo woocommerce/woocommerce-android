@@ -30,12 +30,16 @@ class OrderStatusListView @JvmOverloads constructor(ctx: Context, attrs: Attribu
         private const val ORDER_STATUS_COUNT_MAX_LABEL = "$ORDER_STATUS_COUNT_MAX+"
     }
 
-    fun init() {
+    interface OrderStatusListListener {
+        fun onOrderStatusSelected(orderStatus: String?)
+    }
+
+    fun init(listener: OrderStatusListListener) {
         orderStatusList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(true)
-            adapter = OrderStatusListAdapter()
+            adapter = OrderStatusListAdapter(listener)
         }
     }
 
@@ -48,7 +52,8 @@ class OrderStatusListView @JvmOverloads constructor(ctx: Context, attrs: Attribu
         var orderStatusCountText: TextView = view.orderStatusItem_count
     }
 
-    class OrderStatusListAdapter : RecyclerView.Adapter<OrderStatusListViewHolder>() {
+    class OrderStatusListAdapter(private val listener: OrderStatusListListener)
+        : RecyclerView.Adapter<OrderStatusListViewHolder>() {
         private val orderStatusList: ArrayList<WCOrderStatusModel> = ArrayList()
 
         fun setOrderStatusList(newList: List<WCOrderStatusModel>) {
@@ -75,7 +80,7 @@ class OrderStatusListView @JvmOverloads constructor(ctx: Context, attrs: Attribu
             holder.orderStatusCountText.text = label
 
             holder.itemView.setOnClickListener {
-                // TODO: add click listener here
+                listener.onOrderStatusSelected(orderStatusModel.statusKey)
             }
         }
     }
