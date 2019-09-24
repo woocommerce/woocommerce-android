@@ -219,6 +219,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_LIST_LOAD_ERROR,
         PRODUCT_LIST_PRODUCT_TAPPED,
         PRODUCT_LIST_PULLED_TO_REFRESH,
+        PRODUCT_LIST_SEARCHED,
+        PRODUCT_LIST_MENU_SEARCH_TAPPED,
 
         // -- Product detail
         PRODUCT_DETAIL_LOADED,
