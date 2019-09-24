@@ -63,7 +63,7 @@ local.properties
 # Android Studio captures folder
 captures/
 
-# Android Studio backup folder
+# Android Studio backup files
 projectFilesBackup/
 
 # Keystore files
