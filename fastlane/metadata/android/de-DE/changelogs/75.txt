@@ -1,0 +1,5 @@
+2.6:
+- Du hast kein Jetpack-Konto? Du kannst dich jetzt bei deiner Website anmelden und dabei den Bildschirm umgehen, dass Jetpack erforderlich ist. (Allerdings verpasst du dann einige leistungsstarke Features – probiere Jetpack einfach einmal aus!)
+- Bei einigen von euch, die über eine mit Jetpack verbundene Website verfügen, traten manchmal Probleme beim Anmelden auf. Dieser Fehler wurde behoben.
+- Wir haben die Darstellung der Mein Shop-Statistiken korrigiert, bevor du deine erste Bestellung erhältst.
+- Bei einigen wenigen von euch ist die Website gelegentlich abgestürzt. Wenn du dazu zählst, haben wir gute Nachrichten: Das wird nicht mehr vorkommen.

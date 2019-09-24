@@ -1,3 +1,0 @@
-2.5:
-* Hemos supervisado y corregido lo siguiente: un error extraño que se producía después de hacer un pedido y minimizar la aplicación, un error que hacía que el sitio seleccionado en el selector de sitios volviera a la selección anterior y algunos problemas de la interfaz de usuario que ocurrían en la nueva pestaña "Revisiones".
-* Los nombres de los productos ahora pueden agruparse en dos líneas, en la pantalla Información del pedido.

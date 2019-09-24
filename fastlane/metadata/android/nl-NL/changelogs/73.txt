@@ -1,3 +1,0 @@
-2.5:
-* We hebben het volgende gevonden en gerepareerd: een zeldzame crash die plaatsvond na het voltooien van een bestelling en het minimaliseren van de app, een bug die ervoor zorgde dat de geselecteerde sitekiezer terugkeerde naar de vorige selectie en een paar UI-problemen met het nieuwe tabblad 'Beoordelingen'.
-* Productnamen kunnen nu op twee regels worden weergegeven op het scherm met bestelgegevens.
