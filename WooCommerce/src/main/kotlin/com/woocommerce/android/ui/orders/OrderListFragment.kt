@@ -637,8 +637,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      */
     private fun disableFilterListeners() {
         if (isFilterEnabled) {
-            searchView?.findViewById<EditText>(R.id.search_src_text)?.also { it.isEnabled = true }
-            searchView?.queryHint = getString(R.string.search)
+            searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
+                it.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.wc_grey_17))
+                it.isEnabled = true
+            }
+            searchView?.queryHint = null
 
             val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
