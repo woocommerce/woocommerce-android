@@ -224,26 +224,20 @@ class ReviewDetailFragment : BaseFragment() {
         }
 
         // Configure the moderate button
-        with(review_approve) {
-            setOnCheckedChangeListener(moderateListener)
-        }
+        review_approve.setOnCheckedChangeListener(moderateListener)
 
         // Configure the spam button
-        with(review_spam) {
-            setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
+        review_spam.setOnClickListener {
+            AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
 
-                processReviewModeration(SPAM)
-            }
+            processReviewModeration(SPAM)
         }
 
         // Configure the trash button
-        with(review_trash) {
-            setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
+        review_trash.setOnClickListener {
+            AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
 
-                processReviewModeration(TRASH)
-            }
+            processReviewModeration(TRASH)
         }
     }
 
