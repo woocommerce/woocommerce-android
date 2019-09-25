@@ -13,6 +13,7 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -361,11 +362,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
     }
 
-    private fun isShowingAllOrders(): Boolean {
-        return !isSearching && orderStatusFilter.isNullOrEmpty()
-    }
+    private fun isOrderListEmpty() =
+            getOrderStatusOptions().filterValues { it.statusCount > 0 }.isNullOrEmpty()
 
-    private fun isShowingProcessingOrders() = tab_layout.selectedTabPosition == 0
+    private fun isShowingProcessingOrders() = tab_layout.selectedTabPosition == ORDER_TAB_PROCESSING
 
     /**
      * shows the view that appears for stores that have have no orders matching the current filter
@@ -379,29 +379,32 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             @StringRes val messageId: Int
             val showImage: Boolean
             val showShareButton: Boolean
+            @DrawableRes var imageId: Int? = null
             when {
                 isSearching -> {
                     showImage = false
                     showShareButton = false
                     messageId = R.string.orders_empty_message_with_search
                 }
-                isShowingAllOrders() -> {
-                    showImage = true
-                    showShareButton = true
-                    messageId = R.string.waiting_for_customers
-                }
                 isShowingProcessingOrders() -> {
-                    showImage = false
+                    showImage = true
                     showShareButton = false
-                    messageId = R.string.orders_empty_message_with_processing
+                    messageId = if (isOrderListEmpty()) {
+                        imageId = R.drawable.ic_hourglass_empty
+                        R.string.orders_empty_message_with_processing
+                    } else {
+                        imageId = R.drawable.ic_gridicons_checkmark
+                        R.string.orders_processed_empty_message
+                    }
                 }
                 else -> {
                     showImage = true
-                    showShareButton = true
+                    showShareButton = false
+                    imageId = R.drawable.ic_hourglass_empty
                     messageId = R.string.orders_empty_message_with_filter
                 }
             }
-            order_list_view.showEmptyView(messageId, showImage, showShareButton)
+            order_list_view.showEmptyView(messageId, showImage, showShareButton, imageId)
             isRefreshPending = false
         } else {
             order_list_view.hideEmptyView()
@@ -499,7 +502,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      * If there are orders/processing orders, default to whatever the user previously selected (Processing, by default)
      */
     private fun getTabPosition(): Int {
-        val orderStatusOptions = presenter.getOrderStatusOptions()
+        val orderStatusOptions = getOrderStatusOptions()
         return if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
             ORDER_TAB_DEFAULT
         } else AppPrefs.getSelectedOrderListTabPosition()
@@ -632,7 +635,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
                 .plus(orderStatusFilter?.let { filter ->
-                    val orderStatusLabel = presenter.getOrderStatusOptions()[filter]?.label
+                    val orderStatusLabel = getOrderStatusOptions()[filter]?.label
                     getString(R.string.orderlist_filtered, orderStatusLabel)
                 } ?: "")
 
