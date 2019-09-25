@@ -6,7 +6,7 @@
     android:id="@+id/order_list_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.mystore.MyStoreFragment">
+    tools:context="com.woocommerce.android.ui.orders.OrderListFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -27,6 +27,7 @@
         android:id="@+id/orderRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/default_window_background"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
@@ -46,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
+                style="@style/Woo.Card.List"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
