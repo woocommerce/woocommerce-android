@@ -34,7 +34,6 @@ import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
-import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
@@ -242,13 +241,6 @@ class ReviewDetailFragment : BaseFragment() {
     }
 
     private fun processReviewModeration(newStatus: ProductReviewStatus) {
-        // post an event to tell the notification list to moderate this
-        // review, then close the fragment
-        viewModel.productReview.value?.let { productReview ->
-            val event = OnRequestModerateReviewEvent(
-                    ProductReviewModerationRequest(productReview, newStatus))
-            EventBus.getDefault().post(event)
-        }
-        exitDetailView()
+        viewModel.moderateReview(newStatus)
     }
 }
