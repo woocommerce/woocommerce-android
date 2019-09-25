@@ -8,7 +8,7 @@ import java.util.Locale
 enum class ProductReviewStatus {
     // Real status
     APPROVED,
-    HOLD,
+    HOLD, // The product version of "unnapproved"
     SPAM,
     TRASH,
 
