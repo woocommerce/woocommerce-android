@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
-import com.woocommerce.android.model.DelayedUndoRequest.RequestStatus
+import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
@@ -138,7 +138,7 @@ final class ReviewListViewModel @Inject constructor(
 
     fun markAllReviewsAsRead() {
         if (networkStatus.isConnected()) {
-            _isMarkingAllAsRead.value = ActionStatus.PROCESSING
+            _isMarkingAllAsRead.value = ActionStatus.SUBMITTED
 
             launch {
                 when (reviewRepository.markAllProductReviewsAsRead()) {
@@ -147,7 +147,7 @@ final class ReviewListViewModel @Inject constructor(
                         _showSnackbarMessage.value = R.string.wc_mark_all_read_error
                     }
                     NO_ACTION_NEEDED, SUCCESS -> {
-                        _isMarkingAllAsRead.value = ActionStatus.COMPLETE
+                        _isMarkingAllAsRead.value = ActionStatus.SUCCESS
                         _showSnackbarMessage.value = R.string.wc_mark_all_read_success
                     }
                 }
@@ -167,16 +167,16 @@ final class ReviewListViewModel @Inject constructor(
                     newStatus.toString()
             )
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
-            sendReviewModerationUpdate(RequestStatus.SUBMITTED)
+            sendReviewModerationUpdate(ActionStatus.SUBMITTED)
         } else {
             // Network is not connected
             showOfflineSnack()
-            sendReviewModerationUpdate(RequestStatus.ERROR)
+            sendReviewModerationUpdate(ActionStatus.ERROR)
         }
     }
 
-    private fun sendReviewModerationUpdate(newRequestStatus: RequestStatus) {
-        _moderateProductReview.value = _moderateProductReview.value?.apply { requestStatus = newRequestStatus }
+    private fun sendReviewModerationUpdate(newRequestStatus: ActionStatus) {
+        _moderateProductReview.value = _moderateProductReview.value?.apply { actionStatus = newRequestStatus }
 
         // If the request has been completed, set the event to null to prevent issues later.
         if (newRequestStatus.isComplete()) {
@@ -256,9 +256,9 @@ final class ReviewListViewModel @Inject constructor(
             if (event.isError) {
                 // Show an error in the UI and reload the view
                 _showSnackbarMessage.value = R.string.wc_moderate_review_error
-                sendReviewModerationUpdate(RequestStatus.ERROR)
+                sendReviewModerationUpdate(ActionStatus.ERROR)
             } else {
-                sendReviewModerationUpdate(RequestStatus.SUCCESS)
+                sendReviewModerationUpdate(ActionStatus.SUCCESS)
             }
         }
     }

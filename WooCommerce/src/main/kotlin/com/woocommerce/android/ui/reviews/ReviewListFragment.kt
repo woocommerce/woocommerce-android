@@ -21,15 +21,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
-import com.woocommerce.android.model.DelayedUndoRequest.RequestStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.reviews.ActionStatus.COMPLETE
-import com.woocommerce.android.ui.reviews.ActionStatus.ERROR
-import com.woocommerce.android.ui.reviews.ActionStatus.PROCESSING
+import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -251,15 +248,18 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
         viewModel.isMarkingAllAsRead.observe(this, Observer {
             when (it) {
-                PROCESSING -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
-                COMPLETE -> {
+                ActionStatus.SUBMITTED -> {
+                    menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
+                }
+                ActionStatus.SUCCESS -> {
                     menuMarkAllRead?.actionView = null
                     showMarkAllReadMenuItem(show = false)
 
                     // Remove all active notifications from the system bar
                     context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
                 }
-                ERROR -> menuMarkAllRead?.actionView = null
+                ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
+                else -> {}
             }
         })
 
@@ -319,13 +319,13 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun handleReviewModerationRequest(request: ProductReviewModerationRequest) {
-        when (request.requestStatus) {
-            RequestStatus.PENDING -> processNewModerationRequest(request)
-            RequestStatus.SUCCESS -> {
+        when (request.actionStatus) {
+            ActionStatus.PENDING -> processNewModerationRequest(request)
+            ActionStatus.SUCCESS -> {
                 reviewsAdapter.removeHiddenReviewFromList()
                 resetPendingModerationVariables()
             }
-            RequestStatus.ERROR -> revertPendingModerationState()
+            ActionStatus.ERROR -> revertPendingModerationState()
             else -> { /* do nothing */ }
         }
     }
