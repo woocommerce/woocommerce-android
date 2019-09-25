@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.refunds
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED
@@ -233,11 +232,11 @@ class IssueRefundViewModel @Inject constructor(
     private fun showValidationState() {
         when (validateInput()) {
             TOO_HIGH -> {
-                _showValidationError.value = resourceProvider.getString(string.order_refunds_refund_high_error)
+                _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_high_error)
                 _isNextButtonEnabled.value = false
             }
             TOO_LOW -> {
-                _showValidationError.value = resourceProvider.getString(string.order_refunds_refund_zero_error)
+                _showValidationError.value = resourceProvider.getString(R.string.order_refunds_refund_zero_error)
                 _isNextButtonEnabled.value = false
             }
             VALID -> {
