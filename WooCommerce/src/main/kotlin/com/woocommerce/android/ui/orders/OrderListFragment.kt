@@ -121,7 +121,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      * search menu item to collapse
      */
     private fun refreshOptionsMenu() {
-        val showSearch = shouldShowFilterMenuItem()
+        val showSearch = shouldShowSearchMenuItem()
         searchMenuItem?.let {
             if (it.isActionViewExpanded) it.collapseActionView()
             if (it.isVisible != showSearch) it.isVisible = showSearch
@@ -139,18 +139,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
     }
 
-    private fun shouldShowFilterMenuItem(): Boolean {
-        val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
-        return when {
-            !isActive -> false
-            (isShowingAllOrders() && order_list_view.isEmptyViewDisplayed()) -> false
-            (isChildShowing) -> false
-            else -> true
-        }
-    }
+    private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
 
     private fun shouldShowSearchMenuItem(): Boolean {
-        val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
+        val isChildShowing = isChildFragmentShowing()
         return when {
             (isChildShowing) -> false
             else -> true
@@ -297,7 +289,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                 enableSearchListeners()
                 presenter.searchOrders(searchQuery)
             } else {
-                activity?.toolbar?.elevation = 0f
+                // update the toolbar elevation if child fragment is displayed
+                activity?.toolbar?.elevation = if (isChildFragmentShowing()) {
+                    resources.getDimension(R.dimen.appbar_elevation)
+                } else 0f
+
                 disableSearchListeners()
                 presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
             }
