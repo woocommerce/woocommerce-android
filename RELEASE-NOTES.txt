@@ -1,6 +1,7 @@
 2.8
 -----
 * Revamped the order list page by providing a new tab for unfulfilled orders
+* Added new interface to view order statuses with their count and provided option to search orders by order status.
  
 2.7
 -----
