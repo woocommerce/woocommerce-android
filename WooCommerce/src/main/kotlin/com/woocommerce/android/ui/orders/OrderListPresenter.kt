@@ -138,7 +138,6 @@ class OrderListPresenter @Inject constructor(
     override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
         val options = getOrderStatusList()
         return if (options.isEmpty()) {
-            refreshOrderStatusOptions()
             emptyMap()
         } else {
             options.map { it.statusKey to it }.toMap()
@@ -148,8 +147,15 @@ class OrderListPresenter @Inject constructor(
     /**
      * Method to fetch order status list for a given site
      */
-    override fun getOrderStatusList(): List<WCOrderStatusModel> =
-            orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+    override fun getOrderStatusList(): List<WCOrderStatusModel> {
+        val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+        return if (options.isEmpty()) {
+            refreshOrderStatusOptions()
+            emptyList()
+        } else {
+            options
+        }
+    }
 
     override fun refreshOrderStatusOptions() {
         // Refresh the order status options from the API

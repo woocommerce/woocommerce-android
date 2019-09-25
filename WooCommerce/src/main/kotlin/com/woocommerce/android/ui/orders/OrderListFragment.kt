@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
@@ -54,6 +55,8 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
+        private const val ORDER_TAB_DEFAULT = 1
+        private const val ORDER_TAB_PROCESSING = 0
 
         fun newInstance(orderStatusFilter: String? = null): OrderListFragment {
             val fragment = OrderListFragment()
@@ -201,7 +204,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         presenter.takeView(this)
 
-        val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
         resources.getStringArray(R.array.order_list_tabs).toList()
                 .forEachIndexed { index, title ->
                     val tab = tab_layout.newTab().apply {
@@ -212,7 +214,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
                     // Start with the tab user had previously selected
                     // if no tab is selected, default to the `Processing` Tab
-                    if (index == tabPosition) {
+                    if (index == getTabPosition()) {
                         orderStatusFilter = getOrderStatusByTab(tab)
                         tab.select()
                     }
@@ -491,7 +493,19 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         presenter.refreshOrderStatusOptions()
     }
 
-    private fun getOrderStatusByTab(tab: TabLayout.Tab) = if (tab.position == 0) {
+    /**
+     * Method to return the default tab position to display.
+     * If there are no orders for a site or if there are no orders to process, the `All Orders` tab should be displayed.
+     * If there are orders/processing orders, default to whatever the user previously selected (Processing, by default)
+     */
+    private fun getTabPosition(): Int {
+        val orderStatusOptions = presenter.getOrderStatusOptions()
+        return if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
+            ORDER_TAB_DEFAULT
+        } else AppPrefs.getSelectedOrderListTabPosition()
+    }
+
+    private fun getOrderStatusByTab(tab: TabLayout.Tab) = if (tab.position == ORDER_TAB_PROCESSING) {
         (tab.tag as? String)?.toLowerCase()
     } else null
 
@@ -643,7 +657,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             }
             searchView?.queryHint = null
 
-            val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
+            val tabPosition = getTabPosition()
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
 
             presenter.loadOrders(orderStatusFilter, forceRefresh = isFilterEnabled)
