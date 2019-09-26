@@ -134,7 +134,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = reviewsList
             setOnRefreshListener {
-                // TODO AMANDA : new track notification for refreshing all product reviews
+                AnalyticsTracker.track(Stat.REVIEWS_LIST_PULLED_TO_REFRESH)
                 viewModel.forceRefreshReviews()
             }
         }

@@ -428,6 +428,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_CONNECTED_STORES = "has_connected_stores"
         const val KEY_LAST_KNOWN_VERSION_CODE = "last_known_version_code"
         const val KEY_REVIEW_ID = "review_id"
+        const val KEY_NOTE_ID = "note_id"
 
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"

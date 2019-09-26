@@ -48,6 +48,8 @@ class ReviewDetailRepository @Inject constructor(
         private const val TAG = "ReviewDetailRepository"
     }
 
+    private var remoteReviewId: Long = 0L
+    private var remoteProductId: Long = 0L
     private var localNoteId: Int = 0
 
     private var continuationReview: Continuation<Boolean>? = null
@@ -62,6 +64,7 @@ class ReviewDetailRepository @Inject constructor(
     }
 
     suspend fun fetchProductReview(remoteId: Long): RequestResult {
+        remoteReviewId = remoteId
         if (fetchProductReviewFromApi(remoteId)) {
             getProductReviewFromDb(remoteId)?.let {
                 if (fetchProductByRemoteId(it.remoteProductId)) {
@@ -99,7 +102,9 @@ class ReviewDetailRepository @Inject constructor(
                     val payload = MarkNotificationsReadPayload(listOf(notification))
                     dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
 
-                    AnalyticsTracker.track(Stat.REVIEW_MARK_READ, mapOf(AnalyticsTracker.KEY_ID to localNoteId))
+                    AnalyticsTracker.track(Stat.REVIEW_MARK_READ, mapOf(
+                            AnalyticsTracker.KEY_ID to remoteReviewId,
+                            AnalyticsTracker.KEY_NOTE_ID to notification.remoteNoteId))
                 }
             } catch (e: CancellationException) {
                 WooLog.e(REVIEWS, "Exception encountered while marking notification as read", e)
@@ -108,6 +113,7 @@ class ReviewDetailRepository @Inject constructor(
     }
 
     private suspend fun fetchProductByRemoteId(remoteProductId: Long): Boolean {
+        this.remoteProductId = remoteProductId
         return try {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationProduct = it
@@ -151,15 +157,21 @@ class ReviewDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductReviewChanged(event: OnProductReviewChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT_REVIEW) {
-            if (event.isError) {
-                // TODO AMANDA : track fetch single product review failed
-                WooLog.e(REVIEWS, "Error fetching product review: ${event.error.message}")
-                continuationReview?.resume(false)
-            } else {
-                // TODO AMANDA : track fetch single product review success
-                continuationReview?.resume(true)
+            continuationReview?.let {
+                if (event.isError) {
+                    AnalyticsTracker.track(Stat.REVIEW_LOAD_FAILED, mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
+                    WooLog.e(REVIEWS, "Error fetching product review: ${event.error.message}")
+                    it.resume(false)
+                } else {
+                    AnalyticsTracker.track(Stat.REVIEW_LOADED, mapOf(AnalyticsTracker.KEY_ID to remoteReviewId))
+                    it.resume(true)
+                }
+                continuationReview = null
             }
-            continuationReview = null
         }
     }
 
@@ -167,15 +179,23 @@ class ReviewDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT) {
-            if (event.isError) {
-                // TODO AMANDA : track fetch single product failed
-                WooLog.e(REVIEWS, "Error fetching matching product for product review: ${event.error.message}")
-                continuationProduct?.resume(false)
-            } else {
-                // TODO AMANDA : track fetch single product success
-                continuationProduct?.resume(true)
+            continuationProduct?.let {
+                if (event.isError) {
+                    AnalyticsTracker.track(Stat.REVIEW_PRODUCT_LOAD_FAILED, mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
+                    WooLog.e(REVIEWS, "Error fetching matching product for product review: ${event.error.message}")
+                    it.resume(false)
+                } else {
+                    AnalyticsTracker.track(Stat.REVIEW_PRODUCT_LOADED, mapOf(
+                            AnalyticsTracker.KEY_ID to remoteProductId,
+                            AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId))
+                    it.resume(true)
+                }
+                continuationProduct = null
             }
-            continuationProduct = null
         }
     }
 
