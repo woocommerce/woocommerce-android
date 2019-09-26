@@ -343,15 +343,23 @@ class ReviewListRepository @Inject constructor(
             }
             continuationNotification = null
         } else if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
-            if (event.isError) {
-                // TODO AMANDA : track mark notifications read error
-                WooLog.e(REVIEWS, "Error marking all reviews as read: ${event.error.message}")
-                continuationMarkAllRead?.resume(ERROR)
-            } else {
-                // TODO AMANDA : track mark notifications read success
-                continuationMarkAllRead?.resume(SUCCESS)
+            // Since this can be called from other places, only process this event if we were the
+            // one who submitted the request.
+            continuationMarkAllRead?.let {
+                if (event.isError) {
+                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_FAILED, mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
+                    WooLog.e(REVIEWS, "Error marking all reviews as read: ${event.error.message}")
+                    it.resume(ERROR)
+                } else {
+                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
+                    it.resume(SUCCESS)
+                }
+                continuationMarkAllRead = null
             }
-            continuationMarkAllRead = null
         }
     }
 }
