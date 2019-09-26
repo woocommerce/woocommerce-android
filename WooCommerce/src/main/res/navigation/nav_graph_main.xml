@@ -53,6 +53,16 @@
             app:destination="@id/addOrderShipmentTrackingFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_issue_refund"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"
+            app:destination="@id/nav_graph_refunds">
+            <argument
+                android:name="orderId"
+                android:defaultValue="0L"
+                app:argType="long" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"
@@ -152,4 +162,5 @@
         app:destination="@id/reviewDetailFragment"
         app:enterAnim="@anim/activity_fade_in"
         app:popExitAnim="@anim/activity_fade_out"/>
+    <include app:graph="@navigation/nav_graph_refunds"/>
 </navigation>
