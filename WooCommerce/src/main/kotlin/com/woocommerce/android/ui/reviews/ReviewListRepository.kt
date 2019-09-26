@@ -168,7 +168,7 @@ class ReviewListRepository @Inject constructor(
             }.also { review ->
                 review.forEach {
                     it.product = productsMap[it.remoteProductId]
-                    it.read = readValueByRemoteIdMap[it.remoteId] ?: true
+                    it.read = readValueByRemoteIdMap[it.remoteId] // if not found will stay null
                 }
             }
         }

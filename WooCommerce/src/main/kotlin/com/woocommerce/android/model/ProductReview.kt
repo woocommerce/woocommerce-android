@@ -14,7 +14,7 @@ data class ProductReview(
     val reviewerAvatarUrl: String?,
     val remoteProductId: Long,
     var status: String,
-    var read: Boolean = true,
+    var read: Boolean? = null, // Only has a value if it's been set using a matching Notification
     var product: ProductReviewProduct? = null
 )
 
