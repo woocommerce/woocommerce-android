@@ -43,7 +43,7 @@
                     android:textAppearance="@style/Woo.Refunds.TextAppearance.Bold" />
 
                 <TextView
-                    android:id="@+id/refundConfirmation_refundAmount"
+                    android:id="@+id/refundDetail_refundAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/Woo.Refunds.TextAppearance.Bold"
