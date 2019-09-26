@@ -134,6 +134,8 @@ class ReviewListRepository @Inject constructor(
                     val payload = MarkNotificationsReadPayload(unreadProductReviews)
                     dispatcher.dispatch(
                             NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+
+                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ)
                 } ?: ERROR // block timed out. Return error.
             } catch (e: CancellationException) {
                 WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
