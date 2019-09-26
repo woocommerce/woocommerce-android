@@ -302,10 +302,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun openReviewDetail(review: ProductReview) {
-        AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
-                AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
-                AnalyticsTracker.KEY_ALREADY_READ to review.read))
-
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId, tempStatus = pendingModerationNewStatus)
     }
