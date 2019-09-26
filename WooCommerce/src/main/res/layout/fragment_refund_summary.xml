@@ -91,7 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="top"
-                android:hint="@string/order_refunds_reason"
+                android:hint="@string/order_refunds_reason_hint"
                 android:inputType="textMultiLine"
                 android:maxLength="@integer/max_length_tracking_number"
                 android:paddingBottom="@dimen/margin_extra_large"
