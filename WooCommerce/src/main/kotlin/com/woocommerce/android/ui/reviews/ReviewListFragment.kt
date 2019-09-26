@@ -337,10 +337,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
             var changeReviewStatusCanceled = false
 
-            AnalyticsTracker.track(
-                    Stat.REVIEW_ACTION,
-                    mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
-
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
                 AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
