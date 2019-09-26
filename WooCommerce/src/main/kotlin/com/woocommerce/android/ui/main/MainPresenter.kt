@@ -12,6 +12,7 @@ import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenRevie
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher.RevenueStatsAvailabilityChangeEvent
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
@@ -245,6 +246,10 @@ class MainPresenter @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: RevenueStatsAvailabilityChangeEvent) {
+        mainView?.updateStatsView(event.available)
+    }
+
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
         if (pendingUnfilledOrderCountCheck) {
             fetchUnfilledOrderCount()

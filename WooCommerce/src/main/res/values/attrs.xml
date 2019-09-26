@@ -33,5 +33,7 @@
         <attr name="switchTitle" format="reference|string"/>
         <attr name="switchSummary" format="reference|string"/>
         <attr name="switchChecked" format="boolean"/>
+        <attr name="switchSummaryTextColor" format="reference|color"/>
+        <attr name="switchTopPadding" format="dimension" />
     </declare-styleable>
 </resources>

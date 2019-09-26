@@ -611,7 +611,6 @@ Language: zh_CN
     <string name="order_error_fetch_notes_generic">抓取错误备注时出错</string>
     <string name="order_fulfill_marked_complete">订单已标记为完成</string>
     <string name="order_fulfill_mark_complete">将订单标记为完成</string>
-    <string name="order_fulfill_order">完成订单</string>
     <string name="orderdetail_addnote_contentdesc">添加订单备注</string>
     <string name="orderdetail_add_note">添加备注</string>
     <string name="orderdetail_hide_billing">隐藏账单</string>
@@ -625,7 +624,6 @@ Language: zh_CN
     <string name="orderdetail_customer_provided_note">客户提供的备注</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_payment_refunded">付款 – 已退款</string>
-    <string name="orderdetail_new_total">新订单总额</string>
     <string name="orderdetail_refunded">已退款</string>
     <string name="orderdetail_payment_summary_onhold">订单已%s，正在等待付款</string>
     <string name="orderdetail_payment_summary_completed">通过 %2$s 接收 %1$s 的付款</string>
@@ -720,7 +718,6 @@ Language: zh_CN
     <string name="taxes">税费</string>
     <string name="payment">付款</string>
     <string name="shipping">配送</string>
-    <string name="total">合计</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">订单</string>
