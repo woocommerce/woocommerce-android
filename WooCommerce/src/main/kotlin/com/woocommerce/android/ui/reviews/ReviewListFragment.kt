@@ -165,7 +165,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.menu_mark_all_read -> {
-                AnalyticsTracker.track(Stat.NOTIFICATIONS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
+                AnalyticsTracker.track(Stat.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
                 viewModel.markAllReviewsAsRead()
                 true
             }
