@@ -334,11 +334,16 @@ class ReviewListRepository @Inject constructor(
     fun onNotificationChanged(event: OnNotificationChanged) {
         if (event.causeOfChange == FETCH_NOTIFICATIONS) {
             if (event.isError) {
-                // TODO AMANDA : track fetch notifications failed
+                AnalyticsTracker.track(Stat.NOTIFICATIONS_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
                 WooLog.e(REVIEWS, "Error fetching product review notifications: ${event.error.message}")
                 continuationNotification?.resume(false)
             } else {
-                // TODO AMANDA : track fetch notifications success
+                AnalyticsTracker.track(Stat.NOTIFICATIONS_LOADED)
+
                 continuationNotification?.resume(true)
             }
             continuationNotification = null
