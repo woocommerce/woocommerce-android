@@ -14,18 +14,23 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderDetailOrderNoteListView.OrderDetailNoteListener
+import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -38,10 +43,11 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
-        OrderStatusSelectorDialog.OrderStatusDialogListener {
+        OrderStatusSelectorDialog.OrderStatusDialogListener, NavigationResult {
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
+        const val REFUND_REQUEST_CODE = 1001
     }
 
     @Inject lateinit var presenter: OrderDetailContract.Presenter
@@ -228,7 +234,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     billingOnly = presenter.isVirtualProduct(order))
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(order, currencyFormatter.buildFormatter(order.currency))
+            orderDetail_paymentInfo.initView(
+                    order.toAppModel(),
+                    currencyFormatter.buildBigDecimalFormatter(order.currency),
+                    this
+            )
 
             if (isFreshData) {
                 isRefreshPending = false
@@ -283,6 +293,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         findNavController().navigate(action)
     }
 
+    override fun issueOrderRefund(order: Order) {
+        AnalyticsTracker.track(ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED)
+
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToIssueRefund(order.number.toLong())
+        findNavController().navigate(action)
+    }
+
     override fun openOrderProductList(order: WCOrderModel) {
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderProductListFragment(
                 order.getIdentifier(),
@@ -300,7 +317,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         orderDetail_orderStatus.updateStatus(orderStatus)
         presenter.orderModel?.let {
             orderDetail_productList.updateView(it, this)
-            orderDetail_paymentInfo.initView(it, currencyFormatter.buildFormatter(it.currency))
+            orderDetail_paymentInfo.initView(
+                    it.toAppModel(),
+                    currencyFormatter.buildBigDecimalFormatter(it.currency),
+                    this
+            )
         }
     }
 
@@ -593,6 +614,17 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                     it.addCallback(callback)
                     it.show()
                 }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            REFUND_REQUEST_CODE -> {
+                val refundWasSuccessful = result.getBoolean(RefundSummaryFragment.REFUND_SUCCESS_KEY, false)
+                if (refundWasSuccessful) {
+                    presenter.refreshOrderDetail(false)
+                }
+            }
+        }
     }
 
     private fun showOrderStatusSelector() {

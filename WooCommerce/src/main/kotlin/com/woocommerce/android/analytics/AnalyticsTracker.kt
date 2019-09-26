@@ -155,6 +155,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_TRACKING_LOADED,
         ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED,
         ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED,
+        ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED,
+
+        // -- Refunds
+        ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED,
+        ADD_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
+        ADD_ORDER_REFUND_SUMMARY_UNDO_BUTTON_TAPPED,
+        REFUND_CREATE,
+        REFUND_CREATE_SUCCESS,
+        REFUND_CREATE_FAILED,
 
         // -- Order Notes
         ADD_ORDER_NOTE_ADD_BUTTON_TAPPED,
@@ -413,6 +422,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_ORDER_FULFILL = "order_fulfill"
+
+        const val KEY_REFUND_IS_FULL = "is_full"
+        const val KEY_REFUND_TYPE = "method"
+        const val KEY_REFUND_METHOD = "gateway"
+        const val KEY_REFUND_AMOUNT = "amount"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 

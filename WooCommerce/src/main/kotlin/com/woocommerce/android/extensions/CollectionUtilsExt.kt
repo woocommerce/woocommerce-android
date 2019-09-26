@@ -1,4 +1,4 @@
-package com.woocommerce.android.util
+package com.woocommerce.android.extensions
 
 /**
  * Extension function that applies a transformation method on each of the list members, then

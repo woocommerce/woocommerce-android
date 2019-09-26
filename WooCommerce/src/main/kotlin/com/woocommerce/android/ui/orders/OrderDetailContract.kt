@@ -36,10 +36,9 @@ interface OrderDetailContract {
         fun isVirtualProduct(order: WCOrderModel): Boolean
     }
 
-    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener,
+    interface View : BaseView<Presenter>, OrderActionListener, OrderProductActionListener, OrderRefundActionListener,
             OrderShipmentTrackingActionListener {
         var isRefreshPending: Boolean
-
         fun showSkeleton(show: Boolean)
         fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean)
         fun showOrderNotes(notes: List<WCOrderNoteModel>)

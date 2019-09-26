@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_refunds"
+    app:startDestination="@id/issueRefundFragment" >
+    <fragment
+        android:id="@+id/refundConfirmationFragment"
+        android:name="com.woocommerce.android.ui.refunds.RefundSummaryFragment"
+        tools:layout="@layout/fragment_refund_summary"/>
+    <fragment
+        android:id="@+id/issueRefundFragment"
+        android:name="com.woocommerce.android.ui.refunds.IssueRefundFragment"
+        tools:layout="@layout/fragment_issue_refund">
+        <action
+            android:id="@+id/action_issueRefundFragment_to_refundConfirmationFragment"
+            app:destination="@id/refundConfirmationFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <argument
+            android:name="orderId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
+</navigation>
