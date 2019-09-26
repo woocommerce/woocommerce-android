@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -25,16 +26,19 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.reviews.ActionStatus.COMPLETE
-import com.woocommerce.android.ui.reviews.ActionStatus.ERROR
-import com.woocommerce.android.ui.reviews.ActionStatus.PROCESSING
+import com.woocommerce.android.model.ActionStatus
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
+import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.UnreadItemDecoration
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
+import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_reviews_list.*
 import kotlinx.android.synthetic.main.fragment_reviews_list.reviewsList
 import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
+import java.util.Locale
 import javax.inject.Inject
 
 class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewListAdapter.OnReviewClickListener {
@@ -57,6 +61,10 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
     private var newDataAvailable = false // New reviews are available in cache
     private var listState: Parcelable? = null // Save the state of the recycler view
+
+    private var pendingModerationRemoteReviewId: Long? = null
+    private var pendingModerationNewStatus: String? = null
+    private var changeReviewStatusSnackbar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -175,6 +183,22 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        changeReviewStatusSnackbar?.dismiss()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        // If this fragment is no longer visible dismiss the pending review moderation
+        // s it can be processed immediately, otherwise silently refresh
+        if (hidden) {
+            changeReviewStatusSnackbar?.dismiss()
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         val listState = reviewsList.layoutManager?.onSaveInstanceState()
         outState.putParcelable(KEY_LIST_STATE, listState)
@@ -195,6 +219,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         viewModel.start()
     }
 
+    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     @SuppressLint("InflateParams")
     private fun setupObservers() {
         viewModel.reviewList.observe(this, Observer {
@@ -223,16 +248,23 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
 
         viewModel.isMarkingAllAsRead.observe(this, Observer {
             when (it) {
-                PROCESSING -> menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
-                COMPLETE -> {
+                ActionStatus.SUBMITTED -> {
+                    menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
+                }
+                ActionStatus.SUCCESS -> {
                     menuMarkAllRead?.actionView = null
                     showMarkAllReadMenuItem(show = false)
 
                     // Remove all active notifications from the system bar
                     context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
                 }
-                ERROR -> menuMarkAllRead?.actionView = null
+                ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
+                else -> {}
             }
+        })
+
+        viewModel.moderateProductReview.observe(this, Observer {
+            it?.let { request -> handleReviewModerationRequest(request) }
         })
     }
 
@@ -275,7 +307,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 AnalyticsTracker.KEY_ALREADY_READ to review.read))
 
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId)
+        (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId, tempStatus = pendingModerationNewStatus)
     }
 
     /**
@@ -284,6 +316,96 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
      */
     private fun showOptionsMenu(show: Boolean) {
         setHasOptionsMenu(show)
+    }
+
+    private fun handleReviewModerationRequest(request: ProductReviewModerationRequest) {
+        when (request.actionStatus) {
+            ActionStatus.PENDING -> processNewModerationRequest(request)
+            ActionStatus.SUCCESS -> {
+                reviewsAdapter.removeHiddenReviewFromList()
+                resetPendingModerationVariables()
+            }
+            ActionStatus.ERROR -> revertPendingModerationState()
+            else -> { /* do nothing */ }
+        }
+    }
+
+    private fun processNewModerationRequest(request: ProductReviewModerationRequest) {
+        with(request) {
+            pendingModerationRemoteReviewId = productReview.remoteId
+            pendingModerationNewStatus = newStatus.toString()
+
+            var changeReviewStatusCanceled = false
+
+            AnalyticsTracker.track(
+                    Stat.REVIEW_ACTION,
+                    mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
+
+            // Listener for the UNDO button in the snackbar
+            val actionListener = View.OnClickListener {
+                AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
+
+                // User canceled the action to change the status
+                changeReviewStatusCanceled = true
+
+                // Add the notification back to the list
+                revertPendingModerationState()
+            }
+
+            val callback = object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (!changeReviewStatusCanceled) {
+                        viewModel.submitReviewStatusChange(productReview, newStatus)
+                    }
+                }
+            }
+
+            changeReviewStatusSnackbar = uiMessageResolver
+                    .getUndoSnack(
+                            R.string.review_moderation_undo,
+                            ProductReviewStatus.getLocalizedLabel(context, newStatus)
+                                    .toLowerCase(Locale.getDefault()),
+                            actionListener = actionListener
+                    ).also {
+                        it.addCallback(callback)
+                        it.show()
+                    }
+
+            // Manually remove the product review from the list if it's new
+            // status will be spam or trash
+            if (newStatus == SPAM || newStatus == TRASH) {
+                removeProductReviewFromList(productReview.remoteId)
+            }
+
+            AppRatingDialog.incrementInteractions()
+        }
+    }
+
+    private fun removeProductReviewFromList(remoteReviewId: Long) {
+        reviewsAdapter.hideReviewWithId(remoteReviewId)
+    }
+
+    private fun resetPendingModerationVariables() {
+        pendingModerationNewStatus = null
+        pendingModerationRemoteReviewId = null
+        reviewsAdapter.resetPendingModerationState()
+    }
+
+    private fun revertPendingModerationState() {
+        AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
+
+        pendingModerationNewStatus?.let {
+            val status = ProductReviewStatus.fromString(it)
+            if (status == SPAM || status == TRASH) {
+                val itemPos = reviewsAdapter.revertHiddenReviewAndReturnPos()
+                if (itemPos != SectionedRecyclerViewAdapter.INVALID_POSITION && !reviewsAdapter.isEmpty()) {
+                    reviewsList.smoothScrollToPosition(itemPos)
+                }
+            }
+        }
+
+        resetPendingModerationVariables()
     }
 
     override fun getFragmentTitle() = getString(R.string.review_notifications)

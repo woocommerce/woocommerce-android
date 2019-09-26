@@ -33,7 +33,6 @@ class ReviewListAdapter(
     private var starTintColor: Int = 0
     init {
         starTintColor = ContextCompat.getColor(context, R.color.grey_darken_30)
-        setHasStableIds(true)
     }
 
     private val reviewList = mutableListOf<ProductReview>()
@@ -54,9 +53,6 @@ class ReviewListAdapter(
             return
         }
 
-        // make sure to exclude any reviews that we know have been removed
-        val newList = reviews.filter { !removedRemoteIds.contains(it.remoteId) }
-
         // clear all the current data from the adapter
         removeAllSections()
 
@@ -67,7 +63,7 @@ class ReviewListAdapter(
         val listWeek = ArrayList<ProductReview>()
         val listMonth = ArrayList<ProductReview>()
 
-        newList.forEach {
+        reviews.forEach {
             // Default to today if the date cannot be parsed
             when (TimeGroup.getTimeGroupForDate(it.dateCreated)) {
                 TimeGroup.GROUP_TODAY -> listToday.add(it)
@@ -98,11 +94,14 @@ class ReviewListAdapter(
             addSection(ReviewListSection(TimeGroup.GROUP_OLDER_MONTH.name, listMonth))
         }
 
-        notifyDataSetChanged()
-
         // remember these reviews for comparison in isSameList() below
         reviewList.clear()
-        reviewList.addAll(newList)
+        reviewList.addAll(reviews)
+
+        // remove any items temporarily being hidden
+        pendingRemovalReview?.first?.remoteId?.let { hideReviewWithId(it, notifyDataChanged = false) }
+
+        notifyDataSetChanged()
     }
 
     private fun isSameList(reviews: List<ProductReview>): Boolean {
@@ -135,8 +134,14 @@ class ReviewListAdapter(
      * Locates and removes the review from the appropriate section, but keeps a reference to
      * it so it may be be restored if needed. This temporary object will get cleared either manually
      * by reverting the action, or by loading a fresh list of product reviews.
+     *
+     * If we've hidden this item already, but have since received fresh data, set [notifyDataChanged] as false to
+     * suppress the dataChanged notifications and prevent the UI from jumping.
+     *
+     * @param remoteId The remote Id of the product review
+     * @param notifyDataChanged If true, notify the UI of changes to the underlying data set. Default true.
      */
-    fun hideReviewWithId(remoteId: Long) {
+    fun hideReviewWithId(remoteId: Long, notifyDataChanged: Boolean = true) {
         val posInList = reviewList.indexOfFirst { it.remoteId == remoteId }
         if (posInList == -1) {
             WooLog.w(T.REVIEWS, "Unable to hide product review, position is -1")
@@ -149,16 +154,22 @@ class ReviewListAdapter(
             val section = it as ReviewListSection
             val posInSection = getPositionInSectionByListPos(posInList)
             pendingRemovalReview = Triple(reviewList[posInList], section, posInSection)
-            removedRemoteIds.add(remoteId)
 
             // remove from the section list
             section.list.removeAt(posInSection)
-            notifyItemRemovedFromSection(section, posInSection)
+
+            if (!removedRemoteIds.contains(remoteId)) {
+                removedRemoteIds.add(remoteId)
+            }
+
+            if (notifyDataChanged) {
+                notifyItemRemovedFromSection(section, posInSection)
+            }
 
             if (section.list.size == 0) {
                 val sectionPos = getSectionPosition(section)
                 section.isVisible = false
-                if (sectionPos != INVALID_POSITION) {
+                if (sectionPos != INVALID_POSITION && notifyDataChanged) {
                     notifySectionChangedToInvisible(section, sectionPos)
                 }
             }
@@ -241,6 +252,19 @@ class ReviewListAdapter(
             notifyItemInsertedInSection(section, pos)
             getPositionInAdapter(section, pos)
         } ?: INVALID_POSITION
+    }
+
+    /**
+     * Removes the previously hidden review from the main list so changes from the
+     * database will be properly applied.
+     */
+    fun removeHiddenReviewFromList() {
+        pendingRemovalReview?.let { (review, _, _) ->
+            reviewList.remove(review)
+
+            removedRemoteIds.remove(review.remoteId)
+            pendingRemovalReview = null
+        }
     }
 
     /**

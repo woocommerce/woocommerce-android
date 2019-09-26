@@ -14,6 +14,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -50,6 +51,25 @@ final class ReviewDetailViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         repository.onCleanup()
+    }
+
+    fun moderateReview(newStatus: ProductReviewStatus) {
+        if (networkStatus.isConnected()) {
+            productReview.value?.let { review ->
+                // post an event to tell the notification list to moderate this
+                // review, then close the fragment
+                val event = OnRequestModerateReviewEvent(
+                        ProductReviewModerationRequest(review, newStatus)
+                )
+                EventBus.getDefault().post(event)
+
+                // Close the detail view
+                _exit.call()
+            }
+        } else {
+            // Network is not connected
+            _showSnackbarMessage.value = R.string.offline_error
+        }
     }
 
     private fun loadProductReview(remoteReviewId: Long) {

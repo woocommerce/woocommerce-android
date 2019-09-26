@@ -8,10 +8,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -22,7 +24,13 @@ import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_review_detail.*
@@ -45,6 +53,14 @@ class ReviewDetailFragment : BaseFragment() {
     private val skeletonView = SkeletonView()
 
     private val navArgs: ReviewDetailFragmentArgs by navArgs()
+
+    private val moderateListener = OnCheckedChangeListener { _, isChecked ->
+        AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
+        when (isChecked) {
+            true -> processReviewModeration(APPROVED)
+            false -> processReviewModeration(HOLD)
+        }
+    }
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -162,6 +178,9 @@ class ReviewDetailFragment : BaseFragment() {
 
         // Set the review text
         review_description.text = HtmlUtils.fromHtml(review.review)
+
+        // Initialize the moderation buttons and set review status
+        configureModerationButtons(ProductReviewStatus.fromString(review.status))
     }
 
     private fun refreshProductImage(remoteProductId: Long) {
@@ -187,9 +206,41 @@ class ReviewDetailFragment : BaseFragment() {
 
     private fun exitDetailView() {
         if (isStateSaved) {
-            runOnStartFunc = { activity?.onBackPressed() }
+            runOnStartFunc = { findNavController().popBackStack() }
         } else {
-            activity?.onBackPressed()
+            findNavController().popBackStack()
         }
+    }
+
+    private fun configureModerationButtons(status: ProductReviewStatus) {
+        review_approve.setOnCheckedChangeListener(null)
+
+        // Use the status override if present,else new status
+        when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
+            APPROVED -> review_approve.isChecked = true
+            HOLD -> review_approve.isChecked = false
+            else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
+        }
+
+        // Configure the moderate button
+        review_approve.setOnCheckedChangeListener(moderateListener)
+
+        // Configure the spam button
+        review_spam.setOnClickListener {
+            AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
+
+            processReviewModeration(SPAM)
+        }
+
+        // Configure the trash button
+        review_trash.setOnClickListener {
+            AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
+
+            processReviewModeration(TRASH)
+        }
+    }
+
+    private fun processReviewModeration(newStatus: ProductReviewStatus) {
+        viewModel.moderateReview(newStatus)
     }
 }

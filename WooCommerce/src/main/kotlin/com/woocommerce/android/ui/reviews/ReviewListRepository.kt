@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
@@ -23,6 +25,7 @@ import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATIONS
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
+import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -308,6 +311,19 @@ class ReviewListRepository @Inject constructor(
                 continuationReview?.resume(true)
             }
             continuationReview = null
+        } else if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
+            if (event.isError) {
+                AnalyticsTracker.track(
+                        Stat.REVIEW_ACTION_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
+                WooLog.e(REVIEWS, "${ReviewListFragment.TAG} - Error pushing product review status " +
+                        "changes to server! ${event.error.message}")
+            } else {
+                AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
+            }
         }
     }
 
