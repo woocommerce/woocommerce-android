@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel
+import com.woocommerce.android.ui.refunds.RefundDetailViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -21,7 +22,12 @@ internal abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(IssueRefundViewModel::class)
-    internal abstract fun refundsViewModel(viewModel: IssueRefundViewModel): ViewModel
+    internal abstract fun issueRefundViewModel(viewModel: IssueRefundViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RefundDetailViewModel::class)
+    internal abstract fun refundDetailViewModel(viewModel: RefundDetailViewModel): ViewModel
 
     @Binds
     internal abstract fun provideViewModelFactory(viewModelFactory: ViewModelFactory): ViewModelProvider.Factory
