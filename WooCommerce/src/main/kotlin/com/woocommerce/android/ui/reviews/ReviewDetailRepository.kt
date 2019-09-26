@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.toAppModel
@@ -96,6 +98,8 @@ class ReviewDetailRepository @Inject constructor(
                     notification.read = true
                     val payload = MarkNotificationsReadPayload(listOf(notification))
                     dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+
+                    AnalyticsTracker.track(Stat.REVIEW_MARK_READ, mapOf(AnalyticsTracker.KEY_ID to localNoteId))
                 }
             } catch (e: CancellationException) {
                 WooLog.e(REVIEWS, "Exception encountered while marking notification as read", e)
@@ -179,11 +183,20 @@ class ReviewDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
         if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
+            // Since this can be called from other places, only process this event if we were the
+            // one who submitted the request.
             if (event.changedNotificationLocalIds.contains(localNoteId)) {
                 if (event.isError) {
+                    AnalyticsTracker.track(Stat.REVIEW_MARK_READ_FAILED, mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
                     WooLog.e(REVIEWS, "$TAG - Error marking review notification as read!")
-                    localNoteId = 0
+                } else {
+                    AnalyticsTracker.track(Stat.REVIEW_MARK_READ_SUCCESS)
                 }
+                localNoteId = 0
             }
         }
     }
