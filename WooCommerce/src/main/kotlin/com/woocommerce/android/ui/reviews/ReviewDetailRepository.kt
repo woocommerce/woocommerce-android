@@ -180,8 +180,10 @@ class ReviewDetailRepository @Inject constructor(
     fun onNotificationChanged(event: OnNotificationChanged) {
         if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
             if (event.changedNotificationLocalIds.contains(localNoteId)) {
-                WooLog.e(REVIEWS, "$TAG - Error marking review notification as read!")
-                localNoteId = 0
+                if (event.isError) {
+                    WooLog.e(REVIEWS, "$TAG - Error marking review notification as read!")
+                    localNoteId = 0
+                }
             }
         }
     }
