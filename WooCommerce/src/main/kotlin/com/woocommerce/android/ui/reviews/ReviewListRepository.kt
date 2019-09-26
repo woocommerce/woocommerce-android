@@ -60,6 +60,7 @@ class ReviewListRepository @Inject constructor(
 
     private var offset = 0
     private var isFetchingProductReviews = false
+    private var isLoadingMore = false
 
     var canLoadMore: Boolean = false
         private set
@@ -82,6 +83,7 @@ class ReviewListRepository @Inject constructor(
      */
     suspend fun fetchProductReviews(loadMore: Boolean): RequestResult {
         return if (!isFetchingProductReviews) {
+            isLoadingMore = loadMore
             coroutineScope {
                 val fetchNotifs = async {
                     /*
@@ -287,11 +289,15 @@ class ReviewListRepository @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_PRODUCTS) {
             if (event.isError) {
-                // TODO AMANDA : track fetch products failed
+                AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
                 WooLog.e(REVIEWS, "Error fetching matching product for product review: ${event.error.message}")
                 continuationProduct?.resume(false)
             } else {
-                // TODO AMANDA : track fetch products success
+                AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOADED)
                 continuationProduct?.resume(true)
             }
             continuationProduct = null
@@ -304,11 +310,17 @@ class ReviewListRepository @Inject constructor(
         if (event.causeOfChange == FETCH_PRODUCT_REVIEWS) {
             isFetchingProductReviews = false
             if (event.isError) {
-                // TODO AMANDA : track fetch product reviews failed
+                AnalyticsTracker.track(Stat.REVIEWS_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+
                 WooLog.e(REVIEWS, "Error fetching product review: ${event.error.message}")
                 continuationReview?.resume(false)
             } else {
-                // TODO AMANDA : track fetch product reviews success
+                AnalyticsTracker.track(Stat.REVIEWS_LOADED, mapOf(
+                        AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore))
+                isLoadingMore = false
                 canLoadMore = event.canLoadMore
                 continuationReview?.resume(true)
             }
