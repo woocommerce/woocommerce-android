@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.reviews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.ActionStatus
@@ -167,6 +169,11 @@ final class ReviewListViewModel @Inject constructor(
                     newStatus.toString()
             )
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
+
+            AnalyticsTracker.track(
+                    Stat.REVIEW_ACTION,
+                    mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
+
             sendReviewModerationUpdate(ActionStatus.SUBMITTED)
         } else {
             // Network is not connected
