@@ -214,42 +214,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="@dimen/card_item_padding_intra_double"
             android:visibility="gone"
             tools:visibility="visible">
 
-            <!-- Divider -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/list_divider"
-                app:srcCompat="@drawable/list_divider" />
-
-            <!-- Refunds -->
-            <LinearLayout
+            <!-- List: Refunds -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/paymentInfo_refunds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="true"
-                android:layout_marginTop="@dimen/card_item_padding_intra_double"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/paymentInfo_lblRefund"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/orderdetail_refunded"
-                    android:textAlignment="viewStart"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"/>
-
-                <TextView
-                    android:id="@+id/paymentInfo_refundTotal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/Woo.OrderDetail.TextAppearance.Bold"
-                    tools:text="-$15.00"/>
-
-            </LinearLayout>
+                android:nestedScrollingEnabled="false"
+                tools:itemCount="3"
+                tools:listitem="@layout/order_detail_refund_payment_item"
+                tools:targetApi="lollipop" />
 
             <!-- Divider -->
             <View

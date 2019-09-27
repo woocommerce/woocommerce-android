@@ -39,6 +39,7 @@ import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
+import org.wordpress.android.fluxc.model.refunds.RefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
@@ -442,6 +443,10 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         } else {
             activity?.onBackPressed()
         }
+    }
+
+    override fun showOrderRefunds(refunds: List<RefundModel>) {
+        orderDetail_paymentInfo.showRefunds(refunds)
     }
 
     override fun showAddOrderNoteScreen(order: WCOrderModel) {

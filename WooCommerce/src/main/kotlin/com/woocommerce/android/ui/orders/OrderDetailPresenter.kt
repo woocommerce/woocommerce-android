@@ -20,6 +20,9 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -40,10 +43,12 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.model.refunds.RefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.RefundsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
@@ -60,6 +65,7 @@ import javax.inject.Inject
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val refundStore: RefundsStore,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
@@ -112,15 +118,31 @@ class OrderDetailPresenter @Inject constructor(
      * displaying the loaded order detail data in UI
      */
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
-        this.orderIdentifier = orderIdentifier
-        if (orderIdentifier.isNotEmpty()) {
-            orderModel = loadOrderDetailFromDb(orderIdentifier)
-            orderModel?.let { order ->
-                orderView?.showOrderDetail(order, isFreshData = false)
-                if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                loadOrderNotes()
-                loadOrderShipmentTrackings()
-            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
+        OrderDetailFragment@this.orderIdentifier = orderIdentifier
+        GlobalScope.launch(Dispatchers.Main) {
+            if (orderIdentifier.isNotEmpty()) {
+                orderModel = loadOrderDetailFromDb(orderIdentifier)
+                orderModel?.let { order ->
+                    orderView?.showOrderDetail(order, isFreshData = false)
+                    if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
+                    loadRefunds(order.remoteOrderId)
+                    loadOrderNotes()
+                    loadOrderShipmentTrackings()
+                } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
+            }
+        }
+    }
+
+    private suspend fun loadRefunds(orderId: Long) {
+        val refunds = refundStore.getAllRefunds(selectedSite.get(), orderId)
+        orderView?.showOrderRefunds(refunds)
+
+        val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), orderId)
+        if (requestResult.isError) {
+        } else {
+            requestResult.model?.let { freshRefunds ->
+                orderView?.showOrderRefunds(freshRefunds)
+            }
         }
     }
 

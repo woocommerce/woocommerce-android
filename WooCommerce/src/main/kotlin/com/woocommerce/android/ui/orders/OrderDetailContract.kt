@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.model.refunds.RefundModel
 
 interface OrderDetailContract {
     interface Presenter : BasePresenter<View> {
@@ -46,6 +47,7 @@ interface OrderDetailContract {
         fun showAddOrderNoteScreen(order: WCOrderModel)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>)
+        fun showOrderRefunds(refunds: List<RefundModel>)
         fun setOrderStatus(newStatus: String)
         fun showChangeOrderStatusSnackbar(newStatus: String)
         fun showNotesErrorSnack()
