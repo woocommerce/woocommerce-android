@@ -130,9 +130,9 @@ class OrderListPresenter @Inject constructor(
 
     override fun canLoadMoreOrders(): Boolean {
         orderView?.let {
-            if (it.isSearching) return canSearchMore
+            if (it.isFilterEnabled || !it.isSearching) return canLoadMore
         }
-        return canLoadMore
+        return canSearchMore
     }
 
     override fun getOrderStatusOptions(): Map<String, WCOrderStatusModel> {
