@@ -301,6 +301,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         findNavController().navigate(action)
     }
 
+    override fun showRefundDetail(orderId: Long, refundId: Long) {
+//        AnalyticsTracker.track(ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED)
+
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToRefundDetailFragment(orderId, refundId)
+        findNavController().navigate(action)
+    }
+
     override fun openOrderProductList(order: WCOrderModel) {
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderProductListFragment(
                 order.getIdentifier(),

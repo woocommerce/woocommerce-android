@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.orders
 
 import android.annotation.SuppressLint
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.format.DateFormat
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -10,16 +13,20 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.widgets.WooClickableSpan
 import org.wordpress.android.fluxc.model.refunds.RefundModel
 import java.math.BigDecimal
 
 class OrderDetailRefundListAdapter(
-    private val formatCurrency: (BigDecimal) -> String
+    private val formatCurrency: (BigDecimal) -> String,
+    private val onRefundDetailsClicked: (Long, Long) -> Unit,
+    private val order: Order
 ) : RecyclerView.Adapter<OrderDetailRefundListAdapter.ViewHolder>() {
     private var items = ArrayList<RefundModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ViewHolder {
-        return ViewHolder(parent, formatCurrency)
+        return ViewHolder(parent, order, formatCurrency, onRefundDetailsClicked)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -34,7 +41,12 @@ class OrderDetailRefundListAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    class ViewHolder(parent: ViewGroup, private val formatCurrency: (BigDecimal) -> String) : RecyclerView.ViewHolder(
+    class ViewHolder(
+        parent: ViewGroup,
+        private val order: Order,
+        private val formatCurrency: (BigDecimal) -> String,
+        private val onRefundDetailsClicked: (Long, Long) -> Unit
+    ) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.order_detail_refund_payment_item, parent, false)
     ) {
         private val amount: TextView = itemView.findViewById(R.id.refundsList_refundAmount)
@@ -42,11 +54,28 @@ class OrderDetailRefundListAdapter(
 
         @SuppressLint("SetTextI18n") fun bind(refund: RefundModel) {
             amount.text = "-${formatCurrency(refund.amount)}"
-            method.text = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
+
+            val linkText = itemView.resources.getString(R.string.orderdetail_refund_view_details)
+            val methodText = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
                     DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
                     itemView.resources.getString(R.string.order_refunds_manual_refund), // TODO: Change after auto refunds implemented
-                    itemView.resources.getString(R.string.orderdetail_refund_view_details)
+                    linkText
             )
+            val spannable = SpannableString(methodText)
+            val start = methodText.indexOf(linkText)
+            spannable.setSpan(
+                    WooClickableSpan {
+//                        AnalyticsTracker.track(
+//                                LOGIN_JETPACK_REQUIRED_SIGN_IN_LINK_TAPPED,
+//                                mapOf(AnalyticsTracker.KEY_URL to siteAddress.orEmpty()))
+                        onRefundDetailsClicked(order.remoteId, refund.id)
+                    },
+                    start,
+                    start + linkText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            method.setText(spannable, TextView.BufferType.SPANNABLE)
+            method.movementMethod = LinkMovementMethod.getInstance()
         }
     }
 
