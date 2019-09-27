@@ -10,15 +10,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.orders.OrderDetailFragment.Companion.REFUND_REQUEST_CODE
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_refund_detail.*
-import kotlinx.android.synthetic.main.fragment_refund_summary.*
+import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import javax.inject.Inject
 
 class RefundDetailFragment : DaggerFragment() {
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val navArgs: RefundDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,7 @@ class RefundDetailFragment : DaggerFragment() {
     private fun initializeViewModel() {
         ViewModelProviders.of(requireActivity(), viewModelFactory).get(RefundDetailViewModel::class.java).also {
             setupObservers(it)
+            it.start(navArgs.orderId, navArgs.refundId)
         }
     }
 
@@ -57,7 +60,12 @@ class RefundDetailFragment : DaggerFragment() {
         })
 
         viewModel.refundReason.observe(this, Observer {
-            refundDetail_refundReason.text = it
+            if (it.isNullOrEmpty()) {
+                refundDetail_reasonCard.hide()
+            } else {
+                refundDetail_reasonCard.show()
+                refundDetail_refundReason.text = it
+            }
         })
     }
 }

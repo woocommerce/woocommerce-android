@@ -267,6 +267,7 @@
     <string name="order_refunds_reason">Reason for refund</string>
     <string name="order_refunds_reason_hint">Reason for refund (optional)</string>
     <string name="order_refunds_refund_via">Refund via</string>
+    <string name="order_refunds_refunded_via">Refunded via %s</string>
     <string name="order_refunds_refund_details">Refund details</string>
     <string name="order_refunds_manual_refund">Manual refund</string>
     <string name="order_refunds_quote_image_description">Quotation icon</string>

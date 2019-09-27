@@ -58,7 +58,7 @@ class OrderDetailRefundListAdapter(
             val linkText = itemView.resources.getString(R.string.orderdetail_refund_view_details)
             val methodText = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
                     DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
-                    itemView.resources.getString(R.string.order_refunds_manual_refund), // TODO: Change after auto refunds implemented
+                    order.paymentMethodTitle,
                     linkText
             )
             val spannable = SpannableString(methodText)

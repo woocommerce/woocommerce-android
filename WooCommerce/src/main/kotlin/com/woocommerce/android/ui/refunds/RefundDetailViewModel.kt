@@ -69,7 +69,9 @@ class RefundDetailViewModel @Inject constructor(
 
     private fun displayRefundDetails(refund: RefundModel, order: Order) {
         _formattedRefundAmount.value = formatCurrency(refund.amount)
-        _refundMethod.value = order.paymentMethodTitle
         _refundReason.value = refund.reason
+
+        val method = resourceProvider.getString(R.string.order_refunds_refunded_via).format(order.paymentMethodTitle)
+        _refundMethod.value = method
     }
 }
