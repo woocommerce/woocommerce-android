@@ -86,7 +86,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      * flag to check if the user selected any order status from the order status list
      * If true, the data in the order list tab currently visible, will be refreshed
      */
-    private var isFilterEnabled: Boolean = false
+    override var isFilterEnabled: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -179,7 +179,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
                     if (!isRefreshPending) {
                         isRefreshPending = true
-                        if (isFilterEnabled || !isSearching) {
+                        if (isOrderStatusFilterEnabled()) {
                             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
                         } else {
                             presenter.searchOrders(searchQuery)
@@ -255,7 +255,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         })
 
         // As part of the new order list design changes, there is no elevation of the toolbar
-        activity?.toolbar?.elevation = 0f
+        enableToolbarElevation(false)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -281,21 +281,18 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         if (hidden) {
             // restore the toolbar elevation when the order list screen is hidden
-            activity?.toolbar?.elevation = resources.getDimension(R.dimen.appbar_elevation)
+            enableToolbarElevation(true)
             clearSearchResults()
         } else {
             // silently refresh if this fragment is no longer hidden
-            if (isSearching) {
-                enableSearchListeners()
-                presenter.searchOrders(searchQuery)
-            } else {
+            if (isOrderStatusFilterEnabled()) {
                 // update the toolbar elevation if child fragment is displayed
-                activity?.toolbar?.elevation = if (isChildFragmentShowing()) {
-                    resources.getDimension(R.dimen.appbar_elevation)
-                } else 0f
-
+                enableToolbarElevation(isChildFragmentShowing())
                 disableSearchListeners()
                 presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+            } else {
+                enableSearchListeners()
+                presenter.searchOrders(searchQuery)
             }
         }
     }
@@ -303,11 +300,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
 
-        if (isSearching) {
+        if (isOrderStatusFilterEnabled()) {
+            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
+        } else {
             searchMenuItem?.expandActionView()
             searchView?.setQuery(searchQuery, false)
-        } else {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
         }
     }
 
@@ -351,10 +348,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      */
     override fun onRequestLoadMore() {
         if (presenter.canLoadMoreOrders() && !presenter.isLoadingOrders()) {
-            if (isSearching) {
-                presenter.searchMoreOrders(searchQuery)
-            } else {
+            if (isOrderStatusFilterEnabled()) {
                 presenter.loadMoreOrders(orderStatusFilter)
+            } else {
+                presenter.searchMoreOrders(searchQuery)
             }
         }
     }
@@ -406,22 +403,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
     }
 
-    override fun getFragmentTitle(): String {
-        return getString(R.string.orders)
-    }
+    override fun getFragmentTitle() = getString(R.string.orders)
 
     override fun scrollToTop() {
         order_list_view.scrollToTop()
     }
 
     override fun refreshFragmentState() {
-        isRefreshPending = true
         if (isActive) {
-            if (isSearching) {
-                presenter.searchOrders(searchQuery)
-            } else {
-                presenter.loadOrders(orderStatusFilter, forceRefresh = true)
-            }
+            refreshOrders()
         }
     }
 
@@ -589,6 +579,21 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
     }
 
+    private fun refreshOrders() {
+        isRefreshPending = true
+        if (isOrderStatusFilterEnabled()) {
+            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+        } else {
+            presenter.searchOrders(searchQuery)
+        }
+    }
+
+    private fun isOrderStatusFilterEnabled() = isFilterEnabled || !isSearching
+
+    private fun enableToolbarElevation(enable: Boolean) {
+        activity?.toolbar?.elevation = if (enable) resources.getDimension(R.dimen.appbar_elevation) else 0f
+    }
+
     private fun disableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
@@ -653,13 +658,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private fun displayOrderStatusListView() {
         order_status_list_view.visibility = View.VISIBLE
         orderRefreshLayout.isEnabled = false
-        activity?.toolbar?.elevation = resources.getDimension(R.dimen.appbar_elevation)
+        enableToolbarElevation(true)
     }
 
     private fun hideOrderStatusListView() {
         order_status_list_view.visibility = View.GONE
         orderRefreshLayout.isEnabled = true
-        activity?.toolbar?.elevation = 0f
+        enableToolbarElevation(false)
     }
     // endregion
 }

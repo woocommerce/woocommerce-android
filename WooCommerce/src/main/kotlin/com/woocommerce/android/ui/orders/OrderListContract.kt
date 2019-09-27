@@ -32,6 +32,7 @@ interface OrderListContract {
         var isRefreshPending: Boolean
         var isSearching: Boolean
         var isRefreshing: Boolean
+        var isFilterEnabled: Boolean
 
         fun setLoadingMoreIndicator(active: Boolean)
         fun showOrders(orders: List<WCOrderModel>, filterByStatus: String? = null, isFreshData: Boolean)
