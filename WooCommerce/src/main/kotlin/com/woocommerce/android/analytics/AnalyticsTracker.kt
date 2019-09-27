@@ -237,7 +237,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         NOTIFICATIONS_LOAD_FAILED,
 
         // -- Product Review List
-        REVIEW_OPEN,
         REVIEWS_LOADED,
         REVIEWS_LOAD_FAILED,
         REVIEWS_PRODUCTS_LOADED,
