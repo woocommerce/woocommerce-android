@@ -605,10 +605,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     /**
      * Method called when user clicks on an order status from [OrderStatusListView]
-     * 1. The order status view is hidden
-     * 2. The search is no longer enabled
-     * 3. The search query text is updated to display the order status selected.
-     * 4. The [isFilterEnabled] flag is set to true.
+     * 1. Hide the order status view
+     * 2. Disable search
+     * 3. Display the order status selected in the search query text area
+     * 4. Set [isFilterEnabled] flag to true.
      *    This is because once an order status is selected and the order list for that status is displayed,
      *    when back is clicked, the order list needs to be refreshed again from the api,
      *    since we only store the orders for a particular status in local cache.
@@ -629,11 +629,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     /**
-     * Method called when user clicks on the back button after selecting an order status
-     * 1. The order status view is hidden
-     * 2. The search is enabled again and the hint query is updated
-     * 3. The order list for the currently displayed tab needs to be refreshed from the api only
-     *    if isFilterEnabled is true
+     * Method called when user clicks on the back button after selecting an order status.
+     * The order list for the currently displayed tab should be refreshed only if [isFilterEnabled] is true
+     * 1. Hide the order status view
+     * 2. Enable search again and update the hint query
      */
     private fun disableFilterListeners() {
         if (isFilterEnabled) {
@@ -646,7 +645,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
 
-            presenter.loadOrders(orderStatusFilter, forceRefresh = isFilterEnabled)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
             isFilterEnabled = false
         }
     }
