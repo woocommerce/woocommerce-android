@@ -1,7 +1,7 @@
 2.8
 -----
 * Revamped the order list page by providing a new tab for unfulfilled orders
-* Added new interface to view order statuses with their count and provided option to search orders by order status.
+* Order search functionality has been redesigned and now displays counts by order status. Items in this list can be clicked to immediately filter by that order status as well as allows for searching for orders by order status.
  
 2.7
 -----
