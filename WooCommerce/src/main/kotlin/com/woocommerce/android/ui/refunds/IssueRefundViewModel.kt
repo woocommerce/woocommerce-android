@@ -159,7 +159,7 @@ class IssueRefundViewModel @Inject constructor(
                 if (!wasRefundCanceled) {
                     // TODO: Update this once the item & automatic refunds are supported
                     AnalyticsTracker.track(Stat.REFUND_CREATE, mapOf(
-                            AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                            AnalyticsTracker.KEY_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to (enteredAmount isEqualTo maxRefund).toString(),
                             AnalyticsTracker.KEY_REFUND_TYPE to "amount",
                             AnalyticsTracker.KEY_REFUND_METHOD to "manual",
@@ -169,7 +169,7 @@ class IssueRefundViewModel @Inject constructor(
                     val resultCall = async(backgroundDispatcher) {
                         return@async refundStore.createRefund(
                                 selectedSite.get(),
-                                order.remoteOrderId,
+                                order.remoteId,
                                 enteredAmount,
                                 reason
                         )
