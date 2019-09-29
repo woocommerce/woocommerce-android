@@ -282,7 +282,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         if (hidden) {
             // restore the toolbar elevation when the order list screen is hidden
             enableToolbarElevation(true)
-            clearSearchResults()
         } else {
             // silently refresh if this fragment is no longer hidden
             if (isOrderStatusFilterEnabled()) {
@@ -300,11 +299,25 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
 
-        if (isOrderStatusFilterEnabled()) {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
-        } else {
-            searchMenuItem?.expandActionView()
-            searchView?.setQuery(searchQuery, false)
+        when {
+            isFilterEnabled -> {
+                searchHandler.postDelayed({
+                    enableSearchListeners()
+                    searchMenuItem?.expandActionView()
+                    enableFilterListeners()
+                    presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+                }, 30)
+            }
+            isSearching -> {
+                searchHandler.postDelayed({
+                    enableSearchListeners()
+                    searchMenuItem?.expandActionView()
+                    searchView?.setQuery(searchQuery, true)
+                }, 20)
+            }
+            else -> {
+                presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
+            }
         }
     }
 
@@ -439,7 +452,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun showOrderDetail(order: WCOrderModel) {
-        disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(order.localSiteId, order.remoteOrderId)
     }
