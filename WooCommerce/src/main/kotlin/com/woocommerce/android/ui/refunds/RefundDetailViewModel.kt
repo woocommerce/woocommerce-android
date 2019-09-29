@@ -11,8 +11,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.refunds.RefundModel
 import org.wordpress.android.fluxc.store.RefundsStore
@@ -50,19 +50,8 @@ class RefundDetailViewModel @Inject constructor(
         orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))
                 ?.toAppModel()?.let { order ->
             formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-
-            val localRefund = refundStore.getRefund(selectedSite.get(), orderId, refundId)
-            if (localRefund == null) {
-                launch {
-                    val refund = refundStore.fetchRefund(selectedSite.get(), orderId, refundId).model
-                    if (refund != null) {
-                        displayRefundDetails(refund, order)
-                    } else {
-                        // error
-                    }
-                }
-            } else {
-                displayRefundDetails(localRefund, order)
+            refundStore.getRefund(selectedSite.get(), orderId, refundId)?.let { refund ->
+                displayRefundDetails(refund, order)
             }
         }
     }
