@@ -137,15 +137,17 @@ class OrderDetailPresenter @Inject constructor(
         val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId)
         orderView?.showOrderRefunds(refunds)
 
-        GlobalScope.launch(Dispatchers.Default) {
-            val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), order.remoteId)
-            withContext(Dispatchers.Main) {
-                if (!requestResult.isError) {
-                    requestResult.model?.let { freshRefunds ->
-                        orderView?.showOrderRefunds(freshRefunds)
+        if (networkStatus.isConnected()) {
+            GlobalScope.launch(Dispatchers.Default) {
+                val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), order.remoteId)
+                withContext(Dispatchers.Main) {
+                    if (!requestResult.isError) {
+                        requestResult.model?.let { freshRefunds ->
+                            orderView?.showOrderRefunds(freshRefunds)
+                        }
+                    } else {
+                        orderView?.showOrderRefundTotal(order.refundTotal)
                     }
-                } else {
-                    orderView?.showOrderRefundTotal(order.refundTotal)
                 }
             }
         }
