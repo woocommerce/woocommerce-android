@@ -77,6 +77,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null // Order status filter
 
+    private var orderListMenu: Menu? = null
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var searchQuery: String = ""
@@ -105,6 +106,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.menu_order_list_fragment, menu)
 
+        orderListMenu = menu
         searchMenuItem = menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
 
@@ -273,6 +275,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         disableSearchListeners()
         presenter.dropView()
         searchView = null
+        orderListMenu = null
         super.onDestroyView()
     }
 
@@ -607,13 +610,23 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     private fun disableSearchListeners() {
+        orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
+        orderListMenu?.findItem(R.id.menu_support)?.isVisible = true
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
         tab_layout.visibility = View.VISIBLE
     }
 
+    /**
+     * Method called when user clicks on the search menu icon.
+     * 1. The settings menu is hidden when the search filter is active to prevent the search view
+     *    getting collapsed if the settings menu from the [MainActivity] is clicked.
+     * 2. The order status list view is displayed by default
+     */
     private fun enableSearchListeners() {
+        orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
+        orderListMenu?.findItem(R.id.menu_support)?.isVisible = false
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
         displayOrderStatusListView()
