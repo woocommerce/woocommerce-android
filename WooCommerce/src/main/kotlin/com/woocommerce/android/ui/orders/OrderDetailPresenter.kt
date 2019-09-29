@@ -23,6 +23,7 @@ import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -119,29 +120,30 @@ class OrderDetailPresenter @Inject constructor(
      */
     override fun loadOrderDetail(orderIdentifier: OrderIdentifier, markComplete: Boolean) {
         OrderDetailFragment@this.orderIdentifier = orderIdentifier
-        GlobalScope.launch(Dispatchers.Main) {
-            if (orderIdentifier.isNotEmpty()) {
-                orderModel = loadOrderDetailFromDb(orderIdentifier)
-                orderModel?.let { order ->
-                    orderView?.showOrderDetail(order, isFreshData = false)
-                    if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                    loadRefunds(order.remoteOrderId)
-                    loadOrderNotes()
-                    loadOrderShipmentTrackings()
-                } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
-            }
+        if (orderIdentifier.isNotEmpty()) {
+            orderModel = loadOrderDetailFromDb(orderIdentifier)
+            orderModel?.let { order ->
+                orderView?.showOrderDetail(order, isFreshData = false)
+                if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
+                loadRefunds(order.remoteOrderId)
+                loadOrderNotes()
+                loadOrderShipmentTrackings()
+            } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
 
-    private suspend fun loadRefunds(orderId: Long) {
+    private fun loadRefunds(orderId: Long) {
         val refunds = refundStore.getAllRefunds(selectedSite.get(), orderId)
         orderView?.showOrderRefunds(refunds)
 
-        val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), orderId)
-        if (requestResult.isError) {
-        } else {
-            requestResult.model?.let { freshRefunds ->
-                orderView?.showOrderRefunds(freshRefunds)
+        GlobalScope.launch(Dispatchers.Default) {
+            val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), orderId)
+            if (!requestResult.isError) {
+                requestResult.model?.let { freshRefunds ->
+                    withContext(Dispatchers.Main) {
+                        orderView?.showOrderRefunds(freshRefunds)
+                    }
+                }
             }
         }
     }
