@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
@@ -302,7 +303,10 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showRefundDetail(orderId: Long, refundId: Long) {
-//        AnalyticsTracker.track(ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED)
+        AnalyticsTracker.track(ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED, mapOf(
+                AnalyticsTracker.KEY_ORDER_ID to orderId,
+                AnalyticsTracker.KEY_ID to refundId
+        ))
 
         val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToRefundDetailFragment(orderId, refundId)
         findNavController().navigate(action)
