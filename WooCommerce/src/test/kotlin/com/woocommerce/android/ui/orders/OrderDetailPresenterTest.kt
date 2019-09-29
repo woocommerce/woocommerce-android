@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.RefundsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
@@ -46,6 +47,7 @@ class OrderDetailPresenterTest {
     private val uiMessageResolver: UIMessageResolver = mock()
     private val networkStatus: NetworkStatus = mock()
     private val notificationStore: NotificationStore = mock()
+    private val refundStore: RefundsStore = mock()
 
     private val order = OrderTestUtils.generateOrder()
     private val orderIdentifier = order.getIdentifier()
@@ -58,6 +60,7 @@ class OrderDetailPresenterTest {
                 OrderDetailPresenter(
                         dispatcher,
                         orderStore,
+                        refundStore,
                         productStore,
                         selectedSite,
                         uiMessageResolver,
