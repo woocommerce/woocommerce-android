@@ -42,6 +42,7 @@ import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.refunds.RefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
@@ -458,6 +459,10 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun showOrderRefunds(refunds: List<RefundModel>) {
         orderDetail_paymentInfo.showRefunds(refunds)
+    }
+
+    override fun showOrderRefundTotal(refundTotal: BigDecimal) {
+        orderDetail_paymentInfo.showRefundTotal(refundTotal)
     }
 
     override fun showAddOrderNoteScreen(order: WCOrderModel) {

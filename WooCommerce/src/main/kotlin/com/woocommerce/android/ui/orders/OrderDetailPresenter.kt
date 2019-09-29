@@ -11,6 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -124,24 +126,26 @@ class OrderDetailPresenter @Inject constructor(
             orderModel?.let { order ->
                 orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                loadRefunds(order.remoteOrderId)
+                loadRefunds(order.toAppModel())
                 loadOrderNotes()
                 loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
 
-    private fun loadRefunds(orderId: Long) {
-        val refunds = refundStore.getAllRefunds(selectedSite.get(), orderId)
+    private fun loadRefunds(order: Order) {
+        val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId)
         orderView?.showOrderRefunds(refunds)
 
         GlobalScope.launch(Dispatchers.Default) {
-            val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), orderId)
-            if (!requestResult.isError) {
-                requestResult.model?.let { freshRefunds ->
-                    withContext(Dispatchers.Main) {
+            val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), order.remoteId)
+            withContext(Dispatchers.Main) {
+                if (!requestResult.isError) {
+                    requestResult.model?.let { freshRefunds ->
                         orderView?.showOrderRefunds(freshRefunds)
                     }
+                } else {
+                    orderView?.showOrderRefundTotal(order.refundTotal)
                 }
             }
         }

@@ -119,5 +119,15 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
             paymentInfo_refunds.adapter = adapter
         }
         adapter.update(refunds)
+
+        paymentInfo_refunds.show()
+        paymentInfo_refundTotalSection.hide()
+    }
+
+    fun showRefundTotal(refundTotal: BigDecimal) {
+        paymentInfo_refundTotal.text = formatCurrency(refundTotal)
+
+        paymentInfo_refunds.hide()
+        paymentInfo_refundTotalSection.show()
     }
 }
