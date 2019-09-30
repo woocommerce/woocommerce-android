@@ -447,6 +447,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         order_list_view.setOrderStatusOptions(orderStatusOptions)
     }
 
+    override fun updateOrderStatusList(orderStatusList: List<WCOrderStatusModel>) {
+        order_status_list_view.updateOrderStatusListView(orderStatusList)
+    }
+
     /**
      * We use this to clear the options menu when navigating to a child destination - otherwise this
      * fragment's menu will continue to appear when the child is shown

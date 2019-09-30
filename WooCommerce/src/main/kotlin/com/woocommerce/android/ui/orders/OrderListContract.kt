@@ -54,5 +54,6 @@ interface OrderListContract {
         fun showRefreshingIndicator(show: Boolean)
 
         fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>)
+        fun updateOrderStatusList(orderStatusList: List<WCOrderStatusModel>)
     }
 }

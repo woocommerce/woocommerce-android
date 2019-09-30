@@ -241,7 +241,11 @@ class OrderListPresenter @Inject constructor(
         }
 
         if (event.rowsAffected > 0) {
-            orderView?.setOrderStatusOptions(getOrderStatusOptions())
+            orderView?.let { order ->
+                val orderStatusList = getOrderStatusList()
+                order.setOrderStatusOptions(orderStatusList.map { it.statusKey to it }.toMap())
+                order.updateOrderStatusList(orderStatusList)
+            }
         }
     }
 
@@ -347,6 +351,11 @@ class OrderListPresenter @Inject constructor(
             orderView?.let { order ->
                 if (order.isRefreshPending) {
                     order.refreshFragmentState()
+                }
+
+                // refresh order status options
+                if (order.isFilterEnabled) {
+                    order.updateOrderStatusList(getOrderStatusList())
                 }
             }
         }
