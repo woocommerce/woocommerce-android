@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -38,6 +39,7 @@ import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class OrderListFragment : TopLevelFragment(), OrderListContract.View,
@@ -258,6 +260,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
         // As part of the new order list design changes, there is no elevation of the toolbar
         enableToolbarElevation(false)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        checkOrientation()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -524,6 +531,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         order_list_view.clearAdapterData()
         showTabs(false)
         isSearching = true
+        checkOrientation()
         return true
     }
 
@@ -696,6 +704,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         order_status_list_view.visibility = View.GONE
         orderRefreshLayout.isEnabled = true
         enableToolbarElevation(false)
+    }
+
+    private fun checkOrientation() {
+        val isLandscape = DisplayUtils.isLandscape(context)
+        if (isLandscape && isSearching) {
+            searchView?.post { searchView?.clearFocus() }
+        }
     }
     // endregion
 }
