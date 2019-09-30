@@ -149,6 +149,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         val isChildShowing = isChildFragmentShowing()
         return when {
             (isChildShowing) -> false
+            (isFilterEnabled) -> false
             else -> true
         }
     }
@@ -294,10 +295,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             enableToolbarElevation(true)
         } else {
             // silently refresh if this fragment is no longer hidden
-            showOptionsMenu(true)
-            enableToolbarElevation(isChildFragmentShowing())
-            clearSearchResults()
-            refreshOrders()
+            val isChildFragmentShowing = isChildFragmentShowing()
+            enableToolbarElevation(isChildFragmentShowing)
+            if (!isChildFragmentShowing) {
+                showOptionsMenu(true)
+                clearSearchResults()
+                refreshOrders()
+            }
         }
     }
 
@@ -351,6 +355,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     override fun showOrders(orders: List<WCOrderModel>, filterByStatus: String?, isFreshData: Boolean) {
         // Only update the order list view if the new filter match the currently selected order status
         if (orderStatusFilter == filterByStatus) {
+            isRefreshing = false
             order_list_view.showOrders(orders, filterByStatus, isFreshData)
 
             if (isFreshData) {
@@ -418,6 +423,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             }
             order_list_view.showEmptyView(messageId, showImage, showShareButton)
             isRefreshPending = false
+            isRefreshing = false
         } else {
             order_list_view.hideEmptyView()
         }
