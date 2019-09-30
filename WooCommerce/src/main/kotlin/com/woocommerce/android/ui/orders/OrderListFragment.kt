@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderListAdapter.OnLoadMoreListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooAnimUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_order_list.*
@@ -287,20 +288,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             enableToolbarElevation(true)
         } else {
             // silently refresh if this fragment is no longer hidden
-            if (isOrderStatusFilterEnabled()) {
-                // update the toolbar elevation if child fragment is displayed
-                enableToolbarElevation(isChildFragmentShowing())
-                disableSearchListeners()
-                presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
-            } else {
-                enableSearchListeners()
-                presenter.searchOrders(searchQuery)
-            }
+            showOptionsMenu(true)
+            enableToolbarElevation(isChildFragmentShowing())
+            clearSearchResults()
+            refreshOrders()
         }
     }
 
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
+        enableToolbarElevation(isChildFragmentShowing())
 
         when {
             isFilterEnabled -> {
@@ -525,7 +522,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         order_list_view.clearAdapterData()
-        tab_layout.visibility = View.GONE
+        showTabs(false)
         isSearching = true
         return true
     }
@@ -609,13 +606,21 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         activity?.toolbar?.elevation = if (enable) resources.getDimension(R.dimen.appbar_elevation) else 0f
     }
 
+    private fun showTabs(show: Boolean) {
+        if (show && tab_layout.visibility != View.VISIBLE) {
+            WooAnimUtils.fadeIn(tab_layout)
+        } else if (!show && tab_layout.visibility != View.GONE) {
+            tab_layout.visibility = View.GONE
+        }
+    }
+
     private fun disableSearchListeners() {
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
         orderListMenu?.findItem(R.id.menu_support)?.isVisible = true
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
-        tab_layout.visibility = View.VISIBLE
+        showTabs(true)
     }
 
     /**
