@@ -423,7 +423,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.orders)
+    override fun getFragmentTitle() = if (isFilterEnabled || isSearching) "" else getString(R.string.orders)
 
     override fun scrollToTop() {
         order_list_view.scrollToTop()
@@ -540,7 +540,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-        clearSearchResults()
+        if (isFilterEnabled) {
+            disableFilterListeners()
+            enableSearchListeners()
+            searchMenuItem?.isVisible = false
+            searchView?.post { searchMenuItem?.expandActionView() }
+        } else {
+            clearSearchResults()
+            searchMenuItem?.isVisible = true
+        }
         return true
     }
 
