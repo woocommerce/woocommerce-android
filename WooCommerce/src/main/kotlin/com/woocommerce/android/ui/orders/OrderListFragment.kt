@@ -125,10 +125,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      * search menu item to collapse
      */
     private fun refreshOptionsMenu() {
-        val showSearch = shouldShowSearchMenuItem()
-        searchMenuItem?.let {
-            if (it.isActionViewExpanded) it.collapseActionView()
-            if (it.isVisible != showSearch) it.isVisible = showSearch
+        if (!isChildFragmentShowing() && isSearching) {
+            enableSearchListeners()
+            searchMenuItem?.expandActionView()
+            if (isFilterEnabled) enableFilterListeners()
+        } else {
+            val showSearch = shouldShowSearchMenuItem()
+            searchMenuItem?.let {
+                if (it.isActionViewExpanded) it.collapseActionView()
+                if (it.isVisible != showSearch) it.isVisible = showSearch
+            }
         }
     }
 
@@ -227,10 +233,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         order_list_view.initEmptyView(selectedSite.get())
         order_status_list_view.init(listener = this)
 
-        if (isActive && !deferInit) {
-            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending, isFirstRun = true)
-        }
-
         listState?.let {
             order_list_view.onFragmentRestoreInstanceState(it)
             listState = null
@@ -259,8 +261,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             }
         })
 
-        // As part of the new order list design changes, there is no elevation of the toolbar
-        enableToolbarElevation(false)
+        val filterOrSearchEnabled = isFilterEnabled || isSearching
+        showTabs(!filterOrSearchEnabled)
+        enableToolbarElevation(filterOrSearchEnabled)
+
+        if (isOrderStatusFilterEnabled() && isActive && !deferInit) {
+            presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending, isFirstRun = true)
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -309,25 +316,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         showOptionsMenu(true)
         enableToolbarElevation(isChildFragmentShowing())
 
-        when {
-            isFilterEnabled -> {
-                searchHandler.postDelayed({
-                    enableSearchListeners()
-                    searchMenuItem?.expandActionView()
-                    enableFilterListeners()
-                    presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
-                }, 30)
-            }
-            isSearching -> {
-                searchHandler.postDelayed({
-                    enableSearchListeners()
-                    searchMenuItem?.expandActionView()
-                    searchView?.setQuery(searchQuery, true)
-                }, 20)
-            }
-            else -> {
-                presenter.loadOrders(orderStatusFilter, forceRefresh = this.isRefreshPending)
-            }
+        if (isOrderStatusFilterEnabled()) {
+            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = this.isRefreshPending)
+        } else {
+            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 20)
         }
     }
 
@@ -510,9 +502,13 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         presenter.refreshOrderStatusOptions()
     }
 
-    private fun getOrderStatusByTab(tab: TabLayout.Tab) = if (tab.position == 0) {
-        (tab.tag as? String)?.toLowerCase()
-    } else null
+    private fun getOrderStatusByTab(tab: TabLayout.Tab): String? {
+        return when {
+            isFilterEnabled -> orderStatusFilter
+            tab.position == 0 -> (tab.tag as? String)?.toLowerCase()
+            else -> null
+        }
+    }
 
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
@@ -531,14 +527,14 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         if (newText.length > 2) {
             submitSearchDelayed(newText)
         } else {
-            order_list_view.clearAdapterData()
+            clearOrderListData()
         }
         showEmptyView(false)
         return true
     }
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-        order_list_view.clearAdapterData()
+        clearOrderListData()
         showTabs(false)
         isSearching = true
         checkOrientation()
@@ -698,6 +694,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      */
     private fun disableFilterListeners() {
         if (isFilterEnabled) {
+            isFilterEnabled = false
             searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
                 it.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.default_search_hint_text))
                 it.isEnabled = true
@@ -708,7 +705,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
 
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
-            isFilterEnabled = false
         }
     }
 
@@ -728,6 +724,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         val isLandscape = DisplayUtils.isLandscape(context)
         if (isLandscape && isSearching) {
             searchView?.post { searchView?.clearFocus() }
+        }
+    }
+
+    /**
+     * Method to clear adapter data only if order filter is not enabled.
+     * This is to prevent the order filter list data from being cleared when fragment state is restored
+     */
+    private fun clearOrderListData() {
+        if (!isFilterEnabled) {
+            order_list_view.clearAdapterData()
         }
     }
     // endregion
