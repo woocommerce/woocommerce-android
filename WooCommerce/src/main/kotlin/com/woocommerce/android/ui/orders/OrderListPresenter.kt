@@ -284,7 +284,7 @@ class OrderListPresenter @Inject constructor(
                     // if the device is offline or has not yet been initialized and has no cached orders to display,
                     // show the loading indicator until a successful online refresh.
                     view.showLoading(true)
-                } else {
+                } else if (!view.isRefreshing) {
                     view.showEmptyView(true)
                 }
             }

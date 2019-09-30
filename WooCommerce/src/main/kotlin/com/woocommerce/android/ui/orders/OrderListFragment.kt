@@ -70,9 +70,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override var isRefreshPending = true // If true, the fragment will refresh its orders when its visible
-    override var isRefreshing: Boolean
-        get() = orderRefreshLayout.isRefreshing
-        set(_) {}
+    override var isRefreshing: Boolean = false
     override var isSearching: Boolean = false
 
     private var listState: Parcelable? = null // Save the state of the recycler view
@@ -335,6 +333,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun showLoading(show: Boolean) {
+        isRefreshing = show
         if (order_list_view.getOrderListItemCount() > 0) {
             showRefreshingIndicator(show)
         } else {
@@ -651,6 +650,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
      */
     private fun enableFilterListeners() {
         isFilterEnabled = true
+        isRefreshing = true
         hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
                 .plus(orderStatusFilter?.let { filter ->
