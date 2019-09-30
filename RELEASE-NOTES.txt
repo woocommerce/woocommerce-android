@@ -1,6 +1,7 @@
 2.8
 -----
 * Fixed missing cursor in order list search
+* A new manual refund feature, which lets you specify the refunded amount for an order
  
 2.7
 -----
@@ -10,6 +11,7 @@
 
 2.6
 -----
+* Added brand new stats page for user with the WooCommerce Admin plugin and provided an option for users to opt in or out directly from the Settings page.
 * Added an option to bypass the Jetpack required screen during the login process and attempt to log into the site anyway.
 * Fixed a bug in the Jetpack connection check during login where a small percentage of sites with Jetpack properly connected were coming back as not connected and preventing users from logging in successfully.
 

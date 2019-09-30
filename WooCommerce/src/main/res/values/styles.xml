@@ -175,7 +175,8 @@
 
     <style name="Woo.Button.Purple" parent="Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/white</item>
-        <item name="android:colorButtonNormal">@color/button_purple_bg_color</item>
+        <item name="android:colorAccent">@color/button_purple_bg_color</item>
+        <item name="android:colorButtonNormal">@color/black</item>
     </style>
 
     <style name="Woo.Button.White" parent="Widget.AppCompat.Button.Colored">
@@ -225,10 +226,11 @@
         <item name="android:paddingEnd">0dp</item>
         <item name="android:paddingBottom">0dp</item>
     </style>
-    <style name="Woo.Card.List">
+    <style name="Woo.Card.WithoutPadding">
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>
         <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
     </style>
     <style name="Woo.TextView">
         <item name="android:paddingStart">@dimen/card_item_padding_intra_h</item>
@@ -370,6 +372,23 @@
     <style name="Woo.OrderDetail.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
     <style name="Woo.OrderDetail.TextAppearance.Label" parent="Woo.TextAppearance.Label"/>
     <style name="Woo.OrderDetail.TextAppearance.Label.Bold" parent="Woo.TextAppearance.Label.Bold"/>
+    <!--
+        Refund Styles
+    -->
+    <style name="Woo.Refunds.TextAppearance" parent="Woo.TextAppearance"/>
+    <style name="Woo.Refunds.TextAppearance.Bold" parent="Woo.TextAppearance.Bold"/>
+
+    <style name="Woo.Refunds.EditText" parent="@style/EditText">
+        <item name="android:textColorHint">@color/edit_text_color_control_normal</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="colorControlNormal">@color/list_divider</item>
+        <item name="colorControlActivated">@color/list_divider</item>
+        <item name="colorControlHighlight">@color/list_divider</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="Woo.Refunds.TextAppearance.SectionTitle" parent="Woo.TextAppearance.Title"/>
     <!--
         Settings Styles
     -->

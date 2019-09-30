@@ -229,6 +229,7 @@
     <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
+    <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -249,6 +250,25 @@
     <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
+    <!--
+        Refunds
+    -->
+    <string name="order_refunds_available_for_refund">%s available for refund</string>
+    <string name="order_refunds_title_with_amount">Refund %s</string>
+    <string name="order_refunds_restocking_note">By refunding an amount, no items will be restocked</string>
+    <string name="order_refunds_next_button_title">Next</string>
+    <string name="order_refunds_refund_button_title">Refund</string>
+    <string name="order_refunds_refund_high_error">The refund is higher than the available amount</string>
+    <string name="order_refunds_refund_zero_error">The refund must be greater than 0</string>
+    <string name="order_refunds_previously_refunded">Previously refunded</string>
+    <string name="order_refunds_refund_amount">Refund amount</string>
+    <string name="order_refunds_reason">Reason for refund (optional)</string>
+    <string name="order_refunds_refund_via">Refund via</string>
+    <string name="order_refunds_manual_refund">Manual refund</string>
+    <string name="order_refunds_manual_refund_progress_message">Your refund for %s is being processed. Please wait…</string>
+    <string name="order_refunds_manual_refund_successful">The refund was successfully submitted.</string>
+    <string name="order_refunds_manual_refund_error">Something went wrong with the refund. Please try again.</string>
+    <string name="order_refunds_refund_manual_refund_note">Currently, only manual refunds are supported. Complete the refund through your payment gateway\'s dashboard, or manually transfer the money to the customer.</string>
     <!--
         Add Order Note
     -->
