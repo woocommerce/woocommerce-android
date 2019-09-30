@@ -84,6 +84,13 @@ class OrderListPresenter @Inject constructor(
             orderView?.showLoading(true)
             val payload = FetchOrdersPayload(selectedSite.get(), filterByStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
+        } else if (!networkStatus.isConnected()) {
+            orderView?.let { order ->
+                order.showLoadOrdersError()
+                order.showLoading(false)
+                order.showEmptyView(true)
+                order.isRefreshPending = true
+            }
         }
     }
 
