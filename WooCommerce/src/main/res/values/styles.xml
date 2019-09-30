@@ -374,7 +374,7 @@
         <item name="android:paddingBottom">@dimen/margin_extra_large</item>
     </style>
     <style name="Woo.OrderStatusList.TextAppearance.ListItem.Count" parent="Woo.TextAppearance.ListItem">
-        <item name="tabTextColor">@color/wc_grey_mid</item>
+        <item name="android:textColor">@color/wc_grey_mid</item>
         <item name="android:textSize">@dimen/text_large</item>
     </style>
     <!--

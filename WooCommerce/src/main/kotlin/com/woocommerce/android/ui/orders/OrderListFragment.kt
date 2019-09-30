@@ -110,6 +110,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         orderListMenu = menu
         searchMenuItem = menu?.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
+        searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -672,10 +673,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private fun disableFilterListeners() {
         if (isFilterEnabled) {
             searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
-                it.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.wc_grey_17))
+                it.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.default_search_hint_text))
                 it.isEnabled = true
             }
-            searchView?.queryHint = null
+            searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
             val tabPosition = AppPrefs.getSelectedOrderListTabPosition()
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
