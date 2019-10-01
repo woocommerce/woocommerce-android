@@ -12,7 +12,7 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
-import org.wordpress.android.fluxc.model.refunds.RefundModel
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 
@@ -108,7 +108,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         }
     }
 
-    fun showRefunds(refunds: List<RefundModel>) {
+    fun showRefunds(refunds: List<WCRefundModel>) {
         var adapter = paymentInfo_refunds.adapter as? OrderDetailRefundListAdapter
         if (adapter == null) {
             adapter = OrderDetailRefundListAdapter(

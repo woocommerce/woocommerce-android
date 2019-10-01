@@ -15,7 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.widgets.WooClickableSpan
-import org.wordpress.android.fluxc.model.refunds.RefundModel
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import java.math.BigDecimal
 
 class OrderDetailRefundListAdapter(
@@ -23,7 +23,7 @@ class OrderDetailRefundListAdapter(
     private val onRefundDetailsClicked: (Long, Long) -> Unit,
     private val order: Order
 ) : RecyclerView.Adapter<OrderDetailRefundListAdapter.ViewHolder>() {
-    private var items = ArrayList<RefundModel>()
+    private var items = ArrayList<WCRefundModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ViewHolder {
         return ViewHolder(parent, order, formatCurrency, onRefundDetailsClicked)
@@ -35,7 +35,7 @@ class OrderDetailRefundListAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    fun update(newItems: List<RefundModel>) {
+    fun update(newItems: List<WCRefundModel>) {
         val diffResult = DiffUtil.calculateDiff(RefundModelDiffCallback(items, newItems))
         items = ArrayList(newItems)
         diffResult.dispatchUpdatesTo(this)
@@ -52,7 +52,7 @@ class OrderDetailRefundListAdapter(
         private val amount: TextView = itemView.findViewById(R.id.refundsList_refundAmount)
         private val method: TextView = itemView.findViewById(R.id.refundsList_refundMethod)
 
-        @SuppressLint("SetTextI18n") fun bind(refund: RefundModel) {
+        @SuppressLint("SetTextI18n") fun bind(refund: WCRefundModel) {
             amount.text = "-${formatCurrency(refund.amount)}"
 
             val linkText = itemView.resources.getString(R.string.orderdetail_refund_view_details)
@@ -80,8 +80,8 @@ class OrderDetailRefundListAdapter(
     }
 
     class RefundModelDiffCallback(
-        private val oldList: List<RefundModel>,
-        private val newList: List<RefundModel>
+        private val oldList: List<WCRefundModel>,
+        private val newList: List<WCRefundModel>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition].id == newList[newItemPosition].id

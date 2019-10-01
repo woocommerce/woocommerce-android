@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.refunds.RefundModel
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import java.math.BigDecimal
 
 interface OrderDetailContract {
@@ -48,7 +48,7 @@ interface OrderDetailContract {
         fun showAddOrderNoteScreen(order: WCOrderModel)
         fun updateOrderNotes(notes: List<WCOrderNoteModel>)
         fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>)
-        fun showOrderRefunds(refunds: List<RefundModel>)
+        fun showOrderRefunds(refunds: List<WCRefundModel>)
         fun showOrderRefundTotal(refundTotal: BigDecimal)
         fun setOrderStatus(newStatus: String)
         fun showChangeOrderStatusSnackbar(newStatus: String)

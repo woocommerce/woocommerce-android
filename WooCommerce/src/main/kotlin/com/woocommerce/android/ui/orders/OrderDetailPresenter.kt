@@ -50,7 +50,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
-import org.wordpress.android.fluxc.store.RefundsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
@@ -61,13 +60,14 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChange
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
 class OrderDetailPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
-    private val refundStore: RefundsStore,
+    private val refundStore: WCRefundStore,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,

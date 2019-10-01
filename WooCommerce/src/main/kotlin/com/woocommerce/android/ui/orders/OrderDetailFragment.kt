@@ -40,7 +40,7 @@ import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
-import org.wordpress.android.fluxc.model.refunds.RefundModel
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -457,7 +457,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         }
     }
 
-    override fun showOrderRefunds(refunds: List<RefundModel>) {
+    override fun showOrderRefunds(refunds: List<WCRefundModel>) {
         orderDetail_paymentInfo.showRefunds(refunds)
     }
 

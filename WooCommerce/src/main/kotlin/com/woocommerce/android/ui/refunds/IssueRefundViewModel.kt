@@ -27,8 +27,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.store.RefundsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -41,7 +41,7 @@ import kotlin.coroutines.suspendCoroutine
 class IssueRefundViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher,
-    private val refundStore: RefundsStore,
+    private val refundStore: WCRefundStore,
     private val orderStore: WCOrderStore,
     private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,

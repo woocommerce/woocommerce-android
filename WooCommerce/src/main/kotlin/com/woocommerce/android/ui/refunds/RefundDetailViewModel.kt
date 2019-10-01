@@ -13,9 +13,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.refunds.RefundModel
-import org.wordpress.android.fluxc.store.RefundsStore
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Named
@@ -23,7 +23,7 @@ import javax.inject.Named
 @OpenClassOnDebug
 class RefundDetailViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    private val refundStore: RefundsStore,
+    private val refundStore: WCRefundStore,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val currencyFormatter: CurrencyFormatter,
@@ -55,7 +55,7 @@ class RefundDetailViewModel @Inject constructor(
         }
     }
 
-    private fun displayRefundDetails(refund: RefundModel, order: Order) {
+    private fun displayRefundDetails(refund: WCRefundModel, order: Order) {
         _formattedRefundAmount.value = formatCurrency(refund.amount)
         _refundReason.value = refund.reason
 
