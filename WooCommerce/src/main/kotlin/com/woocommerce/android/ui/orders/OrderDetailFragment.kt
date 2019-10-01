@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKE
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
@@ -40,7 +41,6 @@ import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -457,7 +457,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         }
     }
 
-    override fun showOrderRefunds(refunds: List<WCRefundModel>) {
+    override fun showOrderRefunds(refunds: List<Refund>) {
         orderDetail_paymentInfo.showRefunds(refunds)
     }
 
