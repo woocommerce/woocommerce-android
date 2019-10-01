@@ -140,7 +140,11 @@ class OrderDetailPresenter @Inject constructor(
 
     private fun loadRefunds(order: Order) {
         val refunds = refundStore.getAllRefunds(selectedSite.get(), order.remoteId)
-        orderView?.showOrderRefunds(refunds)
+        if (refunds.isNotEmpty()) {
+            orderView?.showOrderRefunds(refunds)
+        } else {
+            orderView?.showOrderRefundTotal(order.refundTotal)
+        }
 
         if (networkStatus.isConnected()) {
             GlobalScope.launch(backgroundDispatcher) {
