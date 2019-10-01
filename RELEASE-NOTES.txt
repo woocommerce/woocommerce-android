@@ -1,5 +1,6 @@
 2.8
 -----
+* Fixed missing cursor in order list search
 * A new manual refund feature, which lets you specify the refunded amount for an order
 * See a list of issued refunds inside the order detail screen
  
