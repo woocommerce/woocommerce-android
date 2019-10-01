@@ -280,7 +280,16 @@ end
       "release_note_#{values[0].to_s.rjust(2, "0")}#{values[1]}" => {desc: "changelogs/#{options[:build_number]}.txt", max_size: 0},
       play_store_promo: {desc:"short_description.txt", max_size: 80},
       play_store_desc: {desc:"full_description.txt", max_size: 0},
-      play_store_app_title: {desc:"title.txt", max_size: 50}
+      play_store_app_title: {desc:"title.txt", max_size: 50},
+      "app_store_screenshot-1" => {desc: "promo_screenshot_1.txt"},
+      "app_store_screenshot-1_b" => {desc: "promo_screenshot_1_b.txt"},
+      "app_store_screenshot-2" => {desc: "promo_screenshot_2.txt"},
+      "app_store_screenshot-3" => {desc: "promo_screenshot_3.txt"},
+      "app_store_screenshot-4" => {desc: "promo_screenshot_4.txt"},
+      "app_store_screenshot-5" => {desc: "promo_screenshot_5.txt"},
+      "app_store_screenshot-6" => {desc: "promo_screenshot_6.txt"},
+      "app_store_screenshot-7" => {desc: "promo_screenshot_7.txt"},
+      "app_store_screenshot-8" => {desc: "promo_screenshot_8.txt"},
     }
 
     delete_old_changelogs(build: options[:build_number])
