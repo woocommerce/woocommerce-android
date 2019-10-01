@@ -10,6 +10,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.di.BG_THREAD
+import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
@@ -22,7 +24,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -62,6 +64,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
+import javax.inject.Named
 
 @OpenClassOnDebug
 class OrderDetailPresenter @Inject constructor(
@@ -72,7 +75,9 @@ class OrderDetailPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus,
-    private val notificationStore: NotificationStore
+    private val notificationStore: NotificationStore,
+    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+    @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher
 ) : OrderDetailContract.Presenter {
     companion object {
         private val TAG: String = OrderDetailPresenter::class.java.simpleName
@@ -138,9 +143,9 @@ class OrderDetailPresenter @Inject constructor(
         orderView?.showOrderRefunds(refunds)
 
         if (networkStatus.isConnected()) {
-            GlobalScope.launch(Dispatchers.Default) {
+            GlobalScope.launch(backgroundDispatcher) {
                 val requestResult = refundStore.fetchAllRefunds(selectedSite.get(), order.remoteId)
-                withContext(Dispatchers.Main) {
+                withContext(mainDispatcher) {
                     if (!requestResult.isError) {
                         requestResult.model?.let { freshRefunds ->
                             orderView?.showOrderRefunds(freshRefunds)
