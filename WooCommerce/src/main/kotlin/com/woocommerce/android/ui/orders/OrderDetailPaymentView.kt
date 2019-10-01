@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
@@ -74,7 +75,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                         order.paymentMethodTitle
                 )
 
-                if (order.total - order.refundTotal > BigDecimal.ZERO) {
+                if (order.total - order.refundTotal > BigDecimal.ZERO && BuildConfig.DEBUG) {
                     paymentInfo_issueRefundButtonSection.show()
                 } else {
                     paymentInfo_issueRefundButtonSection.hide()
