@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_LOADED
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -11,6 +10,7 @@ import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
@@ -19,7 +19,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
-class ProductRepository @Inject constructor(
+class ProductDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
@@ -60,7 +60,6 @@ class ProductRepository @Inject constructor(
                 continuation?.resume(false)
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-
                 continuation?.resume(true)
             }
         }
