@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders
 
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -13,7 +12,6 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.junit.Before
@@ -130,7 +128,7 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Mark order complete - Displays undo snackbar correctly`()= test {
+    fun `Mark order complete - Displays undo snackbar correctly`() = test {
         doReturn(RefundResult(emptyList<WCRefundModel>()))
                 .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
         presenter.takeView(orderDetailView)
@@ -224,28 +222,30 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Request fresh notes from api on network connected event if using non-updated cached data`() = test {
-        doReturn(RefundResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(true).whenever(presenter).isUsingCachedNotes
-        doReturn(order).whenever(presenter).orderModel
-        presenter.takeView(orderDetailView)
+    fun `Request fresh notes from api on network connected event if using non-updated cached data`() =
+            test {
+                doReturn(RefundResult(emptyList<WCRefundModel>()))
+                        .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
+                doReturn(true).whenever(presenter).isUsingCachedNotes
+                doReturn(order).whenever(presenter).orderModel
+                presenter.takeView(orderDetailView)
 
-        presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(presenter, times(1)).requestOrderNotesFromApi(any())
-    }
+                presenter.onEventMainThread(ConnectionChangeEvent(true))
+                verify(presenter, times(1)).requestOrderNotesFromApi(any())
+            }
 
     @Test
-    fun `Do not refresh notes on network connected event if cached data already refreshed`() = test {
-        doReturn(RefundResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(false).whenever(presenter).isUsingCachedNotes
-        doReturn(order).whenever(presenter).orderModel
-        presenter.takeView(orderDetailView)
+    fun `Do not refresh notes on network connected event if cached data already refreshed`() =
+            test {
+                doReturn(RefundResult(emptyList<WCRefundModel>()))
+                        .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
+                doReturn(false).whenever(presenter).isUsingCachedNotes
+                doReturn(order).whenever(presenter).orderModel
+                presenter.takeView(orderDetailView)
 
-        presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(presenter, times(0)).requestOrderNotesFromApi(any())
-    }
+                presenter.onEventMainThread(ConnectionChangeEvent(true))
+                verify(presenter, times(0)).requestOrderNotesFromApi(any())
+            }
 
     @Test
     fun `Shows and hides the note list skeleton correctly`() = test {
@@ -289,28 +289,30 @@ class OrderDetailPresenterTest {
     }
 
     @Test
-    fun `Request fresh shipment tracking from api on network connected event if using non-updated cached data`() = test {
-        doReturn(RefundResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(true).whenever(presenter).isUsingCachedShipmentTrackings
-        doReturn(order).whenever(presenter).orderModel
-        presenter.takeView(orderDetailView)
+    fun `Request fresh shipment tracking from api on network connected event if using non-updated cached data`() =
+            test {
+                doReturn(RefundResult(emptyList<WCRefundModel>()))
+                        .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
+                doReturn(true).whenever(presenter).isUsingCachedShipmentTrackings
+                doReturn(order).whenever(presenter).orderModel
+                presenter.takeView(orderDetailView)
 
-        presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
-    }
+                presenter.onEventMainThread(ConnectionChangeEvent(true))
+                verify(presenter, times(1)).requestShipmentTrackingsFromApi(any())
+            }
 
     @Test
-    fun `Do not refresh shipment trackings on network connected event if cached data already refreshed`() = test {
-        doReturn(RefundResult(emptyList<WCRefundModel>()))
-                .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(false).whenever(presenter).isUsingCachedShipmentTrackings
-        doReturn(order).whenever(presenter).orderModel
-        presenter.takeView(orderDetailView)
+    fun `Do not refresh shipment trackings on network connected event if cached data already refreshed`() =
+            test {
+                doReturn(RefundResult(emptyList<WCRefundModel>()))
+                        .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
+                doReturn(false).whenever(presenter).isUsingCachedShipmentTrackings
+                doReturn(order).whenever(presenter).orderModel
+                presenter.takeView(orderDetailView)
 
-        presenter.onEventMainThread(ConnectionChangeEvent(true))
-        verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
-    }
+                presenter.onEventMainThread(ConnectionChangeEvent(true))
+                verify(presenter, times(0)).requestShipmentTrackingsFromApi(any())
+            }
 
     @Test
     fun `Do not request delete shipment tracking when network is not available`() = test {
@@ -328,7 +330,9 @@ class OrderDetailPresenterTest {
         verify(uiMessageResolver, times(1)).showOfflineSnack()
 
         // ensure that deleted item is added back to the list
-        verify(orderDetailView, times(1)).undoDeletedTrackingOnError(mockWCOrderShipmentTrackingModel)
+        verify(orderDetailView, times(1)).undoDeletedTrackingOnError(
+                mockWCOrderShipmentTrackingModel
+        )
 
         // ensure that dispatcher is not invoked
         verify(dispatcher, times(0)).dispatch(any<Action<*>>())
@@ -458,7 +462,12 @@ class OrderDetailPresenterTest {
     fun `Verify product is not virtual for multiple products in an order`() = test {
         doReturn(RefundResult(emptyList<WCRefundModel>()))
                 .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        order.lineItems = Gson().toJson(listOf(mapOf("product_id" to "290"), mapOf("product_id" to "291")))
+        order.lineItems = Gson().toJson(
+                listOf(
+                        mapOf("product_id" to "290"),
+                        mapOf("product_id" to "291")
+                )
+        )
 
         val products = listOf(
                 WCProductModel(1).apply { virtual = false },
@@ -479,7 +488,8 @@ class OrderDetailPresenterTest {
     fun `Verify product is not virtual for empty products in an order`() = test {
         doReturn(RefundResult(emptyList<WCRefundModel>()))
                 .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
-        doReturn(emptyList<WCProductModel>()).whenever(productStore).getProductsByRemoteIds(any(), any())
+        doReturn(emptyList<WCProductModel>()).whenever(productStore)
+                .getProductsByRemoteIds(any(), any())
 
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
@@ -495,7 +505,8 @@ class OrderDetailPresenterTest {
         doReturn(RefundResult(emptyList<WCRefundModel>()))
                 .whenever(refundStore).fetchAllRefunds(any(), any(), any(), any())
         order.lineItems = Gson().toJson(listOf(mapOf(), mapOf(), mapOf("product_id" to null)))
-        doReturn(emptyList<WCProductModel>()).whenever(productStore).getProductsByRemoteIds(any(), any())
+        doReturn(emptyList<WCProductModel>()).whenever(productStore)
+                .getProductsByRemoteIds(any(), any())
 
         presenter.takeView(orderDetailView)
         doReturn(order).whenever(orderStore).getOrderByIdentifier(any())
