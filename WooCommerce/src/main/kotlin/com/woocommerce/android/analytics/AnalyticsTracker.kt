@@ -198,6 +198,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MAIN_TAB_DASHBOARD_RESELECTED,
         MAIN_TAB_ORDERS_SELECTED,
         MAIN_TAB_ORDERS_RESELECTED,
+        MAIN_TAB_PRODUCTS_SELECTED,
+        MAIN_TAB_PRODUCTS_RESELECTED,
         MAIN_TAB_NOTIFICATIONS_SELECTED,
         MAIN_TAB_NOTIFICATIONS_RESELECTED,
 
@@ -221,6 +223,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
         PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
         PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
+
+        // -- Product list
+        PRODUCT_LIST_LOADED,
+        PRODUCT_LIST_LOAD_ERROR,
+        PRODUCT_LIST_PRODUCT_TAPPED,
+        PRODUCT_LIST_PULLED_TO_REFRESH,
+        PRODUCT_LIST_SEARCHED,
+        PRODUCT_LIST_MENU_SEARCH_TAPPED,
 
         // -- Product detail
         PRODUCT_DETAIL_LOADED,
