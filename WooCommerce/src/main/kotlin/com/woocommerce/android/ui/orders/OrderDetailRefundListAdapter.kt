@@ -65,9 +65,6 @@ class OrderDetailRefundListAdapter(
             val start = methodText.indexOf(linkText)
             spannable.setSpan(
                     WooClickableSpan {
-//                        AnalyticsTracker.track(
-//                                LOGIN_JETPACK_REQUIRED_SIGN_IN_LINK_TAPPED,
-//                                mapOf(AnalyticsTracker.KEY_URL to siteAddress.orEmpty()))
                         onRefundDetailsClicked(order.remoteId, refund.id)
                     },
                     start,
