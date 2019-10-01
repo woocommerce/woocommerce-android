@@ -305,6 +305,24 @@ end
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end 
 
+  desc "Create Promo Screenshots"
+  lane :create_promo_screenshots do | options |
+
+      # Create a copy of the files to work with – this ensures that if we're doing multiple
+      # screenshot generation tasks close together, we can keep reusing the same source files
+      original_screenshot_directory = File.join(Dir.pwd, "screenshots")
+      metadata_directory = File.join(Dir.pwd, "metadata/android")
+      output_directory = File.join(Dir.pwd, "/promo_screenshots")
+
+      # Run screenshots generator tool 
+      promo_screenshots(
+        orig_folder: original_screenshot_directory,
+        metadata_folder: metadata_directory,
+        output_folder: output_directory,
+        force: options[:force],
+      )
+  end
+
 ########################################################################
 # Helper Lanes
 ########################################################################  
