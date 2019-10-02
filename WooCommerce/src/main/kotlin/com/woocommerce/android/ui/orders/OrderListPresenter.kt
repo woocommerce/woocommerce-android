@@ -154,17 +154,26 @@ class OrderListPresenter @Inject constructor(
     /**
      * Method to fetch order status list for a given site
      */
-    override fun getOrderStatusList(): List<WCOrderStatusModel> =
-            orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+    override fun getOrderStatusList(): List<WCOrderStatusModel> {
+        val options = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
+        return if (options.isEmpty()) {
+            refreshOrderStatusOptions()
+            emptyList()
+        } else options
+    }
 
     override fun refreshOrderStatusOptions() {
-        // Refresh the order status options from the API
-        if (!isOrderStatusOptionsRefreshing()) {
-            isRefreshingOrderStatusOptions = true
-            dispatcher.dispatch(
-                    WCOrderActionBuilder
-                            .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get()))
-            )
+        if (networkStatus.isConnected()) {
+            // Refresh the order status options from the API only if there is network
+            if (!isOrderStatusOptionsRefreshing()) {
+                isRefreshingOrderStatusOptions = true
+                dispatcher.dispatch(
+                        WCOrderActionBuilder
+                                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(selectedSite.get()))
+                )
+            }
+        } else {
+            orderView?.showNoOrderStatusListError()
         }
     }
 
@@ -289,20 +298,9 @@ class OrderListPresenter @Inject constructor(
                 // for some reason, orderId is required to fetch shipment tracking providers
                 // so passing the first order in the order list
                 loadShipmentTrackingProviders(currentOrders[0])
-            } else if (!networkStatus.isConnected()) {
-                when {
-                    isFirstRun -> {
-                        // if the device is offline or has not yet been initialized and has no cached orders to display,
-                        // show the loading indicator until a successful online refresh.
-                        view.showLoading(true)
-                    }
-                    else -> {
-                        // if the device is offline or has not yet been initialised and has no cached orders to display,
-                        // show the empty view until internet connection is back again.
-                        view.showEmptyView(true)
-                    }
-                }
-            } else if (!view.isRefreshing) {
+            } else if (!networkStatus.isConnected() || !view.isRefreshing) {
+                // if the device is offline or has not yet been initialised and has no cached orders to display,
+                // show the empty view until internet connection is back again.
                 view.showEmptyView(true)
             }
         }

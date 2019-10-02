@@ -30,8 +30,10 @@
         android:background="@color/default_window_background"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
-                                                           android:layout_height="match_parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/order_list_view_root">
 
             <com.woocommerce.android.ui.orders.OrderListView
                 android:id="@+id/order_list_view"

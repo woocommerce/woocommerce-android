@@ -55,5 +55,6 @@ interface OrderListContract {
 
         fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>)
         fun updateOrderStatusList(orderStatusList: List<WCOrderStatusModel>)
+        fun showNoOrderStatusListError()
     }
 }

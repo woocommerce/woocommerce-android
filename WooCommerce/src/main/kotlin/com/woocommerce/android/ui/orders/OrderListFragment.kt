@@ -446,6 +446,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     }
 
     override fun updateOrderStatusList(orderStatusList: List<WCOrderStatusModel>) {
+        order_list_view_root.visibility = View.VISIBLE
         order_status_list_view.updateOrderStatusListView(orderStatusList)
     }
 
@@ -613,6 +614,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         }
     }
 
+    override fun showNoOrderStatusListError() {
+        order_list_view_root.visibility = View.GONE
+        uiMessageResolver.getSnack(R.string.orderstatuslist_error_fetch_generic).show()
+    }
+
     private fun refreshOrders() {
         isRefreshPending = true
         if (isOrderStatusFilterEnabled()) {
@@ -639,6 +645,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
     private fun disableSearchListeners() {
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
         orderListMenu?.findItem(R.id.menu_support)?.isVisible = true
+        order_list_view_root.visibility = View.VISIBLE
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
