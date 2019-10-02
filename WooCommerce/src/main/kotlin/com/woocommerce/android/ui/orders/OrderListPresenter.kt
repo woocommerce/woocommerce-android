@@ -88,7 +88,6 @@ class OrderListPresenter @Inject constructor(
             orderView?.let { order ->
                 order.showLoadOrdersError()
                 order.showLoading(false)
-                order.showEmptyView(true)
                 order.isRefreshPending = true
             }
         }
@@ -290,14 +289,21 @@ class OrderListPresenter @Inject constructor(
                 // for some reason, orderId is required to fetch shipment tracking providers
                 // so passing the first order in the order list
                 loadShipmentTrackingProviders(currentOrders[0])
-            } else {
-                if (!networkStatus.isConnected() || isFirstRun) {
-                    // if the device is offline or has not yet been initialized and has no cached orders to display,
-                    // show the loading indicator until a successful online refresh.
-                    view.showLoading(true)
-                } else if (!view.isRefreshing) {
-                    view.showEmptyView(true)
+            } else if (!networkStatus.isConnected()) {
+                when {
+                    isFirstRun -> {
+                        // if the device is offline or has not yet been initialized and has no cached orders to display,
+                        // show the loading indicator until a successful online refresh.
+                        view.showLoading(true)
+                    }
+                    else -> {
+                        // if the device is offline or has not yet been initialised and has no cached orders to display,
+                        // show the empty view until internet connection is back again.
+                        view.showEmptyView(true)
+                    }
                 }
+            } else if (!view.isRefreshing) {
+                view.showEmptyView(true)
             }
         }
     }
