@@ -291,10 +291,11 @@ class ReviewListRepository @Inject constructor(
             if (event.isError) {
                 AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOAD_FAILED, mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
 
-                WooLog.e(REVIEWS, "Error fetching matching product for product review: ${event.error.message}")
+                WooLog.e(REVIEWS, "Error fetching matching product for product review: " +
+                        "${event.error?.type} - ${event.error?.message}")
                 continuationProduct?.resume(false)
             } else {
                 AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOADED)
@@ -312,10 +313,11 @@ class ReviewListRepository @Inject constructor(
             if (event.isError) {
                 AnalyticsTracker.track(Stat.REVIEWS_LOAD_FAILED, mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
 
-                WooLog.e(REVIEWS, "Error fetching product review: ${event.error.message}")
+                WooLog.e(REVIEWS, "Error fetching product review: " +
+                        "${event.error?.type} - ${event.error?.message}")
                 continuationReview?.resume(false)
             } else {
                 AnalyticsTracker.track(Stat.REVIEWS_LOADED, mapOf(
@@ -330,11 +332,11 @@ class ReviewListRepository @Inject constructor(
                 AnalyticsTracker.track(
                         Stat.REVIEW_ACTION_FAILED, mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
 
                 WooLog.e(REVIEWS, "${ReviewListFragment.TAG} - Error pushing product review status " +
-                        "changes to server! ${event.error.message}")
+                        "changes to server!: ${event.error?.type} - ${event.error?.message}")
             } else {
                 AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
             }
@@ -348,10 +350,11 @@ class ReviewListRepository @Inject constructor(
             if (event.isError) {
                 AnalyticsTracker.track(Stat.NOTIFICATIONS_LOAD_FAILED, mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
 
-                WooLog.e(REVIEWS, "Error fetching product review notifications: ${event.error.message}")
+                WooLog.e(REVIEWS, "Error fetching product review notifications: " +
+                        "${event.error?.type} - ${event.error?.message}")
                 continuationNotification?.resume(false)
             } else {
                 AnalyticsTracker.track(Stat.NOTIFICATIONS_LOADED)
@@ -366,10 +369,11 @@ class ReviewListRepository @Inject constructor(
                 if (event.isError) {
                     AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_FAILED, mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
 
-                    WooLog.e(REVIEWS, "Error marking all reviews as read: ${event.error.message}")
+                    WooLog.e(REVIEWS, "Error marking all reviews as read: " +
+                            "${event.error?.type} - ${event.error?.message}")
                     it.resume(ERROR)
                 } else {
                     AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
