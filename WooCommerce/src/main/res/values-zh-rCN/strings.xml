@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-20 02:54:04+0000
+Translation-Revision-Date: 2019-09-04 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">今日统计</string>
+    <string name="login_sign_in">登录</string>
+    <string name="login_jetpack_installed_sign_in">已有 Jetpack 帐户？%1$s</string>
+    <string name="login_refresh_app_progress_jetpack">正在尝试使用 Jetpack 帐户登录…</string>
+    <string name="login_refresh_app_continue">刷新应用程序以继续操作</string>
+    <string name="login_not_connected_jetpack">要以 %1$s 的价格使用此应用程序，您需要安装 Jetpack 插件并连接至此帐户。\n\n设置完成后，%2$s</string>
+    <string name="login_try_another_store">尝试其他商店</string>
+    <string name="database_downgraded">数据库降级、正在重新创建表格及正在加载商店</string>
+    <string name="loading_stores">正在加载商店</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">未找到提供商</string>
     <string name="login_invalid_site_url">请输入完整网址（如 example.com）。</string>
     <string name="reviews_empty_message">尚无评论！</string>

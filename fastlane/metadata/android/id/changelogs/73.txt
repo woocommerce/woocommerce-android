@@ -1,3 +1,0 @@
-2.5:
-* Kami telah menemukan dan memperbaiki: sebuah crash langka yang terjadi setelah memenuhi pesanan dan mengecilkan aplikasi, satu bug yang menyebabkan situs terpilih di pemilih situs beralih kembali ke pilihan sebelumnya, dan beberapa masalah UI di tab “Ulasan” yang baru.
-* Nama produk kini dapat dijadikan dua baris dalam layar detail pesanan.

@@ -1,0 +1,5 @@
+2.6:
+- Non hai un account Jetpack? Ora puoi accedere al sito pur aggirando la schermata richiesta da Jetpack. (Però ti stai perdendo alcune potenti funzionalità: dai una chance a Jetpack!)
+- Alcuni utenti con un sito connesso a Jetpack a volte riscontravano problemi durante l'accesso: bug risolto.
+- Abbiamo corretto la modalità di visualizzazione delle statistiche del negozio prima della ricezione del primo ordine.
+- Occasionalmente si verificavano arresti imprevisti per alcuni utenti: problema risolto.

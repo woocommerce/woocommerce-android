@@ -41,7 +41,8 @@ data class Product(
     val fileCount: Int,
     val downloadLimit: Int,
     val downloadExpiry: Int,
-    val purchaseNote: String
+    val purchaseNote: String,
+    val numVariations: Int
 )
 
 fun WCProductModel.toAppModel(): Product {
@@ -77,7 +78,8 @@ fun WCProductModel.toAppModel(): Product {
         this.getDownloadableFiles().size,
         this.downloadLimit,
         this.downloadExpiry,
-        this.purchaseNote
+        this.purchaseNote,
+        this.getNumVariations()
     )
 }
 

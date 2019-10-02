@@ -166,7 +166,11 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
             StatsGranularity.MONTHS -> R.integer.stats_label_count_months
             StatsGranularity.YEARS -> R.integer.stats_label_count_years
         }
-        return context.resources.getInteger(resId)
+        val chartRevenueStatsSize = chartRevenueStats.keys.size
+        val barLabelCount = context.resources.getInteger(resId)
+        return if (chartRevenueStatsSize < barLabelCount) {
+            chartRevenueStatsSize
+        } else barLabelCount
     }
 
     /**
@@ -464,8 +468,8 @@ class MyStoreStatsView @JvmOverloads constructor(ctx: Context, attrs: AttributeS
     private fun getEntryValue(dateString: String): String {
         return when (activeGranularity) {
             StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
-            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayString(dateString)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthDayString(dateString)
+            StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
+            StatsGranularity.MONTHS -> dateString.formatToMonthDateOnly()
             StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
         }
     }

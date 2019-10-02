@@ -1,85 +1,112 @@
 <ar>
-2.5:
-* لقد تعقبنا وأصلحنا: عطلاً نادرًا حدث بعد إنجاز أحد الطلبات وتصغير حجم التطبيق، إلى جانب خطأ تسبب في تبديل الموقع المُحدَّد في منتقي المواقع إلى التحديد السابق مرة أخرى، فضلاً عن بعض المشكلات في واجهة المستخدم التي تحتوي على علامة تبويب "المراجعات" الجديدة.
-* يمكنك الآن تضمين أسماء المنتجات في سطرين في شاشة تفاصيل الطلب.
+2.6:
+- أليس لديك حساب Jetpack؟ يمكنك الآن تسجيل الدخول إلى موقعك أثناء تجاوز شاشة Jetpack الضرورية. (ومع ذلك، فأنتَ تفقد بعض الميزات الفعَّالة — جرِّب Jetpack!)
+- في بعض الأحيان، سيواجه بعضكم الذين لديهم موقع متصل بـ Jetpack مشكلات أثناء تسجيل الدخول. هذا خطأ لن تواجهه بعد الآن.
+- أصلحنا الكيفية التي تظهر بها إحصاءاتك في "متجري" قبل تلقي طلبك الأول.
+- ستواجه مجموعة صغيرة من بينكم من حين إلى آخر أخطاء غير متوقعة؛ إذا حدث ذلك معك، فلدينا أخبار سارة: لن تواجه هذه الأخطاء بعد الآن.
 </ar>
 <de-DE>
-2.5:
-* Wir haben folgende Probleme gefunden und behoben: einen seltenen Absturz, der nach dem Erfüllen eines Auftrags und Minimieren der App auftrat, einen Fehler, bei dem die ausgewählte Website in der Websiteauswahl zur vorherigen Auswahl zurückwechselte, und einige Probleme mit der Benutzeroberfläche auf dem neuen Tab „Rezensionen“.
-* Produktnamen können jetzt auf dem Bildschirm mit den Bestelldetails in zwei Zeilen geschrieben werden.
+2.6:
+- Du hast kein Jetpack-Konto? Du kannst dich jetzt bei deiner Website anmelden und dabei den Bildschirm umgehen, dass Jetpack erforderlich ist. (Allerdings verpasst du dann einige leistungsstarke Features – probiere Jetpack einfach einmal aus!)
+- Bei einigen von euch, die über eine mit Jetpack verbundene Website verfügen, traten manchmal Probleme beim Anmelden auf. Dieser Fehler wurde behoben.
+- Wir haben die Darstellung der Mein Shop-Statistiken korrigiert, bevor du deine erste Bestellung erhältst.
+- Bei einigen wenigen von euch ist die Website gelegentlich abgestürzt. Wenn du dazu zählst, haben wir gute Nachrichten: Das wird nicht mehr vorkommen.
 </de-DE>
 <es-ES>
-2.5:
-* Hemos supervisado y corregido lo siguiente: un error extraño que se producía después de hacer un pedido y minimizar la aplicación, un error que hacía que el sitio seleccionado en el selector de sitios volviera a la selección anterior y algunos problemas de la interfaz de usuario que ocurrían en la nueva pestaña "Revisiones".
-* Los nombres de los productos ahora pueden agruparse en dos líneas, en la pantalla Información del pedido.
+2.6:
+- ¿No tienes una cuenta de Jetpack? Ahora puedes iniciar sesión en tu sitio sin pasar por la pantalla obligatoria de Jetpack. Dicho esto, te estás perdiendo algunas funciones interesantes: ¡prueba Jetpack!
+- A veces, algunos de los que tenéis un sitio conectado a Jetpack teníais problemas al acceder. Ya no os encontraréis con este error.
+- Solucionamos el aspecto que tienen las estadísticas de Mi tienda antes de que recibas el primer pedido.
+- En ocasiones, un reducido grupo teníais fallos inesperados; si es tu caso, buenas noticias: ya no los tendrás.
 </es-ES>
 <fr-FR>
-2.5 :
-* Nous avons détecté et résolu : une défaillance rare qui survenait après l'exécution d'une commande et la réduction de l'application, un bug remplaçant le site sélectionné dans le sélecteur de site par la sélection précédente, ainsi que quelques problèmes d'interface utilisateur avec le nouvel onglet « Avis ».
-* Les noms de produit peuvent désormais occuper deux lignes dans l'écran des détails de la commande.
+2.6 :
+- Vous n'avez pas de compte Jetpack ? Vous pouvez désormais vous connecter à votre site en contournant l'écran nécessitant Jetpack. (Cela signifie que vous passez à côté de puissantes fonctionnalités. Donnez une chance à Jetpack !)
+- Les utilisateurs possédant un site connecté à Jetpack rencontraient parfois des problèmes de connexion. Ce bug a été corrigé.
+- Nous avons résolu les problèmes d'affichage des statistiques Ma boutique avant la réception de votre première commande.
+- Quelques utilisateurs étaient parfois confrontés à des défaillances inattendues. Ce problème a été résolu. Si vous étiez concerné, vous ne rencontrerez plus ce problème.
 </fr-FR>
 <iw-IL>
-2.5:
-* איתרנו ותיקנו את הבעיות הבאות: קריסה נדירה שהתרחשה לאחר השלמה של הזמנה וצמצום האפליקציה,באג שגרם לאתר שנבחר בבורר האתרים להתחלף לבחירה הקודמת ועוד כמה בעיות בממשק המשתמש בלשונית 'ביקורות' החדשה.
-* כעת ניתן לפרסום את שמות המוצרים על שתי שורות במסך של פרטי ההזמנה.
+2.6:
+אין לך חשבון ב-Jetpack? כעת אפשר להתחבר לאתר שלך ולדלג על המסך שמחייב חשבון ב-Jetpack. (אבל חבל לפספס את התכונות העוצמתיות של השירות – אנחנו ממליצים לנסות את Jetpack!)
+- חלק מהמשתמשים שברשותם אתר עם חיבור ל-Jetpack נתקלו בבעיות בעת הכניסה. טיפלנו בבאג הזה והוא לא יופיע יותר.
+- תיקנו את התצוגה של הנתונים הסטטיסטיים באזור 'החנות שלי' לפני קבלת ההזמנה הראשונה.
+- קבוצה קטנה של משתמשים נתקלה לפעמים בקריסות לא צפויות. אם התופעה הזאת התרחשה אצלך, יש לנו חדשות טובות: הבעיות האלו לא יקרו עוד.
 </iw-IL>
 <id>
-2.5:
-* Kami telah menemukan dan memperbaiki: sebuah crash langka yang terjadi setelah memenuhi pesanan dan mengecilkan aplikasi, satu bug yang menyebabkan situs terpilih di pemilih situs beralih kembali ke pilihan sebelumnya, dan beberapa masalah UI di tab “Ulasan” yang baru.
-* Nama produk kini dapat dijadikan dua baris dalam layar detail pesanan.
+2.6:
+- Belum punya akun Jetpack? Sekarang Anda bisa login ke situs dengan melewati layar wajib Jetpack. (Itu berarti, Anda melewatkan beberapa fitur hebat — coba Jetpack!)
+- Beberapa dari Anda yang mempunyai situs terkoneksi Jetpack terkadang mengalami masalah saat login. Itu adalah bug yang tidak akan Anda temui lagi.
+- Kami telah memperbaiki tampilan statistik Toko Saya sebelum Anda menerima pesanan pertama.
+- Beberapa orang terkadang harus berurusan dengan masalah crash, jika Anda termasuk salah satu yang pernah mengalaminya, ada kabar baik: Anda tidak akan mengalaminya lagi.
 </id>
 <it-IT>
-2.5:
-* Siamo risaliti alle cause e abbiamo risolto: un raro arresto anomalo che si verificava dopo aver evaso un ordine e ridotto a icona l'app, un bug che portava il sito selezionato in Scelta siti a tornare alla selezione precedente e alcuni problemi di interfaccia utente con la nuova scheda "Recensioni".
-* I nomi dei prodotti ora possono essere inseriti in due righe nella schermata dei dettagli dell'ordine.
+2.6:
+- Non hai un account Jetpack? Ora puoi accedere al sito pur aggirando la schermata richiesta da Jetpack. (Però ti stai perdendo alcune potenti funzionalità: dai una chance a Jetpack!)
+- Alcuni utenti con un sito connesso a Jetpack a volte riscontravano problemi durante l'accesso: bug risolto.
+- Abbiamo corretto la modalità di visualizzazione delle statistiche del negozio prima della ricezione del primo ordine.
+- Occasionalmente si verificavano arresti imprevisti per alcuni utenti: problema risolto.
 </it-IT>
-<ja-JP>
-2.5:
-* 追跡して次の修正を実行しました :注文を完了してアプリを最小化した後に発生した稀なクラッシュ、サイトピッカーで選択したサイトが以前の選択内容にスイッチバックするバグ、新しい「レビュー」タブに関する UI の問題の一部。
-* 注文詳細の画面で製品名を折り返して2行で表示できるようになりました。
-</ja-JP>
 <ko-KR>
-2.5:
-* 추적 및 수정 내용: 주문을 이행하고 앱을 최소화한 후 발생하는 드문 충돌, 사이트 선택 도구에서 선택한 사이트가 이전 선택으로 다시 전환되는 버그, 새로운 "검토"탭의 UI 문제.
-* 이제 주문 세부정보 화면에서 제품 이름을 2줄로 줄바꿈할 수 있습니다.
+2.6:
+- 아직 젯팩 계정이 없나요? 이제 젯팩 필수 화면을 무시하고 사이트에 로그인할 수 있습니다. (그래도 몇 가지 강력한 기능이 빠져있으니 젯팩을 사용해 보세요!)
+- 젯팩 연결 사이트를 보유한 일부 사용자는 경우에 따라 로그인할 때 문제가 발생할 수 있습니다. 이제 더 이상 이 버그가 발생하지 않습니다.
+- 첫 주문을 받기 전에 내 스토어 통계가 표시되는 방식을 수정했습니다.
+- 가끔 소규모 그룹에서 예기치 않는 충돌이 발생합니다. 이 경우에 해당한다면 좋은 소식을 전해드립니다. 더 이상 이 문제가 발생하지 않습니다.
 </ko-KR>
 <nl-NL>
-2.5:
-* We hebben het volgende gevonden en gerepareerd: een zeldzame crash die plaatsvond na het voltooien van een bestelling en het minimaliseren van de app, een bug die ervoor zorgde dat de geselecteerde sitekiezer terugkeerde naar de vorige selectie en een paar UI-problemen met het nieuwe tabblad 'Beoordelingen'.
-* Productnamen kunnen nu op twee regels worden weergegeven op het scherm met bestelgegevens.
+2.6:
+- Heb je geen Jetpack-account? Je kunt nu inloggen op je site en het Jetpack-scherm vermijden. (Je mist dan wel een aantal krachtige functies: probeer Jetpack eens!)
+- Sommige gebruikers met een Jetpack-site ondervinden soms inlogproblemen. Dat probleem is nu opgelost.
+- We hebben de weergave van statistieken voor Mijn winkel nu aangepast wanneer je nog geen bestelling hebt ontvangen.
+- Sommigen van jullie ervaarden soms onverwachte crashes. Als jij een van die personen bent, hebben we goed nieuws: je zult ze vanaf nu niet meer ervaren.
 </nl-NL>
 <pt-BR>
-2.5:
-* Rastreamos e corrigimos: um travamento raro que ocorria após a conclusão de um pedido e ao minimizar o aplicativo, um bug que fazia com que o site selecionado no seletor de sites retornasse à seleção anterior e alguns problemas de interface na nova guia "Comentários".
-* Os nomes dos produtos agora podem ser agrupados em duas linhas na tela de detalhes do pedido.
+2.6:
+- Não tem uma conta no Jetpack? Agora é possível fazer login no seu site ao ignorar a tela que solicita o Jetpack. (Porém, você está perdendo funcionalidades incríveis sem o Jetpack. Experimente usá-lo!)
+- Algumas vezes, aqueles que têm um site conectado ao Jetpack encontravam problemas ao fazer o login. Isso era causado por um bug e já foi consertado.
+- Corrigimos a aparência das estatísticas da Minha loja antes de você receber seu primeiro pedido.
+- Um pequeno grupo de usuários tinha que lidar com travamentos inesperados de vez em quando. Se isso acontecia com você, temos boas notícias: não voltará a se repetir.
 </pt-BR>
 <ru-RU>
-2.5:
-* Мы нашли и исправили следующее: редкую ошибку, которая возникала, если заполнить заказ и свернуть приложение; ошибку, из-за которой при выборе сайта выделение откатывалось на шаг назад; несколько проблем с интерфейсом новой вкладки "Обзоры".
-* Названия товаров в окне информации о заказе теперь помещаются в две строки.
+2.6:
+- Нет учетной записи Jetpack? Теперь вы можете войти на свой сайт в обход экрана с требованием установить Jetpack. (Однако вы упускаете возможность использовать некоторые мощные функции — попробуйте Jetpack!)
+- Некоторые пользователи, у которых есть сайт с подключенным Jetpack, иногда не могли войти на сайт. С этой ошибкой вы больше не столкнетесь.
+- Мы исправили отображение статистики магазина до получения первого заказа.
+- Отдельные пользователи могли сталкиваться с неожиданным обрушением сайта. Если вы из их числа, то у нас хорошие новости: такого больше не случится.
 </ru-RU>
 <sv-SE>
-2.5:
-* Vi har hittat och åtgärdat: en sällsynt krasch som inträffade efter att en beställning hade lagts och appen minimerats, ett fel som gjorde att den valda webbplatsen i webbplatsväljaren växlade tillbaka till det föregående valet och några gränssnittsproblem med den nya fliken "Recensioner".
-* Produktnamn kan nu sträcka sig över två rader på skärmen för beställningsinformation.
+2.6:
+- Har du inget Jetpack-konto? Nu kan du logga in på din webbplats och hoppa över skärmen som anger att Jetpack krävs. (Med detta sagt, du kommer att gå miste om kraftfulla funktioner – varför inte testa Jetpack!)
+- Det är möjligt att vissa användare som har en webbplats som är ansluten till Jetpack har stött på problem i samband med inloggningen. Detta är en bugg som inte längre kommer att förekomma.
+- Vi har åtgärdat hur statistiken för Min butik ser ut innan du tar emot din första beställning.
+- Ett fåtal av er upplevde ibland oväntade kraschar. Om du var en av dessa har vi goda nyheter: de kommer inte längre att hända.
 </sv-SE>
 <tr-TR>
-2.5:
-* Takip ettik ve aşağıdakileri düzelttik: bir sipariş verilip uygulama simge durumuna küçültüldükten sonra oluşan nadir bir hata, site seçiciden site seçildikten sonra önceki seçime geri dönülmesine neden olan bir hata ve yeni “Yorumlar” sekmesiyle ilgili bir kaç kullanıcı arayüzü sorunu.
-* Ürün adları artık sipariş ayrıntıları ekranında iki satıra sarılabiliyor.
+2.6:
+- Jetpack hesabınız mı yok? Artık Jetpack zorunlu ekranını atlayarak sitenizde oturum açabilirsiniz. (Bununla birlikte, bazı önemli özellikleri kaçırıyorsunuz; Jetpack'i deneyin!)
+- Jetpack’e bağlı bir sitesi bulunmayan bazı müşterilerimiz oturum açarken sorun yaşayabilir. Bu, artık karşılaşmayacağınız bir hata.
+- Mağazam istatistiklerinizin ilk siparişinizi almadan önceki görünümünü düzelttik.
+- Küçük bir grup müşterimiz zaman zaman beklenmedik çökmelerle karşılaşıyor. Bu durum sizi tarif ediyorsa iyi haberlerimiz var: bunları artık yaşamayacaksınız.
 </tr-TR>
 <zh-CN>
-2.5：
-* 我们跟踪并修复了以下内容：完成订单并将应用程序最小化后偶尔出现的崩溃、导致站点选择器中所选站点切换回之前选择的站点的错误，以及新“评论”选项卡中存在的一些 UI 问题。
-* 产品名称现在可以在“订单详细信息”屏幕中分两行显示。
+2.6：
+- 还没有 Jetpack 帐户？现在，您可以绕过需要使用 Jetpack 的屏幕登录到您的站点。（也就是说，您会错过很多强大的功能 - 试试 Jetpack 吧！）
+- 有些将其站点连接至 Jetpack 的用户可能会在登录时遇到问题。此问题现已得到解决。
+- 我们修正了您收到第一个订单之前，“我的商店”统计信息的显示方式。
+- 一小部分用户偶尔会遇到意外崩溃的问题；如果您也遇到过，那么好消息来了：您再也不会遇到这些问题了。
 </zh-CN>
 <zh-TW>
-2.5：
-* 我們已追蹤及修正以下問題：履行訂單並最小化應用程式後所發生不常見的當機情形；導致所選網站在網站挑選器中切換回上一個選項的錯誤；以及「評論」分頁的一些 UI 問題。
-* 產品名稱現在可於訂單詳細資料畫面中以兩行顯示。
+2.6：
+- 還沒有 Jetpack 帳號？現在你可以繞過需要 Jetpack 帳號的畫面登入網站。(話雖然這麼說，但有些強大的功能卻用不到；給 Jetpack 一個機會吧！)
+- 有些使用者的網站已連結 Jetpack，登入時偶爾會遇到問題。這個問題你永遠不會再遇到了。
+- 在你收到第一筆訂單之前，「我的商店」統計資料的顯示問題就已獲得修復。
+- 你們之中有一小群人偶爾會遇到意外的當機事件；如果你就是這一小群人之一，告訴你一個好消息：你永遠不會再遇到這個問題了。
 </zh-TW>
 <en-US>
-2.5:
-* We tracked down and fixed: a rare crash that happened after fulfilling an order and minimizing the app, a bug causing the selected site in the site picker to switch back to the previous selection, and a few UI issues with the new “Reviews” tab.
-* Product names can now wrap onto two lines in the order detail screen.
+2.6:
+- Don’t have a Jetpack account? Now you can log in to your site while bypassing the Jetpack-required screen. (That said, you’re missing out on some powerful features — give Jetpack a try!)
+- Some of you who do have a Jetpack-connected site would sometimes encounter issues while logging in. That’s a bug you’ll no longer run into.
+- We fixed the way your My Store stats look before you receive your first order.
+- A small group among you would occasionally deal with unexpected crashes; if that sounds like you, good news: you’ll no longer experience them.
 /<en-US>

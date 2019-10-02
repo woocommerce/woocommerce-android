@@ -21,8 +21,8 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.hide
-import com.woocommerce.android.util.show
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*

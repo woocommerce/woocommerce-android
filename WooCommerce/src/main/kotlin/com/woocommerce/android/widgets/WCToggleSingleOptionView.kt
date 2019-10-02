@@ -9,6 +9,7 @@ import android.widget.Checkable
 import android.widget.CompoundButton
 import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.view_toggle_single_option.view.*
 
@@ -31,6 +32,16 @@ class WCToggleSingleOptionView @JvmOverloads constructor(ctx: Context, attrs: At
                 // Set the view title
                 switchSetting_title.text = a.getString(R.styleable.WCToggleSingleOptionView_switchTitle).orEmpty()
 
+                // set the summary text color
+                var textColor = a.getColor(R.styleable.WCToggleSingleOptionView_switchSummaryTextColor, 0)
+                if (textColor == 0) {
+                    val textColorResId = a.getResourceId(
+                            R.styleable.WCToggleSingleOptionView_switchSummaryTextColor, R.color.wc_grey_medium
+                    )
+                    textColor = ContextCompat.getColor(context, textColorResId)
+                }
+                switchSetting_switch.setTextColor(textColor)
+
                 // Set the summary and switch state
                 switchSetting_switch.isChecked =
                         a.getBoolean(R.styleable.WCToggleSingleOptionView_switchChecked, false)
@@ -41,6 +52,10 @@ class WCToggleSingleOptionView @JvmOverloads constructor(ctx: Context, attrs: At
                 // the content description.
                 switchSetting_switch.textOn = resources.getString(R.string.toggle_option_checked)
                 switchSetting_switch.textOff = resources.getString(R.string.toggle_option_not_checked)
+
+                // add top padding between the switch title and subtitle
+                val topPadding = a.getDimensionPixelSize(R.styleable.WCToggleSingleOptionView_switchTopPadding, 0)
+                switchSetting_switch.setPadding(0, topPadding, 0, 0)
 
                 setOnClickListener { toggle() }
             } finally {
