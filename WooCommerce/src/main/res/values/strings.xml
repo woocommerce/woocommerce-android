@@ -157,7 +157,6 @@
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
     <string name="dashboard_top_earners_total_spend">Total spend</string>
     <string name="dashboard_top_earners_total_orders">Total orders: %s</string>
-    <string name="dashboard_top_earners_content_description">Product image</string>
     <string name="dashboard_top_earners_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
@@ -224,6 +223,7 @@
     <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
+    <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -244,6 +244,25 @@
     <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
+    <!--
+        Refunds
+    -->
+    <string name="order_refunds_available_for_refund">%s available for refund</string>
+    <string name="order_refunds_title_with_amount">Refund %s</string>
+    <string name="order_refunds_restocking_note">By refunding an amount, no items will be restocked</string>
+    <string name="order_refunds_next_button_title">Next</string>
+    <string name="order_refunds_refund_button_title">Refund</string>
+    <string name="order_refunds_refund_high_error">The refund is higher than the available amount</string>
+    <string name="order_refunds_refund_zero_error">The refund must be greater than 0</string>
+    <string name="order_refunds_previously_refunded">Previously refunded</string>
+    <string name="order_refunds_refund_amount">Refund amount</string>
+    <string name="order_refunds_reason">Reason for refund (optional)</string>
+    <string name="order_refunds_refund_via">Refund via</string>
+    <string name="order_refunds_manual_refund">Manual refund</string>
+    <string name="order_refunds_manual_refund_progress_message">Your refund for %s is being processed. Please wait…</string>
+    <string name="order_refunds_manual_refund_successful">The refund was successfully submitted.</string>
+    <string name="order_refunds_manual_refund_error">Something went wrong with the refund. Please try again.</string>
+    <string name="order_refunds_refund_manual_refund_note">Currently, only manual refunds are supported. Complete the refund through your payment gateway\'s dashboard, or manually transfer the money to the customer.</string>
     <!--
         Add Order Note
     -->
@@ -319,8 +338,9 @@
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
     <!--
-        Product detail
+        Products
     -->
+    <string name="product_image_content_description">Product image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>
@@ -350,8 +370,10 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
+    <string name="product_stock_count">%s in stock</string>
     <string name="product_backorders_no">Do not allow</string>
     <string name="product_backorders_yes">Allow</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
@@ -359,6 +381,9 @@
     <string name="product_name_external">Affiliate %s</string>
     <string name="product_name_grouped">Grouped %s</string>
     <string name="product_name_virtual">Virtual %s</string>
+    <string name="product_list_empty">No products yet</string>
+    <string name="product_list_empty_search">No matching products</string>
+    <string name="product_search_hint">Search products</string>
     <!--
         Empty list messages
     -->

@@ -1,3 +1,0 @@
-2.5:
-* Wir haben folgende Probleme gefunden und behoben: einen seltenen Absturz, der nach dem Erfüllen eines Auftrags und Minimieren der App auftrat, einen Fehler, bei dem die ausgewählte Website in der Websiteauswahl zur vorherigen Auswahl zurückwechselte, und einige Probleme mit der Benutzeroberfläche auf dem neuen Tab „Rezensionen“.
-* Produktnamen können jetzt auf dem Bildschirm mit den Bestelldetails in zwei Zeilen geschrieben werden.

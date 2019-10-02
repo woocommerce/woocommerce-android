@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
@@ -97,6 +98,10 @@ class MainActivity : AppUpgradeActivity(),
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         }
+    }
+
+    interface NavigationResult {
+        fun onNavigationResult(requestCode: Int, result: Bundle)
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -333,6 +338,8 @@ class MainActivity : AppUpgradeActivity(),
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productDetailFragment,
+                R.id.refundConfirmationFragment,
+                R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment -> {
                     true
@@ -581,6 +588,7 @@ class MainActivity : AppUpgradeActivity(),
         val stat = when (navPos) {
             DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
+            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
@@ -601,6 +609,7 @@ class MainActivity : AppUpgradeActivity(),
         val stat = when (navPos) {
             DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
+            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
