@@ -5,7 +5,7 @@
     android:id="@+id/nav_graph_refunds"
     app:startDestination="@id/issueRefundFragment" >
     <fragment
-        android:id="@+id/refundConfirmationFragment"
+        android:id="@+id/refundSummaryFragment"
         android:name="com.woocommerce.android.ui.refunds.RefundSummaryFragment"
         tools:layout="@layout/fragment_refund_summary"/>
     <fragment
@@ -13,8 +13,8 @@
         android:name="com.woocommerce.android.ui.refunds.IssueRefundFragment"
         tools:layout="@layout/fragment_issue_refund">
         <action
-            android:id="@+id/action_issueRefundFragment_to_refundConfirmationFragment"
-            app:destination="@id/refundConfirmationFragment"
+            android:id="@+id/action_issueRefundFragment_to_refundSummaryFragment"
+            app:destination="@id/refundSummaryFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <argument

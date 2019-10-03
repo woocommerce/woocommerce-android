@@ -7,4 +7,5 @@ import com.woocommerce.android.model.Order
  */
 interface OrderRefundActionListener {
     fun issueOrderRefund(order: Order)
+    fun showRefundDetail(orderId: Long, refundId: Long)
 }

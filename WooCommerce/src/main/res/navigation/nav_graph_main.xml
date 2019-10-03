@@ -63,6 +63,11 @@
                 android:defaultValue="0L"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_refundDetailFragment"
+            app:destination="@id/refundDetailFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"
@@ -163,4 +168,17 @@
         app:enterAnim="@anim/activity_fade_in"
         app:popExitAnim="@anim/activity_fade_out"/>
     <include app:graph="@navigation/nav_graph_refunds"/>
+    <fragment
+        android:id="@+id/refundDetailFragment"
+        android:name="com.woocommerce.android.ui.refunds.RefundDetailFragment"
+        android:label="RefundDetailFragment">
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+        <argument
+            android:name="refundId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+    </fragment>
 </navigation>

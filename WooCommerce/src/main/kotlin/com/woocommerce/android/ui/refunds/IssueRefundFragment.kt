@@ -66,7 +66,7 @@ class IssueRefundFragment : DaggerFragment() {
         })
 
         viewModel.showRefundSummary.observe(this, Observer {
-            val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundConfirmationFragment()
+            val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
             findNavController().navigate(action)
         })
     }
