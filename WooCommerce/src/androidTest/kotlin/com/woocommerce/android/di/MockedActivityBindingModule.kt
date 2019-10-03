@@ -6,8 +6,6 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
-import com.woocommerce.android.ui.notifications.NotifsListModule
-import com.woocommerce.android.ui.notifications.ReviewDetailModule
 import com.woocommerce.android.ui.orders.MockedAddOrderShipmentTrackingModule
 import com.woocommerce.android.ui.orders.MockedAddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
@@ -37,8 +35,6 @@ abstract class MockedActivityBindingModule {
             MockedOrderDetailModule::class,
             MockedOrderProductListModule::class,
             MockedOrderFulfillmentModule::class,
-            NotifsListModule::class,
-            ReviewDetailModule::class,
             MockedViewModelModule::class,
             ThreadModule::class,
             MockedProductDetailModule::class,

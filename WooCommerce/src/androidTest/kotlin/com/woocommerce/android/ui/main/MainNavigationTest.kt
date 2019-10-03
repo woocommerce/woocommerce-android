@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.TestBase
 import org.hamcrest.Matchers.equalToIgnoringCase
 import org.junit.Assert.fail
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,9 +48,15 @@ class MainNavigationTest : TestBase() {
 
     @Test
     fun pressingBackAfterBottomNavOptionChangeExitsApp() {
+        // Make sure the bottom navigation view is showing
+        activityTestRule.activity.showBottomNav()
+
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
+
         // Verify switching bottom bar tabs does not retain a back stack.
         // Switch from the default dashboard tab to the reviews tab
-        onView(withId(R.id.reviews)).perform(click())
+        onView(withId(R.id.orders)).perform(click())
 
         // Clicking back should not switch back to the previous tab, it should
         // exit the app.
@@ -90,8 +97,9 @@ class MainNavigationTest : TestBase() {
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.orders)))))
     }
 
+    @Ignore("Add dependency injection for reviews")
     @Test
-    fun reviewssMenuOptionDisplaysReviewsView() {
+    fun reviewsMenuOptionDisplaysReviewsView() {
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
 
@@ -108,8 +116,11 @@ class MainNavigationTest : TestBase() {
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
 
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
+
         // Switch away from the default selected dashboard option
-        onView(withId(R.id.reviews)).perform(click())
+        onView(withId(R.id.orders)).perform(click())
 
         // Select the dashboard bottom bar option
         onView(withId(R.id.dashboard)).perform(click())
