@@ -12,7 +12,7 @@ import java.util.Date
 
 data class Order(
     val identifier: OrderIdentifier,
-    val remoteOrderId: Long,
+    val remoteId: Long,
     val number: String,
     val localSiteId: Int,
     val dateCreated: Date,
