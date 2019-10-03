@@ -75,6 +75,7 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                         order.paymentMethodTitle
                 )
 
+                // for now, refunds are only enabled in debug builds
                 if (order.total - order.refundTotal > BigDecimal.ZERO && BuildConfig.DEBUG) {
                     paymentInfo_issueRefundButtonSection.show()
                 } else {
