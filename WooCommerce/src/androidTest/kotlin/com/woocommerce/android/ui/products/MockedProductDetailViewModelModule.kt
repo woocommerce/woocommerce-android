@@ -23,7 +23,7 @@ import java.math.BigDecimal
 import kotlin.math.roundToInt
 
 @Module
-internal abstract class MockedViewModelModule {
+internal abstract class MockedProductDetailViewModelModule {
     @Module
     companion object {
         private var product: WCProductModel? = null

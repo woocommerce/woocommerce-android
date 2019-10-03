@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
 import com.woocommerce.android.ui.products.MockedProductDetailModule
-import com.woocommerce.android.ui.products.MockedViewModelModule
+import com.woocommerce.android.ui.products.MockedProductDetailViewModelModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import com.woocommerce.android.ui.stats.MockedDashboardModule
@@ -35,7 +35,7 @@ abstract class MockedActivityBindingModule {
             MockedOrderDetailModule::class,
             MockedOrderProductListModule::class,
             MockedOrderFulfillmentModule::class,
-            MockedViewModelModule::class,
+            MockedProductDetailViewModelModule::class,
             ThreadModule::class,
             MockedProductDetailModule::class,
             MockedAddOrderShipmentTrackingModule::class,
