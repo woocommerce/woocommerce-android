@@ -49,6 +49,6 @@
         android:textColor="@color/wc_grey_medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/refundsList_lblRefund"
-        tools:text="Jan 28 via Stripe (View Details)" />
+        tools:text="Jan 28 via Stripe - View Details" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
