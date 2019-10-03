@@ -156,6 +156,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED,
         ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED,
         ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED,
+        ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED,
 
         // -- Refunds
         ADD_ORDER_REFUND_AMOUNT_NEXT_BUTTON_TAPPED,
@@ -424,6 +425,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
+        const val KEY_ORDER_ID = "order_id"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"

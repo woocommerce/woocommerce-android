@@ -5,17 +5,24 @@ import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import kotlinx.android.synthetic.main.order_detail_payment_info.view.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 
 class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : LinearLayout(ctx, attrs) {
+    private lateinit var formatCurrency: (BigDecimal) -> String
+    private lateinit var actionListener: OrderRefundActionListener
+    private lateinit var order: Order
+
     init {
         View.inflate(context, R.layout.order_detail_payment_info, this)
         orientation = LinearLayout.VERTICAL
@@ -26,11 +33,18 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         formatCurrencyForDisplay: (BigDecimal) -> String,
         actionListener: OrderRefundActionListener
     ) {
+        this.formatCurrency = formatCurrencyForDisplay
+        this.actionListener = actionListener
+        this.order = order
+
         paymentInfo_productsTotal.text = formatCurrencyForDisplay(order.productsTotal)
         paymentInfo_shippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
         paymentInfo_taxesTotal.text = formatCurrencyForDisplay(order.totalTax)
         paymentInfo_total.text = formatCurrencyForDisplay(order.total)
         paymentInfo_lblTitle.text = context.getString(R.string.payment)
+
+        paymentInfo_refunds.layoutManager = LinearLayoutManager(context)
+        paymentInfo_refunds.setHasFixedSize(true)
 
         if (order.paymentMethodTitle.isEmpty()) {
             paymentInfo_paymentMsg.hide()
@@ -61,7 +75,8 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
                         order.paymentMethodTitle
                 )
 
-                if (order.total - order.refundTotal > BigDecimal.ZERO) {
+                // for now, refunds are only enabled in debug builds
+                if (order.total - order.refundTotal > BigDecimal.ZERO && BuildConfig.DEBUG) {
                     paymentInfo_issueRefundButtonSection.show()
                 } else {
                     paymentInfo_issueRefundButtonSection.hide()
@@ -72,7 +87,6 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         // Populate or hide refund section
         if (order.refundTotal > BigDecimal.ZERO) {
             paymentInfo_refundSection.show()
-            paymentInfo_refundTotal.text = formatCurrencyForDisplay(order.refundTotal)
             val newTotal = order.total - order.refundTotal
             paymentInfo_newTotal.text = formatCurrencyForDisplay(newTotal)
         } else {
@@ -94,5 +108,28 @@ class OrderDetailPaymentView @JvmOverloads constructor(ctx: Context, attrs: Attr
         paymentInfo_issueRefundButton.setOnClickListener {
             actionListener.issueOrderRefund(order)
         }
+    }
+
+    fun showRefunds(refunds: List<Refund>) {
+        var adapter = paymentInfo_refunds.adapter as? OrderDetailRefundListAdapter
+        if (adapter == null) {
+            adapter = OrderDetailRefundListAdapter(
+                    formatCurrency,
+                    { orderId, refundId -> actionListener.showRefundDetail(orderId, refundId) },
+                    order
+            )
+            paymentInfo_refunds.adapter = adapter
+        }
+        adapter.update(refunds)
+
+        paymentInfo_refunds.show()
+        paymentInfo_refundTotalSection.hide()
+    }
+
+    fun showRefundTotal(refundTotal: BigDecimal) {
+        paymentInfo_refundTotal.text = formatCurrency(refundTotal)
+
+        paymentInfo_refunds.hide()
+        paymentInfo_refundTotalSection.show()
     }
 }

@@ -70,16 +70,16 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
         })
 
         viewModel.isSummaryFormEnabled.observe(this, Observer {
-            refundConfirmation_btnRefund.isEnabled = it
-            refundConfirmation_reason.isEnabled = it
+            refundSummary_btnRefund.isEnabled = it
+            refundSummary_reason.isEnabled = it
         })
 
         viewModel.formattedRefundAmount.observe(this, Observer {
-            refundConfirmation_refundAmount.text = it
+            refundSummary_refundAmount.text = it
         })
 
         viewModel.previousRefunds.observe(this, Observer {
-            refundConfirmation_previouslyRefunded.text = it
+            refundSummary_previouslyRefunded.text = it
         })
 
         viewModel.exitAfterRefund.observe(this, Observer {
@@ -96,8 +96,8 @@ class RefundSummaryFragment : DaggerFragment(), BackPressListener {
     }
 
     private fun initializeViews(viewModel: IssueRefundViewModel) {
-        refundConfirmation_btnRefund.setOnClickListener {
-            viewModel.onRefundConfirmed(refundConfirmation_reason.text.toString())
+        refundSummary_btnRefund.setOnClickListener {
+            viewModel.onRefundConfirmed(refundSummary_reason.text.toString())
         }
     }
 

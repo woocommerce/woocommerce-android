@@ -27,8 +27,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.store.RefundsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -41,7 +41,7 @@ import kotlin.coroutines.suspendCoroutine
 class IssueRefundViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     @Named(BG_THREAD) private val backgroundDispatcher: CoroutineDispatcher,
-    private val refundStore: RefundsStore,
+    private val refundStore: WCRefundStore,
     private val orderStore: WCOrderStore,
     private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
@@ -159,7 +159,7 @@ class IssueRefundViewModel @Inject constructor(
                 if (!wasRefundCanceled) {
                     // TODO: Update this once the item & automatic refunds are supported
                     AnalyticsTracker.track(Stat.REFUND_CREATE, mapOf(
-                            AnalyticsTracker.KEY_ID to order.remoteOrderId,
+                            AnalyticsTracker.KEY_ID to order.remoteId,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to (enteredAmount isEqualTo maxRefund).toString(),
                             AnalyticsTracker.KEY_REFUND_TYPE to "amount",
                             AnalyticsTracker.KEY_REFUND_METHOD to "manual",
@@ -169,7 +169,7 @@ class IssueRefundViewModel @Inject constructor(
                     val resultCall = async(backgroundDispatcher) {
                         return@async refundStore.createRefund(
                                 selectedSite.get(),
-                                order.remoteOrderId,
+                                order.remoteId,
                                 enteredAmount,
                                 reason
                         )
