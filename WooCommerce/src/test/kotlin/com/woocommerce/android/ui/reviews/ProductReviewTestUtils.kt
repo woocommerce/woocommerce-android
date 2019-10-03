@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.reviews
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 import java.util.Date
 
 object ProductReviewTestUtils {
@@ -39,4 +40,6 @@ object ProductReviewTestUtils {
             return this
         }
     }
+
+    fun generateReviewNotification(remoteNoteId: Long) = NotificationModel(remoteNoteId = remoteNoteId)
 }
