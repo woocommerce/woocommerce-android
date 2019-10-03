@@ -134,7 +134,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = reviewsList
             setOnRefreshListener {
-                // TODO AMANDA : new track notification for refreshing all product reviews
+                AnalyticsTracker.track(Stat.REVIEWS_LIST_PULLED_TO_REFRESH)
                 viewModel.forceRefreshReviews()
             }
         }
@@ -165,7 +165,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.menu_mark_all_read -> {
-                AnalyticsTracker.track(Stat.NOTIFICATIONS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
+                AnalyticsTracker.track(Stat.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
                 viewModel.markAllReviewsAsRead()
                 true
             }
@@ -302,10 +302,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     private fun openReviewDetail(review: ProductReview) {
-        AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
-                AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
-                AnalyticsTracker.KEY_ALREADY_READ to review.read))
-
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showReviewDetail(review.remoteId, tempStatus = pendingModerationNewStatus)
     }
@@ -336,10 +332,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
             pendingModerationNewStatus = newStatus.toString()
 
             var changeReviewStatusCanceled = false
-
-            AnalyticsTracker.track(
-                    Stat.REVIEW_ACTION,
-                    mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
 
             // Listener for the UNDO button in the snackbar
             val actionListener = View.OnClickListener {
