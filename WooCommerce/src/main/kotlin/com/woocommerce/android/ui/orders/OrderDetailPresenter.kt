@@ -278,6 +278,11 @@ class OrderDetailPresenter @Inject constructor(
     override fun markOrderNotificationRead(context: Context, remoteNotificationId: Long) {
         NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNotificationId.toString())
         notificationStore.getNotificationByRemoteId(remoteNotificationId)?.let {
+            // Send event that an order with a matching notification was opened
+            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
+                    AnalyticsTracker.KEY_ALREADY_READ to it.read))
+
             if (!it.read) {
                 it.read = true
                 pendingMarkReadNotification = it

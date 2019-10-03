@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.reviews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.ProductReview
@@ -124,6 +126,11 @@ final class ReviewDetailViewModel @Inject constructor(
 
             // send request to mark notification as read to the server
             repository.markNotificationAsRead(it)
+
+            // Send the track event that a product review notification was opened
+            AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
+                    AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                    AnalyticsTracker.KEY_ALREADY_READ to it.read))
         }
     }
 }

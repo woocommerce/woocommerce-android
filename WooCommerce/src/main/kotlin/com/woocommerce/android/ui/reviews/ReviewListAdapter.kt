@@ -17,7 +17,6 @@ import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.extensions.applyTransform
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
 import com.woocommerce.android.widgets.sectionedrecyclerview.Section
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
@@ -113,7 +112,7 @@ class ReviewListAdapter(
             reviewList.forEach {
                 if (it.remoteId == review.remoteId &&
                         it.review == review.review &&
-                        it.read == review.read &&
+                        it.read == review.read ?: true &&
                         it.status == review.status) {
                     return true
                 }
@@ -218,7 +217,7 @@ class ReviewListAdapter(
                 currentPos++
             }
             if (currentPos == position) {
-                return if (review.read) ItemType.READ else ItemType.UNREAD
+                return if (review.read ?: true) ItemType.READ else ItemType.UNREAD
             }
             currentPos++
         }
@@ -272,17 +271,6 @@ class ReviewListAdapter(
      */
     fun resetPendingModerationState() {
         pendingRemovalReview = null
-    }
-
-    /**
-     * Superficially marks all reviews (that have matching notifications) in the current list
-     * as read by creating a copy of the existing list, then setting the [ProductReview#read]
-     * property to true and feeding the updated list back into the adapter.
-     */
-    fun markAllReviewsAsRead() {
-        val newList = reviewList.map { it.copy() }.applyTransform { it.apply { read = true } }
-
-        setReviews(newList)
     }
 
     fun isEmpty() = reviewList.isEmpty()

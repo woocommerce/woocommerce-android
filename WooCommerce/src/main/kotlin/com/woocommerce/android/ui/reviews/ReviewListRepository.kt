@@ -60,6 +60,7 @@ class ReviewListRepository @Inject constructor(
 
     private var offset = 0
     private var isFetchingProductReviews = false
+    private var isLoadingMore = false
 
     var canLoadMore: Boolean = false
         private set
@@ -82,6 +83,7 @@ class ReviewListRepository @Inject constructor(
      */
     suspend fun fetchProductReviews(loadMore: Boolean): RequestResult {
         return if (!isFetchingProductReviews) {
+            isLoadingMore = loadMore
             coroutineScope {
                 val fetchNotifs = async {
                     /*
@@ -134,6 +136,8 @@ class ReviewListRepository @Inject constructor(
                     val payload = MarkNotificationsReadPayload(unreadProductReviews)
                     dispatcher.dispatch(
                             NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+
+                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ)
                 } ?: ERROR // block timed out. Return error.
             } catch (e: CancellationException) {
                 WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
@@ -166,7 +170,7 @@ class ReviewListRepository @Inject constructor(
             }.also { review ->
                 review.forEach {
                     it.product = productsMap[it.remoteProductId]
-                    it.read = readValueByRemoteIdMap[it.remoteId] ?: true
+                    it.read = readValueByRemoteIdMap[it.remoteId] // if not found will stay null
                 }
             }
         }
@@ -285,11 +289,16 @@ class ReviewListRepository @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_PRODUCTS) {
             if (event.isError) {
-                // TODO AMANDA : track fetch products failed
-                WooLog.e(REVIEWS, "Error fetching matching product for product review: ${event.error.message}")
+                AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+
+                WooLog.e(REVIEWS, "Error fetching matching product for product review: " +
+                        "${event.error?.type} - ${event.error?.message}")
                 continuationProduct?.resume(false)
             } else {
-                // TODO AMANDA : track fetch products success
+                AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOADED)
                 continuationProduct?.resume(true)
             }
             continuationProduct = null
@@ -302,11 +311,18 @@ class ReviewListRepository @Inject constructor(
         if (event.causeOfChange == FETCH_PRODUCT_REVIEWS) {
             isFetchingProductReviews = false
             if (event.isError) {
-                // TODO AMANDA : track fetch product reviews failed
-                WooLog.e(REVIEWS, "Error fetching product review: ${event.error.message}")
+                AnalyticsTracker.track(Stat.REVIEWS_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+
+                WooLog.e(REVIEWS, "Error fetching product review: " +
+                        "${event.error?.type} - ${event.error?.message}")
                 continuationReview?.resume(false)
             } else {
-                // TODO AMANDA : track fetch product reviews success
+                AnalyticsTracker.track(Stat.REVIEWS_LOADED, mapOf(
+                        AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore))
+                isLoadingMore = false
                 canLoadMore = event.canLoadMore
                 continuationReview?.resume(true)
             }
@@ -316,11 +332,11 @@ class ReviewListRepository @Inject constructor(
                 AnalyticsTracker.track(
                         Stat.REVIEW_ACTION_FAILED, mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message))
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
 
                 WooLog.e(REVIEWS, "${ReviewListFragment.TAG} - Error pushing product review status " +
-                        "changes to server! ${event.error.message}")
+                        "changes to server!: ${event.error?.type} - ${event.error?.message}")
             } else {
                 AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
             }
@@ -332,24 +348,39 @@ class ReviewListRepository @Inject constructor(
     fun onNotificationChanged(event: OnNotificationChanged) {
         if (event.causeOfChange == FETCH_NOTIFICATIONS) {
             if (event.isError) {
-                // TODO AMANDA : track fetch notifications failed
-                WooLog.e(REVIEWS, "Error fetching product review notifications: ${event.error.message}")
+                AnalyticsTracker.track(Stat.NOTIFICATIONS_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+
+                WooLog.e(REVIEWS, "Error fetching product review notifications: " +
+                        "${event.error?.type} - ${event.error?.message}")
                 continuationNotification?.resume(false)
             } else {
-                // TODO AMANDA : track fetch notifications success
+                AnalyticsTracker.track(Stat.NOTIFICATIONS_LOADED)
+
                 continuationNotification?.resume(true)
             }
             continuationNotification = null
         } else if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
-            if (event.isError) {
-                // TODO AMANDA : track mark notifications read error
-                WooLog.e(REVIEWS, "Error marking all reviews as read: ${event.error.message}")
-                continuationMarkAllRead?.resume(ERROR)
-            } else {
-                // TODO AMANDA : track mark notifications read success
-                continuationMarkAllRead?.resume(SUCCESS)
+            // Since this can be called from other places, only process this event if we were the
+            // one who submitted the request.
+            continuationMarkAllRead?.let {
+                if (event.isError) {
+                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_FAILED, mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+
+                    WooLog.e(REVIEWS, "Error marking all reviews as read: " +
+                            "${event.error?.type} - ${event.error?.message}")
+                    it.resume(ERROR)
+                } else {
+                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
+                    it.resume(SUCCESS)
+                }
+                continuationMarkAllRead = null
             }
-            continuationMarkAllRead = null
         }
     }
 }
