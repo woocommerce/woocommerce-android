@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
@@ -246,7 +245,7 @@ final class ReviewListViewModel @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
         if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
             if (!event.isError) {
@@ -257,7 +256,7 @@ final class ReviewListViewModel @Inject constructor(
     }
 
     @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductReviewChanged(event: OnProductReviewChanged) {
         if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
             if (event.isError) {
