@@ -146,14 +146,10 @@
         app:popExitAnim="@anim/activity_fade_out"/>
     <fragment
         android:id="@+id/reviewDetailFragment"
-        android:name="com.woocommerce.android.ui.notifications.ReviewDetailFragment"
+        android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
         tools:layout="@layout/fragment_review_detail">
         <argument
-            android:name="remoteNoteId"
-            app:argType="long"
-            android:defaultValue="0L"/>
-        <argument
-            android:name="remoteCommentId"
+            android:name="remoteReviewId"
             app:argType="long"
             android:defaultValue="0L"/>
         <argument
