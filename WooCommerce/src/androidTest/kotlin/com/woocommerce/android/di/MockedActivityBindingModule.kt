@@ -18,9 +18,11 @@ import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
 import com.woocommerce.android.ui.products.MockedProductDetailModule
 import com.woocommerce.android.ui.reviews.MockedReviewDetailModule
+import com.woocommerce.android.ui.reviews.MockedReviewListModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import com.woocommerce.android.ui.stats.MockedDashboardModule
+import com.woocommerce.android.ui.stats.MockedMyStoreModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule
@@ -31,6 +33,7 @@ abstract class MockedActivityBindingModule {
     @ContributesAndroidInjector(modules = arrayOf(
             MockedMainModule::class,
             MockedDashboardModule::class,
+            MockedMyStoreModule::class,
             MockedOrderListModule::class,
             MockedOrderDetailModule::class,
             MockedOrderProductListModule::class,
@@ -38,7 +41,9 @@ abstract class MockedActivityBindingModule {
             ThreadModule::class,
             MockedProductDetailModule::class,
             MockedAddOrderShipmentTrackingModule::class,
-            MockedAddOrderTrackingProviderListModule::class))
+            MockedAddOrderTrackingProviderListModule::class,
+            MockedReviewListModule::class,
+            MockedReviewDetailModule::class,
             MockedViewModelModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 

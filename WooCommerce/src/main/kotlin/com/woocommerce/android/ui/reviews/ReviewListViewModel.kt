@@ -37,7 +37,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @OpenClassOnDebug
-final class ReviewListViewModel @Inject constructor(
+class ReviewListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
     private val reviewRepository: ReviewListRepository,
     private val networkStatus: NetworkStatus,
