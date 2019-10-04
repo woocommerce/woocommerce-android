@@ -166,7 +166,12 @@ class ReviewDetailFragment : BaseFragment() {
             refreshProductImage(product.remoteProductId)
         }
 
-        review_rating_bar.rating = review.rating.toFloat()
+        if (review.rating > 0) {
+            review_rating_bar.rating = review.rating.toFloat()
+            review_rating_bar.visibility = View.VISIBLE
+        } else {
+            review_rating_bar.visibility = View.GONE
+        }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val stars = review_rating_bar.progressDrawable as? LayerDrawable
