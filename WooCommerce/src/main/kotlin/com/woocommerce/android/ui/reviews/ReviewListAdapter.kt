@@ -346,13 +346,15 @@ class ReviewListAdapter(
             itemHolder.icon.setImageResource(R.drawable.ic_comment)
             itemHolder.desc.maxLines = 2
 
-            review.rating.let {
-                itemHolder.rating.rating = it.toFloat()
+            if (review.rating > 0) {
+                itemHolder.rating.rating = review.rating.toFloat()
                 itemHolder.rating.visibility = View.VISIBLE
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     val stars = itemHolder.rating.progressDrawable as? LayerDrawable
                     stars?.getDrawable(2)?.setColorFilter(starTintColor, PorterDuff.Mode.SRC_ATOP)
                 }
+            } else {
+                itemHolder.rating.visibility = View.GONE
             }
 
             itemHolder.title.text = context.getString(
