@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-22 00:54:03+0000
+Translation-Revision-Date: 2019-10-03 02:54:44+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">WooCommerce Admin プラグインで利用可能な\n新しい統計機能をお試しください</string>
+    <string name="settings_enable_v4_stats_title">強化された統計</string>
+    <string name="beta_features">ベータ版の機能</string>
+    <string name="order_begin_fulfillment">フルフィルメントを開始</string>
+    <string name="orderdetail_net">純額</string>
+    <string name="orderdetail_payment_paid_by_customer">顧客から支払われた金額</string>
+    <string name="orderdetail_payment_summary_onhold">%s による決済待ち</string>
+    <string name="orderdetail_payment_summary_completed">%2$s により %1$s</string>
+    <string name="my_store_stats_availability_message">WooCommerce Admin プラグインでストアに強化された統計機能を提供開始します</string>
+    <string name="my_store_stats_availability_title">強化された統計機能をお試しください</string>
+    <string name="my_store_stats_reverted_message">WooCommerce Admin プラグインが見つからないため、\n従来の統計機能に戻しました</string>
+    <string name="dashboard_state_no_data">この期間には収益がありません</string>
+    <string name="no_thanks">結構です</string>
+    <string name="try_it_now">今すぐお試しください</string>
+    <string name="products_total">商品の合計</string>
+    <string name="order_total">注文合計</string>
+    <string name="dashboard_stats_todays_stats">本日の統計情報</string>
+    <string name="login_sign_in">サインイン</string>
+    <string name="login_jetpack_installed_sign_in">Jetpack はインストール済みですか ?%1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Jetpack でログイン試行中…</string>
+    <string name="login_refresh_app_continue">続行するにはアプリを再読み込みします</string>
+    <string name="login_not_connected_jetpack">%1$s にこのアプリを使用するには、Jetpack プラグインを設定し、このアカウントと連携する必要があります。\n\n設定が完了したら、%2$s</string>
+    <string name="login_try_another_store">ほかのストアでお試しください</string>
+    <string name="database_downgraded">データベースのダウングレードに伴い、テーブルを再作成し、ストアを読み込んでいます</string>
+    <string name="loading_stores">ストアを読み込んでいます</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">プロバイダーが見つかりません</string>
     <string name="login_invalid_site_url">ウェブサイトの完全なアドレス (例 : example.com) を入力してください。</string>
     <string name="reviews_empty_message">まだレビューがありません。</string>
@@ -390,9 +415,11 @@ Language: ja_JP
     <string name="waiting_for_customers">顧客待ち</string>
     <string name="share_store_dialog_title">ストアの URL を共有します</string>
     <string name="share_store_button">ストアを共有</string>
+    <string name="wc_mark_all_read_success">すべての既読レビュー</string>
     <string name="login_update_required_title">ストアを WooCommerce 3.5 に更新</string>
     <string name="login_verifying_site_error">%s に接続できません</string>
     <string name="dismiss">非表示にする</string>
+    <string name="wc_mark_all_read_error">すべてのレビューが既読になるエラー</string>
     <string name="wc_mark_all_read">すべてを既読にする</string>
     <string name="orderdetail_message_customer">メッセージ</string>
     <string name="orderdetail_call_customer">通話</string>
@@ -614,10 +641,7 @@ Language: ja_JP
     <string name="orderdetail_customer_image_contentdesc">顧客プロフィール画像</string>
     <string name="orderdetail_customer_provided_note">顧客提供メモ</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">支払い - 返金済み</string>
     <string name="orderdetail_refunded">返金済み</string>
-    <string name="orderdetail_payment_summary_onhold">%s 待ちの支払い</string>
-    <string name="orderdetail_payment_summary_completed">%1$s の支払いを %2$s から受領しました</string>
     <string name="orderdetail_product_qty">数量</string>
     <string name="orderdetail_product">商品</string>
     <string name="orderdetail_product_image_contentdesc">商品画像</string>
@@ -656,7 +680,6 @@ Language: ja_JP
     <string name="dashboard_stats_updated_now">さっき更新</string>
     <string name="dashboard_stats_error_content_description">エラー画像</string>
     <string name="dashboard_stats_error">データを取得する際にエラーが発生しました</string>
-    <string name="dashboard_state_no_data">使用可能なデータがありません</string>
     <string name="dashboard_stats_revenue">収益</string>
     <string name="dashboard_stats_orders">注文</string>
     <string name="dashboard_stats_visitors">訪問者</string>
@@ -674,6 +697,7 @@ Language: ja_JP
     <string name="login_prologue_banner">注文を管理し、売り上げをトラッキングし、ストアのアクティビティをリアルタイムのアラートでモニターします。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
     <string name="already_logged_in_wpcom">すでに WordPress.com アカウントにログインしています。別のアカウントに結び付いている WordPress.com サイトを追加することはできません。</string>
     <string name="cant_open_url">リンクを開けません</string>
     <string name="error_no_sms_app">SMS アプリが見つかりませんでした</string>

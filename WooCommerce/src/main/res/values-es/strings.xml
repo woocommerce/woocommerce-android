@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-09-05 00:54:04+0000
+Translation-Revision-Date: 2019-09-25 00:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
@@ -399,9 +399,11 @@ Language: es
     <string name="waiting_for_customers">Esperando clientes</string>
     <string name="share_store_dialog_title">Comparte la URL de tu tienda</string>
     <string name="share_store_button">Compartir tienda</string>
+    <string name="wc_mark_all_read_success">Se han marcado todas las reseñas como leídas</string>
     <string name="login_update_required_title">Actualizar tienda a WooCommerce 3.5</string>
     <string name="login_verifying_site_error">No se puede conectar a %s</string>
     <string name="dismiss">Descartar </string>
+    <string name="wc_mark_all_read_error">No se han podido marcar todas las reseñas como leídas</string>
     <string name="wc_mark_all_read">Marcar todo como leído</string>
     <string name="orderdetail_message_customer">Enviar mensaje</string>
     <string name="orderdetail_call_customer">Llamar</string>
@@ -623,10 +625,7 @@ Language: es
     <string name="orderdetail_customer_image_contentdesc">Imagen de perfil del cliente</string>
     <string name="orderdetail_customer_provided_note">Nota proporcionada por el cliente</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">Pago: reembolsado</string>
     <string name="orderdetail_refunded">Reembolsado</string>
-    <string name="orderdetail_payment_summary_onhold">Pago en espera por %s</string>
-    <string name="orderdetail_payment_summary_completed">Se ha recibido el pago de %1$s a través de %2$s</string>
     <string name="orderdetail_product_qty">Cantidad</string>
     <string name="orderdetail_product">Producto</string>
     <string name="orderdetail_product_image_contentdesc">Imagen del producto</string>
@@ -665,7 +664,6 @@ Language: es
     <string name="dashboard_stats_updated_now">Se ha actualizado hace unos instantes.</string>
     <string name="dashboard_stats_error_content_description">Imagen de error</string>
     <string name="dashboard_stats_error">Se ha producido un error al obtener los datos</string>
-    <string name="dashboard_state_no_data">No hay datos disponibles.</string>
     <string name="dashboard_stats_revenue">Ingresos</string>
     <string name="dashboard_stats_orders">Pedidos</string>
     <string name="dashboard_stats_visitors">Visitantes</string>
@@ -683,6 +681,7 @@ Language: es
     <string name="login_prologue_banner">Gestiona pedidos, controla las ventas y supervisa la actividad de la tienda con alertas en tiempo real.</string>
     <string name="login_jetpack_required">Esta aplicación requiere que Jetpack esté conectado a tu tienda.</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">Introduce la dirección de la tienda de WooCommerce que quieres conectar.</string>
     <string name="already_logged_in_wpcom">Ya estás registrado en una cuenta de WordPress.com, no se puede agregar un sitio de WordPress.com a otra cuenta.</string>
     <string name="cant_open_url">No fue posible abrir el enlace</string>
     <string name="error_no_sms_app">No se ha encontrado ninguna aplicación de SMS.</string>

@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-09-04 00:54:04+0000
+Translation-Revision-Date: 2019-10-01 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">Probeer de nieuwe statistieken die beschikbaar zijn met de\nWooCommerce Admin-plugin</string>
+    <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
+    <string name="beta_features">Bèta-functies</string>
+    <string name="order_begin_fulfillment">Begin met leveren</string>
+    <string name="orderdetail_net">Netto</string>
+    <string name="orderdetail_payment_paid_by_customer">Betaald door klant</string>
+    <string name="orderdetail_payment_summary_onhold">Wachten op betaling via %s</string>
+    <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
+    <string name="my_store_stats_availability_message">We voeren verbeteringen aan statistieken voor winkels door, via de WooCommerce Admin-plugin</string>
+    <string name="my_store_stats_availability_title">Probeer onze verbeterde statistieken</string>
+    <string name="my_store_stats_reverted_message">We hebben de oude statistieken hersteld, want we\nkonden de WooCommerce Admin-plugin niet vinden</string>
+    <string name="dashboard_state_no_data">Geen omzet deze periode</string>
+    <string name="no_thanks">Nee, liever niet</string>
+    <string name="try_it_now">Probeer het nu</string>
+    <string name="products_total">Totaalaantal producten</string>
+    <string name="order_total">Totaalaantal bestellingen</string>
     <string name="dashboard_stats_todays_stats">Statistieken van vandaag</string>
     <string name="login_sign_in">Aanmelden</string>
     <string name="login_jetpack_installed_sign_in">Heb je Jetpack al? %1$s</string>
@@ -399,9 +415,11 @@ Language: nl
     <string name="waiting_for_customers">Wachten op klanten</string>
     <string name="share_store_dialog_title">Deel de URL van je winkel</string>
     <string name="share_store_button">Deel je winkel</string>
+    <string name="wc_mark_all_read_success">Alle beoordelingen zijn gemarkeerd als gelezen</string>
     <string name="login_update_required_title">Winkel bijwerken naar WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Kan geen verbinding maken met %s</string>
     <string name="dismiss">Afbreken</string>
+    <string name="wc_mark_all_read_error">Fout bij alle beoordelingen als gelezen markeren</string>
     <string name="wc_mark_all_read">Alles als gelezen markeren</string>
     <string name="orderdetail_message_customer">Bericht</string>
     <string name="orderdetail_call_customer">Bellen</string>
@@ -623,10 +641,7 @@ Language: nl
     <string name="orderdetail_customer_image_contentdesc">Profielfoto klant</string>
     <string name="orderdetail_customer_provided_note">Bericht van klant</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">Betaling - Terugbetaald</string>
     <string name="orderdetail_refunded">Terugbetaald</string>
-    <string name="orderdetail_payment_summary_onhold">Betaling in de wacht voor %s</string>
-    <string name="orderdetail_payment_summary_completed">Betaling van %1$s ontvangen via %2$s</string>
     <string name="orderdetail_product_qty">Aantal</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_image_contentdesc">Productafbeelding</string>
@@ -665,7 +680,6 @@ Language: nl
     <string name="dashboard_stats_updated_now">Zojuist bijgewerkt</string>
     <string name="dashboard_stats_error_content_description">Foutafbeelding</string>
     <string name="dashboard_stats_error">Fout bij ophalen gegevens</string>
-    <string name="dashboard_state_no_data">Geen gegevens beschikbaar</string>
     <string name="dashboard_stats_revenue">Inkomsten</string>
     <string name="dashboard_stats_orders">Bestellingen</string>
     <string name="dashboard_stats_visitors">Bezoekers</string>
@@ -683,6 +697,7 @@ Language: nl
     <string name="login_prologue_banner">Beheer bestellingen, houd de verkoop bij en bewaak de winkelactiviteit met waarschuwingen in real time.</string>
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">Voer het adres van de WooCommerce-winkel die je wilt koppelen in.</string>
     <string name="already_logged_in_wpcom">Je bent al aangemeld bij een WordPress.com-account. Je kunt geen WordPress.com-site toevoegen die is gekoppeld aan een ander account.</string>
     <string name="cant_open_url">De link kan niet worden geopend</string>
     <string name="error_no_sms_app">Er is geen app voor sms gevonden</string>
