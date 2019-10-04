@@ -1,112 +1,90 @@
 <ar>
-2.6:
-- أليس لديك حساب Jetpack؟ يمكنك الآن تسجيل الدخول إلى موقعك أثناء تجاوز شاشة Jetpack الضرورية. (ومع ذلك، فأنتَ تفقد بعض الميزات الفعَّالة — جرِّب Jetpack!)
-- في بعض الأحيان، سيواجه بعضكم الذين لديهم موقع متصل بـ Jetpack مشكلات أثناء تسجيل الدخول. هذا خطأ لن تواجهه بعد الآن.
-- أصلحنا الكيفية التي تظهر بها إحصاءاتك في "متجري" قبل تلقي طلبك الأول.
-- ستواجه مجموعة صغيرة من بينكم من حين إلى آخر أخطاء غير متوقعة؛ إذا حدث ذلك معك، فلدينا أخبار سارة: لن تواجه هذه الأخطاء بعد الآن.
+2.7:
+- ثمَّة صفحة إحصاءات جديدة تمامًا (مع مزيد من التحليلات الدقيقة) تخص أولئك الذين يستخدمون إضافة مسؤول WooCommerce! يمكنك الاشتراك لاستخدامها من صفحة الإعدادات.
+- مَن لا يحب تجربة أكثر بساطة؟ إذا قمت بتعطيل وحدة الإحصاءات على موقعك، فسنخفي قسم إحصاءات الزائر في صفحة متجري.
+- استمتع بقسمي معلومات العميل والسداد اللذين أعيد تصميمهما (وأكثر قابلية للقراءة) في عرض تفاصيل الطلب.
 </ar>
 <de-DE>
-2.6:
-- Du hast kein Jetpack-Konto? Du kannst dich jetzt bei deiner Website anmelden und dabei den Bildschirm umgehen, dass Jetpack erforderlich ist. (Allerdings verpasst du dann einige leistungsstarke Features – probiere Jetpack einfach einmal aus!)
-- Bei einigen von euch, die über eine mit Jetpack verbundene Website verfügen, traten manchmal Probleme beim Anmelden auf. Dieser Fehler wurde behoben.
-- Wir haben die Darstellung der Mein Shop-Statistiken korrigiert, bevor du deine erste Bestellung erhältst.
-- Bei einigen wenigen von euch ist die Website gelegentlich abgestürzt. Wenn du dazu zählst, haben wir gute Nachrichten: Das wird nicht mehr vorkommen.
+2.7:
+- Es gibt eine brandneue Statistikseite mit noch detaillierteren Analysen für alle, die das WooCommerce Admin-Plugin verwenden! Du kannst sie über die Seite mit den Einstellungen verwenden.
+- Wer möchte eine Seite nicht optimal nutzen können? Wenn du das Statistikmodul auf deiner Website deaktiviert hast, blenden wir den Abschnitt mit den Besucherstatistiken auf deiner Seite „Mein Shop“ aus.
+- Der Bereich mit den Kundeninformationen und den Zahlungsdetails in der Ansicht mit den Auftragsdetails wurde neu entworfen und ist jetzt besser lesbar.
 </de-DE>
-<es-ES>
-2.6:
-- ¿No tienes una cuenta de Jetpack? Ahora puedes iniciar sesión en tu sitio sin pasar por la pantalla obligatoria de Jetpack. Dicho esto, te estás perdiendo algunas funciones interesantes: ¡prueba Jetpack!
-- A veces, algunos de los que tenéis un sitio conectado a Jetpack teníais problemas al acceder. Ya no os encontraréis con este error.
-- Solucionamos el aspecto que tienen las estadísticas de Mi tienda antes de que recibas el primer pedido.
-- En ocasiones, un reducido grupo teníais fallos inesperados; si es tu caso, buenas noticias: ya no los tendrás.
-</es-ES>
 <fr-FR>
-2.6 :
-- Vous n'avez pas de compte Jetpack ? Vous pouvez désormais vous connecter à votre site en contournant l'écran nécessitant Jetpack. (Cela signifie que vous passez à côté de puissantes fonctionnalités. Donnez une chance à Jetpack !)
-- Les utilisateurs possédant un site connecté à Jetpack rencontraient parfois des problèmes de connexion. Ce bug a été corrigé.
-- Nous avons résolu les problèmes d'affichage des statistiques Ma boutique avant la réception de votre première commande.
-- Quelques utilisateurs étaient parfois confrontés à des défaillances inattendues. Ce problème a été résolu. Si vous étiez concerné, vous ne rencontrerez plus ce problème.
+2.7 :
+- Une nouvelle page de statistiques (proposant des analyses plus approfondies) est disponible pour les utilisateurs de l'extension d'administration WooCommerce ! Vous pouvez vous inscrire afin de l'utiliser sur la page Paramètres.
+- Qui n'apprécie pas de profiter d'une expérience plus rationalisée ? Si vous avez désactivé le module de statistiques sur votre site, nous masquerons la section des statistiques détaillées sur vos visiteurs sur votre page Ma boutique.
+- Profitez de sections Informations sur le client et Paiement repensées (et plus lisibles) dans les vues des détails de la commande.
 </fr-FR>
 <iw-IL>
-2.6:
-אין לך חשבון ב-Jetpack? כעת אפשר להתחבר לאתר שלך ולדלג על המסך שמחייב חשבון ב-Jetpack. (אבל חבל לפספס את התכונות העוצמתיות של השירות – אנחנו ממליצים לנסות את Jetpack!)
-- חלק מהמשתמשים שברשותם אתר עם חיבור ל-Jetpack נתקלו בבעיות בעת הכניסה. טיפלנו בבאג הזה והוא לא יופיע יותר.
-- תיקנו את התצוגה של הנתונים הסטטיסטיים באזור 'החנות שלי' לפני קבלת ההזמנה הראשונה.
-- קבוצה קטנה של משתמשים נתקלה לפעמים בקריסות לא צפויות. אם התופעה הזאת התרחשה אצלך, יש לנו חדשות טובות: הבעיות האלו לא יקרו עוד.
+2.7:
+יש עמוד חדש לנתונים הסטטיסטיים (עם ניתוחים פרטניים נוספים) למשתמשים בתוסף הניהול של WooCommerce! אפשר להתחבר ולהשתמש בו מעמוד ההגדרות.
+- מי לא אוהב חוויה יעילה יותר? אם השבתת בעבר את מודול הנתונים הסטטיסטיים באתר שלך, אנחנו נסתיר את המקטע של הנתונים הסטטיסטיים של האורחים בעמוד "החנות שלי".
+- אפשר ליהנות ממקטעים מעוצבים מחדש (וקריאים יותר) של פרטי הלקוח ותשלומים בתצוגה של פרטי ההזמנה.
 </iw-IL>
 <id>
-2.6:
-- Belum punya akun Jetpack? Sekarang Anda bisa login ke situs dengan melewati layar wajib Jetpack. (Itu berarti, Anda melewatkan beberapa fitur hebat — coba Jetpack!)
-- Beberapa dari Anda yang mempunyai situs terkoneksi Jetpack terkadang mengalami masalah saat login. Itu adalah bug yang tidak akan Anda temui lagi.
-- Kami telah memperbaiki tampilan statistik Toko Saya sebelum Anda menerima pesanan pertama.
-- Beberapa orang terkadang harus berurusan dengan masalah crash, jika Anda termasuk salah satu yang pernah mengalaminya, ada kabar baik: Anda tidak akan mengalaminya lagi.
+2.7:
+- Ada halaman statistik baru (dengan analitik yang lebih mendetail) untuk Anda yang menggunakan plugin Admin WooCommerce! Anda dapat memilih untuk menggunakannya dari halaman Pengaturan.
+- Siapa yang tidak suka tampilan yang lebih simpel? Jika Anda telah menonaktifkan modul statistik di situs, kami akan menyembunyikan bagian statistik pengunjung di halaman Toko Saya.
+- Nikmati bagian Informasi Pelanggan dan Pembayaran dengan desain baru (dan lebih mudah dibaca) dalam tampilan detail pesanan.
 </id>
 <it-IT>
-2.6:
-- Non hai un account Jetpack? Ora puoi accedere al sito pur aggirando la schermata richiesta da Jetpack. (Però ti stai perdendo alcune potenti funzionalità: dai una chance a Jetpack!)
-- Alcuni utenti con un sito connesso a Jetpack a volte riscontravano problemi durante l'accesso: bug risolto.
-- Abbiamo corretto la modalità di visualizzazione delle statistiche del negozio prima della ricezione del primo ordine.
-- Occasionalmente si verificavano arresti imprevisti per alcuni utenti: problema risolto.
+2.7:
+- Nuova pagina delle statistiche (con analisi più granulari) per coloro che usano il plugin WooCommerce Admin. Puoi decidere di usarla dalla pagina Impostazioni.
+- A chi non piace un'esperienza più semplificata? Se hai disabilitato il modulo delle statistiche sul tuo sito, nasconderemo la sezione delle statistiche sui visitatori nella pagina Il mio negozio.
+- Goditi le sezioni Informazioni cliente e Pagamento riprogettate (e più leggibili) nella schermata dei dettagli dell'ordine.
 </it-IT>
+<ja-JP>
+2.7:
+- WooCommerce Admin プラグインで、より詳細な分析が可能な新しい統計ページを利用できるようになりました。「設定」ページから選択して、これを使用できます。
+- ユーザーエクスペリエンスの改善を行いました。サイトで統計モジュールを無効にすると、「自分のストア」ページで訪問者の統計セクションが非表示になるようにしました。
+- 注文の詳細画面の顧客情報と支払いのセクションのデザインがリニューアルされ、見やすくなりました。
+</ja-JP>
 <ko-KR>
-2.6:
-- 아직 젯팩 계정이 없나요? 이제 젯팩 필수 화면을 무시하고 사이트에 로그인할 수 있습니다. (그래도 몇 가지 강력한 기능이 빠져있으니 젯팩을 사용해 보세요!)
-- 젯팩 연결 사이트를 보유한 일부 사용자는 경우에 따라 로그인할 때 문제가 발생할 수 있습니다. 이제 더 이상 이 버그가 발생하지 않습니다.
-- 첫 주문을 받기 전에 내 스토어 통계가 표시되는 방식을 수정했습니다.
-- 가끔 소규모 그룹에서 예기치 않는 충돌이 발생합니다. 이 경우에 해당한다면 좋은 소식을 전해드립니다. 더 이상 이 문제가 발생하지 않습니다.
+2.7:
+- WooCommerce 관리자 플러그인을 사용하는 사람들을 위한 새로운 통계 페이지(더 세분화된 분석 기능 포함)가 출시되었습니다! 설정 페이지에서 옵트인할 수 있습니다.
+- 누구나 간편한 환경을 선호합니다. 사이트에서 통계 모듈을 비활성화한 경우 내 스토어 페이지에서 방문자 통계 섹션이 숨겨집니다.
+- 주문 세부정보 보기에서 새롭게 디자인되어 가독성이 높아진 고객 정보 및 결제 섹션을 마음껏 이용해 보세요.
 </ko-KR>
 <nl-NL>
-2.6:
-- Heb je geen Jetpack-account? Je kunt nu inloggen op je site en het Jetpack-scherm vermijden. (Je mist dan wel een aantal krachtige functies: probeer Jetpack eens!)
-- Sommige gebruikers met een Jetpack-site ondervinden soms inlogproblemen. Dat probleem is nu opgelost.
-- We hebben de weergave van statistieken voor Mijn winkel nu aangepast wanneer je nog geen bestelling hebt ontvangen.
-- Sommigen van jullie ervaarden soms onverwachte crashes. Als jij een van die personen bent, hebben we goed nieuws: je zult ze vanaf nu niet meer ervaren.
+2.7:
+- Voor degenen die de WooCommerce Admin-plugin gebruiken, is er nu een gloednieuwe statistiekenpagina (met grondigere analyse) beschikbaar! Je kunt je hiervoor aanmelden via de pagina Instellingen.
+- Wie houdt er nou niet van een meer gestroomlijnde ervaring? Als je de statistiekenmodule van je site hebt uitgeschakeld, verbergen wij het gedeelte met bezoekersstatistieken van je pagina Mijn winkel.
+- Geniet van de vernieuwde (en beter leesbare) gedeelten Klantgegevens en Betalingen in de het overzicht van bestelgegevens.
 </nl-NL>
 <pt-BR>
-2.6:
-- Não tem uma conta no Jetpack? Agora é possível fazer login no seu site ao ignorar a tela que solicita o Jetpack. (Porém, você está perdendo funcionalidades incríveis sem o Jetpack. Experimente usá-lo!)
-- Algumas vezes, aqueles que têm um site conectado ao Jetpack encontravam problemas ao fazer o login. Isso era causado por um bug e já foi consertado.
-- Corrigimos a aparência das estatísticas da Minha loja antes de você receber seu primeiro pedido.
-- Um pequeno grupo de usuários tinha que lidar com travamentos inesperados de vez em quando. Se isso acontecia com você, temos boas notícias: não voltará a se repetir.
+2.7:
+- Há uma nova página de estatísticas com análises mais granulares para quem usa o plugin WooCommerce Admin! Ative-a nas Configurações.
+- Quem não gosta de uma experiência simples? Se você desativou o módulo de estatísticas no seu site, a seção para visitantes será ocultada da página Minha loja.
+- Aproveite as seções replanejadas Pagamento e Informações do cliente na exibição de detalhes de pedido.
 </pt-BR>
 <ru-RU>
-2.6:
-- Нет учетной записи Jetpack? Теперь вы можете войти на свой сайт в обход экрана с требованием установить Jetpack. (Однако вы упускаете возможность использовать некоторые мощные функции — попробуйте Jetpack!)
-- Некоторые пользователи, у которых есть сайт с подключенным Jetpack, иногда не могли войти на сайт. С этой ошибкой вы больше не столкнетесь.
-- Мы исправили отображение статистики магазина до получения первого заказа.
-- Отдельные пользователи могли сталкиваться с неожиданным обрушением сайта. Если вы из их числа, то у нас хорошие новости: такого больше не случится.
+Версия 2.7
+– Те, кто использует плагин администратора WooCommerce, оценят новую страницу статистики, содержащую более подробные аналитические сведения. Чтобы использовать ее, выберите нужный параметр на странице "Настройки".
+– Вы согласны, что во всем должен быть порядок? Если вы отключили модуль статистики на сайте, на странице "Мой магазин" не будет отображаться раздел статистики посещений.
+– Оцените удобные обновленные разделы "Информация о заказчиках" и "Платежи" на экране сведений о заказе.
 </ru-RU>
 <sv-SE>
-2.6:
-- Har du inget Jetpack-konto? Nu kan du logga in på din webbplats och hoppa över skärmen som anger att Jetpack krävs. (Med detta sagt, du kommer att gå miste om kraftfulla funktioner – varför inte testa Jetpack!)
-- Det är möjligt att vissa användare som har en webbplats som är ansluten till Jetpack har stött på problem i samband med inloggningen. Detta är en bugg som inte längre kommer att förekomma.
-- Vi har åtgärdat hur statistiken för Min butik ser ut innan du tar emot din första beställning.
-- Ett fåtal av er upplevde ibland oväntade kraschar. Om du var en av dessa har vi goda nyheter: de kommer inte längre att hända.
+2.7:
+– Det finns en helt ny statistiksida (med mer detaljerade analyser) för dem som använder WooCommerce adminplugin-programmet! Du kan välja att använda det från sidan Inställningar.
+– Vem vill inte ha en mer effektiv upplevelse? Om du har inaktiverat statistikmodulen på din webbplats döljer vi avsnittet med besöksstatistik på sidan Min butik.
+– Njut av omdesignade (och med läsvänliga) avsnitt för kundinformation och betalning i vyn med orderinformation.
 </sv-SE>
 <tr-TR>
-2.6:
-- Jetpack hesabınız mı yok? Artık Jetpack zorunlu ekranını atlayarak sitenizde oturum açabilirsiniz. (Bununla birlikte, bazı önemli özellikleri kaçırıyorsunuz; Jetpack'i deneyin!)
-- Jetpack’e bağlı bir sitesi bulunmayan bazı müşterilerimiz oturum açarken sorun yaşayabilir. Bu, artık karşılaşmayacağınız bir hata.
-- Mağazam istatistiklerinizin ilk siparişinizi almadan önceki görünümünü düzelttik.
-- Küçük bir grup müşterimiz zaman zaman beklenmedik çökmelerle karşılaşıyor. Bu durum sizi tarif ediyorsa iyi haberlerimiz var: bunları artık yaşamayacaksınız.
+2.7:
+- WooCommerce Yönetici eklentisini kullananlar için yepyeni bir istatistik sayfası oluşturuldu (daha ayrıntılı analiz içeriyor)! Ayarlar sayfasından kullanmayı seçebilirsiniz.
+- Daha düzenli bir deneyime kim hayır diyebilir? Sitenizde istatistik modülünü devre dışı bıraktıysanız, Mağazam sayfanızdaki ziyaretçi istatistikleri bölümünü gizleriz.
+- Sipariş ayrıntıları görünümünde, yeniden tasarladığımız (ve daha okunabilir özellikteki) Müşteri Bilgileri ve Ödeme bölümlerinin keyfini çıkarın.
 </tr-TR>
-<zh-CN>
-2.6：
-- 还没有 Jetpack 帐户？现在，您可以绕过需要使用 Jetpack 的屏幕登录到您的站点。（也就是说，您会错过很多强大的功能 - 试试 Jetpack 吧！）
-- 有些将其站点连接至 Jetpack 的用户可能会在登录时遇到问题。此问题现已得到解决。
-- 我们修正了您收到第一个订单之前，“我的商店”统计信息的显示方式。
-- 一小部分用户偶尔会遇到意外崩溃的问题；如果您也遇到过，那么好消息来了：您再也不会遇到这些问题了。
-</zh-CN>
 <zh-TW>
-2.6：
-- 還沒有 Jetpack 帳號？現在你可以繞過需要 Jetpack 帳號的畫面登入網站。(話雖然這麼說，但有些強大的功能卻用不到；給 Jetpack 一個機會吧！)
-- 有些使用者的網站已連結 Jetpack，登入時偶爾會遇到問題。這個問題你永遠不會再遇到了。
-- 在你收到第一筆訂單之前，「我的商店」統計資料的顯示問題就已獲得修復。
-- 你們之中有一小群人偶爾會遇到意外的當機事件；如果你就是這一小群人之一，告訴你一個好消息：你永遠不會再遇到這個問題了。
+2.7：
+- 我們已為 WooCommerce 管理員外掛程式提供全新的統計資料頁面 (包含更多細分分析)！從「設定」頁面即可選用此功能。
+- 誰不喜歡更精簡的使用體驗？如果你停用網站的統計資料模組，我們會在「我的商店」頁面中隱藏訪客統計資料區段。
+- 盡情使用訂單詳細資訊檢視畫面中，經過重新設計的「顧客資訊」和「付款」區段。
 </zh-TW>
 <en-US>
-2.6:
-- Don’t have a Jetpack account? Now you can log in to your site while bypassing the Jetpack-required screen. (That said, you’re missing out on some powerful features — give Jetpack a try!)
-- Some of you who do have a Jetpack-connected site would sometimes encounter issues while logging in. That’s a bug you’ll no longer run into.
-- We fixed the way your My Store stats look before you receive your first order.
-- A small group among you would occasionally deal with unexpected crashes; if that sounds like you, good news: you’ll no longer experience them.
+2.7:
+- There’s a brand-new stats page (with more granular analytics) for those of you who use the WooCommerce Admin plugin! You can opt in to use it from the Settings page.
+- Who doesn’t like a more streamlined experience? If you’ve disabled the stats module on your site, we’ll hide the visitor stats section on your My Store page.
+- Enjoy a redesigned (and more readable) Customer Information and Payment sections in the order detail view.
 /<en-US>
