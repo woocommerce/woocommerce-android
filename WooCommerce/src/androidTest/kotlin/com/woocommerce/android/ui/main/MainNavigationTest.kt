@@ -23,7 +23,6 @@ import com.woocommerce.android.ui.TestBase
 import org.hamcrest.Matchers.equalToIgnoringCase
 import org.junit.Assert.fail
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -97,11 +96,13 @@ class MainNavigationTest : TestBase() {
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.orders)))))
     }
 
-    @Ignore("Add dependency injection for reviews")
     @Test
     fun reviewsMenuOptionDisplaysReviewsView() {
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
+
+        // add mock data to the reviews list screen
+        activityTestRule.setReviewListWithMockData()
 
         // Select the reviews bottom bar option
         onView(withId(R.id.reviews)).perform(click())
@@ -109,6 +110,11 @@ class MainNavigationTest : TestBase() {
         // Verify the toolbar title has changed to Reviews
         onView(withId(R.id.toolbar)).check(matches(
                 WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.review_notifications)))))
+
+        // Verify the toolbar title has changed to 'Reviews'
+        onView(withId(R.id.toolbar)).check(matches(
+                WCMatchers.withToolbarTitle(equalToIgnoringCase(
+                        appContext.getString(R.string.product_reviews)))))
     }
 
     @Test
