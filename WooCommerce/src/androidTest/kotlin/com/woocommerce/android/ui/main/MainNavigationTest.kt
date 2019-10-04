@@ -54,7 +54,7 @@ class MainNavigationTest : TestBase() {
         activityTestRule.setOrderListWithMockData()
 
         // Verify switching bottom bar tabs does not retain a back stack.
-        // Switch from the default dashboard tab to the reviews tab
+        // Switch from the default dashboard tab to the orders tab
         onView(withId(R.id.orders)).perform(click())
 
         // Clicking back should not switch back to the previous tab, it should
@@ -106,10 +106,6 @@ class MainNavigationTest : TestBase() {
 
         // Select the reviews bottom bar option
         onView(withId(R.id.reviews)).perform(click())
-
-        // Verify the toolbar title has changed to Reviews
-        onView(withId(R.id.toolbar)).check(matches(
-                WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.review_notifications)))))
 
         // Verify the toolbar title has changed to 'Reviews'
         onView(withId(R.id.toolbar)).check(matches(
