@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/wordpress-mobile/release-toolkit
-  revision: 640df0f4c9396af8fff56fdbcd9114ea74341ddd
-  branch: add/screenshot-tool-updates-for-woo
+  revision: c8007b8c11c282ea3e9f97f722d1971271959770
+  tag: 0.8.0
   specs:
-    fastlane-plugin-wpmreleasetoolkit (0.7.1)
+    fastlane-plugin-wpmreleasetoolkit (0.8.0)
       activesupport (~> 4)
       chroma (= 0.2.0)
       diffy (~> 3.3)
@@ -143,7 +143,7 @@ GEM
       mini_portile2 (~> 2.4.0)
     octokit (4.14.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    oj (3.9.1)
+    oj (3.9.2)
     optimist (3.0.0)
     options (2.3.2)
     os (1.0.1)
@@ -161,6 +161,7 @@ GEM
       declarative-option (< 0.2.0)
       uber (< 0.2.0)
     retriable (3.1.2)
+    rmagick (3.2.0)
     rouge (2.0.7)
     rubyzip (1.2.3)
     sawyer (0.8.2)
@@ -210,6 +211,7 @@ DEPENDENCIES
   fastlane (= 2.127.2)!
   fastlane-plugin-wpmreleasetoolkit!
   nokogiri!
+  rmagick (~> 3.2.0)
 
 BUNDLED WITH
    1.17.3
