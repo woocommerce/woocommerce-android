@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
+import kotlinx.coroutines.Dispatchers
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
@@ -22,15 +23,19 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.refunds.RefundMapper
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
 import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.tools.FormattableContentMapper
 
 @Module
@@ -87,10 +92,16 @@ abstract class MockedOrderDetailModule {
             val mockContext = mock<Context>()
             val mockSelectedSite = mock<SelectedSite>()
             val mockNetworkStatus = mock<NetworkStatus>()
+            val refundStore = WCRefundStore(
+                    RefundRestClient(mockDispatcher, JetpackTunnelGsonRequestBuilder(), mockContext, mock(), mock(), mock()),
+                    Dispatchers.Unconfined,
+                    RefundMapper()
+            )
 
             val mockedOrderDetailPresenter = spy(OrderDetailPresenter(
                     mockDispatcher,
                     WCOrderStore(mockDispatcher, OrderRestClient(mockContext, mockDispatcher, mock(), mock(), mock())),
+                    refundStore,
                     WCProductStore(
                             mockDispatcher,
                             ProductRestClient(mockContext, mockDispatcher, mock(), mock(), mock())
@@ -101,7 +112,9 @@ abstract class MockedOrderDetailModule {
                     NotificationStore(
                             mock(), mockContext,
                             NotificationRestClient(mockContext, mockDispatcher, mock(), mock(), mock()),
-                            NotificationSqlUtils(FormattableContentMapper(Gson())))
+                            NotificationSqlUtils(FormattableContentMapper(Gson()))),
+                    Dispatchers.Unconfined,
+                    Dispatchers.Unconfined
             ))
 
             /*
