@@ -93,7 +93,14 @@ abstract class MockedOrderDetailModule {
             val mockSelectedSite = mock<SelectedSite>()
             val mockNetworkStatus = mock<NetworkStatus>()
             val refundStore = WCRefundStore(
-                    RefundRestClient(mockDispatcher, JetpackTunnelGsonRequestBuilder(), mockContext, mock(), mock(), mock()),
+                    RefundRestClient(
+                            mockDispatcher,
+                            JetpackTunnelGsonRequestBuilder(),
+                            mockContext,
+                            mock(),
+                            mock(),
+                            mock()
+                    ),
                     Dispatchers.Unconfined,
                     RefundMapper()
             )
