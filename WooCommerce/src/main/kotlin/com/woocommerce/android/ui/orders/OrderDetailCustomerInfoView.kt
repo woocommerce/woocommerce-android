@@ -11,10 +11,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.PhoneUtils
-import com.woocommerce.android.util.collapse
-import com.woocommerce.android.util.expand
-import com.woocommerce.android.util.hide
-import com.woocommerce.android.util.show
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel

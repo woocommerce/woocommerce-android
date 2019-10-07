@@ -41,7 +41,8 @@ data class Product(
     val fileCount: Int,
     val downloadLimit: Int,
     val downloadExpiry: Int,
-    val purchaseNote: String
+    val purchaseNote: String,
+    val numVariations: Int
 )
 
 fun WCProductModel.toAppModel(): Product {
@@ -77,6 +78,13 @@ fun WCProductModel.toAppModel(): Product {
         this.getDownloadableFiles().size,
         this.downloadLimit,
         this.downloadExpiry,
-        this.purchaseNote
+        this.purchaseNote,
+        this.getNumVariations()
     )
 }
+
+/**
+ * Returns the product as a [ProductReviewProduct] for use with the product reviews feature.
+ */
+fun WCProductModel.toProductReviewProductModel() =
+        ProductReviewProduct(this.remoteProductId, this.name, this.permalink)

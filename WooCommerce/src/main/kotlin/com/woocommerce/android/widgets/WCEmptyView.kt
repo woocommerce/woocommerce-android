@@ -12,8 +12,8 @@ import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import com.woocommerce.android.util.hide
-import com.woocommerce.android.util.show
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.*
 import kotlinx.android.synthetic.main.wc_empty_view.view.*
 import org.wordpress.android.fluxc.model.SiteModel

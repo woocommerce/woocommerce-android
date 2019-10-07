@@ -59,7 +59,7 @@ class OrderDetailPaymentCardTest : TestBase() {
     @Test
     fun verifyPaymentCardViewPopulatedSuccessfully() {
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                orderStatus = "PROCESSING",
+                orderStatus = "processing",
                 paymentMethodTitle = "Credit Card (Stripe)",
                 discountTotal = "4",
                 datePaidString = "2018-02-02T16:11:13Z"
@@ -95,7 +95,7 @@ class OrderDetailPaymentCardTest : TestBase() {
         onView(withId(R.id.paymentInfo_paymentMsg)).check(matches(withText(appContext.getString(
                 R.string.orderdetail_payment_summary_completed,
                 "Feb 2, 2018",
-                mockWCOrderModel.paymentMethodTitle)
+                "Credit Card (Stripe)")
         )))
     }
 
@@ -244,7 +244,9 @@ class OrderDetailPaymentCardTest : TestBase() {
     @Test
     fun verifyPaymentCardViewWithRefundPopulatedSuccessfully() {
         val mockWCOrderModel = WcOrderTestUtils.generateOrderDetail(
-                refundTotal = 4.25
+                refundTotal = -4.25,
+                paymentMethodTitle = "Credit Card (Stripe)",
+                datePaidString = "2018-02-02T16:11:13Z"
         )
         activityTestRule.setOrderDetailWithMockData(mockWCOrderModel)
 
@@ -252,14 +254,14 @@ class OrderDetailPaymentCardTest : TestBase() {
         onView(withId(R.id.ordersList))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
 
-        // Since no refund is available, the section should be hidden:
+        // There are refunds, the section should be visible:
         onView(withId(R.id.paymentInfo_refundSection)).check(matches(ViewMatchers.withEffectiveVisibility(VISIBLE)))
 
         // verify that the refund total is displayed
         onView(withId(R.id.paymentInfo_refundTotal)).check(matches(withText("$4.25")))
 
         // verify that the new payment total is displayed
-        onView(withId(R.id.paymentInfo_newTotal)).check(matches(withText("$48.25")))
+        onView(withId(R.id.paymentInfo_newTotal)).check(matches(withText("$39.75")))
     }
 
     @Test

@@ -13,7 +13,6 @@
 
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
     <string name="login_notification_channel_id" translatable="false" content_override="true">@string/notification_channel_general_id</string>
-
     <!--
         General Strings
     -->
@@ -88,12 +87,10 @@
     <string name="error_no_phone_app">No phone app was found</string>
     <string name="error_no_email_app">No e-mail app was found</string>
     <string name="error_no_sms_app">No SMS app was found</string>
-
     <!--
         Login Library Overrides
     -->
     <string name="enter_site_address" content_override="true">Enter the address of the WooCommerce store you\'d like to connect.</string>
-
     <!--
         Login View
     -->
@@ -133,7 +130,6 @@
     <string name="login_need_help_finding_email">Need help finding the connected email?</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
     <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections &gt; Account connection%4$s</string>
-
     <!--
         Dashboard View
     -->
@@ -161,7 +157,6 @@
     <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
     <string name="dashboard_top_earners_total_spend">Total spend</string>
     <string name="dashboard_top_earners_total_orders">Total orders: %s</string>
-    <string name="dashboard_top_earners_content_description">Product image</string>
     <string name="dashboard_top_earners_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
@@ -173,7 +168,6 @@
     <string name="my_store_stats_reverted_message">We have reverted to the old stats as we\ncouldn\'t find the WooCommerce Admin Plugin</string>
     <string name="my_store_stats_availability_title">Try our improved stats</string>
     <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for  stores using the WooCommerce Admin plugin</string>
-
     <!--
         Order List View
     -->
@@ -209,6 +203,8 @@
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
     <string name="orderdetail_payment_paid_by_customer">Paid by customer</string>
     <string name="orderdetail_refunded">Refunded</string>
+    <string name="orderdetail_refund_detail">%1$s via %2$s – %3$s</string>
+    <string name="orderdetail_refund_view_details">View details</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
@@ -229,6 +225,7 @@
     <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
+    <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -249,6 +246,29 @@
     <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
+    <!--
+        Refunds
+    -->
+    <string name="order_refunds_available_for_refund">%s available for refund</string>
+    <string name="order_refunds_title_with_amount">Refund %s</string>
+    <string name="order_refunds_restocking_note">By refunding an amount, no items will be restocked</string>
+    <string name="order_refunds_next_button_title">Next</string>
+    <string name="order_refunds_refund">Refund</string>
+    <string name="order_refunds_refund_high_error">The refund is higher than the available amount</string>
+    <string name="order_refunds_refund_zero_error">The refund must be greater than 0</string>
+    <string name="order_refunds_previously_refunded">Previously refunded</string>
+    <string name="order_refunds_refund_amount">Refund amount</string>
+    <string name="order_refunds_reason">Reason for refund</string>
+    <string name="order_refunds_reason_hint">Reason for refund (optional)</string>
+    <string name="order_refunds_refund_via">Refund via</string>
+    <string name="order_refunds_refunded_via">Refunded via %s</string>
+    <string name="order_refunds_refund_details">Refund details</string>
+    <string name="order_refunds_manual_refund">Manual refund</string>
+    <string name="order_refunds_quote_image_description">Quotation icon</string>
+    <string name="order_refunds_manual_refund_progress_message">Your refund for %s is being processed. Please wait…</string>
+    <string name="order_refunds_manual_refund_successful">The refund was successfully submitted.</string>
+    <string name="order_refunds_manual_refund_error">Something went wrong with the refund. Please try again.</string>
+    <string name="order_refunds_refund_manual_refund_note">Currently, only manual refunds are supported. Complete the refund through your payment gateway\'s dashboard, or manually transfer the money to the customer.</string>
     <!--
         Add Order Note
     -->
@@ -302,15 +322,31 @@
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
     <!--
-        Notifications View
+        Product Review Detail
     -->
-    <string name="notifs_fetch_error">Error fetching notifications</string>
-    <string name="notifs_review_moderation_undo">Review marked as %1$s</string>
-    <string name="notifs_detail_loading_error">Error loading notification detail</string>
-
+    <string name="review_fetch_error">Error fetching product reviews</string>
+    <string name="review_single_fetch_error">Error fetching new product review</string>
+    <string name="wc_view_the_product_external">View the product</string>
+    <string name="wc_approve">Approve</string>
+    <string name="wc_approved">Approved</string>
+    <string name="wc_unapproved">Unapproved</string>
+    <string name="wc_spam">Spam</string>
+    <string name="wc_trash">Trash</string>
+    <string name="wc_load_review_error">Error loading product review detail</string>
+    <string name="wc_moderate_review_error">Error updating product review status</string>
+    <string name="wc_review_title">Review</string>
     <!--
-        Product detail
+        Product Reviews List
     -->
+    <string name="review_list_item_title">%1$s left a review on %2$s</string>
+    <string name="review_moderation_undo">Review marked as %1$s</string>
+    <string name="wc_mark_all_read">Mark all as read</string>
+    <string name="wc_mark_all_read_success">All reviews marked as read</string>
+    <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
+    <!--
+        Products
+    -->
+    <string name="product_image_content_description">Product image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>
@@ -340,8 +376,10 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
+    <string name="product_stock_count">%s in stock</string>
     <string name="product_backorders_no">Do not allow</string>
     <string name="product_backorders_yes">Allow</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
@@ -349,7 +387,9 @@
     <string name="product_name_external">Affiliate %s</string>
     <string name="product_name_grouped">Grouped %s</string>
     <string name="product_name_virtual">Virtual %s</string>
-
+    <string name="product_list_empty">No products yet</string>
+    <string name="product_list_empty_search">No matching products</string>
+    <string name="product_search_hint">Search products</string>
     <!--
         Empty list messages
     -->
@@ -358,7 +398,6 @@
     <string name="orders_empty_message_with_filter">No orders</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
     <string name="reviews_empty_message">No reviews yet!</string>
-
     <!--
         Settings
     -->
@@ -434,23 +473,6 @@
     <string name="about_url_text" translatable="false">automattic.com</string>
     <string name="about_version">Version %s</string>
     <string name="about_copyright" translatable="false">© %1$d Automattic, Inc</string>
-    <!--
-        Review Notification Detail
-    -->
-    <string name="wc_view_the_product_external">View the product</string>
-    <string name="wc_approve">Approve</string>
-    <string name="wc_approved">Approved</string>
-    <string name="wc_spam">Spam</string>
-    <string name="wc_trash">Trash</string>
-    <string name="wc_load_review_error">Error loading product review detail</string>
-    <string name="wc_moderate_review_error">Error updating product review status</string>
-    <string name="wc_review_title">Review</string>
-    <!--
-        Notifications List
-    -->
-    <string name="wc_mark_all_read">Mark all as read</string>
-    <string name="wc_mark_all_read_success">All reviews marked as read</string>
-    <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
     <!--
         Login Library Imported Strings
     -->
