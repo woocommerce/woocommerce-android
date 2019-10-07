@@ -193,8 +193,10 @@ class IssueRefundViewModel @Inject constructor(
                         AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
                                 AnalyticsTracker.KEY_ID to result.model?.id
                         ))
-                        
-                        noteRepository.createOrderNote(order.identifier, reason, true)
+
+                        if (reason.isNotBlank()) {
+                            noteRepository.createOrderNote(order.identifier, reason, true)
+                        }
 
                         _showSnackbarMessage.value = resourceProvider.getString(
                                 R.string.order_refunds_manual_refund_successful
