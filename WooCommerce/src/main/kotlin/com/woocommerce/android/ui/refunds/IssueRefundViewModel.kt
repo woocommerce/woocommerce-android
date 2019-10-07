@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.ui.orders.OrderNoteRepository
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
@@ -47,7 +48,8 @@ class IssueRefundViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val noteRepository: OrderNoteRepository
 ) : ScopedViewModel(mainDispatcher) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -174,6 +176,7 @@ class IssueRefundViewModel @Inject constructor(
                                 reason
                         )
                     }
+
                     val result = resultCall.await()
 
                     if (result.isError) {
@@ -190,6 +193,8 @@ class IssueRefundViewModel @Inject constructor(
                         AnalyticsTracker.track(Stat.REFUND_CREATE_SUCCESS, mapOf(
                                 AnalyticsTracker.KEY_ID to result.model?.id
                         ))
+                        
+                        noteRepository.createOrderNote(order.identifier, reason, true)
 
                         _showSnackbarMessage.value = resourceProvider.getString(
                                 R.string.order_refunds_manual_refund_successful
