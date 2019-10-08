@@ -1,24 +1,71 @@
 package com.woocommerce.android.media
 
+import android.content.Context
+import android.net.Uri
+import android.webkit.MimeTypeMap
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.util.helpers.MediaFile
+import org.wordpress.android.fluxc.store.MediaStore
+import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.MediaUtils
+import org.wordpress.android.util.UrlUtils
+import java.io.File
 
 object MediaUploadUtils {
-    fun mediaModelFromMediaFile(file: MediaFile): MediaModel {
-        val mediaModel = MediaModel()
-        mediaModel.fileName = file.fileName
-        mediaModel.filePath = file.filePath
-        mediaModel.fileExtension = org.wordpress.android.fluxc.utils.MediaUtils.getExtension(file.filePath)
-        mediaModel.mimeType = file.mimeType
-        mediaModel.thumbnailUrl = file.thumbnailURL
-        mediaModel.url = file.fileURL
-        mediaModel.title = file.title
-        mediaModel.description = file.description
-        mediaModel.caption = file.caption
-        mediaModel.mediaId = if (file.mediaId != null) java.lang.Long.valueOf(file.mediaId) else 0
-        mediaModel.id = file.id
-        mediaModel.uploadState = file.uploadState
-        mediaModel.localSiteId = Integer.valueOf(file.blogId)
-        return mediaModel
+    private fun mediaModelFromLocalUri(
+        context: Context,
+        localSiteId: Int,
+        uri: Uri,
+        mediaStore: MediaStore
+    ): MediaModel? {
+        val path = MediaUtils.getRealPathFromURI(context, uri)
+        val file = File(path)
+        if (!file.exists()) {
+            return null
+        }
+
+        val media = mediaStore.instantiateMediaModel()
+        var filename = org.wordpress.android.fluxc.utils.MediaUtils.getFileName(path)
+        var fileExtension: String? = org.wordpress.android.fluxc.utils.MediaUtils.getExtension(path)
+
+        var mimeType = UrlUtils.getUrlMimeType(uri.toString())
+        if (mimeType == null) {
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension)
+            if (mimeType == null) {
+                // Default to image jpeg
+                mimeType = "image/jpeg"
+            }
+        }
+
+        // If file extension is null, upload won't work on wordpress.com
+        if (fileExtension.isNullOrBlank()) {
+            fileExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+            filename += "." + fileExtension!!
+        }
+
+        media.fileName = filename
+        media.title = filename
+        media.filePath = path
+        media.localSiteId = localSiteId
+        media.fileExtension = fileExtension
+        media.mimeType = mimeType
+        media.uploadDate = DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000)
+
+        media.setUploadState(MediaModel.MediaUploadState.UPLOADING) // ??
+
+        return media
+    }
+
+    fun mediaModelFromLocalFilename(context: Context, localSiteId: Int, filename: String, mediaStore: MediaStore): MediaModel? {
+        val file = File(filename)
+        if (!file.exists()) {
+            return null
+        }
+
+        val uri = Uri.fromFile(file)
+        return mediaModelFromLocalUri(
+                context,
+                localSiteId,
+                uri,
+                mediaStore)
     }
 }
