@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-21 00:54:31+0000
+Translation-Revision-Date: 2019-10-03 00:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">體驗下列外掛程式提供的全新統計資料：\nWooCommerce 管理員外掛程式</string>
+    <string name="settings_enable_v4_stats_title">改善的統計資料</string>
+    <string name="beta_features">Beta 功能</string>
+    <string name="order_begin_fulfillment">開始履行</string>
+    <string name="orderdetail_net">淨額</string>
+    <string name="orderdetail_payment_paid_by_customer">顧客付款</string>
+    <string name="orderdetail_payment_summary_onhold">等待透過 %s 支付的款項</string>
+    <string name="orderdetail_payment_summary_completed">%1$s，付款方式：%2$s</string>
+    <string name="my_store_stats_availability_message">我們即將為使用 WooCommerce 管理員外掛程式的商店推出統計資料改善功能</string>
+    <string name="my_store_stats_availability_title">體驗我們改善的統計資料效能</string>
+    <string name="my_store_stats_reverted_message">我們已回復為舊的統計資料，因為我們\n找不到 WooCommerce 管理員外掛程式</string>
+    <string name="dashboard_state_no_data">此期間沒有收益</string>
+    <string name="no_thanks">不用了，謝謝</string>
+    <string name="try_it_now">立即試試</string>
+    <string name="products_total">產品總額</string>
+    <string name="order_total">訂單總額</string>
+    <string name="dashboard_stats_todays_stats">本日統計</string>
+    <string name="login_sign_in">登入</string>
+    <string name="login_jetpack_installed_sign_in">已經有 Jetpack 了？%1$s</string>
+    <string name="login_refresh_app_progress_jetpack">正在嘗試使用 Jetpack 登入…</string>
+    <string name="login_refresh_app_continue">重新整理應用程式以繼續使用</string>
+    <string name="login_not_connected_jetpack">若要將此應用程式用於 %1$s，你需要設定 Jetpack 外掛程式並連接到此帳戶。\n\n設定完成後，%2$s</string>
+    <string name="login_try_another_store">逛逛其他商店</string>
+    <string name="database_downgraded">資料庫降級，正在重新建立表格和載入商店</string>
+    <string name="loading_stores">載入商店</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">找不到提供者</string>
     <string name="login_invalid_site_url">請輸入完整的網站位址，例如 example.com。</string>
     <string name="reviews_empty_message">目前沒有評論！</string>
@@ -390,9 +415,11 @@ Language: zh_TW
     <string name="waiting_for_customers">等待客戶</string>
     <string name="share_store_dialog_title">分享商店 URL</string>
     <string name="share_store_button">分享你的商店</string>
+    <string name="wc_mark_all_read_success">已將所有評論標記為已讀</string>
     <string name="login_update_required_title">將商店更新至 WooCommerce 3.5</string>
     <string name="login_verifying_site_error">無法連線至 %s</string>
     <string name="dismiss">關閉</string>
+    <string name="wc_mark_all_read_error">將全部評論標記為已讀時發生錯誤</string>
     <string name="wc_mark_all_read">將全部標示為已讀</string>
     <string name="orderdetail_message_customer">訊息</string>
     <string name="orderdetail_call_customer">致電</string>
@@ -614,10 +641,7 @@ Language: zh_TW
     <string name="orderdetail_customer_image_contentdesc">客戶個人檔案圖片</string>
     <string name="orderdetail_customer_provided_note">顧客所提出的備註</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">付款 - 已退款</string>
     <string name="orderdetail_refunded">已退款</string>
-    <string name="orderdetail_payment_summary_onhold">付款正在等待 %s</string>
-    <string name="orderdetail_payment_summary_completed">%1$s 的款項已透過 %2$s 收到</string>
     <string name="orderdetail_product_qty">數量</string>
     <string name="orderdetail_product">產品</string>
     <string name="orderdetail_product_image_contentdesc">商品圖片</string>
@@ -656,7 +680,6 @@ Language: zh_TW
     <string name="dashboard_stats_updated_now">不久前已更新</string>
     <string name="dashboard_stats_error_content_description">錯誤圖片</string>
     <string name="dashboard_stats_error">擷取資料時發生錯誤</string>
-    <string name="dashboard_state_no_data">目前沒有資料</string>
     <string name="dashboard_stats_revenue">收益</string>
     <string name="dashboard_stats_orders">訂單</string>
     <string name="dashboard_stats_visitors">訪客</string>
@@ -674,6 +697,7 @@ Language: zh_TW
     <string name="login_prologue_banner">透過即時警示管理訂單、追蹤銷售狀況，並監控商店活動。</string>
     <string name="login_jetpack_required">此應用程式需要 Jetpack 才能連結至你的商店。</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">請輸入要連結的 WooCommerce 商店位址。</string>
     <string name="already_logged_in_wpcom">你已登入 WordPress.com 帳號，無法新增連結至其他帳號的 WordPress.com 網站。</string>
     <string name="cant_open_url">無法開啟連結</string>
     <string name="error_no_sms_app">找不到簡訊應用程式</string>

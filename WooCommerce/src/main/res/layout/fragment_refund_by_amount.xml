@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    style="@style/Woo.Card"
+    tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/issueRefund_refundAmountInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no">
+
+        <com.woocommerce.android.widgets.CurrencyEditText
+            android:id="@+id/issueRefund_refundAmount"
+            android:imeOptions="flagNoExtractUi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/issueRefund_txtAvailableForRefund"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/card_item_padding_intra_h"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/order_refunds_restocking_note"
+        />
+
+</LinearLayout>

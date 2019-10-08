@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-22 00:54:03+0000
+Translation-Revision-Date: 2019-10-02 02:54:38+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">WooCommerce 관리자 플러그인으로\n사용할 수 있는 새 통계를 확인해 보세요.</string>
+    <string name="settings_enable_v4_stats_title">향상된 통계</string>
+    <string name="beta_features">베타 기능</string>
+    <string name="order_begin_fulfillment">처리 시작</string>
+    <string name="orderdetail_net">최종 금액</string>
+    <string name="orderdetail_payment_paid_by_customer">고객 결제</string>
+    <string name="orderdetail_payment_summary_onhold">%s을(를) 통한 결제 대기 중</string>
+    <string name="orderdetail_payment_summary_completed">%2$s을(를) 통한 %1$s</string>
+    <string name="my_store_stats_availability_message">WooCommerce 관리자 플러그인을 사용하여 스토어 통계 개선을 점진적으로 실시합니다.</string>
+    <string name="my_store_stats_availability_title">향상된 통계를 사용해 보세요.</string>
+    <string name="my_store_stats_reverted_message">WooCommerce 관리자 플러그인을 찾을 수 없어\n이전 통계로 되돌렸습니다.</string>
+    <string name="dashboard_state_no_data">이 기간에 해당하는 수익이 없습니다.</string>
+    <string name="no_thanks">괜찮습니다.</string>
+    <string name="try_it_now">지금 사용해 보기</string>
+    <string name="products_total">제품 합계</string>
+    <string name="order_total">주문 총계</string>
+    <string name="dashboard_stats_todays_stats">오늘의 통계</string>
+    <string name="login_sign_in">로그인</string>
+    <string name="login_jetpack_installed_sign_in">이미 젯팩이 있나요? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">젯팩으로 로그인 시도 중…</string>
+    <string name="login_refresh_app_continue">앱을 새로 고친 후 계속</string>
+    <string name="login_not_connected_jetpack">%1$s에 대해 이 앱을 사용하려면 이 계정에 설정되고 연결된 젯팩 플러그인이 있어야 합니다. \n\n설정이 완료되면 %2$s</string>
+    <string name="login_try_another_store">다른 스토어 시도</string>
+    <string name="database_downgraded">데이터베이스 다운그레이드됨, 테이블 다시 생성 및 스토어 로드 중</string>
+    <string name="loading_stores">스토어 로드 중</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">공급자를 찾을 수 없음</string>
     <string name="login_invalid_site_url">example.com과 같은 완전한 웹사이트 주소를 입력하세요.</string>
     <string name="reviews_empty_message">아직 리뷰가 없습니다!</string>
@@ -390,9 +415,11 @@ Language: ko_KR
     <string name="waiting_for_customers">고객을 기다리는 중</string>
     <string name="share_store_dialog_title">스토어 URL 공유</string>
     <string name="share_store_button">스토어 공유</string>
+    <string name="wc_mark_all_read_success">모든 리뷰가 읽음으로 표시됨</string>
     <string name="login_update_required_title">스토어를 WooCommerce 3.5로 업데이트</string>
     <string name="login_verifying_site_error">%s에 연결할 수 없음</string>
     <string name="dismiss">무시</string>
+    <string name="wc_mark_all_read_error">모든 리뷰를 읽음으로 표시하는 중 오류가 발생했습니다.</string>
     <string name="wc_mark_all_read">모두 읽음으로 표시</string>
     <string name="orderdetail_message_customer">메시지</string>
     <string name="orderdetail_call_customer">전화</string>
@@ -614,10 +641,7 @@ Language: ko_KR
     <string name="orderdetail_customer_image_contentdesc">고객 프로필 이미지</string>
     <string name="orderdetail_customer_provided_note">고객이 남긴 메모</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">결제 - 환불됨</string>
     <string name="orderdetail_refunded">환불됨</string>
-    <string name="orderdetail_payment_summary_onhold">%s 대기 중인 결제</string>
-    <string name="orderdetail_payment_summary_completed">%2$s을(를) 통해 %1$s 결제 받음</string>
     <string name="orderdetail_product_qty">수량</string>
     <string name="orderdetail_product">상품</string>
     <string name="orderdetail_product_image_contentdesc">상품 이미지</string>
@@ -656,7 +680,6 @@ Language: ko_KR
     <string name="dashboard_stats_updated_now">방금 업데이트됨</string>
     <string name="dashboard_stats_error_content_description">오류 이미지</string>
     <string name="dashboard_stats_error">데이터를 가져오는 중 오류 발생</string>
-    <string name="dashboard_state_no_data">사용 가능한 데이터 없음</string>
     <string name="dashboard_stats_revenue">수입</string>
     <string name="dashboard_stats_orders">주문</string>
     <string name="dashboard_stats_visitors">방문자</string>
@@ -674,6 +697,7 @@ Language: ko_KR
     <string name="login_prologue_banner">실시간 알림을 통해 주문을 관리하고, 판매를 추적하고, 스토어 활동을 모니터링하세요.</string>
     <string name="login_jetpack_required">이 앱에서 회원님의 스토어에 연결하려면 젯팩이 있어야 합니다.</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">연결하려는 WooCommerce 스토어의 주소를 입력합니다.</string>
     <string name="already_logged_in_wpcom">이미 워드프레스닷컴 계정에 로그인되어 있으므로 다른 계정에 연결된 워드프레스닷컴 사이트를 추가할 수 없습니다.</string>
     <string name="cant_open_url">링크를 열 수 없습니다</string>
     <string name="error_no_sms_app">SMS 앱이 없음</string>

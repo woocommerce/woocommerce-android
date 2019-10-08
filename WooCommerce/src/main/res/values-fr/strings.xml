@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-21 00:54:30+0000
+Translation-Revision-Date: 2019-10-01 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">Essayez les nouvelles statistiques disponibles avec\nl\'extension d\'administration WooCommerce</string>
+    <string name="settings_enable_v4_stats_title">Statistiques améliorées</string>
+    <string name="beta_features">Fonctionnalités bêta</string>
+    <string name="order_begin_fulfillment">Commencer l\'exécution</string>
+    <string name="orderdetail_net">Net</string>
+    <string name="orderdetail_payment_paid_by_customer">Payée par le client</string>
+    <string name="orderdetail_payment_summary_onhold">Paiement en attente via %s</string>
+    <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
+    <string name="my_store_stats_availability_message">Nous déployons des améliorations afin d\'optimiser les statistiques des boutiques via l\'extension d\'administration WooCommerce</string>
+    <string name="my_store_stats_availability_title">Essayer nos statistiques améliorées</string>
+    <string name="my_store_stats_reverted_message">Nous sommes revenus aux anciennes statistiques car nous\nn\'avons pas pu trouver l\'extension d\'administration WooCommerce</string>
+    <string name="dashboard_state_no_data">Pas de revenus durant cette période</string>
+    <string name="no_thanks">Non merci</string>
+    <string name="try_it_now">Essayer maintenant</string>
+    <string name="products_total">Total des produits</string>
+    <string name="order_total">Total de la commande</string>
+    <string name="dashboard_stats_todays_stats">Statistiques du jour</string>
+    <string name="login_sign_in">Connexion</string>
+    <string name="login_jetpack_installed_sign_in">Vous avez déjà Jetpack ? %1$s</string>
+    <string name="login_refresh_app_progress_jetpack">Tentative de connexion avec Jetpack…</string>
+    <string name="login_refresh_app_continue">actualiser l\'application pour continuer</string>
+    <string name="login_not_connected_jetpack">Pour utiliser cette application pour %1$s, vous devez installer et connecter l\'extension Jetpack à ce compte. \n\nUne fois l\'installation effectuée, %2$s</string>
+    <string name="login_try_another_store">Essayer une autre boutique</string>
+    <string name="database_downgraded">Retour à une base de données inférieure, recréation des tables et chargement des boutiques</string>
+    <string name="loading_stores">Chargement des boutiques</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">Aucun fournisseur n\'a été trouvé</string>
     <string name="login_invalid_site_url">Veuillez entrer une adresse de site Web complète, telle que exemple.com.</string>
     <string name="reviews_empty_message">Pas encore d’avis !</string>
@@ -390,9 +415,11 @@ Language: fr
     <string name="waiting_for_customers">En attente des clients</string>
     <string name="share_store_dialog_title">Partager l\'URL de votre boutique</string>
     <string name="share_store_button">Partager votre boutique</string>
+    <string name="wc_mark_all_read_success">Tous les avis marqués comme lus</string>
     <string name="login_update_required_title">Mise à jour de la boutique vers WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Connexion à %s impossible</string>
     <string name="dismiss">Fermer</string>
+    <string name="wc_mark_all_read_error">Erreur lors du marquage de tous les avis comme étant lus</string>
     <string name="wc_mark_all_read">Tout marquer comme lu</string>
     <string name="orderdetail_message_customer">Message</string>
     <string name="orderdetail_call_customer">Appel</string>
@@ -613,10 +640,7 @@ Language: fr
     <string name="orderdetail_customer_image_contentdesc">Image de profil du client</string>
     <string name="orderdetail_customer_provided_note">Note fournie par le client</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">Paiement - Remboursé</string>
     <string name="orderdetail_refunded">Remboursé</string>
-    <string name="orderdetail_payment_summary_onhold">Paiement en attente pour %s</string>
-    <string name="orderdetail_payment_summary_completed">Paiement de %1$s reçu via %2$s</string>
     <string name="orderdetail_product_qty">QTÉ</string>
     <string name="orderdetail_product">Produit</string>
     <string name="orderdetail_product_image_contentdesc">Image produit</string>
@@ -655,7 +679,6 @@ Language: fr
     <string name="dashboard_stats_updated_now">Mises à jour il y a quelques instants</string>
     <string name="dashboard_stats_error_content_description">Image d’erreur</string>
     <string name="dashboard_stats_error">Erreur lors de l’extraction des données</string>
-    <string name="dashboard_state_no_data">Aucune donnée disponible</string>
     <string name="dashboard_stats_revenue">Revenu</string>
     <string name="dashboard_stats_orders">Commandes</string>
     <string name="dashboard_stats_visitors">Visiteurs</string>
@@ -673,6 +696,7 @@ Language: fr
     <string name="login_prologue_banner">Gérez les commandes, suivez l’évolution des ventes et surveillez l’activité de la boutique avec des alertes en temps réel.</string>
     <string name="login_jetpack_required">Cette application nécessite de connecter Jetpack à votre boutique.</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">Entrez l\'adresse de la boutique WooCommerce que vous aimeriez connecter.</string>
     <string name="already_logged_in_wpcom">Vous êtes déjà connecté à votre compte WordPress.com. Vous ne pouvez pas ajouter un site WordPress.com lié à un autre compte.</string>
     <string name="cant_open_url">Impossible d\'ouvrir le lien</string>
     <string name="error_no_sms_app">Application SMS introuvable</string>

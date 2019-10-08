@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-08-20 02:54:04+0000
+Translation-Revision-Date: 2019-09-25 00:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="dashboard_stats_todays_stats">今日统计</string>
+    <string name="login_sign_in">登录</string>
+    <string name="login_jetpack_installed_sign_in">已有 Jetpack 帐户？%1$s</string>
+    <string name="login_refresh_app_progress_jetpack">正在尝试使用 Jetpack 帐户登录…</string>
+    <string name="login_refresh_app_continue">刷新应用程序以继续操作</string>
+    <string name="login_not_connected_jetpack">要以 %1$s 的价格使用此应用程序，您需要安装 Jetpack 插件并连接至此帐户。\n\n设置完成后，%2$s</string>
+    <string name="login_try_another_store">尝试其他商店</string>
+    <string name="database_downgraded">数据库降级、正在重新创建表格及正在加载商店</string>
+    <string name="loading_stores">正在加载商店</string>
     <string name="order_shipment_tracking_provider_list_error_empty_list">未找到提供商</string>
     <string name="login_invalid_site_url">请输入完整网址（如 example.com）。</string>
     <string name="reviews_empty_message">尚无评论！</string>
@@ -390,9 +399,11 @@ Language: zh_CN
     <string name="waiting_for_customers">等待客户</string>
     <string name="share_store_dialog_title">共享您商店的 URL</string>
     <string name="share_store_button">共享您的商店</string>
+    <string name="wc_mark_all_read_success">所有评论均已标记为已读</string>
     <string name="login_update_required_title">将商店更新到 WooCommerce 3.5</string>
     <string name="login_verifying_site_error">无法连接 %s</string>
     <string name="dismiss">不再显示</string>
+    <string name="wc_mark_all_read_error">将所有评论标记为已读时出错</string>
     <string name="wc_mark_all_read">全部标为已读</string>
     <string name="orderdetail_message_customer">邮件</string>
     <string name="orderdetail_call_customer">致电</string>
@@ -614,10 +625,7 @@ Language: zh_CN
     <string name="orderdetail_customer_image_contentdesc">客户个人资料图片</string>
     <string name="orderdetail_customer_provided_note">客户提供的备注</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">付款 – 已退款</string>
     <string name="orderdetail_refunded">已退款</string>
-    <string name="orderdetail_payment_summary_onhold">订单已%s，正在等待付款</string>
-    <string name="orderdetail_payment_summary_completed">通过 %2$s 接收 %1$s 的付款</string>
     <string name="orderdetail_product_qty">数量</string>
     <string name="orderdetail_product">产品</string>
     <string name="orderdetail_product_image_contentdesc">产品图片</string>
@@ -656,7 +664,6 @@ Language: zh_CN
     <string name="dashboard_stats_updated_now">更新时间：片刻前</string>
     <string name="dashboard_stats_error_content_description">错误图片</string>
     <string name="dashboard_stats_error">抓取数据时出错</string>
-    <string name="dashboard_state_no_data">无可用数据</string>
     <string name="dashboard_stats_revenue">收益</string>
     <string name="dashboard_stats_orders">订单</string>
     <string name="dashboard_stats_visitors">访客</string>
@@ -674,6 +681,7 @@ Language: zh_CN
     <string name="login_prologue_banner">通过实时提醒管理订单、跟踪销售情况，以及监控商店活动。</string>
     <string name="login_jetpack_required">这款应用程序需要安装 Jetpack 才能关联您的商店。</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">输入您要关联的 WooCommerce 商店的地址。</string>
     <string name="already_logged_in_wpcom">您已登录 WordPress.com 帐户，不能添加被其他帐户绑定的 WordPress.com 站点。</string>
     <string name="cant_open_url">无法打开链接</string>
     <string name="error_no_sms_app">未找到任何短信应用程序</string>

@@ -1,0 +1,4 @@
+2.7:
+- Ada halaman statistik baru (dengan analitik yang lebih mendetail) untuk Anda yang menggunakan plugin Admin WooCommerce! Anda dapat memilih untuk menggunakannya dari halaman Pengaturan.
+- Siapa yang tidak suka tampilan yang lebih simpel? Jika Anda telah menonaktifkan modul statistik di situs, kami akan menyembunyikan bagian statistik pengunjung di halaman Toko Saya.
+- Nikmati bagian Informasi Pelanggan dan Pembayaran dengan desain baru (dan lebih mudah dibaca) dalam tampilan detail pesanan.

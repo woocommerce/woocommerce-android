@@ -45,7 +45,7 @@
                 android:paddingEnd="@dimen/card_padding_end"
                 android:paddingStart="@dimen/card_padding_start"
                 android:text="@string/my_store_stats_availability_message"
-                android:textAppearance="@style/Woo.TextAppearance.Medium.Gray"
+                android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>

@@ -1,85 +1,90 @@
 <ar>
-2.5:
-* لقد تعقبنا وأصلحنا: عطلاً نادرًا حدث بعد إنجاز أحد الطلبات وتصغير حجم التطبيق، إلى جانب خطأ تسبب في تبديل الموقع المُحدَّد في منتقي المواقع إلى التحديد السابق مرة أخرى، فضلاً عن بعض المشكلات في واجهة المستخدم التي تحتوي على علامة تبويب "المراجعات" الجديدة.
-* يمكنك الآن تضمين أسماء المنتجات في سطرين في شاشة تفاصيل الطلب.
+2.7:
+- ثمَّة صفحة إحصاءات جديدة تمامًا (مع مزيد من التحليلات الدقيقة) تخص أولئك الذين يستخدمون إضافة مسؤول WooCommerce! يمكنك الاشتراك لاستخدامها من صفحة الإعدادات.
+- مَن لا يحب تجربة أكثر بساطة؟ إذا قمت بتعطيل وحدة الإحصاءات على موقعك، فسنخفي قسم إحصاءات الزائر في صفحة متجري.
+- استمتع بقسمي معلومات العميل والسداد اللذين أعيد تصميمهما (وأكثر قابلية للقراءة) في عرض تفاصيل الطلب.
 </ar>
 <de-DE>
-2.5:
-* Wir haben folgende Probleme gefunden und behoben: einen seltenen Absturz, der nach dem Erfüllen eines Auftrags und Minimieren der App auftrat, einen Fehler, bei dem die ausgewählte Website in der Websiteauswahl zur vorherigen Auswahl zurückwechselte, und einige Probleme mit der Benutzeroberfläche auf dem neuen Tab „Rezensionen“.
-* Produktnamen können jetzt auf dem Bildschirm mit den Bestelldetails in zwei Zeilen geschrieben werden.
+2.7:
+- Es gibt eine brandneue Statistikseite mit noch detaillierteren Analysen für alle, die das WooCommerce Admin-Plugin verwenden! Du kannst sie über die Seite mit den Einstellungen verwenden.
+- Wer möchte eine Seite nicht optimal nutzen können? Wenn du das Statistikmodul auf deiner Website deaktiviert hast, blenden wir den Abschnitt mit den Besucherstatistiken auf deiner Seite „Mein Shop“ aus.
+- Der Bereich mit den Kundeninformationen und den Zahlungsdetails in der Ansicht mit den Auftragsdetails wurde neu entworfen und ist jetzt besser lesbar.
 </de-DE>
-<es-ES>
-2.5:
-* Hemos supervisado y corregido lo siguiente: un error extraño que se producía después de hacer un pedido y minimizar la aplicación, un error que hacía que el sitio seleccionado en el selector de sitios volviera a la selección anterior y algunos problemas de la interfaz de usuario que ocurrían en la nueva pestaña "Revisiones".
-* Los nombres de los productos ahora pueden agruparse en dos líneas, en la pantalla Información del pedido.
-</es-ES>
 <fr-FR>
-2.5 :
-* Nous avons détecté et résolu : une défaillance rare qui survenait après l'exécution d'une commande et la réduction de l'application, un bug remplaçant le site sélectionné dans le sélecteur de site par la sélection précédente, ainsi que quelques problèmes d'interface utilisateur avec le nouvel onglet « Avis ».
-* Les noms de produit peuvent désormais occuper deux lignes dans l'écran des détails de la commande.
+2.7 :
+- Une nouvelle page de statistiques (proposant des analyses plus approfondies) est disponible pour les utilisateurs de l'extension d'administration WooCommerce ! Vous pouvez vous inscrire afin de l'utiliser sur la page Paramètres.
+- Qui n'apprécie pas de profiter d'une expérience plus rationalisée ? Si vous avez désactivé le module de statistiques sur votre site, nous masquerons la section des statistiques détaillées sur vos visiteurs sur votre page Ma boutique.
+- Profitez de sections Informations sur le client et Paiement repensées (et plus lisibles) dans les vues des détails de la commande.
 </fr-FR>
 <iw-IL>
-2.5:
-* איתרנו ותיקנו את הבעיות הבאות: קריסה נדירה שהתרחשה לאחר השלמה של הזמנה וצמצום האפליקציה,באג שגרם לאתר שנבחר בבורר האתרים להתחלף לבחירה הקודמת ועוד כמה בעיות בממשק המשתמש בלשונית 'ביקורות' החדשה.
-* כעת ניתן לפרסום את שמות המוצרים על שתי שורות במסך של פרטי ההזמנה.
+2.7:
+יש עמוד חדש לנתונים הסטטיסטיים (עם ניתוחים פרטניים נוספים) למשתמשים בתוסף הניהול של WooCommerce! אפשר להתחבר ולהשתמש בו מעמוד ההגדרות.
+- מי לא אוהב חוויה יעילה יותר? אם השבתת בעבר את מודול הנתונים הסטטיסטיים באתר שלך, אנחנו נסתיר את המקטע של הנתונים הסטטיסטיים של האורחים בעמוד "החנות שלי".
+- אפשר ליהנות ממקטעים מעוצבים מחדש (וקריאים יותר) של פרטי הלקוח ותשלומים בתצוגה של פרטי ההזמנה.
 </iw-IL>
 <id>
-2.5:
-* Kami telah menemukan dan memperbaiki: sebuah crash langka yang terjadi setelah memenuhi pesanan dan mengecilkan aplikasi, satu bug yang menyebabkan situs terpilih di pemilih situs beralih kembali ke pilihan sebelumnya, dan beberapa masalah UI di tab “Ulasan” yang baru.
-* Nama produk kini dapat dijadikan dua baris dalam layar detail pesanan.
+2.7:
+- Ada halaman statistik baru (dengan analitik yang lebih mendetail) untuk Anda yang menggunakan plugin Admin WooCommerce! Anda dapat memilih untuk menggunakannya dari halaman Pengaturan.
+- Siapa yang tidak suka tampilan yang lebih simpel? Jika Anda telah menonaktifkan modul statistik di situs, kami akan menyembunyikan bagian statistik pengunjung di halaman Toko Saya.
+- Nikmati bagian Informasi Pelanggan dan Pembayaran dengan desain baru (dan lebih mudah dibaca) dalam tampilan detail pesanan.
 </id>
 <it-IT>
-2.5:
-* Siamo risaliti alle cause e abbiamo risolto: un raro arresto anomalo che si verificava dopo aver evaso un ordine e ridotto a icona l'app, un bug che portava il sito selezionato in Scelta siti a tornare alla selezione precedente e alcuni problemi di interfaccia utente con la nuova scheda "Recensioni".
-* I nomi dei prodotti ora possono essere inseriti in due righe nella schermata dei dettagli dell'ordine.
+2.7:
+- Nuova pagina delle statistiche (con analisi più granulari) per coloro che usano il plugin WooCommerce Admin. Puoi decidere di usarla dalla pagina Impostazioni.
+- A chi non piace un'esperienza più semplificata? Se hai disabilitato il modulo delle statistiche sul tuo sito, nasconderemo la sezione delle statistiche sui visitatori nella pagina Il mio negozio.
+- Goditi le sezioni Informazioni cliente e Pagamento riprogettate (e più leggibili) nella schermata dei dettagli dell'ordine.
 </it-IT>
 <ja-JP>
-2.5:
-* 追跡して次の修正を実行しました :注文を完了してアプリを最小化した後に発生した稀なクラッシュ、サイトピッカーで選択したサイトが以前の選択内容にスイッチバックするバグ、新しい「レビュー」タブに関する UI の問題の一部。
-* 注文詳細の画面で製品名を折り返して2行で表示できるようになりました。
+2.7:
+- WooCommerce Admin プラグインで、より詳細な分析が可能な新しい統計ページを利用できるようになりました。「設定」ページから選択して、これを使用できます。
+- ユーザーエクスペリエンスの改善を行いました。サイトで統計モジュールを無効にすると、「自分のストア」ページで訪問者の統計セクションが非表示になるようにしました。
+- 注文の詳細画面の顧客情報と支払いのセクションのデザインがリニューアルされ、見やすくなりました。
 </ja-JP>
 <ko-KR>
-2.5:
-* 추적 및 수정 내용: 주문을 이행하고 앱을 최소화한 후 발생하는 드문 충돌, 사이트 선택 도구에서 선택한 사이트가 이전 선택으로 다시 전환되는 버그, 새로운 "검토"탭의 UI 문제.
-* 이제 주문 세부정보 화면에서 제품 이름을 2줄로 줄바꿈할 수 있습니다.
+2.7:
+- WooCommerce 관리자 플러그인을 사용하는 사람들을 위한 새로운 통계 페이지(더 세분화된 분석 기능 포함)가 출시되었습니다! 설정 페이지에서 옵트인할 수 있습니다.
+- 누구나 간편한 환경을 선호합니다. 사이트에서 통계 모듈을 비활성화한 경우 내 스토어 페이지에서 방문자 통계 섹션이 숨겨집니다.
+- 주문 세부정보 보기에서 새롭게 디자인되어 가독성이 높아진 고객 정보 및 결제 섹션을 마음껏 이용해 보세요.
 </ko-KR>
 <nl-NL>
-2.5:
-* We hebben het volgende gevonden en gerepareerd: een zeldzame crash die plaatsvond na het voltooien van een bestelling en het minimaliseren van de app, een bug die ervoor zorgde dat de geselecteerde sitekiezer terugkeerde naar de vorige selectie en een paar UI-problemen met het nieuwe tabblad 'Beoordelingen'.
-* Productnamen kunnen nu op twee regels worden weergegeven op het scherm met bestelgegevens.
+2.7:
+- Voor degenen die de WooCommerce Admin-plugin gebruiken, is er nu een gloednieuwe statistiekenpagina (met grondigere analyse) beschikbaar! Je kunt je hiervoor aanmelden via de pagina Instellingen.
+- Wie houdt er nou niet van een meer gestroomlijnde ervaring? Als je de statistiekenmodule van je site hebt uitgeschakeld, verbergen wij het gedeelte met bezoekersstatistieken van je pagina Mijn winkel.
+- Geniet van de vernieuwde (en beter leesbare) gedeelten Klantgegevens en Betalingen in de het overzicht van bestelgegevens.
 </nl-NL>
 <pt-BR>
-2.5:
-* Rastreamos e corrigimos: um travamento raro que ocorria após a conclusão de um pedido e ao minimizar o aplicativo, um bug que fazia com que o site selecionado no seletor de sites retornasse à seleção anterior e alguns problemas de interface na nova guia "Comentários".
-* Os nomes dos produtos agora podem ser agrupados em duas linhas na tela de detalhes do pedido.
+2.7:
+- Há uma nova página de estatísticas com análises mais granulares para quem usa o plugin WooCommerce Admin! Ative-a nas Configurações.
+- Quem não gosta de uma experiência simples? Se você desativou o módulo de estatísticas no seu site, a seção para visitantes será ocultada da página Minha loja.
+- Aproveite as seções replanejadas Pagamento e Informações do cliente na exibição de detalhes de pedido.
 </pt-BR>
 <ru-RU>
-2.5:
-* Мы нашли и исправили следующее: редкую ошибку, которая возникала, если заполнить заказ и свернуть приложение; ошибку, из-за которой при выборе сайта выделение откатывалось на шаг назад; несколько проблем с интерфейсом новой вкладки "Обзоры".
-* Названия товаров в окне информации о заказе теперь помещаются в две строки.
+Версия 2.7
+– Те, кто использует плагин администратора WooCommerce, оценят новую страницу статистики, содержащую более подробные аналитические сведения. Чтобы использовать ее, выберите нужный параметр на странице "Настройки".
+– Вы согласны, что во всем должен быть порядок? Если вы отключили модуль статистики на сайте, на странице "Мой магазин" не будет отображаться раздел статистики посещений.
+– Оцените удобные обновленные разделы "Информация о заказчиках" и "Платежи" на экране сведений о заказе.
 </ru-RU>
 <sv-SE>
-2.5:
-* Vi har hittat och åtgärdat: en sällsynt krasch som inträffade efter att en beställning hade lagts och appen minimerats, ett fel som gjorde att den valda webbplatsen i webbplatsväljaren växlade tillbaka till det föregående valet och några gränssnittsproblem med den nya fliken "Recensioner".
-* Produktnamn kan nu sträcka sig över två rader på skärmen för beställningsinformation.
+2.7:
+– Det finns en helt ny statistiksida (med mer detaljerade analyser) för dem som använder WooCommerce adminplugin-programmet! Du kan välja att använda det från sidan Inställningar.
+– Vem vill inte ha en mer effektiv upplevelse? Om du har inaktiverat statistikmodulen på din webbplats döljer vi avsnittet med besöksstatistik på sidan Min butik.
+– Njut av omdesignade (och med läsvänliga) avsnitt för kundinformation och betalning i vyn med orderinformation.
 </sv-SE>
 <tr-TR>
-2.5:
-* Takip ettik ve aşağıdakileri düzelttik: bir sipariş verilip uygulama simge durumuna küçültüldükten sonra oluşan nadir bir hata, site seçiciden site seçildikten sonra önceki seçime geri dönülmesine neden olan bir hata ve yeni “Yorumlar” sekmesiyle ilgili bir kaç kullanıcı arayüzü sorunu.
-* Ürün adları artık sipariş ayrıntıları ekranında iki satıra sarılabiliyor.
+2.7:
+- WooCommerce Yönetici eklentisini kullananlar için yepyeni bir istatistik sayfası oluşturuldu (daha ayrıntılı analiz içeriyor)! Ayarlar sayfasından kullanmayı seçebilirsiniz.
+- Daha düzenli bir deneyime kim hayır diyebilir? Sitenizde istatistik modülünü devre dışı bıraktıysanız, Mağazam sayfanızdaki ziyaretçi istatistikleri bölümünü gizleriz.
+- Sipariş ayrıntıları görünümünde, yeniden tasarladığımız (ve daha okunabilir özellikteki) Müşteri Bilgileri ve Ödeme bölümlerinin keyfini çıkarın.
 </tr-TR>
-<zh-CN>
-2.5：
-* 我们跟踪并修复了以下内容：完成订单并将应用程序最小化后偶尔出现的崩溃、导致站点选择器中所选站点切换回之前选择的站点的错误，以及新“评论”选项卡中存在的一些 UI 问题。
-* 产品名称现在可以在“订单详细信息”屏幕中分两行显示。
-</zh-CN>
 <zh-TW>
-2.5：
-* 我們已追蹤及修正以下問題：履行訂單並最小化應用程式後所發生不常見的當機情形；導致所選網站在網站挑選器中切換回上一個選項的錯誤；以及「評論」分頁的一些 UI 問題。
-* 產品名稱現在可於訂單詳細資料畫面中以兩行顯示。
+2.7：
+- 我們已為 WooCommerce 管理員外掛程式提供全新的統計資料頁面 (包含更多細分分析)！從「設定」頁面即可選用此功能。
+- 誰不喜歡更精簡的使用體驗？如果你停用網站的統計資料模組，我們會在「我的商店」頁面中隱藏訪客統計資料區段。
+- 盡情使用訂單詳細資訊檢視畫面中，經過重新設計的「顧客資訊」和「付款」區段。
 </zh-TW>
 <en-US>
-2.5:
-* We tracked down and fixed: a rare crash that happened after fulfilling an order and minimizing the app, a bug causing the selected site in the site picker to switch back to the previous selection, and a few UI issues with the new “Reviews” tab.
-* Product names can now wrap onto two lines in the order detail screen.
+2.7:
+- There’s a brand-new stats page (with more granular analytics) for those of you who use the WooCommerce Admin plugin! You can opt in to use it from the Settings page.
+- Who doesn’t like a more streamlined experience? If you’ve disabled the stats module on your site, we’ll hide the visitor stats section on your My Store page.
+- Enjoy a redesigned (and more readable) Customer Information and Payment sections in the order detail view.
 /<en-US>
