@@ -1,7 +1,3 @@
-group :screenshots, optional: true do
-  gem 'rmagick', '~> 3.2.0'
-end
-
 source "https://rubygems.org" do 
   gem 'nokogiri'
   gem "fastlane", "2.127.2"
