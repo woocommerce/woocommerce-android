@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-09-04 00:54:04+0000
+Translation-Revision-Date: 2019-10-01 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">Cobalah statistik baru yang tersedia bersama\nPlugin admin WooCommerce</string>
+    <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
+    <string name="beta_features">Fitur-fitur Beta</string>
+    <string name="order_begin_fulfillment">Mulai pemenuhan</string>
+    <string name="orderdetail_net">Net</string>
+    <string name="orderdetail_payment_paid_by_customer">Dibayar oleh pelanggan</string>
+    <string name="orderdetail_payment_summary_onhold">Menunggu pembayaran melalui %s</string>
+    <string name="orderdetail_payment_summary_completed">%1$s melalui %2$s</string>
+    <string name="my_store_stats_availability_message">Kami merilis penyempurnaan untuk statistik toko menggunakan plugin Admin WooCommerce</string>
+    <string name="my_store_stats_availability_title">Cobalah statistik yang disempurnakan</string>
+    <string name="my_store_stats_reverted_message">Kami mengembalikan ke statistik lama karena\ntidak dapat menemukan Plugin Admin WooCommerce</string>
+    <string name="dashboard_state_no_data">Tidak ada pendapatan dalam periode ini</string>
+    <string name="no_thanks">Tidak, terima kasih</string>
+    <string name="try_it_now">Coba sekarang</string>
+    <string name="products_total">Total produk</string>
+    <string name="order_total">Total pesanan</string>
     <string name="dashboard_stats_todays_stats">Statistik Hari Ini</string>
     <string name="login_sign_in">Masuk</string>
     <string name="login_jetpack_installed_sign_in">Sudah punya Jetpack? %1$s</string>
@@ -399,9 +415,11 @@ Language: id
     <string name="waiting_for_customers">Menunggu pelanggan</string>
     <string name="share_store_dialog_title">Bagikan URL toko Anda</string>
     <string name="share_store_button">Bagikan toko Anda</string>
+    <string name="wc_mark_all_read_success">Semua ulasan ditandai sudah dibaca</string>
     <string name="login_update_required_title">Perbarui Toko ke WooCommerce 3.5</string>
     <string name="login_verifying_site_error">Tidak dapat terhubung ke %s</string>
     <string name="dismiss">Selesai</string>
+    <string name="wc_mark_all_read_error">Terjadi error saat menandai semua ulasan sudah dibaca</string>
     <string name="wc_mark_all_read">Tandai semua sudah dibaca</string>
     <string name="orderdetail_message_customer">Pesan</string>
     <string name="orderdetail_call_customer">Telepon</string>
@@ -623,10 +641,7 @@ Language: id
     <string name="orderdetail_customer_image_contentdesc">Gambar profil pelanggan</string>
     <string name="orderdetail_customer_provided_note">Catatan yang Diberikan Pelanggan</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">Pembayaran - Dana Dikembalikan</string>
     <string name="orderdetail_refunded">Dana dikembalikan</string>
-    <string name="orderdetail_payment_summary_onhold">Pembayaran menunggu %s</string>
-    <string name="orderdetail_payment_summary_completed">Pembayaran %1$s diterima melalui %2$s</string>
     <string name="orderdetail_product_qty">JML</string>
     <string name="orderdetail_product">Produk</string>
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
@@ -665,7 +680,6 @@ Language: id
     <string name="dashboard_stats_updated_now">Diperbarui sesaat lalu</string>
     <string name="dashboard_stats_error_content_description">Gambar error</string>
     <string name="dashboard_stats_error">Error saat mengambil data</string>
-    <string name="dashboard_state_no_data">Tidak ada data yang tersedia</string>
     <string name="dashboard_stats_revenue">Pendapatan</string>
     <string name="dashboard_stats_orders">Pesanan</string>
     <string name="dashboard_stats_visitors">Pengunjung</string>
@@ -683,6 +697,7 @@ Language: id
     <string name="login_prologue_banner">Kelola pesanan, lacak penjualan, dan pantau aktivitas toko dengan pemberitahuan real-time.</string>
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>
     <string name="at_username">\@%s</string>
+    <string name="enter_site_address">Masukkan alamat toko WooCommerce yang ingin dihubungkan.</string>
     <string name="already_logged_in_wpcom">Anda sudah login ke akun WordPress.com, Anda tidak dapat menambahkan situs WordPress.com yang terikat ke akun lain.</string>
     <string name="cant_open_url">Tidak bisa membuka tautan</string>
     <string name="error_no_sms_app">Tidak ada aplikasi SMS</string>

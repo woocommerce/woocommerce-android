@@ -1,0 +1,4 @@
+2.7:
+- Es gibt eine brandneue Statistikseite mit noch detaillierteren Analysen für alle, die das WooCommerce Admin-Plugin verwenden! Du kannst sie über die Seite mit den Einstellungen verwenden.
+- Wer möchte eine Seite nicht optimal nutzen können? Wenn du das Statistikmodul auf deiner Website deaktiviert hast, blenden wir den Abschnitt mit den Besucherstatistiken auf deiner Seite „Mein Shop“ aus.
+- Der Bereich mit den Kundeninformationen und den Zahlungsdetails in der Ansicht mit den Auftragsdetails wurde neu entworfen und ist jetzt besser lesbar.

@@ -1,0 +1,4 @@
+2.7:
+- Há uma nova página de estatísticas com análises mais granulares para quem usa o plugin WooCommerce Admin! Ative-a nas Configurações.
+- Quem não gosta de uma experiência simples? Se você desativou o módulo de estatísticas no seu site, a seção para visitantes será ocultada da página Minha loja.
+- Aproveite as seções replanejadas Pagamento e Informações do cliente na exibição de detalhes de pedido.

@@ -1,5 +1,0 @@
-2.6:
-- Não tem uma conta no Jetpack? Agora é possível fazer login no seu site ao ignorar a tela que solicita o Jetpack. (Porém, você está perdendo funcionalidades incríveis sem o Jetpack. Experimente usá-lo!)
-- Algumas vezes, aqueles que têm um site conectado ao Jetpack encontravam problemas ao fazer o login. Isso era causado por um bug e já foi consertado.
-- Corrigimos a aparência das estatísticas da Minha loja antes de você receber seu primeiro pedido.
-- Um pequeno grupo de usuários tinha que lidar com travamentos inesperados de vez em quando. Se isso acontecia com você, temos boas notícias: não voltará a se repetir.
