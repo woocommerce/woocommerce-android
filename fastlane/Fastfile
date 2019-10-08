@@ -280,16 +280,7 @@ end
       "release_note_#{values[0].to_s.rjust(2, "0")}#{values[1]}" => {desc: "changelogs/#{options[:build_number]}.txt", max_size: 0},
       play_store_promo: {desc:"short_description.txt", max_size: 80},
       play_store_desc: {desc:"full_description.txt", max_size: 0},
-      play_store_app_title: {desc:"title.txt", max_size: 50},
-      "app_store_screenshot-1" => {desc: "promo_screenshot_1.txt"},
-      "app_store_screenshot-1_b" => {desc: "promo_screenshot_1_b.txt"},
-      "app_store_screenshot-2" => {desc: "promo_screenshot_2.txt"},
-      "app_store_screenshot-3" => {desc: "promo_screenshot_3.txt"},
-      "app_store_screenshot-4" => {desc: "promo_screenshot_4.txt"},
-      "app_store_screenshot-5" => {desc: "promo_screenshot_5.txt"},
-      "app_store_screenshot-6" => {desc: "promo_screenshot_6.txt"},
-      "app_store_screenshot-7" => {desc: "promo_screenshot_7.txt"},
-      "app_store_screenshot-8" => {desc: "promo_screenshot_8.txt"},
+      play_store_app_title: {desc:"title.txt", max_size: 50}
     }
 
     delete_old_changelogs(build: options[:build_number])
@@ -304,28 +295,6 @@ end
     add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end 
-
-  desc "Create Promo Screenshots"
-  lane :create_promo_screenshots do | options |
-
-      if !Fastlane::Helper::GitHelper.has_git_lfs then
-        UI.user_error!("LFS not enabled – unable to generate promo screenshots. Run `git lfs install && git lfs fetch && git lfs pull` to fix this.")
-      end
-
-      # Create a copy of the files to work with – this ensures that if we're doing multiple
-      # screenshot generation tasks close together, we can keep reusing the same source files
-      original_screenshot_directory = File.join(Dir.pwd, "screenshots")
-      metadata_directory = File.join(Dir.pwd, "metadata/android")
-      output_directory = File.join(Dir.pwd, "/promo_screenshots")
-
-      # Run screenshots generator tool 
-      promo_screenshots(
-        orig_folder: original_screenshot_directory,
-        metadata_folder: metadata_directory,
-        output_folder: output_directory,
-        force: options[:force],
-      )
-  end
 
 ########################################################################
 # Helper Lanes

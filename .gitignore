@@ -88,8 +88,6 @@ google-services.json
 fastlane/README.md
 fastlane/report.xml
 fastlane/.env
-fastlane/promo_screenshots
-default.profraw
 
 # Ruby Dependencies
 /vendor
