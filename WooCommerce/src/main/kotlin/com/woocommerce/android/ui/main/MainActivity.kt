@@ -43,8 +43,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
-import com.woocommerce.android.ui.orders.OrderListFragment
-import com.woocommerce.android.ui.orders.list.OrderListFragmentNew
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections

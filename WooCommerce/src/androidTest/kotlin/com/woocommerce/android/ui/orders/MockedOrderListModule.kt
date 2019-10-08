@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector

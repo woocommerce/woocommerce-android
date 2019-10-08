@@ -157,7 +157,7 @@ class OrderListPresenterNew @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
-        when(event.causeOfChange) {
+        when (event.causeOfChange) {
             FETCH_NOTIFICATION, UPDATE_NOTIFICATION -> {
                 // A notification was received by the device and the details have been fetched from the API.
                 // Refresh the orders list in case that notification was a new order notification.

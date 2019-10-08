@@ -42,10 +42,10 @@ import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
+class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
         OrderStatusSelectorDialog.OrderStatusDialogListener, OnQueryTextListener, OnActionExpandListener {
     companion object {
-        const val TAG: String = "OrderListFragmentNew"
+        const val TAG: String = "OrderListFragment"
         const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -54,7 +54,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
         private const val SEARCH_TYPING_DELAY_MS = 500L
 
         fun newInstance(orderStatusFilter: String? = null) =
-            OrderListFragmentNew().apply { this.orderStatusFilter = orderStatusFilter }
+            OrderListFragment().apply { this.orderStatusFilter = orderStatusFilter }
     }
 
     @Inject lateinit var presenter: OrderListContractNew.Presenter
@@ -404,7 +404,7 @@ class OrderListFragmentNew : TopLevelFragment(), OrderListContractNew.View,
 
     private fun loadList(descriptor: WCOrderListDescriptor) {
         pagedListWrapper?.apply {
-            val lifecycleOwner = this@OrderListFragmentNew
+            val lifecycleOwner = this@OrderListFragment
             data.removeObservers(lifecycleOwner)
             isLoadingMore.removeObservers(lifecycleOwner)
             isFetchingFirstPage.removeObservers(lifecycleOwner)

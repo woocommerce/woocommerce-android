@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.products.ProductListFragment
 import com.woocommerce.android.ui.reviews.ReviewListFragment
-import com.woocommerce.android.ui.orders.list.OrderListFragmentNew
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 
 enum class BottomNavigationPosition(val position: Int, val id: Int) {
     DASHBOARD(0, R.id.dashboard),
@@ -26,14 +26,14 @@ fun findNavigationPositionById(id: Int): BottomNavigationPosition = when (id) {
 
 fun BottomNavigationPosition.getTag(): String = when (this) {
     BottomNavigationPosition.DASHBOARD -> getMyStoreTag()
-    BottomNavigationPosition.ORDERS -> OrderListFragmentNew.TAG
+    BottomNavigationPosition.ORDERS -> OrderListFragment.TAG
     BottomNavigationPosition.PRODUCTS -> ProductListFragment.TAG
     BottomNavigationPosition.REVIEWS -> ReviewListFragment.TAG
 }
 
 fun BottomNavigationPosition.createFragment(): TopLevelFragment = when (this) {
     BottomNavigationPosition.DASHBOARD -> createMyStoreFragment()
-    BottomNavigationPosition.ORDERS -> OrderListFragmentNew.newInstance()
+    BottomNavigationPosition.ORDERS -> OrderListFragment.newInstance()
     BottomNavigationPosition.PRODUCTS -> ProductListFragment.newInstance()
     BottomNavigationPosition.REVIEWS -> ReviewListFragment.newInstance()
 }
