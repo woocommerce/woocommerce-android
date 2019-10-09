@@ -189,12 +189,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
                     orderRefreshLayout.isRefreshing = false
 
                     if (!isRefreshPending) {
-                        isRefreshPending = true
-                        if (isOrderStatusFilterEnabled()) {
-                            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
-                        } else {
-                            presenter.searchOrders(searchQuery)
-                        }
+                        refreshOrders()
                     }
                 }
             }
@@ -610,7 +605,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
-            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }
 
@@ -621,7 +616,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
 
     private fun refreshOrders() {
         isRefreshPending = true
-        if (isOrderStatusFilterEnabled()) {
+        if (searchQuery.isEmpty() || isOrderStatusFilterEnabled()) {
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         } else {
             presenter.searchOrders(searchQuery)

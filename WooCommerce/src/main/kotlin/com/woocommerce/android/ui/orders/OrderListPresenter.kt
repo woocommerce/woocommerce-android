@@ -113,7 +113,10 @@ class OrderListPresenter @Inject constructor(
                 val payload = SearchOrdersPayload(selectedSite.get(), searchQuery, 0)
                 dispatcher.dispatch(WCOrderActionBuilder.newSearchOrdersAction(payload))
             }
-            else -> orderView?.showNoConnectionError()
+            else -> {
+                orderView?.isRefreshPending = true
+                orderView?.showNoConnectionError()
+            }
         }
     }
 
