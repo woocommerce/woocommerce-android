@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
 
-class OrderListAdapterNew(
+class OrderListAdapter(
     val currencyFormatter: CurrencyFormatter,
     val onItemSelected: (remoteOrderId: Long) -> Unit
 ) : PagedListAdapter<OrderListItemUIType, ViewHolder>(OrderListDiffItemCallback) {

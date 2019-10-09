@@ -62,7 +62,7 @@ class OrderListFragment : TopLevelFragment(),
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private lateinit var viewModel: OrderListViewModel
-    private lateinit var ordersAdapter: OrderListAdapterNew
+    private lateinit var ordersAdapter: OrderListAdapter
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private var orderFilterDialog: OrderStatusSelectorDialog? = null
 
@@ -137,7 +137,7 @@ class OrderListFragment : TopLevelFragment(),
         )
 
         // Get cached order status options and prime the adapter
-        ordersAdapter = OrderListAdapterNew(currencyFormatter) {
+        ordersAdapter = OrderListAdapter(currencyFormatter) {
             showOrderDetail(it)
         }
 
