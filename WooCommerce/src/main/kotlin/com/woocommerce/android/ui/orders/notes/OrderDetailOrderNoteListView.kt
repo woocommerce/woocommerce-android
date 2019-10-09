@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.notes
 
 import android.content.Context
 import android.util.AttributeSet
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView.OrderNotesAdapter.ViewHolder
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.order_detail_note_list.view.*
@@ -37,7 +38,9 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
         listener = orderDetailListener
 
         val viewManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-        val viewAdapter = OrderNotesAdapter(notes.toMutableList())
+        val viewAdapter = OrderNotesAdapter(
+                notes.toMutableList()
+        )
         val divider = AlignedDividerDecoration(context,
                 DividerItemDecoration.VERTICAL, R.id.orderNote_created, clipToMargin = false)
 
@@ -92,7 +95,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
     }
 
     class OrderNotesAdapter(private val notes: MutableList<WCOrderNoteModel>)
-        : RecyclerView.Adapter<OrderNotesAdapter.ViewHolder>() {
+        : RecyclerView.Adapter<ViewHolder>() {
         class ViewHolder(val view: OrderDetailOrderNoteItemView) : RecyclerView.ViewHolder(view)
 
         init {
@@ -111,7 +114,9 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(ctx: Context, attrs
             val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.order_detail_note_list_item, parent, false)
                     as OrderDetailOrderNoteItemView
-            return ViewHolder(view)
+            return ViewHolder(
+                    view
+            )
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {

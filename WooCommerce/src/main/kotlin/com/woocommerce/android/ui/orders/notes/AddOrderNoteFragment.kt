@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.notes
 
 import android.app.AlertDialog
 import android.content.Context
@@ -18,6 +18,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EM
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.AddOrderNoteFragmentArgs
+import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.Presenter
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_add_order_note.*
@@ -25,7 +27,8 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPressListener {
+class AddOrderNoteFragment : BaseFragment(),
+        AddOrderNoteContract.View, BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         private const val FIELD_NOTE_TEXT = "note_text"
@@ -33,7 +36,7 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
 
-    @Inject lateinit var presenter: AddOrderNoteContract.Presenter
+    @Inject lateinit var presenter: Presenter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var orderId: OrderIdentifier
