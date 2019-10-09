@@ -47,9 +47,15 @@ class MainNavigationTest : TestBase() {
 
     @Test
     fun pressingBackAfterBottomNavOptionChangeExitsApp() {
+        // Make sure the bottom navigation view is showing
+        activityTestRule.activity.showBottomNav()
+
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
+
         // Verify switching bottom bar tabs does not retain a back stack.
-        // Switch from the default dashboard tab to the reviews tab
-        onView(withId(R.id.reviews)).perform(click())
+        // Switch from the default dashboard tab to the orders tab
+        onView(withId(R.id.orders)).perform(click())
 
         // Clicking back should not switch back to the previous tab, it should
         // exit the app.
@@ -91,16 +97,20 @@ class MainNavigationTest : TestBase() {
     }
 
     @Test
-    fun reviewssMenuOptionDisplaysReviewsView() {
+    fun reviewsMenuOptionDisplaysReviewsView() {
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
+
+        // add mock data to the reviews list screen
+        activityTestRule.setReviewListWithMockData()
 
         // Select the reviews bottom bar option
         onView(withId(R.id.reviews)).perform(click())
 
-        // Verify the toolbar title has changed to Reviews
+        // Verify the toolbar title has changed to 'Reviews'
         onView(withId(R.id.toolbar)).check(matches(
-                WCMatchers.withToolbarTitle(equalToIgnoringCase(appContext.getString(R.string.review_notifications)))))
+                WCMatchers.withToolbarTitle(equalToIgnoringCase(
+                        appContext.getString(R.string.product_reviews)))))
     }
 
     @Test
@@ -108,8 +118,11 @@ class MainNavigationTest : TestBase() {
         // Make sure the bottom navigation view is showing
         activityTestRule.activity.showBottomNav()
 
+        // add mock data to order list screen
+        activityTestRule.setOrderListWithMockData()
+
         // Switch away from the default selected dashboard option
-        onView(withId(R.id.reviews)).perform(click())
+        onView(withId(R.id.orders)).perform(click())
 
         // Select the dashboard bottom bar option
         onView(withId(R.id.dashboard)).perform(click())

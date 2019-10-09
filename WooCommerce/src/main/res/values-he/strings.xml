@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-09-04 00:54:04+0000
+Translation-Revision-Date: 2019-10-03 00:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">נסה את הנתונים הסטטיסטיים שזמינים\nבתוסף הניהול החדש של WooCommerce</string>
+    <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
+    <string name="beta_features">תכונות ביתא</string>
+    <string name="order_begin_fulfillment">להתחיל את ההשלמה</string>
+    <string name="orderdetail_net">נטו</string>
+    <string name="orderdetail_payment_paid_by_customer">שולם על ידי הלקוח</string>
+    <string name="orderdetail_payment_summary_onhold">ממתין לתשלום דרך %s</string>
+    <string name="orderdetail_payment_summary_completed">%1$s דרך %2$s</string>
+    <string name="my_store_stats_availability_message">אנחנו מפרסמים שיפורים לנתונים הסטטיסטיים בחנויות באמצעות תוסף הניהול של WooCommerce</string>
+    <string name="my_store_stats_availability_title">מומלץ לנסות את הנתונים הסטטיסטיים המשופרים</string>
+    <string name="my_store_stats_reverted_message">החזרנו את הנתונים הסטטיסטיים לגרסה הקודמת מאחר שלא הצלחנו\nלמצוא את תוסף הניהול של WooCommerce</string>
+    <string name="dashboard_state_no_data">אין רווחים בתקופה זאת</string>
+    <string name="no_thanks">לא תודה</string>
+    <string name="try_it_now">כדאי לנסות עכשיו</string>
+    <string name="products_total">סך כל המוצרים</string>
+    <string name="order_total">סך כל ההזמנה</string>
     <string name="dashboard_stats_todays_stats">הנתונים הסטטיסטיים של היום</string>
     <string name="login_sign_in">התחברות</string>
     <string name="login_jetpack_installed_sign_in">כבר יש לך חשבון ב-Jetpack? %1$s</string>
@@ -399,9 +415,11 @@ Language: he_IL
     <string name="waiting_for_customers">בהמתנה ללקוחות</string>
     <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
     <string name="share_store_button">שיתוף החנות שלך</string>
+    <string name="wc_mark_all_read_success">כל הביקורות שמסומנות כ\'נקרא\'</string>
     <string name="login_update_required_title">לעדכן את החנות ל-Woocommerce 3.5</string>
     <string name="login_verifying_site_error">אין אפשרות להתחבר אל %s</string>
     <string name="dismiss">סגור</string>
+    <string name="wc_mark_all_read_error">שגיאה בעת סימון של הביקורות כ\'נקרא\'</string>
     <string name="wc_mark_all_read">סימון כל הפריטים כ\'נקרא\'</string>
     <string name="orderdetail_message_customer">הודעה</string>
     <string name="orderdetail_call_customer">להתקשר</string>
@@ -623,10 +641,7 @@ Language: he_IL
     <string name="orderdetail_customer_image_contentdesc">תמונת פרופיל של לקוח</string>
     <string name="orderdetail_customer_provided_note">הערה שסופקה על-ידי הלקוח</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">תשלום – הוחזר</string>
     <string name="orderdetail_refunded">הוחזר</string>
-    <string name="orderdetail_payment_summary_onhold">התשלום בהמתנה עבור %s</string>
-    <string name="orderdetail_payment_summary_completed">תשלום בסך %1$s התקבל באמצעות %2$s</string>
     <string name="orderdetail_product_qty">כמות</string>
     <string name="orderdetail_product">מוצר</string>
     <string name="orderdetail_product_image_contentdesc">תמונת מוצר</string>
@@ -665,7 +680,6 @@ Language: he_IL
     <string name="dashboard_stats_updated_now">עודכן לפני מספר רגעים</string>
     <string name="dashboard_stats_error_content_description">תמונת השגיאה</string>
     <string name="dashboard_stats_error">שגיאה בעת אחזור הנתונים</string>
-    <string name="dashboard_state_no_data">אין נתונים זמינים</string>
     <string name="dashboard_stats_revenue">הכנסה</string>
     <string name="dashboard_stats_orders">הזמנות</string>
     <string name="dashboard_stats_visitors">מבקרים</string>
@@ -683,6 +697,7 @@ Language: he_IL
     <string name="login_prologue_banner">ניהול הזמנות, מעקב אחר מכירות ואחר פעילות החנות באמצעות התראות בזמן אמת.</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
     <string name="at_username">‎@‎%s‎</string>
+    <string name="enter_site_address">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>
     <string name="already_logged_in_wpcom">כבר התחברת לחשבון שלך ב-WordPress.com. אין באפשרותך להוסיף אתר WordPress.com שקשור לחשבון אחר.</string>
     <string name="cant_open_url">אי אפשר לפתוח את הקישור</string>
     <string name="error_no_sms_app">לא נמצאה אפליקציה של הודעות טקסט</string>

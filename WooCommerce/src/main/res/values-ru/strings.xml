@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2019-09-06 13:24:59+0000
+Translation-Revision-Date: 2019-10-03 00:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="settings_enable_v4_stats_message">Оцените новую страницу статистики в\nплагине администратора WooCommerce</string>
+    <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
+    <string name="beta_features">Функции в бета-режиме</string>
+    <string name="order_begin_fulfillment">Начать выполнение</string>
+    <string name="orderdetail_net">Итог</string>
+    <string name="orderdetail_payment_paid_by_customer">Оплачивается заказчиком</string>
+    <string name="orderdetail_payment_summary_onhold">Ожидание оплаты через %s</string>
+    <string name="orderdetail_payment_summary_completed">%1$s через %2$s</string>
+    <string name="my_store_stats_availability_message">Представляем вам улучшенную статистику для магазинов, использующих плагин администратора WooCommerce</string>
+    <string name="my_store_stats_availability_title">Оцените улучшенный раздел статистики</string>
+    <string name="my_store_stats_reverted_message">Восстановлен прежний формат статистики, поскольку\nплагин администратора WooCommerce не обнаружен</string>
+    <string name="dashboard_state_no_data">Нет доходов за указанный период</string>
+    <string name="no_thanks">Нет, спасибо</string>
+    <string name="try_it_now">Попробовать</string>
+    <string name="products_total">Всего товаров</string>
+    <string name="order_total">Общая сумма заказа</string>
     <string name="dashboard_stats_todays_stats">Статистика за сегодня</string>
     <string name="login_sign_in">Войти</string>
     <string name="login_jetpack_installed_sign_in">Уже есть Jetpack? %1$s</string>
@@ -625,10 +641,7 @@ Language: ru
     <string name="orderdetail_customer_image_contentdesc">Изображение профиля клиента</string>
     <string name="orderdetail_customer_provided_note">Примечание клиента</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
-    <string name="orderdetail_payment_refunded">Оплата — возвращено</string>
     <string name="orderdetail_refunded">Средства возвращены</string>
-    <string name="orderdetail_payment_summary_onhold">Ожидание оплаты за %s</string>
-    <string name="orderdetail_payment_summary_completed">Платёж в размере %1$s получен через %2$s</string>
     <string name="orderdetail_product_qty">КОЛ-ВО</string>
     <string name="orderdetail_product">Товар</string>
     <string name="orderdetail_product_image_contentdesc">Изображение товара</string>
@@ -667,7 +680,6 @@ Language: ru
     <string name="dashboard_stats_updated_now">Обновлено только что</string>
     <string name="dashboard_stats_error_content_description">Изображение ошибки</string>
     <string name="dashboard_stats_error">Ошибка при получении данных</string>
-    <string name="dashboard_state_no_data">Данные недоступны</string>
     <string name="dashboard_stats_revenue">Доход</string>
     <string name="dashboard_stats_orders">Заказы</string>
     <string name="dashboard_stats_visitors">Посетители</string>

@@ -31,7 +31,8 @@ object WooLog {
         SUPPORT,
         WP,
         NOTIFICATIONS,
-        LOGIN
+        LOGIN,
+        REVIEWS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

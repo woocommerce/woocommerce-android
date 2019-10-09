@@ -6,9 +6,6 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MockedMainModule
-import com.woocommerce.android.ui.mystore.MyStoreModule
-import com.woocommerce.android.ui.notifications.NotifsListModule
-import com.woocommerce.android.ui.notifications.ReviewDetailModule
 import com.woocommerce.android.ui.orders.MockedAddOrderShipmentTrackingModule
 import com.woocommerce.android.ui.orders.MockedAddOrderTrackingProviderListModule
 import com.woocommerce.android.ui.orders.MockedOrderDetailModule
@@ -20,10 +17,12 @@ import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
 import com.woocommerce.android.ui.products.MockedOrderProductListModule
 import com.woocommerce.android.ui.products.MockedProductDetailModule
-import com.woocommerce.android.ui.products.MockedViewModelModule
+import com.woocommerce.android.ui.reviews.MockedReviewDetailModule
+import com.woocommerce.android.ui.reviews.MockedReviewListModule
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import com.woocommerce.android.ui.stats.MockedDashboardModule
+import com.woocommerce.android.ui.stats.MockedMyStoreModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.wordpress.android.login.di.LoginFragmentModule
@@ -34,18 +33,18 @@ abstract class MockedActivityBindingModule {
     @ContributesAndroidInjector(modules = arrayOf(
             MockedMainModule::class,
             MockedDashboardModule::class,
-            MyStoreModule::class,
+            MockedMyStoreModule::class,
             MockedOrderListModule::class,
             MockedOrderDetailModule::class,
             MockedOrderProductListModule::class,
             MockedOrderFulfillmentModule::class,
-            NotifsListModule::class,
-            ReviewDetailModule::class,
-            MockedViewModelModule::class,
             ThreadModule::class,
             MockedProductDetailModule::class,
             MockedAddOrderShipmentTrackingModule::class,
-            MockedAddOrderTrackingProviderListModule::class))
+            MockedAddOrderTrackingProviderListModule::class,
+            MockedReviewListModule::class,
+            MockedReviewDetailModule::class,
+            MockedViewModelModule::class))
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope

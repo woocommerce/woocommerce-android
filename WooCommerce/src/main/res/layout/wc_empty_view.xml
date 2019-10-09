@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:id="@+id/empty_view_stats_row"
-        style="@style/Woo.Card.List"
+        style="@style/Woo.Card.WithoutPadding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -56,7 +56,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout2"
-        style="@style/Woo.Card.List"
+        style="@style/Woo.Card.WithoutPadding"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/empty_view_stats_row"
