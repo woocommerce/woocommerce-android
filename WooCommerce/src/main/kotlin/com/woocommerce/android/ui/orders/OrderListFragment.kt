@@ -28,6 +28,7 @@ import com.woocommerce.android.extensions.onScrollUp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderListAdapter.OnLoadMoreListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -605,13 +606,12 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
-            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
         }
     }
 
     override fun showNoOrderStatusListError() {
         order_list_view_root.visibility = View.GONE
-        uiMessageResolver.getSnack(R.string.orderstatuslist_error_fetch_generic).show()
     }
 
     private fun refreshOrders() {
@@ -645,6 +645,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
         showTabs(true)
+        (activity as? MainActivity)?.showBottomNav()
     }
 
     /**
@@ -660,6 +661,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
         searchView?.setOnQueryTextListener(this)
         displayOrderStatusListView()
         order_status_list_view.updateOrderStatusListView(presenter.getOrderStatusList())
+        (activity as? MainActivity)?.hideBottomNav()
     }
 
     /**
@@ -686,6 +688,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             it.setHintTextColor(Color.WHITE)
             it.isEnabled = false
         }
+        (activity as? MainActivity)?.showBottomNav()
     }
 
     /**
@@ -707,6 +710,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             orderStatusFilter = tab_layout.getTabAt(tabPosition)?.let { getOrderStatusByTab(it) }
 
             presenter.loadOrders(orderStatusFilter, forceRefresh = true)
+            (activity as? MainActivity)?.hideBottomNav()
         }
     }
 
