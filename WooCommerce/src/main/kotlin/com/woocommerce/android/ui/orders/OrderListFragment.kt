@@ -606,7 +606,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
-            presenter.fetchAndLoadOrdersFromDb(orderStatusFilter, isForceRefresh = false)
+            presenter.loadOrders(orderStatusFilter, forceRefresh = true)
         }
     }
 
