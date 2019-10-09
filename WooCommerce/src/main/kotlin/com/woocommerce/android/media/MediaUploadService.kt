@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.app.JobIntentService
+import com.woocommerce.android.JobServiceIds.JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjection
@@ -26,7 +27,6 @@ class MediaUploadService : JobIntentService() {
     companion object {
         private const val KEY_PRODUCT_ID = "key_product_id"
         private const val KEY_LOCAL_MEDIA_FILENAME = "key_filename"
-        private const val JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID = 1000
 
         fun uploadProductMedia(context: Context, productId: Long, localMediaUri: Uri) {
             val intent = Intent(context, MediaUploadService::class.java)
