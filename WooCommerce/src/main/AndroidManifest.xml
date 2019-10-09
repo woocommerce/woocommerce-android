@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <!-- Dangerous permissions, access must be requested at runtime -->
 
@@ -107,6 +108,7 @@
 
         <service
             android:name=".media.MediaUploadService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="false"
             android:label="Media upload service" />
     </application>

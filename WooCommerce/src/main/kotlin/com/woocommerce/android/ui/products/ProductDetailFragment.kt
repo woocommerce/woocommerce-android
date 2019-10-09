@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -548,15 +549,20 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK) {
-            data?.data?.let { imageUri ->
-                val intent = Intent(context, MediaUploadService::class.java)
-                intent.putExtra(MediaUploadService.KEY_PRODUCT_ID, navArgs.remoteProductId)
-                intent.putExtra(MediaUploadService.KEY_LOCAL_MEDIA_FILENAME, imageUri)
-                activity?.startService(intent)
+        if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK && data != null) {
+            val clipData = data.clipData
+            val imageUri: Uri?
+            if (clipData != null && clipData.itemCount > 0) {
+                imageUri = clipData.getItemAt(0).uri
+            } else {
+                imageUri = data.data
+            }
+            activity?.let {
+                MediaUploadService.uploadProductMedia(it, navArgs.remoteProductId, imageUri)
             }
         }
     }
+
     /**
      * Glide failed to load the product image, do nothing so Glide will show the error drawable
      */

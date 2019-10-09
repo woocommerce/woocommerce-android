@@ -1,6 +1,8 @@
 package com.woocommerce.android.media
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.core.app.JobIntentService
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -22,8 +24,21 @@ import javax.inject.Inject
  */
 class MediaUploadService : JobIntentService() {
     companion object {
-        const val KEY_PRODUCT_ID = "key_product_id"
-        const val KEY_LOCAL_MEDIA_FILENAME = "key_filename"
+        private const val KEY_PRODUCT_ID = "key_product_id"
+        private const val KEY_LOCAL_MEDIA_FILENAME = "key_filename"
+        private const val JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID = 1000
+
+        fun uploadProductMedia(context: Context, productId: Long, localMediaUri: Uri) {
+            val intent = Intent(context, MediaUploadService::class.java)
+            intent.putExtra(KEY_PRODUCT_ID, productId)
+            intent.putExtra(KEY_LOCAL_MEDIA_FILENAME, localMediaUri)
+            enqueueWork(
+                    context,
+                    MediaUploadService::class.java,
+                    JOB_UPLOAD_PRODUCT_MEDIA_SERVICE_ID,
+                    intent
+            )
+        }
     }
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -38,11 +53,11 @@ class MediaUploadService : JobIntentService() {
     private val imageQuality = 85
 
     override fun onCreate() {
+        WooLog.i(WooLog.T.MEDIA, "media upload service > created")
         AndroidInjection.inject(this)
         dispatcher.register(this)
         super.onCreate()
-        WooLog.i(WooLog.T.MEDIA, "media upload service > created")
-    }
+     }
 
     override fun onDestroy() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > destroyed")
@@ -51,6 +66,8 @@ class MediaUploadService : JobIntentService() {
     }
 
     override fun onHandleWork(intent: Intent) {
+        WooLog.i(WooLog.T.MEDIA, "media upload service > onHandleWork")
+
         val productId = intent.getLongExtra(KEY_PRODUCT_ID, 0L)
         var filename = intent.getStringExtra(KEY_LOCAL_MEDIA_FILENAME)
 
@@ -72,10 +89,9 @@ class MediaUploadService : JobIntentService() {
     }
 
     override fun onStopCurrentWork(): Boolean {
-        // this Service was failing silently if it couldn't get to update its data, so
-        // that hints us that we shouldn't really care about rescheduling this job
-        // in the case something failed.
-        return false
+        super.onStopCurrentWork()
+        WooLog.i(WooLog.T.MEDIA, "media upload service > onStopCurrentWork")
+        return true
     }
 
     private fun dispatchUploadAction(media: MediaModel) {
