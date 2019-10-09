@@ -4,14 +4,14 @@ import android.content.Context
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
+import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
-import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.model.OrderNote
 import kotlinx.android.synthetic.main.order_detail_note_item.view.*
-import org.wordpress.android.fluxc.model.WCOrderNoteModel
 
 class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
     : ConstraintLayout(ctx, attrs) {
@@ -19,21 +19,18 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(ctx: Context, attrs
         View.inflate(context, R.layout.order_detail_note_item, this)
     }
 
-    fun initView(note: WCOrderNoteModel) {
-        orderNote_created.text = DateUtils.getFriendlyLongDateAtTimeString(context, note.dateCreated).capitalize()
+    fun initView(note: OrderNote) {
+        orderNote_created.text = DateFormat.getTimeFormat(context).format(note.dateCreated)
         orderNote_note.text = getHtmlText(note.note)
 
         when {
             note.isCustomerNote -> {
-                orderNote_type.text = context.getString(R.string.orderdetail_note_public)
                 orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_public))
             }
             note.isSystemNote -> {
-                orderNote_type.text = context.getString(R.string.orderdetail_note_system)
                 orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_system))
             }
             else -> {
-                orderNote_type.text = context.getString(R.string.orderdetail_note_private)
                 orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_private))
             }
         }

@@ -257,7 +257,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun showOrderNotes(notes: List<WCOrderNoteModel>) {
         // Populate order notes card
-        orderDetail_noteList.initView(notes, this)
+        orderDetail_noteList.initView(notes.map { it.toAppModel() }, this)
     }
 
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
@@ -284,7 +284,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun updateOrderNotes(notes: List<WCOrderNoteModel>) {
         // Update the notes in the notes card
-        orderDetail_noteList.updateView(notes)
+        orderDetail_noteList.updateView(notes.map { it.toAppModel() })
     }
 
     override fun openOrderFulfillment(order: WCOrderModel) {

@@ -18,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EM
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.AddOrderNoteFragmentArgs
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.Presenter
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.support.AndroidSupportInjection
@@ -50,7 +49,7 @@ class AddOrderNoteFragment : BaseFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        setRetainInstance(true)
+        retainInstance = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
