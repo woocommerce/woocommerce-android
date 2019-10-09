@@ -128,7 +128,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContract.View,
             if (it.isVisible != showFilter) it.isVisible = showFilter
         }
 
-        val showSearch = shouldShowFilterMenuItem()
+        val showSearch = shouldShowSearchMenuItem()
         searchMenuItem?.let {
             if (it.isActionViewExpanded && !showFilter) it.collapseActionView()
             if (it.isVisible != showSearch) it.isVisible = showSearch

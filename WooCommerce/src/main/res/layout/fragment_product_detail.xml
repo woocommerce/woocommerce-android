@@ -71,7 +71,7 @@
                         android:paddingEnd="@dimen/margin_medium"
                         android:paddingStart="@dimen/margin_medium"
                         android:paddingTop="@dimen/margin_small"
-                        android:textColor="@color/wc_grey_light"
+                        android:textColor="@color/wc_grey_dark"
                         android:textSize="@dimen/text_medium"
                         tools:text="Private"/>
                 </FrameLayout>

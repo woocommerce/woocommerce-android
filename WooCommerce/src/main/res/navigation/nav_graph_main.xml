@@ -53,6 +53,21 @@
             app:destination="@id/addOrderShipmentTrackingFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_issue_refund"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"
+            app:destination="@id/nav_graph_refunds">
+            <argument
+                android:name="orderId"
+                android:defaultValue="0L"
+                app:argType="long" />
+        </action>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_refundDetailFragment"
+            app:destination="@id/refundDetailFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"
@@ -131,14 +146,10 @@
         app:popExitAnim="@anim/activity_fade_out"/>
     <fragment
         android:id="@+id/reviewDetailFragment"
-        android:name="com.woocommerce.android.ui.notifications.ReviewDetailFragment"
+        android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
         tools:layout="@layout/fragment_review_detail">
         <argument
-            android:name="remoteNoteId"
-            app:argType="long"
-            android:defaultValue="0L"/>
-        <argument
-            android:name="remoteCommentId"
+            android:name="remoteReviewId"
             app:argType="long"
             android:defaultValue="0L"/>
         <argument
@@ -152,4 +163,18 @@
         app:destination="@id/reviewDetailFragment"
         app:enterAnim="@anim/activity_fade_in"
         app:popExitAnim="@anim/activity_fade_out"/>
+    <include app:graph="@navigation/nav_graph_refunds"/>
+    <fragment
+        android:id="@+id/refundDetailFragment"
+        android:name="com.woocommerce.android.ui.refunds.RefundDetailFragment"
+        android:label="RefundDetailFragment">
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+        <argument
+            android:name="refundId"
+            app:argType="long"
+            android:defaultValue="0L"/>
+    </fragment>
 </navigation>

@@ -1,0 +1,4 @@
+2.7:
+– Det finns en helt ny statistiksida (med mer detaljerade analyser) för dem som använder WooCommerce adminplugin-programmet! Du kan välja att använda det från sidan Inställningar.
+– Vem vill inte ha en mer effektiv upplevelse? Om du har inaktiverat statistikmodulen på din webbplats döljer vi avsnittet med besöksstatistik på sidan Min butik.
+– Njut av omdesignade (och med läsvänliga) avsnitt för kundinformation och betalning i vyn med orderinformation.
