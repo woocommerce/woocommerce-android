@@ -1,3 +1,3 @@
-- There’s a brand-new stats page (with more granular analytics) for those of you who use the WooCommerce Admin plugin! You can opt in to use it from the Settings page.
-- Who doesn’t like a more streamlined experience? If you’ve disabled the stats module on your site, we’ll hide the visitor stats section on your My Store page.
-- Enjoy a redesigned (and more readable) Customer Information and Payment sections in the order detail view.
+* Order list search was missing a cursor. Now it’s got one!
+* The updated order detail screen also shows a list of refunds you’ve issued.
+* The “Reviews” tab now displays all product reviews for the store.
