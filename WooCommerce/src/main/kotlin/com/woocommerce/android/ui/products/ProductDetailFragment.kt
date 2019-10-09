@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -18,10 +20,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -30,10 +34,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.media.MediaUploadService
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.imageviewer.ImageViewerActivity
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -46,10 +52,13 @@ import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
 import kotlin.math.max
-import androidx.navigation.fragment.navArgs
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductWithParameters
 
 class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
+    companion object {
+        private const val ID_CHOOSE_PHOTO = 2
+        private const val REQUEST_CODE_CHOOSE_PHOTO = Activity.RESULT_FIRST_USER
+    }
+
     private enum class DetailCard {
         Primary,
         PricingAndInventory,
@@ -144,13 +153,21 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         menu?.clear()
         inflater?.inflate(R.menu.menu_share, menu)
+        // TODO: hide behind FeatureFlag enum
+        if (BuildConfig.DEBUG) {
+            menu?.add(Menu.NONE, ID_CHOOSE_PHOTO, Menu.NONE, "Choose photo")
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when {
-            item?.itemId == R.id.menu_share -> {
+        return when (item?.itemId) {
+            R.id.menu_share -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
+                true
+            }
+            ID_CHOOSE_PHOTO -> {
+                chooseProductImage()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -522,6 +539,24 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
     }
 
+    private fun chooseProductImage() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        val chooser = Intent.createChooser(intent, "Choose photo")
+        activity?.startActivityFromFragment(this, chooser, REQUEST_CODE_CHOOSE_PHOTO)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_CHOOSE_PHOTO && resultCode == RESULT_OK) {
+            data?.data?.let { imageUri ->
+                val intent = Intent(context, MediaUploadService::class.java)
+                intent.putExtra(MediaUploadService.KEY_PRODUCT_ID, navArgs.remoteProductId)
+                intent.putExtra(MediaUploadService.KEY_LOCAL_MEDIA_FILENAME, imageUri)
+                activity?.startService(intent)
+            }
+        }
+    }
     /**
      * Glide failed to load the product image, do nothing so Glide will show the error drawable
      */
