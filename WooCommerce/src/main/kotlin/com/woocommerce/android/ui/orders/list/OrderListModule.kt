@@ -1,6 +1,5 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.list
 
-import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
