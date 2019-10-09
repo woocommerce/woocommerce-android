@@ -33,7 +33,7 @@ import java.util.Date
 class OrderListItemDataSource(
     val dispatcher: Dispatcher,
     val orderStore: WCOrderStore,
-    private val lifecycle: Lifecycle
+    lifecycle: Lifecycle
 ) : ListItemDataSourceInterface<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType> {
     private val fetcher = OrderFetcher(lifecycle, dispatcher)
 

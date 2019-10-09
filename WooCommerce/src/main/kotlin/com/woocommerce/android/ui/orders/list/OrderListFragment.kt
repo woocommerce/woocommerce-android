@@ -16,6 +16,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,13 +38,10 @@ import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.orderRefreshLayout
 import kotlinx.android.synthetic.main.fragment_order_list.ordersList
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
-import org.wordpress.android.fluxc.model.WCOrderListDescriptor
-import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
+class OrderListFragment : TopLevelFragment(),
         OrderStatusSelectorDialog.OrderStatusDialogListener, OnQueryTextListener, OnActionExpandListener {
     companion object {
         const val TAG: String = "OrderListFragment"
@@ -57,23 +56,21 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
             OrderListFragment().apply { this.orderStatusFilter = orderStatusFilter }
     }
 
-    @Inject lateinit var presenter: OrderListContractNew.Presenter
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    private var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    private lateinit var viewModel: OrderListViewModel
     private lateinit var ordersAdapter: OrderListAdapterNew
     private lateinit var ordersDividerDecoration: DividerItemDecoration
     private var orderFilterDialog: OrderStatusSelectorDialog? = null
-
-    override var isRefreshPending = false // not used.
 
     private var listState: Parcelable? = null // Save the state of the recycler view
     private var orderStatusFilter: String? = null
     private var filterMenuItem: MenuItem? = null
 
-    override var isSearching: Boolean = false
+    private var isSearching: Boolean = false
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var searchQuery: String = ""
@@ -117,11 +114,17 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
                     AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
 
                     orderRefreshLayout.isRefreshing = false
-                    pagedListWrapper?.fetchFirstPage()
+                    viewModel.fetchFirstPage()
                 }
             }
         }
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initializeViewModel()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -134,8 +137,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
         )
 
         // Get cached order status options and prime the adapter
-        val orderStatusOptions = presenter.getOrderStatusOptions()
-        ordersAdapter = OrderListAdapterNew(currencyFormatter, orderStatusOptions) {
+        ordersAdapter = OrderListAdapterNew(currencyFormatter) {
             showOrderDetail(it)
         }
 
@@ -156,17 +158,11 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
             })
         }
 
-        presenter.takeView(this)
         empty_view.setSiteToShare(selectedSite.get(), Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
 
-        val orderListDescriptor = WCOrderListDescriptor(
-                site = selectedSite.get(),
-                statusFilter = orderStatusFilter,
-                searchQuery = searchQuery)
         if (isSearching) {
             rebuildSearchView()
         }
-        loadList(orderListDescriptor)
     }
 
     override fun onResume() {
@@ -194,8 +190,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
     }
 
     override fun onDestroyView() {
-        presenter.dropView()
-
         disableSearchListeners()
         searchView = null
         filterMenuItem = null
@@ -210,7 +204,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
             disableSearchListeners()
         } else {
             enableSearchListeners()
-            pagedListWrapper?.invalidateData()
+            viewModel.reloadListFromCache()
         }
     }
 
@@ -282,7 +276,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
     // region Filtering
     private fun showFilterDialog() {
         fragmentManager?.let { fm ->
-            val orderStatusOptions = presenter.getOrderStatusOptions()
+            val orderStatusOptions = viewModel.orderStatusOptions.value ?: emptyMap()
             orderFilterDialog = OrderStatusSelectorDialog
                     .newInstance(orderStatusOptions, orderStatusFilter, true, listener = this)
                     .also { it.show(fm, OrderStatusSelectorDialog.TAG) }
@@ -305,10 +299,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
             clearOrderList()
             closeSearchView()
 
-            val descriptor = WCOrderListDescriptor(
-                    site = selectedSite.get(),
-                    statusFilter = orderStatus)
-            loadList(descriptor)
+            viewModel.loadList(statusFilter = orderStatus)
 
             updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
@@ -319,26 +310,16 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
     override fun getFragmentTitle(): String {
         return getString(R.string.orders)
                 .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
-                    val orderStatusLabel = presenter.getOrderStatusOptions()[filter]?.label
+                    val orderStatusLabel = viewModel.orderStatusOptions.value?.let {
+                        it[filter]?.label
+                    }
                     getString(R.string.orderlist_filtered, orderStatusLabel)
                 } ?: "")
     }
 
     override fun refreshFragmentState() {
         clearOrderList()
-        pagedListWrapper?.fetchFirstPage() // reload the active list from scratch
-    }
-
-    /**
-     * Reload the list from the db and redraw any changes. If a filter is
-     * active, then we need to reload the list entirely to ensure any changes
-     * are properly filtered.
-     */
-    override fun invalidateListData() {
-        orderStatusFilter?.let {
-            // Filter is applied, so we'll want to completely reload the list.
-            pagedListWrapper?.fetchFirstPage()
-        } ?: pagedListWrapper?.invalidateData() // Just update the value the changed
+        viewModel.fetchFirstPage() // reload the active list from scratch
     }
 
     override fun scrollToTop() {
@@ -354,14 +335,15 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
     }
 
     /**
-     * Shows the view that appears for stores that have no orders matching the current filter
+     * Shows the appropriate "empty view" when no orders are available for display:
+     * <ul>
+     *     <li>If searching -> show the "No matching orders" view</li>
+     *     <li>If filtering -> show the "No orders" view</li>
+     *     <li>Else -> show "Customers waiting" view</li>
+     * </ul>
      */
-    override fun showEmptyView(show: Boolean) {
+    fun showEmptyView(show: Boolean) {
         if (show) {
-            // if the user is searching we show a simple "No matching orders" TextView, otherwise if
-            // there isn't a filter (ie: we're showing All orders and there aren't any), then we want
-            // to show the full "customers waiting" view, otherwise we show a simple textView stating
-            // there aren't any orders
             @StringRes val messageId: Int
             val showImage: Boolean
             val showShareButton: Boolean
@@ -388,92 +370,10 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
         }
     }
 
-    override fun showOrderDetail(remoteOrderId: Long) {
-        // Load order shipment tracking providers if it hasn't been done already.
-        presenter.loadShipmentTrackingProviders()
-
+    fun showOrderDetail(remoteOrderId: Long) {
         disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
-    }
-
-    override fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
-        // So the order status can be matched to the appropriate label
-        ordersAdapter.setOrderStatusOptions(orderStatusOptions)
-    }
-
-    private fun loadList(descriptor: WCOrderListDescriptor) {
-        pagedListWrapper?.apply {
-            val lifecycleOwner = this@OrderListFragment
-            data.removeObservers(lifecycleOwner)
-            isLoadingMore.removeObservers(lifecycleOwner)
-            isFetchingFirstPage.removeObservers(lifecycleOwner)
-            listError.removeObservers(lifecycleOwner)
-            isEmpty.removeObservers(lifecycleOwner)
-        }
-
-        pagedListWrapper = presenter.generatePageWrapper(descriptor, lifecycle).also { wrapper ->
-            /*
-             * Set observers for various changes in state
-             */
-            wrapper.isLoadingMore.observe(this, Observer {
-                it?.let { isLoadingMore ->
-                    load_more_progressbar?.visibility = if (isLoadingMore) View.VISIBLE else View.GONE
-                }
-            })
-            wrapper.isFetchingFirstPage.observe(this, Observer { isFetchingFirstPage ->
-                orderRefreshLayout?.isRefreshing = isFetchingFirstPage == true
-
-                // Fetch order status options as well
-                if (isFetchingFirstPage) {
-                    presenter.refreshOrderStatusOptions()
-                }
-            })
-            var firstRunComplete = false
-            var dataObserverAdded = false
-            wrapper.data.observe(this, Observer {
-                it?.let { orderListData ->
-                    if (orderListData.isNotEmpty()) {
-                        ordersAdapter.submitList(orderListData)
-                        listState?.let {
-                            ordersList.layoutManager?.onRestoreInstanceState(listState)
-                            listState = null
-                        }
-
-                        if (isSearching) {
-                            ActivityUtils.hideKeyboard(activity)
-                        }
-                    }
-
-                    /*
-                     * Intentionally skip the first data result before setting up the
-                     * listener for the empty event which controls whether or not we
-                     * show the empty view. The first time the list is fetched, the data
-                     * result is just the total of records in the db. If a new install, it
-                     * will be zero.
-                     */
-                    if (firstRunComplete && !dataObserverAdded) {
-                        wrapper.isEmpty.observe(this, Observer { it2 ->
-                            it2?.let { empty ->
-                                showEmptyView(empty)
-                            }
-                        })
-                        dataObserverAdded = true
-                    }
-
-                    firstRunComplete = true
-                }
-            })
-            wrapper.listError.observe(this, Observer {
-                it?.let {
-                    isRefreshPending = true
-
-                    // Display an error message
-                    showLoadOrdersError()
-                }
-            })
-            wrapper.fetchFirstPage()
-        }
     }
 
     private fun isShowingAllOrders(): Boolean {
@@ -489,10 +389,6 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
         if (show) {
             refreshOptionsMenu()
         }
-    }
-
-    private fun showLoadOrdersError() {
-        uiMessageResolver.getSnack(R.string.orderlist_error_fetch_generic).show()
     }
 
     private fun clearOrderList() {
@@ -523,8 +419,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         closeSearchView()
-        val descriptor = WCOrderListDescriptor(site = selectedSite.get(), statusFilter = orderStatusFilter)
-        loadList(descriptor)
+        viewModel.loadList(statusFilter = orderStatusFilter)
         return true
     }
 
@@ -560,11 +455,7 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
      * view state.
      */
     private fun submitSearchQuery(query: String) {
-        val descriptor = WCOrderListDescriptor(
-                site = selectedSite.get(),
-                statusFilter = null,
-                searchQuery = query)
-        loadList(descriptor)
+        viewModel.loadList(searchQuery = query)
     }
 
     /**
@@ -604,4 +495,73 @@ class OrderListFragment : TopLevelFragment(), OrderListContractNew.View,
         searchView?.setOnQueryTextListener(this)
     }
     // endregion
+
+    private fun initializeViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(OrderListViewModel::class.java)
+
+        // setup observers
+        viewModel.isFetchingFirstPage.observe(this, Observer {
+            orderRefreshLayout?.isRefreshing = it == true
+        })
+
+        viewModel.isLoadingMore.observe(this, Observer {
+            it?.let { loadingMore ->
+                load_more_progressbar?.visibility = if (loadingMore) View.VISIBLE else View.GONE
+            }
+        })
+
+        viewModel.orderStatusOptions.observe(this, Observer {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                ordersAdapter.setOrderStatusOptions(options)
+            }
+        })
+
+        var firstRunComplete = false
+        var dataObserverAdded = false
+        viewModel.pagedListData.observe(this, Observer {
+            it?.let { orderListData ->
+                if (orderListData.isNotEmpty()) {
+                    ordersAdapter.submitList(orderListData)
+                    listState?.let {
+                        ordersList.layoutManager?.onRestoreInstanceState(listState)
+                        listState = null
+                    }
+
+                    if (isSearching) {
+                        ActivityUtils.hideKeyboard(activity)
+                    }
+                }
+
+                /*
+                 * Intentionally skip the first data result before setting up the
+                 * listener for the empty event which controls whether or not we
+                 * show the empty view. The first time the list is fetched, the data
+                 * result is just the total of records in the db. If a new install, it
+                 * will be zero.
+                 */
+                if (firstRunComplete && !dataObserverAdded) {
+                    viewModel.isEmpty.observe(this, Observer { it2 ->
+                        it2?.let { empty ->
+                            showEmptyView(empty)
+                        }
+                    })
+                    dataObserverAdded = true
+                }
+
+                firstRunComplete = true
+            }
+        })
+
+        viewModel.showSnackbarMessage.observe(this, Observer { msg ->
+            msg?.let { uiMessageResolver.showSnack(it) }
+        })
+
+        viewModel.scrollToPosition.observe(this, Observer {
+            // TODO
+        })
+
+        viewModel.start()
+        viewModel.loadList(orderStatusFilter, searchQuery)
+    }
 }

@@ -25,7 +25,6 @@ import org.wordpress.android.util.DateTimeUtils
 
 class OrderListAdapterNew(
     val currencyFormatter: CurrencyFormatter,
-    var activeOrderStatusMap: Map<String, WCOrderStatusModel>,
     val onItemSelected: (remoteOrderId: Long) -> Unit
 ) : PagedListAdapter<OrderListItemUIType, ViewHolder>(OrderListDiffItemCallback) {
     companion object {
@@ -33,6 +32,9 @@ class OrderListAdapterNew(
         private const val VIEW_TYPE_SECTION_HEADER = 2
         private const val VIEW_TYPE_LOADING = 1
     }
+
+    var activeOrderStatusMap: Map<String, WCOrderStatusModel> = emptyMap()
+
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is OrderListItemUI -> VIEW_TYPE_ORDER_ITEM
@@ -179,5 +181,11 @@ private val OrderListDiffItemCallback = object : DiffUtil.ItemCallback<OrderList
         return false
     }
 
+    /**
+     * We can use a basic `==` here because the `equals()` method for these classes have been overridden to
+     * properly compare the necessary fields.
+     *
+     * @see [OrderListItemUIType.equals]
+     */
     override fun areContentsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType) = oldItem == newItem
 }
