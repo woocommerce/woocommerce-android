@@ -21,7 +21,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
-import com.woocommerce.android.util.FeatureFlags
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 
@@ -57,7 +57,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.fragmentManager = fm
         this.listener = listener
 
-        if (FeatureFlags.PRODUCT_LIST.isEnabled()) {
+        if (FeatureFlag.PRODUCT_LIST.isEnabled()) {
             detectLabelVisibilityMode()
             menu.findItem(R.id.products)?.isVisible = true
         } else {

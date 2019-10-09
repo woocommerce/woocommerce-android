@@ -11,7 +11,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FeatureFlags
+import com.woocommerce.android.util.FeatureFlag
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -162,7 +162,7 @@ class MainPresenterTest {
 
     @Test
     fun `Handles database downgrade correctly`() {
-        if (FeatureFlags.DB_DOWNGRADE.isEnabled()) {
+        if (FeatureFlag.DB_DOWNGRADE.isEnabled()) {
             mainPresenter.takeView(mainContractView)
             mainPresenter.fetchSitesAfterDowngrade()
             verify(mainContractView).showProgressDialog(any())
