@@ -11,7 +11,7 @@ import org.wordpress.android.util.UrlUtils
 import java.io.File
 
 object MediaUploadUtils {
-    private fun mediaModelFromLocalUri(
+    fun mediaModelFromLocalUri(
         context: Context,
         localSiteId: Int,
         uri: Uri,
@@ -53,19 +53,5 @@ object MediaUploadUtils {
         media.setUploadState(MediaModel.MediaUploadState.UPLOADING) // ??
 
         return media
-    }
-
-    fun mediaModelFromLocalFilename(context: Context, localSiteId: Int, filename: String, mediaStore: MediaStore): MediaModel? {
-        val file = File(filename)
-        if (!file.exists()) {
-            return null
-        }
-
-        val uri = Uri.fromFile(file)
-        return mediaModelFromLocalUri(
-                context,
-                localSiteId,
-                uri,
-                mediaStore)
     }
 }

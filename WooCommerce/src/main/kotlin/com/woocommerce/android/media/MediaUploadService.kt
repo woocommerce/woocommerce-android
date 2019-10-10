@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
+import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
 /**
@@ -26,12 +27,12 @@ import javax.inject.Inject
 class MediaUploadService : JobIntentService() {
     companion object {
         private const val KEY_PRODUCT_ID = "key_product_id"
-        private const val KEY_LOCAL_MEDIA_FILENAME = "key_filename"
+        private const val KEY_LOCAL_MEDIA_URI = "key_media_uri"
 
         fun uploadProductMedia(context: Context, productId: Long, localMediaUri: Uri) {
             val intent = Intent(context, MediaUploadService::class.java)
             intent.putExtra(KEY_PRODUCT_ID, productId)
-            intent.putExtra(KEY_LOCAL_MEDIA_FILENAME, localMediaUri)
+            intent.putExtra(KEY_LOCAL_MEDIA_URI, localMediaUri)
             enqueueWork(
                     context,
                     MediaUploadService::class.java,
@@ -45,6 +46,8 @@ class MediaUploadService : JobIntentService() {
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var mediaStore: MediaStore
     @Inject lateinit var selectedSite: SelectedSite
+
+    private val doneSignal = CountDownLatch(1)
 
     // TODO: move to prefs?
     private val stripImageLocation = true
@@ -69,16 +72,16 @@ class MediaUploadService : JobIntentService() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > onHandleWork")
 
         val productId = intent.getLongExtra(KEY_PRODUCT_ID, 0L)
-        var filename = intent.getStringExtra(KEY_LOCAL_MEDIA_FILENAME)
+        var localMediaUri = intent.getParcelableExtra<Uri>(KEY_LOCAL_MEDIA_URI)
 
-        if (optimizeImages) {
+        /*if (optimizeImages) {
             filename = ImageUtils.optimizeImage(this, filename, maxImageSize, imageQuality)
-        }
+        }*/
 
-        val media = MediaUploadUtils.mediaModelFromLocalFilename(
+        val media = MediaUploadUtils.mediaModelFromLocalUri(
                 this,
                 selectedSite.get().id,
-                filename,
+                localMediaUri,
                 mediaStore
         )
 
@@ -98,6 +101,7 @@ class MediaUploadService : JobIntentService() {
         val site = siteStore.getSiteByLocalId(media.localSiteId)
         val payload = UploadMediaPayload(site, media, stripImageLocation)
         dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
+        doneSignal.await()
     }
 
     @SuppressWarnings("unused")
@@ -113,5 +117,7 @@ class MediaUploadService : JobIntentService() {
         } else {
             // TODO
         }
+
+        doneSignal.countDown()
     }
 }
