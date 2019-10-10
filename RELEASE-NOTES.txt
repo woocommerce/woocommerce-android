@@ -2,6 +2,7 @@
 -----
 * Fixed missing cursor in order list search
 * See a list of issued refunds inside the order detail screen
+* Fixed rare crash on opening stats page with WooCommerce Admin is enabled
  
 2.7
 -----
