@@ -59,7 +59,7 @@ class MediaUploadService : JobIntentService() {
         AndroidInjection.inject(this)
         dispatcher.register(this)
         super.onCreate()
-     }
+    }
 
     override fun onDestroy() {
         WooLog.i(WooLog.T.MEDIA, "media upload service > destroyed")
@@ -109,7 +109,10 @@ class MediaUploadService : JobIntentService() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMediaUploaded(event: OnMediaUploaded) {
         if (event.isError) {
-            WooLog.w(WooLog.T.MEDIA, "MediaUploadService > error uploading media: ${event.error.type}, ${event.error.message}")
+            WooLog.w(
+                    WooLog.T.MEDIA,
+                    "MediaUploadService > error uploading media: ${event.error.type}, ${event.error.message}"
+            )
             // TODO
         } else {
             WooLog.w(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
