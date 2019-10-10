@@ -17,7 +17,6 @@ import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.util.ImageUtils
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
@@ -87,6 +86,8 @@ class MediaUploadService : JobIntentService() {
 
         // TODO: handle null media
         media?.let {
+            it.postId = productId
+            it.setUploadState(MediaModel.MediaUploadState.UPLOADING)
             dispatchUploadAction(it)
         }
     }
@@ -107,14 +108,11 @@ class MediaUploadService : JobIntentService() {
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMediaUploaded(event: OnMediaUploaded) {
-        if (event.media == null) {
-            WooLog.w(WooLog.T.MEDIA, "MediaUploadService > Received media event for null media, ignoring")
-            return
-        }
-
         if (event.isError) {
+            WooLog.w(WooLog.T.MEDIA, "MediaUploadService > error uploading media: ${event.error.type}, ${event.error.message}")
             // TODO
         } else {
+            WooLog.w(WooLog.T.MEDIA, "MediaUploadService > uploaded media ${event.media?.id}")
             // TODO
         }
 

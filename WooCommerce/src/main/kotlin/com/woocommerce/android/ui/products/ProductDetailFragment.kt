@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.Manifest.permission
 import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -540,7 +541,14 @@ class ProductDetailFragment : BaseFragment(), RequestListener<Drawable> {
         }
     }
 
+    private fun requestStoragePermission() {
+        val permissions = arrayOf(permission.READ_EXTERNAL_STORAGE)
+        requestPermissions(permissions, 10)
+    }
+
     private fun chooseProductImage() {
+        // TODO: copy WPAndroid's permission code
+        requestStoragePermission()
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         val chooser = Intent.createChooser(intent, "Choose photo")

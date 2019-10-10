@@ -50,8 +50,6 @@ object MediaUploadUtils {
         media.mimeType = mimeType
         media.uploadDate = DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000)
 
-        media.setUploadState(MediaModel.MediaUploadState.UPLOADING) // ??
-
         return media
     }
 }
