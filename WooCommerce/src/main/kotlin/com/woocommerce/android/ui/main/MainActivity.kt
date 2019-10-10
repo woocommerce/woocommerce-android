@@ -38,14 +38,15 @@ import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
-import com.woocommerce.android.ui.notifications.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
+import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -60,7 +61,6 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -98,6 +98,10 @@ class MainActivity : AppUpgradeActivity(),
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         }
+    }
+
+    interface NavigationResult {
+        fun onNavigationResult(requestCode: Int, result: Bundle)
     }
 
     @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -334,6 +338,8 @@ class MainActivity : AppUpgradeActivity(),
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productDetailFragment,
+                R.id.refundSummaryFragment,
+                R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment -> {
                     true
@@ -582,6 +588,7 @@ class MainActivity : AppUpgradeActivity(),
         val stat = when (navPos) {
             DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
+            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
         }
         AnalyticsTracker.track(stat)
@@ -602,6 +609,7 @@ class MainActivity : AppUpgradeActivity(),
         val stat = when (navPos) {
             DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
+            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
         }
         AnalyticsTracker.track(stat)
@@ -704,7 +712,7 @@ class MainActivity : AppUpgradeActivity(),
                         }
                     }
                 }
-                PRODUCT_REVIEW -> showReviewDetail(note)
+                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId())
                 else -> { /* do nothing */ }
             }
         }
@@ -716,7 +724,7 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigate(action)
     }
 
-    override fun showReviewDetail(notification: NotificationModel, tempStatus: String?) {
+    override fun showReviewDetail(remoteReviewId: Long, tempStatus: String?) {
         showBottomNav()
         bottomNavView.currentPosition = REVIEWS
 
@@ -724,10 +732,8 @@ class MainActivity : AppUpgradeActivity(),
         bottom_nav.active(navPos)
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-                notification.remoteNoteId,
-                notification.getCommentId(),
-                tempStatus
-        )
+                remoteReviewId,
+                tempStatus)
         navController.navigate(action)
     }
 

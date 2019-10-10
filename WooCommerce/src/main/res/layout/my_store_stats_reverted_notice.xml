@@ -29,7 +29,7 @@
             android:gravity="start"
             android:lineSpacingExtra="4sp"
             android:text="@string/my_store_stats_reverted_message"
-            android:textAppearance="@style/Woo.TextAppearance.Medium.Gray"
+            android:textAppearance="@style/Woo.TextAppearance.Medium.Grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/my_store_info_icon"
             app:layout_constraintTop_toTopOf="parent"/>

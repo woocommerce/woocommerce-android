@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.model.CommentModel
 import org.wordpress.android.fluxc.model.CommentStatus.APPROVED
 import org.wordpress.android.fluxc.model.CommentStatus.UNAPPROVED
 import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Kind.COMMENT
 import org.wordpress.android.util.DateTimeUtils
 
 /**
@@ -130,7 +131,7 @@ fun NotificationModel.getConvertedTimestamp(): Long = DateTimeUtils.timestampFro
  * review.
  */
 fun NotificationModel.getCommentId(): Long {
-    if (this.getWooType() != PRODUCT_REVIEW) {
+    if (this.type != COMMENT) {
         return 0L
     }
 
