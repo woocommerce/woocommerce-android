@@ -2,9 +2,11 @@
 <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.main.MainActivity">
 
     <RelativeLayout
         android:id="@+id/ordersContainer"
@@ -26,11 +28,15 @@
                 android:layout_height="match_parent"/>
         </LinearLayout>
 
-        <com.woocommerce.android.widgets.WCEmptyView
+        <com.woocommerce.android.widgets.ActionableEmptyView
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:aevTitle="@string/waiting_for_customers"
+            app:aevButton="@string/share_store_button"
+            app:aevImage="@drawable/ic_woo_waiting_customers"/>
 
         <ProgressBar
             android:id="@+id/load_more_progressbar"

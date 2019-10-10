@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.app.Application
+import android.text.TextUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -9,13 +11,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.di.BG_THREAD
 import com.woocommerce.android.di.UI_THREAD
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ThrottleLiveData
+import com.woocommerce.android.viewmodel.ScopedAndroidViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -36,17 +43,24 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 import javax.inject.Named
 
+private const val EMPTY_VIEW_THROTTLE = 250L
+typealias PagedOrdersList = PagedList<OrderListItemUIType>
+
 @OpenClassOnDebug
 class OrderListViewModel @Inject constructor(
     @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
+    @Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher,
     private val repository: OrderListRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
-    private val selectedSite: SelectedSite
-) : ScopedViewModel(mainDispatcher), LifecycleOwner {
-    private val lifecycleRegistry = LifecycleRegistry(this)
+    private val selectedSite: SelectedSite,
+    appContext: Application
+) : ScopedAndroidViewModel(mainDispatcher, appContext), LifecycleOwner {
+    private val lifecycleRegistry: LifecycleRegistry by lazy {
+        LifecycleRegistry(this)
+    }
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     private var pagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
@@ -57,8 +71,8 @@ class OrderListViewModel @Inject constructor(
     private var isStarted = false
     private var isRefreshPending = true
 
-    private val _pagedListData = MediatorLiveData<PagedList<OrderListItemUIType>>()
-    val pagedListData: LiveData<PagedList<OrderListItemUIType>> = _pagedListData
+    private val _pagedListData = MediatorLiveData<PagedOrdersList>()
+    val pagedListData: LiveData<PagedOrdersList> = _pagedListData
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
@@ -78,7 +92,17 @@ class OrderListViewModel @Inject constructor(
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
-    // TODO AMANDA: Add empty UI State live data
+    private val _emptyViewState: ThrottleLiveData<OrderListEmptyUiState> by lazy {
+        ThrottleLiveData<OrderListEmptyUiState>(
+                offset = EMPTY_VIEW_THROTTLE,
+                coroutineScope = this,
+                mainDispatcher = mainDispatcher,
+                backgroundDispatcher = bgDispatcher)
+    }
+    val emptyViewState: LiveData<OrderListEmptyUiState> = _emptyViewState
+
+    var isSearching = false
+    var searchQuery = ""
 
     init {
         lifecycleRegistry.markState(Lifecycle.State.CREATED)
@@ -105,20 +129,21 @@ class OrderListViewModel @Inject constructor(
     fun loadList(statusFilter: String? = null, searchQuery: String? = null) {
         val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
 
-        clearLiveDataSources()
-        // TODO AMANDA - listen for empty state live data
-
+        // Clear any of the data sources assigned to the current wrapper, then
+        // create a new one.
+        pagedListWrapper?.let { clearLiveDataSources(it) }
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+
+        listenToEmptyViewStateLiveData(pagedListWrapper)
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
-                if (isDataDeliverable()) {
+                if (isSearchResultDeliverable(pagedListWrapper)) {
                     _pagedListData.value = it
                 }
             }
         }
         _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) {
-            // TODO AMANDA - add search logic
             _isFetchingFirstPage.value = it
         }
         _isLoadingMore.addSource(pagedListWrapper.isLoadingMore) {
@@ -159,21 +184,66 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun shareStore() {
+        AnalyticsTracker.track(Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
+        selectedSite.getIfExists()?.let {
+            ActivityUtils.shareStoreUrl(appContext, it.url)
+        }
+    }
+
     fun reloadListFromCache() {
         pagedListWrapper?.invalidateData()
     }
 
-    private fun isDataDeliverable(): Boolean {
-        // FIXME AMANDA: if searching, make sure isFetchingFirstPage.value != null && is false
-        return true
+    private fun isEmptySearch() = TextUtils.isEmpty(searchQuery) && isSearching
+
+    /**
+     * Used to filter out dataset changes that might trigger an empty view when performing a search.
+     *
+     * @return True if the user is either not currently in search mode, or if they are there is already data
+     * available so the view can safely be updated.
+     */
+    private fun isSearchResultDeliverable(pagedListWrapper: PagedListWrapper<OrderListItemUIType>): Boolean {
+        return !isSearching ||
+                (isSearching &&
+                        pagedListWrapper.isFetchingFirstPage.value != null &&
+                        isFetchingFirstPage.value == false)
     }
 
-    private fun clearLiveDataSources() {
-        pagedListWrapper?.let {
-            _pagedListData.removeSource(it.data)
-            _isFetchingFirstPage.removeSource(it.isFetchingFirstPage)
-            _isLoadingMore.removeSource(it.isLoadingMore)
+    private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>) {
+        with(pagedListWrapper) {
+            _pagedListData.removeSource(data)
+            _emptyViewState.removeSource(pagedListData)
+            _emptyViewState.removeSource(isEmpty)
+            _emptyViewState.removeSource(listError)
+            _emptyViewState.removeSource(isFetchingFirstPage)
+            _isFetchingFirstPage.removeSource(isFetchingFirstPage)
+            _isLoadingMore.removeSource(isLoadingMore)
         }
+    }
+
+    /**
+     * Builds the function for handling empty view state scenarios and links the various [LiveData] feeds as
+     * a source for the [_emptyViewState] LivData object.
+     */
+    private fun listenToEmptyViewStateLiveData(pagedListWrapper: PagedListWrapper<OrderListItemUIType>) {
+        val update = {
+            val listType = if (this.isSearching) OrderListType.SEARCH else OrderListType.ALL
+            createEmptyUiState(
+                orderListType = listType,
+                isNetworkAvailable = networkStatus.isConnected(),
+                isLoadingData = pagedListWrapper.isFetchingFirstPage.value ?: false ||
+                        pagedListWrapper.data.value == null,
+                isListEmpty = pagedListWrapper.isEmpty.value ?: true,
+                isSearchPromptRequired = isEmptySearch(),
+                isError = pagedListWrapper.listError.value != null,
+                fetchFirstPage = this::fetchFirstPage,
+                shareStoreFunc = this::shareStore)
+        }
+
+        _emptyViewState.addSource(pagedListWrapper.isEmpty) { _emptyViewState.postValue(update()) }
+        _emptyViewState.addSource(pagedListWrapper.isFetchingFirstPage) { _emptyViewState.postValue(update()) }
+        _emptyViewState.addSource(pagedListWrapper.listError) { _emptyViewState.postValue(update()) }
     }
 
     private fun showOfflineSnack() {

@@ -11,13 +11,14 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
+import android.widget.Button
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,12 +28,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.onScrollDown
 import com.woocommerce.android.extensions.onScrollUp
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusSelectorDialog
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UiHelpers
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_list.*
 import kotlinx.android.synthetic.main.fragment_order_list.orderRefreshLayout
@@ -40,6 +43,8 @@ import kotlinx.android.synthetic.main.fragment_order_list.ordersList
 import kotlinx.android.synthetic.main.fragment_order_list.view.*
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
+
+private const val MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION = 2
 
 class OrderListFragment : TopLevelFragment(),
         OrderStatusSelectorDialog.OrderStatusDialogListener, OnQueryTextListener, OnActionExpandListener {
@@ -56,10 +61,10 @@ class OrderListFragment : TopLevelFragment(),
             OrderListFragment().apply { this.orderStatusFilter = orderStatusFilter }
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject internal lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var selectedSite: SelectedSite
+    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
     private lateinit var viewModel: OrderListViewModel
     private lateinit var ordersAdapter: OrderListAdapter
@@ -70,10 +75,20 @@ class OrderListFragment : TopLevelFragment(),
     private var orderStatusFilter: String? = null
     private var filterMenuItem: MenuItem? = null
 
-    private var isSearching: Boolean = false
+    // Alias for interacting with [viewModel.isSearching] so the value is always identical
+    // to the real value on the UI side.
+    private var isSearching: Boolean
+        private set(value) { viewModel.isSearching = value }
+        get() = viewModel.isSearching
+
+    // Alias for interacting with [viewModel.searchQuery] so the value is always identical
+    // to the real value on the UI side.
+    private var searchQuery: String
+        private set(value) { viewModel.searchQuery = value }
+        get() = viewModel.searchQuery
+
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private var searchQuery: String = ""
     private val searchHandler = Handler()
 
     override fun onAttach(context: Context) {
@@ -158,8 +173,6 @@ class OrderListFragment : TopLevelFragment(),
             })
         }
 
-        empty_view.setSiteToShare(selectedSite.get(), Stat.ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED)
-
         if (isSearching) {
             rebuildSearchView()
         }
@@ -208,7 +221,128 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    // region Options menu
+    override fun getFragmentTitle(): String {
+        return getString(R.string.orders)
+                .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
+                    val orderStatusLabel = viewModel.orderStatusOptions.value?.let {
+                        it[filter]?.label
+                    }
+                    getString(R.string.orderlist_filtered, orderStatusLabel)
+                } ?: "")
+    }
+
+    override fun refreshFragmentState() {
+        clearOrderList()
+        viewModel.fetchFirstPage() // reload the active list from scratch
+    }
+
+    override fun scrollToTop() {
+        ordersList.smoothScrollToPosition(0)
+    }
+
+    override fun onReturnedFromChildFragment() {
+        showOptionsMenu(true)
+
+        if (isSearching) {
+            rebuildSearchView()
+        }
+    }
+
+    private fun initializeViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(OrderListViewModel::class.java)
+
+        // setup observers
+        viewModel.isFetchingFirstPage.observe(this, Observer {
+            orderRefreshLayout?.isRefreshing = it == true
+        })
+
+        viewModel.isLoadingMore.observe(this, Observer {
+            it?.let { loadingMore ->
+                load_more_progressbar?.visibility = if (loadingMore) View.VISIBLE else View.GONE
+            }
+        })
+
+        viewModel.orderStatusOptions.observe(this, Observer {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                ordersAdapter.setOrderStatusOptions(options)
+            }
+        })
+
+        viewModel.pagedListData.observe(this, Observer {
+            updatePagedListData(it)
+        })
+
+        viewModel.showSnackbarMessage.observe(this, Observer { msg ->
+            msg?.let { uiMessageResolver.showSnack(it) }
+        })
+
+        viewModel.scrollToPosition.observe(this, Observer {
+            // TODO AMANDA - needed?
+        })
+
+        viewModel.emptyViewState.observe(this, Observer {
+            it?.let { emptyViewState -> updateEmptyViewForState(emptyViewState) }
+        })
+
+        viewModel.start()
+        viewModel.loadList(orderStatusFilter, searchQuery)
+    }
+
+    private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
+        val recyclerViewState = ordersList?.layoutManager?.onSaveInstanceState()
+        ordersAdapter.submitList(pagedListData)
+
+        if (pagedListData?.size != 0 && isSearching) {
+            ActivityUtils.hideKeyboard(activity)
+        }
+
+        ordersList?.post {
+            (ordersList?.layoutManager as? LinearLayoutManager)?.let { layoutManager ->
+                if (layoutManager.findFirstVisibleItemPosition() < MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION) {
+                    layoutManager.onRestoreInstanceState(recyclerViewState)
+                }
+            }
+        }
+    }
+
+    private fun updateEmptyViewForState(state: OrderListEmptyUiState) {
+        empty_view?.let { emptyView ->
+            if (state.emptyViewVisible) {
+                UiHelpers.setTextOrHide(emptyView.title, state.title)
+                UiHelpers.setImageOrHide(emptyView.image, state.imgResId)
+                setupButtonOrHide(emptyView.button, state.buttonText, state.onButtonClick)
+                emptyView.visibility = View.VISIBLE
+            } else {
+                emptyView.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun setupButtonOrHide(
+        buttonView: Button,
+        text: UiString?,
+        onButtonClick: (() -> Unit)?
+    ) {
+        UiHelpers.setTextOrHide(buttonView, text)
+        buttonView.setOnClickListener { onButtonClick?.invoke() }
+    }
+
+    private fun showOrderDetail(remoteOrderId: Long) {
+        disableSearchListeners()
+        showOptionsMenu(false)
+        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
+    }
+
+    private fun isShowingAllOrders(): Boolean {
+        return !isSearching && orderStatusFilter.isNullOrEmpty()
+    }
+
+    private fun clearOrderList() {
+        ordersAdapter.submitList(null)
+    }
+
+    // region options menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
@@ -218,6 +352,17 @@ class OrderListFragment : TopLevelFragment(),
 
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
+    }
+
+    /**
+     * We use this to clear the options menu when navigating to a child destination - otherwise this
+     * fragment's menu will continue to appear when the child is shown
+     */
+    private fun showOptionsMenu(show: Boolean) {
+        setHasOptionsMenu(show)
+        if (show) {
+            refreshOptionsMenu()
+        }
     }
 
     /**
@@ -273,7 +418,7 @@ class OrderListFragment : TopLevelFragment(),
     }
     // endregion
 
-    // region Filtering
+    // region filtering
     private fun showFilterDialog() {
         fragmentManager?.let { fm ->
             val orderStatusOptions = viewModel.orderStatusOptions.value ?: emptyMap()
@@ -307,94 +452,6 @@ class OrderListFragment : TopLevelFragment(),
     }
     // endregion
 
-    override fun getFragmentTitle(): String {
-        return getString(R.string.orders)
-                .plus(orderStatusFilter.takeIf { !it.isNullOrEmpty() }?.let { filter ->
-                    val orderStatusLabel = viewModel.orderStatusOptions.value?.let {
-                        it[filter]?.label
-                    }
-                    getString(R.string.orderlist_filtered, orderStatusLabel)
-                } ?: "")
-    }
-
-    override fun refreshFragmentState() {
-        clearOrderList()
-        viewModel.fetchFirstPage() // reload the active list from scratch
-    }
-
-    override fun scrollToTop() {
-        ordersList.smoothScrollToPosition(0)
-    }
-
-    override fun onReturnedFromChildFragment() {
-        showOptionsMenu(true)
-
-        if (isSearching) {
-            rebuildSearchView()
-        }
-    }
-
-    /**
-     * Shows the appropriate "empty view" when no orders are available for display:
-     * <ul>
-     *     <li>If searching -> show the "No matching orders" view</li>
-     *     <li>If filtering -> show the "No orders" view</li>
-     *     <li>Else -> show "Customers waiting" view</li>
-     * </ul>
-     */
-    fun showEmptyView(show: Boolean) {
-        if (show) {
-            @StringRes val messageId: Int
-            val showImage: Boolean
-            val showShareButton: Boolean
-            when {
-                isSearching -> {
-                    showImage = false
-                    showShareButton = false
-                    messageId = R.string.orders_empty_message_with_search
-                }
-                isShowingAllOrders() -> {
-                    showImage = true
-                    showShareButton = true
-                    messageId = R.string.waiting_for_customers
-                }
-                else -> {
-                    showImage = true
-                    showShareButton = true
-                    messageId = R.string.orders_empty_message_with_filter
-                }
-            }
-            empty_view.show(messageId, showImage, showShareButton)
-        } else {
-            empty_view.hide()
-        }
-    }
-
-    fun showOrderDetail(remoteOrderId: Long) {
-        disableSearchListeners()
-        showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
-    }
-
-    private fun isShowingAllOrders(): Boolean {
-        return !isSearching && orderStatusFilter.isNullOrEmpty()
-    }
-
-    /**
-     * We use this to clear the options menu when navigating to a child destination - otherwise this
-     * fragment's menu will continue to appear when the child is shown
-     */
-    private fun showOptionsMenu(show: Boolean) {
-        setHasOptionsMenu(show)
-        if (show) {
-            refreshOptionsMenu()
-        }
-    }
-
-    private fun clearOrderList() {
-        ordersAdapter.submitList(null)
-    }
-
     // region search
     override fun onQueryTextSubmit(query: String): Boolean {
         handleNewSearchRequest(query)
@@ -408,7 +465,6 @@ class OrderListFragment : TopLevelFragment(),
         } else if (newText.isEmpty()) {
             clearOrderList()
         }
-        showEmptyView(false)
         return true
     }
 
@@ -463,8 +519,6 @@ class OrderListFragment : TopLevelFragment(),
      */
     private fun closeSearchView() {
         if (isSearching) {
-            showEmptyView(false)
-
             searchQuery = ""
             isSearching = false
             disableSearchListeners()
@@ -495,73 +549,4 @@ class OrderListFragment : TopLevelFragment(),
         searchView?.setOnQueryTextListener(this)
     }
     // endregion
-
-    private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(OrderListViewModel::class.java)
-
-        // setup observers
-        viewModel.isFetchingFirstPage.observe(this, Observer {
-            orderRefreshLayout?.isRefreshing = it == true
-        })
-
-        viewModel.isLoadingMore.observe(this, Observer {
-            it?.let { loadingMore ->
-                load_more_progressbar?.visibility = if (loadingMore) View.VISIBLE else View.GONE
-            }
-        })
-
-        viewModel.orderStatusOptions.observe(this, Observer {
-            it?.let { options ->
-                // So the order status can be matched to the appropriate label
-                ordersAdapter.setOrderStatusOptions(options)
-            }
-        })
-
-        var firstRunComplete = false
-        var dataObserverAdded = false
-        viewModel.pagedListData.observe(this, Observer {
-            it?.let { orderListData ->
-                if (orderListData.isNotEmpty()) {
-                    ordersAdapter.submitList(orderListData)
-                    listState?.let {
-                        ordersList.layoutManager?.onRestoreInstanceState(listState)
-                        listState = null
-                    }
-
-                    if (isSearching) {
-                        ActivityUtils.hideKeyboard(activity)
-                    }
-                }
-
-                /*
-                 * Intentionally skip the first data result before setting up the
-                 * listener for the empty event which controls whether or not we
-                 * show the empty view. The first time the list is fetched, the data
-                 * result is just the total of records in the db. If a new install, it
-                 * will be zero.
-                 */
-                if (firstRunComplete && !dataObserverAdded) {
-                    viewModel.isEmpty.observe(this, Observer { it2 ->
-                        it2?.let { empty ->
-                            showEmptyView(empty)
-                        }
-                    })
-                    dataObserverAdded = true
-                }
-
-                firstRunComplete = true
-            }
-        })
-
-        viewModel.showSnackbarMessage.observe(this, Observer { msg ->
-            msg?.let { uiMessageResolver.showSnack(it) }
-        })
-
-        viewModel.scrollToPosition.observe(this, Observer {
-            // TODO
-        })
-
-        viewModel.start()
-        viewModel.loadList(orderStatusFilter, searchQuery)
-    }
 }
